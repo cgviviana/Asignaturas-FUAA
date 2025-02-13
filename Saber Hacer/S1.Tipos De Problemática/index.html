@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con La Profe Vivy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            margin: 50px auto;
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .correct { background-color: #4CAF50; color: white; }
+        .wrong { background-color: #f44336; color: white; }
+        .correct:hover { background-color: #45a049; }
+        .wrong:hover { background-color: #e53935; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div id="startScreen" class="container">
+        <h1>Aprendiendo con La Profe Vivy</h1>
+        <h2>Tipos de problemáticas</h2>
+        <button onclick="startGame()">Comenzar</button>
+    </div>
+
+    <div id="gameScreen" class="container hidden">
+        <h1>🎯 Clasifica la Problemática</h1>
+        <p id="question">Cargando pregunta...</p>
+        <button class="option" onclick="checkAnswer('Caótica')">Caótica</button>
+        <button class="option" onclick="checkAnswer('Compleja')">Compleja</button>
+        <button class="option" onclick="checkAnswer('Complicada')">Complicada</button>
+        <button class="option" onclick="checkAnswer('Simple')">Simple</button>
+        <p id="result"></p>
+        <p id="feedback"></p>
+        <p><strong>Puntaje:</strong> <span id="score">0</span></p>
+        <button onclick="nextQuestion()">Siguiente Pregunta</button>
+    </div>
+
+    <script>
+        const problematics = [
+            { text: "Crisis económica global causada por conflictos internacionales y fluctuaciones en el mercado.", category: "Caótica", feedback: "Es caótica porque no tiene una solución clara e inmediata y depende de múltiples factores fuera de control." },
+            { text: "Cambio climático acelerado y sus efectos en el planeta.", category: "Caótica", feedback: "Es caótica porque involucra variables incontrolables como el comportamiento humano y eventos climáticos extremos." },
+            { text: "Propagación de una nueva enfermedad sin tratamiento conocido.", category: "Caótica", feedback: "Es caótica porque se desarrolla sin un patrón predecible y las soluciones pueden tardar años en desarrollarse." },
+            { text: "El tráfico en una gran ciudad debido al aumento de vehículos y mala planificación urbana.", category: "Compleja", feedback: "Es compleja porque tiene múltiples causas y soluciones parciales que pueden mejorar la situación, pero no resolverla completamente." },
+            { text: "La contaminación del aire causada por múltiples fuentes industriales y urbanas.", category: "Compleja", feedback: "Es compleja porque tiene múltiples fuentes y requiere coordinación entre industrias, gobiernos y ciudadanos." },
+            { text: "La distribución de vacunas en una pandemia, considerando logística, almacenamiento y acceso.", category: "Compleja", feedback: "Es compleja porque implica factores médicos, logísticos y sociales que influyen en su implementación." },
+            { text: "Implementación de un nuevo software en una empresa, donde los empleados deben ser capacitados.", category: "Complicada", feedback: "Es complicada porque requiere conocimientos técnicos y planificación, pero se puede resolver con la estrategia adecuada." },
+            { text: "El mantenimiento de una planta nuclear para evitar fallos críticos.", category: "Complicada", feedback: "Es complicada porque requiere conocimientos especializados, pero los procedimientos bien establecidos permiten su gestión." },
+            { text: "La construcción de un puente en una zona de alta actividad sísmica.", category: "Complicada", feedback: "Es complicada porque involucra cálculos estructurales avanzados y cumplimiento de normativas estrictas." },
+            { text: "Un grifo en casa está goteando y debe repararse.", category: "Simple", feedback: "Es simple porque se resuelve con una acción directa, como cambiar una arandela o ajustar la llave." },
+            { text: "Un bombillo está quemado y debe reemplazarse.", category: "Simple", feedback: "Es simple porque basta con cambiar el bombillo por uno nuevo sin necesidad de conocimientos técnicos avanzados." },
+            { text: "Una impresora dejó de funcionar porque no tiene papel.", category: "Simple", feedback: "Es simple porque la solución inmediata es reponer el papel en la bandeja de la impresora." }
+        ];
+
+        let score = 0;
+        let availableQuestions = [...problematics];
+
+        function startGame() {
+            document.getElementById("startScreen").classList.add("hidden");
+            document.getElementById("gameScreen").classList.remove("hidden");
+            availableQuestions = [...problematics];
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            if (availableQuestions.length === 0) {
+                availableQuestions = [...problematics];
+            }
+            let index = Math.floor(Math.random() * availableQuestions.length);
+            let newQuestion = availableQuestions.splice(index, 1)[0];
+            document.getElementById("question").innerText = newQuestion.text;
+            document.getElementById("result").innerText = "";
+            document.getElementById("feedback").innerText = "";
+            currentQuestion = newQuestion;
+        }
+
+        function checkAnswer(answer) {
+            if (answer === currentQuestion.category) {
+                document.getElementById("result").innerText = "✅ ¡Correcto!";
+                document.getElementById("result").style.color = "green";
+                score++;
+            } else {
+                document.getElementById("result").innerText = "❌ Incorrecto. La respuesta correcta era: " + currentQuestion.category;
+                document.getElementById("result").style.color = "red";
+            }
+            document.getElementById("feedback").innerText = currentQuestion.feedback;
+            document.getElementById("score").innerText = score;
+        }
+    </script>
+</body>
+</html>
