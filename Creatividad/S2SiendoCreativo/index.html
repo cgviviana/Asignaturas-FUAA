@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Creatividad - Desafío Rápido</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, p, label {
+            text-align: left;
+        }
+        button {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        textarea {
+            height: 80px;
+            resize: none;
+        }
+        canvas {
+            border: 1px solid black;
+            width: 700px;
+            height: 400px;
+            border-radius: 5px;
+            cursor: crosshair;
+            background-color: white;
+            touch-action: none;
+            display: block;
+        }
+        .color-picker {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Juego de Creatividad</h1>
+        <label for="name">Ingresa tu nombre:</label>
+        <input type="text" id="name" placeholder="Tu nombre...">
+        <button onclick="startGame()">Comenzar</button>
+        <p id="exercise-timer">Tiempo restante: 300s</p>
+    </div>
+    <div class="container">
+        <p id="player-name"></p>
+        <p id="challenge">Presiona el botón para obtener un desafío.</p>
+        <p id="timer"></p>
+        <button onclick="startChallenge()">Obtener Desafío</button>
+        <textarea id="response" placeholder="Escribe tu respuesta aquí (mínimo 3 renglones, máximo 200 caracteres)" maxlength="200"></textarea>
+    </div>
+    <div class="container">
+        <h2>Dibuja lo que imaginaste</h2>
+        <p id="draw-timer"></p>
+        <canvas id="drawingCanvas" width="700" height="400"></canvas>
+        <div class="color-picker">
+            <input type="color" id="colorPicker" value="#000000">
+            <button onclick="clearCanvas()">Borrar Dibujo</button>
+        </div>
+    </div>
+    <script>
+        let playerName = "";
+        let painting = false;
+        let ctx;
+        const canvas = document.getElementById("drawingCanvas");
+        ctx = canvas.getContext("2d");
+        let lastX = 0, lastY = 0;
+        let totalTime = 300; // 5 minutos
+        
+        const challenges = [
+            "Escribe una historia de al menos 3 renglones donde un árbol parlante ayude a un viajero perdido.",
+            "Describe una nueva festividad con mínimo 3 personajes y 4 líneas de texto.",
+            "Explica tu viaje en el tiempo en al menos 3 renglones y qué harías allí.",
+            "Crea una historia sobre un objeto cotidiano con vida en mínimo 3 renglones.",
+            "Diseña un eslogan para una ciudad flotante usando exactamente 10 palabras."
+        ];
+
+        function startExerciseTimer() {
+            const timerElement = document.getElementById("exercise-timer");
+            const timerInterval = setInterval(() => {
+                totalTime--;
+                timerElement.innerText = `Tiempo restante: ${totalTime}s`;
+                if (totalTime === 0) {
+                    clearInterval(timerInterval);
+                    alert("¡Tiempo terminado!");
+                }
+            }, 1000);
+        }
+        
+        function startGame() {
+            startExerciseTimer();
+        }
+
+        function startChallenge() {
+            const randomIndex = Math.floor(Math.random() * challenges.length);
+            document.getElementById("challenge").innerText = challenges[randomIndex];
+        }
+
+        function getMousePos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (evt.clientX - rect.left) * (canvas.width / rect.width),
+                y: (evt.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+        
+        canvas.addEventListener("mousedown", (e) => {
+            painting = true;
+            const pos = getMousePos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+        });
+        
+        canvas.addEventListener("mouseup", () => {
+            painting = false;
+            ctx.beginPath();
+        });
+        
+        canvas.addEventListener("mouseleave", () => {
+            painting = false;
+            ctx.beginPath();
+        });
+        
+        canvas.addEventListener("mousemove", (e) => {
+            if (!painting) return;
+            const pos = getMousePos(e);
+            ctx.lineWidth = 3;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = document.getElementById("colorPicker").value;
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        });
+        
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>
