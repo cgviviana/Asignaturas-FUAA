@@ -3,107 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>De la problemática al proyecto I - Aprendiendo con la Profe Vivy</title>
+    <title>De la problemática al proyecto I</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
             text-align: center;
-            background-color: #f4f4f4;
             padding: 20px;
         }
         .container {
             background: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px gray;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             max-width: 600px;
             margin: auto;
         }
-        button {
-            padding: 10px;
-            margin-top: 10px;
+        h1 { color: #333; }
+        .question { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .options label {
+            display: block;
+            background: #e0e0e0;
+            padding: 12px;
+            margin: 8px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: 0.3s;
         }
+        .options label:hover { background: #b0c4de; }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .btn:hover { background: #0056b3; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>De la problemática al proyecto I</h2>
-        <h3>Aprendiendo con la Profe Vivy</h3>
-        <div id="startScreen">
-            <label for="studentName">Ingrese su nombre:</label>
-            <input type="text" id="studentName" required>
-            <button onclick="startGame()">Iniciar Juego</button>
+        <h1>De la problemática al proyecto I</h1>
+        <h3>Aprendiendo con la profe Vivy</h3>
+        <div id="intro">
+            <p>Ingresa tu nombre para comenzar:</p>
+            <input type="text" id="nombre" placeholder="Tu nombre" required>
+            <button class="btn" onclick="iniciarJuego()">Iniciar</button>
         </div>
-        <div id="quizContainer" style="display: none;">
-            <p id="questionText"></p>
-            <div id="answers"></div>
-            <button onclick="nextQuestion()">Siguiente</button>
+        <div id="quiz" class="hidden">
+            <div id="preguntaActual"></div>
+            <button class="btn" id="nextBtn" onclick="siguientePregunta()" disabled>Siguiente</button>
         </div>
-        <div id="resultScreen" style="display: none;">
-            <h3>Resultados</h3>
-            <p id="resultText"></p>
-            <button onclick="location.reload()">Reiniciar Juego</button>
+        <div id="resultado" class="hidden">
+            <h2>Reporte final</h2>
+            <p id="resumen"></p>
         </div>
     </div>
     <script>
-        const questions = [
-            { q: "¿Cómo se clasifica una problemática cuando no tiene una solución directa y depende de múltiples factores globales?", options: ["Caótica", "Compleja", "Complicada", "Simple"], answer: 0 },
-            { q: "¿Cuál de las siguientes características define una problemática simple?", options: ["Se resuelve con una acción clara y directa", "Requiere la intervención de múltiples actores", "Depende de variables externas", "No tiene solución identificable"], answer: 0 },
-            { q: "¿Qué aspecto es fundamental para identificar una problemática como \"complicada\"?", options: ["Requiere intervención de expertos", "Es imposible de resolver", "Puede resolverse fácilmente", "No necesita análisis profundo"], answer: 0 },
-            { q: "¿Qué tipo de problemática se caracteriza por ser mitigable, pero no totalmente solucionable?", options: ["Caótica", "Compleja", "Simple", "Complicada"], answer: 1 },
-            { q: "¿Cuál es el propósito principal del análisis de problemáticas?", options: ["Comprender causas y efectos", "Encontrar soluciones inmediatas", "Clasificar problemas", "Eliminar factores"], answer: 0 },
-            { q: "¿Cuál es el propósito de un diagrama de flujo?", options: ["Organizar visualmente los pasos", "Representar ideas sin estructura", "Mostrar información desordenada", "Sustituir la escritura"], answer: 0 },
-            { q: "Según la tabla de símbolos, ¿qué forma representa un inicio o fin?", options: ["Óvalo", "Rectángulo", "Rombo", "Flecha"], answer: 0 },
-            { q: "¿Qué tipo de algoritmo sigue pasos ordenados y bien definidos?", options: ["Algoritmo secuencial", "Algoritmo aleatorio", "Algoritmo caótico", "Algoritmo heurístico"], answer: 0 },
-            { q: "En un diagrama de flujo, ¿qué representa un rombo?", options: ["Decisión basada en condiciones", "Inicio o fin", "Proceso general", "Entrada o salida de datos"], answer: 0 },
-            { q: "¿Cuál de los siguientes representa un algoritmo cualitativo?", options: ["Seguir una receta de cocina", "Resolver una ecuación", "Calcular la media", "Convertir temperaturas"], answer: 0 },
-            { q: "¿Cuál es el propósito de un diagrama de flujo en la representación de un proceso?", options: ["Organizar visualmente los pasos", "Representar ideas sin estructura", "Mostrar información desordenada", "Sustituir la escritura"], answer: 0 },
-            { q: "Según la tabla de símbolos, ¿qué forma representa un inicio o fin?", options: ["Óvalo", "Rectángulo", "Rombo", "Flecha"], answer: 0 },
-            { q: "¿Cuáles son los nodos que implica el Saber Hacer?", options: ["Competencias lingüísticas y Habilidades Tecnológicas y Digitales", "Pensamiento Crítico y Creatividad", "Humanismo Digital y Liderazgo", "Nuevas Ciudadanías y Desarrollo Sostenible"], answer: 0 }
+        const preguntas = [
+            { pregunta: "¿Cómo se clasifica una problemática cuando no tiene una solución directa y depende de múltiples factores globales?", opciones: ["Caótica", "Compleja", "Complicada", "Simple"], correcta: 0 },
+            { pregunta: "¿Cuál de las siguientes características definen una problemática simple?", opciones: ["Se resuelve con una acción clara y directa", "Requiere la intervención de múltiples actores", "Depende de variables externas difíciles de controlar", "No tiene solución identificable"], correcta: 0 },
+            { pregunta: "¿Qué aspecto es fundamental para identificar una problemática como 'complicada' en el análisis de datos?", opciones: ["Requiere intervención de expertos, pero tiene solución con estrategias adecuadas", "Es imposible de resolver", "Puede resolverse fácilmente", "No necesita análisis profundo"], correcta: 0 },
+            { pregunta: "¿Qué tipo de problemática se caracteriza por ser mitigable, pero no totalmente solucionable debido a la interconexión de múltiples factores?", opciones: ["Caótica", "Compleja", "Simple", "Complicada"], correcta: 1 },
+            { pregunta: "¿Cuál es el propósito principal del análisis de problemáticas en la toma de decisiones?", opciones: ["Comprender las causas y efectos para identificar estrategias de solución efectivas", "Encontrar soluciones inmediatas", "Clasificar problemas sin buscar soluciones", "Eliminar factores"], correcta: 0 },
+            { pregunta: "¿Cuál es el propósito de un diagrama de flujo en la representación de un proceso?", opciones: ["Organizar visualmente los pasos y decisiones en la solución de un problema", "Representar ideas sin estructura lógica", "Mostrar información de forma desordenada", "Sustituir completamente la escritura de instrucciones"], correcta: 0 },
+            { pregunta: "Según la tabla de símbolos de diagramas de flujo, ¿qué forma geométrica representa un inicio o fin en un proceso?", opciones: ["Óvalo", "Rectángulo", "Rombo", "Flecha"], correcta: 0 },
+ { pregunta: "¿Cuáles son los nodos que implica el Saber Hacer?", opciones:["Competencias lingüísticas y Habilidades Tecnológicas y Digitales", "Pensamiento Crítico y Creatividad Desarrollo y Emprendimiento", "Humanismo Digital y Liderazgo colectivo", "Nuevas ciudadanías y Desarrollo Sostenible"], correcta: 0 },
+{ pregunta: "¿Dentro de la integralidad del ser humano que implica el Saber Hacer?", opciones:["Valores y actitudes", "Relaciona el conocimiento teórico y conceptual", "Competencias sociales", "Aplicación de lo aprendido"], correcta: 3 },
+{ pregunta: "¿El desarrollo del reto en el curso Saber Hacer es?", opciones:["Aplicativo móvil", "Reflexión crítica del entorno", "Árbol de problemas", "Solución digital comercial"], correcta: 3 },
+            { pregunta: "¿Qué es un algoritmo?", opciones: ["Representación visual", "Propósito para desarrollar el proyecto", "Conjunto de pasos ordenados y bien definidos para resolver un problema", "Tipo de problemática del entorno"], correcta: 2 }
+
         ];
         
-        let currentQuestion = 0;
-        let score = 0;
-        let studentName = "";
-        
-        function startGame() {
-            studentName = document.getElementById("studentName").value;
-            if (studentName.trim() === "") {
-                alert("Por favor, ingrese su nombre.");
+        let indicePregunta = 0;
+        let puntaje = 0;
+        let nombre = "";
+
+        function iniciarJuego() {
+            nombre = document.getElementById("nombre").value.trim();
+            if (!nombre) {
+                alert("Por favor, ingresa tu nombre");
                 return;
             }
-            document.getElementById("startScreen").style.display = "none";
-            document.getElementById("quizContainer").style.display = "block";
-            showQuestion();
+            document.getElementById("intro").classList.add("hidden");
+            document.getElementById("quiz").classList.remove("hidden");
+            mostrarPregunta();
         }
-        
-        function showQuestion() {
-            if (currentQuestion >= questions.length) {
-                endGame();
+
+        function mostrarPregunta() {
+            if (indicePregunta >= preguntas.length) {
+                finalizarJuego();
                 return;
             }
-            let q = questions[currentQuestion];
-            document.getElementById("questionText").innerText = q.q;
-            let answersDiv = document.getElementById("answers");
-            answersDiv.innerHTML = "";
-            q.options.forEach((option, index) => {
-                let btn = document.createElement("button");
-                btn.innerText = option;
-                btn.onclick = () => {
-                    if (index === q.answer) score++;
-                    currentQuestion++;
-                    showQuestion();
-                };
-                answersDiv.appendChild(btn);
-            });
+            
+            const preguntaActual = preguntas[indicePregunta];
+            document.getElementById("preguntaActual").innerHTML = `
+                <div class='question'>${preguntaActual.pregunta}</div>
+                <div class='options'>
+                    ${preguntaActual.opciones.map((opcion, i) => `<label><input type='radio' name='respuesta' value='${i}' onclick='activarBoton()'> ${opcion}</label>`).join('')}
+                </div>
+            `;
+            document.getElementById("nextBtn").disabled = true;
+        }
+
+        function activarBoton() {
+            document.getElementById("nextBtn").disabled = false;
+        }
+
+        function siguientePregunta() {
+            const seleccion = document.querySelector("input[name='respuesta']:checked");
+            if (!seleccion) {
+                alert("Por favor, selecciona una respuesta");
+                return;
+            }
+            if (parseInt(seleccion.value) === preguntas[indicePregunta].correcta) {
+                puntaje++;
+            }
+            indicePregunta++;
+            mostrarPregunta();
         }
         
-        function endGame() {
-            document.getElementById("quizContainer").style.display = "none";
-            document.getElementById("resultScreen").style.display = "block";
-            let finalGrade = (score / 13).toFixed(2);
-            document.getElementById("resultText").innerText = `Nombre: ${studentName}\nPuntos acertados: ${score}\nCalificación final: ${finalGrade}`;
+        function finalizarJuego() {
+            document.getElementById("quiz").classList.add("hidden");
+            document.getElementById("resultado").classList.remove("hidden");
+            document.getElementById("resumen").textContent = `${nombre}, has obtenido ${puntaje} de ${preguntas.length} respuestas correctas.`;
         }
     </script>
 </body>
