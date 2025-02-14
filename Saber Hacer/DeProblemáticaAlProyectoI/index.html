@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De la problemática al proyecto I - Aprendiendo con la Profe Vivy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+            max-width: 600px;
+            margin: auto;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>De la problemática al proyecto I</h2>
+        <h3>Aprendiendo con la Profe Vivy</h3>
+        <div id="startScreen">
+            <label for="studentName">Ingrese su nombre:</label>
+            <input type="text" id="studentName" required>
+            <button onclick="startGame()">Iniciar Juego</button>
+        </div>
+        <div id="quizContainer" style="display: none;">
+            <p id="questionText"></p>
+            <div id="answers"></div>
+            <button onclick="nextQuestion()">Siguiente</button>
+        </div>
+        <div id="resultScreen" style="display: none;">
+            <h3>Resultados</h3>
+            <p id="resultText"></p>
+            <button onclick="location.reload()">Reiniciar Juego</button>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            { q: "¿Cómo se clasifica una problemática cuando no tiene una solución directa y depende de múltiples factores globales?", options: ["Caótica", "Compleja", "Complicada", "Simple"], answer: 0 },
+            { q: "¿Cuál de las siguientes características define una problemática simple?", options: ["Se resuelve con una acción clara y directa", "Requiere la intervención de múltiples actores", "Depende de variables externas", "No tiene solución identificable"], answer: 0 },
+            { q: "¿Qué aspecto es fundamental para identificar una problemática como \"complicada\"?", options: ["Requiere intervención de expertos", "Es imposible de resolver", "Puede resolverse fácilmente", "No necesita análisis profundo"], answer: 0 },
+            { q: "¿Qué tipo de problemática se caracteriza por ser mitigable, pero no totalmente solucionable?", options: ["Caótica", "Compleja", "Simple", "Complicada"], answer: 1 },
+            { q: "¿Cuál es el propósito principal del análisis de problemáticas?", options: ["Comprender causas y efectos", "Encontrar soluciones inmediatas", "Clasificar problemas", "Eliminar factores"], answer: 0 },
+            { q: "¿Cuál es el propósito de un diagrama de flujo?", options: ["Organizar visualmente los pasos", "Representar ideas sin estructura", "Mostrar información desordenada", "Sustituir la escritura"], answer: 0 },
+            { q: "Según la tabla de símbolos, ¿qué forma representa un inicio o fin?", options: ["Óvalo", "Rectángulo", "Rombo", "Flecha"], answer: 0 },
+            { q: "¿Qué tipo de algoritmo sigue pasos ordenados y bien definidos?", options: ["Algoritmo secuencial", "Algoritmo aleatorio", "Algoritmo caótico", "Algoritmo heurístico"], answer: 0 },
+            { q: "En un diagrama de flujo, ¿qué representa un rombo?", options: ["Decisión basada en condiciones", "Inicio o fin", "Proceso general", "Entrada o salida de datos"], answer: 0 },
+            { q: "¿Cuál de los siguientes representa un algoritmo cualitativo?", options: ["Seguir una receta de cocina", "Resolver una ecuación", "Calcular la media", "Convertir temperaturas"], answer: 0 },
+            { q: "¿Cuál es el propósito de un diagrama de flujo en la representación de un proceso?", options: ["Organizar visualmente los pasos", "Representar ideas sin estructura", "Mostrar información desordenada", "Sustituir la escritura"], answer: 0 },
+            { q: "Según la tabla de símbolos, ¿qué forma representa un inicio o fin?", options: ["Óvalo", "Rectángulo", "Rombo", "Flecha"], answer: 0 },
+            { q: "¿Cuáles son los nodos que implica el Saber Hacer?", options: ["Competencias lingüísticas y Habilidades Tecnológicas y Digitales", "Pensamiento Crítico y Creatividad", "Humanismo Digital y Liderazgo", "Nuevas Ciudadanías y Desarrollo Sostenible"], answer: 0 }
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        let studentName = "";
+        
+        function startGame() {
+            studentName = document.getElementById("studentName").value;
+            if (studentName.trim() === "") {
+                alert("Por favor, ingrese su nombre.");
+                return;
+            }
+            document.getElementById("startScreen").style.display = "none";
+            document.getElementById("quizContainer").style.display = "block";
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                endGame();
+                return;
+            }
+            let q = questions[currentQuestion];
+            document.getElementById("questionText").innerText = q.q;
+            let answersDiv = document.getElementById("answers");
+            answersDiv.innerHTML = "";
+            q.options.forEach((option, index) => {
+                let btn = document.createElement("button");
+                btn.innerText = option;
+                btn.onclick = () => {
+                    if (index === q.answer) score++;
+                    currentQuestion++;
+                    showQuestion();
+                };
+                answersDiv.appendChild(btn);
+            });
+        }
+        
+        function endGame() {
+            document.getElementById("quizContainer").style.display = "none";
+            document.getElementById("resultScreen").style.display = "block";
+            let finalGrade = (score / 13).toFixed(2);
+            document.getElementById("resultText").innerText = `Nombre: ${studentName}\nPuntos acertados: ${score}\nCalificación final: ${finalGrade}`;
+        }
+    </script>
+</body>
+</html>
