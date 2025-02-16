@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con la Profe Vivy - Juego de Preguntas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 60%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+        }
+        .options button:hover {
+            background: #0056b3;
+        }
+        #result {
+            font-size: 22px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aprendiendo con la Profe Vivy</h1>
+        <p>Ingresa tu nombre para comenzar:</p>
+        <input type="text" id="studentName" placeholder="Tu nombre aquí">
+        <button onclick="startGame()">Iniciar Juego</button>
+        <div id="game" style="display:none;">
+            <p class="question" id="question"></p>
+            <div class="options" id="options"></div>
+            <p id="result"></p>
+        </div>
+    </div>
+
+    <script>
+        let studentName = "";
+        const preguntas = [
+            { pregunta: "¿Qué es un dato?", opciones: ["Información organizada", "Un número o texto sin contexto", "Un análisis avanzado", "Una decisión final"], respuesta: "Un número o texto sin contexto" },
+            { pregunta: "¿Qué es procesamiento de datos?", opciones: ["Guardar datos sin organizarlos", "Eliminar información innecesaria", "Convertir datos en información", "Copiar archivos en la nube"], respuesta: "Convertir datos en información" },
+            { pregunta: "Ejemplo de datos estructurados", opciones: ["Lista de clientes con ID y nombres", "Mensajes en un chat",  "Publicaciones en Instagram", "Fotos aleatorias en un celular"], respuesta: "Lista de clientes con ID y nombres" },
+            { pregunta: "¿Qué tipo de datos son las opiniones en redes sociales?", opciones: ["Estructurados", "No estructurados", "Binarios", "Numéricos"], respuesta: "No estructurados" },
+            { pregunta: "¿Cuál es la primera fase del procesamiento de datos?", opciones: ["Almacenamiento", "Análisis", "Interpretación", "Recolección"], respuesta: "Recolección" },
+            { pregunta: "Ejemplo de dato cuantitativo", opciones: ["Un producto bonito", "5 ventas realizadas", "Satisfacción del cliente", "Comentarios en redes sociales"], respuesta: "5 ventas realizadas" },
+            { pregunta: "¿Qué herramienta se usa para analizar grandes volúmenes de datos?", opciones: ["Facebook", "WhatsApp", "Excel", "PowerPoint"], respuesta: "Excel" },
+            { pregunta: "¿Qué técnica permite recolectar opiniones de clientes?", opciones: ["Archivos en Excel", "Encuestas", "Fotografías", "Copias de seguridad"], respuesta: "Encuestas" },
+            { pregunta: "¿Cómo se transforma un dato en información?", opciones: ["Guardándolo en la nube", "Dándole contexto y estructura", "Repitiéndolo muchas veces", "Haciéndolo más largo"], respuesta: "Dándole contexto y estructura" },
+            { pregunta: "¿Qué técnica usa Netflix para recomendar películas?", opciones: ["Análisis de datos", "Correos electrónicos",  "Llamadas telefónicas", "Sorteos aleatorios"], respuesta: "Análisis de datos" },
+            { pregunta: "¿Qué significa Big Data?", opciones: ["Una computadora gigante", "Red social de análisis", "Gran volumen de datos procesados",  "Programa para gráficos"], respuesta: "Gran volumen de datos procesados" },
+            { pregunta: "¿Qué herramienta ayuda a visualizar datos?", opciones: ["TikTok", "Power BI", "Instagram", "Spotify"], respuesta: "Power BI" },
+            { pregunta: "¿Qué método usa Amazon para sugerir productos?", opciones: ["Análisis de patrones de compra", "Encuestas físicas", "Publicidad aleatoria", "Correo electrónico masivo"], respuesta: "Análisis de patrones de compra" },
+            { pregunta: "¿Qué permite el Machine Learning en datos?", opciones: ["Crear bases de datos", "Aprender de los datos para hacer predicciones", "Guardar información en la nube", "Eliminar registros duplicados"], respuesta: "Aprender de los datos para hacer predicciones" }
+        ];
+        
+        let index = 0;
+        let score = 0;
+        
+        function startGame() {
+            studentName = document.getElementById("studentName").value;
+            if (studentName.trim() === "") {
+                alert("Por favor, ingresa tu nombre para comenzar.");
+                return;
+            }
+            document.querySelector("#game").style.display = "block";
+            document.querySelector("#studentName").style.display = "none";
+            document.querySelector("button").style.display = "none";
+            mostrarPregunta();
+        }
+        
+        function mostrarPregunta() {
+            if (index < preguntas.length) {
+                document.getElementById("question").innerText = preguntas[index].pregunta;
+                const opcionesDiv = document.getElementById("options");
+                opcionesDiv.innerHTML = "";
+                
+                preguntas[index].opciones.forEach(opcion => {
+                    const button = document.createElement("button");
+                    button.innerText = opcion;
+                    button.onclick = () => verificarRespuesta(opcion);
+                    opcionesDiv.appendChild(button);
+                });
+            } else {
+                mostrarResultado();
+            }
+        }
+        
+        function verificarRespuesta(opcionSeleccionada) {
+            if (opcionSeleccionada === preguntas[index].respuesta) {
+                score++;
+            }
+            index++;
+            mostrarPregunta();
+        }
+        
+        function mostrarResultado() {
+            let calificacion = (score / preguntas.length) * 5;
+            let mensaje = `¡Bien hecho, ${studentName}! \n Respondiste correctamente ${score} de ${preguntas.length} preguntas. \n Tu calificación final es: ${calificacion.toFixed(2)} / 5`;
+            document.getElementById("question").innerText = "Juego terminado";
+            document.getElementById("options").innerHTML = "";
+            document.getElementById("result").innerText = mensaje;
+        }
+        
+    </script>
+</body>
+</html>
