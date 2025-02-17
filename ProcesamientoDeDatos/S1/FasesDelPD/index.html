@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con: La Profe Vivy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 60%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .dropzone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 200px;
+            padding: 10px;
+            border: 2px dashed #007bff;
+            background: #e9f5ff;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: grab;
+            width: 80%;
+            text-align: center;
+        }
+        .btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aprendiendo con: La Profe Vivy</h1>
+    <p> <h2>Fases del Procesamiento de Datos.</h2></p>
+        <p>Ingresa tu nombre y grupo para comenzar:</p>
+        <input type="text" id="studentName" placeholder="Tu nombre aquí">
+        <input type="text" id="groupName" placeholder="Tu grupo aquí">
+        <button onclick="startGame()">Iniciar Juego</button>
+        <div id="game" style="display:none;">
+            
+            <p>Arrastra y suelta las tarjetas en el orden correcto.</p>
+            <div class="dropzone" id="initialZone"></div>
+            <h3>Ordena aquí:</h3>
+            <div class="dropzone" id="dropzone" ondragover="allowDrop(event)" ondrop="drop(event)"></div>
+            <button class="btn" onclick="verificarOrden()">Verificar Orden</button>
+            <p id="resultado"></p>
+        </div>
+    </div>
+
+    <script>
+        const fases = [
+            "Recolección",
+            "Almacenamiento",
+            "Procesamiento",
+            "Análisis",
+            "Toma de Decisiones"
+        ];
+
+        function desordenarArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startGame() {
+            let studentName = document.getElementById("studentName").value;
+            let groupName = document.getElementById("groupName").value;
+            
+            if (studentName.trim() === "" || groupName.trim() === "") {
+                alert("Por favor, ingresa tu nombre y grupo.");
+                return;
+            }
+            
+            document.getElementById("game").style.display = "block";
+            document.querySelector("button").style.display = "none";
+            document.getElementById("studentName").style.display = "none";
+            document.getElementById("groupName").style.display = "none";
+            crearTarjetas();
+        }
+
+        function crearTarjetas() {
+            const initialZone = document.getElementById("initialZone");
+            initialZone.innerHTML = "";
+            const dropzone = document.getElementById("dropzone");
+            dropzone.innerHTML = "";
+            
+            const fasesDesordenadas = desordenarArray([...fases]);
+            fasesDesordenadas.forEach(fase => {
+                const div = document.createElement("div");
+                div.classList.add("card");
+                div.textContent = fase;
+                div.draggable = true;
+                div.ondragstart = drag;
+                initialZone.appendChild(div);
+            });
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.textContent);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            const dropzone = event.target;
+            
+            if (dropzone.classList.contains("dropzone")) {
+                const div = document.createElement("div");
+                div.classList.add("card");
+                div.textContent = data;
+                div.draggable = true;
+                div.ondragstart = drag;
+                dropzone.appendChild(div);
+            }
+        }
+
+        function verificarOrden() {
+            const tarjetas = document.querySelectorAll("#dropzone .card");
+            let ordenCorrecto = true;
+            
+            tarjetas.forEach((tarjeta, index) => {
+                if (index < fases.length && tarjeta.textContent !== fases[index]) {
+                    ordenCorrecto = false;
+                }
+            });
+            
+            let studentName = document.getElementById("studentName").value;
+            let groupName = document.getElementById("groupName").value;
+            
+            const resultado = document.getElementById("resultado");
+            if (ordenCorrecto && tarjetas.length === fases.length) {
+                resultado.textContent = `¡Correcto! ${studentName} del grupo ${groupName} ha ordenado las fases correctamente.`;
+                resultado.style.color = "green";
+            } else {
+                resultado.textContent = `¡Intenta de nuevo, ${studentName} del grupo ${groupName}! El orden no es correcto.`;
+                resultado.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
