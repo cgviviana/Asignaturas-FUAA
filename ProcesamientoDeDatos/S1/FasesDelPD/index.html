@@ -56,13 +56,12 @@
 <body>
     <div class="container">
         <h1>Aprendiendo con: La Profe Vivy</h1>
-    <p> <h2>Fases del Procesamiento de Datos.</h2></p>
+        <h2>Fases del Procesamiento de Datos</h2>
         <p>Ingresa tu nombre y grupo para comenzar:</p>
         <input type="text" id="studentName" placeholder="Tu nombre aquí">
         <input type="text" id="groupName" placeholder="Tu grupo aquí">
         <button onclick="startGame()">Iniciar Juego</button>
         <div id="game" style="display:none;">
-            
             <p>Arrastra y suelta las tarjetas en el orden correcto.</p>
             <div class="dropzone" id="initialZone"></div>
             <h3>Ordena aquí:</h3>
@@ -82,7 +81,11 @@
         ];
 
         function desordenarArray(array) {
-            return array.sort(() => Math.random() - 0.5);
+            for (let i = array.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
 
         function startGame() {
@@ -129,16 +132,14 @@
         function drop(event) {
             event.preventDefault();
             const data = event.dataTransfer.getData("text");
-            const dropzone = event.target;
+            const dropzone = document.getElementById("dropzone");
             
-            if (dropzone.classList.contains("dropzone")) {
-                const div = document.createElement("div");
-                div.classList.add("card");
-                div.textContent = data;
-                div.draggable = true;
-                div.ondragstart = drag;
-                dropzone.appendChild(div);
-            }
+            const div = document.createElement("div");
+            div.classList.add("card");
+            div.textContent = data;
+            div.draggable = true;
+            div.ondragstart = drag;
+            dropzone.appendChild(div);
         }
 
         function verificarOrden() {
