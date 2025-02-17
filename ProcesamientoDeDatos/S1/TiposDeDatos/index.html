@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con: La Profe Vivy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 60%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .dropzone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 200px;
+            padding: 10px;
+            border: 2px dashed #007bff;
+            background: #e9f5ff;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: grab;
+            width: 80%;
+            text-align: center;
+        }
+        .btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aprendiendo con: La Profe Vivy</h1>
+        <h2>Clasificación de Tipos de Datos</h2>
+        <p>Ingresa tu nombre y grupo para comenzar:</p>
+        <input type="text" id="studentName" placeholder="Tu nombre aquí">
+        <input type="text" id="groupName" placeholder="Tu grupo aquí">
+        <button onclick="startGame()">Iniciar Juego</button>
+        <div id="game" style="display:none;">
+            <p>Arrastra y suelta los ejemplos en la categoría correcta.</p>
+            <div class="dropzone" id="initialZone"></div>
+            <h3>Clasifica aquí:</h3>
+            <div class="dropzone" id="structuredZone" ondragover="allowDrop(event)" ondrop="drop(event, 'Estructurado')">Estructurados</div>
+            <div class="dropzone" id="unstructuredZone" ondragover="allowDrop(event)" ondrop="drop(event, 'No Estructurado')">No Estructurados</div>
+            <button class="btn" onclick="verificarOrden()">Verificar Respuestas</button>
+            <p id="resultado"></p>
+        </div>
+    </div>
+
+    <script>
+        const datosEjemplos = [
+            { texto: "Lista de Clientes", tipo: "Estructurado" },
+            { texto: "Fotos", tipo: "No Estructurado" },
+            { texto: "Mensajes de WhatsApp", tipo: "No Estructurado" },
+            { texto: "Historial de Compras", tipo: "Estructurado" },
+            { texto: "Tweets", tipo: "No Estructurado" },
+            { texto: "Facturas", tipo: "Estructurado" },
+            { texto: "Videos de YouTube", tipo: "No Estructurado" },
+            { texto: "Registros Bancarios", tipo: "Estructurado" },
+            { texto: "Comentarios en Redes Sociales", tipo: "No Estructurado" },
+            { texto: "Inventario de Productos", tipo: "Estructurado" }
+        ];
+
+        function desordenarArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function startGame() {
+            let studentName = document.getElementById("studentName").value;
+            let groupName = document.getElementById("groupName").value;
+            
+            if (studentName.trim() === "" || groupName.trim() === "") {
+                alert("Por favor, ingresa tu nombre y grupo.");
+                return;
+            }
+            
+            document.getElementById("game").style.display = "block";
+            document.querySelector("button").style.display = "none";
+            document.getElementById("studentName").style.display = "none";
+            document.getElementById("groupName").style.display = "none";
+            crearTarjetas();
+        }
+
+        function crearTarjetas() {
+            const initialZone = document.getElementById("initialZone");
+            initialZone.innerHTML = "";
+            
+            const datosDesordenados = desordenarArray([...datosEjemplos]);
+            datosDesordenados.forEach(dato => {
+                const div = document.createElement("div");
+                div.classList.add("card");
+                div.textContent = dato.texto;
+                div.draggable = true;
+                div.dataset.tipo = dato.tipo;
+                div.ondragstart = drag;
+                initialZone.appendChild(div);
+            });
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.textContent);
+            event.dataTransfer.setData("tipo", event.target.dataset.tipo);
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drop(event, categoria) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            const tipo = event.dataTransfer.getData("tipo");
+            
+            const div = document.createElement("div");
+            div.classList.add("card");
+            div.textContent = data;
+            div.draggable = true;
+            
+            if (categoria === tipo) {
+                event.target.appendChild(div);
+            } else {
+                alert("Ubicación incorrecta. Intenta de nuevo.");
+            }
+        }
+
+        function verificarOrden() {
+            let studentName = document.getElementById("studentName").value;
+            let groupName = document.getElementById("groupName").value;
+            let resultado = document.getElementById("resultado");
+            resultado.textContent = `¡Juego completado, ${studentName} del grupo ${groupName}! Revisa si organizaste correctamente los datos.`;
+            resultado.style.color = "blue";
+        }
+    </script>
+</body>
+</html>
