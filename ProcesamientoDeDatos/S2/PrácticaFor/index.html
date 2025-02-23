@@ -1,1 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aprendiendo con la profe Vivy - Funciones Matemáticas de Excel</title>
+  <style>
+    /* Estilos generales */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f2f5f9;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 2.3em;
+      color: #007bff;
+      margin: 0;
+    }
+    .header h2 {
+      font-size: 1.5em;
+      color: #333;
+      margin: 5px 0 0 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    /* Sección superior: Dataset y Área de Funciones */
+    .top-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .dataset-container, .functions-container {
+      flex: 1;
+      min-width: 300px;
+    }
+    .dataset-container h3, .functions-container h3 {
+      text-align: center;
+      color: #007bff;
+    }
+    /* Tabla del dataset Editable */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0 auto;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+      font-size: 14px;
+      min-width: 50px;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    td[contenteditable="true"] {
+      background-color: #fffbea;
+    }
+    /* Botón para limpiar el dataset */
+    #clearDataset {
+      display: block;
+      width: 50%;
+      margin: 10px auto;
+      padding: 6px;
+      font-size: 14px;
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #clearDataset:hover {
+      background: #c82333;
+    }
+    /* Resaltado de celdas */
+    .highlight {
+      background-color: #ffeb3b !important;
+    }
+    /* Área de Funciones: contenedor de ejercicio, campo para fórmula, menú, botón, explicación y limpiar */
+    .functions-container select {
+      display: block;
+      width: 80%;
+      margin: 5px auto 10px;
+      padding: 6px;
+      font-size: 14px;
+    }
+    .functions-container button {
+      display: block;
+      width: 50%;
+      margin: 0 auto 10px;
+      padding: 6px;
+      font-size: 14px;
+      background: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .functions-container button:hover {
+      background: #218838;
+    }
+    .exercise-info {
+      width: 80%;
+      margin: 5px auto;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #e0f7fa;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+    }
+    /* Campo para que el estudiante ingrese su fórmula */
+    #studentFormula {
+      display: block;
+      width: 80%;
+      margin: 5px auto 10px;
+      padding: 6px;
+      font-size: 14px;
+    }
+    .explanation-container {
+      width: 80%;
+      margin: 5px auto;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #eef;
+      font-size: 14px;
+      color: #333;
+      white-space: pre-line;
+    }
+    /* Lista de Ejercicios */
+    .exercises-container {
+      margin-bottom: 20px;
+    }
+    .exercises-container h3 {
+      color: #007bff;
+      text-align: center;
+      font-size: 16px;
+    }
+    .exercise-item {
+      background: #eef;
+      border: 1px solid #ccd;
+      border-radius: 4px;
+      padding: 8px;
+      margin: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    .exercise-item:hover {
+      background: #dde;
+    }
+    /* Botón Limpiar (Área de Funciones) */
+    .clear-btn {
+      display: block;
+      width: 50%;
+      margin: 0 auto;
+      padding: 8px 16px;
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 14px;
+    }
+    .clear-btn:hover {
+      background: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Aprendiendo con la profe Vivy</h1>
+    <h2>Simulación de Funciones Matemáticas de Excel</h2>
+  </div>
+  <div class="container">
+    <div class="top-section">
+      <!-- Dataset Editable -->
+      <div class="dataset-container">
+        <h3>Dataset (ingresa tus valores a partir de C2)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>A</th>
+              <th>B</th>
+              <th>C</th>
+              <th>D</th>
+              <th>E</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>1</th>
+              <td contenteditable="true" data-cell="A1"></td>
+              <td contenteditable="true" data-cell="B1"></td>
+              <td contenteditable="true" data-cell="C1"></td>
+              <td contenteditable="true" data-cell="D1"></td>
+              <td contenteditable="true" data-cell="E1"></td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td contenteditable="true" data-cell="A2"></td>
+              <td contenteditable="true" data-cell="B2"></td>
+              <td contenteditable="true" data-cell="C2"></td>
+              <td contenteditable="true" data-cell="D2"></td>
+              <td contenteditable="true" data-cell="E2"></td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td contenteditable="true" data-cell="A3"></td>
+              <td contenteditable="true" data-cell="B3"></td>
+              <td contenteditable="true" data-cell="C3"></td>
+              <td contenteditable="true" data-cell="D3"></td>
+              <td contenteditable="true" data-cell="E3"></td>
+            </tr>
+            <tr>
+              <th>4</th>
+              <td contenteditable="true" data-cell="A4"></td>
+              <td contenteditable="true" data-cell="B4"></td>
+              <td contenteditable="true" data-cell="C4"></td>
+              <td contenteditable="true" data-cell="D4"></td>
+              <td contenteditable="true" data-cell="E4"></td>
+            </tr>
+            <tr>
+              <th>5</th>
+              <td contenteditable="true" data-cell="A5"></td>
+              <td contenteditable="true" data-cell="B5"></td>
+              <td contenteditable="true" data-cell="C5"></td>
+              <td contenteditable="true" data-cell="D5"></td>
+              <td contenteditable="true" data-cell="E5"></td>
+            </tr>
+            <tr>
+              <th>6</th>
+              <td contenteditable="true" data-cell="A6"></td>
+              <td contenteditable="true" data-cell="B6"></td>
+              <td contenteditable="true" data-cell="C6"></td>
+              <td contenteditable="true" data-cell="D6"></td>
+              <td contenteditable="true" data-cell="E6"></td>
+            </tr>
+            <tr>
+              <th>7</th>
+              <td contenteditable="true" data-cell="A7"></td>
+              <td contenteditable="true" data-cell="B7"></td>
+              <td contenteditable="true" data-cell="C7"></td>
+              <td contenteditable="true" data-cell="D7"></td>
+              <td contenteditable="true" data-cell="E7"></td>
+            </tr>
+            <tr>
+              <th>8</th>
+              <td contenteditable="true" data-cell="A8"></td>
+              <td contenteditable="true" data-cell="B8"></td>
+              <td contenteditable="true" data-cell="C8"></td>
+              <td contenteditable="true" data-cell="D8"></td>
+              <td contenteditable="true" data-cell="E8"></td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- Botón para limpiar el dataset -->
+        <button id="clearDataset">Limpiar Dataset</button>
+      </div>
+      <!-- Área de Funciones -->
+      <div class="functions-container">
+        <h3>Ejercicio y Funciones</h3>
+        <!-- Contenedor del ejercicio actual -->
+        <div class="exercise-info" id="currentExerciseInfo">Ejercicio actual: Ninguno</div>
+        <!-- Campo para que el estudiante ingrese su fórmula -->
+        <input type="text" id="studentFormula" placeholder="Escribe aquí tu fórmula de Excel" />
+        <!-- Menú de funciones -->
+        <select id="functionSelect">
+          <option value="ALEATORIO">ALEATORIO</option>
+          <option value="ALEATORIO.ENTRE">ALEATORIO.ENTRE</option>
+          <option value="COCIENTE">COCIENTE</option>
+          <option value="ENTERO">ENTERO</option>
+          <option value="NUMERO ROMANO">NUMERO ROMANO</option>
+          <option value="POTENCIA">POTENCIA</option>
+          <option value="PRODUCTO">PRODUCTO</option>
+          <option value="REDONDEAR">REDONDEAR</option>
+          <option value="RESIDUO">RESIDUO</option>
+          <option value="SUMA">SUMA</option>
+          <option value="SUMASI">SUMASI</option>
+          <option value="RAIZ">RAIZ</option>
+         
+
+        </select>
+        <!-- Botón para ejecutar la función -->
+        <button id="executeFunctionButton">Ejecutar Función</button>
+        <!-- Contenedor de explicación -->
+        <div class="explanation-container" id="explanationContainer">
+          <div class="explanation-text" id="explanationText">Aquí aparecerá la explicación.</div>
+        </div>
+        <!-- Botón Limpiar (Área de Funciones) -->
+        <button class="clear-btn" id="clearBtn">Limpiar</button>
+      </div>
+    </div>
+    <!-- Lista de Ejercicios -->
+    <div class="exercises-container">
+      <h3>Ejercicios</h3>
+      <div id="exerciseList"></div>
+    </div>
+  </div>
+  
+  <script>
+    // Función para obtener el valor de una celda (si está vacía, retorna null)
+    function getCellValue(cellRef) {
+      const cell = document.querySelector(`[data-cell="${cellRef}"]`);
+      if (!cell) return null;
+      const value = cell.textContent.trim();
+      const num = parseFloat(value);
+      return isNaN(num) ? value : num;
+    }
+    
+    // Obtiene los valores de un rango (por ejemplo, "C2:C8")
+    function getRangeValues(rangeStr) {
+      const rangeParts = rangeStr.split(':');
+      if (rangeParts.length !== 2) return [];
+      const start = rangeParts[0].trim();
+      const end = rangeParts[1].trim();
+      const startCol = start.charAt(0);
+      const startRow = parseInt(start.slice(1));
+      const endRow = parseInt(end.slice(1));
+      const values = [];
+      for (let row = startRow; row <= endRow; row++) {
+        const cellRef = startCol + row;
+        values.push(getCellValue(cellRef));
+      }
+      return values;
+    }
+    
+    // Para funciones que operan sobre un único valor (una celda)
+    function getSingleValue(rangeStr) {
+      const values = getRangeValues(rangeStr);
+      return values.length > 0 ? values[0] : null;
+    }
+    
+    // Resalta un rango en la tabla
+    function highlightRange(rangeStr) {
+      document.querySelectorAll('.highlight').forEach(cell => cell.classList.remove('highlight'));
+      const rangeParts = rangeStr.split(':');
+      if (rangeParts.length !== 2) return;
+      const start = rangeParts[0].trim();
+      const end = rangeParts[1].trim();
+      const startCol = start.charAt(0);
+      const startRow = parseInt(start.slice(1));
+      const endRow = parseInt(end.slice(1));
+      for (let row = startRow; row <= endRow; row++) {
+        const cellRef = startCol + row;
+        const cell = document.querySelector(`[data-cell="${cellRef}"]`);
+        if (cell) cell.classList.add('highlight');
+      }
+    }
+    
+    // Funciones matemáticas
+    const functions = {
+      'ALEATORIO': (args) => {
+        return Math.random();
+      },
+      'ALEATORIO.ENTRE': (args) => {
+        if (!args[1]) return "Error: se requiere rango de enteros (lower;upper)";
+        const parts = args[1].split(',');
+        if (parts.length < 2) return "Error: se requieren dos números";
+        const lower = parseInt(parts[0]);
+        const upper = parseInt(parts[1]);
+        if (isNaN(lower) || isNaN(upper)) return "Error";
+        return Math.floor(Math.random() * (upper - lower + 1)) + lower;
+      },
+      'COCIENTE': (args) => {
+        const num = parseFloat(getSingleValue(args[0]));
+        const den = parseFloat(args[1]);
+        if (isNaN(num) || isNaN(den) || den === 0) return "Error";
+        return Math.floor(num / den);
+      },
+      'ENTERO': (args) => {
+        const val = getSingleValue(args[0]);
+        const num = parseFloat(val);
+        if (isNaN(num)) return "Error";
+        return Math.trunc(num);
+      },
+      'NUMERO ROMANO': (args) => {
+        const num = parseInt(getSingleValue(args[0]));
+        if (isNaN(num) || num <= 0 || num >= 4000) return "Error";
+        const romans = [
+          { value: 1000, numeral: "M" },
+          { value: 900, numeral: "CM" },
+          { value: 500, numeral: "D" },
+          { value: 400, numeral: "CD" },
+          { value: 100, numeral: "C" },
+          { value: 90, numeral: "XC" },
+          { value: 50, numeral: "L" },
+          { value: 40, numeral: "XL" },
+          { value: 10, numeral: "X" },
+          { value: 9, numeral: "IX" },
+          { value: 5, numeral: "V" },
+          { value: 4, numeral: "IV" },
+          { value: 1, numeral: "I" }
+        ];
+        let result = "";
+        let n = num;
+        for (const {value, numeral} of romans) {
+          while (n >= value) {
+            result += numeral;
+            n -= value;
+          }
+        }
+        return result;
+      },
+      'POTENCIA': (args) => {
+        const base = parseFloat(getSingleValue(args[0]));
+        const expVal = parseFloat(args[1]);
+        if (isNaN(base) || isNaN(expVal)) return "Error";
+        return Math.pow(base, expVal);
+      },
+      'PRODUCTO': (args) => {
+        const values = getRangeValues(args[0]).filter(v => typeof v === 'number');
+        if (values.length === 0) return 0;
+        return values.reduce((prod, num) => prod * num, 1);
+      },
+      'REDONDEAR': (args) => {
+        const val = getSingleValue(args[0]);
+        const dec = parseInt(args[1]);
+        const num = parseFloat(val);
+        if (isNaN(num) || isNaN(dec)) return "Error";
+        return Number(num.toFixed(dec));
+      },
+      'RESIDUO': (args) => {
+        const val = getSingleValue(args[0]);
+        const num = parseFloat(val);
+        const divisor = parseFloat(args[1]);
+        if (isNaN(num) || isNaN(divisor) || divisor === 0) return "Error";
+        return num % divisor;
+      },
+      'SUMA': (args) => {
+        const values = getRangeValues(args[0]);
+        return values.filter(v => typeof v === 'number').reduce((sum, num) => sum + num, 0);
+      },
+      'SUMASI': (args) => {
+        const values = getRangeValues(args[0]);
+        const criterio = args[1];
+        return values.filter(v => {
+          if (typeof v !== 'number') return false;
+          if (criterio.startsWith('>')) return v > parseFloat(criterio.slice(1));
+          if (criterio.startsWith('<')) return v < parseFloat(criterio.slice(1));
+          if (criterio.startsWith('=')) return v === parseFloat(criterio.slice(1));
+          return v === parseFloat(criterio);
+        }).reduce((sum, num) => sum + num, 0);
+      },
+      'RAIZ': (args) => {
+        const val = getSingleValue(args[0]);
+        const num = parseFloat(val);
+        if (isNaN(num) || num < 0) return "Error";
+        return Math.sqrt(num);
+      },
+      
+
+    };
+    
+    // Definición de ejercicios predefinidos (13 ejercicios, uno por función)
+    // Los rangos se ajustan para utilizar datos numéricos a partir de C2 en adelante.
+    const exercises = [
+      {
+        id: 1,
+        description: "Ejercicio 1: Genera un número aleatorio.",
+        function: "ALEATORIO",
+        range: "N/A"
+      },
+      {
+        id: 2,
+        description: "Ejercicio 2: Genera un número aleatorio entero entre 10 y 20.",
+        function: "ALEATORIO.ENTRE",
+        range: "N/A",
+        criteria: "10,20"
+      },
+      {
+        id: 3,
+        description: "Ejercicio 3: Obtén el cociente de dividir la celda C2 entre 3.",
+        function: "COCIENTE",
+        range: "C2:C2",
+        criteria: "3"
+      },
+      {
+        id: 4,
+        description: "Ejercicio 4: Obtén la parte entera de la celda D2.",
+        function: "ENTERO",
+        range: "D2:D2"
+      },
+      {
+        id: 5,
+        description: "Ejercicio 5: Convierte el valor de la celda C2 a número romano.",
+        function: "NUMERO ROMANO",
+        range: "C2:C2"
+      },
+      {
+        id: 6,
+        description: "Ejercicio 6: Calcula la potencia de la celda C2 elevada a 3.",
+        function: "POTENCIA",
+        range: "C2:C2",
+        criteria: "3"
+      },
+      {
+        id: 7,
+        description: "Ejercicio 7: Calcula el producto de los números en la columna C (C2:C8).",
+        function: "PRODUCTO",
+        range: "C2:C8"
+      },
+      {
+        id: 8,
+        description: "Ejercicio 8: Redondea el valor de la celda D2 a 1 decimal.",
+        function: "REDONDEAR",
+        range: "D2:D2",
+        criteria: "1"
+      },
+      {
+        id: 9,
+        description: "Ejercicio 9: Calcula el residuo de dividir la celda D2 entre 3.",
+        function: "RESIDUO",
+        range: "D2:D2",
+        criteria: "3"
+      },
+      {
+        id: 10,
+        description: "Ejercicio 10: Suma los números en la columna C (C2:C8).",
+        function: "SUMA",
+        range: "C2:C8"
+      },
+      {
+        id: 11,
+        description: "Ejercicio 11: Suma los números mayores a 5 en la columna C (C2:C8).",
+        function: "SUMASI",
+        range: "C2:C8",
+        criteria: ">5"
+      },
+      {
+        id: 12,
+        description: "Ejercicio 12: Calcula la raíz cuadrada de la celda D2.",
+        function: "RAIZ",
+        range: "D2:D2"
+      },
+      
+
+    ];
+    
+    let currentExercise = null;
+    
+    // Carga la lista de ejercicios en la sección de ejercicios
+    function loadExercises() {
+      const exerciseList = document.getElementById('exerciseList');
+      exerciseList.innerHTML = "";
+      exercises.forEach(ex => {
+        const div = document.createElement('div');
+        div.className = 'exercise-item';
+        div.textContent = ex.description;
+        div.addEventListener('click', () => {
+          currentExercise = ex;
+          document.getElementById('currentExerciseInfo').textContent = "Ejercicio actual: " + ex.description;
+          if (ex.range !== "N/A") {
+            highlightRange(ex.range);
+          } else {
+            document.querySelectorAll('.highlight').forEach(cell => cell.classList.remove('highlight'));
+          }
+          document.getElementById('explanationText').textContent = "";
+          document.getElementById('studentFormula').value = "";
+        });
+        exerciseList.appendChild(div);
+      });
+    }
+    loadExercises();
+    
+    // Botón para limpiar el dataset (borra el contenido de todas las celdas editables)
+    document.getElementById('clearDataset').addEventListener('click', function() {
+      document.querySelectorAll('td[contenteditable="true"]').forEach(cell => cell.textContent = "");
+    });
+    
+    // Al pulsar "Ejecutar Función", se obtiene la función seleccionada y se ejecuta
+    document.getElementById('executeFunctionButton').addEventListener('click', function() {
+      const funcName = document.getElementById('functionSelect').value;
+      runFunction(funcName);
+    });
+    
+    // Ejecuta la función seleccionada, muestra la explicación y compara la fórmula ingresada por el estudiante
+    function runFunction(selectedFunc) {
+      if (!currentExercise) {
+        document.getElementById('explanationText').textContent = "Por favor, selecciona un ejercicio primero.";
+        return;
+      }
+      if (selectedFunc !== currentExercise.function) {
+        document.getElementById('explanationText').textContent =
+          "Ups, esa no es la función correcta. Para este ejercicio, debes usar: " + currentExercise.function;
+        return;
+      }
+      
+      const args = [ currentExercise.range ];
+      if (currentExercise.criteria) {
+        args.push(currentExercise.criteria);
+      }
+      
+      const res = functions[selectedFunc](args);
+      
+      // Para funciones de una celda, se usa solo la primera celda del rango.
+      const singleCellFunctions = ["COCIENTE", "ENTERO", "NUMERO ROMANO", "POTENCIA", "REDONDEAR", "RESIDUO", "RAIZ"];
+      
+      let excelFunctionCall = "";
+      if (currentExercise.range === "N/A") {
+        if (selectedFunc === "ALEATORIO.ENTRE" && currentExercise.criteria) {
+          let crit = currentExercise.criteria.replace(",", ";");
+          excelFunctionCall = "=" + selectedFunc.toLowerCase() + "(" + crit + ")";
+        } else {
+          excelFunctionCall = "=" + selectedFunc.toLowerCase() + "()";
+        }
+      } else {
+        if (singleCellFunctions.includes(currentExercise.function)) {
+          let cellRef = currentExercise.range.split(":")[0].trim();
+          if (currentExercise.criteria) {
+            excelFunctionCall = "=" + selectedFunc.toLowerCase() + "(" + cellRef + ";" + currentExercise.criteria + ")";
+          } else {
+            excelFunctionCall = "=" + selectedFunc.toLowerCase() + "(" + cellRef + ")";
+          }
+        } else {
+          if (currentExercise.criteria) {
+            excelFunctionCall = "=" + selectedFunc.toLowerCase() + "(" + currentExercise.range + ";" + currentExercise.criteria + ")";
+          } else {
+            excelFunctionCall = "=" + selectedFunc.toLowerCase() + "(" + currentExercise.range + ")";
+          }
+        }
+      }
+      
+      // Compara la fórmula ingresada por el estudiante con la fórmula esperada.
+      const studentFormula = document.getElementById('studentFormula').value.trim().toLowerCase();
+      const expectedFormula = excelFunctionCall.toLowerCase().trim();
+      let formulaComparison = "";
+      if (studentFormula === expectedFormula) {
+        formulaComparison = "¡Correcto! Has escrito la fórmula correctamente.\n\n";
+      } else {
+        formulaComparison = "Incorrecto. La fórmula correcta es: " + excelFunctionCall + "\n\n";
+      }
+      
+      let message = "";
+      if (currentExercise.range === "N/A") {
+        message = "Ejercicio: " + currentExercise.description + "\n\n" +
+                  formulaComparison +
+                  "Esta función no utiliza la tabla de datos (dataset), sino que genera su resultado por sí sola.\n" +
+                  "El resultado obtenido es: " + res;
+      } else {
+        message = "Ejercicio: " + currentExercise.description + "\n\n" +
+                  formulaComparison +
+                  "En Excel, la fórmula se vería así: " + excelFunctionCall + "\n\n" +
+                  "Se tomó de la tabla de datos (dataset) la " +
+                  (singleCellFunctions.includes(currentExercise.function) ? "celda " : "rango ") + currentExercise.range + ".\n" +
+                  "Se aplicó la función " + selectedFunc +
+                  (currentExercise.criteria ? " con el criterio " + currentExercise.criteria : "") + ".\n" +
+                  "El resultado obtenido es: " + res;
+      }
+      document.getElementById('explanationText').textContent = message;
+    }
+    
+    // Botón Limpiar (Área de Funciones): reinicia la selección, quita los resaltados y limpia el campo de fórmula
+    document.getElementById('clearBtn').addEventListener('click', function() {
+      currentExercise = null;
+      document.getElementById('currentExerciseInfo').textContent = "Ejercicio actual: Ninguno";
+      document.getElementById('explanationText').textContent = "";
+      document.getElementById('studentFormula').value = "";
+      document.querySelectorAll('.highlight').forEach(cell => cell.classList.remove('highlight'));
+    });
+  </script>
+</body>
+</html>
 
