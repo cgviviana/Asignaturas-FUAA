@@ -1,1 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Aprendiendo con: LaProfeVivy - Interfaz de Microsoft Excel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #eef2f3;
+    }
+    .main-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+    .simulation {
+      flex: 2;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .info-panel {
+      flex: 1;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .info-panel h2 {
+      text-align: center;
+      margin-top: 0;
+      color: #0078d7;
+    }
+    .barra-titulo {
+      background: #0078d7;
+      color: #fff;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+    .barra-nombre-formula {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .barra-nombre {
+      background: #e3e3e3;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100px;
+      text-align: center;
+    }
+    .barra-formula {
+      background: #e3e3e3;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      flex-grow: 1;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: #fdfdfd;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      font-size: 14px;
+    }
+    th {
+      background: #0078d7;
+      color: white;
+    }
+    .highlight {
+      background: #ffeb3b !important;
+    }
+    .active-cell {
+      border: 2px solid red;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="simulation">
+      <div id="barra-titulo" class="barra-titulo" onclick="showInfo('Barra de Título', 'Muestra el nombre del archivo y los controles de la ventana.')">Aprendiendo con: LaProfeVivy - Interfaz de Microsoft Excel</div>
+      
+      <div class="barra-nombre-formula">
+        <div id="barra-nombre" class="barra-nombre" onclick="showInfo('Barra de Nombre', 'Muestra la referencia de la celda activa.')">Nombre: <span id="nombre-actual">A1</span></div>
+        <div id="barra-formula" class="barra-formula" onclick="showInfo('Barra de Fórmula', 'Permite editar el contenido de la celda activa.')">Fórmula: <input type="text" value="=SUM(A1:A10)" readonly style="border: none; background: white; padding: 5px; width: 80%;"></div>
+      </div>
+      
+      <table id="excelGrid">
+        <tr>
+          <th></th>
+          <th id="col-A" onclick="highlightColumn('A')">A</th>
+          <th id="col-B" onclick="highlightColumn('B')">B</th>
+          <th id="col-C" onclick="highlightColumn('C')">C</th>
+          <th id="col-D" onclick="highlightColumn('D')">D</th>
+        </tr>
+        <tr>
+          <td id="row-1" onclick="highlightRow(1)">1</td>
+          <td id="cell-A1" onclick="updateActiveCell(this)">Dato 1</td>
+          <td id="cell-B1" onclick="updateActiveCell(this)">Dato 2</td>
+          <td id="cell-C1" onclick="updateActiveCell(this)">Dato 3</td>
+          <td id="cell-D1" onclick="updateActiveCell(this)">Dato 4</td>
+                <tr>
+          <td id="row-2" onclick="highlightRow(2)">2</td>
+          <td id="cell-A2" onclick="updateActiveCell(this)">Dato 5</td>
+          <td id="cell-B2" onclick="updateActiveCell(this)">Dato 6</td>
+          <td id="cell-C2" onclick="updateActiveCell(this)">Dato 7</td>
+          <td id="cell-D2" onclick="updateActiveCell(this)">Dato 8</td>
+        </tr>
+        <tr>
+          <td id="row-3" onclick="highlightRow(3)">3</td>
+          <td id="cell-A3" onclick="updateActiveCell(this)">Dato 9</td>
+          <td id="cell-B3" onclick="updateActiveCell(this)">Dato 10</td>
+          <td id="cell-C3" onclick="updateActiveCell(this)">Dato 11</td>
+          <td id="cell-D3" onclick="updateActiveCell(this)">Dato 12</td>
+        </tr>
+        <tr>
+          <td id="row-4" onclick="highlightRow(4)">4</td>
+          <td id="cell-A4" onclick="updateActiveCell(this)">Dato 13</td>
+          <td id="cell-B4" onclick="updateActiveCell(this)">Dato 14</td>
+          <td id="cell-C4" onclick="updateActiveCell(this)">Dato 15</td>
+          <td id="cell-D4" onclick="updateActiveCell(this)">Dato 16</td>
+        </tr>
+        <tr>
+          <td id="row-5" onclick="highlightRow(5)">5</td>
+          <td id="cell-A5" onclick="updateActiveCell(this)">Dato 17</td>
+          <td id="cell-B5" onclick="updateActiveCell(this)">Dato 18</td>
+          <td id="cell-C5" onclick="updateActiveCell(this)">Dato 19</td>
+          <td id="cell-D5" onclick="updateActiveCell(this)">Dato 20</td>
+        </tr>
+      </table>
+    </div>
+    <div class="info-panel" id="info-panel">
+      <h2>Información de las Secciones</h2>
+      <p id="info-text">Haz clic en las partes de la interfaz para ver su descripción.</p>
+    </div>
+  </div>
+  
+  <script>
+    function showInfo(title, description) {
+      document.getElementById('info-text').innerHTML = `<strong>${title}:</strong> ${description}`;
+    }
+    function updateActiveCell(cell) {
+      document.querySelectorAll('.active-cell').forEach(el => el.classList.remove('active-cell'));
+      cell.classList.add('active-cell');
+      document.getElementById('nombre-actual').innerText = cell.id.replace('cell-', '');
+      showInfo('Celda Activa', 'Esta es la celda seleccionada actualmente.');
+    }
+    function highlightColumn(column) {
+      document.querySelectorAll('td, th').forEach(el => el.classList.remove('highlight'));
+      document.querySelectorAll(`[id^="cell-${column}"]`).forEach(el => el.classList.add('highlight'));
+      showInfo('Columna ' + column, 'Representa la columna seleccionada en la hoja de cálculo.');
+    }
+    function highlightRow(row) {
+      document.querySelectorAll('td, th').forEach(el => el.classList.remove('highlight'));
+      document.querySelectorAll(`#row-${row}, [id$="${row}"]`).forEach(el => el.classList.add('highlight'));
+      showInfo('Fila ' + row, 'Representa la fila seleccionada en la hoja de cálculo.');
+    }
+  </script>
+</body>
+</html>
 
