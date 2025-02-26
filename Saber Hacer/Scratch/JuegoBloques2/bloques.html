@@ -1,0 +1,198 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprendiendo con: LaProfeVivy</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('fondo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 5px;
+    }
+    h2 {
+      color: #007acc;
+      margin-bottom: 10px;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    #left-panel, #right-panel {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    #game-board {
+      margin: 0 auto;
+      max-width: 600px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 10px;
+    }
+    .card {
+      background-color: #444;
+      color: #fff;
+      font-size: 1.2em;
+      padding: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .card.matched {
+      background-color: #8bc34a;
+      cursor: default;
+    }
+    .explanation-block {
+      margin-bottom: 8px;
+      padding: 5px;
+      background-color: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      border-radius: 4px;
+      text-align: left;
+      font-size: 0.85em;
+      line-height: 1.2;
+    }
+    #report {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 1100px;
+      text-align: center;
+      font-size: 1.1em;
+      color: #333;
+    }
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Aprendiendo con: LaProfeVivy</h1>
+    <h2>Bloques de Scratch</h2>
+  </header>
+  <div class="container">
+    <div id="left-panel">
+      <div id="game-board"></div>
+    </div>
+    <div id="right-panel">
+      <h2>Explicaciones</h2>
+      <div id="explanation-panel"></div>
+    </div>
+  </div>
+  <div id="report"></div>
+  <script>
+    let playerName = prompt("¡Bienvenido! Por favor, introduce tu nombre:");
+    if (!playerName) {
+      playerName = "Jugador";
+    }
+    const modules = [
+      { name: 'Movimiento', color: '#2196F3', explanation: "Permite mover personajes." },
+      { name: 'Apariencia', color: '#9C27B0', explanation: "Cambia el aspecto de los personajes." },
+      { name: 'Sonido', color: '#FF4081', explanation: "Agrega efectos de sonido." },
+      { name: 'Control', color: '#FF9800', explanation: "Define la lógica del programa." },
+      { name: 'Eventos', color: '#FFD600', explanation: "Inicia acciones en respuesta a eventos." },
+      { name: 'Sensores', color: '#00BCD4', explanation: "Detecta condiciones en el programa." },
+      { name: 'Operadores', color: '#4CAF50', explanation: "Realiza cálculos y comparaciones." },
+      { name: 'Variables', color: '#FF5722', explanation: "Almacena información para su uso." }
+    ];
+    let cards = [];
+    modules.forEach(module => {
+      cards.push({ ...module });
+      cards.push({ ...module });
+    });
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+    shuffle(cards);
+    const gameBoard = document.getElementById('game-board');
+    const explanationPanel = document.getElementById('explanation-panel');
+    const reportDiv = document.getElementById('report');
+    let flippedCards = [];
+    function createCard(module) {
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.dataset.module = module.name;
+      card.textContent = "?";
+      card.addEventListener('click', () => flipCard(card, module));
+      gameBoard.appendChild(card);
+    }
+    function flipCard(card, module) {
+      if (flippedCards.length < 2 && !card.classList.contains('flipped')) {
+        card.classList.add('flipped');
+        card.style.backgroundColor = module.color;
+        card.textContent = module.name;
+        flippedCards.push({ card, module });
+        if (flippedCards.length === 2) {
+          checkForMatch();
+        }
+      }
+    }
+    function checkForMatch() {
+      const [first, second] = flippedCards;
+      if (first.module.name === second.module.name) {
+        first.card.classList.add('matched');
+        second.card.classList.add('matched');
+        addExplanation(first.module);
+      } else {
+        setTimeout(() => {
+          first.card.classList.remove('flipped');
+          second.card.classList.remove('flipped');
+          first.card.style.backgroundColor = '#444';
+          second.card.style.backgroundColor = '#444';
+          first.card.textContent = "?";
+          second.card.textContent = "?";
+        }, 1000);
+      }
+      flippedCards = [];
+      if (document.querySelectorAll('.card.matched').length === cards.length) {
+        gameOver();
+      }
+    }
+    function addExplanation(module) {
+      if (!document.getElementById('explanation-' + module.name)) {
+        const block = document.createElement('div');
+        block.classList.add('explanation-block');
+        block.id = 'explanation-' + module.name;
+        block.innerHTML = `<h3>${module.name}</h3><p>${module.explanation}</p>`;
+        explanationPanel.appendChild(block);
+      }
+    }
+    function gameOver() {
+      reportDiv.innerHTML = `<strong>¡Felicitaciones, ${playerName}!</strong> Has completado el juego.`;
+    }
+    function initGame() {
+      gameBoard.innerHTML = "";
+      cards.forEach(module => createCard(module));
+    }
+    initGame();
+  </script>
+</body>
+</html>
