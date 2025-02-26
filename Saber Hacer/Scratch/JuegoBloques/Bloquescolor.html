@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprendiendo con: LaProfeVivy</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      /* Se establece la imagen de fondo usando fondo.jpg */
+      background: url('fondo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 5px;
+    }
+    h2 {
+      color: #007acc;
+      margin-bottom: 10px;
+    }
+    /* Contenedor principal con dos columnas usando grid */
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    /* Panel izquierdo: Juego */
+    #left-panel {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    /* Panel derecho: Explicaciones */
+    #right-panel {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    #game-board {
+      margin: 0 auto;
+      max-width: 600px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 10px;
+    }
+    .card {
+      background-color: #444;
+      color: #fff;
+      font-size: 1.2em;
+      padding: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .card.flipped {
+      /* Sin efecto de giro para mantener el texto legible */
+    }
+    .card.matched {
+      background-color: #8bc34a;
+      cursor: default;
+    }
+    /* Estilos para el panel de explicaciones */
+    .explanation-block {
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      border-radius: 4px;
+      text-align: left;
+    }
+    .explanation-block h3 {
+      margin: 0;
+      font-size: 1.2em;
+      color: #007acc;
+    }
+    .explanation-block p {
+      margin: 5px 0 0;
+      font-size: 0.95em;
+      line-height: 1.4;
+    }
+    /* Reporte final */
+    #report {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 1100px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 1.1em;
+      color: #333;
+    }
+    /* Para pantallas pequeñas, las columnas se apilan */
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Aprendiendo con: LaProfeVivy</h1>
+    <h2>Bloques de Scratch</h2>
+  </header>
+  
+  <div class="container">
+    <!-- Panel izquierdo: Juego -->
+    <div id="left-panel">
+      <div id="game-board"></div>
+    </div>
+    <!-- Panel derecho: Explicaciones -->
+    <div id="right-panel">
+      <h2>Explicaciones</h2>
+      <div id="explanation-panel"></div>
+    </div>
+  </div>
+  
+  <!-- Reporte final -->
+  <div id="report"></div>
+  
+  <script>
+    // Pedir nombre al iniciar el juego
+    let playerName = prompt("¡Bienvenido! Por favor, introduce tu nombre:");
+    if (!playerName) {
+      playerName = "Jugador";
+    }
+    
+    // Definición de módulos con su color y explicación asociada
+    const modules = [
+      { name: 'Movimiento', color: '#2196F3', explanation: "¡Con este bloque tus personajes se ponen en marcha! Permite avanzar, retroceder o girar para cambiar de dirección, como si tuvieran ruedas mágicas." },
+      { name: 'Apariencia', color: '#9C27B0', explanation: "Este bloque es como un armario de disfraces: cambia cómo se ven tus personajes, los hace aparecer o desaparecer, ¡y hasta pueden mostrar mensajes divertidos!" },
+      { name: 'Sonido', color: '#4CAF50', explanation: "El bloque de Sonido da vida a tu proyecto. Con él, los personajes pueden cantar, hablar o reproducir efectos, creando una atmósfera llena de ritmo." },
+      { name: 'Control', color: '#FF9800', explanation: "Este bloque es el jefe que organiza todo. Permite repetir acciones, esperar un ratito o tomar decisiones, haciendo que todo suceda en el momento justo." }
+    ];
+    
+    // Duplicar cada módulo para formar parejas
+    let cards = [];
+    modules.forEach(module => {
+      cards.push(module);
+      cards.push(module);
+    });
+    
+    // Mezclar el arreglo de tarjetas (algoritmo Fisher-Yates)
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+    
+    cards = shuffle(cards);
+    
+    const gameBoard = document.getElementById('game-board');
+    const explanationPanel = document.getElementById('explanation-panel');
+    const reportDiv = document.getElementById('report');
+    let flippedCards = [];
+    let lockBoard = false;
+    let moves = 0; // Contador de jugadas (cada intento de emparejar dos tarjetas)
+    
+    // Crea una tarjeta y la agrega al tablero
+    function createCard(module) {
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.dataset.module = module.name;
+      card.addEventListener('click', () => flipCard(card, module));
+      return card;
+    }
+    
+    // Función para voltear la tarjeta y mostrar su contenido
+    function flipCard(card, module) {
+      if (lockBoard || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+      
+      card.classList.add('flipped');
+      card.style.backgroundColor = module.color;
+      card.textContent = module.name;
+      
+      flippedCards.push({ card, module });
+      
+      if (flippedCards.length === 2) {
+        moves++; // Se incrementa el contador de jugadas
+        checkForMatch();
+      }
+    }
+    
+    // Comprueba si las dos tarjetas volteadas son iguales
+    function checkForMatch() {
+      lockBoard = true;
+      const [first, second] = flippedCards;
+      
+      if (first.module.name === second.module.name) {
+        first.card.classList.add('matched');
+        second.card.classList.add('matched');
+        addExplanation(first.module);
+        resetBoard();
+        // Verificar si se han emparejado todas las tarjetas
+        if (document.querySelectorAll('.card.matched').length === cards.length) {
+          gameOver();
+        }
+      } else {
+        setTimeout(() => {
+          first.card.classList.remove('flipped');
+          second.card.classList.remove('flipped');
+          first.card.style.backgroundColor = '#444';
+          second.card.style.backgroundColor = '#444';
+          first.card.textContent = '';
+          second.card.textContent = '';
+          resetBoard();
+        }, 1000);
+      }
+    }
+    
+    function resetBoard() {
+      flippedCards = [];
+      lockBoard = false;
+    }
+    
+    // Agrega la explicación del módulo al panel si aún no existe
+    function addExplanation(module) {
+      if (document.getElementById('explanation-' + module.name)) return;
+      
+      const block = document.createElement('div');
+      block.classList.add('explanation-block');
+      block.id = 'explanation-' + module.name;
+      
+      const title = document.createElement('h3');
+      title.textContent = module.name;
+      const paragraph = document.createElement('p');
+      paragraph.textContent = module.explanation;
+      
+      block.appendChild(title);
+      block.appendChild(paragraph);
+      
+      explanationPanel.appendChild(block);
+    }
+    
+    // Muestra el reporte final cuando se han emparejado todas las tarjetas
+    function gameOver() {
+      reportDiv.innerHTML = `<strong>¡Felicitaciones, ${playerName}!</strong> Has completado el juego en <strong>${moves}</strong> jugadas.`;
+    }
+    
+    // Inicializa el juego creando las tarjetas
+    function initGame() {
+      cards.forEach(module => {
+        const cardElement = createCard(module);
+        gameBoard.appendChild(cardElement);
+      });
+    }
+    
+    initGame();
+  </script>
+</body>
+</html>
