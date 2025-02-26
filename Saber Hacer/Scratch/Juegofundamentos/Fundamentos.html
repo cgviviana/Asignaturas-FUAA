@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con: LaProfeVivy</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1.5fr 2fr; /* Ahora el panel de explicaciones es más ancho */
+            gap: 40px;
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .card {
+            background: #007acc;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1em;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .card:hover {
+            background: #005f99;
+            transform: scale(1.05);
+        }
+        .matched {
+            visibility: hidden;
+        }
+        #right-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            max-height: 600px;
+            overflow-y: auto;
+            text-align: left;
+            width: 100%;
+        }
+        .explanation {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #e3f2fd;
+            border-left: 6px solid #2196F3;
+            border-radius: 8px;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+        #report {
+            display: none;
+            margin-top: 20px;
+            font-size: 1.3em;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Aprendiendo con: LaProfeVivy</h1>
+    <h2>fundamentos de scratch.</h2>
+    
+    <div class="container">
+        <div id="game-board"></div>
+        <div id="right-panel">
+            <h2>Explicaciones</h2>scratch.
+            <div id="explanation-panel"></div>
+        </div>
+    </div>
+
+    <div id="report"></div>
+
+    <script>
+        let playerName = prompt("¡Bienvenido! ¿Cuál es tu nombre?");
+        if (!playerName) playerName = "Jugador";
+
+        const questions = [
+            {
+                question: "¿Qué es Scratch?",
+                answer: "Un lenguaje de programación visual",
+                explanation: "Scratch es un lenguaje de programación creado por el MIT para enseñar a programar de manera sencilla y visual."
+            },
+            {
+                question: "¿Para qué sirve Scratch?",
+                answer: "Crear programas con bloques visuales",
+                explanation: "Scratch permite arrastrar y unir bloques de código para crear historias, juegos y animaciones sin escribir código tradicional."
+            },
+            {
+                question: "¿Qué relación tiene Scratch con el pensamiento computacional?",
+                answer: "Ayuda a resolver problemas paso a paso",
+                explanation: "Scratch desarrolla el pensamiento computacional al dividir problemas complejos en pasos más pequeños y lógicos."
+            },
+            {
+                question: "¿Cuáles son algunos elementos de Scratch?",
+                answer: "Sprites, escenarios y bloques de código",
+                explanation: "En Scratch, los sprites son personajes, los escenarios son fondos y los bloques de código hacen que todo cobre vida."
+            },
+            {
+                question: "¿Qué tipos de bloques existen en Scratch?",
+                answer: "Movimiento, apariencia, sonido, eventos y más",
+                explanation: "Los bloques de Scratch incluyen opciones para mover, cambiar apariencia, interactuar con eventos y controlar la lógica del programa."
+            }
+        ];
+
+        let pairs = [];
+        questions.forEach(q => {
+            pairs.push({ type: "question", text: q.question, pair: q.answer, explanation: q.explanation });
+            pairs.push({ type: "answer", text: q.answer, pair: q.question, explanation: q.explanation });
+        });
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        pairs = shuffle(pairs);
+
+        const gameBoard = document.getElementById("game-board");
+        const explanationPanel = document.getElementById("explanation-panel");
+        const reportDiv = document.getElementById("report");
+        let selectedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+
+        function createCard(item) {
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.textContent = item.text;
+            card.dataset.pair = item.pair;
+            card.dataset.explanation = item.explanation;
+
+            card.onclick = () => selectCard(card);
+            return card;
+        }
+
+        function selectCard(card) {
+            if (selectedCards.length === 2 || card.classList.contains("matched")) return;
+            
+            card.style.background = "#ff9800";
+            selectedCards.push(card);
+
+            if (selectedCards.length === 2) {
+                moves++;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [first, second] = selectedCards;
+            if (first.dataset.pair === second.textContent && second.dataset.pair === first.textContent) {
+                first.classList.add("matched");
+                second.classList.add("matched");
+
+                addExplanation(first.dataset.pair, first.dataset.explanation);
+                matchedPairs++;
+
+                if (matchedPairs === questions.length) gameOver();
+            } else {
+                setTimeout(() => {
+                    first.style.background = "#007acc";
+                    second.style.background = "#007acc";
+                }, 1000);
+            }
+            selectedCards = [];
+        }
+
+        function addExplanation(title, explanation) {
+            const block = document.createElement("div");
+            block.classList.add("explanation");
+            block.innerHTML = `<strong>${title}</strong><p>${explanation}</p>`;
+            explanationPanel.appendChild(block);
+        }
+
+        function gameOver() {
+            reportDiv.style.display = "block";
+            reportDiv.innerHTML = `<strong>¡Felicidades, ${playerName}!</strong><br>Has completado el juego en ${moves} movimientos.`;
+        }
+
+        function initGame() {
+            pairs.forEach(item => gameBoard.appendChild(createCard(item)));
+        }
+
+        initGame();
+    </script>
+
+</body>
+</html>
