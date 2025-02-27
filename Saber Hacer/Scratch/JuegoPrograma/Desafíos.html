@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con: LaProfeVivy</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1.5fr 2fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        #game-area {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        #blocks, .drop-zone {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 80px;
+        }
+        #blocks {
+            background: rgba(0, 122, 204, 0.1);
+        }
+        .drop-zone {
+            background: rgba(0, 122, 204, 0.2);
+        }
+        .block {
+            background: #ff9800;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: grab;
+            user-select: none;
+            font-size: 1.1em;
+        }
+        .buttons {
+            margin-top: 10px;
+        }
+        .btn {
+            background-color: #007acc;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #005f99;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Aprendiendo con: LaProfeVivy</h1>
+    <h2 id="exercise-number"></h2>
+    <h3 id="instruction"></h3>
+    
+    <div class="container">
+        <div id="game-area">
+            <div id="blocks"></div>
+            <h3>Zona de Ordenación</h3>
+            <div class="drop-zone" id="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div class="buttons">
+                <button class="btn" onclick="checkOrder()">Verificar</button>
+                <button class="btn" onclick="resetChallenge()">Reiniciar</button>
+            </div>
+        </div>
+        <div id="right-panel">
+            <h2>Explicaciones</h2>
+            <div id="explanation-panel"></div>
+        </div>
+    </div>
+
+    <script>
+        let playerName = prompt("¡Bienvenido! ¿Cuál es tu nombre?");
+        if (!playerName) playerName = "Jugador";
+
+        const challenges = [
+            {
+                instruction: "Ordena los bloques para que el objeto se mueva a la derecha",
+                correctOrder: ["Cuando se haga clic en la bandera verde", "Mover 10 pasos"],
+                explanation: "En Scratch, 'Cuando se haga clic en la bandera verde' inicia el programa y 'Mover 10 pasos' hace que el objeto se desplace a la derecha."
+            },
+            {
+                instruction: "Ordena los bloques para que el personaje salude",
+                correctOrder: ["Cuando se haga clic en la bandera verde", "Decir '¡Hola!' por 2 segundos"],
+                explanation: "El bloque 'Decir' permite que el personaje muestre un mensaje en pantalla."
+            },
+            {
+                instruction: "Ordena los bloques para que otro personaje responda al saludo",
+                correctOrder: ["Cuando reciba mensaje 'Hola'", "Decir '¡Hola, cómo estás!' por 2 segundos"],
+                explanation: "En Scratch, los mensajes permiten la comunicación entre personajes."
+            }
+        ];
+
+        let currentChallengeIndex = 0;
+        let score = 0;
+
+        function loadChallenge() {
+            const challenge = challenges[currentChallengeIndex];
+            document.getElementById("exercise-number").textContent = `Ejercicio ${currentChallengeIndex + 1} de ${challenges.length}`;
+            document.getElementById("instruction").textContent = challenge.instruction;
+            document.getElementById("drop-zone").innerHTML = "";
+            document.getElementById("blocks").innerHTML = "";
+
+            let shuffledBlocks = challenge.correctOrder.slice().sort(() => Math.random() - 0.5);
+            shuffledBlocks.forEach(text => {
+                let block = document.createElement("div");
+                block.classList.add("block");
+                block.textContent = text;
+                block.draggable = true;
+                block.ondragstart = drag;
+                document.getElementById("blocks").appendChild(block);
+            });
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.textContent);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            let data = event.dataTransfer.getData("text");
+
+            let dropZone = document.getElementById("drop-zone");
+            let existingBlocks = Array.from(dropZone.children).map(block => block.textContent);
+            let correctOrder = challenges[currentChallengeIndex].correctOrder;
+
+            if (existingBlocks.length >= correctOrder.length) {
+                alert("Ya colocaste todos los bloques. Si quieres cambiar el orden, reinicia el ejercicio.");
+                return;
+            }
+
+            let droppedBlock = document.createElement("div");
+            droppedBlock.classList.add("block");
+            droppedBlock.textContent = data;
+            droppedBlock.draggable = true;
+            droppedBlock.ondragstart = drag;
+            droppedBlock.ondblclick = function () {
+                droppedBlock.remove();
+            };
+            dropZone.appendChild(droppedBlock);
+
+            document.querySelector(`.block:contains('${data}')`)?.remove();
+        }
+
+        function checkOrder() {
+            let dropZoneBlocks = Array.from(document.getElementById("drop-zone").children).map(block => block.textContent);
+            let correctOrder = challenges[currentChallengeIndex].correctOrder;
+
+            if (dropZoneBlocks.length !== correctOrder.length) {
+                alert("Debes colocar todos los bloques antes de verificar.");
+                return;
+            }
+
+            for (let i = 0; i < correctOrder.length; i++) {
+                if (dropZoneBlocks[i] !== correctOrder[i]) {
+                    alert("Orden incorrecto, intenta de nuevo.");
+                    return;
+                }
+            }
+
+            score++;
+            alert("¡Correcto! Pasando al siguiente desafío.");
+            addExplanation(challenges[currentChallengeIndex].instruction, challenges[currentChallengeIndex].explanation);
+            currentChallengeIndex++;
+
+            if (currentChallengeIndex < challenges.length) {
+                setTimeout(loadChallenge, 1000);
+            } else {
+                alert(`¡Felicidades ${playerName}! Has completado todos los ejercicios con ${score} puntos.`);
+            }
+        }
+
+        function addExplanation(title, explanation) {
+            const block = document.createElement("div");
+            block.classList.add("explanation");
+            block.innerHTML = `<strong>${title}</strong><p>${explanation}</p>`;
+            document.getElementById("explanation-panel").appendChild(block);
+        }
+
+        function resetChallenge() {
+            loadChallenge();
+        }
+
+        loadChallenge();
+    </script>
+
+</body>
+</html>
