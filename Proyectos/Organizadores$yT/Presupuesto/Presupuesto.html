@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Presupuesto Familiar - Aprende con LaProfeVivy</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            color: #2c3e50;
+            max-width: 100%;
+        }
+        .story {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        h1, h2 {
+            margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #1e3c72;
+            text-align: center;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            align-items: center;
+            text-align: left;
+            padding: 10px 20px;
+        }
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #34495e;
+            display: block;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+            text-align: right;
+            padding-right: 10px;
+            font-size: 14px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .btn {
+            background: #1e3c72;
+            color: white;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 48%;
+        }
+        .btn:hover {
+            background: #2a5298;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 12px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #34495e;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function calcularPresupuesto() {
+            let nombre = document.getElementById("nombre").value || "Estudiante";
+            let ingresos = parseFloat(document.getElementById("ingresos").value) || 0;
+            let ahorro = parseFloat(document.getElementById("ahorro").value) || 0;
+            let totalGastos = 0;
+            document.querySelectorAll(".gasto").forEach(input => {
+                totalGastos += parseFloat(input.value) || 0;
+            });
+            let disponible = ingresos - (totalGastos + ahorro);
+            document.getElementById("resultado").innerHTML = `${nombre}, tu gasto total es: $${totalGastos.toFixed(2)}<br>Ahorro: $${ahorro.toFixed(2)}<br>Saldo Disponible: $${disponible.toFixed(2)}`;
+        }
+        function limpiarCampos() {
+            document.querySelectorAll("input").forEach(input => input.value = "");
+            document.getElementById("resultado").innerHTML = "";
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="story">
+            <h2>📖 Día a día de Anita</h2>
+            <p>Anita es una joven de 23 años que trabaja en un call center internacional bilingüe de lunes 
+            a viernes  en Bogotá <b> con un salario de 2 smlv por tanto recibe auxilio de transporte,</b> 
+            con su descuento legal de salud y pensión. </b></p>
+  
+            <p>Para ir a su trabajo, utiliza el servicio de transporte transmilenio
+            normalmente 2 veces al día, <b>por lo que hace recargas mensuales de $150,000.</b>
+              
+            <p>Vive en un apartaestudio sola, <b>cuyo canon de arrendamiento es de $950,000 eso sí, con servicios incluídos</b>,
+             estudia los sábados en un  instituto técnico a dos cuadras de su casa, donde paga 
+             <b>cuotas de $580,000 mensuales </b>, compró su celular recientemente y va en la tercera de
+             6 cuotas mensuales <b>con valor cada una de  $250,000 </b> , 
+             <b>tiene su plan de internet de $65,000 </b>y los fines de semana le gusta salir,  pero tiene de norma 
+            que no  puede pasar <b>de un monto de 500,000 al mes </b> cualquier actividad de entretención que realice, pues piensa más adelante
+            en comprar su apartamento. </p>
+
+            <p>Tu reto es ayudar a Anita a hacer su presupuesto mensual. ¿Podrá ahorrar este mes? 🤔</p>
+        </div>
+        <div>
+            <h1>📘 Aprende con LaProfeVivy</h1>
+            <h2>📊 Simulador de Presupuesto Familiar</h2>
+            <label for="nombre">✍️ Ingresa tu Nombre completo:</label>
+            <input type="text" id="nombre" placeholder="Ejemplo: Juan">
+            <label for="fecha">📅 Seleccionar Fecha:</label>
+            <input type="date" id="fecha">
+            <div class="grid-container">
+                <div>
+                    <label for="ingresos">💰 Ingresos Mensuales ($):</label>
+                    <input type="number" id="ingresos" placeholder="Ejemplo: 2600000">
+                </div>
+                <div>
+                    <label for="ahorro">💾 Ahorro Mensual ($):</label>
+                    <input type="number" id="ahorro" placeholder="Ejemplo: 50000">
+                </div>
+            </div>
+            <h2>📑 Gastos</h2>
+            <div class="grid-container">
+                <div>
+                    <h3>Gastos Fijos</h3>
+                    <label>🏡 Vivienda:</label> <input type="number" class="gasto" id="vivienda" placeholder="Ejemplo: 800000">
+                    <label>📚 Educación:</label> <input type="number" class="gasto" id="educacion" placeholder="Ejemplo: 380000">
+                    <label>💡 Servicios Públicos:</label> <input type="number" class="gasto" id="servicios" placeholder="Ejemplo: 150000">
+                    <label>🚌 Transporte:</label> <input type="number" class="gasto" id="transporte" placeholder="Ejemplo: 250000">
+                    <label>💲 Otros Gastos Fijos:</label> <input type="number" class="gasto" id="otros gastosf" placeholder="Ejemplo: 450000">
+                </div>
+                <div>
+                    <h3>Gastos Variables</h3>
+                    <label>🏥 Salud:</label> <input type="number" class="gasto" id="salud" placeholder="Ejemplo: 200000">
+                    <label>💳 Tarjetas de Crédito:</label> <input type="number" class="gasto" id="tarjetas" placeholder="Ejemplo: 300000">
+                    <label>🏦 Préstamos:</label> <input type="number" class="gasto" id="prestamos" placeholder="Ejemplo: 400000">
+                    <label>🫢 Imprevistos:</label> <input type="number" class="gasto" id="imprevistos" placeholder="Ejemplo: 150000">
+                    <label>💲 Otros Gastos Variables:</label> <input type="number" class="gasto" id="gastosv" placeholder="Ejemplo: 250000">
+                </div>
+            </div>
+            <div class="btn-container">
+                <button class="btn" onclick="calcularPresupuesto()">Calcular</button>
+                <button class="btn" onclick="limpiarCampos()">Limpiar</button>
+            </div>
+            <div class="result" id="resultado"></div>
+        </div>
+    </div>
+</body>
+</html>
