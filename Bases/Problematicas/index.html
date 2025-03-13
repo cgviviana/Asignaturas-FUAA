@@ -37,7 +37,6 @@
             border: 1px solid #ddd;
             cursor: pointer;
             transition: 0.3s;
-            position: relative;
         }
 
         th {
@@ -45,30 +44,36 @@
             color: white;
         }
 
-        /* Colores de cada problemática */
-        .simple { background-color: #8BC34A; color: white; } /* Verde */
-        .complicada { background-color: #FFEB3B; color: black; } /* Amarillo */
-        .compleja { background-color: #FF7043; color: white; } /* Naranja */
-        .caotica { background-color: #B0BEC5; color: black; } /* Gris */
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-        /* Sombra y efecto al pasar el mouse */
-        td:hover {
-            transform: scale(1.05);
+        tr:hover {
+            background-color: #e0e0e0;
             transition: 0.3s;
         }
 
-        /* Información emergente */
-        .info-box {
+        .simple { background-color: #c3e6cb; }  /* Verde claro */
+        .complicada { background-color: #ffeeba; } /* Amarillo */
+        .compleja { background-color: #f5c6cb; } /* Rojo claro */
+        .caotica { background-color: #d6d8db; color: black; } /* Gris */
+
+        /* Estilos de la información oculta */
+        .hidden-content {
             display: none;
-            position: absolute;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
             padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
             border-radius: 5px;
-            font-size: 14px;
-            width: 220px;
+            position: absolute;
+            transform: translateY(-50%);
+            width: 250px;
             text-align: center;
             z-index: 10;
+        }
+
+        .table-container {
+            position: relative;
         }
     </style>
 </head>
@@ -86,55 +91,66 @@
                 <th class="caotica">Caótica ⚠️</th>
             </tr>
             <tr>
-                <td><b>Definición</b></td>
-                <td class="simple" onmouseover="showInfo(this, 'Fácil de entender y resolver.')">Fácil de entender.</td>
-                <td class="complicada" onmouseover="showInfo(this, 'Tiene muchas partes y necesita expertos.')">Necesita expertos.</td>
-                <td class="compleja" onmouseover="showInfo(this, 'Cambia constantemente y no hay solución exacta.')">Cambia mucho.</td>
-                <td class="caotica" onmouseover="showInfo(this, 'No hay reglas claras, todo es incierto.')">Incontrolable.</td>
-            </tr>
-            <tr>
-                <td><b>Ejemplo</b></td>
-                <td class="simple" onmouseover="showInfo(this, 'Seguir una receta de cocina.')">Hacer un café.</td>
-                <td class="complicada" onmouseover="showInfo(this, 'Construcción de un avión o una máquina.')">Construir un auto.</td>
-                <td class="compleja" onmouseover="showInfo(this, 'Cómo mejorar la educación en un país.')">Cambio climático.</td>
-                <td class="caotica" onmouseover="showInfo(this, 'Desastres naturales, crisis económicas.')">Terremoto.</td>
-            </tr>
-            <tr>
-                <td><b>¿Se puede predecir?</b></td>
-                <td class="simple" onmouseover="showInfo(this, 'Sí, porque sigue reglas fijas.')">Sí, fácil.</td>
-                <td class="complicada" onmouseover="showInfo(this, 'Sí, pero con mucha planificación.')">Con esfuerzo.</td>
-                <td class="compleja" onmouseover="showInfo(this, 'No exactamente, siempre cambia.')">Difícil.</td>
-                <td class="caotica" onmouseover="showInfo(this, 'No, todo es impredecible.')">Imposible.</td>
+                <td><b>Naturaleza</b></td>
+                <td class="simple" onclick="toggleInfo(this)">Proceso claro y repetible.</td>
+                <td class="complicada" onclick="toggleInfo(this)">Requiere expertos, muchas partes.</td>
+                <td class="compleja" onclick="toggleInfo(this)">Múltiples factores, incertidumbre.</td>
+                <td class="caotica" onclick="toggleInfo(this)">Sin patrones, desorden total.</td>
             </tr>
             <tr>
                 <td><b>Solución</b></td>
-                <td class="simple" onmouseover="showInfo(this, 'Solo necesitas seguir los pasos.')">Sigue reglas.</td>
-                <td class="complicada" onmouseover="showInfo(this, 'Requiere planificación y cálculos.')">Estudio profundo.</td>
-                <td class="compleja" onmouseover="showInfo(this, 'Se necesitan muchos intentos y ajustes.')">Adaptación.</td>
-                <td class="caotica" onmouseover="showInfo(this, 'No hay solución clara, solo reacción inmediata.')">Acción rápida.</td>
+                <td class="simple" onclick="toggleInfo(this)">Método definido.</td>
+                <td class="complicada" onclick="toggleInfo(this)">Se resuelve con técnicas estructuradas.</td>
+                <td class="compleja" onclick="toggleInfo(this)">Requiere adaptación constante.</td>
+                <td class="caotica" onclick="toggleInfo(this)">No hay solución clara.</td>
+            </tr>
+            <tr>
+                <td><b>Ejemplo</b></td>
+                <td class="simple" onclick="toggleInfo(this)">Seguir una receta de cocina.</td>
+                <td class="complicada" onclick="toggleInfo(this)">Construcción de un avión.</td>
+                <td class="compleja" onclick="toggleInfo(this)">Cambio climático, educación.</td>
+                <td class="caotica" onclick="toggleInfo(this)">Desastre natural, pandemia.</td>
+            </tr>
+            <tr>
+                <td><b>Tiempo de resolución</b></td>
+                <td class="simple" onclick="toggleInfo(this)">Corto.</td>
+                <td class="complicada" onclick="toggleInfo(this)">Largo pero estructurado.</td>
+                <td class="compleja" onclick="toggleInfo(this)">Depende del contexto.</td>
+                <td class="caotica" onclick="toggleInfo(this)">Incierto.</td>
+            </tr>
+            <tr>
+                <td><b>¿Quién lo resuelve?</b></td>
+                <td class="simple" onclick="toggleInfo(this)">Cualquiera con instrucciones.</td>
+                <td class="complicada" onclick="toggleInfo(this)">Expertos y equipos especializados.</td>
+                <td class="compleja" onclick="toggleInfo(this)">Cooperación entre múltiples actores.</td>
+                <td class="caotica" onclick="toggleInfo(this)">Acción inmediata y liderazgo.</td>
             </tr>
         </table>
     </div>
 
-    <!-- Caja para mostrar información emergente -->
-    <div id="infoBox" class="info-box"></div>
-
     <script>
-        function showInfo(element, text) {
-            let infoBox = document.getElementById("infoBox");
-            infoBox.innerText = text;
-            infoBox.style.display = "block";
+        function toggleInfo(element) {
+            // Eliminar cualquier información activa
+            let activeInfo = document.querySelector(".hidden-content");
+            if (activeInfo) {
+                activeInfo.remove();
+            }
 
-            // Posicionar cerca del cursor
-            element.addEventListener("mousemove", function(event) {
-                infoBox.style.left = event.pageX + 10 + "px";
-                infoBox.style.top = event.pageY + 10 + "px";
-            });
+            // Crear la nueva información emergente
+            let infoBox = document.createElement("div");
+            infoBox.className = "hidden-content";
+            infoBox.innerText = element.innerText;
+            document.body.appendChild(infoBox);
 
-            // Ocultar al salir
-            element.addEventListener("mouseleave", function() {
-                infoBox.style.display = "none";
-            });
+            // Posicionar la información cerca del elemento clickeado
+            let rect = element.getBoundingClientRect();
+            infoBox.style.left = rect.left + window.scrollX + "px";
+            infoBox.style.top = rect.top + window.scrollY + "px";
+
+            // Ocultar la información después de 3 segundos
+            setTimeout(() => {
+                infoBox.remove();
+            }, 3000);
         }
     </script>
 
