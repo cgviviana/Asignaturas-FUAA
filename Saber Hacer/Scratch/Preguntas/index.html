@@ -1,1 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con LaProfeVivy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 28px;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.3);
+            text-align: left; /* Alinea el contenido a la izquierda */
+        }
+        .question {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #ffcc00;
+            color: black;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #ffdd44;
+        }
+        .question p {
+            margin: 0;
+            font-weight: bold;
+        }
+        .options {
+            margin-top: 5px;
+        }
+        .options input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Aprendiendo con LAProfeVivy</h1>
+    <div class="container">
+        <p><strong>Ingresa tu nombre:</strong></p>
+        <input type="text" id="nombreEstudiante" placeholder="Escribe tu nombre aquí">
+        <button onclick="iniciarTest()">Comenzar Test</button>
+    </div>
+
+    <div class="container" id="testContainer" style="display: none;">
+        <p id="nombreJugador"></p>
+        <div id="preguntas"></div>
+        <button onclick="calcularResultados()">Finalizar Test</button>
+    </div>
+
+    <div class="container" id="resultadoContainer" style="display: none;">
+        <p id="resultadoMensaje"></p>
+    </div>
+
+    <script>
+        let preguntas = [
+            {
+                pregunta: "¿Cuál es el propósito principal de Scratch?",
+                opciones: ["Hacer documentos de texto", "Crear videojuegos y animaciones", "Diseñar bases de datos", "Hacer cálculos matemáticos"],
+                correcta: 1
+            },
+            {
+                pregunta: "¿Qué son los Sprites en Scratch?",
+                opciones: ["Fondos de pantalla", "Personajes y objetos que se pueden programar", "Efectos de sonido", "Códigos de error"],
+                correcta: 1
+            },
+            {
+                pregunta: "¿Para qué sirve el bloque 'Mover 10 pasos'?",
+                opciones: ["Para cambiar de fondo", "Para mover un sprite en el escenario", "Para agregar sonidos", "Para cerrar el programa"],
+                correcta: 1
+            },
+            {
+                pregunta: "¿Qué tipo de juegos se pueden crear en Scratch?",
+                opciones: ["Solo juegos de preguntas", "Juegos de plataformas, aventura, simulación y más", "Solo juegos de matemáticas", "Solo juegos de carreras"],
+                correcta: 1
+            },
+            {
+                pregunta: "¿Cuál es la función del escenario en Scratch?",
+                opciones: ["Controlar los personajes", "Definir el fondo y ambiente del juego", "Programar los movimientos", "Reproducir sonidos"],
+                correcta: 1
+            }
+        ];
+
+        let nombre = "";
+
+        function iniciarTest() {
+            nombre = document.getElementById("nombreEstudiante").value.trim();
+            if (nombre === "") {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+
+            document.querySelector(".container").style.display = "none";
+            document.getElementById("testContainer").style.display = "block";
+            document.getElementById("nombreJugador").innerHTML = `<strong>Hola ${nombre}! Responde las siguientes preguntas:</strong>`;
+
+            let preguntasHTML = "";
+            preguntas.forEach((q, index) => {
+                preguntasHTML += `
+                    <div class="question">
+                        <p>${index + 1}. ${q.pregunta}</p>
+                        <div class="options">
+                            ${q.opciones.map((opcion, i) => 
+                                `<label><input type="radio" name="pregunta${index}" value="${i}"> ${opcion}</label><br>`
+                            ).join("")}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("preguntas").innerHTML = preguntasHTML;
+        }
+
+        function calcularResultados() {
+            let aciertos = 0;
+            preguntas.forEach((q, index) => {
+                let seleccionada = document.querySelector(`input[name="pregunta${index}"]:checked`);
+                if (seleccionada && parseInt(seleccionada.value) === q.correcta) {
+                    aciertos++;
+                }
+            });
+
+            let mensaje = `${nombre}, has acertado ${aciertos} de 5 preguntas.`;
+            if (aciertos === 5) {
+                mensaje = `¡Felicidades, ${nombre}! Has respondido todas las preguntas correctamente. ¡Eres un experto en Scratch!`;
+            }
+
+            document.getElementById("testContainer").style.display = "none";
+            document.getElementById("resultadoContainer").style.display = "block";
+            document.getElementById("resultadoMensaje").innerText = mensaje;
+        }
+    </script>
+
+</body>
+</html>
 
