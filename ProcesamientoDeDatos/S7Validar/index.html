@@ -1,1 +1,159 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con la Profe Vivy - Validación de Datos en Excel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #eef2f3;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #004080;
+            font-size: 24px;
+        }
+        p {
+            font-size: 16px;
+            color: #333;
+        }
+        .excel-container {
+            display: flex;
+            justify-content: center;
+        }
+        .excel-table {
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .excel-table th, .excel-table td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: center;
+            width: 120px;
+            height: 30px;
+            border-radius: 5px;
+        }
+        .excel-table th {
+            background-color: #004080;
+            color: white;
+            cursor: pointer;
+        }
+        .row-number {
+            background-color: #ddd;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+            padding: 5px;
+            background: transparent;
+        }
+        .highlight {
+            background-color: #ff9999;
+        }
+    </style>
+    <script>
+        function solicitarNombre() {
+            let nombre = prompt("Ingrese su nombre para registrar la actividad:");
+            if (nombre) {
+                document.getElementById("nombreUsuario").textContent = nombre;
+            }
+        }
+        function validarCodigo(input) {
+            input.value = input.value.replace(/\D/g, '');
+        }
+        function validarTexto(input) {
+            if (/[^a-zA-ZáéíóúÁÉÍÓÚ ]/.test(input.value)) {
+                alert("Error: Solo se permiten letras en este campo.");
+                input.value = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚ ]/g, '');
+            }
+        }
+        function validarTelefono(input) {
+            input.value = input.value.replace(/\D/g, '');
+            if (input.value.length !== 10) {
+                alert("Error: El número de teléfono debe tener exactamente 10 dígitos.");
+                input.value = "";
+            }
+        }
+        function validarPromedio(input) {
+            let valor = parseFloat(input.value);
+            if (valor < 0) input.value = 0;
+            if (valor > 5) input.value = 5;
+            if (valor < 3) {
+                input.classList.add("highlight");
+            } else {
+                input.classList.remove("highlight");
+            }
+        }
+        function filtrarTabla(columna) {
+            let input = document.getElementsByClassName("filter-input")[columna];
+            let filtro = input.value.toLowerCase();
+            let tabla = document.getElementById("tabla-datos");
+            let filas = tabla.getElementsByTagName("tr");
+            for (let i = 3; i < filas.length; i++) {
+                let celdas = filas[i].getElementsByTagName("td");
+                let celda = celdas[columna];
+                if (celda) {
+                    let contenido = celda.querySelector("input, select");
+                    let texto = contenido ? contenido.value.toLowerCase() : "";
+                    filas[i].style.display = texto.includes(filtro) ? "" : "none";
+                }
+            }
+        }
+    </script>
+</head>
+<body onload="solicitarNombre()">
+    <h1>Aprendiendo con la Profe Vivy</h1>
+    <p>Ejercicio realizado por: <span id="nombreUsuario">(Nombre)</span></p>
+    <p>Ingrese los datos en la tabla y siga las validaciones establecidas para cada campo.</p>
+    <div class="excel-container">
+        <table class="excel-table" id="tabla-datos">
+            <tr>
+                <th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th>
+            </tr>
+            <tr>
+                <td class="row-number">1</td>
+                <th onclick="alert('Ingrese solo números en Código de Estudiante')">Código de Estudiante</th>
+                <th onclick="alert('Ingrese solo texto en Apellido')">Apellido</th>
+                <th onclick="alert('Ingrese solo texto en Nombre')">Nombre</th>
+                <th onclick="alert('Ingrese exactamente 10 dígitos en Teléfono')">Teléfono</th>
+                <th onclick="alert('Seleccione Primaria o Bachillerato')">Curso</th>
+                <th onclick="alert('Seleccione un estado de pago')">Estado de Pago</th>
+                <th onclick="alert('Ingrese un número entre 0 y 5 en Promedio')">Promedio</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filtrarTabla(0)"></td>
+                <td><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filtrarTabla(1)"></td>
+                <td><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filtrarTabla(2)"></td>
+                <td><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filtrarTabla(3)"></td>
+                <td><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filtrarTabla(4)"></td>
+                <td><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filtrarTabla(5)"></td>
+                <td><input type="text" class="filter-input" placeholder="Filtrar..." onkeyup="filtrarTabla(6)"></td>
+            </tr>
+            <script>
+                for (let i = 1; i <= 8; i++) {
+                    document.write('<tr>');
+                    document.write('<td class="row-number">' + (i+1) + '</td>');
+                    document.write('<td><input type="text" oninput="validarCodigo(this)"></td>');
+                    document.write('<td><input type="text" oninput="validarTexto(this)"></td>');
+                    document.write('<td><input type="text" oninput="validarTexto(this)"></td>');
+                    document.write('<td><input type="text" oninput="validarTelefono(this)" maxlength="10"></td>');
+                    document.write('<td><select><option value="">Seleccionar...</option><option value="Primaria">Primaria</option><option value="Bachillerato">Bachillerato</option></select></td>');
+                    document.write('<td><select><option value="">Seleccionar...</option><option value="Pagado">Pagado</option><option value="Pendiente">Pendiente</option><option value="Moroso">Moroso</option></select></td>');
+                    document.write('<td><input type="number" min="0" max="5" step="0.1" oninput="validarPromedio(this)"></td>');
+                    document.write('</tr>');
+                }
+            </script>
+        </table>
+    </div>
+</body>
+</html>
