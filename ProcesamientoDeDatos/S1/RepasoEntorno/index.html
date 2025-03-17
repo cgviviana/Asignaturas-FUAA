@@ -1,1 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Concentrese - Excel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+        }
+        .instructions {
+            margin: 20px auto;
+            max-width: 600px;
+            font-size: 18px;
+            background: #eaf2f8;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 800px;
+        }
+        .card {
+            width: 150px;
+            height: 150px;
+            background-color: #3498db;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 10px;
+            text-align: center;
+            padding: 10px;
+        }
+        .flipped {
+            background-color: white;
+            color: black;
+            border: 2px solid #3498db;
+        }
+        .panel {
+            padding: 15px;
+            background: #eaf2f8;
+            width: 250px;
+            border-radius: 5px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Aprendiendo con LaProfeVivy</h1>
+    <p class="instructions">Empareja los términos de Excel con sus definiciones. Haz clic en una tarjeta para verla y encuentra su pareja correspondiente.</p>
+    <p id="playerName"></p>
+    <p>Puntuación: <span id="score">0</span></p>
+    <div class="container">
+        <div class="game-container" id="gameBoard"></div>
+        <div class="panel" id="infoPanel"><strong>Pares encontrados:</strong>
+            <ul id="matchedPairs"></ul>
+        </div>
+    </div>
+    <script>
+        let playerName = prompt("Ingresa tu nombre:");
+        document.getElementById("playerName").innerText = "Jugador: " + playerName;
+        let score = 0;
+        
+        const cardsArray = [
+            { term: "Excel", definition: "Software de hojas de cálculo desarrollado por Microsoft." },
+            { term: "Celda", definition: "Unidad básica en la hoja de cálculo donde se ingresan datos." },
+            { term: "Fila", definition: "Conjunto horizontal de celdas identificadas por un número." },
+            { term: "Columna", definition: "Conjunto vertical de celdas identificadas por una letra." },
+            { term: "Fórmula", definition: "Expresión matemática que realiza cálculos en celdas." },
+            { term: "Función", definition: "Herramienta predefinida para cálculos específicos en Excel." },
+            { term: "Hoja de cálculo", definition: "Área de trabajo en Excel compuesta por filas y columnas." },
+            { term: "Gráfico", definition: "Representación visual de datos en Excel." }
+        ];
+
+        let gameCards = [...cardsArray.map(c => ({ text: c.term, pair: c.definition })), 
+                         ...cardsArray.map(c => ({ text: c.definition, pair: c.term }))]
+                         .sort(() => Math.random() - 0.5);
+        
+        let firstCard = null, secondCard = null;
+        let board = document.getElementById("gameBoard");
+        let matchedPairs = document.getElementById("matchedPairs");
+        
+        gameCards.forEach((item) => {
+            let card = document.createElement("div");
+            card.classList.add("card");
+            card.dataset.pair = item.pair;
+            card.innerText = "?";
+            card.addEventListener("click", () => flipCard(card, item));
+            board.appendChild(card);
+        });
+
+        function flipCard(card, item) {
+            if (card.classList.contains("flipped")) return;
+            card.classList.add("flipped");
+            card.innerText = item.text;
+            
+            if (!firstCard) {
+                firstCard = { element: card, pair: item.pair, text: item.text };
+            } else {
+                secondCard = { element: card, pair: item.pair, text: item.text };
+                setTimeout(checkMatch, 1000);
+            }
+        }
+
+        function checkMatch() {
+            if (firstCard.pair === secondCard.text && secondCard.pair === firstCard.text) {
+                score += 10;
+                document.getElementById("score").innerText = score;
+                let listItem = document.createElement("li");
+                listItem.innerText = firstCard.text + " - " + firstCard.pair;
+                matchedPairs.appendChild(listItem);
+                firstCard = secondCard = null;
+                checkGameOver();
+            } else {
+                firstCard.element.classList.remove("flipped");
+                secondCard.element.classList.remove("flipped");
+                firstCard.element.innerText = "?";
+                secondCard.element.innerText = "?";
+                firstCard = secondCard = null;
+            }
+        }
+
+        function checkGameOver() {
+            if (document.querySelectorAll(".flipped").length === gameCards.length) {
+                alert("¡Felicidades " + playerName + "! Has completado el juego con una puntuación de " + score + " puntos.");
+            }
+        }
+    </script>
+</body>
+</html>
 
