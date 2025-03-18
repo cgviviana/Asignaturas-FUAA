@@ -1,1 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con LaProfeVivy: Funciones Básicas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .hidden {
+            display: none;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aprendiendo con LaProfeVivy: Funciones Básicas</h1>
+        <div id="inicio">
+            <p>¡Bienvenido! Ingresa tu nombre para empezar:</p>
+            <input type="text" id="nombre" placeholder="Tu nombre aquí">
+            <button onclick="iniciarJuego()">Iniciar Juego</button>
+        </div>
+
+        <div id="juego" class="hidden">
+            <p id="pregunta" class="question"></p>
+            <button onclick="verificarRespuesta(true)">✔ Correcto</button>
+            <button onclick="verificarRespuesta(false)">✖ Incorrecto</button>
+        </div>
+
+        <div id="resultado" class="hidden">
+            <h2>Resultados</h2>
+            <p id="mensaje"></p>
+            <p id="puntuacion"></p>
+            <button onclick="reiniciarJuego()">Jugar de Nuevo</button>
+        </div>
+    </div>
+
+    <script>
+        let preguntas = [
+            { pregunta: "¿La función CONTAR cuenta solo números en un rango de celdas?", respuesta: true },
+            { pregunta: "¿La función CONTAR.SI permite contar celdas según un criterio específico?", respuesta: true },
+            { pregunta: "¿La función SUMA sirve para encontrar el promedio de un conjunto de números?", respuesta: false },
+            { pregunta: "¿La función SUMAR.SI permite sumar valores según un criterio?", respuesta: true },
+            { pregunta: "¿La función PROMEDIO calcula la moda de un conjunto de datos?", respuesta: false },
+            { pregunta: "¿La función MODA devuelve el valor más frecuente de un conjunto de datos?", respuesta: true },
+            { pregunta: "¿La función MEDIANA devuelve el número más grande del conjunto de datos?", respuesta: false },
+            { pregunta: "¿La función MAXIMO devuelve el valor más alto de un rango de celdas?", respuesta: true },
+            { pregunta: "¿La función MINIMO devuelve el valor más pequeño de un rango de celdas?", respuesta: true }
+        ];
+        
+        let indicePregunta = 0;
+        let puntuacion = 0;
+        let nombreJugador = "";
+
+        function iniciarJuego() {
+            nombreJugador = document.getElementById("nombre").value;
+            if (nombreJugador.trim() === "") {
+                alert("Por favor, ingresa tu nombre para comenzar.");
+                return;
+            }
+            document.getElementById("inicio").classList.add("hidden");
+            document.getElementById("juego").classList.remove("hidden");
+            mostrarPregunta();
+        }
+
+        function mostrarPregunta() {
+            if (indicePregunta < preguntas.length) {
+                document.getElementById("pregunta").innerText = preguntas[indicePregunta].pregunta;
+            } else {
+                mostrarResultados();
+            }
+        }
+
+        function verificarRespuesta(respuesta) {
+            if (preguntas[indicePregunta].respuesta === respuesta) {
+                puntuacion++;
+            }
+            indicePregunta++;
+            mostrarPregunta();
+        }
+
+        function mostrarResultados() {
+            document.getElementById("juego").classList.add("hidden");
+            document.getElementById("resultado").classList.remove("hidden");
+            document.getElementById("puntuacion").innerText = "Tu puntuación es: " + puntuacion + " de " + preguntas.length;
+            let mensaje = "¡Buen intento! Sigue practicando.";
+            if (puntuacion === preguntas.length) {
+                mensaje = "¡Excelente, " + nombreJugador + "! Has aprendido perfectamente las funciones.";
+            } else if (puntuacion > preguntas.length / 2) {
+                mensaje = "¡Muy bien, " + nombreJugador + "! Estás aprendiendo rápido.";
+            }
+            document.getElementById("mensaje").innerText = mensaje;
+        }
+
+        function reiniciarJuego() {
+            indicePregunta = 0;
+            puntuacion = 0;
+            document.getElementById("resultado").classList.add("hidden");
+            document.getElementById("inicio").classList.remove("hidden");
+            document.getElementById("nombre").value = "";
+        }
+    </script>
+</body>
+</html>
 
