@@ -67,6 +67,7 @@
         <div id="resultContainer" class="hidden">
             <h2>Resultado</h2>
             <p id="scoreMessage"></p>
+            <p id="dateTime"></p>
             <button onclick="restartQuiz()">Intentar de Nuevo</button>
         </div>
     </div>
@@ -87,17 +88,18 @@
         
         let currentQuestion = 0;
         let score = 0;
+        let studentName = "";
         
         function startQuiz() {
-            let name = document.getElementById("studentName").value.trim();
-            if (name === "") {
+            studentName = document.getElementById("studentName").value.trim();
+            if (studentName === "") {
                 alert("Por favor, ingresa tu nombre.");
                 return;
             }
             
             document.getElementById("nameInput").classList.add("hidden");
             document.getElementById("quizContainer").classList.remove("hidden");
-            document.getElementById("welcomeMessage").innerText = `¡Bienvenido, ${name}! Responde las siguientes preguntas:`;
+            document.getElementById("welcomeMessage").innerText = `¡Bienvenido, ${studentName}! Responde las siguientes preguntas:`;
             showQuestion();
         }
         
@@ -130,9 +132,12 @@
         }
         
         function showResults() {
+            let now = new Date();
+            let dateTime = now.toLocaleString();
             document.getElementById("quizContainer").classList.add("hidden");
             document.getElementById("resultContainer").classList.remove("hidden");
-            document.getElementById("scoreMessage").innerText = `¡Has acertado ${score} de 10 preguntas!`;
+            document.getElementById("scoreMessage").innerText = `¡${studentName}, has acertado ${score} de 10 preguntas!`;
+            document.getElementById("dateTime").innerText = `Fecha y hora: ${dateTime}`;
         }
         
         function restartQuiz() {
@@ -145,4 +150,3 @@
     </script>
 </body>
 </html>
-
