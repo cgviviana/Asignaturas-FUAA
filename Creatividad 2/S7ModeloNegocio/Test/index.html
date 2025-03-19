@@ -1,1 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo con LaProfeVivy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('1.jpg');
+            background-size: cover;
+            background-position: center;
+            color: black;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            text-align: left;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        button {
+            background: #8B5E83;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 10px auto;
+        }
+        button:hover {
+            background: #6D466B;
+        }
+        .question-container {
+            display: none;
+        }
+        .visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aprendiendo con LaProfeVivy</h1>
+        <div id="nameInput">
+            <p>Ingresa tu nombre para comenzar:</p>
+            <input type="text" id="studentName" placeholder="Escribe tu nombre">
+            <button onclick="startQuiz()">Iniciar Test</button>
+        </div>
+
+        <div id="quizContainer" class="hidden">
+            <p id="welcomeMessage"></p>
+            <div id="questionSection" class="question-container visible"></div>
+            <button onclick="nextQuestion()" id="nextButton">Siguiente</button>
+        </div>
+
+        <div id="resultContainer" class="hidden">
+            <h2>Resultado</h2>
+            <p id="scoreMessage"></p>
+            <button onclick="restartQuiz()">Intentar de Nuevo</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "¿Qué es el Modelo Canvas?", options: ["Un plan de negocios detallado", "Una herramienta visual para diseñar modelos de negocio", "Un documento legal"], correct: 1 },
+            { question: "¿Cuántos bloques tiene el Modelo Canvas?", options: ["5", "7", "9"], correct: 2 },
+            { question: "¿Qué representa la 'Propuesta de Valor'?", options: ["El costo de producción", "El valor único que ofrece la empresa", "La estrategia de marketing"], correct: 1 },
+            { question: "¿Qué describe el 'Segmento de Clientes'?", options: ["El equipo de la empresa", "Los clientes ideales", "Los costos y recursos"], correct: 1 },
+            { question: "¿Qué se analiza en los 'Canales'?", options: ["Cómo la empresa llega a sus clientes", "Cómo se calculan los costos", "Las estrategias de financiamiento"], correct: 0 },
+            { question: "¿Qué significa 'Fuentes de Ingreso' en el Canvas?", options: ["Cómo gana dinero la empresa", "Cómo se distribuyen los empleados", "Cómo se gestiona la producción"], correct: 0 },
+            { question: "¿Para qué sirven los 'Recursos Clave'?", options: ["Para definir actividades esenciales", "Para identificar costos", "Para establecer alianzas"], correct: 0 },
+            { question: "¿Qué describe la 'Estructura de Costos'?", options: ["Los gastos del negocio", "Las fuentes de ingreso", "Los clientes potenciales"], correct: 0 },
+            { question: "¿Qué representa 'Relación con Clientes'?", options: ["Cómo se interactúa con los clientes", "Cómo se calcula el precio", "Cómo se elaboran los productos"], correct: 0 },
+            { question: "¿Qué es un 'Socio Clave'?", options: ["Un cliente importante", "Un aliado estratégico del negocio", "Un inversor externo"], correct: 1 }
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        
+        function startQuiz() {
+            let name = document.getElementById("studentName").value.trim();
+            if (name === "") {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+            
+            document.getElementById("nameInput").classList.add("hidden");
+            document.getElementById("quizContainer").classList.remove("hidden");
+            document.getElementById("welcomeMessage").innerText = `¡Bienvenido, ${name}! Responde las siguientes preguntas:`;
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            let questionSection = document.getElementById("questionSection");
+            let q = questions[currentQuestion];
+            
+            questionSection.innerHTML = `<p>${q.question}</p>`;
+            q.options.forEach((opt, i) => {
+                questionSection.innerHTML += `<label><input type="radio" name="q${currentQuestion}" value="${i}"> ${opt}</label><br>`;
+            });
+        }
+        
+        function nextQuestion() {
+            let selectedOption = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+            if (!selectedOption) {
+                alert("Por favor, selecciona una respuesta antes de continuar.");
+                return;
+            }
+            if (parseInt(selectedOption.value) === questions[currentQuestion].correct) {
+                score++;
+            }
+            
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function showResults() {
+            document.getElementById("quizContainer").classList.add("hidden");
+            document.getElementById("resultContainer").classList.remove("hidden");
+            document.getElementById("scoreMessage").innerText = `¡Has acertado ${score} de 10 preguntas!`;
+        }
+        
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById("resultContainer").classList.add("hidden");
+            document.getElementById("nameInput").classList.remove("hidden");
+            document.getElementById("studentName").value = "";
+        }
+    </script>
+</body>
+</html>
 
