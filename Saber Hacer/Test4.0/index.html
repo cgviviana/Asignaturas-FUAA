@@ -1,1 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Tecnologías 4.0 - Aprendiendo con La Profe Vivy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f6fa;
+            color: #2d3436;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            padding-top: 50px;
+        }
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #0984e3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #74b9ff;
+        }
+        .hidden {
+            display: none;
+        }
+        #answers button {
+            margin: 5px 0;
+        }
+        #nextButton {
+            font-size: 14px;
+            padding: 8px 12px;
+            width: auto;
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test de Tecnologías 4.0</h1>
+        <h3>Aprendiendo con La Profe Vivy</h3>
+        <p>Ingresa tu nombre para comenzar:</p>
+        <input type="text" id="username" placeholder="Tu nombre">
+        <button onclick="startQuiz()">Comenzar</button>
+    </div>
+
+    <div class="container hidden" id="quiz">
+        <p id="questionText"></p>
+        <div id="answers"></div>
+        <button onclick="nextQuestion()" id="nextButton" class="hidden">Siguiente</button>
+    </div>
+
+    <div class="container hidden" id="result"></div>
+
+    <script>
+        const questions = [
+            { q: "¿Qué significa IoT?", a: ["Internet de Tecnología", "Internet de las Cosas", "Innovación de Tecnología"], correct: 1 },
+            { q: "¿Para qué se usa la Inteligencia Artificial?", a: ["Automatizar procesos", "Controlar el clima", "Hacer deportes"], correct: 0 },
+            { q: "¿Qué ventaja ofrece Blockchain?", a: ["Mayor transparencia", "Más velocidad en internet", "Mejor calidad de video"], correct: 0 },
+            { q: "¿Qué tecnología permite superponer información digital sobre el mundo real?", a: ["Big Data", "Realidad Aumentada", "Blockchain"], correct: 1 },
+            { q: "¿Cuál es el propósito de la Ciberseguridad?", a: ["Proteger datos y sistemas", "Hacer computadoras más rápidas", "Automatizar fábricas"], correct: 0 },
+            { q: "¿Cómo funciona la impresión 3D?", a: ["Dibuja en papel", "Crea objetos físicos capa por capa", "Hace hologramas"], correct: 1 },
+            { q: "¿Para qué se usa Big Data?", a: ["Analizar grandes volúmenes de datos", "Hacer llamadas en video", "Imprimir fotos en 3D"], correct: 0 },
+            { q: "¿Qué ventaja tiene la Computación en la Nube?", a: ["Acceso remoto a archivos y software", "Crea electricidad", "Mejora la conexión de radio"], correct: 0 },
+            { q: "¿Qué hacen los Robots Autónomos?", a: ["Operan sin intervención humana", "Navegan en internet", "Pintan cuadros"], correct: 0 },
+            { q: "¿Qué beneficio ofrecen las redes 5G?", a: ["Mayor velocidad de conexión", "Mejoran la calidad del agua", "Reducen el tráfico en las calles"], correct: 0 }
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        let username = "";
+        
+        function startQuiz() {
+            username = document.getElementById("username").value;
+            if (username === "") {
+                alert("Por favor, ingresa tu nombre");
+                return;
+            }
+            document.querySelector(".container").classList.add("hidden");
+            document.getElementById("quiz").classList.remove("hidden");
+            loadQuestion();
+        }
+        
+        function loadQuestion() {
+            let q = questions[currentQuestion];
+            document.getElementById("questionText").textContent = q.q;
+            let answersDiv = document.getElementById("answers");
+            answersDiv.innerHTML = "";
+            q.a.forEach((answer, index) => {
+                let btn = document.createElement("button");
+                btn.textContent = answer;
+                btn.onclick = () => checkAnswer(index);
+                answersDiv.appendChild(btn);
+            });
+        }
+        
+        function checkAnswer(index) {
+            if (index === questions[currentQuestion].correct) {
+                score++;
+            }
+            document.getElementById("nextButton").classList.remove("hidden");
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            document.getElementById("nextButton").classList.add("hidden");
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+        
+        function showResult() {
+            let finalScore = (score / questions.length) * 5;
+            document.getElementById("quiz").classList.add("hidden");
+            document.getElementById("result").classList.remove("hidden");
+            let message = finalScore > 0 ? `¡Felicidades, ${username}!` : `¡Ánimo, ${username}!`;
+            document.getElementById("result").innerHTML = `<h2>${message}</h2>
+                <p>Obtuviste ${finalScore.toFixed(2)} de 5 puntos en el test.</p>
+                <p>¡Sigue aprendiendo con La Profe Vivy!</p>`;
+        }
+    </script>
+</body>
+</html>
 
