@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión Futuro 4.0</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #1a1a2e;
+            color: white;
+        }
+        #container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #16213e;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #0f3460;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #00a8cc;
+        }
+        .hidden {
+            display: none;
+        }
+        .missions-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .mission-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #1b1b3a;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+            align-items: center;
+        }
+        .dropzone-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .dropzone {
+            margin-top: 20px;
+            padding: 20px;
+            border: 2px dashed white;
+            min-height: 100px;
+            width: 80%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0f3460;
+        }
+        .draggable {
+            padding: 10px;
+            background-color: #00a8cc;
+            border-radius: 5px;
+            cursor: grab;
+            margin: 5px;
+        }
+        .options-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Misión Futuro 4.0</h1>
+        <p>Bienvenido, agente. El mundo ha colapsado por fallos en las tecnologías 4.0. Ayuda a TechnoMentor a restaurar el sistema.</p>
+        <h3>Selecciona una misión:</h3>
+        <div class="missions-container">
+            <button onclick="startMission(1)">Misión 1</button>
+            <button onclick="startMission(2)">Misión 2</button>
+            <button onclick="startMission(3)">Misión 3</button>
+            <button onclick="startMission(4)">Misión 4</button>
+            <button onclick="startMission(5)">Misión 5</button>
+        </div>
+    </div>
+
+    <div id="missions"></div>
+
+    <script>
+        let missionsData = [
+            {title: "Fábrica Inteligente", question: "La producción se ha detenido debido a una falla en los sensores IoT. ¿Cómo solucionarías el problema?", correct: "🔧 Sensor IoT", incorrect: ["🔋 Batería de respaldo", "💡 Luz de emergencia"]},
+            {title: "Ciberseguridad", question: "Un hacker ha comprometido la red de una ciudad inteligente. ¿Qué acción tomarías?", correct: "🛡 Firewall", incorrect: ["🖥 Actualización de software", "📞 Llamar a soporte técnico"]},
+            {title: "Vehículos Autónomos", question: "El sistema de conducción autónoma está fallando. ¿Cómo lo solucionarías?", correct: "📡 GPS de precisión", incorrect: ["🚦 Semáforo inteligente", "🔋 Batería auxiliar"]},
+            {title: "Red 5G", question: "La conectividad 5G se ha interrumpido en la ciudad. ¿Cómo restaurarla?", correct: "📶 Torre de señal", incorrect: ["📻 Radio de emergencia", "📠 Fax digital"]},
+            {title: "Blockchain en Finanzas", question: "El sistema de pagos basado en blockchain ha sido vulnerado. ¿Qué acción tomarías?", correct: "🔒 Cifrado avanzado", incorrect: ["💳 Tarjeta de crédito", "🏦 Banco físico"]}
+        ];
+
+        let missionsContainer = document.getElementById("missions");
+        
+        missionsData.forEach((mission, index) => {
+            let missionNumber = index + 1;
+            let missionDiv = document.createElement("div");
+            missionDiv.id = "mission" + missionNumber;
+            missionDiv.classList.add("mission-container");
+            
+            let optionsHTML = mission.incorrect.map(option => `<span class="draggable" draggable="true" ondragstart="drag(event)">${option}</span>`).join(" ");
+            optionsHTML += `<span class="draggable" draggable="true" id="solution${missionNumber}" ondragstart="drag(event)">${mission.correct}</span>`;
+            
+            missionDiv.innerHTML = `
+                <div class="choices">
+                    <h2>Misión ${missionNumber}: ${mission.title}</h2>
+                    <p>${mission.question}</p>
+                    <button onclick="activateDropzone(${missionNumber})">Seleccionar solución</button>
+                </div>
+                <div class="dropzone-container hidden" id="dropzone-section-${missionNumber}">
+                    <h3>Arrastra la solución correcta aquí:</h3>
+                    <div class="dropzone" id="dropzone${missionNumber}" ondrop="completeMission(event, ${missionNumber})" ondragover="allowDrop(event)">Suelta aquí la solución</div>
+                    <div class="options-container">${optionsHTML}</div>
+                </div>
+            `;
+            missionsContainer.appendChild(missionDiv);
+        });
+
+        function startMission(missionNumber) {
+            document.querySelectorAll(".mission-container").forEach(mission => {
+                mission.style.display = "none";
+            });
+            document.getElementById("mission" + missionNumber).style.display = "flex";
+        }
+
+        function activateDropzone(missionNumber) {
+            document.getElementById("dropzone-section-" + missionNumber).classList.remove("hidden");
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.textContent);
+        }
+
+        function completeMission(event, missionNumber) {
+            event.preventDefault();
+            let data = event.dataTransfer.getData("text");
+            let correctAnswer = missionsData[missionNumber - 1].correct;
+            alert(data === correctAnswer ? "¡Correcto!" : "Incorrecto. Intenta de nuevo.");
+        }
+    </script>
+</body>
+</html>
