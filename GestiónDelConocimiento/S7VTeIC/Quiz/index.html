@@ -1,1 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz VT e IC - LaProfeVivy</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url("1.jpg") no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      color: #1f2d45;
+    }
+
+    .pantalla {
+      display: none;
+      padding: 60px 40px 40px;
+      max-width: 800px;
+      margin: 60px auto;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .pantalla.active {
+      display: block;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .opciones label {
+      display: block;
+      margin: 15px 0;
+      font-size: 16px;
+    }
+
+    button {
+      background: #1f2d45;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    button:hover {
+      background: #2d3f60;
+    }
+
+    .resultado {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .medalla {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .medalla img {
+      width: 150px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Pantalla 0: Inicio -->
+<div class="pantalla active" id="pantalla0">
+  <h1>🧠 Aprendiendo con LaProfeVivy</h1>
+  <h2>Quiz de Vigilancia Tecnológica e Inteligencia Competitiva</h2>
+  <p><strong>Ingresa tu nombre para comenzar:</strong></p>
+  <input type="text" id="nombre" required>
+  <br><br>
+  <button onclick="siguientePantalla()">Comenzar</button>
+</div>
+
+<!-- Pantallas de Preguntas -->
+<div id="pantallas-container"></div>
+
+<!-- Pantalla Final -->
+<div class="pantalla" id="pantallaFinal">
+  <div class="resultado" id="resultado"></div>
+  <div class="medalla" id="medalla" style="display: none;">
+    <p>🏅 ¡Felicidades! Has ganado esta medalla por tu excelente resultado en Vigilancia Tecnológica e Inteligencia Competitiva.</p>
+    <img src="medalla.jpg" alt="Medalla de reconocimiento">
+  </div>
+</div>
+
+<script>
+  const preguntas = [
+    {
+      texto: "1. ¿Cuál es el propósito principal de la Vigilancia Tecnológica?",
+      opciones: [
+        "Monitorear tendencias tecnológicas y anticiparse a cambios.",
+        "Crear campañas publicitarias.",
+        "Capacitar personal de ventas.",
+        "Mejorar la decoración empresarial."
+      ],
+      correcta: 0
+    },
+    {
+      texto: "2. ¿Qué herramienta permite reunir noticias y contenidos actualizados de múltiples fuentes?",
+      opciones: [
+        "Buscador académico",
+        "Agregador RSS",
+        "Redes sociales",
+        "Repositorio institucional"
+      ],
+      correcta: 1
+    },
+    {
+      texto: "3. ¿En qué se diferencia la Inteligencia Competitiva de la Vigilancia Tecnológica?",
+      opciones: [
+        "IC se centra en análisis de mercado y competencia; VT en tendencias tecnológicas.",
+        "VT analiza clientes; IC analiza solo datos internos.",
+        "VT no se usa en empresas.",
+        "IC solo se aplica en el sector salud."
+      ],
+      correcta: 0
+    },
+    {
+      texto: "4. ¿Qué fuentes se usan comúnmente en Inteligencia Competitiva?",
+      opciones: [
+        "Estudios de mercado, redes sociales e informes financieros.",
+        "Canciones populares y encuestas de entretenimiento.",
+        "Blogs personales y diarios escolares.",
+        "Aplicaciones de mensajería."
+      ],
+      correcta: 0
+    },
+    {
+      texto: "5. ¿Qué empresa se destaca por aplicar VT con inteligencia artificial en su logística?",
+      opciones: [
+        "Amazon",
+        "Spotify",
+        "Zoom",
+        "Airbnb"
+      ],
+      correcta: 0
+    },
+    {
+      texto: "6. ¿Cuál de los siguientes es un resultado esperado de aplicar Vigilancia Tecnológica?",
+      opciones: [
+        "Reducción de riesgos y mejora en la toma de decisiones.",
+        "Mayor rotación de personal.",
+        "Incremento en tiempos de entrega.",
+        "Pérdida de competitividad."
+      ],
+      correcta: 0
+    },
+    {
+      texto: "7. ¿Qué herramienta permite buscar información científica y técnica confiable?",
+      opciones: [
+        "Buscador especializado",
+        "Red social general",
+        "Aplicación de mensajería",
+        "Canal de videos"
+      ],
+      correcta: 0
+    },
+    {
+      texto: "8. ¿Cómo aplica Netflix la Inteligencia Competitiva?",
+      opciones: [
+        "Analiza datos de comportamiento del usuario y tendencias del mercado.",
+        "Evita recopilar información del entorno.",
+        "Solo se basa en intuición para crear contenido.",
+        "Copia contenido sin análisis."
+      ],
+      correcta: 0
+    },
+    {
+      texto: "9. ¿Cuál es uno de los pasos clave de la Vigilancia Tecnológica?",
+      opciones: [
+        "Análisis de información y toma de decisiones estratégicas.",
+        "Redacción de poemas tecnológicos.",
+        "Producción musical industrial.",
+        "Revisión de estilos gráficos."
+      ],
+      correcta: 0
+    },
+    {
+      texto: "10. ¿Qué resultado se espera de una adecuada Inteligencia Competitiva?",
+      opciones: [
+        "Mayor ventaja competitiva y mejor posicionamiento.",
+        "Desorganización interna.",
+        "Aislamiento de clientes.",
+        "Pérdida de innovación."
+      ],
+      correcta: 0
+    }
+  ];
+
+  let respuestas = [];
+  let pantallaActual = 0;
+
+  function siguientePantalla() {
+    const nombre = document.getElementById('nombre').value.trim();
+    if (pantallaActual === 0 && nombre === "") {
+      alert("Por favor escribe tu nombre.");
+      return;
+    }
+
+    document.getElementById(`pantalla${pantallaActual}`).classList.remove('active');
+    pantallaActual++;
+
+    if (pantallaActual <= preguntas.length) {
+      document.getElementById(`pantalla${pantallaActual}`).classList.add('active');
+    } else {
+      mostrarResultado();
+    }
+  }
+
+  function guardarRespuesta(preguntaIndex, valor) {
+    respuestas[preguntaIndex] = parseInt(valor);
+    siguientePantalla();
+  }
+
+  function mostrarResultado() {
+    let correctas = 0;
+    preguntas.forEach((pregunta, index) => {
+      if (respuestas[index] === pregunta.correcta) {
+        correctas++;
+      }
+    });
+
+    const puntaje = (correctas / preguntas.length) * 5;
+    const nombre = document.getElementById('nombre').value;
+    document.getElementById("pantallaFinal").classList.add("active");
+    document.getElementById("resultado").innerText = `🎉 ¡Gracias, ${nombre}! Obtuviste un puntaje de ${puntaje.toFixed(1)} / 5.0`;
+
+    if (puntaje === 5.0) {
+      document.getElementById("medalla").style.display = "block";
+    }
+  }
+
+  // Crear pantallas dinámicamente
+  const container = document.getElementById("pantallas-container");
+  preguntas.forEach((pregunta, index) => {
+    const div = document.createElement("div");
+    div.className = "pantalla";
+    div.id = `pantalla${index + 1}`;
+    div.innerHTML = `<h2>${pregunta.texto}</h2><div class="opciones"></div>`;
+    pregunta.opciones.forEach((opcion, i) => {
+      div.querySelector(".opciones").innerHTML += `
+        <label><input type="radio" name="p${index}" value="${i}" onclick="guardarRespuesta(${index}, this.value)"> ${opcion}</label>
+      `;
+    });
+    container.appendChild(div);
+  });
+</script>
+
+</body>
+</html>
 
