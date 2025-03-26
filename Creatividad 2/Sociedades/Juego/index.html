@@ -1,1 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafío Empresarial con LaProfeVivy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-image: url('1.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+    }
+    .card {
+      background-color: #ffffff;
+      border: 2px solid #0077aa;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #004466;
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .options button {
+      padding: 12px 20px;
+      font-size: 16px;
+      background-color: #e0f2f8;
+      border: 1px solid #0077aa;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .options button:hover {
+      background-color: #cce5f0;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header style="text-align:center; margin-bottom: 20px;">
+    <h1 style="font-family: 'Georgia', serif; font-size: 2.6em; color: #003366; margin: 0;">Aprendiendo con LaProfeVivy</h1>
+    <p style="font-size: 1.2em; color: #005577; margin: 8px 0 0;">Refuerza lo aprendido sobre sociedades</p>
+  </header>
+  <div class="card">
+    <h1>🌟 Desafío Empresarial con LaProfeVivy</h1>
+    <div class="question" id="question">Esta sociedad puede ser unipersonal, tiene trámites sencillos y es ideal para emprendedores.</div>
+    <div class="options">
+      <button onclick="checkAnswer(this, 'correct')">S.A.S.</button>
+      <button onclick="checkAnswer(this, 'wrong')">S.A.</button>
+      <button onclick="checkAnswer(this, 'wrong')">S. Ltda.</button>
+    </div>
+    <div class="result" id="result"></div>
+    <button class="hidden" id="nextBtn" onclick="nextQuestion()">Siguiente</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        text: "Esta sociedad puede ser unipersonal, tiene trámites sencillos y es ideal para emprendedores.",
+        correct: "S.A.S.",
+        options: ["S.A.S.", "S.A.", "S. Ltda."]
+      },
+      {
+        text: "Sociedad ideal para captar inversión mediante acciones y con más de 5 socios.",
+        correct: "S.A.",
+        options: ["S.A.", "S. en C.", "S.A.S."]
+      },
+      {
+        text: "Sociedad donde trabajadores también son dueños y se reparten las utilidades.",
+        correct: "E.A.T.",
+        options: ["S. Ltda.", "E.A.T.", "S. en C.A."]
+      },
+      {
+        text: "Sociedad con al menos un socio gestor y uno comanditario, ideal para atraer inversión sin perder control.",
+        correct: "S. en C.",
+        options: ["S.A.", "S. en C.", "S.A.S."]
+      },
+      {
+        text: "Sociedad donde el capital de los comanditarios se representa con acciones.",
+        correct: "S. en C.A.",
+        options: ["S.A.S.", "S. en C.A.", "S. Ltda."]
+      },
+      {
+        text: "Sociedad utilizada por familias o grupos de confianza, con máximo 25 socios.",
+        correct: "S. Ltda.",
+        options: ["S.A.S.", "S.A.", "S. Ltda."]
+      },
+      {
+        text: "Relación informal entre personas que hacen negocios sin registro legal.",
+        correct: "Sociedad de Hecho",
+        options: ["S.A.S.", "Sociedad de Hecho", "S. en C."]
+      },
+      {
+        text: "Requiere escritura pública, permite cotizar en bolsa y captar grandes inversiones.",
+        correct: "S.A.",
+        options: ["S.A.", "S. en C.A.", "S. Ltda."]
+      },
+      {
+        text: "Permite a los emprendedores comenzar con bajo capital y sin junta directiva.",
+        correct: "S.A.S.",
+        options: ["S.A.", "S.A.S.", "S. en C."]
+      },
+      {
+        text: "Organización basada en la colaboración de mínimo tres trabajadores socios.",
+        correct: "E.A.T.",
+        options: ["S. Ltda.", "S.A.", "E.A.T."]
+      }
+    ];
+
+    let current = 0;
+
+    function checkAnswer(button, status) {
+      const result = document.getElementById('result');
+      const nextBtn = document.getElementById('nextBtn');
+      const isCorrect = button.textContent === questions[current].correct;
+      result.innerHTML = isCorrect
+        ? '✅ <strong>¡Correcto!</strong><br>' + getExplanation(button.textContent)
+        : '❌ Intenta de nuevo';
+      if (isCorrect) nextBtn.classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        const q = questions[current];
+        document.getElementById('question').textContent = q.text;
+        const buttons = document.querySelectorAll('.options button');
+        buttons.forEach((btn, i) => btn.textContent = q.options[i]);
+        document.getElementById('result').textContent = '';
+        document.getElementById('nextBtn').classList.add('hidden');
+      } else {
+        document.querySelector('.card').innerHTML = '<h1>🎉¡Terminaste el Desafío!</h1><p>Revisa tus apuntes y sigue aprendiendo con LaProfeVivy.</p>';
+      }
+    }
+  function getExplanation(answer) {
+      const explanations = {
+        "S.A.S.": "La Sociedad por Acciones Simplificada permite crear empresas de forma rápida, incluso por una sola persona, sin necesidad de escritura pública.",
+        "S.A.": "La Sociedad Anónima es ideal para grandes inversiones, con más de 5 socios y acciones que se pueden negociar.",
+        "E.A.T.": "La Empresa Asociativa de Trabajo permite que los trabajadores sean también los dueños y se repartan las ganancias.",
+        "S. en C.": "La Sociedad en Comandita Simple permite tener inversionistas sin que participen en la administración.",
+        "S. en C.A.": "La Sociedad en Comandita por Acciones combina gestión con inversión a través de acciones.",
+        "S. Ltda.": "La Sociedad Limitada es ideal para grupos de confianza, con número limitado de socios y responsabilidad limitada.",
+        "Sociedad de Hecho": "Es una relación informal de negocio sin registro legal ni protección jurídica."
+      };
+      return explanations[answer] || '';
+    }
+  </script>
+</body>
+</html>
 
