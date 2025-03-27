@@ -1,1 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprendiendo con: LaProfeVivy</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('2.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    header {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      font-size: 2.2em;
+      font-weight: bold;
+      color: #00ffc3;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    #gameContainer {
+      padding: 20px;
+      min-height: calc(100% - 100px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    input, button, select {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+    }
+
+    button {
+      background-color: #00ffc3;
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .status {
+      font-size: 1.5em;
+      margin-top: 10px;
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffc3;
+    }
+
+    #avatarDisplay {
+      font-size: 2em;
+    }
+
+    .progress-bar {
+      width: 80%;
+      background-color: #333;
+      border-radius: 20px;
+      margin: 20px auto;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 20px;
+      background-color: #00ffc3;
+      width: 0%;
+      transition: width 0.5s;
+    }
+
+    #finalScreen img {
+      width: 150px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <audio id="winSound" src="win.mp3"></audio>
+  <audio id="lostSound" src="lost.mp3"></audio>
+  <header>Aprendiendo con: LaProfeVivy</header>
+  <div id="gameContainer">
+    <div id="welcomeScreen">
+      <p>Welcome! Please enter your name and nickname:</p>
+      <input type="text" id="playerName" placeholder="Your Name">
+      <input type="text" id="nickname" placeholder="Nickname">
+      <p>Choose your avatar:</p>
+      <select id="avatar">
+        <option value="👧">👧 Emily</option>
+        <option value="👦">👦 Liam</option>
+        <option value="👩‍🎓">👩‍🎓 Olivia</option>
+        <option value="👨‍🎓">👨‍🎓 Noah</option>
+        <option value="🧑‍🏫">🧑‍🏫 Ava</option>
+        <option value="🤖">🤖 R.O.B.O.</option>
+      </select><br>
+      <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <div id="playerInfo" class="hidden">
+      <div id="avatarDisplay"></div>
+      <div class="status" id="statusBar">❤️ Lives: 3 | ⭐ Score: 0</div>
+      <div class="progress-bar">
+        <div class="progress" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div id="questionContainer" class="hidden">
+      <h2 id="levelTitle"></h2>
+      <p id="questionText"></p>
+      <div id="optionsContainer"></div>
+    </div>
+
+    <div id="finalScreen" class="hidden">
+      <h2>🏆 Congratulations!</h2>
+      <p>You completed all levels successfully.</p>
+      <img src="medalla.jpg" alt="Medal">
+      <br>
+      <button onclick="generateDiploma()">Download Diploma</button>
+    </div>
+  </div>
+
+  <script>
+    let currentLevel = 0;
+    let currentQuestion = 0;
+    let lives = 3;
+    let score = 0;
+    let playerName = "";
+    let nickname = "";
+
+    const winSound = document.getElementById('winSound');
+    const lostSound = document.getElementById('lostSound');
+
+    const questions = [
+      { level: 1, title: "Level 1: Empathize 🌳👥", question: "Which of the following is part of the Problem Tree?", options: ["Marketing strategy", "Root causes", "Solution ideas"], correct: 1 },
+      { level: 1, title: "Level 1: Empathize 🌳👥", question: "Who are the stakeholders in a Design Thinking project?", options: ["Only designers", "Users and team members", "The CEO only"], correct: 1 },
+      { level: 1, title: "Level 1: Empathize 🌳👥", question: "What is the main goal of empathizing?", options: ["Sell a product", "Draw a diagram", "Understand users' needs"], correct: 2 },
+      { level: 2, title: "Level 2: Define 🧠", question: "What element belongs to the Empathy Map?", options: ["Company revenue", "What users say", "Brand colors"], correct: 1 },
+      { level: 2, title: "Level 2: Define 🧠", question: "Define stage is focused on...", options: ["Creating solutions immediately", "Framing the problem clearly", "Testing ideas"], correct: 1 },
+      { level: 2, title: "Level 2: Define 🧠", question: "Which of these helps define the problem?", options: ["Advertising goals", "User insights", "Budget reports"], correct: 1 },
+      { level: 3, title: "Level 3: Ideate 💡", question: "Which is a good Value Proposition?", options: ["Old product name", "Fast, affordable, and eco-friendly solution", "User complaints"], correct: 1 },
+      { level: 3, title: "Level 3: Ideate 💡", question: "What does the Ideate phase focus on?", options: ["Analyzing revenue", "Collecting user payments", "Generating creative ideas"], correct: 2 },
+      { level: 3, title: "Level 3: Ideate 💡", question: "A brainstorming session is part of...", options: ["Market research", "Empathy phase", "Ideate phase"], correct: 2 }
+    ];
+
+    function startGame() {
+      playerName = document.getElementById('playerName').value;
+      nickname = document.getElementById('nickname').value;
+      const avatar = document.getElementById('avatar').value;
+
+      if (!playerName || !nickname) {
+        alert("Please enter your name and nickname.");
+        return;
+      }
+
+      document.getElementById('welcomeScreen').classList.add('hidden');
+      document.getElementById('playerInfo').classList.remove('hidden');
+      document.getElementById('questionContainer').classList.remove('hidden');
+      document.getElementById('avatarDisplay').innerHTML = `${avatar} <strong>${nickname}</strong>`;
+
+      currentLevel = 1;
+      currentQuestion = 0;
+      updateStatus();
+      showQuestion();
+    }
+
+    function updateStatus() {
+      document.getElementById('statusBar').innerText = `❤️ Lives: ${lives} | ⭐ Score: ${score}`;
+    }
+
+    function showQuestion() {
+      const levelQuestions = questions.filter(q => q.level === currentLevel);
+      const question = levelQuestions[currentQuestion];
+      document.getElementById('levelTitle').innerText = question.title;
+      document.getElementById('questionText').innerText = question.question;
+      const optionsDiv = document.getElementById('optionsContainer');
+      optionsDiv.innerHTML = '';
+      question.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.innerText = option;
+        btn.onclick = () => checkAnswer(index === question.correct);
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(isCorrect) {
+      if (isCorrect) {
+        score += 10;
+        currentQuestion++;
+        const levelQuestions = questions.filter(q => q.level === currentLevel);
+        if (currentQuestion >= levelQuestions.length) {
+          updateProgress(currentLevel);
+          currentLevel++;
+          currentQuestion = 0;
+          if (currentLevel > 3) {
+            winSound.play();
+            showFinalScreen();
+            return;
+          }
+        }
+      } else {
+        lives--;
+        if (lives === 0) {
+          lostSound.play();
+          setTimeout(() => {
+            alert("💀 Game Over! Your score: " + score);
+            location.reload();
+          }, 500);
+          return;
+        }
+      }
+      updateStatus();
+      showQuestion();
+    }
+
+    function updateProgress(level) {
+      const progressBar = document.getElementById('progressBar');
+      const percent = (level / 3) * 100;
+      progressBar.style.width = percent + '%';
+    }
+
+    function showFinalScreen() {
+      document.getElementById('questionContainer').classList.add('hidden');
+      document.getElementById('finalScreen').classList.remove('hidden');
+    }
+
+    function generateDiploma() {
+      const date = new Date();
+      const formattedDate = date.toLocaleString('en-GB');
+      const diplomaWindow = window.open('', '_blank');
+      diplomaWindow.document.write(`
+        <html>
+        <head>
+          <title>Diploma</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+            body {
+              font-family: 'Orbitron', sans-serif;
+              text-align: center;
+              padding: 10vh 5vw;
+              background-image: url('diploma.jpg');
+              background-size: 100% 100%;
+              background-position: center;
+              background-repeat: no-repeat;
+              color: #ffffff;
+            }
+            h1 { font-size: 40px; margin-bottom: 10px; }
+            h2 { font-size: 36px; margin: 20px 0; }
+            h3 { font-size: 24px; margin: 10px 0; }
+            .footer {
+              margin-top: 20px;
+              font-size: 20px;
+              color: #ffffff;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>🎓 Certificate of Completion</h1>
+          <p>This diploma is awarded to:</p>
+          <h2>${playerName} (${nickname})</h2>
+          <p>For successfully completing the course:</p>
+          <h3>Design Thinking</h3>
+          <h3>Issued by LaProfeVivy</h3>
+          <div class="footer">Date and time: ${formattedDate}</div>
+        </body>
+        </html>
+      `);
+      diplomaWindow.document.close();
+      diplomaWindow.focus();
+    }
+  </script>
+</body>
+</html>
 
