@@ -1,165 +1,219 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Glosario de Funciones Excel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Excel Glossary - LaProfeVivy</title>
   <style>
+    :root {
+      --main-color: #2a74b5;
+      --accent-color: #1d5c8e;
+      --light-bg: rgba(255, 255, 255, 0.95);
+      --text-dark: #0d2c54;
+      --text-light: #ffffff;
+      --progress-bg: #ddd;
+      --progress-fill: #2a74b5;
+    }
+
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: url('fondo.jpg') no-repeat center center fixed;
       background-size: cover;
-      margin: 0;
-      padding: 0;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
+      justify-content: flex-start;
+      padding: 40px 20px;
     }
 
     header {
       text-align: center;
-      padding: 60px 20px 10px;
+      margin-bottom: 60px;
+      animation: fadeInDown 1.5s ease;
     }
 
     header h1 {
-      font-size: 36px;
-      color: #1a1a1a;
-      margin: 0;
-      text-shadow: 1px 1px 3px #ffffff;
+      font-size: 42px;
+      color: var(--text-dark);
+      font-family: 'Segoe UI Semibold', sans-serif;
+      text-shadow: 2px 2px 4px var(--text-light);
     }
 
     header h2 {
       font-size: 22px;
-      color: #333333;
-      margin-top: 8px;
-      text-shadow: 1px 1px 2px #ffffff;
+      color: var(--text-dark);
+      margin-top: 10px;
+      text-shadow: 1px 1px 2px var(--text-light);
     }
 
-    .spacer {
-      height: 60px;
-    }
-
-    .container {
-      background-color: rgba(255, 255, 255, 0.95);
+    .card {
+      background-color: var(--light-bg);
       padding: 30px;
-      border-radius: 15px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
       max-width: 600px;
       width: 90%;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       text-align: center;
+      transition: all 0.5s ease-in-out;
+      position: relative;
     }
 
     .function-name {
-      font-size: 1.6em;
+      font-size: 1.8em;
       font-weight: bold;
-      color: #2a74b5;
-      margin-bottom: 5px;
-    }
-
-    #cardCount {
-      font-size: 0.95em;
-      color: #555;
+      color: var(--main-color);
       margin-bottom: 15px;
     }
 
     .definition {
       font-size: 1.1em;
       margin-bottom: 20px;
+      transition: opacity 0.5s ease-in-out;
     }
 
-    .controls {
-      margin-top: 20px;
+    .lang-speak {
       display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
     }
 
-    .controls button,
-    .lang-toggle button {
-      background-color: #2a74b5;
+    .bottom-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 25px;
+      position: relative;
+    }
+
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    #cardCount {
+      font-size: 0.95em;
+      color: #444;
+      min-width: 100px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background-color: var(--progress-bg);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--progress-fill);
+      width: 0%;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .nav-mini {
+      background-color: #ccc;
+      color: #333;
+      font-size: 16px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .nav-mini:hover {
+      background-color: #999;
+      transform: scale(1.1);
+    }
+
+    button {
+      background-color: var(--main-color);
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       padding: 10px 16px;
       font-size: 14px;
-      margin: 5px;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
 
-    .controls button:hover,
-    .lang-toggle button:hover {
-      background-color: #1d5c8e;
+    button:hover {
+      background-color: var(--accent-color);
+      transform: scale(1.05);
     }
 
     .speak-button {
-      background-color: #2a74b5;
-      color: white;
-      border: none;
+      background-color: var(--main-color);
       border-radius: 50%;
       width: 50px;
       height: 50px;
       font-size: 22px;
-      margin: 15px auto;
-      cursor: pointer;
     }
 
-    .speak-button:hover {
-      background-color: #1d5c8e;
+    @keyframes slideInFromRight {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
-    @media screen and (max-width: 600px) {
-      header h1 {
-        font-size: 28px;
-      }
-
-      header h2 {
-        font-size: 18px;
-      }
-
-      .function-name {
-        font-size: 1.4em;
-      }
-
-      .definition {
-        font-size: 1em;
-      }
-
-      .speak-button {
-        width: 44px;
-        height: 44px;
-        font-size: 18px;
-      }
+    @keyframes slideInFromLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
     }
+
+    .card.slide-right {
+      animation: slideInFromRight 0.5s ease-in-out;
+    }
+
+    .card.slide-left {
+      animation: slideInFromLeft 0.5s ease-in-out;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
   </style>
 </head>
 <body>
-
   <header>
-    <h1>Aprendiendo con LaProfeVivy</h1>
+    <h1>Learning with LaProfeVivy</h1>
     <h2>Excel Functions</h2>
   </header>
 
-  <div class="spacer"></div>
+  <div class="card" id="cardContainer">
+    <div class="function-name" id="functionName">...</div>
+    <div class="definition" id="definition" data-en="" data-es=""></div>
 
-  <div class="container">
-    <div class="lang-toggle">
+    <div class="lang-speak">
+      <button class="speak-button" onclick="speak()">🔊</button>
       <button onclick="toggleLang()">EN</button>
     </div>
 
-    <div class="function-name" id="functionName">...</div>
-    <div id="cardCount">Tarjeta 1 de 12</div>
-    <div class="definition" id="definition" data-en="" data-es=""></div>
-
-    <button class="speak-button" onclick="speak()">🔊</button>
-
-    <div class="controls">
-      <button onclick="prevCard()">⬅ Anterior</button>
-      <button onclick="nextCard()">Siguiente ➡</button>
+    <div class="bottom-section">
+      <div class="nav-row">
+        <button class="nav-mini" onclick="prevCard()">&#8249;</button>
+        <div id="cardCount">Tarjeta 1 de 12</div>
+        <button class="nav-mini" onclick="nextCard()">&#8250;</button>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
     </div>
   </div>
 
@@ -186,29 +240,43 @@
 
     function updateCard() {
       const card = cards[current];
-      document.getElementById("functionName").innerText = card.name;
-
       const def = document.getElementById("definition");
-      def.innerText = lang === 'en' ? card.en : card.es;
-      def.setAttribute("data-en", card.en);
-      def.setAttribute("data-es", card.es);
+      const cardElement = document.getElementById("cardContainer");
 
-      document.getElementById("cardCount").innerText = `Tarjeta ${current + 1} de ${cards.length}`;
+      cardElement.classList.add("transition");
+
+      setTimeout(() => {
+        document.getElementById("functionName").innerText = card.name;
+        def.innerText = lang === 'en' ? card.en : card.es;
+        def.setAttribute("data-en", card.en);
+        def.setAttribute("data-es", card.es);
+        document.getElementById("cardCount").innerText = `Tarjeta ${current + 1} de ${cards.length}`;
+        document.getElementById("progressFill").style.width = `${((current + 1) / cards.length) * 100}%`;
+        cardElement.classList.remove("transition");
+      }, 200);
     }
 
     function nextCard() {
+      const card = document.getElementById('cardContainer');
+      card.classList.remove('slide-left', 'slide-right');
+      void card.offsetWidth; // reinicia animación
       current = (current + 1) % cards.length;
       updateCard();
+      card.classList.add('slide-right');
     }
 
     function prevCard() {
+      const card = document.getElementById('cardContainer');
+      card.classList.remove('slide-right', 'slide-left');
+      void card.offsetWidth; // reinicia animación
       current = (current - 1 + cards.length) % cards.length;
       updateCard();
+      card.classList.add('slide-left');
     }
 
     function toggleLang() {
       lang = lang === 'en' ? 'es' : 'en';
-      document.querySelector(".lang-toggle button").innerText = lang.toUpperCase();
+      document.querySelector(".lang-speak button:last-child").innerText = lang.toUpperCase();
       updateCard();
     }
 
@@ -222,7 +290,5 @@
 
     updateCard();
   </script>
-
 </body>
 </html>
-
