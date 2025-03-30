@@ -1,1 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Glosario de Funciones Excel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: url('fondo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px 10px;
+    }
+
+    header h1 {
+      font-size: 36px;
+      color: #1a1a1a;
+      margin: 0;
+      text-shadow: 1px 1px 3px #ffffff;
+    }
+
+    header h2 {
+      font-size: 22px;
+      color: #333333;
+      margin-top: 8px;
+      text-shadow: 1px 1px 2px #ffffff;
+    }
+
+    .spacer {
+      height: 60px;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .function-name {
+      font-size: 1.6em;
+      font-weight: bold;
+      color: #2a74b5;
+      margin-bottom: 5px;
+    }
+
+    #cardCount {
+      font-size: 0.95em;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    .definition {
+      font-size: 1.1em;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+
+    .controls button,
+    .lang-toggle button {
+      background-color: #2a74b5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 16px;
+      font-size: 14px;
+      margin: 5px;
+      cursor: pointer;
+    }
+
+    .controls button:hover,
+    .lang-toggle button:hover {
+      background-color: #1d5c8e;
+    }
+
+    .speak-button {
+      background-color: #2a74b5;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 22px;
+      margin: 15px auto;
+      cursor: pointer;
+    }
+
+    .speak-button:hover {
+      background-color: #1d5c8e;
+    }
+
+    @media screen and (max-width: 600px) {
+      header h1 {
+        font-size: 28px;
+      }
+
+      header h2 {
+        font-size: 18px;
+      }
+
+      .function-name {
+        font-size: 1.4em;
+      }
+
+      .definition {
+        font-size: 1em;
+      }
+
+      .speak-button {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Aprendiendo con LaProfeVivy</h1>
+    <h2>Excel Functions</h2>
+  </header>
+
+  <div class="spacer"></div>
+
+  <div class="container">
+    <div class="lang-toggle">
+      <button onclick="toggleLang()">EN</button>
+    </div>
+
+    <div class="function-name" id="functionName">...</div>
+    <div id="cardCount">Tarjeta 1 de 12</div>
+    <div class="definition" id="definition" data-en="" data-es=""></div>
+
+    <button class="speak-button" onclick="speak()">🔊</button>
+
+    <div class="controls">
+      <button onclick="prevCard()">⬅ Anterior</button>
+      <button onclick="nextCard()">Siguiente ➡</button>
+    </div>
+  </div>
+
+  <script>
+    const cards = [
+      { name: "AND / Y", en: "Returns TRUE if all conditions are true.", es: "Devuelve VERDADERO si todas las condiciones son verdaderas." },
+      { name: "AVERAGE / PROMEDIO", en: "Calculates the arithmetic mean.", es: "Calcula la media aritmética." },
+      { name: "AVERAGEIF / PROMEDIO.SI", en: "Returns the average of cells that meet a condition.", es: "Devuelve el promedio de celdas que cumplen una condición." },
+      { name: "COUNT / CONTAR", en: "Counts numeric values in a range.", es: "Cuenta valores numéricos en un rango." },
+      { name: "COUNTA / CONTARA", en: "Counts non-empty cells.", es: "Cuenta las celdas no vacías." },
+      { name: "COUNTIF / CONTAR.SI", en: "Counts cells that meet a condition.", es: "Cuenta celdas que cumplen una condición." },
+      { name: "IF / SI", en: "Returns one value if condition is true, another if false.", es: "Devuelve un valor si la condición es verdadera, otro si es falsa." },
+      { name: "MEDIAN / MEDIANA", en: "Returns the middle number in a dataset.", es: "Devuelve el número central en un conjunto de datos." },
+      { name: "MODE / MODA", en: "Returns the most frequent value.", es: "Devuelve el valor que más se repite." },
+      { name: "OR / O", en: "Returns TRUE if at least one condition is true.", es: "Devuelve VERDADERO si al menos una condición es verdadera." },
+      { name: "SUM / SUMAR", en: "Adds all the numbers in a range.", es: "Suma todos los números en un rango." },
+      { name: "SUMIF / SUMAR.SI", en: "Adds values that meet a condition.", es: "Suma los valores que cumplen una condición." }
+    ];
+
+    cards.sort((a, b) => a.name.localeCompare(b.name));
+
+    let current = 0;
+    let lang = 'en';
+
+    function updateCard() {
+      const card = cards[current];
+      document.getElementById("functionName").innerText = card.name;
+
+      const def = document.getElementById("definition");
+      def.innerText = lang === 'en' ? card.en : card.es;
+      def.setAttribute("data-en", card.en);
+      def.setAttribute("data-es", card.es);
+
+      document.getElementById("cardCount").innerText = `Tarjeta ${current + 1} de ${cards.length}`;
+    }
+
+    function nextCard() {
+      current = (current + 1) % cards.length;
+      updateCard();
+    }
+
+    function prevCard() {
+      current = (current - 1 + cards.length) % cards.length;
+      updateCard();
+    }
+
+    function toggleLang() {
+      lang = lang === 'en' ? 'es' : 'en';
+      document.querySelector(".lang-toggle button").innerText = lang.toUpperCase();
+      updateCard();
+    }
+
+    function speak() {
+      const text = document.getElementById("definition").innerText;
+      const voice = lang === 'en' ? 'en-US' : 'es-ES';
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = voice;
+      speechSynthesis.speak(utterance);
+    }
+
+    updateCard();
+  </script>
+
+</body>
+</html>
 
