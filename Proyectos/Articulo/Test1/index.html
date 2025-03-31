@@ -23,7 +23,6 @@
       padding: 30px;
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      text-align: justify;
     }
     h1 {
       text-align: center;
@@ -49,18 +48,11 @@
       font-size: 1.1em;
       font-weight: 500;
       color: #333;
-      text-align: justify;
     }
     .question label {
       font-weight: normal;
-      display: flex;
-      align-items: flex-start;
+      display: block;
       margin: 10px 0;
-      text-align: justify;
-      gap: 10px;
-    }
-    .question input[type="radio"] {
-      margin-top: 3px;
     }
     button {
       margin-top: 30px;
@@ -85,12 +77,143 @@
       border-left: 5px solid #ab47bc;
       font-size: 1em;
       border-radius: 8px;
-      text-align: justify;
     }
   </style>
 </head>
 <body>
-<!-- CONTENIDO SIN CAMBIOS EN LA LÓGICA -->
+<div class="container">
+  <h1>Aprendiendo con LaProfeVivy<br>Secciones del Artículo</h1>
+
+  <div id="inicio">
+    <label for="apellido">Apellido del estudiante:</label>
+    <input type="text" id="apellido" required>
+
+    <label for="nombre">Nombre del estudiante:</label>
+    <input type="text" id="nombre" required>
+
+    <button onclick="iniciarCuestionario()">Iniciar</button>
+  </div>
+
+  <form id="quizForm" style="display:none">
+    <div class="question" id="pregunta"></div>
+    <div id="opciones"></div>
+    <button type="button" onclick="siguientePregunta()" id="btnSiguiente">Siguiente</button>
+  </form>
+
+  <div class="result" id="resultado" style="display:none"></div>
+</div>
+
+<script>
+  const preguntas = [
+    {
+      texto: "¿Qué función cumple el resumen en relación con la comprensión rápida del contenido de un artículo académico?",
+      opciones: [
+        "Ofrece una lista detallada de referencias bibliográficas",
+        "Permite identificar de manera inmediata los objetivos, metodología y resultados del artículo",
+        "Profundiza en el análisis teórico del tema tratado",
+        "Presenta la interpretación personal del autor sobre el tema"
+      ],
+      correcta: 1
+    },
+    {
+      texto: "¿Qué sección permite conocer las investigaciones más recientes y aplicadas que respaldan el estudio realizado?",
+      opciones: [
+        "Revisión de literatura",
+        "Estado del arte",
+        "Conclusiones preliminares",
+        "Referencias finales"
+      ],
+      correcta: 1
+    },
+    {
+      texto: "¿Cómo contribuyen los objetivos a la estructura lógica de un artículo investigativo?",
+      opciones: [
+        "Proveen una base filosófica para el análisis crítico",
+        "Sirven para organizar la estructura del marco teórico",
+        "Establecen las metas claras que guían la formulación del problema y la metodología",
+        "Detallan la forma en que se citarán los autores consultados"
+      ],
+      correcta: 2
+    },
+    {
+      texto: "¿Qué elementos debe describir la sección de metodología para garantizar la reproducibilidad del estudio?",
+      opciones: [
+        "Contexto histórico del problema y referencias clave",
+        "Los hallazgos y sus implicaciones en la práctica",
+        "Diseño del estudio, técnicas empleadas y población o muestra considerada",
+        "El impacto social y económico de los resultados"
+      ],
+      correcta: 2
+    },
+    {
+      texto: "¿Cuál es el propósito principal de la discusión en un artículo académico?",
+      opciones: [
+        "Organizar las citas en orden alfabético",
+        "Describir de nuevo los resultados sin interpretación",
+        "Relacionar los hallazgos con estudios previos, argumentar su relevancia y proponer interpretaciones",
+        "Enumerar los pasos del procedimiento experimental"
+      ],
+      correcta: 2
+    }
+  ];
+
+  let indice = 0;
+  let respuestas = [];
+
+  function iniciarCuestionario() {
+    const apellido = document.getElementById("apellido").value.trim();
+    const nombre = document.getElementById("nombre").value.trim();
+    if (!apellido || !nombre) {
+      alert("Por favor ingrese ambos campos.");
+      return;
+    }
+    document.getElementById("inicio").style.display = "none";
+    document.getElementById("quizForm").style.display = "block";
+    mostrarPregunta();
+  }
+
+  function mostrarPregunta() {
+    const p = preguntas[indice];
+    document.getElementById("pregunta").innerText = p.texto;
+    const opcionesHTML = p.opciones.map((op, i) =>
+      `<label><input type='radio' name='respuesta' value='${i}'> ${op}</label>`
+    ).join("");
+    document.getElementById("opciones").innerHTML = opcionesHTML;
+  }
+
+  function siguientePregunta() {
+    const seleccion = document.querySelector("input[name='respuesta']:checked");
+    if (!seleccion) {
+      alert("Por favor seleccione una respuesta.");
+      return;
+    }
+    respuestas.push(parseInt(seleccion.value));
+    seleccion.checked = false;
+    indice++;
+
+    if (indice < preguntas.length) {
+      mostrarPregunta();
+    } else {
+      calcularResultado();
+    }
+  }
+
+  function calcularResultado() {
+    document.getElementById("quizForm").style.display = "none";
+    let correctas = 0;
+    respuestas.forEach((r, i) => {
+      if (r === preguntas[i].correcta) correctas++;
+    });
+    const nota = (correctas * 5 / preguntas.length).toFixed(1);
+    const fechaHora = new Date().toLocaleString();
+    const nombre = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
+    document.getElementById("resultado").innerHTML =
+      `<strong>${nombre} ${apellido}</strong><br>
+       Calificación obtenida: <strong>${nota}</strong> sobre 5<br>
+       Fecha y hora de presentación: ${fechaHora}`;
+    document.getElementById("resultado").style.display = "block";
+  }
+</script>
 </body>
 </html>
-
