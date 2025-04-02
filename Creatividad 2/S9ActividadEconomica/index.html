@@ -1,1 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OVA Formalización - LaProfeVivy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f8fb;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+    .language-select {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    .language-select select, .language-select button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #003366;
+      background-color: white;
+      color: #003366;
+      font-size: 14px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      background-color: #e6eef5;
+      justify-content: space-between;
+      border-radius: 6px 6px 0 0;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tabs button.active {
+      background-color: white;
+      border-bottom: 2px solid #003366;
+    }
+    .tabcontent {
+      display: none;
+      background-color: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+    }
+    .tabcontent.active {
+      display: block;
+    }
+    .quiz-box {
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .quiz-box label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    .quiz-box input[type="radio"] {
+      margin-right: 8px;
+    }
+    .quiz-box button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      background-color: #003366;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #accessBtn {
+      background-color: #28a745;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="language-select">
+      <select id="languageSelector" onchange="changeLanguage()">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+      </select>
+      <button onclick="toggleAudio()">🔊 Escuchar / Listen</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tablink active" onclick="openTab(event, 'ciiu')">Actividad Económica y CIIU</button>
+      <button class="tablink" onclick="openTab(event, 'sociedades')">Tipos de Sociedades</button>
+      <button class="tablink" onclick="openTab(event, 'registro')">Registro Cámara de Comercio</button>
+      <button class="tablink" onclick="openTab(event, 'obligaciones')">Obligaciones Legales</button>
+      <button class="tablink" onclick="openTab(event, 'beneficios')">Beneficios</button>
+      <button class="tablink" onclick="openTab(event, 'test')">Evaluación</button>
+    </div>
+
+    <!-- Aquí se insertan las secciones del OVA -->
+    <!-- CONTENIDO SE MANTIENE DE LA VERSIÓN ANTERIOR -->
+
+  </div>
+
+  <script>
+    function openTab(evt, tabName) {
+      document.querySelectorAll('.tabcontent').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tablink').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+      evt.currentTarget.classList.add('active');
+    }
+
+    function changeLanguage() {
+      const lang = document.getElementById("languageSelector").value;
+      Swal.fire({
+        title: 'Idioma cambiado',
+        text: lang === 'en' ? 'You selected English' : 'Seleccionaste Español',
+        icon: 'info',
+        confirmButtonColor: '#003366'
+      });
+    }
+
+    function toggleAudio() {
+      const activeTab = document.querySelector(".tabcontent.active");
+      if (!activeTab) return;
+      const text = activeTab.innerText;
+      const lang = document.getElementById("languageSelector").value;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang === 'en' ? 'en-US' : 'es-ES';
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+  </script>
+</body>
+</html>
 
