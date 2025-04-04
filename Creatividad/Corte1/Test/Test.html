@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Reconociéndome - LaProfeVivy</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('fondo.jpg');
+      background-size: cover;
+      color: #4a004d;
+      padding: 20px;
+      margin: 0;
+    }
+    .contenedor {
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 0 20px #dca0d8;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #b44fb4;
+    }
+    .pregunta {
+      margin-top: 20px;
+      color: #5e005e;
+    }
+    button {
+      background-color: #f7c7e3;
+      border: none;
+      color: #4a004d;
+      padding: 10px 20px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 0 10px #cfa1d2;
+    }
+    .resultado {
+      display: none;
+      margin-top: 30px;
+      background-color: #ffe9f5;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #dba0dd;
+      color: #5e005e;
+    }
+    input[type="text"] {
+      background-color: #fff0f9;
+      border: 1px solid #e2bce0;
+      color: #4a004d;
+    }
+    select, input[type="radio"] {
+      accent-color: #b44fb4;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <h1>Aprendiendo con la Profe Vivy</h1>
+    <h2>Test: Reconociéndome</h2>
+
+    <div id="test">
+      <label for="nombre">¿Cuál es tu nombre?</label>
+      <input type="text" id="nombre" required style="width: 100%; padding: 10px; border-radius: 8px; border: none; margin-bottom: 20px;">
+
+      <div class="pregunta" id="pregunta"></div>
+
+      <div id="opciones"></div>
+
+      <button onclick="siguientePregunta()">Siguiente</button>
+    </div>
+
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+  <script>
+    const preguntas = [
+      { texto: "Me encanta crear cosas nuevas y únicas.", tipo: "divergente" },
+      { texto: "Disfruto resolver problemas complejos con lógica.", tipo: "logico" },
+      { texto: "Me expreso mejor a través del arte, la música o la danza.", tipo: "artistica" },
+      { texto: "Me gusta organizar ideas, listas o tareas.", tipo: "organizativa" },
+      { texto: "Prefiero observar y entender cómo funciona la naturaleza.", tipo: "naturalista" },
+      { texto: "Siento empatía por los demás y me interesa ayudar a las personas.", tipo: "interpersonal" },
+      { texto: "Prefiero trabajar solo/a y reflexionar sobre mis ideas.", tipo: "intrapersonal" },
+      { texto: "Disfruto actividades que involucren el cuerpo, como el deporte o el baile.", tipo: "corporal" },
+      { texto: "Me gusta identificar patrones, formas y estructuras en lo que veo.", tipo: "visual" },
+      { texto: "Tengo habilidad para reconocer sonidos, melodías o ritmos.", tipo: "musical" }
+    ];
+
+    const puntajes = {
+      divergente: 0,
+      logico: 0,
+      artistica: 0,
+      organizativa: 0,
+      naturalista: 0,
+      interpersonal: 0,
+      intrapersonal: 0,
+      corporal: 0,
+      visual: 0,
+      musical: 0
+    };
+
+    let indice = 0;
+
+    function mostrarPregunta() {
+      document.getElementById('pregunta').innerText = preguntas[indice].texto;
+      document.getElementById('opciones').innerHTML = `
+        <label><input type="radio" name="respuesta" value="1"> 1 - Nada</label><br>
+        <label><input type="radio" name="respuesta" value="2"> 2 - Poco</label><br>
+        <label><input type="radio" name="respuesta" value="3"> 3 - Algo</label><br>
+        <label><input type="radio" name="respuesta" value="4"> 4 - Bastante</label><br>
+        <label><input type="radio" name="respuesta" value="5"> 5 - Mucho</label>
+      `;
+    }
+
+    function siguientePregunta() {
+      const nombre = document.getElementById('nombre').value;
+      const seleccion = document.querySelector('input[name="respuesta"]:checked');
+      if (!nombre || !seleccion) return alert("Por favor responde antes de continuar.");
+      const valor = parseInt(seleccion.value);
+      const tipo = preguntas[indice].tipo;
+      puntajes[tipo] += valor;
+      indice++;
+      if (indice < preguntas.length) {
+        mostrarPregunta();
+      } else {
+        mostrarResultado(nombre);
+      }
+    }
+
+    function mostrarResultado(nombre) {
+      document.getElementById('test').style.display = 'none';
+      const mayor = Object.entries(puntajes).sort((a, b) => b[1] - a[1])[0];
+      let mensaje = '';
+      switch(mayor[0]) {
+        case 'divergente': mensaje = 'Tienes una creatividad divergente. Eres ideal para emprendimiento, innovación, publicidad o creación de soluciones nuevas.'; break;
+        case 'logico': mensaje = 'Tu creatividad lógica es ideal para carreras como ingeniería, análisis de datos, matemáticas y programación.'; break;
+        case 'artistica': mensaje = 'Eres un alma creativa y artística. Puedes destacar en arte, diseño gráfico, animación, música o escénicas.'; break;
+        case 'organizativa': mensaje = 'Eres muy organizada/o. Tu creatividad funciona bien en gestión, administración, planificación de proyectos.'; break;
+        case 'naturalista': mensaje = 'Tu conexión con la naturaleza destaca. Ideal para biología, veterinaria, medio ambiente.'; break;
+        case 'interpersonal': mensaje = 'Eres empática/o y sociable. Áreas como psicología, docencia o trabajo social te van muy bien.'; break;
+        case 'intrapersonal': mensaje = 'Eres reflexiva/o y profundo. Tienes talento para escribir, filosofar, orientar o liderar desde adentro.'; break;
+        case 'corporal': mensaje = 'Tu creatividad es corporal. Puedes destacar en actuación, danza, deporte o recreación.'; break;
+        case 'visual': mensaje = 'Tu mirada visual es fuerte. Áreas como diseño, arquitectura, arte digital o moda son para ti.'; break;
+        case 'musical': mensaje = 'Tu creatividad sonora es especial. Música, producción, artes sonoras o canto son tu camino.'; break;
+      }
+      document.getElementById('resultado').style.display = 'block';
+      document.getElementById('resultado').innerHTML = `
+        <h2>¡Felicidades, ${nombre}!</h2>
+        <p>${mensaje}</p>
+        <p><strong>Sigue potenciando tu talento con LaProfeVivy ✨</strong></p>
+      `;
+    }
+
+    mostrarPregunta();
+  </script>
+</body>
+</html>
