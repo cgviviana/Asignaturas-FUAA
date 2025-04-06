@@ -1,1 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>LaProfeVivy - Técnicas de Creatividad</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f6fc url('https://www.transparenttextures.com/patterns/washi.png');
+      background-size: contain;
+      margin: 0;
+      padding: 40px 20px;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      text-align: center;
+      color: #a084dc;
+      font-size: 28px;
+      margin-bottom: 50px;
+      letter-spacing: 1px;
+    }
+
+    .tarjeta {
+      background-color: #ffffffdd;
+      width: 100%;
+      max-width: 440px;
+      min-height: 600px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      box-sizing: border-box;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .tarjeta.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+ .tarjeta img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background-color: #f2ebfb;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  padding: 10px;
+}
+
+    .titulo {
+      font-size: 22px;
+      font-weight: bold;
+      color: #6b5ca5;
+      margin-bottom: 15px;
+    }
+
+    .contenido {
+      font-size: 15px;
+      line-height: 1.6;
+      flex-grow: 1;
+      text-align: justify;
+    }
+
+    .contenido p {
+      margin: 10px 0;
+    }
+
+    .botones {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+    }
+
+    button {
+      background-color: #a084dc;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #8c6bdc;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 480px) {
+      .tarjeta {
+        min-height: auto;
+        padding: 20px;
+      }
+
+      .contenido p {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Aprendiendo con: LaProfeVivy<br>Técnicas de Creatividad</h1>
+
+  <div class="tarjeta" id="tarjeta"></div>
+
+  <div class="botones">
+    <button onclick="anterior()">⬅ Anterior</button>
+    <button onclick="siguiente()">Siguiente ➡</button>
+  </div>
+
+  <script>
+    const tecnicas = [
+      {
+        titulo: "SCAMPER",
+        imagen: "1.jpg",
+        tipo: "Individual",
+        descripcion: "Estimula ideas creativas al modificar productos existentes usando verbos como Sustituir, Combinar, Adaptar, Modificar, Eliminar o Reordenar.",
+        ejemplo: "Un estudiante analiza una plataforma educativa poco atractiva. Usa SCAMPER y aplica 'Combinar' para unir videolecciones con foros gamificados, y 'Modificar' para simplificar la navegación."
+      },
+      {
+        titulo: "Mapas mentales",
+        imagen: "2.jpg",
+        tipo: "Individual",
+        descripcion: "Organiza visualmente ideas alrededor de un concepto central. Ideal para clarificar, planear o sintetizar información compleja.",
+        ejemplo: "Antes de escribir su marco teórico, una estudiante crea un mapa con ramas para autores, teorías y relaciones clave, ayudándole a organizar su enfoque."
+      },
+      {
+        titulo: "Analogías",
+        imagen: "3.jpg",
+        tipo: "Individual",
+        descripcion: "Relaciona una idea con otra de diferente contexto para reinterpretar un problema de manera innovadora.",
+        ejemplo: "Un equipo compara una universidad con una red neuronal para entender cómo fluyen los conocimientos entre personas y departamentos. Esto inspira una app colaborativa."
+      },
+      {
+        titulo: "Reversión",
+        imagen: "4.jpg",
+        tipo: "Individual",
+        descripcion: "Invierte el problema o el objetivo para descubrir obstáculos y plantear soluciones desde una lógica opuesta.",
+        ejemplo: "En lugar de pensar cómo hacer que los estudiantes usen el aula virtual, se preguntan: '¿Qué haría que no la usen?' Así detectan barreras a resolver."
+      },
+      {
+        titulo: "Brainstorming",
+        imagen: "5.jpg",
+        tipo: "Grupal",
+        descripcion: "Sesión grupal para generar ideas de forma libre, rápida y sin juicios, promoviendo la participación y la creatividad colectiva.",
+        ejemplo: "Un grupo lanza 40 ideas para mejorar la experiencia estudiantil sin criticarlas. Luego las agrupan, eligen y desarrollan las más viables."
+      },
+      {
+        titulo: "Seis sombreros",
+        imagen: "6.jpg",
+        tipo: "Grupal",
+        descripcion: "Permite analizar un problema desde seis formas distintas de pensar: lógica, emocional, creativa, crítica, objetiva y de control.",
+        ejemplo: "Durante la evaluación de una propuesta de proyecto, cada integrante asume un 'sombrero'. Uno analiza beneficios, otro riesgos, otro emociones, etc."
+      },
+      {
+        titulo: "Lluvia de preguntas",
+        imagen: "7.jpg",
+        tipo: "Grupal",
+        descripcion: "Se generan muchas preguntas sobre un tema en vez de respuestas, lo que permite ampliar la comprensión del problema.",
+        ejemplo: "En lugar de proponer soluciones directas, un grupo formula 20 preguntas clave sobre por qué los estudiantes abandonan la carrera."
+      },
+      {
+        titulo: "Collage creativo",
+        imagen: "8.jpg",
+        tipo: "Grupal",
+        descripcion: "Reúne imágenes, palabras o símbolos visuales para representar ideas abstractas o emociones asociadas a un tema.",
+        ejemplo: "Para una actividad sobre inclusión, el grupo crea un collage con recortes que reflejan la diversidad universitaria y lo usan como base para un manifiesto estudiantil."
+      },
+      {
+        titulo: "Role playing",
+        imagen: "9.jpg",
+        tipo: "Grupal",
+        descripcion: "Simulación de roles para explorar distintas perspectivas y comprender mejor a los involucrados en una situación real.",
+        ejemplo: "Un grupo representa a usuarios con discapacidades y docentes para identificar barreras digitales y proponer ajustes inclusivos en la plataforma educativa."
+      },
+      {
+        titulo: "Técnica Delphi",
+        imagen: "10.jpg",
+        tipo: "Grupal",
+        descripcion: "Permite tomar decisiones estratégicas consultando varias veces a expertos de forma anónima hasta llegar a un consenso.",
+        ejemplo: "Un grupo consulta a expertos en pedagogía sobre estrategias digitales. Tras dos rondas de retroalimentación, adoptan un enfoque híbrido recomendado por la mayoría."
+      }
+    ];
+
+    let indice = 0;
+
+    function mostrarTarjeta() {
+      const t = tecnicas[indice];
+      const tarjeta = document.getElementById("tarjeta");
+      tarjeta.classList.remove("visible");
+
+      setTimeout(() => {
+        tarjeta.innerHTML = `
+          <img src="${t.imagen}" alt="${t.titulo}">
+          <div class="titulo">${t.titulo}</div>
+          <div class="contenido">
+            <p><strong>Tipología:</strong> ${t.tipo}</p>
+            <p><strong>Descripción:</strong> ${t.descripcion}</p>
+            <p><strong>Ejemplo:</strong> ${t.ejemplo}</p>
+          </div>
+        `;
+        tarjeta.classList.add("visible");
+      }, 200);
+    }
+
+    function siguiente() {
+      indice = (indice + 1) % tecnicas.length;
+      mostrarTarjeta();
+    }
+
+    function anterior() {
+      indice = (indice - 1 + tecnicas.length) % tecnicas.length;
+      mostrarTarjeta();
+    }
+
+    mostrarTarjeta();
+  </script>
+
+</body>
+</html>
 
