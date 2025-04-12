@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OVA Diagnóstico - La Profe Vivy</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url('fondov.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      color: #3d2a4d;}
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #8c5fb3;
+    }
+    .video {
+      text-align: center;
+      margin: 20px 0;
+    }
+    #player {
+      width: 100%;
+      max-width: 640px;
+      height: 360px;
+    }
+    #preguntas {
+      background: #f3e8ff;
+      border-left: 5px solid #ba8ed1;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+      display: block;
+    }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+    }
+    button {
+      background: #8c5fb3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .result {
+      background: #e0d1f0;
+      padding: 1rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+    #fragmentoTitulo {
+      font-weight: bold;
+      color: #6a3b8d;
+      margin-bottom: 0.5rem;
+    }
+    #barraProgreso {
+      background: #e0d1f0;
+      border-radius: 5px;
+      margin-top: 10px;
+      height: 20px;
+      width: 100%;
+    }
+    #progresoInterno {
+      height: 100%;
+      background: #8c5fb3;
+      border-radius: 5px;
+      width: 0;
+    }
+  </style>
+  <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+<div class="container">
+  <h1>Aprendiendo con La Profe Vivy</h1>
+  <h2>Diagnóstico de necesidades de los clientes</h2>
+  <div id="inicio">
+    <label>Escribe tu nombre para comenzar:</label>
+    <input type="text" id="nombreEstudiante" placeholder="Tu nombre aquí">
+    <button onclick="iniciarActividad()">Comenzar</button>
+  </div>
+  <div id="contenido" style="display:none;">
+    <div class="video">
+      <div id="player"></div>
+    </div>
+    <div id="preguntas">
+      <div id="fragmentoTitulo">Aquí aparecerán las preguntas relacionadas con el video.</div>
+      <strong id="textoPregunta"></strong>
+      <select id="opciones"></select><br>
+      <button onclick="responder()">Responder</button>
+      <div id="barraProgreso" style="position: relative;">
+  <div id="progresoInterno"></div>
+  <div id="progresoTexto" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #4a2c6a;"></div>
+</div>
+    </div>
+    <div id="resultado" class="result"></div>
+  </div>
+</div>
+
+<script>
+const preguntas = [
+  { tiempo: 14, texto: "¿Por dónde se inicia el diagnóstico de necesidades de los clientes?", opciones: ["Por los productos disponibles", "Por el entendimiento del cliente como ser humano", "Por las estadísticas de consumo"], correcta: 1 },
+  { tiempo: 26, texto: "¿Qué afirma el video sobre todos los seres humanos?", opciones: ["Que solo necesitan tecnología", "Que todos tenemos necesidades increíbles", "Que no tienen muchas carencias"], correcta: 1 },
+  { tiempo: 38, texto: "¿Para qué se hacen muchas de las cosas en la vida, según el video?", opciones: ["Para sobrevivir exclusivamente", "Para abastecer necesidades humanas", "Para competir en el mercado"], correcta: 1 },
+  { tiempo: 50, texto: "¿Qué disciplinas han estudiado las necesidades humanas?", opciones: ["La biología y la química", "La psicología y la economía", "La filosofía y la política"], correcta: 1 },
+  { tiempo: 60, texto: "¿Cuáles son dos necesidades humanas básicas mencionadas?", opciones: ["Educación y diversión", "Alimentarse y vestirse", "Viajar y comunicarse"], correcta: 1 },
+  { tiempo: 74, texto: "¿Qué explica que gran parte del comercio se enfoque en ciertas áreas?", opciones: ["La moda del momento", "La globalización", "Las necesidades básicas del ser humano"], correcta: 2 },
+  { tiempo: 90, texto: "¿Qué teoría se menciona sobre las necesidades humanas?", opciones: ["La teoría de la oferta y la demanda", "La pirámide de Maslow", "La teoría del capital humano"], correcta: 1 },
+  { tiempo: 106, texto: "¿Qué categorías de necesidad se mencionan?", opciones: ["Fisiológicas, seguridad, amor, estima y autorrealización", "Tecnológicas, culturales y económicas", "Básicas, complejas y emocionales"], correcta: 0 },
+  { tiempo: 130, texto: "¿Qué motiva al cliente a buscar productos en el mercado?", opciones: ["Su presupuesto mensual", "Sus carencias personales", "Las estrategias publicitarias"], correcta: 1 },
+  { tiempo: 144, texto: "¿Qué hacen las empresas con las necesidades insatisfechas del consumidor?", opciones: ["Diseñan productos que las satisfacen", "Reducen costos de producción", "Ignoran dichas necesidades"], correcta: 0 }
+];
+
+let player, index = 0, puntaje = 0, estudiante = "";
+
+function iniciarActividad() {
+  estudiante = document.getElementById("nombreEstudiante").value.trim();
+  if (estudiante === "") {
+    alert("Por favor, escribe tu nombre");
+    return;
+  }
+  document.getElementById("inicio").style.display = "none";
+  document.getElementById("contenido").style.display = "block";
+  player.playVideo();
+}
+
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {
+    videoId: 'yc8fiXKYVLM',
+    events: {
+      'onStateChange': verificarTiempo
+    }
+  });
+}
+
+function verificarTiempo(event) {
+  if (event.data === YT.PlayerState.PLAYING) {
+    if (typeof verificarTiempo.intervalo !== 'undefined') {
+      clearInterval(verificarTiempo.intervalo);
+    }
+    verificarTiempo.intervalo = setInterval(() => {
+      if (index < preguntas.length && player.getCurrentTime() >= preguntas[index].tiempo) {
+        clearInterval(verificarTiempo.intervalo);
+        player.pauseVideo();
+        cargarPregunta(index);
+      }
+    }, 1000);
+  } else if (event.data === YT.PlayerState.PAUSED) {
+    clearInterval(verificarTiempo.intervalo);
+  }
+}
+
+function cargarPregunta(i) {
+  document.getElementById("fragmentoTitulo").textContent = `Pregunta ${i + 1}`;
+  document.getElementById("textoPregunta").textContent = preguntas[i].texto;
+
+  const opciones = document.getElementById("opciones");
+  opciones.innerHTML = '<option disabled selected>Selecciona una opción</option>';
+  opciones.disabled = false;
+  preguntas[i].opciones.forEach((op, idx) => {
+    const option = document.createElement("option");
+    option.value = idx;
+    option.text = op;
+    opciones.appendChild(option);
+  });
+
+  const progreso = document.getElementById("progresoInterno");
+  const porcentaje = ((i + 1) / preguntas.length) * 100;
+  progreso.style.width = `${porcentaje}%`;
+  document.getElementById("progresoTexto").textContent = `Pregunta ${i + 1} de ${preguntas.length}`;
+}
+
+function responder() {
+  const seleccion = document.getElementById("opciones").value;
+  if (seleccion === "" || seleccion === undefined) {
+    alert("Por favor selecciona una respuesta");
+    return;
+  }
+  if (parseInt(seleccion) === preguntas[index].correcta) {
+    puntaje++;
+  }
+  index++;
+  if (index < preguntas.length) {
+    document.getElementById("textoPregunta").textContent = "Espera mientras llega la siguiente pregunta...";
+    // No limpiar opciones inmediatamente para que se vea la selección
+document.getElementById("opciones").disabled = true;
+    player.playVideo();
+  } else {
+    mostrarResultado();
+  }
+}
+
+function mostrarResultado() {
+  const nota = Math.round((puntaje / preguntas.length) * 5 * 10) / 10;
+  document.getElementById("resultado").style.display = "block";
+  document.getElementById("resultado").innerText = `${estudiante}, tu puntuación final es ${nota} sobre 5.`;
+  document.getElementById("preguntas").style.display = "none";
+}
+</script>
+</body>
+</html>
