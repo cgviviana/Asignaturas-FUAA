@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualizador de Fuentes  </title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Raleway&family=Pacifico&family=Playfair+Display&family=Orbitron&family=Courier+Prime&family=Comfortaa&family=Montserrat&family=Lobster&family=Indie+Flower&family=Cinzel+Decorative&family=Creepster&family=Press+Start+2P&family=Comic+Neue&family=Architects+Daughter&family=Merriweather&family=Quicksand&family=Open+Sans&family=Rubik&family=Teko&family=Unica+One&family=Manrope&family=Silkscreen&family=Righteous&family=Abril+Fatface&family=Special+Elite&family=Zen+Tokyo+Zoo&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: url('blanco.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 1000px;
+      width: 95%;
+      text-align: center;
+      border: 2px solid #fff;
+    }
+    h1 {
+      color: #4a3b6d;
+      margin-bottom: 20px;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    .controls div {
+      display: flex;
+      flex-direction: column;
+    }
+    select, textarea {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 100%;
+      margin-top: 5px;
+    }
+    .output {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .preview {
+      padding: 20px;
+      border-radius: 15px;
+      background: #fafafa;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .preview#previewTitle {
+      font-weight: bold;
+    }
+    .preview#previewBody {
+      line-height: 1.5;
+    }
+    .suggestion {
+      font-style: italic;
+      color: #555;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Visualizador de Fuentes </h1>
+    <div class="controls">
+      <div>
+        <label for="textTitle">Texto para título:</label>
+        <textarea id="textTitle" rows="2">Aprendiendo con @LaProfeVivy</textarea>
+      </div>
+      <div>
+        <label for="textBody">Texto para cuerpo:</label>
+        <textarea id="textBody" rows="3">Este es un ejemplo de contenido o descripción para acompañar el título principal.</textarea>
+      </div>
+      <div>
+        <label for="fontSelectorTitle">Fuente para título:</label>
+        <select id="fontSelectorTitle">
+          <optgroup label="Misteriosas / Elegantes">
+            <option value="Cinzel Decorative">Cinzel Decorative</option>
+            <option value="Abril Fatface">Abril Fatface</option>
+          </optgroup>
+          <optgroup label="Divertidas / Cómic">
+            <option value="Comic Neue">Comic Neue</option>
+            <option value="Lobster">Lobster</option>
+            <option value="Pacifico">Pacifico</option>
+            <option value="Architects Daughter">Architects Daughter</option>
+          </optgroup>
+          <optgroup label="Futuristas / Robóticas">
+            <option value="Orbitron">Orbitron</option>
+            <option value="Press Start 2P">Press Start 2P</option>
+            <option value="Teko">Teko</option>
+            <option value="Zen Tokyo Zoo">Zen Tokyo Zoo</option>
+          </optgroup>
+          <optgroup label="Literarias / Clásicas">
+            <option value="Playfair Display">Playfair Display</option>
+            <option value="Unica One">Unica One</option>
+            <option value="Righteous">Righteous</option>
+          </optgroup>
+          <optgroup label="Terror / Rústicas">
+            <option value="Creepster">Creepster</option>
+          </optgroup>
+        </select>
+      </div>
+      <div>
+        <label for="fontSelectorBody">Fuente para cuerpo:</label>
+        <select id="fontSelectorBody">
+          <optgroup label="Modernas y legibles">
+            <option value="Roboto">Roboto</option>
+            <option value="Raleway">Raleway</option>
+            <option value="Comfortaa">Comfortaa</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Rubik">Rubik</option>
+            <option value="Quicksand">Quicksand</option>
+            <option value="Manrope">Manrope</option>
+          </optgroup>
+          <optgroup label="Clásicas / Literarias">
+            <option value="Merriweather">Merriweather</option>
+            <option value="Courier Prime">Courier Prime</option>
+          </optgroup>
+          <optgroup label="Estilo Máquina / Retro">
+            <option value="Special Elite">Special Elite</option>
+            <option value="Silkscreen">Silkscreen</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    <div class="output">
+      <div class="preview" id="previewTitle">Aprendiendo con @LaProfeVivy</div>
+      <div class="preview" id="previewBody">Este es un ejemplo de contenido o descripción para acompañar el título principal.</div>
+      <div class="suggestion" id="suggestion">Sugerencia: Usa combinaciones contrastantes para títulos y cuerpo.</div>
+    </div>
+  </div>
+  <script>
+    const titleText = document.getElementById("textTitle");
+    const bodyText = document.getElementById("textBody");
+    const fontTitle = document.getElementById("fontSelectorTitle");
+    const fontBody = document.getElementById("fontSelectorBody");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewBody = document.getElementById("previewBody");
+    const suggestion = document.getElementById("suggestion");
+
+    const recomendaciones = {
+      "Cinzel Decorative": { fuente: "Roboto", motivo: "por su elegancia clásica y buena legibilidad" },
+      "Lobster": { fuente: "Comfortaa", motivo: "porque equilibra el estilo manuscrito con claridad" },
+      "Pacifico": { fuente: "Comic Neue", motivo: "por su tono amigable y coherente con lo casual" },
+      "Playfair Display": { fuente: "Raleway", motivo: "porque combina estilo editorial con un diseño moderno" },
+      "Orbitron": { fuente: "Courier Prime", motivo: "por su apariencia técnica y buena lectura en pantalla" },
+      "Architects Daughter": { fuente: "Open Sans", motivo: "por su neutralidad y complementariedad" },
+      "Teko": { fuente: "Rubik", motivo: "por su robustez y legibilidad en digital" },
+      "Unica One": { fuente: "Quicksand", motivo: "porque suaviza su geometría con claridad" },
+      "Creepster": { fuente: "Special Elite", motivo: "por su estilo envejecido que mantiene la atmósfera" },
+      "Press Start 2P": { fuente: "Silkscreen", motivo: "porque ambas simulan tipografía retro pixelada" },
+      "Righteous": { fuente: "Manrope", motivo: "por su estructura limpia que equilibra lo decorativo" },
+      "Abril Fatface": { fuente: "Merriweather", motivo: "porque combina contraste alto con lectura fluida" },
+      "Zen Tokyo Zoo": { fuente: "Raleway", motivo: "por su simplicidad que balancea lo experimental" }
+    };
+
+    function updateFonts() {
+      const fuenteTitulo = fontTitle.value;
+      const fuenteCuerpo = fontBody.value || recomendaciones[fuenteTitulo]?.fuente || "Roboto";
+      previewTitle.textContent = titleText.value;
+      previewBody.textContent = bodyText.value;
+      previewTitle.style.fontFamily = fuenteTitulo;
+      previewBody.style.fontFamily = fuenteCuerpo;
+      previewTitle.style.fontSize = "40px";
+      previewBody.style.fontSize = "20px";
+      previewTitle.style.color = "#4a3b6d";
+      previewBody.style.color = "#333";
+
+      const razon = recomendaciones[fuenteTitulo]?.motivo;
+      suggestion.innerHTML = razon
+        ? `Sugerencia: Como elegiste <b>${fuenteTitulo}</b>, se recomienda <b>${recomendaciones[fuenteTitulo].fuente}</b> porque ${razon}.`
+        : "Puedes elegir cualquier combinación que se adapte a tu estilo.";
+    }
+
+    fontTitle.addEventListener("change", updateFonts);
+    fontBody.addEventListener("change", updateFonts);
+    titleText.addEventListener("input", updateFonts);
+    bodyText.addEventListener("input", updateFonts);
+
+    updateFonts();
+  </script>
+</body>
+</html>
