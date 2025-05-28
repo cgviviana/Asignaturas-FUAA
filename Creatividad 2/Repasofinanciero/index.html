@@ -1,1 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprendiendo con LaProfeVivy</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('https://www.transparenttextures.com/patterns/pink-paper.png');
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #dda0dd;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 20px;
+      margin-top: -10px;
+      color: #7a4e94;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 30px;
+      background: #ffffffcc;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    .question {
+      display: none;
+    }
+    .question.active {
+      display: block;
+    }
+    .feedback {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      background-color: #dda0dd;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    .option {
+      margin: 5px 0;
+      padding: 8px;
+      background-color: #f8eafd;
+      border-radius: 5px;
+    }
+    #score {
+      text-align: center;
+      font-size: 1.5em;
+      color: #4b0082;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>Aprendiendo con LaProfeVivy</header>
+  <div class="subtitle">Por Repaso Financiero</div>
+  <div class="container" id="quiz-container"></div>
+  <div id="score"></div>
+  <script>
+    const preguntas = [
+      { pregunta: "1. ¿Qué representa la fórmula: Ingresos - Costos - Gastos?", opciones: ["Utilidad neta", "Patrimonio", "Punto de equilibrio", "Capital contable"], correcta: 0 },
+      { pregunta: "2. ¿Cuál es el objetivo principal de calcular el punto de equilibrio?", opciones: ["Determinar el precio de venta", "Saber cuántas unidades se deben vender para no perder", "Calcular los activos", "Conocer los impuestos"], correcta: 1 },
+      { pregunta: "3. ¿Qué elemento NO es un costo fijo?", opciones: ["Arriendo", "Servicios básicos", "Materia prima", "Sueldos administrativos"], correcta: 2 },
+      { pregunta: "4. ¿Qué mide un estado de resultados?", opciones: ["Las ganancias y pérdidas en un período", "El patrimonio acumulado", "El total de activos fijos", "La cantidad de ventas realizadas"], correcta: 0 },
+      { pregunta: "5. ¿Qué tipo de activo se convierte fácilmente en efectivo?", opciones: ["Activo corriente", "Activo fijo", "Pasivo", "Patrimonio"], correcta: 0 },
+      { pregunta: "6. ¿Cuál es la fórmula para el punto de equilibrio en unidades?", opciones: ["(Ingresos - Costos)/Precio", "Costos fijos/(Precio de venta - Costo variable unitario)", "Costos variables x Unidades vendidas", "Utilidad/Precio de venta"], correcta: 1 },
+      { pregunta: "7. ¿Qué representa el patrimonio en una empresa?", opciones: ["El dinero que debe", "Las inversiones externas", "Los recursos propios de la empresa", "Las cuentas por pagar"], correcta: 2 },
+      { pregunta: "8. ¿Cuál es el uso principal de los estados financieros?", opciones: ["Diseñar logos", "Organizar tareas del día", "Tomar decisiones basadas en datos contables", "Calcular porcentajes de IVA"], correcta: 2 },
+      { pregunta: "9. ¿Cuál de estos es un ejemplo de proyección financiera?", opciones: ["Crear una página web", "Estimar ventas del próximo mes", "Contratar personal", "Diseñar productos"], correcta: 1 },
+      { pregunta: "10. ¿Qué indicador muestra si una empresa está ganando dinero?", opciones: ["Rentabilidad", "Pasivo", "Cronograma", "Activo"], correcta: 0 },
+      { pregunta: "11. ¿Qué se incluye en el Balance General?", opciones: ["Tareas diarias", "Proyectos", "Activos, pasivos y patrimonio", "Clientes"], correcta: 2 },
+      { pregunta: "12. ¿Qué representa un pasivo?", opciones: ["Una venta", "Una inversión", "Una deuda", "Un ingreso"], correcta: 2 },
+      { pregunta: "13. ¿Qué fórmula permite conocer el total de costos?", opciones: ["=PROMEDIO", "=SUMA(rango)", "=RESTA", "=PRODUCTO"], correcta: 1 },
+      { pregunta: "14. ¿Qué es un costo variable?", opciones: ["Un costo que no cambia", "Un costo que cambia según la producción", "Un gasto general", "Un ingreso eventual"], correcta: 1 },
+      { pregunta: "15. ¿Para qué sirven las proyecciones?", opciones: ["Jugar en Excel", "Decorar hojas", "Tomar decisiones futuras", "Guardar imágenes"], correcta: 2 },
+      { pregunta: "16. ¿Qué se necesita para calcular el punto de equilibrio?", opciones: ["Gastos generales", "Ventas totales", "Costos fijos y margen de contribución", "Valor del patrimonio"], correcta: 2 },
+      { pregunta: "17. ¿Qué indica el margen de contribución?", opciones: ["El total de ventas", "El dinero que queda tras cubrir los costos variables", "Los impuestos", "El total de activos"], correcta: 1 },
+      { pregunta: "18. ¿Cuál es una herramienta de decisión para emprendedores?", opciones: ["Instagram", "Facebook", "Estados financieros", "Juegos de azar"], correcta: 2 },
+      { pregunta: "19. ¿Qué fórmula se usa para calcular utilidad bruta?", opciones: ["Ventas - Costos de ventas", "Ventas + Gastos", "Pasivo + Patrimonio", "Activo - Pasivo"], correcta: 0 },
+      { pregunta: "20. ¿Qué es una proyección?", opciones: ["Un documento de identidad", "Un gráfico", "Una estimación futura basada en datos", "Una hoja de cálculo vacía"], correcta: 2 }
+    ];
+
+    let puntaje = 0;
+    const container = document.getElementById("quiz-container");
+    const scoreDisplay = document.getElementById("score");
+
+    preguntas.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.className = "question" + (index === 0 ? " active" : "");
+      div.innerHTML = `
+        <p><strong>${q.pregunta}</strong></p>
+        ${q.opciones.map((op, i) => `<div class="option"><input type="radio" name="q${index}" value="${i === q.correcta ? 'correct' : ''}"> ${op}</div>`).join('')}
+        <button onclick="checkAnswer(${index}, 'q${index}')">Siguiente</button>
+        <div class="feedback" id="feedback${index}"></div>
+      `;
+      container.appendChild(div);
+    });
+
+    function checkAnswer(index, name) {
+      const opciones = document.getElementsByName(name);
+      let correcta = false;
+      for (let op of opciones) {
+        if (op.checked) {
+          correcta = op.value === "correct";
+          if (correcta) puntaje++;
+          break;
+        }
+      }
+      const feedback = document.getElementById('feedback' + index);
+      if (correcta) {
+        feedback.innerText = "✅ ¡Correcto!";
+        setTimeout(() => nextQuestion(index), 1000);
+      } else {
+        feedback.innerText = "❌ Incorrecto. Intenta de nuevo.";
+      }
+    }
+
+    function nextQuestion(current) {
+      const preguntas = document.querySelectorAll('.question');
+      preguntas[current].classList.remove('active');
+      if (preguntas[current + 1]) {
+        preguntas[current + 1].classList.add('active');
+      } else {
+        document.querySelector('.container').innerHTML = `<h2>¡Has terminado la evaluación!</h2><p>Puntaje obtenido: ${puntaje} / 20</p><button onclick='reiniciar()'>Reiniciar</button>`;
+      }
+    }
+
+    function reiniciar() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>
 
