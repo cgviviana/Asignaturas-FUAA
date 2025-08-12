@@ -1,1 +1,562 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OVA · Árbol de problemas – Aprendiendo conLaProfeVivy</title>
+<style>
+  :root{
+    --bg:#f9f7fb; --card:#ffffff; --txt:#2f2942; --muted:#6e667a; --bdr:#e7e3ee;
+    --lav1:#f3eefc; --lav2:#efe7fb; --lav3:#f7f2ff; --cream:#fffaf3;
+    --ok:#24a148; --bad:#d83a52; --accent:#7a5cc7;
+    --cause:#dfe8ff;   /* causa (raíces) */
+    --effect:#ffe4f1;  /* efecto (ramas) */
+    --core:#f7f2ff;    /* problema central */
+    --note:#fffaf3;    /* nota */
+  }
+  html,body{background:var(--bg); color:var(--txt); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif; margin:0}
+  .wrap{max-width:1100px; margin:28px auto; padding:0 16px}
+  .brand{
+    text-align:center; background:linear-gradient(90deg,var(--lav2),var(--cream));
+    border:1px solid var(--bdr); border-radius:18px; padding:18px 16px;
+    box-shadow:0 8px 24px rgba(20,40,80,.06); margin-bottom:14px;
+    font-weight:800; letter-spacing:.2px; font-size:2.1rem;
+  }
+  .brand small{display:block; font-weight:500; color:var(--muted); margin-top:6px; font-size:.95rem}
+  .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+  .tab{border:1px solid var(--bdr); background:#fff; padding:8px 12px; border-radius:999px; cursor:pointer}
+  .tab.active{background:linear-gradient(90deg,var(--lav1),var(--lav3)); font-weight:600}
+  .card{background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:16px; box-shadow:0 8px 24px rgba(20,40,80,.06); margin-bottom:12px}
+  h2{margin:.2rem 0 .6rem; font-size:1.15rem}
+  .muted{color:var(--muted)} .small{font-size:.88rem}
+  .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+  .pill{padding:4px 8px; border:1px solid var(--bdr); border-radius:999px; background:#fff; font-size:.82rem}
+  .btn{border:1px solid var(--bdr); background:#fff; padding:8px 12px; border-radius:10px; cursor:pointer}
+  .btn.primary{background:linear-gradient(90deg,var(--lav1),var(--lav3))}
+  .btn:hover{background:#f4f3f8}
+  select,input[type="file"]{border:1px solid var(--bdr); border-radius:10px; padding:8px 10px; background:#fff}
+  .legend{display:flex; gap:8px; flex-wrap:wrap}
 
+  /* Lienzo SVG */
+  #board{width:100%; height:560px; border:1px dashed var(--bdr); border-radius:14px; background:#fff}
+  .node text{font-size:12px; pointer-events:none; fill:#2f2942}
+  .shape{stroke:#8a7fc9; stroke-width:1.2}
+  .core .shape{fill:var(--core)}
+  .cause .shape{fill:var(--cause)}
+  .effect .shape{fill:var(--effect)}
+  .note .shape{fill:var(--note)}
+  .node.selected .shape{stroke:#5c4cb3; stroke-width:2}
+  .edge{stroke:#5c4cb3; stroke-width:1.4; fill:none; marker-end:url(#arrow)}
+  .edge-label{font-size:11px; fill:#4a4060; user-select:none}
+  .toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; background:linear-gradient(90deg,var(--lav2),var(--cream)); padding:10px; border:1px solid var(--bdr); border-radius:12px}
+  .ok{color:var(--ok)} .bad{color:var(--bad)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    Aprendiendo conLaProfeVivy
+    <small>OVA · Árbol de problemas (problema central, causas y efectos)</small>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-v="v-teoria">1) Mini-teoría</button>
+    <button class="tab" data-v="v-builder">2) Constructor</button>
+    <button class="tab" data-v="v-ejemplos">3) Ejemplos</button>
+    <button class="tab" data-v="v-check">4) Checklist</button>
+    <button class="tab" data-v="v-quiz">5) Mini-quiz</button>
+  </div>
+
+  <!-- TEORÍA -->
+  <section id="v-teoria" class="card view">
+    <h2>Qué es y cómo se lee</h2>
+    <div class="legend">
+      <span class="pill">Tronco: <b>Problema central</b> (1)</span>
+      <span class="pill">Raíces: <b>Causas</b> (directas e indirectas)</span>
+      <span class="pill">Ramas: <b>Efectos</b> (directos e indirectos)</span>
+      <span class="pill">Flechas: dirección causal</span>
+    </div>
+    <ul class="small" style="margin-top:8px">
+      <li><b>Problema central</b>: formulado en negativo, concreto y situado (¿quién, dónde?).</li>
+      <li><b>Causas</b>: lo que explica el problema (indirectas → directas → problema).</li>
+      <li><b>Efectos</b>: lo que ocurre por el problema (problema → efectos directos → indirectos).</li>
+      <li>Usa frases cortas (≤ 2 líneas) y un verbo/idea por nodo.</li>
+    </ul>
+  </section>
+
+  <!-- CONSTRUCTOR -->
+  <section id="v-builder" class="card view" style="display:none">
+    <h2>Constructor de árbol</h2>
+    <div class="toolbar">
+      <label class="pill">Nodo:
+        <select id="nodeType">
+          <option value="core" selected>Problema central</option>
+          <option value="causeD">Causa directa</option>
+          <option value="causeI">Causa indirecta</option>
+          <option value="effectD">Efecto directo</option>
+          <option value="effectI">Efecto indirecto</option>
+          <option value="note">Nota</option>
+        </select>
+      </label>
+      <button class="btn" id="addNode">Añadir</button>
+      <button class="btn" id="connectBtn">Conectar</button>
+      <button class="btn" id="delBtn">Eliminar seleccionado</button>
+      <button class="btn" id="autoBtn">Autolayout</button>
+      <span class="pill">Doble clic para editar texto • Arrastra para mover</span>
+      <span id="modeMsg" class="pill"></span>
+      <span style="flex:1"></span>
+      <button class="btn" id="savePNG">PNG</button>
+      <button class="btn" id="saveSVG">SVG</button>
+      <button class="btn" id="saveJSON">Exportar JSON</button>
+      <label class="btn">Importar JSON <input type="file" id="loadJSON" accept="application/json" style="display:none"></label>
+    </div>
+
+    <svg id="board" viewBox="0 0 1000 560" aria-label="lienzo-árbol">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#5c4cb3"></path>
+        </marker>
+      </defs>
+      <g id="edges"></g>
+      <g id="nodes"></g>
+    </svg>
+
+    <div class="row small muted" style="margin-top:6px">
+      <span class="pill">Convención: causas apuntan <b>hacia el problema</b>; del problema salen flechas a los efectos.</span>
+    </div>
+  </section>
+
+  <!-- EJEMPLOS -->
+  <section id="v-ejemplos" class="card view" style="display:none">
+    <h2>Ejemplos rápidos</h2>
+    <div class="row">
+      <select id="exSel">
+        <option selected disabled>— elegir —</option>
+        <option value="triage">Salud · Espera en urgencias</option>
+        <option value="energia">Hogar · Consumo energético alto</option>
+        <option value="tardanza">Educación · Tardanza escolar</option>
+      </select>
+      <button class="btn primary" id="loadEx">Cargar en el constructor</button>
+      <span class="pill">Sobrescribe el diagrama actual</span>
+    </div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section id="v-check" class="card view" style="display:none">
+    <h2>Checklist de calidad</h2>
+    <ul>
+      <li>✔ Hay <b>un</b> problema central, claro y en negativo.</li>
+      <li>✔ Hay al menos <b>1 causa</b> y <b>1 efecto</b>.</li>
+      <li>✔ Las flechas de causas llegan al problema; del problema salen a efectos.</li>
+      <li>✔ No hay ciclos absurdos (A → … → A).</li>
+      <li>✔ Textos cortos y un solo concepto por nodo.</li>
+    </ul>
+    <div class="row">
+      <button class="btn primary" id="btnCheck">Revisar mi árbol</button>
+      <span id="ckMsg" class="pill"></span>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="v-quiz" class="card view" style="display:none">
+    <h2>Mini-quiz</h2>
+    <div id="qBox"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn primary" id="qCheck">Revisar</button>
+      <button class="btn" id="qReset">Reiniciar</button>
+      <span id="qScore" class="pill"></span>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ===== Navegación ===== */
+document.querySelectorAll(".tab").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    b.classList.add("active");
+    const v=b.dataset.v;
+    document.querySelectorAll(".view").forEach(s=>s.style.display="none");
+    document.getElementById(v).style.display="block";
+  });
+});
+
+/* ===== Modelo ===== */
+let nodes=[], edges=[];
+let selId=null, connectMode=false, connectFrom=null;
+const board=document.getElementById("board");
+const NODES=document.getElementById("nodes");
+const EDGES=document.getElementById("edges");
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function nDefaultText(t){
+  if(t==="core") return "Problema central";
+  if(t==="causeD") return "Causa directa";
+  if(t==="causeI") return "Causa indirecta";
+  if(t==="effectD") return "Efecto directo";
+  if(t==="effectI") return "Efecto indirecto";
+  return "Nota";
+}
+function addNode(type,x=500,y=280,text=""){
+  const baseH = 60;
+  const n={id:uid(), type, x, y, w:180, h:baseH, text:text||nDefaultText(type)};
+  nodes.push(n); draw();
+}
+
+/* ===== Dibujo ===== */
+function draw(){
+  // edges
+  EDGES.innerHTML="";
+  edges.forEach(e=>{
+    const a=nodes.find(n=>n.id===e.from), b=nodes.find(n=>n.id===e.to);
+    if(!a||!b) return;
+    const x1=a.x+a.w/2, y1=a.y+a.h/2, x2=b.x+b.w/2, y2=b.y+b.h/2;
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",x1); line.setAttribute("y1",y1);
+    line.setAttribute("x2",x2); line.setAttribute("y2",y2);
+    line.setAttribute("class","edge"); EDGES.appendChild(line);
+    if(e.label){
+      const tx=document.createElementNS("http://www.w3.org/2000/svg","text");
+      tx.setAttribute("class","edge-label");
+      tx.setAttribute("x",(x1+x2)/2); tx.setAttribute("y",(y1+y2)/2 - 4);
+      tx.textContent=e.label; EDGES.appendChild(tx);
+    }
+  });
+
+  // nodes
+  NODES.innerHTML="";
+  nodes.forEach(n=>{
+    const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("class","node "+cssClass(n.type)+(n.id===selId?" selected":""));
+    g.setAttribute("data-id",n.id);
+    g.setAttribute("transform",`translate(${n.x},${n.y})`);
+    const shape=roundedRect(n.w,n.h,12); shape.setAttribute("class","shape"); g.appendChild(shape);
+
+    const t=document.createElementNS("http://www.w3.org/2000/svg","text");
+    t.setAttribute("x",n.w/2); t.setAttribute("y",n.h/2+4); t.setAttribute("text-anchor","middle");
+    g.appendChild(t); wrapText(t,n.text,n.w-16);
+
+    g.addEventListener("mousedown", startDrag);
+    g.addEventListener("dblclick", editText);
+    g.addEventListener("click", selectNode);
+    NODES.appendChild(g);
+  });
+}
+function cssClass(type){
+  if(type==="core") return "core";
+  if(type.startsWith("cause")) return "cause";
+  if(type.startsWith("effect")) return "effect";
+  return "note";
+}
+function roundedRect(w,h,r){
+  const el=document.createElementNS("http://www.w3.org/2000/svg","rect");
+  el.setAttribute("width",w); el.setAttribute("height",h); el.setAttribute("rx",r); return el;
+}
+function wrapText(tEl,text,maxW){
+  const words=text.split(/\s+/); let line="", y=0; tEl.innerHTML="";
+  words.forEach((w,i)=>{
+    const test=(line?line+" ":"")+w;
+    tEl.textContent=test;
+    if(tEl.getComputedTextLength()>maxW && line){
+      const l=document.createElementNS("http://www.w3.org/2000/svg","tspan");
+      l.setAttribute("x",tEl.getAttribute("x")); l.setAttribute("dy",14);
+      l.textContent=line; tEl.appendChild(l); line=w; y+=14;
+    }else line=test;
+  });
+  const l=document.createElementNS("http://www.w3.org/2000/svg","tspan");
+  l.setAttribute("x",tEl.getAttribute("x")); l.setAttribute("dy",y?14:0);
+  l.textContent=line; tEl.appendChild(l);
+}
+
+/* ===== Interacción ===== */
+let drag={active:false, dx:0, dy:0};
+function svgPoint(evt){
+  const pt=board.createSVGPoint(); pt.x=evt.clientX; pt.y=evt.clientY;
+  return pt.matrixTransform(board.getScreenCTM().inverse());
+}
+function selectNode(e){
+  const id=e.currentTarget.getAttribute("data-id");
+  if(connectMode){
+    if(!connectFrom){ connectFrom=id; modeMsg("Origen ✔ Ahora elige destino"); }
+    else{
+      if(connectFrom!==id){
+        const from=nodes.find(n=>n.id===connectFrom);
+        let label="";
+        if(from){
+          if(from.type.startsWith("cause")) label="causa de";
+          else if(from.type==="core") label="provoca";
+          else label="";
+        }
+        // permitir editar etiqueta
+        const custom=prompt("Etiqueta del vínculo (opcional):",label);
+        edges.push({from:connectFrom,to:id,label:(custom??label)||""});
+        connectFrom=null; connectMode=false; modeMsg("");
+        draw();
+      }
+    }
+    return;
+  }
+  selId=id; draw();
+}
+function editText(e){
+  const id=e.currentTarget.getAttribute("data-id");
+  const n=nodes.find(n=>n.id===id); if(!n) return;
+  const txt=prompt("Texto del nodo:",n.text);
+  if(txt!==null){ n.text=txt.trim()||n.text; draw(); }
+}
+function startDrag(e){
+  const id=e.currentTarget.getAttribute("data-id");
+  selId=id; draw();
+  drag.active=true;
+  const n=nodes.find(n=>n.id===id);
+  const p=svgPoint(e);
+  drag.dx=p.x-n.x; drag.dy=p.y-n.y;
+  window.addEventListener("mousemove", onDrag);
+  window.addEventListener("mouseup", endDrag);
+}
+function onDrag(e){
+  if(!drag.active||!selId) return;
+  const n=nodes.find(n=>n.id===selId);
+  const p=svgPoint(e);
+  n.x=Math.max(10,Math.min(1000-n.w-10,p.x-drag.dx));
+  n.y=Math.max(10,Math.min(560 -n.h-10,p.y-drag.dy));
+  draw();
+}
+function endDrag(){
+  drag.active=false;
+  window.removeEventListener("mousemove", onDrag);
+  window.removeEventListener("mouseup", endDrag);
+}
+
+/* ===== Botones constructor ===== */
+function modeMsg(m){ document.getElementById("modeMsg").textContent=m; }
+document.getElementById("addNode").onclick=()=>{
+  const t=document.getElementById("nodeType").value;
+  const pos=smartPos(t);
+  addNode(t, pos.x, pos.y, "");
+};
+document.getElementById("connectBtn").onclick=()=>{
+  connectMode=!connectMode; connectFrom=null; modeMsg(connectMode?"Modo conectar: elige origen y destino":"");
+};
+document.getElementById("delBtn").onclick=()=>{
+  if(!selId) return;
+  nodes=nodes.filter(n=>n.id!==selId);
+  edges=edges.filter(e=>e.from!==selId && e.to!==selId);
+  selId=null; draw();
+};
+document.getElementById("autoBtn").onclick=autoLayout;
+
+/* Posición “inteligente” inicial según tipo */
+function smartPos(t){
+  const centerX=500, coreY=280;
+  const idx = nodes.filter(n=>n.type===t).length;
+  const offsetX = 60 + (idx%5)*190 - 380; // distribuye en fila
+  if(t==="core") return {x:centerX-90,y:coreY-30};
+  if(t.startsWith("effect")) return {x:centerX+offsetX, y:120 + Math.floor(idx/5)*90};
+  if(t.startsWith("cause")) return {x:centerX+offsetX, y:420 + Math.floor(idx/5)*90};
+  return {x:centerX-90 + (idx%6)*30, y:coreY-30 + (idx%6)*20};
+}
+
+/* Autolayout simple: efectos arriba, causas abajo */
+function autoLayout(){
+  const core = nodes.find(n=>n.type==="core") || nodes[0];
+  if(!core) return;
+  core.x=500-core.w/2; core.y=280-core.h/2;
+  const effD = nodes.filter(n=>n.type==="effectD");
+  const effI = nodes.filter(n=>n.type==="effectI");
+  const cauD = nodes.filter(n=>n.type==="causeD");
+  const cauI = nodes.filter(n=>n.type==="causeI");
+  placeRow(effI, 70); placeRow(effD, 160);
+  placeRow(cauD, 380); placeRow(cauI, 470);
+  draw();
+}
+function placeRow(arr, y){
+  const total = arr.length;
+  const spacing = 1000/(total+1);
+  arr.forEach((n,i)=>{ n.x = spacing*(i+1)-n.w/2; n.y=y; });
+}
+
+/* ===== Export / Import ===== */
+function svgString(){
+  const clone=board.cloneNode(true);
+  clone.querySelectorAll(".node").forEach(n=>n.classList.remove("selected"));
+  const ser=new XMLSerializer(); return ser.serializeToString(clone);
+}
+document.getElementById("saveSVG").onclick=()=>{
+  const s=svgString(); const blob=new Blob([s],{type:"image/svg+xml"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="arbol.svg"; a.click(); URL.revokeObjectURL(a.href);
+};
+document.getElementById("savePNG").onclick=()=>{
+  const s=svgString(); const img=new Image();
+  const url=URL.createObjectURL(new Blob([s],{type:"image/svg+xml"}));
+  img.onload=()=>{
+    const c=document.createElement("canvas"); c.width=1000; c.height=560;
+    const ctx=c.getContext("2d"); ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,c.width,c.height);
+    ctx.drawImage(img,0,0); URL.revokeObjectURL(url);
+    c.toBlob(b=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="arbol.png"; a.click(); }, "image/png");
+  };
+  img.src=url;
+};
+document.getElementById("saveJSON").onclick=()=>{
+  const data=JSON.stringify({nodes,edges},null,2);
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));
+  a.download="arbol.json"; a.click();
+};
+document.getElementById("loadJSON").onchange=(ev)=>{
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const obj=JSON.parse(r.result); nodes=obj.nodes||[]; edges=obj.edges||[]; selId=null; draw(); }catch(e){ alert("JSON inválido"); } };
+  r.readAsText(f);
+};
+
+/* ===== Ejemplos ===== */
+const EXAMPLES={
+  triage:{
+    nodes:[
+      {id:"c",type:"core",x:410,y:250,w:180,h:60,text:"Esperas altas en urgencias"},
+      {id:"cd1",type:"causeD",x:200,y:380,w:180,h:60,text:"Triage aplicado desigual"},
+      {id:"cd2",type:"causeD",x:410,y:380,w:180,h:60,text:"Falta de turnos visibles"},
+      {id:"ci1",type:"causeI",x:620,y:470,w:180,h:60,text:"Poca capacitación nocturna"},
+      {id:"ed1",type:"effectD",x:200,y:160,w:180,h:60,text:"Baja satisfacción del paciente"},
+      {id:"ed2",type:"effectD",x:410,y:160,w:180,h:60,text:"Mayor riesgo en críticos"},
+      {id:"ei1",type:"effectI",x:620,y:70,w:180,h:60,text:"Quejas y mala reputación"}
+    ],
+    edges:[
+      {from:"cd1",to:"c",label:"causa de"}, {from:"cd2",to:"c",label:"causa de"},
+      {from:"ci1",to:"cd2",label:"contribuye a"},
+      {from:"c",to:"ed1",label:"provoca"}, {from:"c",to:"ed2",label:"provoca"},
+      {from:"ed2",to:"ei1",label:"deriva en"}
+    ]
+  },
+  energia:{
+    nodes:[
+      {id:"c",type:"core",x:410,y:250,w:180,h:60,text:"Consumo eléctrico alto"},
+      {id:"cd1",type:"causeD",x:200,y:380,w:180,h:60,text:"Uso ineficiente de equipos"},
+      {id:"cd2",type:"causeD",x:410,y:380,w:180,h:60,text:"Sin monitoreo de consumo"},
+      {id:"ci1",type:"causeI",x:620,y:470,w:180,h:60,text:"Desconocimiento de tarifas"},
+      {id:"ed1",type:"effectD",x:200,y:160,w:180,h:60,text:"Facturas elevadas"},
+      {id:"ed2",type:"effectD",x:410,y:160,w:180,h:60,text:"Carga de tomas y sobrecalentamiento"},
+      {id:"ei1",type:"effectI",x:620,y:70,w:180,h:60,text:"Ajustes presupuestales"}
+    ],
+    edges:[
+      {from:"cd1",to:"c",label:"causa de"}, {from:"cd2",to:"c",label:"causa de"},
+      {from:"ci1",to:"cd1",label:"contribuye a"},
+      {from:"c",to:"ed1",label:"provoca"}, {from:"c",to:"ed2",label:"provoca"},
+      {from:"ed1",to:"ei1",label:"deriva en"}
+    ]
+  },
+  tardanza:{
+    nodes:[
+      {id:"c",type:"core",x:410,y:250,w:180,h:60,text:"Tardanzas frecuentes del alumnado"},
+      {id:"cd1",type:"causeD",x:200,y:380,w:180,h:60,text:"Rutas de transporte inestables"},
+      {id:"cd2",type:"causeD",x:410,y:380,w:180,h:60,text:"Rutinas de sueño irregulares"},
+      {id:"ci1",type:"causeI",x:620,y:470,w:180,h:60,text:"Poca coordinación familia-escuela"},
+      {id:"ed1",type:"effectD",x:200,y:160,w:180,h:60,text:"Pérdida de clases"},
+      {id:"ed2",type:"effectD",x:410,y:160,w:180,h:60,text:"Bajo rendimiento"},
+      {id:"ei1",type:"effectI",x:620,y:70,w:180,h:60,text:"Deserción tardía"}
+    ],
+    edges:[
+      {from:"cd1",to:"c",label:"causa de"}, {from:"cd2",to:"c",label:"causa de"},
+      {from:"ci1",to:"cd2",label:"contribuye a"},
+      {from:"c",to:"ed1",label:"provoca"}, {from:"c",to:"ed2",label:"provoca"},
+      {from:"ed2",to:"ei1",label:"deriva en"}
+    ]
+  }
+};
+document.getElementById("loadEx").onclick=()=>{
+  const k=document.getElementById("exSel").value;
+  if(!EXAMPLES[k]) return alert("Elige un ejemplo");
+  nodes=JSON.parse(JSON.stringify(EXAMPLES[k].nodes));
+  edges=JSON.parse(JSON.stringify(EXAMPLES[k].edges));
+  selId=null; draw();
+};
+
+/* ===== Checklist automático ===== */
+document.getElementById("btnCheck").onclick=()=>{
+  const msg=document.getElementById("ckMsg");
+  const core=nodes.filter(n=>n.type==="core");
+  const hasCause=nodes.some(n=>n.type.startsWith("cause"));
+  const hasEffect=nodes.some(n=>n.type.startsWith("effect"));
+  const cycle = hasCycle();
+  const edgesOK = linksDirectionalOK();
+  let ok=0, total=4;
+  if(core.length===1) ok++;
+  if(hasCause && hasEffect) ok++;
+  if(edgesOK) ok++;
+  if(!cycle) ok++;
+  msg.textContent=`Checklist: ${ok}/${total} ✓`+(core.length!==1?" · Debe haber 1 problema central":"");
+  msg.style.color = ok>=3 ? "var(--ok)" : "var(--bad)";
+};
+function hasCycle(){
+  const adj={}; edges.forEach(e=>{ (adj[e.from]=adj[e.from]||[]).push(e.to); });
+  const visited={}, stack={};
+  function dfs(v){
+    if(stack[v]) return true;
+    if(visited[v]) return false;
+    visited[v]=true; stack[v]=true;
+    (adj[v]||[]).forEach(u=>{ if(dfs(u)) throw "cycle"; });
+    stack[v]=false; return false;
+  }
+  try{ nodes.forEach(n=>dfs(n.id)); }catch(_){ return true; }
+  return false;
+}
+function linksDirectionalOK(){
+  // causas -> core/causas; core -> efectos/efectos; efectos pueden -> efectos indirectos
+  const byId=id=>nodes.find(n=>n.id===id);
+  return edges.every(e=>{
+    const a=byId(e.from), b=byId(e.to); if(!a||!b) return false;
+    if(a.type.startsWith("cause")) return (b.type==="core"||b.type.startsWith("cause"));
+    if(a.type==="core") return b.type.startsWith("effect");
+    if(a.type.startsWith("effect")) return b.type.startsWith("effect");
+    return true; // notas libres
+  });
+}
+
+/* ===== Quiz ===== */
+const QUIZ=[
+  {txt:"“Bajo nivel de iluminación en vías”", type:"cause"},
+  {txt:"“Aumento de accidentes nocturnos”", type:"effect"},
+  {txt:"“Triage aplicado de forma desigual”", type:"cause"},
+  {txt:"“Mejorar la seguridad vial”", type:"no"}, // es objetivo, no problema/causa/efecto
+  {txt:"“Facturas elevadas por consumo”", type:"effect"}
+];
+const LABEL={cause:"Causa",effect:"Efecto",no:"No pertenece (es objetivo/otro)"};
+function renderQuiz(){
+  const box=document.getElementById("qBox");
+  box.innerHTML = QUIZ.map((q,i)=>`
+    <div class="card" id="qi-${i}">
+      <div class="small muted">${i+1}.</div>
+      <div style="margin:.25rem 0 .5rem">${q.txt}</div>
+      <div class="row">
+        <label class="pill"><input type="radio" name="q${i}" value="cause"> Causa</label>
+        <label class="pill"><input type="radio" name="q${i}" value="effect"> Efecto</label>
+        <label class="pill"><input type="radio" name="q${i}" value="no"> No pertenece</label>
+      </div>
+    </div>`).join("");
+}
+renderQuiz();
+document.getElementById("qCheck").onclick=()=>{
+  let ok=0;
+  QUIZ.forEach((q,i)=>{
+    const chosen=[...document.getElementsByName("q"+i)].find(r=>r.checked);
+    const el=document.getElementById("qi-"+i);
+    el.classList.remove("ok","bad");
+    if(chosen && chosen.value===q.type){ ok++; el.classList.add("ok"); } else { el.classList.add("bad"); }
+  });
+  document.getElementById("qScore").textContent=`Puntaje: ${ok}/${QUIZ.length}`;
+};
+document.getElementById("qReset").onclick=()=>{
+  QUIZ.forEach((_,i)=>{
+    [...document.getElementsByName("q"+i)].forEach(r=>r.checked=false);
+    document.getElementById("qi-"+i).classList.remove("ok","bad");
+  });
+  document.getElementById("qScore").textContent="";
+};
+
+/* ===== Init ===== */
+addNode("core",410,250,"Problema central");
+draw();
+</script>
+</body>
+</html>
