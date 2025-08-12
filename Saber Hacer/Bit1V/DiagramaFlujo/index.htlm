@@ -1,1 +1,500 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OVA · Diagrama de flujo – Aprendiendo conLaProfeVivy</title>
+<style>
+  :root{
+    --bg:#f9f7fb; --card:#ffffff; --txt:#2f2942; --muted:#6e667a; --bdr:#e7e3ee;
+    --lav1:#f3eefc; --lav2:#efe7fb; --lav3:#f7f2ff; --cream:#fffaf3;
+    --ok:#24a148; --bad:#d83a52; --accent:#7a5cc7;
+  }
+  html,body{background:var(--bg); color:var(--txt); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif; margin:0}
+  .wrap{max-width:1100px; margin:28px auto; padding:0 16px}
+  .brand{
+    text-align:center; background:linear-gradient(90deg,var(--lav2),var(--cream));
+    border:1px solid var(--bdr); border-radius:18px; padding:18px 16px;
+    box-shadow:0 8px 24px rgba(20,40,80,.06); margin-bottom:14px;
+    font-weight:800; letter-spacing:.2px; font-size:2.1rem;
+  }
+  .brand small{display:block; font-weight:500; color:var(--muted); margin-top:6px; font-size:.95rem}
+  .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+  .tab{border:1px solid var(--bdr); background:#fff; padding:8px 12px; border-radius:999px; cursor:pointer}
+  .tab.active{background:linear-gradient(90deg,var(--lav1),var(--lav3)); font-weight:600}
+  .card{background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:16px; box-shadow:0 8px 24px rgba(20,40,80,.06); margin-bottom:12px}
+  h2{margin:.2rem 0 .6rem; font-size:1.15rem}
+  .muted{color:var(--muted)} .small{font-size:.88rem}
+  .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+  .pill{padding:4px 8px; border:1px solid var(--bdr); border-radius:999px; background:#fff; font-size:.82rem}
+  .btn{border:1px solid var(--bdr); background:#fff; padding:8px 12px; border-radius:10px; cursor:pointer}
+  .btn.primary{background:linear-gradient(90deg,var(--lav1),var(--lav3))}
+  .btn:hover{background:#f4f3f8}
+  select,input[type="file"]{border:1px solid var(--bdr); border-radius:10px; padding:8px 10px; background:#fff}
+  .grid{display:grid; gap:12px}
+  @media(min-width:950px){ .grid-2{grid-template-columns:1fr 1fr} }
+  .legend{display:flex; gap:8px; flex-wrap:wrap}
+
+  /* Lienzo SVG */
+  #board{width:100%; height:520px; border:1px dashed var(--bdr); border-radius:14px; background:#fff}
+  .node text{font-size:12px; pointer-events:none; fill:#2f2942}
+  .node .shape{fill:url(#nodeBg); stroke:#8a7fc9; stroke-width:1.2}
+  .node.selected .shape{stroke:#5c4cb3; stroke-width:2}
+  .edge{stroke:#5c4cb3; stroke-width:1.4; fill:none; marker-end:url(#arrow)}
+  .edge-label{font-size:11px; fill:#4a4060; user-select:none}
+  .toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; background:linear-gradient(90deg,var(--lav2),var(--cream)); padding:10px; border:1px solid var(--bdr); border-radius:12px}
+
+  .ok{color:var(--ok)} .bad{color:var(--bad)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    Aprendiendo conLaProfeVivy
+    <small>OVA · Diagramas de flujo (símbolos, construcción y buenas prácticas)</small>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-v="v-teoria">1) Mini-teoría</button>
+    <button class="tab" data-v="v-builder">2) Constructor</button>
+    <button class="tab" data-v="v-ejemplos">3) Ejemplos</button>
+    <button class="tab" data-v="v-check">4) Checklist</button>
+    <button class="tab" data-v="v-quiz">5) Mini-quiz</button>
+  </div>
+
+  <!-- TEORÍA -->
+  <section id="v-teoria" class="card view">
+    <h2>Símbolos básicos y reglas</h2>
+    <div class="grid grid-2">
+      <div class="card" style="background:linear-gradient(90deg,var(--lav2),var(--cream));">
+        <h2>Símbolos</h2>
+        <ul class="small">
+          <li><b>Inicio/Fin</b>: óvalo (terminador).</li>
+          <li><b>Proceso</b>: rectángulo (acción).</li>
+          <li><b>Decisión</b>: rombo (pregunta Sí/No).</li>
+          <li><b>Entrada/Salida</b>: paralelogramo (leer/mostrar).</li>
+          <li><b>Flechas</b>: dirección del flujo.</li>
+        </ul>
+        <p class="muted small">Tip: un diagrama claro cabe en una página; usa frases cortas (máx. 2 líneas).</p>
+      </div>
+      <div class="card">
+        <h2>Reglas</h2>
+        <ul class="small">
+          <li>1 solo <b>Inicio</b> y al menos 1 <b>Fin</b>.</li>
+          <li>Cada <b>Decisión</b> debe tener 2 salidas (Sí/No).</li>
+          <li>Flujo de arriba a abajo y de izquierda a derecha.</li>
+          <li>Evita cruces; usa más de un Fin si ayuda a la claridad.</li>
+          <li>Verbos de acción: calcular, verificar, mostrar, etc.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSTRUCTOR -->
+  <section id="v-builder" class="card view" style="display:none">
+    <h2>Constructor de diagrama</h2>
+
+    <div class="toolbar">
+      <label class="pill">Nodo:
+        <select id="nodeType">
+          <option value="start">Inicio/Fin</option>
+          <option value="process" selected>Proceso</option>
+          <option value="decision">Decisión</option>
+          <option value="io">Entrada/Salida</option>
+        </select>
+      </label>
+      <button class="btn" id="addNode">Añadir</button>
+      <button class="btn" id="connectBtn">Conectar</button>
+      <button class="btn" id="delBtn">Eliminar seleccionado</button>
+      <span class="pill">Doble clic en un nodo para editar texto • Arrastra para mover</span>
+      <span id="modeMsg" class="pill"></span>
+      <span style="flex:1"></span>
+      <button class="btn" id="savePNG">Exportar PNG</button>
+      <button class="btn" id="saveSVG">Exportar SVG</button>
+      <button class="btn" id="saveJSON">Exportar JSON</button>
+      <label class="btn">
+        Importar JSON <input type="file" id="loadJSON" accept="application/json" style="display:none">
+      </label>
+    </div>
+
+    <svg id="board" viewBox="0 0 1000 520">
+      <defs>
+        <linearGradient id="nodeBg" x1="0" x2="1">
+          <stop offset="0" stop-color="#efe7fb"/><stop offset="1" stop-color="#fffaf3"/>
+        </linearGradient>
+        <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#5c4cb3"></path>
+        </marker>
+      </defs>
+      <g id="edges"></g>
+      <g id="nodes"></g>
+    </svg>
+
+    <p class="muted small">Modo “Conectar”: clic en nodo <b>origen</b> y luego en <b>destino</b>. En “Decisión” te pedirá el rótulo (ej. Sí/No).</p>
+  </section>
+
+  <!-- EJEMPLOS -->
+  <section id="v-ejemplos" class="card view" style="display:none">
+    <h2>Ejemplos rápidos</h2>
+    <div class="row">
+      <select id="exSel">
+        <option selected disabled>— elegir —</option>
+        <option value="semaforo">Semáforo</option>
+        <option value="lavado">Lavado de manos</option>
+        <option value="compra">Compra en supermercado</option>
+      </select>
+      <button class="btn primary" id="loadEx">Cargar en el constructor</button>
+      <span class="pill">Se sobrescribe el diagrama actual</span>
+    </div>
+    <div class="legend" style="margin-top:10px">
+      <span class="pill">Semáforo: Verde → Amarillo → Rojo (decisión por temporizador)</span>
+      <span class="pill">Lavado: Mojar → Enjabonar → Frotar → Enjuagar → Secar</span>
+      <span class="pill">Compra: Lista → ¿Disponible? Sí/No → Pagar/Buscar alternativa</span>
+    </div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section id="v-check" class="card view" style="display:none">
+    <h2>Checklist de calidad</h2>
+    <ul>
+      <li>✔ Tiene un único “Inicio” y al menos un “Fin”.</li>
+      <li>✔ Todas las decisiones tienen dos salidas rotuladas.</li>
+      <li>✔ Flechas siempre apuntan hacia delante (no ciclos sin condición).</li>
+      <li>✔ Textos cortos (≤ 2 líneas) con verbo de acción.</li>
+      <li>✔ Flujo limpio sin cruces confusos.</li>
+    </ul>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="v-quiz" class="card view" style="display:none">
+    <h2>Mini-quiz</h2>
+    <div id="qBox"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn primary" id="qCheck">Revisar</button>
+      <button class="btn" id="qReset">Reiniciar</button>
+      <span id="qScore" class="pill"></span>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ===== Navegación (FIX: solo .view) ===== */
+document.querySelectorAll(".tab").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    b.classList.add("active");
+    const v = b.dataset.v;
+    document.querySelectorAll(".view").forEach(s=>s.style.display="none");
+    document.getElementById(v).style.display="block";
+  });
+});
+
+/* ===== Modelo ===== */
+let nodes=[], edges=[];
+let selId=null, connectMode=false, connectFrom=null;
+const NODES_G = document.getElementById("nodes");
+const EDGES_G = document.getElementById("edges");
+const board   = document.getElementById("board");
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function addNode(type,x=500,y=70,text=""){
+  const n={id:uid(), type, x, y, w:140, h:(type==="decision"?80:60), text:text||defaultText(type)};
+  nodes.push(n); draw();
+}
+function defaultText(t){
+  if(t==="start") return "Inicio/Fin";
+  if(t==="process") return "Proceso";
+  if(t==="decision") return "¿Decisión?";
+  return "Entrada/Salida";
+}
+
+/* ===== Dibujo (FIX: añadir <text> antes de medir) ===== */
+function draw(){
+  // edges
+  EDGES_G.innerHTML="";
+  edges.forEach(e=>{
+    const a=nodes.find(n=>n.id===e.from), b=nodes.find(n=>n.id===e.to);
+    if(!a||!b) return;
+    const x1=a.x+a.w/2, y1=a.y+a.h/2, x2=b.x+b.w/2, y2=b.y+b.h/2;
+    const path = document.createElementNS("http://www.w3.org/2000/svg","line");
+    path.setAttribute("x1",x1); path.setAttribute("y1",y1);
+    path.setAttribute("x2",x2); path.setAttribute("y2",y2);
+    path.setAttribute("class","edge"); EDGES_G.appendChild(path);
+    if(e.label){
+      const tx=document.createElementNS("http://www.w3.org/2000/svg","text");
+      tx.setAttribute("class","edge-label");
+      tx.setAttribute("x",(x1+x2)/2); tx.setAttribute("y",(y1+y2)/2 - 4);
+      tx.textContent=e.label; EDGES_G.appendChild(tx);
+    }
+  });
+
+  // nodes
+  NODES_G.innerHTML="";
+  nodes.forEach(n=>{
+    const g = document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("class","node"+(n.id===selId?" selected":""));
+    g.setAttribute("data-id",n.id);
+    g.setAttribute("transform",`translate(${n.x},${n.y})`);
+    // shape
+    let shape;
+    if(n.type==="start"){ shape = roundedRect(n.w,n.h,28); }
+    else if(n.type==="process"){ shape = roundedRect(n.w,n.h,8); }
+    else if(n.type==="io"){ shape = parallelogram(n.w,n.h,18); }
+    else { shape = diamond(n.w,n.h); }
+    shape.setAttribute("class","shape"); g.appendChild(shape);
+    // text (append first, then wrap)
+    const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+    t.setAttribute("x", n.w/2); t.setAttribute("y", n.h/2+4);
+    t.setAttribute("text-anchor","middle");
+    g.appendChild(t);
+    wrapText(t, n.text, n.w-14);
+
+    // events
+    g.addEventListener("mousedown", startDrag);
+    g.addEventListener("dblclick", editText);
+    g.addEventListener("click", selectNode);
+    NODES_G.appendChild(g);
+  });
+}
+function roundedRect(w,h,r){
+  const el = document.createElementNS("http://www.w3.org/2000/svg","rect");
+  el.setAttribute("width",w); el.setAttribute("height",h); el.setAttribute("rx",r); return el;
+}
+function diamond(w,h){
+  const el = document.createElementNS("http://www.w3.org/2000/svg","polygon");
+  el.setAttribute("points", `${w/2},0 ${w},${h/2} ${w/2},${h} 0,${h/2}`); return el;
+}
+function parallelogram(w,h,s){
+  const el = document.createElementNS("http://www.w3.org/2000/svg","polygon");
+  el.setAttribute("points", `${s},0 ${w},0 ${w-s},${h} 0,${h}`); return el;
+}
+function wrapText(tEl, text, maxW){
+  const words = text.split(/\s+/); let line="", y=0; tEl.innerHTML="";
+  words.forEach((w,i)=>{
+    const test = (line?line+" ":"")+w;
+    tEl.textContent=test;
+    if(tEl.getComputedTextLength()>maxW && line){
+      const l = document.createElementNS("http://www.w3.org/2000/svg","tspan");
+      l.setAttribute("x", tEl.getAttribute("x"));
+      l.setAttribute("dy", 14);
+      l.textContent=line; tEl.appendChild(l);
+      line=w; y+=14;
+    }else line=test;
+  });
+  const l = document.createElementNS("http://www.w3.org/2000/svg","tspan");
+  l.setAttribute("x", tEl.getAttribute("x"));
+  l.setAttribute("dy", y?14:0);
+  l.textContent=line; tEl.appendChild(l);
+}
+
+/* ===== Interacción (FIX: coords SVG, no offsetX) ===== */
+let drag={active:false, dx:0, dy:0};
+function svgPoint(evt){
+  const pt = board.createSVGPoint();
+  pt.x = evt.clientX; pt.y = evt.clientY;
+  return pt.matrixTransform(board.getScreenCTM().inverse());
+}
+function selectNode(e){
+  const id = e.currentTarget.getAttribute("data-id");
+  if(connectMode){
+    if(!connectFrom){ connectFrom=id; document.getElementById("modeMsg").textContent="Origen ✔ Ahora elige destino"; }
+    else{
+      if(connectFrom!==id){
+        let label="";
+        const from = nodes.find(n=>n.id===connectFrom);
+        if(from && from.type==="decision"){ label = prompt("Etiqueta (Sí / No):","Sí")||""; }
+        edges.push({from:connectFrom, to:id, label});
+        connectFrom=null; connectMode=false;
+        document.getElementById("modeMsg").textContent="";
+        draw();
+      }
+    }
+    return;
+  }
+  selId=id; draw();
+}
+function editText(e){
+  const id = e.currentTarget.getAttribute("data-id");
+  const n = nodes.find(n=>n.id===id); if(!n) return;
+  const txt = prompt("Texto del nodo:", n.text);
+  if(txt!==null){ n.text=txt.trim()||n.text; draw(); }
+}
+function startDrag(e){
+  const id = e.currentTarget.getAttribute("data-id");
+  selId=id; draw();
+  drag.active=true;
+  const n = nodes.find(n=>n.id===id);
+  const p = svgPoint(e);
+  drag.dx = p.x - n.x;
+  drag.dy = p.y - n.y;
+  window.addEventListener("mousemove", onDrag);
+  window.addEventListener("mouseup", endDrag);
+}
+function onDrag(e){
+  if(!drag.active||!selId) return;
+  const n = nodes.find(n=>n.id===selId);
+  const p = svgPoint(e);
+  n.x = Math.max(10, Math.min(1000-n.w-10, p.x - drag.dx));
+  n.y = Math.max(10, Math.min(520 -n.h-10, p.y - drag.dy));
+  draw();
+}
+function endDrag(){
+  drag.active=false;
+  window.removeEventListener("mousemove", onDrag);
+  window.removeEventListener("mouseup", endDrag);
+}
+
+/* ===== Botones ===== */
+document.getElementById("addNode").onclick=()=>{
+  const t=document.getElementById("nodeType").value;
+  const pos = {x: 60 + nodes.length*18, y: 40 + nodes.length*12};
+  addNode(t, pos.x, pos.y, "");
+};
+document.getElementById("connectBtn").onclick=()=>{
+  connectMode=!connectMode; connectFrom=null;
+  document.getElementById("modeMsg").textContent = connectMode? "Modo conectar: elige origen y destino" : "";
+};
+document.getElementById("delBtn").onclick=()=>{
+  if(!selId) return;
+  nodes = nodes.filter(n=>n.id!==selId);
+  edges = edges.filter(e=>e.from!==selId && e.to!==selId);
+  selId=null; draw();
+};
+
+/* ===== Export / Import ===== */
+function svgString(){
+  const clone = board.cloneNode(true);
+  clone.querySelectorAll(".node").forEach(n=>n.classList.remove("selected"));
+  const ser = new XMLSerializer();
+  return ser.serializeToString(clone);
+}
+document.getElementById("saveSVG").onclick=()=>{
+  const s = svgString();
+  const blob = new Blob([s],{type:"image/svg+xml"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="diagrama.svg"; a.click(); URL.revokeObjectURL(a.href);
+};
+document.getElementById("savePNG").onclick=()=>{
+  const s = svgString(); const img=new Image();
+  const url = URL.createObjectURL(new Blob([s],{type:"image/svg+xml"}));
+  img.onload=()=>{
+    const c=document.createElement("canvas"); c.width=1000; c.height=520;
+    const ctx=c.getContext("2d"); ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,c.width,c.height);
+    ctx.drawImage(img,0,0); URL.revokeObjectURL(url);
+    c.toBlob(b=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="diagrama.png"; a.click(); }, "image/png");
+  };
+  img.src=url;
+};
+document.getElementById("saveJSON").onclick=()=>{
+  const data=JSON.stringify({nodes,edges},null,2);
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));
+  a.download="diagrama.json"; a.click();
+};
+document.getElementById("loadJSON").onchange=(ev)=>{
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const obj=JSON.parse(r.result); nodes=obj.nodes||[]; edges=obj.edges||[]; selId=null; draw(); }catch(e){ alert("JSON inválido"); } };
+  r.readAsText(f);
+};
+
+/* ===== Ejemplos ===== */
+const EXAMPLES={
+  semaforo:{
+    nodes:[
+      {id:"a",type:"start",x:60,y:40,w:140,h:60,text:"Inicio"},
+      {id:"p1",type:"process",x:260,y:40,w:140,h:60,text:"Luz verde"},
+      {id:"d",type:"decision",x:470,y:35,w:140,h:80,text:"¿Tiempo\nterminó?"},
+      {id:"p2",type:"process",x:660,y:40,w:140,h:60,text:"Luz amarilla"},
+      {id:"p3",type:"process",x:860,y:40,w:140,h:60,text:"Luz roja"},
+      {id:"f",type:"start",x:860,y:180,w:140,h:60,text:"Fin"}
+    ],
+    edges:[
+      {from:"a",to:"p1"}, {from:"p1",to:"d"},
+      {from:"d",to:"p2",label:"Sí"}, {from:"p2",to:"p3"},
+      {from:"p3",to:"d",label:"Ciclo"}, {from:"d",to:"f",label:"No"}
+    ]
+  },
+  lavado:{
+    nodes:[
+      {id:"a",type:"start",x:60,y:40,w:140,h:60,text:"Inicio"},
+      {id:"io1",type:"io",x:240,y:40,w:160,h:60,text:"Abrir grifo\n& mojar manos"},
+      {id:"p2",type:"process",x:440,y:40,w:160,h:60,text:"Aplicar jabón"},
+      {id:"p3",type:"process",x:640,y:40,w:160,h:60,text:"Frotar 20 s"},
+      {id:"p4",type:"process",x:840,y:40,w:160,h:60,text:"Enjuagar"},
+      {id:"p5",type:"process",x:840,y:140,w:160,h:60,text:"Secar"},
+      {id:"f",type:"start",x:840,y:240,w:160,h:60,text:"Fin"}
+    ],
+    edges:[{from:"a",to:"io1"},{from:"io1",to:"p2"},{from:"p2",to:"p3"},{from:"p3",to:"p4"},{from:"p4",to:"p5"},{from:"p5",to:"f"}]
+  },
+  compra:{
+    nodes:[
+      {id:"a",type:"start",x:60,y:40,w:140,h:60,text:"Inicio"},
+      {id:"p1",type:"process",x:240,y:40,w:160,h:60,text:"Hacer lista"},
+      {id:"d",type:"decision",x:450,y:35,w:150,h:80,text:"¿Producto\ndisponible?"},
+      {id:"p2",type:"process",x:650,y:40,w:160,h:60,text:"Añadir al carrito"},
+      {id:"p3",type:"process",x:450,y:150,w:160,h:60,text:"Buscar alternativa"},
+      {id:"p4",type:"io",x:850,y:40,w:160,h:60,text:"Pagar"},
+      {id:"f",type:"start",x:850,y:140,w:160,h:60,text:"Fin"}
+    ],
+    edges:[
+      {from:"a",to:"p1"}, {from:"p1",to:"d"},
+      {from:"d",to:"p2",label:"Sí"}, {from:"p2",to:"p4"}, {from:"p4",to:"f"},
+      {from:"d",to:"p3",label:"No"}, {from:"p3",to:"d",label:"Revisar"}
+    ]
+  }
+};
+document.getElementById("loadEx").onclick=()=>{
+  const k=document.getElementById("exSel").value;
+  if(!EXAMPLES[k]) return alert("Elige un ejemplo");
+  // clonado seguro
+  nodes = JSON.parse(JSON.stringify(EXAMPLES[k].nodes));
+  edges = JSON.parse(JSON.stringify(EXAMPLES[k].edges));
+  selId=null; draw();
+};
+
+/* ===== Quiz ===== */
+const QUIZ=[
+ {q:"¿Qué símbolo representa una pregunta con dos salidas?", a:["Proceso","Decisión","Entrada/Salida","Inicio/Fin"], c:1},
+ {q:"¿Cuántas salidas debe tener un rombo bien hecho?", a:["1","2","3","Depende"], c:1},
+ {q:"¿Qué símbolo usar para 'Mostrar total'?", a:["Paralelogramo","Óvalo","Rombo","Rectángulo"], c:0},
+ {q:"Regla correcta:", a:["Varios inicios mejoran claridad","Decisiones pueden no tener flechas","Flujo de arriba-abajo/izq-der","Los textos deben ser largos"], c:2}
+];
+function renderQuiz(){
+  const b=document.getElementById("qBox");
+  b.innerHTML = QUIZ.map((it,i)=>`
+   <div class="card" id="qi-${i}">
+     <div class="small muted">${i+1}.</div>
+     <div style="margin:.25rem 0 .5rem">${it.q}</div>
+     ${it.a.map((opt,j)=>`<label class="pill"><input type="radio" name="q${i}" value="${j}"> ${opt}</label>`).join(" ")}
+   </div>`).join("");
+}
+renderQuiz();
+
+/* ===== Init ===== */
+addNode("start",60,60,"Inicio");
+addNode("process",260,60,"Proceso");
+addNode("start",460,60,"Fin");
+draw();
+
+/* Botones quiz */
+document.getElementById("qCheck").onclick=()=>{
+  let ok=0;
+  QUIZ.forEach((it,i)=>{
+    const chosen = [...document.getElementsByName("q"+i)].find(r=>r.checked);
+    const el=document.getElementById("qi-"+i);
+    el.classList.remove("ok","bad");
+    if(chosen && +chosen.value===it.c){ ok++; el.classList.add("ok"); }
+    else { el.classList.add("bad"); }
+  });
+  document.getElementById("qScore").textContent = `Puntaje: ${ok}/${QUIZ.length}`;
+};
+document.getElementById("qReset").onclick=()=>{
+  QUIZ.forEach((_,i)=>{ [...document.getElementsByName("q"+i)].forEach(r=>r.checked=false);
+    document.getElementById("qi-"+i).classList.remove("ok","bad"); });
+  document.getElementById("qScore").textContent="";
+};
+</script>
+</body>
+</html>
 
