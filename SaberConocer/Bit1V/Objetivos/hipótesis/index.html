@@ -1,1 +1,390 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OVA · Hipótesis de solución – Aprendiendo conLaProfeVivy</title>
+<style>
+  :root{
+    /* Paleta "mora en leche" */
+    --bg:#f9f7fb; --card:#ffffff; --txt:#2f2942; --muted:#6e667a; --bdr:#e7e3ee;
+    --lav1:#f3eefc; --lav2:#efe7fb; --lav3:#f7f2ff; --cream:#fffaf3;
+    --ok:#24a148; --bad:#d83a52; --accent:#7a5cc7;
+  }
+  html,body{background:var(--bg); color:var(--txt); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif; margin:0}
+  .wrap{max-width:1024px; margin:28px auto; padding:0 16px}
+  /* Marca */
+  .brand{
+    text-align:center; background:linear-gradient(90deg,var(--lav2),var(--cream));
+    border:1px solid var(--bdr); border-radius:18px; padding:18px 16px;
+    box-shadow:0 8px 24px rgba(20,40,80,.06); margin-bottom:14px;
+    font-weight:800; letter-spacing:.2px; font-size:2rem;
+  }
+  .brand small{display:block; font-weight:500; color:var(--muted); margin-top:6px; font-size:.95rem}
+
+  /* Navegación */
+  .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+  .tab{border:1px solid var(--bdr); background:#fff; padding:8px 12px; border-radius:999px; cursor:pointer}
+  .tab.active{background:linear-gradient(90deg,var(--lav1),var(--lav3)); font-weight:600}
+
+  /* Tarjetas */
+  .card{background:var(--card); border:1px solid var(--bdr); border-radius:16px; padding:16px; box-shadow:0 8px 24px rgba(20,40,80,.06); margin-bottom:12px}
+  h2{margin:.2rem 0 0.6rem; font-size:1.15rem}
+  .muted{color:var(--muted)}
+  .grid{display:grid; gap:12px}
+  @media(min-width:900px){ .grid-2{grid-template-columns:1fr 1fr} }
+  label{font-size:.9rem; color:var(--muted)}
+  input[type=text], textarea, select{
+    width:100%; padding:10px 12px; border:1px solid var(--bdr); border-radius:10px; background:#fff; outline:none
+  }
+  textarea{min-height:84px; resize:vertical}
+  .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+  .badge{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid var(--bdr);
+         border-radius:999px; background:#fff; color:#4a4060; font-size:.85rem}
+  .btn{border:1px solid var(--bdr); background:#fff; padding:10px 14px; border-radius:12px; cursor:pointer}
+  .btn.primary{background:linear-gradient(90deg,var(--lav1),var(--lav3))}
+  .btn:hover{background:#f4f3f8}
+  .out{background:#fff; border:1px dashed var(--bdr); border-radius:12px; padding:12px}
+  .good{color:var(--ok)} .bad{color:var(--bad)}
+  .pill{padding:4px 8px; border:1px solid var(--bdr); border-radius:999px; background:#fff; font-size:.82rem}
+
+  /* Quiz */
+  .item{border:1px solid var(--bdr); border-radius:12px; padding:10px; background:#fff}
+  .item + .item{margin-top:8px}
+  .ok{border-color:rgba(36,161,72,.35); background:#f0fbf4}
+  .wrong{border-color:rgba(216,58,82,.35); background:#fff2f4}
+
+  /* Footer */
+  .tip{font-size:.9rem; color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    Aprendiendo conLaProfeVivy
+    <small>OVA · Cómo formular hipótesis de solución (rápido, claro y comprobable)</small>
+  </div>
+
+  <!-- NAV -->
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-view="v-teoria">1) Mini-teoría</button>
+    <button class="tab" data-view="v-constructor">2) Constructor guiado</button>
+    <button class="tab" data-view="v-ejemplos">3) Ejemplos</button>
+    <button class="tab" data-view="v-checklist">4) Checklist</button>
+    <button class="tab" data-view="v-quiz">5) Mini-quiz</button>
+  </div>
+
+  <!-- 1. TEORÍA -->
+  <section id="v-teoria" class="card">
+    <h2>¿Qué es una hipótesis de solución?</h2>
+    <p>Es una <b>apuesta comprobable</b> sobre <i>qué solución</i> ayudará a <i>qué actor</i> en <i>qué contexto</i> y <i>cómo sabremos que funcionó</i>.</p>
+    <div class="grid grid-2">
+      <div class="card" style="background:linear-gradient(90deg,var(--lav2),var(--cream));">
+        <h2>Plantilla sugerida</h2>
+        <p class="muted">Rellena los huecos para que sea clara y medible.</p>
+        <div class="out">
+          <b>Si</b> implementamos <u>[solución]</u> para <u>[actor]</u> en <u>[contexto]</u>, <br/>
+          <b>entonces</b> esperamos <u>[métrica objetivo y umbral]</u> <br/>
+          <b>porque</b> <u>[mecanismo/razón]</u>. <br/>
+          Lo <b>sabremos</b> si <u>[prueba/experimento]</u> en <u>[tiempo]</u>.
+        </div>
+      </div>
+      <div class="card">
+        <h2>Reglas rápidas</h2>
+        <ul>
+          <li>1 verbo fuerte (diseñar, implementar, automatizar...).</li>
+          <li>Actor explícito (¿quién vive el problema?).</li>
+          <li>Métrica con umbral (ej.: <span class="pill">tiempo de espera −20%</span>).</li>
+          <li>Prueba definida (A/B, piloto, antes-después, prototipo).</li>
+          <li>Tiempo acotado (semanas/meses).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. CONSTRUCTOR -->
+  <section id="v-constructor" class="card" style="display:none">
+    <h2>Constructor guiado de hipótesis</h2>
+    <div class="grid grid-2">
+      <div>
+        <label>Actor (¿quién?)</label>
+        <input id="i-actor" type="text" placeholder="p. ej., Paciente en urgencias"/>
+      </div>
+      <div>
+        <label>Contexto (¿dónde?)</label>
+        <input id="i-contexto" type="text" placeholder="p. ej., Sala de triage nocturna"/>
+      </div>
+      <div>
+        <label>Problema/dolor (en negativo)</label>
+        <input id="i-dolor" type="text" placeholder="p. ej., espera alta para priorizar atención"/>
+      </div>
+      <div>
+        <label>Tipo de solución</label>
+        <select id="i-tipo">
+          <option value="app">App</option>
+          <option value="dispositivo">Dispositivo</option>
+          <option value="proceso">Proceso/flujo</option>
+        </select>
+      </div>
+      <div>
+        <label>Solución candidata</label>
+        <input id="i-sol" type="text" placeholder="p. ej., app de turnos y alertas"/>
+      </div>
+      <div>
+        <label>Mecanismo (¿por qué funcionaría?)</label>
+        <input id="i-mecanismo" type="text" placeholder="p. ej., reduce incertidumbre y ordena prioridad"/>
+      </div>
+      <div>
+        <label>Métrica objetivo + umbral</label>
+        <input id="i-metrica" type="text" placeholder="p. ej., mediana de espera −20%"/>
+      </div>
+      <div>
+        <label>Prueba/experimento</label>
+        <input id="i-prueba" type="text" placeholder="p. ej., piloto 4 semanas comparando antes-después"/>
+      </div>
+      <div>
+        <label>Tiempo para evaluar</label>
+        <input id="i-tiempo" type="text" placeholder="p. ej., 1 mes"/>
+      </div>
+      <div>
+        <label>Riesgo clave (opcional)</label>
+        <input id="i-riesgo" type="text" placeholder="p. ej., baja adopción del personal"/>
+      </div>
+      <div style="grid-column:1/-1">
+        <label>Notas (opcional)</label>
+        <textarea id="i-notas" placeholder="supuestos, restricciones, alcance"></textarea>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <button class="btn primary" onclick="generar()">Generar hipótesis</button>
+      <button class="btn" onclick="copiar()">Copiar</button>
+      <button class="btn" onclick="descargar()">Descargar .txt</button>
+      <span class="badge" id="status"></span>
+    </div>
+
+    <h3>Salida</h3>
+    <div id="salida" class="out"></div>
+  </section>
+
+  <!-- 3. EJEMPLOS -->
+  <section id="v-ejemplos" class="card" style="display:none">
+    <h2>Ejemplos listos para usar</h2>
+    <p class="muted">Selecciona un ejemplo para cargarlo en el constructor y editarlo.</p>
+    <div class="grid grid-2">
+      <select id="sel-ej" onchange="cargarEjemplo()">
+        <option selected disabled>— elegir —</option>
+        <option value="med">Medicina · triage</option>
+        <option value="hog">Hogar · energía</option>
+        <option value="sup">Supermercado · reposición</option>
+        <option value="bic">Movilidad · luces automáticas (dispositivo)</option>
+      </select>
+      <div class="row">
+        <span class="pill">Tip: ajusta actor + métrica + prueba</span>
+      </div>
+    </div>
+    <div class="out" id="ej-vista" style="margin-top:10px">—</div>
+  </section>
+
+  <!-- 4. CHECKLIST -->
+  <section id="v-checklist" class="card" style="display:none">
+    <h2>Checklist de calidad</h2>
+    <ul>
+      <li>Actor explícito y contexto claro.</li>
+      <li>Un solo verbo principal en la acción (evita listas de verbos).</li>
+      <li>Métrica con umbral (porcentaje, tiempo, tasa, etc.).</li>
+      <li>Prueba definida y realizable en el tiempo dado.</li>
+      <li>Mecanismo causal razonable (¿por qué debería funcionar?).</li>
+      <li>Riesgo clave identificado.</li>
+    </ul>
+    <div class="row">
+      <button class="btn" onclick="autoRevisar()">Auto-revisar mi hipótesis</button>
+      <span id="rev" class="badge"></span>
+    </div>
+  </section>
+
+  <!-- 5. MINI-QUIZ -->
+  <section id="v-quiz" class="card" style="display:none">
+    <h2>Mini-quiz: reconoce una buena hipótesis</h2>
+    <div id="quizBox"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn primary" onclick="corrQuiz()">Revisar</button>
+      <button class="btn" onclick="resetQuiz()">Reiniciar</button>
+      <span class="badge" id="qscore"></span>
+    </div>
+  </section>
+
+  <p class="tip">Cambia de sección con las pestañas de arriba. Guarda tu hipótesis como texto para usarla en tu proyecto.</p>
+</div>
+
+<script>
+/* ---------- Navegación ---------- */
+const views=["v-teoria","v-constructor","v-ejemplos","v-checklist","v-quiz"];
+document.querySelectorAll(".tab").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    b.classList.add("active");
+    const v=b.dataset.view;
+    views.forEach(id=>document.getElementById(id).style.display = (id===v)?"block":"none");
+  });
+});
+
+/* ---------- Constructor ---------- */
+function v(id){return document.getElementById(id);}
+function generar(){
+  const actor=v("i-actor").value.trim();
+  const ctx=v("i-contexto").value.trim();
+  const dolor=v("i-dolor").value.trim();
+  const tipo=v("i-tipo").value;
+  const sol=v("i-sol").value.trim();
+  const mec=v("i-mecanismo").value.trim();
+  const met=v("i-metrica").value.trim();
+  const pru=v("i-prueba").value.trim();
+  const t=v("i-tiempo").value.trim();
+  const risk=v("i-riesgo").value.trim();
+
+  const str = `Si implementamos ${sol} (${tipo}) para ${actor} en ${ctx}, entonces esperamos ${met} porque ${mec}. ` +
+              `Lo sabremos si ejecutamos ${pru} en ${t}.` + (risk?` Riesgo clave: ${risk}.`:"");
+  v("salida").textContent = str;
+  v("status").textContent = "Generado ✅";
+}
+function copiar(){
+  const txt=v("salida").textContent;
+  if(!txt){v("status").textContent="Nada que copiar";return}
+  navigator.clipboard.writeText(txt).then(()=>v("status").textContent="Copiado ✅");
+}
+function descargar(){
+  const txt=v("salida").textContent||"";
+  const blob=new Blob([txt],{type:"text/plain"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="hipotesis-solucion.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------- Ejemplos ---------- */
+const EJ={
+  med:{
+    actor:"Paciente en urgencias",
+    contexto:"Sala de triage nocturna",
+    dolor:"espera alta para priorizar atención",
+    tipo:"app",
+    sol:"app de turnos y alertas",
+    mecanismo:"ordena prioridades y reduce incertidumbre",
+    metrica:"mediana de espera −20%",
+    prueba:"piloto antes-después",
+    tiempo:"4 semanas",
+    riesgo:"baja adopción del personal"
+  },
+  hog:{
+    actor:"Familia del hogar",
+    contexto:"Vivienda",
+    dolor:"consumo alto por hábitos poco eficientes",
+    tipo:"app",
+    sol:"panel de metas y alertas de uso",
+    mecanismo:"hace visibles los consumos y guía cambios",
+    metrica:"kWh/mes −15%",
+    prueba:"A/B: metas vs. sin metas",
+    tiempo:"1 mes",
+    riesgo:"desuso del panel"
+  },
+  sup:{
+    actor:"Repositor de tienda",
+    contexto:"Supermercado",
+    dolor:"quiebres por reposición tardía",
+    tipo:"app",
+    sol:"dashboard + escaneo de reposición",
+    mecanismo:"alerta temprana por punto de pedido",
+    metrica:"quiebres −30%",
+    prueba:"piloto en 2 pasillos",
+    tiempo:"6 semanas",
+    riesgo:"datos de inventario incompletos"
+  },
+  bic:{
+    actor:"Ciclista",
+    contexto:"Trayectos nocturnos",
+    dolor:"baja visibilidad por olvido de luces",
+    tipo:"dispositivo",
+    sol:"luces automáticas con sensor de luz/movimiento",
+    mecanismo:"enciende sin intervención del ciclista",
+    metrica:"olvido 0% y autonomía ≥6h",
+    prueba:"prueba de campo en 10 trayectos",
+    tiempo:"2 semanas",
+    riesgo:"fijación inestable del dispositivo"
+  }
+};
+function cargarEjemplo(){
+  const k=v("sel-ej").value; if(!EJ[k]) return;
+  v("i-actor").value=EJ[k].actor;
+  v("i-contexto").value=EJ[k].contexto;
+  v("i-dolor").value=EJ[k].dolor;
+  v("i-tipo").value=EJ[k].tipo;
+  v("i-sol").value=EJ[k].sol;
+  v("i-mecanismo").value=EJ[k].mecanismo;
+  v("i-metrica").value=EJ[k].metrica;
+  v("i-prueba").value=EJ[k].prueba;
+  v("i-tiempo").value=EJ[k].tiempo;
+  v("i-riesgo").value=EJ[k].riesgo;
+  v("ej-vista").textContent =
+    `Si implementamos ${EJ[k].sol} (${EJ[k].tipo}) para ${EJ[k].actor} en ${EJ[k].contexto}, `+
+    `entonces esperamos ${EJ[k].metrica} porque ${EJ[k].mecanismo}. `+
+    `Lo sabremos si ejecutamos ${EJ[k].prueba} en ${EJ[k].tiempo}.`;
+}
+
+/* ---------- Checklist automático (básico) ---------- */
+function autoRevisar(){
+  const s=v("salida").textContent.trim();
+  if(!s){v("rev").textContent="Genera tu hipótesis primero"; return;}
+  let ok=0, total=5;
+  if(/para\s.+?\sen\s/i.test(s)) ok++;         // actor+contexto
+  if(/implementamos|diseñamos|automatizamos|instalamos/i.test(s)) ok++; // verbo acción
+  if(/esperamos\s.+%|≥|≤|seg|min|h|horas|días|semanas|mes/i.test(s)) ok++; // métrica/umbral
+  if(/porque\s/i.test(s)) ok++;               // mecanismo
+  if(/sabremos\s.+\s(si|con)\s|ejecutamos/i.test(s)) ok++; // prueba
+  v("rev").textContent = `Checklist: ${ok}/${total} ✓`;
+  v("rev").style.color = ok>=4 ? "var(--ok)" : "var(--bad)";
+}
+
+/* ---------- Quiz ---------- */
+const QUIZ=[
+  {txt:"Si implementamos una app de turnos para urgencias entonces esperamos mediana de espera −20% porque reduce incertidumbre; lo sabremos con piloto 4 semanas.", ok:true},
+  {txt:"Vamos a reducir el tiempo de espera mucho.", ok:false},
+  {txt:"Instalaremos luces automáticas en bicis; olvido 0% medido en 10 trayectos en 2 semanas.", ok:true},
+  {txt:"La energía es cara; hay que ahorrar.", ok:false}
+];
+function renderQuiz(){
+  const box=v("quizBox");
+  box.innerHTML = QUIZ.map((q,i)=>`
+    <div class="item" id="qi-${i}">
+      <div class="muted">${i+1}.</div>
+      <div>${q.txt}</div>
+      <div class="row" style="margin-top:6px">
+        <label class="badge"><input type="radio" name="q${i}" value="true"> Es hipótesis válida</label>
+        <label class="badge"><input type="radio" name="q${i}" value="false"> No es hipótesis</label>
+      </div>
+    </div>`).join("");
+}
+function corrQuiz(){
+  let bien=0;
+  QUIZ.forEach((q,i)=>{
+    const chosen = Array.from(document.getElementsByName("q"+i)).find(r=>r.checked);
+    const el=v("qi-"+i);
+    el.classList.remove("ok","wrong");
+    if(chosen && String(q.ok)===chosen.value){ bien++; el.classList.add("ok"); }
+    else { el.classList.add("wrong"); }
+  });
+  v("qscore").textContent = `Puntaje: ${bien}/${QUIZ.length}`;
+}
+function resetQuiz(){
+  QUIZ.forEach((_,i)=>{
+    Array.from(document.getElementsByName("q"+i)).forEach(r=>r.checked=false);
+    v("qi-"+i).classList.remove("ok","wrong");
+  });
+  v("qscore").textContent="";
+}
+renderQuiz();
+</script>
+</body>
+</html>
 
