@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección: Estrategias de Búsqueda Efectiva — Interactiva (v4)</title>
+<style>
+  :root{
+    --overlay: rgba(10,16,36,.66);
+    --panel:#0f1a3a; --card:#101b36; --text:#eaf1ff; --muted:#c9d6ff;
+    --ok:#58ffb2; --warn:#ffd866; --bad:#ff7b7b; --accent:#00d2ff; --accent2:#8a7bff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;color:var(--text);
+    font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:#0a1024 url('Fondo.jpeg') center center/cover fixed no-repeat;
+    position:relative; overflow:hidden;
+  }
+  body::before{content:"";position:fixed;inset:0;background:linear-gradient(180deg,var(--overlay),rgba(10,16,36,.78));pointer-events:none}
+  header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;
+         border-bottom:1px solid rgba(255,255,255,.12);background:rgba(10,16,36,.55);backdrop-filter:blur(4px)}
+  .title{font-weight:800;font-size:clamp(18px,2.6vw,24px)}
+  .sub{color:var(--muted);font-size:clamp(12px,1.6vw,14px)}
+  .controls{display:flex;gap:8px}
+  button{appearance:none;border:none;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer}
+  .ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.25)}
+  .primary{color:#07111f;background:linear-gradient(180deg,var(--accent),#0088ff)}
+  main{height:calc(100dvh - 112px);position:relative;z-index:1}
+  .track{display:flex;height:100%;transition:transform .4s ease;will-change:transform}
+  section{min-width:100%;position:relative;overflow:auto;padding-bottom:40px}
+  .panel{max-width:min(980px,92%);margin:60px auto 26px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+         border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:22px}
+  .center{display:flex;align-items:center;justify-content:center;text-align:center;min-height:calc(100% - 120px)}
+  h1{font-size:clamp(28px,5vw,44px);margin:0 0 6px}
+  h2{margin:0 0 8px;font-size:clamp(20px,3vw,30px)}
+  p,li{color:var(--muted);font-size:clamp(14px,1.9vw,17px)}
+  ul{margin:.4rem 0 .2rem 1.2rem;line-height:1.55}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:10px}
+  .card{background:#101b36cc;border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px}
+  .ans{display:block;margin:6px 0;padding:10px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);cursor:pointer}
+  .result{margin-top:10px;font-weight:700}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+  .progress{position:relative;z-index:2;display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid rgba(255,255,255,.1);
+            background:rgba(10,16,36,.55);backdrop-filter:blur(4px)}
+  .bar{flex:1;height:10px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
+  .bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s ease}
+  .dots{display:flex;gap:6px}.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25)}.dot.active{background:linear-gradient(180deg,var(--accent),#007bff)}
+  .footerNote{position:relative;z-index:2;font-size:12px;color:var(--muted);padding:6px 16px}
+  code{background:rgba(0,0,0,.35);padding:2px 6px;border-radius:8px}
+  .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);margin-right:6px}
+  .badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.3);margin:0 6px 6px 0}
+  .one{background:rgba(0,210,255,.12)} .multi{background:rgba(120,255,160,.12)}
+  .legend{font-size:12px;color:var(--muted);margin:6px 0 10px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="title">Lección: Estrategias de Búsqueda Efectiva</div>
+    <div id="sceneLabel" class="sub">00 · Portada</div>
+  </div>
+  <div class="controls"><button class="ghost" id="prevBtn">⟵ Anterior</button><button class="primary" id="nextBtn">Siguiente ⟶</button></div>
+</header>
+
+<main>
+  <div id="track" class="track">
+
+    <!-- 0. PORTADA -->
+    <section data-label="Portada">
+      <div class="panel center">
+        <div>
+          <h1>Estrategias de Búsqueda Efectiva</h1>
+          <p style="font-size:16px;margin:0 0 14px">Aprendiendo con <b>@LaProfeVivy</b></p>
+         
+       
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. Búsquedas en Internet -->
+    <section data-label="Búsquedas en Internet">
+      <div class="panel">
+        <h2>1. Búsquedas en Internet</h2>
+        <p>Antes de buscar, define la <b>pregunta</b>, las <b>palabras clave</b> y <b>sinónimos</b>. Observa el resultado: <b>título</b>, <b>URL</b> y <b>extracto</b>.</p>
+        <div class="grid">
+          <div class="card"><b>Atajos útiles</b>
+            <ul><li><code>"frase exacta"</code> — secuencia exacta.</li><li><code>-término</code> — excluye.</li><li><code>site:dominio</code> — sitio específico.</li><li><code>filetype:pdf</code> — tipo de archivo.</li></ul>
+          </div>
+          <div class="card"><b>Tips rápidos</b>
+            <ul><li>Usa sustantivos y verbos clave.</li><li>Prueba sinónimos (energía <i>solar</i> / fotovoltaica).</li><li>Lee 2–3 resultados antes de entrar.</li></ul>
+          </div>
+          <div class="card"><b>Ejemplos</b>
+            <ul><li><code>"cambio climático" site:un.org filetype:pdf</code></li><li><code>intitle:"aprendizaje automático" -curso</code></li><li><code>site:areandina.edu.co biblioteca inurl:servicios</code></li></ul>
+          </div>
+        </div>
+        <div style="margin-top:8px"><span class="pill">Define → Busca → Verifica</span><span class="pill">Cambia una palabra cada intento</span></div>
+      </div>
+    </section>
+
+    <!-- Quiz 1 -->
+    <section data-label="Práctica 1">
+      <div class="panel">
+        <h2>Práctica 1 — Búsquedas en Internet</h2>
+        <div class="legend"><span class="badge one">Una respuesta</span> Elige <b>solo una</b> opción por pregunta.</div>
+        <div class="ans"><label><input type="radio" name="q1a" value="v"> Poner comillas busca la frase exacta.</label></div>
+        <div class="ans"><label><input type="radio" name="q1a" value="f"> Poner comillas amplía la búsqueda.</label></div>
+        <div class="ans">¿Qué es lo primero antes de buscar?
+          <label><input type="radio" name="q1b" value="ok"> Definir la pregunta y palabras clave.</label>
+          <label style="margin-left:12px"><input type="radio" name="q1b" value="no"> Abrir el primer resultado.</label>
+        </div>
+        <div class="ans">Para excluir un término, usas:
+          <label><input type="radio" name="q1c" value="-"> El signo menos (-)</label>
+          <label style="margin-left:12px"><input type="radio" name="q1c" value="x"> El símbolo +</label>
+        </div>
+        <div id="r1" class="result"></div>
+      </div>
+    </section>
+
+    <!-- 2. Booleanos -->
+    <section data-label="Operadores Booleanos">
+      <div class="panel">
+        <h2>2. Operadores Booleanos</h2>
+        <p>Usa <b>AND</b> (reduce), <b>OR</b> (amplía con sinónimos) y <b>NOT</b>/<code>-</code> (excluye). Los <b>paréntesis</b> agrupan ideas.</p>
+        <ul>
+          <li><code>energía solar AND almacenamiento</code> — ambas palabras.</li>
+          <li><code>costo OR precio</code> — cualquiera de las dos.</li>
+          <li><code>virus NOT biología</code> / <code>virus -biología</code> — excluye.</li>
+          <li><code>(paneles OR módulos) solares</code> — agrupa sinónimos.</li>
+        </ul>
+        <div class="grid">
+          <div class="card"><b>Errores comunes</b>
+            <ul><li>Usar <i>and</i>/<i>or</i> en minúscula (algunos buscadores los ignoran).</li><li>No agrupar términos con <b>( )</b>.</li></ul>
+          </div>
+          <div class="card"><b>Plantilla</b>
+            <p><code>(sinónimo1 OR sinónimo2) AND tema2 -exclusión</code></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz 2 -->
+    <section data-label="Práctica 2">
+      <div class="panel">
+        <h2>Práctica 2 — Booleanos</h2>
+        <div class="legend">
+          <span class="badge one">Una respuesta</span> para las dos primeras preguntas · 
+          <span class="badge multi">Varias respuestas</span> en la última (marca todas las correctas).
+        </div>
+        <div class="ans">¿Qué operador se usa para <b>ampliar</b> con sinónimos?
+          <label><input type="radio" name="q2a" value="OR"> OR</label>
+          <label style="margin-left:12px"><input type="radio" name="q2a" value="AND"> AND</label>
+        </div>
+        <div class="ans"><label><input type="radio" name="q2b" value="ok"> AND reduce los resultados; OR los amplía.</label></div>
+        <div class="ans"><label><input type="radio" name="q2b" value="no"> OR reduce y AND amplía.</label></div>
+        <div class="ans"><span class="badge multi">Varias respuestas</span>
+          <label><input type="checkbox" name="q2c" value="p"> Los paréntesis ayudan a agrupar términos.</label>
+          <label style="margin-left:12px"><input type="checkbox" name="q2c" value="f"> NOT sirve para incluir sinónimos.</label>
+        </div>
+        <div id="r2" class="result"></div>
+      </div>
+    </section>
+
+    <!-- 3. Tesauro & Calidad -->
+    <section data-label="Tesauro y Calidad">
+      <div class="panel">
+        <h2>3. Tesauro, factor de calidad e impacto</h2>
+        <div class="grid">
+          <div class="card"><b>Tesauro</b>
+            <p>Vocabulario controlado: da el <b>término preferido</b> y relaciones (<i>más amplio</i>, <i>relacionado</i>).</p>
+            <p><b>Ejemplo:</b> “célula madre” → preferido: “<i>células troncales</i>”.</p>
+          </div>
+          <div class="card"><b>Calidad</b>
+            <ul><li><b>Autoridad</b> (¿quién escribe?).</li><li><b>Actualidad</b> (fecha/vigencia).</li><li><b>Relevancia</b> (¿responde?).</li><li><b>Objetividad</b> (sesgo/propósito).</li></ul>
+          </div>
+          <div class="card"><b>Impacto</b>
+            <p>El <b>factor de impacto</b> aproxima cuántas <b>citas</b> reciben los artículos de una revista.</p>
+            <p>Úsalo como referencia, no como verdad absoluta.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz 3 -->
+    <section data-label="Práctica 3">
+      <div class="panel">
+        <h2>Práctica 3 — Tesauro & Calidad</h2>
+        <div class="legend"><span class="badge one">Una respuesta</span> en 1 y 3 · <span class="badge multi">Varias</span> en la 2.</div>
+        <div class="ans">El tesauro se usa para…
+          <label><input type="radio" name="q3a" value="ok"> Encontrar el término preferido y relaciones.</label>
+          <label style="margin-left:12px"><input type="radio" name="q3a" value="no"> Descargar artículos completos.</label>
+        </div>
+        <div class="ans"><span class="badge multi">Varias respuestas</span>
+          <label><input type="checkbox" name="q3b" value="aut"> Autoridad</label>
+          <label style="margin-left:12px"><input type="checkbox" name="q3b" value="act"> Actualidad</label>
+          <label style="margin-left:12px"><input type="checkbox" name="q3b" value="col"> Color del logo</label>
+        </div>
+        <div class="ans">
+          <label><input type="radio" name="q3c" value="v"> El factor de impacto se basa en citas promedio.</label>
+          <label style="margin-left:12px"><input type="radio" name="q3c" value="f"> El factor de impacto mide tamaño del PDF.</label>
+        </div>
+        <div id="r3" class="result"></div>
+      </div>
+    </section>
+
+    <!-- 4. Búsquedas avanzadas -->
+    <section data-label="Búsquedas Avanzadas">
+      <div class="panel">
+        <h2>4. Búsquedas avanzadas</h2>
+        <ul>
+          <li><code>site:</code> restringe dominio: <code>site:gov.co</code>, <code>site:areandina.edu.co</code></li>
+          <li><code>intitle:</code> en el título; <code>inurl:</code> en la URL; <code>filetype:</code> tipo de archivo.</li>
+          <li><code>define:</code> definiciones; <code>related:</code> sitios similares.</li>
+          <li>Para artículos con citas: <b>Google Scholar</b> u otras bases (Scopus, WoS).</li>
+        </ul>
+        <div class="grid">
+          <div class="card"><b>Consultas ejemplo</b>
+            <ul><li><code>site:gov.co "salud pública" filetype:pdf</code></li>
+                <li><code>intitle:"guía docente" site:areandina.edu.co</code></li>
+                <li><code>related:who.int</code></li></ul></div>
+          <div class="card"><b>Cuando nada aparece</b>
+            <ul><li>Quita filtros (filetype/site) o cambia idioma.</li><li>Prueba sinónimos y cambia de buscador.</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz 4 -->
+    <section data-label="Práctica 4">
+      <div class="panel">
+        <h2>Práctica 4 — Búsquedas avanzadas</h2>
+        <div class="legend"><span class="badge one">Una respuesta</span> en 1 y 2 · <span class="badge multi">Varias</span> en la 3.</div>
+        <div class="ans">Para buscar PDFs en sitios del gobierno usarías:
+          <label><input type="radio" name="q4a" value="ok"> site:gov filetype:pdf</label>
+          <label style="margin-left:12px"><input type="radio" name="q4a" value="no"> intitle:gov define:pdf</label>
+        </div>
+        <div class="ans">¿Dónde miras número de citas de un artículo?
+          <label><input type="radio" name="q4b" value="ok"> Google Scholar</label>
+          <label style="margin-left:12px"><input type="radio" name="q4b" value="no"> Google Imágenes</label>
+        </div>
+        <div class="ans"><span class="badge multi">Varias respuestas</span>
+          <label><input type="checkbox" name="q4c" value="i"> intitle:</label>
+          <label style="margin-left:12px"><input type="checkbox" name="q4c" value="u"> inurl:</label>
+          <label style="margin-left:12px"><input type="checkbox" name="q4c" value="x"> hashtag:</label>
+        </div>
+        <div id="r4" class="result"></div>
+      </div>
+    </section>
+
+    <!-- Summary -->
+    <section data-label="Resumen y Puntaje">
+      <div class="panel center">
+        <div>
+          <h2>Resumen</h2>
+          <p>Tu puntaje total: <b><span id="scoreTotal">0</span> / 14</b></p>
+          <div id="feedback" style="margin-bottom:8px"></div>
+          <p class="legend">Autoría: <b>Aprendiendo con @LaProfeVivy</b></p>
+          
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div class="progress">
+  <div class="sub">Progreso</div>
+  <div class="bar"><span id="barFill"></span></div>
+  <div class="dots" id="dots"></div>
+</div>
+<div class="footerNote">Tipos de pregunta: <span class="badge one">Una respuesta</span> · <span class="badge multi">Varias respuestas</span>. Usa flechas o los botones.</div>
+
+<script>
+  const track = document.getElementById('track');
+  const slides = Array.from(track.children);
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const sceneLabel = document.getElementById('sceneLabel');
+  const dotsWrap = document.getElementById('dots');
+  const barFill = document.getElementById('barFill');
+
+  let i = Number(localStorage.getItem('leccion_idx')||0);
+  const state = JSON.parse(localStorage.getItem('leccion_state')||'{}');
+
+  function setIndex(n){
+    i = Math.max(0, Math.min(slides.length-1, n));
+    localStorage.setItem('leccion_idx', i);
+    track.style.transform = `translateX(${-i*100}%)`;
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    sceneLabel.textContent = String(i).padStart(2,'0') + " · " + (slides[i].dataset.label || "Diapositiva");
+    Array.from(dotsWrap.children).forEach((d,k)=>d.classList.toggle('active',k===i));
+    barFill.style.width = ((i)/(slides.length-1))*100 + '%';
+    if(i === slides.length-1){ computeScore(); }
+  }
+  function go(delta){ setIndex(i+delta); }
+
+  prevBtn.addEventListener('click', ()=>go(-1));
+  nextBtn.addEventListener('click', ()=>go(1));
+
+  window.addEventListener('keydown', (e)=>{
+    if(e.key==='ArrowRight') go(1);
+    if(e.key==='ArrowLeft') go(-1);
+  });
+
+  slides.forEach((_,k)=>{
+    const b = document.createElement('div');
+    b.className = 'dot';
+    b.addEventListener('click', ()=>setIndex(k));
+    dotsWrap.appendChild(b);
+  });
+
+  function radioValue(name){
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : null;
+  }
+  function checkboxValues(name){
+    return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x=>x.value).sort().join(',');
+  }
+  function save(name,val){
+    state[name]=val; localStorage.setItem('leccion_state', JSON.stringify(state));
+  }
+
+  document.querySelectorAll('input[type="radio"],input[type="checkbox"]').forEach(inp=>{
+    inp.addEventListener('change', ()=>{
+      const name = inp.name;
+      let val = inp.type==='radio' ? radioValue(name) : checkboxValues(name);
+      save(name,val);
+      gradeCurrent();
+    });
+  });
+
+  Object.entries(state).forEach(([k,v])=>{
+    if(v){
+      if(v.includes(',')){
+        v.split(',').forEach(val=>{
+          const el = document.querySelector(`input[name="${k}"][value="${val}"]`);
+          if(el) el.checked = true;
+        });
+      }else{
+        const el = document.querySelector(`input[name="${k}"][value="${v}"]`);
+        if(el) el.checked = true;
+      }
+    }
+  });
+
+  function gradeCurrent(){
+    const r1 = document.getElementById('r1');
+    if(r1){
+      const a = state.q1a==='v';
+      const b = state.q1b==='ok';
+      const c = state.q1c==='-';
+      const sc = (a?1:0)+(b?1:0)+(c?1:0);
+      r1.textContent = `Puntaje parcial: ${sc}/3`;
+      r1.className = 'result ' + (sc===3?'ok':(sc>=2?'warn':'bad'));
+    }
+    const r2 = document.getElementById('r2');
+    if(r2){
+      const a = state.q2a==='OR';
+      const b = state.q2b==='ok';
+      const cValid = (state.q2c||'').split(',').includes('p') && !(state.q2c||'').split(',').includes('f');
+      const sc = (a?1:0)+(b?1:0)+(cValid?1:0);
+      r2.textContent = `Puntaje parcial: ${sc}/3`;
+      r2.className = 'result ' + (sc===3?'ok':(sc>=2?'warn':'bad'));
+    }
+    const r3 = document.getElementById('r3');
+    if(r3){
+      const a = state.q3a==='ok';
+      const bVals = (state.q3b||'').split(',').filter(Boolean);
+      const b = bVals.sort().join(',')==='act,aut';
+      const c = state.q3c==='v';
+      const sc = (a?1:0)+(b?1:0)+(c?1:0);
+      r3.textContent = `Puntaje parcial: ${sc}/3`;
+      r3.className = 'result ' + (sc===3?'ok':(sc>=2?'warn':'bad'));
+    }
+    const r4 = document.getElementById('r4');
+    if(r4){
+      const a = state.q4a==='ok';
+      const b = state.q4b==='ok';
+      const cVals = (state.q4c||'').split(',').filter(Boolean);
+      const c = cVals.sort().join(',')==='i,u';
+      const sc = (a?1:0)+(b?1:0)+(c?1:0);
+      r4.textContent = `Puntaje parcial: ${sc}/3`;
+      r4.className = 'result ' + (sc===3?'ok':(sc>=2?'warn':'bad'));
+    }
+  }
+
+  function computeScore(){
+    gradeCurrent();
+    const total =
+      (state.q1a==='v') + (state.q1b==='ok') + (state.q1c==='-') +
+      (state.q2a==='OR') + (state.q2b==='ok') + (((state.q2c||'').split(',').includes('p')) && !((state.q2c||'').split(',').includes('f'))) +
+      (state.q3a==='ok') + (((state.q3b||'').split(',').sort().join(',')==='act,aut')) + (state.q3c==='v') +
+      (state.q4a==='ok') + (state.q4b==='ok') + (((state.q4c||'').split(',').sort().join(',')==='i,u'));
+    document.getElementById('scoreTotal').textContent = total;
+    const fb = document.getElementById('feedback');
+    let msg = 'Bien. Repasa las pistas para mejorar.';
+    if(total >= 12) msg = '¡Excelente! Dominio muy sólido.';
+    else if(total <= 7) msg = 'Revisa las diapositivas y vuelve a intentar.';
+    fb.textContent = msg;
+  }
+
+  setIndex(i);
+  gradeCurrent();
+</script>
+</body>
+</html>
