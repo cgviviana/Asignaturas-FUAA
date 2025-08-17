@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OVA Multipestaña – Fuentes y Búsquedas</title>
+  <style>
+    :root{
+      --panel:#ffffff;      /* blanco panel */
+      --ink:#1f2937;        /* gris oscuro texto */
+      --muted:#6b7280;      /* gris medio */
+      --accent:#3b82f6;     /* azul profesional */
+      --accent-2:#38bdf8;   /* celeste */
+      --card:#ffffff;       /* panel claro */
+      --shadow: 0 4px 10px rgba(0,0,0,.08);
+      --radius:14px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+      background: url('Fondo.png') no-repeat center center fixed;
+      background-size: cover;
+      color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+      padding:16px;
+    }
+    .wrap{max-width:1100px; margin:0 auto;}
+
+    /* Header */
+    .head{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:12px; padding:12px 14px; background:#ffffff;
+      border:1px solid #e5e7eb; border-radius:var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .head h1{font-size:20px; margin:0; font-weight:700; letter-spacing:.2px; color:var(--accent)}
+    .head small{color:var(--muted)}
+
+    /* Tabs bar */
+    .tabs{
+      position:sticky; top:8px; z-index:10;
+      overflow:auto; display:flex; gap:8px; padding:8px; margin-bottom:12px;
+      background:#ffffff;
+      border:1px solid #e5e7eb; border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      scroll-snap-type:x mandatory;
+    }
+    .tab-btn{
+      flex:1 0 150px; /* ancho uniforme */
+      scroll-snap-align:start;
+      white-space:nowrap; text-overflow:ellipsis; overflow:hidden;
+      background:#f3f4f6; color:var(--ink);
+      border:1px solid #d1d5db;
+      border-radius:10px; padding:8px 10px; cursor:pointer;
+      transition: all .15s ease;
+      font-weight:600; font-size:14px;
+    }
+    .tab-btn[aria-selected="true"]{
+      background: var(--accent);
+      color:#fff;
+      border-color: var(--accent);
+    }
+    .tab-btn:hover{ background:#e0e7ff; }
+
+    /* Panels */
+    .panel{
+      display:none; background:#ffffff;
+      border:1px solid #e5e7eb;
+      border-radius:var(--radius); padding:18px; box-shadow: var(--shadow);
+      animation: fade .25s ease;
+    }
+    .panel.active{display:block;}
+    @keyframes fade{from{opacity:.6; transform:translateY(2px)} to{opacity:1; transform:none}}
+
+    .kicker{display:inline-flex; gap:8px; align-items:center; color:var(--muted); font-weight:600; letter-spacing:.3px; text-transform:uppercase; font-size:12px}
+    .title{font-size:22px; margin:.2rem 0 1rem; color:var(--accent)}
+
+    .card{
+      background:#f9fafb; border:1px solid #e5e7eb;
+      border-radius:12px; padding:14px; margin:10px 0; box-shadow: var(--shadow);
+    }
+    .grid{
+      display:grid; gap:12px; grid-template-columns: repeat(12, 1fr);
+    }
+    .col-6{grid-column: span 6;}
+    .col-12{grid-column: span 12;}
+    @media (max-width: 900px){ .col-6{grid-column: span 12;} }
+
+    .embed, .img-box, .video-box{
+      display:grid; place-items:center; background:#fff;
+      border:1px dashed #cbd5e1; border-radius:12px; min-height:220px; padding:8px;
+    }
+    .embed iframe, .video-box iframe{ width:100%; height:420px; border:0; border-radius:10px;}
+    .img-box img{ max-width:90%; height:auto; border-radius:8px; display:block; margin:auto;}
+
+    .btn{ display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+      padding:8px 12px; border-radius:10px; border:1px solid var(--accent);
+      background:var(--accent); color:#fff; text-decoration:none;
+      font-weight:600; font-size:14px;
+      transition: background .12s ease, transform .12s ease; }
+    .btn:hover{ background:var(--accent-2); transform: translateY(-1px); }
+
+    .btn-row{display:flex; flex-wrap:wrap; gap:10px;}
+    .muted{color:var(--muted)}
+
+    footer{
+      margin:18px auto 4px; padding:12px 14px; text-align:center; color:var(--muted);
+      border-top:1px dashed #d1d5db;
+    }
+  </style>
+</head>
+</head>
+
+<body>
+  <div class="wrap" role="application">
+    <div class="head">
+      <h1>Búsquedas de Información</h1>
+      
+    </div>
+
+    <!-- Tabs Bar -->
+    <div class="tabs" role="tablist" aria-label="Navegación de pestañas">
+      <button class="tab-btn" role="tab" aria-selected="true" aria-controls="p1" id="t1">Fuentes</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p2" id="t2">Buscadores</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p3" id="t3">B. Especializados</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p4" id="t4">Biblioteca</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p5" id="t5">Recursos</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p6" id="t6">Búsquedas</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p7" id="t7">Práctica</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="p8" id="t8">Referentes</button>
+    </div>
+
+    <!-- Panels -->
+    <section class="panel active" id="p1" role="tabpanel" aria-labelledby="t1">
+      <span class="kicker">Pestaña 1</span>
+      <h2 class="title">Fuentes de información</h2>
+      <p><strong> Conceptualización y <em>formas de validación</em> .</strong></p>
+      <div class="grid">
+        <div class="col-12 card">
+          <h3>Fuentes</h3>
+          <div class="embed">
+            <iframe src="https://cgviviana.github.io/Asignaturas-FUAA/Saber%20Hacer/Fuentes/index.html" title="Recurso: Fuentes de información" allowfullscreen></iframe>
+          </div>
+        </div>
+
+
+        </div>
+       <a class="btn"   href="https://cgviviana.github.io/Asignaturas-FUAA/Bases/Fuentes/"target="_blank" rel="noopener"
+        onclick="(e=>{let z=+(e.dataset.z||16);z=z>=22?14:z+2;document.body.style.fontSize=z+'px';e.dataset.z=z;})(this)">  Ir a Recurso 1 </a>
+       <a class="btn"    href="https://www.youtube.com/watch?v=fmwhRXYs5Go"  target="_blank" rel="noopener"
+       onclick="(e=>{let z=+(e.dataset.z||16);z=z>=22?14:z+2;document.body.style.fontSize=z+'px';e.dataset.z=z;})(this)">    Ir a Recurso 2 </a>
+      
+      <a class="btn"  href="https://cgviviana.github.io/Asignaturas-FUAA/GInformacion/BusquedasInternet/index.html" target="_blank" rel="noopener" 
+       onclick="(e=>{let z=+(e.dataset.z||16);z=z>=22?14:z+2;document.body.style.fontSize=z+'px';e.dataset.z=z;})(this)">  Ir a Test </a>
+      </div>
+
+    </section>
+
+    <section class="panel" id="p2" role="tabpanel" aria-labelledby="t2">
+      <span class="kicker">Pestaña 2</span>
+      <h2 class="title">Buscadores generales</h2>
+      <p><b>Buscadores:</b> Son herramientas en línea que cuentan con un índice propio de páginas web. Ellos rastrean, almacenan y organizan información de internet para mostrar 
+         resultados cuando el usuario escribe palabras clave. <br>Ejemplos: Google, Bing, DuckDuckGo, Brave. <br><br>
+         <b>Metabuscadores:</b> No tienen un índice propio, sino que consultan de manera simultánea a varios buscadores y muestran los resultados combinados en una sola lista.<br>
+         Ejemplos: Startpage, Qwant, Swisscows, Metager. </p>
+
+      <div class="grid">
+        <div class="col-6 card">
+          <h3>Gratis</h3>
+          <ul class="muted">
+            <li>Google, Bing, DuckDuckGo, Brave Search</li>
+            <li>Metabuscadores: Startpage, Qwant, Swisscows</li>
+          </ul>
+        </div>
+        <div class="col-6 card">
+          <h3>De pago</h3>
+          <ul class="muted">
+            <li>Alternativas con planes Pro / empresariales</li>
+            <li>Meta-buscadores/IA con planes premium</li>
+          </ul>
+        </div>
+        
+    </section>
+
+    <section class="panel" id="p3" role="tabpanel" aria-labelledby="t3">
+      <span class="kicker">Pestaña 3</span>
+      <h2 class="title">Buscadores especializados</h2>
+      <p> Es un motor de búsqueda diseñado para trabajar en un campo temático o académico específico, 
+          en lugar de indexar todo internet como hacen los buscadores generales, garantizando información más confiable, 
+          académica o técnica en un área determinada.</p> 
+
+           <b>Características principales: </b> <br> 
+
+          - Se enfocan en un área concreta (medicina, educación, ciencia, derecho, ingeniería, etc.).<br>
+          - Indexan bases de datos, artículos, revistas o portales académicos que no siempre aparecen en Google.<br>
+          - Ofrecen filtros avanzados (por autor, año, revista, DOI ("Cédula de identidad” del documento), tipo de documento.<br>
+          - Suelen estar ligados a instituciones académicas, bibliotecas o comunidades científicas. <br><br>
+      
+          
+
+
+      <div class="grid">
+        <div class="col-6 card">
+          <h3>Académicos (gratis)</h3>
+          <ul class="muted">
+            <li>Google Scholar, Scielo, Redalic,DOAJ, BASE, CORE</li>
+            <li>Scielo, Redalyc, ERIC</li>
+          </ul>
+        </div>
+        <div class="col-6 card">
+          <h3>Buscadores Especializados </h3>
+          <ul class="muted">                 
+          <li>Académicos: Xplore, Scopus, Web of Science, PubMed, DOAJ, ERIC, PubMed, IEEE Xplore, Scopus, Web of Science.</li>
+          <li>Jurídicos: VLex, Westlaw, Legis.</li>
+          <li>Patentes Google Patents, Espacenet.</li>
+          <li>Datos científicos: BASE, CORE, ArXiv, ResearchGate.</li>
+          </ul>
+        </div>
+      </div>
+     
+    </section>
+
+    <section class="panel" id="p4" role="tabpanel" aria-labelledby="t4">
+      <span class="kicker">Pestaña 4</span>
+      <h2 class="title">Biblioteca Areandina</h2>
+      <p>Acceso al <em>Catálogo / Recursos suscritos</em>. .</p>
+       <div class="col-12 card">
+          <h3>Acceso institucional</h3>
+          <div class="img-box">
+            <img src="BAndina.png" alt="Biblioteca Areandina" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="btn-row">
+         <a class="btn" href="https://bidig.areandina.edu.co/" target="_blank" rel="noopener">Ir a Biblioteca Areandina</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="p5" role="tabpanel" aria-labelledby="t5">
+      <span class="kicker">Pestaña 5</span>
+      <h2 class="title">Buscadores de recursos</h2>
+      <p>Repositorios y/o bancos para crear presentaciones: imágenes, íconos, vectores, audio, video, tipografías, trabajar datos y otros tipos de información relevante.</p>
+
+     
+      <div class="grid">
+        <div class="col-6 card">
+          <h3>Gratis</h3>
+          <ul class="muted">
+           <li>Imágenes: Pexels, Unsplash, Pixabay </li>
+           <li>Iconos: The Noun Project, Iconfinder (plan gratuito)</li>
+           <li>GIFs: Giphy, Tenor/li>
+           <li>Audio: Bensound, Free Music Archive, YouTube Audio Library</li>
+           <li>Vídeo: Pexels Videos, Pixabay Videos, Mixkit</li>
+           <li>Tipografía: Google Fonts, Font Squirrel, Dafont</li>
+          </ul>
+        </div>
+        <div class="col-6 card">
+          <h3>De Pago</h3>
+          <ul class="muted">
+            <li>Imágenes: Getty Images, Shutterstock, Adobe Stock, iStock</li>
+            <li>Iconos: Flaticon (planes premium), Iconfinder (planes de pago)</li>
+            <li>GIFs: Giphy (licencias comerciales)</li>
+            <li>Audio: Epidemic Sound, Artlist, AudioJungle</li>
+            <li>Vídeo: Shutterstock Video, Adobe Stock Video, Storyblocks</li>   
+            <li>Tipografía: Adobe Fonts, MyFonts, Fontspring</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card">
+      <h3>Otros Recursos Especializados</h3>
+        <ul class="muted">
+          <li>Patentes: Google Patents, Espacenet</li>
+          <li>Datos abiertos: data.gov, datos.gov.co, Kaggle Datasets</li>
+          <li>Mapas: OpenStreetMap, Natural Earth</li>
+        </ul>
+      </div>
+        
+      </div>
+
+    </section>
+
+    <section class="panel" id="p6" role="tabpanel" aria-labelledby="t7">
+      <span class="kicker">Pestaña 6</span>
+      <h2 class="title">Técnicas de búsqueda simple</h2>
+      <p>Búsquedas simples: Caracterizadas por uso de Operadores básicos, comillas, exclusión, sitio, tipo de archivo.<br/></p>
+      <p>Búsquedas avanzadas: Presentan Filtros por dominio, truncamiento, comodines, búsqueda académica avanzada. <br/></p>
+     
+     <div style="display: flex; justify-content: center; margin: 20px 0;">
+       <iframe width="700" height="515" 
+          src="https://www.youtube.com/embed/fmwhRXYs5Go" 
+          title="YouTube video player" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen>
+       </iframe>
+    </div>
+
+    </section>
+
+    <section class="panel" id="p7" role="tabpanel" aria-labelledby="t10">
+      <span class="kicker">Pestaña 7</span>
+      <h2 class="title">Ejercicio práctico</h2>
+      <p>Actividad guiada.</p>
+      <div class="card">
+        <h3>Actividad en plataforma Moodle</h3>
+        <div class="embed">
+          <iframe src="" title="Instrucciones en plataforma Moodle" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="p8" role="tabpanel" aria-labelledby="t11">
+      <span class="kicker">Pestaña 8</span>
+      <h2 class="title">Referentes </h2>
+      <p>Lista de referencias utilizada para el OVA (norma APA 7). Puedes editar los elementos.</p>
+      <div class="card">
+        <ul>
+          <li>Duoc UC Bibliotecas. (s. f.). Buscadores generales en internet. Duoc UC.  https://bibliotecas.duoc.cl/busqueda-de-informacion/buscadores-en-internet</li>
+          <li>Editorial Etecé. (2023, julio 17). Fuentes de información. Concepto.de.  https://concepto.de/fuentes-de-informacion/</li>
+          <li>Universitat de València. (s. f.). Competencias informacionales nivel medio: Fuentes de información.  https://uv.es/cibisoc/tutoriales/trabajo_social/22_las_fuentes_de_informacin.html</li>
+          <li>Universidad Autónoma del Estado de Hidalgo. (s. f.). Tipos de fuentes de información [PDF]. Repositorio Institucional UAEH. Rhttps://dspace.uaeh.edu.mx/</li>
+          <li>Suárez, E. (2024, febrero 22). Guía práctica sobre los distintos tipos de fuentes de información. Experto Universitario. https://expertouniversitario.es/blog/fuentes-de-informacion/</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      Aprendiendo con <strong>@LaProfeVivy</strong>
+    </footer>
+  </div>
+
+  <script>
+    // Accesibilidad básica de tabs
+    const btns = Array.from(document.querySelectorAll('.tab-btn'));
+    const panels = Array.from(document.querySelectorAll('.panel'));
+
+    function activate(idx){
+      btns.forEach((b,i)=>{
+        const sel = i===idx;
+        b.setAttribute('aria-selected', sel);
+        panels[i].classList.toggle('active', sel);
+      });
+    }
+
+    btns.forEach((btn, idx)=>{
+      btn.addEventListener('click', ()=> activate(idx));
+      btn.addEventListener('keydown', (e)=>{
+        if(e.key==='ArrowRight'){ e.preventDefault(); btns[(idx+1)%btns.length].focus(); }
+        if(e.key==='ArrowLeft'){ e.preventDefault(); btns[(idx-1+btns.length)%btns.length].focus(); }
+        if(e.key==='Home'){ e.preventDefault(); btns[0].focus(); }
+        if(e.key==='End'){ e.preventDefault(); btns[btns.length-1].focus(); }
+        if(e.key==='Enter' || e.key===' '){ e.preventDefault(); activate(idx); }
+      });
+    });
+
+    // Abre por hash (#pX)
+    function openFromHash(){
+      const id = location.hash.replace('#','');
+      const idx = panels.findIndex(p=>p.id===id);
+      if(idx>=0) activate(idx);
+    }
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
+  </script>
+</body>
+</html>
