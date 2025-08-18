@@ -1,1 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tecnologías 4.0 — </title>
+<style>
+  :root{
+    --text:#edf2ff; --muted:#b8c7ff; --panel:rgba(10,16,40,.55); --stroke:rgba(255,255,255,.3);
+    --c1:#00e5ff; --c2:#58ffb2; --c3:#ffd866; --c4:#ff7b7b; --c5:#9ad7ff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:#0a1024;color:var(--text);font-family: Arial, Helvetica, sans-serif;overflow:hidden}
+  header, footer{padding:10px 16px}
+  header{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-bottom:1px solid var(--stroke)}
+  .title{font-weight:800;font-size:clamp(18px,2.5vw,24px)}
+  .sub{color:var(--muted);font-size:clamp(12px,1.6vw,14px)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap}
+  button{appearance:none;border:none;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;
+    color:#07111f;background:linear-gradient(180deg,var(--c1),#0088ff)}
+  button.ghost{background:transparent;color:var(--text);border:1px solid var(--stroke)}
+  main{height:calc(100dvh - 110px); position:relative}
+  .track{display:flex;height:100%;transition:transform .5s ease;will-change:transform}
+  .scene{min-width:100%;position:relative;overflow:hidden;border-bottom:1px solid var(--stroke)}
+  .panel{position:absolute;left:16px;top:16px;max-width:min(600px, 85%);background:var(--panel);
+    border:1px solid var(--stroke);border-radius:14px;padding:12px 14px}
+  .panel h2{margin:0 0 6px;font-size:clamp(18px,2.6vw,28px)}
+  .panel p{margin:0 0 6px;color:var(--muted);font-size:clamp(12px,1.8vw,16px)}
+  .panel ul{margin:.2rem 0 .2rem 1.1rem;line-height:1.4;font-size:clamp(12px,1.8vw,16px)}
+  footer{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.04);border-top:1px solid var(--stroke)}
+  .dots{display:flex;gap:8px}
+  .dot{width:12px;height:12px;border-radius:999px;background:rgba(255,255,255,.2);border:1px solid var(--stroke);cursor:pointer}
+  .dot.active{background:linear-gradient(180deg, var(--c1), #007bff); box-shadow:0 0 10px rgba(0,229,255,.35)}
+  svg{display:block;width:100%;height:100%}
+  .scene .run {animation-play-state: paused}
+  .scene.active .run {animation-play-state: running}
+
+  /* helpers */
+  .floatY{animation:floatY 5s ease-in-out infinite}
+  @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .pulse{animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%{opacity:.6; transform:scale(.96)}50%{opacity:1; transform:scale(1)}100%{opacity:.6; transform:scale(.96)}}
+  .dash{stroke-dasharray:120;stroke-dashoffset:120;animation:dash 2.2s ease-in-out infinite}
+  @keyframes dash{0%{stroke-dashoffset:120;opacity:0}10%{opacity:1}70%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+  .flow{animation:flow 3s linear infinite; stroke-dasharray:14 18}
+  @keyframes flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-240}}
+
+  /* themes */
+  .s0{background:linear-gradient(180deg,#051225,#112a55)}
+  .s1{background:linear-gradient(180deg,#091a2a,#0a2f52)}
+  .s2{background:linear-gradient(180deg,#170b2b,#3a1470)}
+  .s3{background:linear-gradient(180deg,#0e1a0b,#183a10)}
+  .s4{background:linear-gradient(180deg,#0b111f,#0b2a4f)}
+  .s5{background:linear-gradient(180deg,#101018,#2a0b3a)}
+  .s6{background:linear-gradient(180deg,#1a0e12,#3a0b20)}
+  .s7{background:linear-gradient(180deg,#0b141f,#113a4a)}
+  .s8{background:linear-gradient(180deg,#14110b,#3a2a0b)}
+  .s9{background:linear-gradient(180deg,#0b1a20,#10454f)}
+  .s10{background:linear-gradient(180deg,#12111f,#2a205a)}
+  .s11{background:linear-gradient(180deg,#0b1620,#0e385c)}
+  .s12{background:linear-gradient(180deg,#1a0e12,#3f2032)}
+  .s13{background:linear-gradient(180deg,#0f151a,#243341)}
+  .s14{background:linear-gradient(180deg,#06202a,#0f3b46)}
+
+  /* Redes 4.0 extra */
+  .speedbar{transform-origin: bottom; animation:sgrow 2.2s ease-in-out infinite}
+  @keyframes sgrow{0%{transform:scaleY(.2)}50%{transform:scaleY(1)}100%{transform:scaleY(.2)}}
+  .ping{animation:ping 1.2s linear infinite}
+  @keyframes ping{0%{transform:translateX(0);opacity:1}100%{transform:translateX(140px);opacity:.2}}
+  .ping.med{animation-duration:1.8s}
+  .ping.slow{animation-duration:3.0s}
+  .arrow{marker-end:url(#arrow)}
+  .move{animation:move 2.4s linear infinite}
+  @keyframes move{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="title">Tecnologías 4.0 </div>
+    <div id="sceneLabel" class="sub">01 · Presentación</div>
+  </div>
+  <div class="controls">
+    <button class="ghost" id="prevBtn">⟵ Anterior</button>
+    <button id="nextBtn">Siguiente ⟶</button>
+  </div>
+</header>
+
+<main>
+  <div id="track" class="track">
+
+    <!-- S0 Portada -->
+     <section class="scene s0 active" data-label="Portada" style="overflow:visible;">
+                   <svg viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid meet"    style="width:100%;height:auto;display:block;max-height:80vh;">
+                             <text x="120" y="230" fill="#ffffff" font-size="72" font-weight="800">       Tecnologías 4.0     </text>
+                                              <text x="120" y="300" fill="#F5F5F5" font-size="26">
+                                              <tspan x="120" dy="0">Integración de tecnologías de última generación que</tspan>
+                                              <tspan x="120" dy="34">conecta lo físico y lo digital para monitorizar,</tspan>
+                                             <tspan x="120" dy="34">analizar y automatizar procesos en tiempo real.</tspan>
+                                </text>
+             </svg>
+        </section>
+
+
+    <!-- S1 IoT -->
+    <section class="scene s1" data-label="Internet de las Cosas (IoT)">
+      <div class="panel">
+        <h2>Internet de las Cosas (IoT)</h2><br> 
+        <p>Dispositivos físicos con <strong>sensores que capturan datos </strong> (temperatura, movimiento, GPS, consumo) y envían 
+        vía <strong>  gateway</strong>,</p> 
+          <p>a una <strong>plataforma</strong> para analizarlos y actuar.</p> <br> 
+        <ul>
+          <li>Ejemplos: medidor, cámara, reloj, auto, máquina CNC.</li>
+          <li><strong>Gateway:</strong> recibe de varios sensores y conecta a Internet.</li>
+          <li>Usos: domótica, industria, ciudad inteligente.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Sensores → Gateway → Plataforma">
+        <g class="floatY">
+          <rect x="1000" y="240" width="180" height="110" rx="14" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <text x="1090" y="300" fill="#b8c7ff" font-size="18" text-anchor="middle">Plataforma</text>
+        </g>
+        <g transform="translate(820,380)">
+          <rect x="-90" y="-40" width="180" height="100" rx="14" fill="#102040" stroke="rgba(255,255,255,.35)"/>
+          <text x="0" y="10" fill="#b8c7ff" font-size="18" text-anchor="middle">Gateway</text>
+          <circle class="pulse run" cx="-40" cy="30" r="6" fill="#00f2ff"/>
+          <circle class="pulse run" cx="0" cy="30" r="6" fill="#58ffb2"/>
+          <circle class="pulse run" cx="40" cy="30" r="6" fill="#ffd866"/>
+        </g>
+        <g>
+          <g transform="translate(520,340)">
+            <rect x="-36" y="-24" width="72" height="48" rx="8" fill="#173160" stroke="rgba(255,255,255,.3)"/>
+            <circle cx="0" cy="0" r="10" fill="#00e5ff"/>
+            <text x="0" y="40" fill="#b8c7ff" font-size="16" text-anchor="middle">Cámara</text>
+            <path class="dash run" d="M36 0 C 120 0, 220 -10, 300 -20" stroke="#00e5ff" stroke-width="6" fill="none" stroke-linecap="round"/>
+          </g>
+          <g transform="translate(520,470)">
+            <rect x="-44" y="-18" width="88" height="36" rx="10" fill="#173160" stroke="rgba(255,255,255,.3)"/>
+            <circle cx="-20" cy="18" r="8" fill="#9ad7ff"/><circle cx="20" cy="18" r="8" fill="#9ad7ff"/>
+            <text x="0" y="46" fill="#b8c7ff" font-size="16" text-anchor="middle">Auto</text>
+            <path class="dash run" d="M44 0 C 120 -10, 220 -10, 300 -20" stroke="#ffd866" stroke-width="6" fill="none" stroke-linecap="round"/>
+          </g>
+          <g transform="translate(520,220)">
+            <rect x="-40" y="-30" width="80" height="60" rx="8" fill="#173160" stroke="rgba(255,255,255,.3)"/>
+            <text x="0" y="40" fill="#b8c7ff" font-size="16" text-anchor="middle">Medidor</text>
+            <path class="dash run" d="M40 0 C 120 20, 220 10, 300 0" stroke="#58ffb2" stroke-width="6" fill="none" stroke-linecap="round"/>
+          </g>
+        </g>
+        <path class="dash run" d="M820 360 C 900 320, 960 300, 1000 300" stroke="#58ffb2" stroke-width="8" fill="none" stroke-linecap="round"/>
+      </svg>
+    </section>
+
+    <!-- S2 IA -->
+    <section class="scene s2" data-label="Inteligencia Artificial">
+      <div class="panel">
+        <h2>Inteligencia Artificial</h2><br>
+        <p><strong>Modelos</strong> que aprenden de datos para reconocer patrones y generar resultados <strong>predicciones, clasificaciones o decisiones</strong>
+          con mínima intervención humana.</p> <br>
+        <ul>
+          <li>Ejemplos: Modelos de lenguaje (LLM),Visión por computador.</li>
+          <li>Entradas: imágenes, texto, sensores. Salidas: Detectección.</li>
+          <li>Usos: Chatbots y asistentes, Inspección de calidad,Dx por imagen.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Entradas → Modelo → Salidas">
+        <g>
+          <rect x="380" y="260" width="170" height="60" rx="12" fill="#162a55" stroke="rgba(255,255,255,.25)"/>
+          <text x="465" y="298" fill="#b8c7ff" font-size="18" text-anchor="middle">Imágenes</text>
+          <rect x="380" y="350" width="170" height="60" rx="12" fill="#162a55" stroke="rgba(255,255,255,.25)"/>
+          <text x="465" y="388" fill="#b8c7ff" font-size="18" text-anchor="middle">Texto</text>
+          <rect x="380" y="440" width="170" height="60" rx="12" fill="#162a55" stroke="rgba(255,255,255,.25)"/>
+          <text x="465" y="478" fill="#b8c7ff" font-size="18" text-anchor="middle">Sensores</text>
+          <path class="flow run" d="M550 290 H 760" stroke="#9ad7ff" stroke-width="6"/>
+          <path class="flow run" d="M550 380 H 760" stroke="#9ad7ff" stroke-width="6"/>
+          <path class="flow run" d="M550 470 H 760" stroke="#9ad7ff" stroke-width="6"/>
+        </g>
+        <g class="pulse run">
+          <rect x="760" y="300" width="220" height="200" rx="24" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <text x="870" y="380" fill="#b8c7ff" font-size="20" text-anchor="middle">Modelo</text>
+          <text x="870" y="410" fill="#b8c7ff" font-size="16" text-anchor="middle">entrenado</text>
+        </g>
+        <g>
+          <path class="flow run" d="M980 360 H 1140" stroke="#58ffb2" stroke-width="6"/>
+          <path class="flow run" d="M980 420 H 1140" stroke="#58ffb2" stroke-width="6"/>
+          <rect x="1140" y="330" width="180" height="60" rx="12" fill="#173160" stroke="rgba(255,255,255,.25)"/>
+          <rect x="1140" y="400" width="180" height="60" rx="12" fill="#173160" stroke="rgba(255,255,255,.25)"/>
+          <text x="1230" y="368" fill="#b8c7ff" font-size="18" text-anchor="middle">Predicción</text>
+          <text x="1230" y="438" fill="#b8c7ff" font-size="18" text-anchor="middle">Clasificación</text>
+        </g>
+      </svg>
+    </section>
+
+    <!-- S3 Robótica -->
+    <section class="scene s3" data-label="Robótica colaborativa">
+      <div class="panel">
+        <h2>Robótica colaborativa</h2><br>
+        <p><strong>Cobots </strong>son robots que asisten al operario en tareas repetitivas, pesadas o de precisión compartiendo  espacio con seguridad.</p> <br>
+        <ul>
+          <li>Ejemplos: Universal Robots, FANUC.</li>
+          <li>Seguridad: Sensores que limitan fuerza/velocidad.</li>
+          <li>Usos: Pick & place y empaque, Machine tending.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Brazo clasifica paquetes OK/X">
+        <rect x="360" y="520" width="760" height="26" fill="#202a3a"/>
+        <rect x="980" y="440" width="110" height="56" rx="8" fill="#0f1a3a" stroke="rgba(255,255,255,.25)"/>
+        <text x="1035" y="474" fill="#58ffb2" font-size="16" text-anchor="middle">Aprobado</text>
+        <rect x="980" y="560" width="110" height="56" rx="8" fill="#0f1a3a" stroke="rgba(255,255,255,.25)"/>
+        <text x="1035" y="594" fill="#ff7b7b" font-size="16" text-anchor="middle">Rechazado</text>
+        <g>
+          <rect class="run" x="380" y="494" width="76" height="52" fill="#ffcf66" stroke="#e4b24a" style="animation:move1 5s linear infinite"/>
+          <text x="418" y="528" fill="#122" font-size="18" text-anchor="middle">OK</text>
+          <rect class="run" x="100" y="494" width="76" height="52" fill="#ffcf66" stroke="#e4b24a" style="animation:move2 5s linear infinite; animation-delay:2.2s"/>
+          <text x="138" y="528" fill="#122" font-size="18" text-anchor="middle" style="animation:move2 5s linear infinite; animation-delay:2.2s">X</text>
+        </g>
+        <style>
+          @keyframes move1{from{transform:translateX(0)}50%{transform:translateX(470px)}60%{transform:translate(470px,-70px)}to{transform:translate(650px,-70px)}}
+          @keyframes move2{from{transform:translateX(0)}50%{transform:translateX(470px)}60%{transform:translate(470px,70px)}to{transform:translate(650px,70px)}}
+        </style>
+        <rect x="500" y="380" width="110" height="110" rx="10" fill="#11233f" stroke="rgba(255,255,255,.35)"/>
+        <g class="run" style="animation:arms 2.4s ease-in-out infinite; transform-origin: 520px 360px">
+          <rect x="510" y="350" width="200" height="22" rx="10" fill="#3a9cff"/>
+          <circle cx="520" cy="362" r="18" fill="#1b5fa3"/>
+          <circle cx="700" cy="362" r="16" fill="#1b5fa3"/>
+          <rect x="692" y="360" width="18" height="110" rx="8" fill="#3a9cff"/>
+          <rect x="686" y="468" width="30" height="18" rx="4" fill="#58ffb2"/>
+        </g>
+        <style>@keyframes arms{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}</style>
+      </svg>
+    </section>
+
+    <!-- S4 Nube -->
+    <section class="scene s4" data-label="Computación en la nube">
+      <div class="panel">
+        <h2>Computación en la nube</h2><br>
+        <p>Equipos suben información para almacenamiento y procesamiento de datos en <strong>servidores remotos</strong>.</p><br>
+        <ul>
+          <li>Ejemplo: Modelo SaaS: Google Drive, Microsoft 365.</li>
+          <li>Acceso: Desde cualquier lugar con internet.</li>
+          <li>Usos: Trabajo en línea, colaboración y backups, Hospedaje de sitios, Apps, IoT. </li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Tres PCs suben datos a una nube">
+        <rect x="0" y="560" width="1200" height="80" fill="rgba(0,0,0,.25)"/>
+        <g class="floatY">
+          <ellipse cx="820" cy="160" rx="160" ry="80" fill="#e6f3ff" opacity="0.96"/>
+          <ellipse cx="940" cy="180" rx="140" ry="70" fill="#e6f3ff" opacity="0.95"/>
+          <ellipse cx="700" cy="185" rx="140" ry="72" fill="#e6f3ff" opacity="0.95"/>
+          <ellipse cx="820" cy="200" rx="220" ry="86" fill="#e6f3ff" opacity="0.98"/>
+        </g>
+        <g transform="translate(380,480)">
+          <rect x="-80" y="-40" width="160" height="100" rx="10" fill="#0f1a3a" stroke="rgba(255,255,255,.25)"/>
+          <rect x="-64" y="-24" width="128" height="48" rx="6" fill="#0ce6ff" opacity=".9"/>
+        </g>
+        <g transform="translate(760,480)">
+          <rect x="-80" y="-40" width="160" height="100" rx="10" fill="#0f1a3a" stroke="rgba(255,255,255,.25)"/>
+          <rect x="-64" y="-24" width="128" height="48" rx="6" fill="#0ce6ff" opacity=".9"/>
+        </g>
+        <g transform="translate(1120,480)">
+          <rect x="-80" y="-40" width="160" height="100" rx="10" fill="#0f1a3a" stroke="rgba(255,255,255,.25)"/>
+          <rect x="-64" y="-24" width="128" height="48" rx="6" fill="#0ce6ff" opacity=".9"/>
+        </g>
+        <path class="dash run" d="M380 440 C430 380, 560 320, 720 260" stroke="#58ffb2" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <path class="dash run" d="M760 440 C800 360, 860 300, 900 250" stroke="#58ffb2" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <path class="dash run" d="M1120 440 C1080 360, 1000 300, 940 250" stroke="#58ffb2" stroke-width="8" fill="none" stroke-linecap="round"/>
+      </svg>
+    </section>
+
+    <!-- S5 Big Data -->
+    <section class="scene s5" data-label="Big Data & Analytics">
+      <div class="panel">
+        <h2>Big Data & Analytics</h2><br>
+        <p>Recopilación, almacenamiento y análisis de <strong>grandes volúmenes de datos</strong> para analizar extraer información valiosa.</p><br>
+        <ul>
+          <li>Ejemplos: Procesamiento, Elmacenamiento</li>
+          <li>Fuentes: Redes sociales, bancos, sensores / Resultado: KPIs y alertas.
+          <li>Usos: Pronóstico de demanda y optimización logística, Monitoreo en tiempo real, Analítica clínica</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Fuentes → Lago de datos → Gráfico">
+        <g>
+          <rect x="420" y="340" width="180" height="56" rx="12" fill="#162a55" stroke="rgba(255,255,255,.25)"/>
+          <text x="510" y="375" fill="#b8c7ff" font-size="18" text-anchor="middle">Redes</text>
+          <rect x="420" y="410" width="180" height="56" rx="12" fill="#162a55" stroke="rgba(255,255,255,.25)"/>
+          <text x="510" y="445" fill="#b8c7ff" font-size="18" text-anchor="middle">Bancos</text>
+          <rect x="420" y="480" width="180" height="56" rx="12" fill="#162a55" stroke="rgba(255,255,255,.25)"/>
+          <text x="510" y="515" fill="#b8c7ff" font-size="18" text-anchor="middle">Sensores</text>
+        </g>
+        <g stroke="#9ad7ff" stroke-width="6" fill="none">
+          <path class="flow run" d="M600 368 H 780"/>
+          <path class="flow run" d="M600 438 H 780"/>
+          <path class="flow run" d="M600 508 H 780"/>
+        </g>
+        <g transform="translate(840,460)">
+          <ellipse cx="0" cy="0" rx="120" ry="36" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <rect x="-120" y="-8" width="240" height="54" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <ellipse cx="0" cy="46" rx="120" ry="36" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <text x="0" y="10" fill="#b8c7ff" font-size="18" text-anchor="middle">Lago de datos</text>
+        </g>
+        <g transform="translate(1010,520)" fill="#ff6bd6">
+          <rect class="run" x="0" y="-160" width="52" height="160" rx="8" style="animation:grow 2s ease-in-out infinite"/>
+          <rect class="run" x="74" y="-220" width="52" height="220" rx="8" style="animation:grow 2s ease-in-out infinite; animation-delay:.3s"/>
+          <rect class="run" x="148" y="-120" width="52" height="120" rx="8" style="animation:grow 2s ease-in-out infinite; animation-delay:.6s"/>
+          <rect class="run" x="222" y="-260" width="52" height="260" rx="8" style="animation:grow 2s ease-in-out infinite; animation-delay:.9s"/>
+        </g>
+        <style>@keyframes grow{0%{transform:scaleY(.1)}50%{transform:scaleY(1)}100%{transform:scaleY(.1)}}</style>
+      </svg>
+    </section>
+
+    <!-- S6 Ciberseguridad ) -->
+    <section class="scene s6" data-label="Ciberseguridad">
+      <div class="panel">
+        <h2>Ciberseguridad</h2><br>
+        <p>Protege sistemas, redes, equipos y datos contra ataques digitales como <strong>escudo</strong> que los bloquea.</p><br>
+        <ul>
+          <li>Ejemplos:Autenticación, cifrado, firewall, antivirus .</li>
+          <li>Usos: Acceso seguro, Control de datos sensible, Gestión de vulnerbilidades.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Escudo bloquea virus que intenta entrar al computador">
+        <!-- Equipo -->
+        <g transform="translate(1040,460)">
+          <rect x="-120" y="-80" width="240" height="160" rx="12" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <rect x="-100" y="-60" width="200" height="120" rx="8" fill="#0ce6ff" opacity=".85"/>
+          <text x="0" y="10" fill="#0b1226" font-size="18" text-anchor="middle">Equipo</text>
+        </g>
+        <!-- Flujos -->
+        <g stroke="#58ffb2" stroke-width="6" fill="none">
+          <path class="flow run" d="M420 360 H 860"/>
+          <path class="flow run" d="M420 420 H 860"/>
+          <path class="flow run" d="M420 480 H 860"/>
+        </g>
+        <!-- Escudo bien abajo/derecha -->
+        <g class="run" transform="translate(980,540)">
+          <path d="M0,-80 L70,-40 L55,55 L0,100 L-55,55 L-70,-40 Z" fill="rgba(255,210,122,.2)" stroke="#ffd27a" stroke-width="8"/>
+        </g>
+        <!-- Virus que rebota -->
+        <g class="run" style="animation:virus 2.6s ease-in-out infinite">
+          <circle cx="420" cy="420" r="16" fill="#ff7b7b"/>
+          <text x="420" y="426" fill="#fff" font-size="12" text-anchor="middle">X</text>
+        </g>
+        <style>
+          @keyframes virus{
+            0%{transform:translateX(0)}
+            60%{transform:translateX(430px)}
+            70%{transform:translate(430px,0) scale(.9)}
+            100%{transform:translateX(0)}
+          }
+        </style>
+      </svg>
+    </section>
+
+    <!-- S7 AR/VR -->
+    <section class="scene s7" data-label="AR/VR (XR)">
+      <div class="panel">
+        <h2>AR/VR (XR)</h2><br>
+        <p><strong>Superpone </strong>elementos digitales en el mundo real a través de dispositivos donde el usuario observa con  dispositivos especiales, Majea entorno real/virtual.</p>
+        <ul><br>
+          <li>Ejemplos:RA:Pokémon GO,  Google Lens/ RV: Meta Quest, Simuladores.</li>
+          <li>Permite simulación segura y asistencia remota.</li>
+          <li>ejemplos: Entrenamiento seguro (quirúrgico/industrial), simulación de maquinaria/vuelo, Educación inmersiva.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Persona con visor y paneles de instrucciones">
+        <g transform="translate(560,460)">
+          <circle cx="0" cy="-80" r="40" fill="#0b2038"/>
+          <rect x="-20" y="-92" width="80" height="24" rx="12" fill="#5ef3ff"/>
+          <rect x="-40" y="-40" width="80" height="160" rx="20" fill="#0b2038"/>
+          <rect x="-80" y="120" width="60" height="20" rx="10" fill="#0b2038"/>
+          <rect x="20" y="120" width="60" height="20" rx="10" fill="#0b2038"/>
+        </g>
+        <g class="run" style="animation:steps 4s ease-in-out infinite">
+          <rect x="820" y="260" width="260" height="80" rx="12" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.25)"/>
+          <text x="950" y="308" fill="#b8c7ff" font-size="18" text-anchor="middle">Paso 1: Inspeccionar</text>
+        </g>
+        <g class="run" style="animation:steps 4s ease-in-out infinite; animation-delay:1.3s">
+          <rect x="860" y="360" width="260" height="80" rx="12" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.25)"/>
+          <text x="990" y="408" fill="#b8c7ff" font-size="18" text-anchor="middle">Paso 2: Ajustar</text>
+        </g>
+        <g class="run" style="animation:steps 4s ease-in-out infinite; animation-delay:2.6s">
+          <rect x="820" y="460" width="260" height="80" rx="12" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.25)"/>
+          <text x="950" y="508" fill="#b8c7ff" font-size="18" text-anchor="middle">Paso 3: Verificar</text>
+        </g>
+        <style>@keyframes steps{0%{opacity:0;transform:translateY(10px)}20%,70%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-10px)}}</style>
+      </svg>
+    </section>
+
+    <!-- S8 Impresión 3D -->
+    <section class="scene s8" data-label="Impresión 3D">
+      <div class="panel">
+        <h2>Impresión 3D</h2> <br>
+        <p>Fabricación de objetos <strong>capa por capa a partir de modelos digitales</strong>.</p><br>
+        <ul>
+          <li>Ejemploa: SLA/DLP (resina), SLS/MJF (nylon/PA12), DMLS/SLM (metales), Binder Jetting.</li>
+          <li>Prototipos y repuestos personalizados.</li>
+          <li>Usos: Prototipado rápido, , piezas personalizadas,repuestos.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Cabezal deposita capas que forman la pieza">
+        <rect x="560" y="320" width="600" height="280" rx="14" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.25)"/>
+        <rect x="600" y="580" width="560" height="14" fill="#33445a"/>
+        <g transform="translate(880,420)">
+          <g class="head run">
+            <rect x="-40" y="-20" width="80" height="40" rx="8" fill="#1b335a"/>
+            <rect x="-6" y="20" width="12" height="26" fill="#ffd866"/>
+          </g>
+        </g>
+        <g fill="#58ffb2">
+          <rect class="run layer1" x="860" y="556" width="120" height="8"/>
+          <rect class="run layer2" x="860" y="548" width="120" height="8"/>
+          <rect class="run layer3" x="860" y="540" width="120" height="8"/>
+          <rect class="run layer4" x="860" y="532" width="120" height="8"/>
+        </g>
+        <style>
+          .head{animation:headX 3.2s ease-in-out infinite}
+          @keyframes headX{0%,100%{transform:translateX(240px)}50%{transform:translateX(-240px)}}
+          .layer1{animation:lay1 3.2s ease-in-out infinite}
+          .layer2{animation:lay2 3.2s ease-in-out infinite}
+          .layer3{animation:lay3 3.2s ease-in-out infinite}
+          .layer4{animation:lay4 3.2s ease-in-out infinite}
+          @keyframes lay1{0%{opacity:.1}30%,100%{opacity:1}}
+          @keyframes lay2{0%,20%{opacity:.1}40%,100%{opacity:1}}
+          @keyframes lay3{0%,40%{opacity:.1}60%,100%{opacity:1}}
+          @keyframes lay4{0%,60%{opacity:.1}80%,100%{opacity:1}}
+        </style>
+      </svg>
+    </section>
+
+    <!-- S9 Edge Computing -->
+    <section class="scene s9" data-label="Edge Computing">
+      <div class="panel">
+        <h2>Edge Computing</h2><br>
+        <p>Procesa información<strong>cerca de donde se generan los datos</strong> para responder rápido, y solo envía lo resumido a la nube.</p><br>
+        <ul>
+          <li>Ejemplos: Vehículos autónomos, Ciudades inteligentes, Video juego en la nube.</li>
+          <li>Menor latencia y menos tráfico.</li>
+          <li>Usos:Analizar datos en tiempo real, Tomar decisiones de forma autónoma.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Sensores → Nodo Edge → Nube">
+        <g transform="translate(560,420)">
+          <circle cx="-160" cy="0" r="12" fill="#58ffb2"/><text x="-160" y="28" fill="#b8c7ff" font-size="14" text-anchor="middle">Sensor</text>
+          <circle cx="-220" cy="-60" r="12" fill="#58ffb2"/><text x="-220" y="-30" fill="#b8c7ff" font-size="14" text-anchor="middle">Sensor</text>
+          <circle cx="-220" cy="60" r="12" fill="#58ffb2"/><text x="-220" y="90" fill="#b8c7ff" font-size="14" text-anchor="middle">Sensor</text>
+        </g>
+        <g transform="translate(760,420)">
+          <rect x="-70" y="-40" width="140" height="90" rx="12" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <text x="0" y="10" fill="#b8c7ff" font-size="18" text-anchor="middle">Nodo Edge</text>
+        </g>
+        <g>
+          <path class="flow run" d="M540 360 C 640 380, 660 400, 690 410" stroke="#9ad7ff" stroke-width="6" fill="none"/>
+          <path class="flow run" d="M520 470 C 640 440, 660 430, 690 420" stroke="#9ad7ff" stroke-width="6" fill="none"/>
+          <path class="flow run" d="M520 300 C 640 360, 660 370, 690 400" stroke="#9ad7ff" stroke-width="6" fill="none"/>
+        </g>
+        <g class="floatY">
+          <ellipse cx="980" cy="200" rx="160" ry="70" fill="#e6f3ff"/>
+          <text x="980" y="205" fill="#0b1226" font-size="16" text-anchor="middle">Nube</text>
+        </g>
+        <path class="dash run" d="M760 420 C 820 360, 880 300, 940 240" stroke="#58ffb2" stroke-width="8" fill="none" stroke-linecap="round"/>
+      </svg>
+    </section>
+
+    <!-- S10 Gemelos Digitales -->
+    <section class="scene s10" data-label="Gemelos digitales">
+      <div class="panel">
+        <h2>Gemelos Digitales</h2><br>
+        <p><strong>Réplica digital </strong>y viva de un activo/proceso físico que recibe datos en tiempo real para monitorizar, predecir y optimizar.
+         Los sensores del físico actualizan el gemelo</p> <br>
+        <ul>
+          <li>Ejemplos: Simulación “what-if”, Entrenamiento de operadores.</li>
+          <li>Hace uso de: IoT/Sensores, Modelo y la Plataforma.</li>
+          <li>USos: Línea de producción: gemelo de máquina para ajustar velocidad y detectar desalineo.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Máquina real ↔ Gemelo virtual">
+        <g transform="translate(560,420)">
+          <rect x="-160" y="-80" width="120" height="160" rx="12" fill="#173160" stroke="rgba(255,255,255,.3)"/>
+          <text x="-100" y="100" fill="#b8c7ff" font-size="16" text-anchor="middle">Equipo real</text>
+        </g>
+        <g transform="translate(920,420)">
+          <rect x="-160" y="-90" width="200" height="120" rx="12" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <text x="-60" y="-100" fill="#b8c7ff" font-size="16">Gemelo</text>
+          <circle class="pulse run" cx="-60" cy="-40" r="10" fill="#5ef3ff"/>
+          <rect x="-80" y="-30" width="100" height="12" fill="#5ef3ff" opacity=".6"/>
+          <rect x="-80" y="-10" width="70" height="10" fill="#5ef3ff" opacity=".4"/>
+        </g>
+        <path class="flow run" d="M460 340 C 580 320, 720 320, 840 330" stroke="#58ffb2" stroke-width="6" fill="none"/>
+        <path class="flow run" d="M460 420 C 600 420, 720 420, 840 420" stroke="#58ffb2" stroke-width="6" fill="none"/>
+      </svg>
+    </section>
+
+    <!-- S11 Redes para Industria 4.0 -->
+    <section class="scene s14" data-label="Redes para Industria 4.0 (5G · Wi‑Fi 6/7 · LPWAN)">
+      <div class="panel">
+        <h2>Redes para Industria 4.0</h2>
+        <p>Comparación de redes que habilitan 4.0.</p>
+        <ul>
+          <li><strong>5G</strong>: baja latencia (URLLC), alta velocidad, muchas conexiones.</li>
+          <li><strong>Wi‑Fi 6/7</strong>: alta capacidad local (OFDMA, canales anchos).</li>
+          <li><strong>LPWAN</strong> (NB‑IoT/LTE‑M/LoRa): gran alcance y <em>muy bajo consumo</em>.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="5G vs Wi‑Fi vs LPWAN">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ad7ff"/>
+          </marker>
+        </defs>
+
+        <text x="760" y="220" fill="#b8c7ff" font-size="20" text-anchor="middle">5G</text>
+        <text x="960" y="220" fill="#b8c7ff" font-size="20" text-anchor="middle">Wi‑Fi 6/7</text>
+        <text x="1160" y="220" fill="#b8c7ff" font-size="20" text-anchor="middle">LPWAN</text>
+
+        <!-- Speed bars (claras) -->
+        <text x="660" y="260" fill="#b8c7ff" font-size="16">Velocidad</text>
+        <g transform="translate(720,260)" fill="#58ffb2">
+          <rect class="speedbar run" x="20" y="-90" width="34" height="90"/>
+        </g>
+        <g transform="translate(920,260)" fill="#58ffb2">
+          <rect class="speedbar run" style="animation-duration:2.6s" x="20" y="-60" width="34" height="60"/>
+        </g>
+        <g transform="translate(1120,260)" fill="#58ffb2">
+          <rect class="speedbar run" style="animation-duration:3.2s" x="20" y="-30" width="34" height="30"/>
+        </g>
+
+        <!-- Latencia (punto corriendo) -->
+        <text x="660" y="330" fill="#b8c7ff" font-size="16">Latencia</text>
+        <g transform="translate(720,310)">
+          <line x1="0" y1="20" x2="140" y2="20" stroke="#9ad7ff" stroke-width="6" stroke-linecap="round"/>
+          <circle class="ping run" cx="0" cy="20" r="8" fill="#9ad7ff"/>
+        </g>
+        <g transform="translate(920,310)">
+          <line x1="0" y1="20" x2="140" y2="20" stroke="#9ad7ff" stroke-width="6" stroke-linecap="round"/>
+          <circle class="ping med run" cx="0" cy="20" r="8" fill="#9ad7ff"/>
+        </g>
+        <g transform="translate(1120,310)">
+          <line x1="0" y1="20" x2="140" y2="20" stroke="#9ad7ff" stroke-width="6" stroke-linecap="round"/>
+          <circle class="ping slow run" cx="0" cy="20" r="8" fill="#9ad7ff"/>
+        </g>
+
+        <!-- Energía (batería) -->
+        <text x="660" y="400" fill="#b8c7ff" font-size="16">Energía</text>
+        <g transform="translate(720,380)">
+          <rect x="6" y="6" width="70" height="28" rx="6" ry="6" fill="none" stroke="#ffd866" stroke-width="4"/>
+          <rect x="80" y="14" width="6" height="12" rx="2" fill="#ffd866"/>
+          <rect class="run" x="10" y="10" width="58" height="20" fill="#ffd866">
+            <animate attributeName="width" values="10;60;10" dur="2.4s" repeatCount="indefinite"/>
+          </rect>
+        </g>
+        <g transform="translate(920,380)">
+          <rect x="6" y="6" width="70" height="28" rx="6" ry="6" fill="none" stroke="#ffd866" stroke-width="4"/>
+          <rect x="80" y="14" width="6" height="12" rx="2" fill="#ffd866"/>
+          <rect class="run" x="10" y="10" width="56" height="20" fill="#ffd866">
+            <animate attributeName="width" values="14;56;14" dur="3s" repeatCount="indefinite"/>
+          </rect>
+        </g>
+        <g transform="translate(1120,380)">
+          <rect x="6" y="6" width="70" height="28" rx="6" ry="6" fill="none" stroke="#ffd866" stroke-width="4"/>
+          <rect x="80" y="14" width="6" height="12" rx="2" fill="#ffd866"/>
+          <rect class="run" x="10" y="10" width="52" height="20" fill="#ffd866">
+            <animate attributeName="width" values="18;52;18" dur="4s" repeatCount="indefinite"/>
+          </rect>
+        </g>
+
+        <!-- Líneas con flechas animadas para hacer obvio el movimiento -->
+        <g stroke="#9ad7ff" stroke-width="4" fill="none" stroke-dasharray="6 8" class="move run">
+          <line class="arrow" x1="700" y1="470" x2="820" y2="470"/>
+          <line class="arrow" x1="900" y1="470" x2="1020" y2="470"/>
+          <line class="arrow" x1="1100" y1="470" x2="1220" y2="470"/>
+        </g>
+      </svg>
+    </section>
+
+    <!-- S12 5G  -->
+    <section class="scene s11" data-label="Conectividad 5G">
+      <div class="panel">
+        <h2>Conectividad </h2><br>
+        <p>Es omnipresente, rápida y segura, buscando no solo conectar computadoras, sino de crear redes para trasnmitir grandes volumenes de datos con latencia baja.  </p><br>
+        <ul>
+          <li>Aumento de eficiencia energética. </li>
+          <li> Tenologías clave: 5G, Wi-Fi 6, redes de fibra óptica y protocolos de comunicación(como el MQTT para el Internet de las Cosas).</li>
+          <li>Usos: Fábricas inteligentes, Agricultura de precisión.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Antena 5G conecta dispositivos y nube">
+        <g transform="translate(760,420)">
+          <rect x="-10" y="-90" width="20" height="180" fill="#1b335a"/>
+          <circle class="pulse run" cx="0" cy="-110" r="12" fill="#5ef3ff"/>
+          <circle class="run" cx="0" cy="-110" r="40" fill="none" stroke="#5ef3ff" stroke-width="4" style="animation:wave 2.4s ease-out infinite"/>
+          <circle class="run" cx="0" cy="-110" r="70" fill="none" stroke="#5ef3ff" stroke-width="4" style="animation:wave 2.4s ease-out infinite; animation-delay:.5s"/>
+        </g>
+        <style>@keyframes wave{0%{opacity:0;transform:scale(.5)}80%{opacity:1}100%{opacity:0;transform:scale(1.2)}}</style>
+        <g>
+          <rect x="980" y="480" width="120" height="60" rx="10" fill="#0f1a3a" stroke="rgba(255,255,255,.25)"/>
+          <text x="1040" y="515" fill="#b8c7ff" font-size="16" text-anchor="middle">Robot</text>
+          <rect x="920" y="360" width="90" height="50" rx="10" fill="#0f1a3a" stroke="rgba(255,255,255,.25)"/>
+          <text x="965" y="392" fill="#b8c7ff" font-size="14" text-anchor="middle">Sensor</text>
+          <rect x="1060" y="300" width="90" height="50" rx="10" fill="#0f1a3a" stroke="rgba(255,255,255,.25)"/>
+          <text x="1105" y="332" fill="#b8c7ff" font-size="14" text-anchor="middle">Cámara</text>
+        </g>
+        <path class="dash run" d="M760 310 C 860 320, 960 340, 1060 330" stroke="#58ffb2" stroke-width="6" fill="none"/>
+        <path class="dash run" d="M760 310 C 880 360, 960 400, 1040 500" stroke="#58ffb2" stroke-width="6" fill="none"/>
+        <path class="dash run" d="M760 310 C 840 340, 900 360, 960 380" stroke="#58ffb2" stroke-width="6" fill="none"/>
+      </svg>
+    </section>
+
+    <!-- S13 Blockchain -->
+    <section class="scene s12" data-label="Blockchain & Trazabilidad">
+      <div class="panel">
+        <h2>Blockchain </h2><br>
+        <p>Registros descentralizados  mediante cadena de <strong>bloques inmutables</strong>que garantiza seguridad y transparencia en transacciones digitales y el origen de un producto.</p><br>
+        <ul>
+          <li>Ejemplos: Bitcoin (pagos P2P),Ethereum (contratos inteligentes</li>
+          <li>Seguimiento de lote/QR.</li>
+          <li>Usos: Pagos y remesas, Contratos inteligentes B2B, Certificación/registro.</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Bloques conectados y producto trazado">
+        <g transform="translate(700,380)" fill="#173160" stroke="rgba(255,255,255,.25)">
+          <rect x="-240" y="-40" width="80" height="80" rx="10"/><rect x="-140" y="-40" width="80" height="80" rx="10"/>
+          <rect x="-40" y="-40" width="80" height="80" rx="10"/><rect x="60" y="-40" width="80" height="80" rx="10"/>
+        </g>
+        <g stroke="#58ffb2" stroke-width="6" fill="none">
+          <path class="flow run" d="M540 340 H 660"/>
+          <path class="flow run" d="M640 340 H 760"/>
+          <path class="flow run" d="M740 340 H 860"/>
+        </g>
+        <g transform="translate(1040,480)">
+          <rect x="-60" y="-60" width="120" height="120" rx="10" fill="#0f1a3a" stroke="rgba(255,255,255,.25)"/>
+          <rect x="-20" y="-20" width="40" height="40" fill="#5ef3ff"/>
+          <text x="0" y="80" fill="#b8c7ff" font-size="16" text-anchor="middle">Producto</text>
+        </g>
+        <path class="dash run" d="M820 380 C 900 420, 980 460, 1040 480" stroke="#58ffb2" stroke-width="6" fill="none"/>
+      </svg>
+    </section>
+
+    <!-- S14 RPA -->
+    <section class="scene s13" data-label="RPA (Automatización de Procesos Robóticos)">
+      <div class="panel">
+        <h2>RPA — Automatización de procesos</h2> <br>
+        <p><strong>Bots de software</strong> imitan acciones humanas para mover datos entre aplicaciones sin errores.</p><br>
+        <ul>
+          <li>Ejemplos:Onboarding RR. HH., Mesa de ayuda  .</li>
+          <li>Evita tareas repetitivas.</li>
+          <li>Copiar correos/tickets y envío de respuestas, Creación de usuarios, reseteo de contraseñas, reportes .</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 1200 640" aria-label="Bot mueve documentos entre apps">
+        <g transform="translate(1040,420)">
+          <rect x="-160" y="-80" width="120" height="100" rx="12" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <text x="-100" y="-90" fill="#b8c7ff" font-size="16" text-anchor="middle">ERP</text>
+          <rect x="20" y="-80" width="120" height="100" rx="12" fill="#0f1a3a" stroke="rgba(255,255,255,.35)"/>
+          <text x="80" y="-90" fill="#b8c7ff" font-size="16" text-anchor="middle">CRM</text>
+        </g>
+        <g transform="translate(780,420)">
+          <circle cx="0" cy="-20" r="20" fill="#5ef3ff"/>
+          <rect x="-18" y="0" width="36" height="60" rx="10" fill="#173160"/>
+          <text x="0" y="88" fill="#b8c7ff" font-size="14" text-anchor="middle">Bot</text>
+        </g>
+        <g class="run" style="animation:doc 4.2s linear infinite">
+          <rect x="540" y="380" width="80" height="60" rx="8" fill="#ffd866" stroke="#e4b24a"/>
+          <text x="580" y="416" fill="#0b1226" font-size="14" text-anchor="middle">Formulario</text>
+        </g>
+        <style>@keyframes doc{0%{transform:translateX(0)}100%{transform:translateX(540px)}}</style>
+        <path class="dash run" d="M620 410 H 860" stroke="#58ffb2" stroke-width="6" fill="none"/>
+        <path class="dash run" d="M860 410 H 980" stroke="#58ffb2" stroke-width="6" fill="none"/>
+        <path class="dash run" d="M980 410 H 1060" stroke="#58ffb2" stroke-width="6" fill="none"/>
+      </svg>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="sub" id="hint">Aprendiendo con @LaProfeVivy.</div>
+  <div class="dots" id="dots"></div>
+</footer>
+
+<script>
+  const track = document.getElementById('track');
+  const scenes = Array.from(track.children);
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const label = document.getElementById('sceneLabel');
+  const dotsWrap = document.getElementById('dots');
+
+  let index = 0;
+  function sync() {
+    track.style.transform = `translateX(${-index*100}%)`;
+    scenes.forEach((s,i)=> s.classList.toggle('active', i===index));
+    const t = scenes[index].dataset.label || `Escena ${index+1}`;
+    label.textContent = `${String(index+1).padStart(2,'0')} · ${t}`;
+    Array.from(dotsWrap.children).forEach((d,i)=>d.classList.toggle('active', i===index));
+  }
+  function go(i){ index = (i+scenes.length)%scenes.length; sync(); }
+
+  prevBtn.addEventListener('click', ()=>go(index-1));
+  nextBtn.addEventListener('click', ()=>go(index+1));
+  window.addEventListener('keydown', (e)=>{
+    if(e.key==='ArrowRight') go(index+1);
+    if(e.key==='ArrowLeft') go(index-1);
+  });
+
+  // Dots
+  scenes.forEach((_,i)=>{
+    const b = document.createElement('div');
+    b.className = 'dot' + (i===0?' active':'');
+    b.addEventListener('click', ()=>{ index=i; sync(); });
+    dotsWrap.appendChild(b);
+  });
+
+  sync();
+</script>
+</body>
+</html>
 
