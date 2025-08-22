@@ -1,1 +1,527 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tarjetas de Sensores IoT (Flip + Modal)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    --bg:#0e1726; --card:#ffffff; --ink:#0f172a; --muted:#475569;
+    --accent:#60a5fa; --accent2:#93c5fd; --ring:#c7d2fe;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,system-ui,Segoe UI,Arial,sans-serif; color:var(--ink);
+    background:linear-gradient(180deg,#0e1726 0%,#0b1323 100%);
+    padding:28px;
+  }
+  h1{margin:0 0 8px; color:#eaf2ff; text-align:center; font-weight:800}
+  .sub{color:#c7d2fe;text-align:center;margin:0 0 26px}
+
+  .grid{
+    display:grid; gap:18px; max-width:1200px; margin:0 auto;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  }
+
+  /* Contenedor de tarjeta + botón info (botón fuera y más abajo) */
+  .cardwrap{display:flex; flex-direction:column; align-items:center}
+  .spacer{height:16px}      /* una línea */
+  .spacer2{height:16px}     /* segunda línea → total dos renglones */
+  .info-out{
+    margin-top:2px;
+    background:linear-gradient(90deg,#dbeafe,#eef2ff);
+    border:1px solid #c7d2fe; color:#0f172a; font-weight:700;
+    border-radius:999px; padding:6px 10px; cursor:pointer; font-size:.85rem;
+    box-shadow:0 6px 14px rgba(2,8,23,.18);
+  }
+
+  /* Flip card */
+  .flip{perspective:1100px; height:260px; outline:none; cursor:pointer; position:relative; width:100%}
+  .flip-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+  .flip:hover .flip-inner{ transform:rotateY(180deg); }
+  .flip.is-flipped .flip-inner{ transform:rotateY(180deg); }
+
+  .face{
+    position:absolute; inset:0; border-radius:16px; overflow:hidden;
+    -webkit-backface-visibility:hidden; backface-visibility:hidden;
+    border:1px solid var(--ring);
+    box-shadow:0 10px 22px rgba(2,8,23,.35);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    padding:14px;
+  }
+  .front{ background:linear-gradient(180deg,#f8fafc 0%,#eef2ff 100%); }
+  .back{
+    background:linear-gradient(180deg,#dbeafe 0%,#ffffff 100%);
+    transform:rotateY(180deg);
+    align-items:flex-start; justify-content:flex-start;
+  }
+
+  .svgwrap{
+    width:72px; height:72px; display:grid; place-items:center;
+    background:radial-gradient(60% 60% at 50% 40%, #e9efff, #c7d2fe);
+    border-radius:14px; border:1px solid #dbeafe;
+  }
+  .pill{
+    display:inline-block; padding:6px 10px; border-radius:999px; font-size:.78rem; color:#0f172a;
+    background:linear-gradient(90deg,#dbeafe,#f1f5f9); border:1px solid #e5e7eb;
+  }
+  .title{font-weight:800; color:#0f172a; letter-spacing:.2px; text-align:center; padding:0 8px}
+  .h{font-weight:700; margin:2px 0 4px}
+  .desc{ color:var(--muted); font-size:.93rem; line-height:1.35; margin:0 0 6px}
+  .list{margin:0; padding-left:16px; color:var(--muted); font-size:.9rem}
+
+  /* Modal */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(2,8,23,.55);
+    display:none; align-items:center; justify-content:center; z-index:50;
+  }
+  .modal{width:min(560px,92%); background:#ffffff; color:#0f172a; border-radius:16px; border:1px solid #dbeafe;
+    box-shadow:0 24px 48px rgba(2,8,23,.35); padding:18px 18px 14px;
+  }
+  .modal h3{margin:0 0 6px; font-size:1.1rem}
+  .modal .model{display:inline-block; padding:4px 10px; border-radius:999px; background:#eef2ff; border:1px solid #dbeafe; font-weight:700; margin:0 0 10px}
+  .modal p{margin:6px 0; color:#334155}
+  .modal ul{margin:6px 0 0; padding-left:18px; color:#475569}
+  .modal .actions{display:flex; justify-content:flex-end; gap:8px; margin-top:12px}
+  .btn{border:1px solid #c7d2fe; background:#eaf1ff; color:#0f172a; padding:8px 12px; border-radius:10px; cursor:pointer}
+  .btn.primary{background:#2563eb; color:#fff; border-color:#1e40af}
+  .close-x{position:absolute; top:8px; right:10px; background:transparent; border:none; font-size:20px; cursor:pointer; color:#0f172a}
+  .show{display:flex}
+</style>
+</head>
+<body>
+
+<h1>Sensores IoT</h1>
+<p class="sub">Toca o pasa el cursor para girar cada tarjeta. El botón “ℹ Más info” está debajo y abre una explicación con el modelo específico.</p>
+
+<div class="grid" id="grid">
+
+  <!-- ====== 1 Gas ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
+              <defs><linearGradient id="g1" x1="0" x2="1"><stop stop-color="#60a5fa"/><stop offset="1" stop-color="#93c5fd"/></linearGradient></defs>
+              <path d="M20 14h24a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H20a6 6 0 0 1-6-6V20a6 6 0 0 1 6-6z" fill="url(#g1)"/>
+              <circle cx="32" cy="32" r="10" fill="#fff"/><circle cx="32" cy="32" r="4" fill="#60a5fa"/>
+            </svg>
+          </div>
+          <div class="pill">MQ-2 / MQ-5</div>
+          <div class="title">Gas inflamable</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Detecta fuga de GLP/metano para activar alarma o alerta al celular.</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Cocina: aviso si hay fuga.</li>
+            <li>Caldera: seguridad preventiva.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="Gas inflamable"
+      data-model="MQ-2 / MQ-5"
+      data-desc="Modelos muy usados para detectar gases combustibles (GLP, propano, metano). Salida analógica, requieren calibración básica."
+      data-ex="• Si gas > umbral ⇒ Sirena ON y alerta App.&#10;• Ventilar automáticamente la cocina.">
+      ℹ Más info
+    </button>
+  </div>
+
+  <!-- ====== 2 Temperatura ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="46" height="46" aria-hidden="true">
+              <rect x="26" y="10" width="12" height="30" rx="6" fill="#60a5fa"/>
+              <circle cx="32" cy="46" r="10" fill="#93c5fd"/>
+            </svg>
+          </div>
+          <div class="pill">DHT22 / DS18B20</div>
+          <div class="title">Temperatura</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Control de confort y protección de equipos sensibles.</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Activar ventilación si ≥ 30 °C.</li>
+            <li>Registro diario de °C.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="Temperatura"
+      data-model="DHT22 / DS18B20"
+      data-desc="Sensores populares de temperatura (DHT22 también mide humedad). Fáciles de leer desde microcontroladores."
+      data-ex="• Si T ≥ 30 °C ⇒ Ventilación ON.&#10;• Si T < 28 °C ⇒ Ventilación OFF.">
+      ℹ Más info
+    </button>
+  </div>
+
+  <!-- ====== 3 Humedad ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="50" height="50" aria-hidden="true">
+              <path d="M32 10c8 10 14 18 14 26a14 14 0 1 1-28 0c0-8 6-16 14-26z" fill="#93c5fd"/>
+            </svg>
+          </div>
+          <div class="pill">DHT22 / Capacitivo</div>
+          <div class="title">Humedad</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Evitar moho o resequedad; riego automático.</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Activar riego si suelo seco.</li>
+            <li>Alertas por HR muy alta.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="Humedad"
+      data-model="DHT22 (ambiente) / Sensor capacitivo (suelo)"
+      data-desc="Humedad relativa del aire y humedad de suelo para riego. Lectura digital (DHT22) o analógica (capacitivo)."
+      data-ex="• Si HR > 70% ⇒ Alerta de moho.&#10;• Si suelo < 35% ⇒ Riego ON 30 s.">
+      ℹ Más info
+    </button>
+  </div>
+
+  <!-- ====== 4 Movimiento PIR ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
+              <circle cx="20" cy="32" r="6" fill="#60a5fa"/>
+              <path d="M30 26h12v12H30z" fill="#93c5fd"/><circle cx="44" cy="32" r="6" fill="#60a5fa"/>
+            </svg>
+          </div>
+          <div class="pill">HC-SR501</div>
+          <div class="title">Movimiento (PIR)</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Encender luces o disparar alarmas si hay presencia.</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Luz de pasillo automática.</li>
+            <li>Alerta nocturna.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="Movimiento (PIR)"
+      data-model="HC-SR501"
+      data-desc="PIR = Infrarrojo pasivo. Entrega HIGH cuando detecta presencia. Retardo y sensibilidad ajustables."
+      data-ex="• Si PIR=HIGH y lux<200 ⇒ Luz ON 60 s.">
+      ℹ Más info
+    </button>
+  </div>
+
+  <!-- ====== 5 Luz ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="50" height="50" aria-hidden="true">
+              <circle cx="32" cy="24" r="12" fill="#f8fafc" stroke="#60a5fa" stroke-width="3"/>
+              <path d="M32 38v10M20 34l-8 8M44 34l8 8" stroke="#93c5fd" stroke-width="3"/>
+            </svg>
+          </div>
+          <div class="pill">LDR / BH1750</div>
+          <div class="title">Luz</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Ahorro de energía con iluminación inteligente.</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Encender al anochecer.</li>
+            <li>Atenuar con mucha luz.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="Luz"
+      data-model="LDR / BH1750"
+      data-desc="Miden nivel de iluminación. LDR es analógico; BH1750 entrega lux por I²C (digital)."
+      data-ex="• Si lux<200 ⇒ Luz ON.&#10;• Si lux>400 ⇒ Luz OFF.">
+      ℹ Más info
+    </button>
+  </div>
+
+  <!-- ====== 6 Distancia ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
+              <rect x="10" y="24" width="14" height="16" rx="4" fill="#60a5fa"/>
+              <path d="M30 20c10 6 10 18 0 24M38 16c14 8 14 24 0 32" stroke="#93c5fd" stroke-width="3" fill="none"/>
+            </svg>
+          </div>
+          <div class="pill">HC-SR04 / VL53L0X</div>
+          <div class="title">Proximidad/Distancia</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Conteo de personas, evitar choques o medir nivel de tanque.</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Barrera de distancia.</li>
+            <li>Nivel en depósito.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="Proximidad/Distancia"
+      data-model="HC-SR04 (ultrasónico) / VL53L0X (ToF)"
+      data-desc="Miden distancia por ultrasonido o tiempo de vuelo láser. Útiles para nivel de tanque o detección de objetos."
+      data-ex="• Si d<30 cm ⇒ abrir barrera / contar persona.">
+      ℹ Más info
+    </button>
+  </div>
+
+  <!-- ====== 7 Magnético ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
+              <rect x="18" y="16" width="20" height="32" rx="4" fill="#93c5fd"/>
+              <rect x="40" y="24" width="6" height="16" rx="2" fill="#60a5fa"/>
+            </svg>
+          </div>
+          <div class="pill">Reed switch</div>
+          <div class="title">Puerta/Ventana</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Saber si algo está abierto o cerrado para seguridad.</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Alarma de puerta.</li>
+            <li>Ahorro de aire acondicionado.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="Puerta/Ventana"
+      data-model="Reed switch (interruptor magnético)"
+      data-desc="Detecta apertura/cierre usando un imán. Muy fiable y de bajo consumo."
+      data-ex="• Si puerta=abierta y hora>22:00 ⇒ notificar App.">
+      ℹ Más info
+    </button>
+  </div>
+
+  <!-- ====== 8 Sonido ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
+              <path d="M18 36h8l12 10V18L26 28h-8z" fill="#60a5fa"/>
+              <path d="M44 20c6 6 6 18 0 24" stroke="#93c5fd" stroke-width="4" fill="none"/>
+            </svg>
+          </div>
+          <div class="pill">Mic / KY-038</div>
+          <div class="title">Sonido</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Detectar ruidos (golpes, gritos, maquinaria).</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Alerta por ruido alto.</li>
+            <li>Monitoreo de sala.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="Sonido"
+      data-model="Micrófono / KY-038"
+      data-desc="Detecta picos de ruido; orientativo (no calibra dB exactos). Útil para eventos bruscos."
+      data-ex="• Si ruido>umbral ⇒ alerta/registro de evento.">
+      ℹ Más info
+    </button>
+  </div>
+
+  <!-- ====== 9 CO₂ / IAQ ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
+              <circle cx="24" cy="32" r="10" fill="#60a5fa"/>
+              <circle cx="40" cy="32" r="10" fill="#93c5fd" opacity=".9"/>
+            </svg>
+          </div>
+          <div class="pill">MH-Z19 / SGP30</div>
+          <div class="title">CO₂ / Calidad aire</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Ventilar aulas/oficinas cuando sube el CO₂.</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Alerta si &gt; 1000 ppm.</li>
+            <li>Registro de IAQ.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="CO₂ / Calidad de aire"
+      data-model="MH-Z19 (CO₂) / SGP30 (TVOC/IAQ)"
+      data-desc="Medición de CO₂ en ppm y calidad del aire. Útiles para activar ventilación."
+      data-ex="• Si CO₂>1000 ppm ⇒ extractor ON; hasta <800 ppm.">
+      ℹ Más info
+    </button>
+  </div>
+
+  <!-- ====== 10 Fuga de agua ====== -->
+  <div class="cardwrap">
+    <div class="flip" tabindex="0" role="button" aria-pressed="false">
+      <div class="flip-inner">
+        <div class="face front">
+          <div class="svgwrap">
+            <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
+              <path d="M32 12c8 11 12 17 12 24a12 12 0 1 1-24 0c0-7 4-13 12-24z" fill="#60a5fa"/>
+            </svg>
+          </div>
+          <div class="pill">Sonda / Flotador</div>
+          <div class="title">Fuga de agua</div>
+        </div>
+        <div class="face back">
+          <div class="h">¿Para qué sirve?</div>
+          <p class="desc">Avisar si aparece charco o sube el nivel en un cuarto técnico.</p>
+          <div class="h">Ejemplos</div>
+          <ul class="list">
+            <li>Lavadero/baño.</li>
+            <li>Cuarto de bombas.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="spacer"></div><div class="spacer2"></div>
+    <button class="info-out"
+      data-title="Fuga de agua"
+      data-model="Sonda de humedad / Flotador"
+      data-desc="Detecta presencia o nivel de agua. Muy usado para prevenir daños por fugas."
+      data-ex="• Si agua detectada ⇒ cortar bomba y alertar.">
+      ℹ Más info
+    </button>
+  </div>
+
+</div>
+
+<!-- Modal reutilizable -->
+<div class="modal-backdrop" id="backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="close-x" id="mClose" aria-label="Cerrar">×</button>
+    <span class="model" id="mModel">MODEL</span>
+    <h3 id="mTitle">Título</h3>
+    <p id="mDesc">Descripción</p>
+    <p style="margin:10px 0 4px; font-weight:700;">Ejemplos</p>
+    <ul id="mEx"></ul>
+    <div class="actions">
+      <button class="btn" id="mCancel">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Giro con click/teclado (solo la tarjeta)
+  document.querySelectorAll('.flip').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      card.classList.toggle('is-flipped');
+      card.setAttribute('aria-pressed', card.classList.contains('is-flipped') ? 'true' : 'false');
+    });
+    card.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault(); card.click();
+      }
+    });
+  });
+
+  // Modal: abrir desde botón de info (fuera de la tarjeta)
+  const backdrop = document.getElementById('backdrop');
+  const mTitle = document.getElementById('mTitle');
+  const mModel = document.getElementById('mModel');
+  const mDesc  = document.getElementById('mDesc');
+  const mEx    = document.getElementById('mEx');
+
+  document.querySelectorAll('.info-out').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation(); // no afecta el flip
+      const title = btn.dataset.title || 'Sensor';
+      const model = btn.dataset.model || '';
+      const desc  = btn.dataset.desc  || '';
+      const exStr = btn.dataset.ex   || '';
+      // llenar modal
+      mTitle.textContent = title;
+      mModel.textContent = model;
+      mDesc.textContent  = desc;
+      mEx.innerHTML = '';
+      exStr.split('\n').forEach(line=>{
+        if(line.trim()){
+          const li=document.createElement('li');
+          li.textContent=line.replace(/^•\s*/,'').trim();
+          mEx.appendChild(li);
+        }
+      });
+      backdrop.classList.add('show');
+      backdrop.setAttribute('aria-hidden','false');
+    });
+  });
+
+  // Cerrar modal
+  function closeModal(){
+    backdrop.classList.remove('show');
+    backdrop.setAttribute('aria-hidden','true');
+  }
+  document.getElementById('mClose').onclick = closeModal;
+  document.getElementById('mCancel').onclick = closeModal;
+  backdrop.addEventListener('click', (e)=>{
+    if(e.target === backdrop) closeModal();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && backdrop.classList.contains('show')) closeModal();
+  });
+</script>
+
+</body>
+</html>
 
