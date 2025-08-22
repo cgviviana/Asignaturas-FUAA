@@ -1,1 +1,320 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Casa inteligente —  (pulso y posiciones)</title>
+<style>
+  :root{
+    --bg:#0e1726; --panel:#0f1930; --ink:#eef3ff; --muted:#b8c6e5;
+    --zone:#14233f; --edge:#2b4475;
+    --data:#00b3ff; --act:#22c55e; --alert:#ff3344; --y:#ffd95e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0e1726,#0a1324);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Arial}
+  .wrap{max-width:1100px;margin:24px auto;padding:16px}
+  h1{margin:0 0 8px;font-size:1.5rem}
+  .muted{color:var(--muted);margin:0 0 12px}
+  .tabs{display:flex;gap:10px;margin:0 0 12px}
+  .btn{background:#162541;border:1px solid #233a68;color:#e7efff;padding:8px 14px;border-radius:10px;cursor:pointer}
+  .btn.active{background:#203a6a;border-color:#3f67b1}
+  .panel{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:14px}
+  svg{width:100%;height:auto;display:block}
+  .hide{display:none}
+
+  .zone{fill:var(--zone);stroke:var(--edge);stroke-width:2;rx:16;ry:16}
+  .label{font:800 16px/1.2 Inter,system-ui;fill:#f2f6ff}
+  .small{font:600 12px/1.2 Inter,system-ui;fill:#d2def7}
+  .node{fill:#152a4d;stroke:#2e4a80;stroke-width:1.5;rx:10;ry:10}
+
+  .wire{fill:none;stroke:var(--data);stroke-width:3;stroke-dasharray:10 8;animation:flow 2.2s linear infinite;marker-end:url(#arrB)}
+  .wireAct{fill:none;stroke:var(--act);stroke-width:3;stroke-dasharray:10 8;animation:flow 2.6s linear infinite;marker-end:url(#arrG)}
+  .wireAlert{fill:none;stroke:var(--alert);stroke-width:3;stroke-dasharray:8 10;animation:flow 1.6s linear infinite;marker-end:url(#arrR)}
+  @keyframes flow{to{stroke-dashoffset:-200}}
+
+  /* indicadores */
+  .off{opacity:.45}
+  .on{opacity:1}
+  .py{fill:var(--y); animation:py 1.4s ease-in-out infinite alternate}
+  @keyframes py{from{opacity:.35}to{opacity:1}}
+  .pr{fill:var(--alert); animation:pr 1.1s ease-in-out infinite alternate}
+  @keyframes pr{from{opacity:.35}to{opacity:1}}
+
+  .cases{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .chip{background:#162541;border:1px solid #233a68;color:#e7efff;padding:6px 12px;border-radius:999px;cursor:pointer;font-size:.9rem}
+  .chip.active{background:#203a6a;border-color:#3f67b1}
+  .card{background:#0f1c36;border:1px solid var(--edge);border-radius:12px;padding:12px}
+  .card h3{margin:0 0 6px;font-size:1.05rem}
+  .card p{margin:4px 0;color:#bcd0f2;font-size:.95rem}
+  .phone{margin-top:8px;border:1px solid var(--edge);border-radius:12px;background:#0f1c36;padding:8px}
+  .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.82rem;margin-bottom:6px}
+  .bAlert{background:rgba(255,51,68,.12);border:1px solid var(--alert);color:#ffd1d1}
+  .bInfo{background:rgba(0,179,255,.12);border:1px solid var(--data);color:#d8f7ff}
+  .bOk{background:rgba(34,197,94,.12);border:1px solid var(--act);color:#caffea}
+
+  /* ondas de sonido sirena */
+  .sound{fill:none;stroke:var(--alert);stroke-width:2;opacity:0}
+  .sound.on{opacity:1;animation:sound 1.2s ease-out infinite}
+  @keyframes sound{0%{stroke-opacity:.9;transform:scale(.85)}100%{stroke-opacity:.05;transform:scale(1.15)}}
+
+  /* intruso */
+  .slide-intruso{animation:intruso 1.8s ease-out forwards}
+  @keyframes intruso{0%{transform:translateX(0)}100%{transform:translateX(70px)}}
+
+  .glow{filter:drop-shadow(0 0 8px #22c55e)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Casa inteligente </h1>
+  <p class="muted">Azul = Datos · Verde = Acción local · Rojo = Alerta</p>
+
+  <div class="tabs">
+    <button id="bMapa" class="btn active">Mapa</button>
+    <button id="bPanel" class="btn">Panel</button>
+  </div>
+
+  <div class="panel">
+    <!-- ============== MAPA ============== -->
+    <svg id="mapa" viewBox="0 0 1100 600" aria-label="Mapa de la casa">
+      <defs>
+        <marker id="arrB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#00b3ff"/></marker>
+        <marker id="arrG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#22c55e"/></marker>
+        <marker id="arrR" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#ff3344"/></marker>
+      </defs>
+
+      <!-- Zonas -->
+      <rect class="zone" x="30" y="60" width="320" height="240" />
+      <text class="label" x="50" y="90">Cocina</text>
+
+      <rect class="zone" x="370" y="60" width="340" height="240" />
+      <text class="label" x="390" y="90">Sala</text>
+
+      <rect class="zone" x="730" y="60" width="340" height="240" />
+      <text class="label" x="750" y="90">Habitación</text>
+
+      <rect class="zone" x="30" y="320" width="240" height="180" />
+      <text class="label" x="50" y="350">Puerta principal</text>
+
+      <!-- HUB (bajado) / APP (más abajo, no encima) -->
+      <g id="hubBox" transform="translate(760,340)">
+        <rect class="node" x="0" y="0" width="240" height="90"/>
+        <text class="label" x="14" y="36">Router / Hub</text>
+        <text class="small" x="14" y="62">Conecta sensores y envía acciones</text>
+      </g>
+      <g id="appBox" transform="translate(760,450)">
+        <rect class="node" x="0" y="0" width="240" height="90" rx="12"/>
+        <text class="label" x="14" y="36">App</text>
+        <text class="small" x="14" y="62">Recibe alertas / Control remoto</text>
+      </g>
+
+      <!-- Cocina -->
+      <g transform="translate(60,120)">
+        <rect id="gas" class="node" x="0" y="0" width="120" height="48"/><text class="small" x="10" y="30">Sensor GAS</text>
+        <rect id="humo" class="node" x="140" y="0" width="110" height="42"/><text class="small" x="148" y="28">Det. HUMO</text>
+        <rect id="caf" class="node" x="0" y="70" width="140" height="56"/><text class="small" x="10" y="100">Cafetera</text>
+        <rect id="sirena" class="node" x="160" y="70" width="110" height="56"/><text class="small" x="170" y="100">Sirena</text>
+      </g>
+
+      <!-- Sala -->
+      <g transform="translate(400,120)">
+        <rect id="luzSala" class="node" x="0" y="0" width="140" height="48"/><text class="small" x="10" y="30">Luz sala</text>
+        <rect id="tv" class="node" x="156" y="0" width="120" height="42"/><text class="small" x="164" y="28">Televisor</text>
+        <rect id="cam" class="node" x="0" y="70" width="160" height="48"/><text class="small" x="10" y="98">Cámara pasillo</text>
+      </g>
+
+      <!-- Habitación -->
+      <g transform="translate(760,120)">
+        <rect id="luzHabit" class="node" x="0" y="0" width="170" height="48"/><text class="small" x="10" y="30">Luz habitación</text>
+        <rect id="pirHab" class="node" x="0" y="60" width="170" height="48"/><text class="small" x="10" y="88">PIR movimiento</text>
+      </g>
+
+      <!-- Flujos EJEMPLO -->
+      <!-- GAS -> HUB -->
+      <path class="wire" d="M180,150 C420,120 760,330 780,350"/>
+      <!-- PIR -> HUB -->
+      <path class="wire" d="M845,210 C860,250 820,310 780,350"/>
+      <!-- HUB -> LUZ SALA -->
+      <path class="wireAct" d="M780,370 C640,340 500,140 430,130"/>
+
+      <!-- Indicadores (sin televisor) -->
+      <circle id="cafDot" cx="66"  cy="194" r="6" class="off"/>
+      <circle id="luzSalaDot" cx="410" cy="132" r="6" class="off"/>
+      <circle id="sirenaDot"  cx="236" cy="194" r="6" class="off"/>
+      <circle id="gasDot"  cx="110" cy="150" r="6" class="off"/>
+    </svg>
+
+    <!-- ============== PANEL ============== -->
+    <div id="panel" class="hide">
+      <div class="cases">
+        <button class="chip active" data-case="gas">Gas (cocina)</button>
+        <button class="chip" data-case="puerta">Movimiento (puerta → luz sala)</button>
+        <button class="chip" data-case="cafetera">Cafetera (usuario remoto)</button>
+      </div>
+
+      <!-- Gas -->
+      <div class="card case" id="case-gas">
+        <h3>Gas detectado → Sirena ON y alerta</h3>
+        <p>Umbral superado; el hub activa la sirena y notifica en la app.</p>
+        <svg viewBox="0 0 360 130">
+          <defs>
+            <marker id="arrSB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#00b3ff"/></marker>
+            <marker id="arrSG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#22c55e"/></marker>
+            <marker id="arrSR" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#ff3344"/></marker>
+          </defs>
+          <rect x="10" y="12" width="90" height="40" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="34" y="38" fill="#d2def7" font-size="12" font-weight="700">GAS</text>
+          <rect x="120" y="12" width="90" height="40" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="142" y="38" fill="#d2def7" font-size="12" font-weight="700">HUB</text>
+          <rect x="230" y="12" width="110" height="40" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="265" y="38" fill="#d2def7" font-size="12" font-weight="700">APP</text>
+          <rect x="120" y="80" width="90" height="32" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="142" y="100" fill="#d2def7" font-size="12" font-weight="700">SIRENA</text>
+
+          <!-- “aire” rojo -->
+          <path class="wireAlert" marker-end="url(#arrSR)" d="M30,12 C20,6 18,2 26,0"/>
+          <circle class="wireAlert" cx="24" cy="6" r="2"/><circle class="wireAlert" cx="18" cy="10" r="2"/><circle class="wireAlert" cx="34" cy="8" r="2"/>
+
+          <path id="gData"   class="wire"    marker-end="url(#arrSB)" d="M100,32 L120,32" style="opacity:1"/>
+          <path id="gHubApp" class="wire"    marker-end="url(#arrSB)" d="M210,32 L230,32" style="opacity:1"/>
+          <path id="gAct"    class="wireAct" marker-end="url(#arrSG)" d="M165,52 L165,80" style="opacity:1"/>
+
+          <!-- ondas sirena -->
+          <path id="sw1" class="sound" d="M208,92 q12-12 24 0"/>
+          <path id="sw2" class="sound" d="M206,88 q16-16 32 0"/>
+        </svg>
+        <div class="phone">
+          <div class="badge bAlert" id="bGas" style="display:none">Gas detectado</div>
+          <ul id="logGas" style="margin:6px 0 0;padding-left:18px;font-size:.9rem;color:#e9efff"></ul>
+        </div>
+      </div>
+
+      <!-- Puerta -->
+      <div class="card case hide" id="case-puerta">
+        <h3>Movimiento en puerta → Luz sala ON y aviso</h3>
+        <p>La cámara detecta paso; el hub enciende la luz y la app avisa.</p>
+        <svg viewBox="0 0 360 150">
+          <defs>
+            <marker id="arrMB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#00b3ff"/></marker>
+            <marker id="arrMG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#22c55e"/></marker>
+          </defs>
+          <circle id="intruso" cx="26" cy="110" r="8" fill="#ffd166" />
+          <rect x="10" y="12" width="110" height="40" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="36" y="38" fill="#d2def7" font-size="12" font-weight="700">CÁMARA</text>
+          <rect x="130" y="12" width="90" height="40" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="154" y="38" fill="#d2def7" font-size="12" font-weight="700">HUB</text>
+          <rect x="240" y="12" width="110" height="40" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="277" y="38" fill="#d2def7" font-size="12" font-weight="700">APP</text>
+          <rect id="miniLuzRect" x="130" y="90" width="110" height="32" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="149" y="110" fill="#d2def7" font-size="12" font-weight="700">LUZ SALA</text>
+          <path id="mData1" class="wire" marker-end="url(#arrMB)" d="M120,32 L130,32" style="opacity:.25"/>
+          <path id="mData2" class="wire" marker-end="url(#arrMB)" d="M220,32 L240,32" style="opacity:.25"/>
+          <path id="mAct"   class="wireAct" marker-end="url(#arrMG)" d="M185,52 L185,90" style="opacity:.25"/>
+        </svg>
+        <div class="phone">
+          <div class="badge bInfo" id="bMov" style="display:none">Movimiento en puerta</div>
+          <ul id="logMov" style="margin:6px 0 0;padding-left:18px;font-size:.9rem;color:#e9efff"></ul>
+        </div>
+      </div>
+
+      <!-- Cafetera -->
+      <div class="card case hide" id="case-cafetera">
+        <h3>Usuario en app → Cafetera ON</h3>
+        <p>La app envía el comando; el hub enciende la cafetera.</p>
+        <svg viewBox="0 0 360 120">
+          <defs>
+            <marker id="arrCB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#00b3ff"/></marker>
+            <marker id="arrCG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#22c55e"/></marker>
+          </defs>
+          <rect x="10" y="12" width="90" height="40" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="36" y="38" fill="#d2def7" font-size="12" font-weight="700">APP</text>
+          <rect x="120" y="12" width="90" height="40" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="144" y="38" fill="#d2def7" font-size="12" font-weight="700">HUB</text>
+          <rect id="cafMiniRect" x="230" y="12" width="120" height="40" rx="8" fill="#152a4d" stroke="#2e4a80"/><text x="242" y="38" fill="#d2def7" font-size="12" font-weight="700">CAFETERA</text>
+          <path id="cAppHub" class="wire"    marker-end="url(#arrCB)" d="M100,32 L120,32" style="opacity:1"/>
+          <path id="cHubCaf" class="wireAct" marker-end="url(#arrCG)" d="M210,32 L230,32" style="opacity:1"/>
+        </svg>
+        <div class="phone">
+          <div class="badge bOk" id="bCaf" style="display:none">Cafetera encendida</div>
+          <ul id="logCaf" style="margin:6px 0 0;padding-left:18px;font-size:.9rem;color:#e9efff"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tabs
+  const bMapa=document.getElementById('bMapa');
+  const bPanel=document.getElementById('bPanel');
+  const mapa=document.getElementById('mapa');
+  const panel=document.getElementById('panel');
+  bMapa.onclick=()=>{bMapa.classList.add('active');bPanel.classList.remove('active');mapa.classList.remove('hide');panel.classList.add('hide');};
+  bPanel.onclick=()=>{bPanel.classList.add('active');bMapa.classList.remove('active');panel.classList.remove('hide');mapa.classList.add('hide');};
+
+  // Selector de casos
+  const chips=document.querySelectorAll('.chip');
+  function resetDots(){
+    [cafDot,luzSalaDot,sirenaDot,gasDot].forEach(d=>{
+      d.classList.remove('on','py','pr');
+      d.classList.add('off');
+    });
+    document.getElementById('miniLuzRect')?.classList.remove('glow');
+    ['sw1','sw2'].forEach(id=>{const p=document.getElementById(id);p&&p.classList.remove('on');});
+    bGas.style.display='none';logGas.innerHTML='';
+    bMov.style.display='none';logMov.innerHTML='';
+    bCaf.style.display='none';logCaf.innerHTML='';
+    const intruso=document.getElementById('intruso'); intruso && (intruso.style.transform='translateX(0)');
+  }
+  function showCase(name){
+    document.querySelectorAll('.case').forEach(c=>c.classList.add('hide'));
+    document.getElementById('case-'+name).classList.remove('hide');
+    chips.forEach(ch=>ch.classList.toggle('active', ch.dataset.case===name));
+    resetDots();
+  }
+  chips.forEach(ch=>ch.onclick=()=>showCase(ch.dataset.case));
+
+  // Dots del mapa
+  const cafDot=document.getElementById('cafDot');
+  const luzSalaDot=document.getElementById('luzSalaDot');
+  const sirenaDot=document.getElementById('sirenaDot');
+  const gasDot=document.getElementById('gasDot');
+
+  // GAS
+  const bGas=document.getElementById('bGas');
+  const logGas=document.getElementById('logGas');
+  document.getElementById('case-gas').addEventListener('click', ()=>{
+    bGas.style.display='inline-block';
+    logGas.innerHTML='<li>Umbral superado</li><li>Alerta en app</li><li>Sirena activada</li>';
+    // ondas de sonido
+    ['sw1','sw2'].forEach(id=>document.getElementById(id).classList.add('on'));
+    // mapa: gas y sirena en rojo pulsante
+    [gasDot,sirenaDot].forEach(d=>{d.classList.remove('off'); d.classList.add('on','pr');});
+  });
+
+  // PUERTA
+  const bMov=document.getElementById('bMov');
+  const logMov=document.getElementById('logMov');
+  const mData1=document.getElementById('mData1');
+  const mData2=document.getElementById('mData2');
+  const mAct=document.getElementById('mAct');
+  document.getElementById('case-puerta').addEventListener('click', ()=>{
+    const intruso=document.getElementById('intruso');
+    intruso.classList.remove('slide-intruso'); void intruso.offsetWidth; intruso.classList.add('slide-intruso');
+    setTimeout(()=>{
+      mData1.style.opacity=1; mData2.style.opacity=1; mAct.style.opacity=1;
+      document.getElementById('miniLuzRect').classList.add('glow');
+      bMov.style.display='inline-block';
+      logMov.innerHTML='<li>Movimiento detectado</li><li>Aviso en app</li><li>Luz de sala encendida</li>';
+      // mapa: luz sala en pulso amarillo
+      luzSalaDot.classList.remove('off'); luzSalaDot.classList.add('on','py');
+    }, 900);
+  });
+
+  // CAFETERA
+  const bCaf=document.getElementById('bCaf');
+  const logCaf=document.getElementById('logCaf');
+  const cafMiniRect=document.getElementById('cafMiniRect');
+  document.getElementById('case-cafetera').addEventListener('click', ()=>{
+    bCaf.style.display='inline-block';
+    logCaf.innerHTML='<li>Comando enviado</li><li>Cafetera encendida</li>';
+    cafMiniRect.classList.add('glow');             // mini panel
+    cafDot.classList.remove('off'); cafDot.classList.add('on','py'); // mapa pulso amarillo
+  });
+
+  // Estado inicial
+  showCase('gas');
+</script>
+</body>
+</html>
 
