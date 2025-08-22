@@ -1,21 +1,25 @@
-<!doctype html>
+<!doctype html> 
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Casa inteligente —  (pulso y posiciones)</title>
+<title>Casa inteligente — (pulso y posiciones)</title>
 <style>
   :root{
-    --bg:#0e1726; --panel:#0f1930; --ink:#eef3ff; --muted:#b8c6e5;
+    --bg1:#14223d; --bg2:#0e1a33;           /* fondo un poco más claro, SIN radial */
+    --panel:#0f1930; --ink:#eef3ff; --muted:#b8c6e5;
     --zone:#14233f; --edge:#2b4475;
     --data:#00b3ff; --act:#22c55e; --alert:#ff3344; --y:#ffd95e;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:linear-gradient(180deg,#0e1726,#0a1324);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Arial}
+  body{
+    margin:0; color:var(--ink); font-family:Inter,system-ui,Segoe UI,Arial;
+    background:linear-gradient(180deg,var(--bg1),var(--bg2)); /* solo linear, sin efecto bajo el footer */
+  }
   .wrap{max-width:1100px;margin:24px auto;padding:16px}
-  h1{margin:0 0 8px;font-size:1.5rem}
-  .muted{color:var(--muted);margin:0 0 12px}
-  .tabs{display:flex;gap:10px;margin:0 0 12px}
+  h1{margin:0 0 8px;font-size:1.5rem;text-align:center}      /* título centrado */
+  .muted{color:var(--muted);margin:0 0 12px;text-align:center}
+  .tabs{display:flex;gap:10px;margin:0 0 12px;justify-content:flex-start}
   .btn{background:#162541;border:1px solid #233a68;color:#e7efff;padding:8px 14px;border-radius:10px;cursor:pointer}
   .btn.active{background:#203a6a;border-color:#3f67b1}
   .panel{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:14px}
@@ -32,7 +36,6 @@
   .wireAlert{fill:none;stroke:var(--alert);stroke-width:3;stroke-dasharray:8 10;animation:flow 1.6s linear infinite;marker-end:url(#arrR)}
   @keyframes flow{to{stroke-dashoffset:-200}}
 
-  /* indicadores */
   .off{opacity:.45}
   .on{opacity:1}
   .py{fill:var(--y); animation:py 1.4s ease-in-out infinite alternate}
@@ -52,6 +55,12 @@
   .bInfo{background:rgba(0,179,255,.12);border:1px solid var(--data);color:#d8f7ff}
   .bOk{background:rgba(34,197,94,.12);border:1px solid var(--act);color:#caffea}
 
+  /* botón de enlace en la tarjeta */
+  .btnLink{
+    display:inline-block;margin-top:8px;background:#162541;border:1px solid #233a68;
+    color:#e7efff;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:600
+  }
+
   /* ondas de sonido sirena */
   .sound{fill:none;stroke:var(--alert);stroke-width:2;opacity:0}
   .sound.on{opacity:1;animation:sound 1.2s ease-out infinite}
@@ -62,12 +71,21 @@
   @keyframes intruso{0%{transform:translateX(0)}100%{transform:translateX(70px)}}
 
   .glow{filter:drop-shadow(0 0 8px #22c55e)}
+
+  /* pie de página */
+  .footer{
+    max-width:1100px;margin:18px auto 24px;padding:10px 16px;border-top:1px solid var(--edge);
+    text-align:center;color:var(--muted);font-weight:600;letter-spacing:.2px
+  }
+  
+  /* cursor para el rectángulo de GAS en el mapa */
+  .clickable{cursor:pointer}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Casa inteligente </h1>
-  <p class="muted">Azul = Datos · Verde = Acción local · Rojo = Alerta</p>
+  <h1>Casa inteligente</h1>
+  <p class="muted">Flujo datos y acciones</p>
 
   <div class="tabs">
     <button id="bMapa" class="btn active">Mapa</button>
@@ -96,7 +114,7 @@
       <rect class="zone" x="30" y="320" width="240" height="180" />
       <text class="label" x="50" y="350">Puerta principal</text>
 
-      <!-- HUB (bajado) / APP (más abajo, no encima) -->
+      <!-- HUB / APP -->
       <g id="hubBox" transform="translate(760,340)">
         <rect class="node" x="0" y="0" width="240" height="90"/>
         <text class="label" x="14" y="36">Router / Hub</text>
@@ -110,7 +128,11 @@
 
       <!-- Cocina -->
       <g transform="translate(60,120)">
-        <rect id="gas" class="node" x="0" y="0" width="120" height="48"/><text class="small" x="10" y="30">Sensor GAS</text>
+        <!-- Hago el rect y su etiqueta clicables -->
+        <a href="https://cgviviana.github.io/Asignaturas-FUAA/PtoComp/Tec4.0/IOT/IoTCocina/" target="_blank" rel="noopener">
+          <rect id="gas" class="node clickable" x="0" y="0" width="120" height="48"/>
+          <text class="small" x="10" y="30">Sensor GAS (ver más)</text>
+        </a>
         <rect id="humo" class="node" x="140" y="0" width="110" height="42"/><text class="small" x="148" y="28">Det. HUMO</text>
         <rect id="caf" class="node" x="0" y="70" width="140" height="56"/><text class="small" x="10" y="100">Cafetera</text>
         <rect id="sirena" class="node" x="160" y="70" width="110" height="56"/><text class="small" x="170" y="100">Sirena</text>
@@ -129,15 +151,12 @@
         <rect id="pirHab" class="node" x="0" y="60" width="170" height="48"/><text class="small" x="10" y="88">PIR movimiento</text>
       </g>
 
-      <!-- Flujos EJEMPLO -->
-      <!-- GAS -> HUB -->
+      <!-- Flujos -->
       <path class="wire" d="M180,150 C420,120 760,330 780,350"/>
-      <!-- PIR -> HUB -->
       <path class="wire" d="M845,210 C860,250 820,310 780,350"/>
-      <!-- HUB -> LUZ SALA -->
       <path class="wireAct" d="M780,370 C640,340 500,140 430,130"/>
 
-      <!-- Indicadores (sin televisor) -->
+      <!-- Indicadores -->
       <circle id="cafDot" cx="66"  cy="194" r="6" class="off"/>
       <circle id="luzSalaDot" cx="410" cy="132" r="6" class="off"/>
       <circle id="sirenaDot"  cx="236" cy="194" r="6" class="off"/>
@@ -147,9 +166,9 @@
     <!-- ============== PANEL ============== -->
     <div id="panel" class="hide">
       <div class="cases">
-        <button class="chip active" data-case="gas">Gas (cocina)</button>
         <button class="chip" data-case="puerta">Movimiento (puerta → luz sala)</button>
         <button class="chip" data-case="cafetera">Cafetera (usuario remoto)</button>
+        <button class="chip active" data-case="gas">Gas (cocina)</button>
       </div>
 
       <!-- Gas -->
@@ -183,6 +202,8 @@
           <div class="badge bAlert" id="bGas" style="display:none">Gas detectado</div>
           <ul id="logGas" style="margin:6px 0 0;padding-left:18px;font-size:.9rem;color:#e9efff"></ul>
         </div>
+        <!-- Botón "Ver más" solicitado -->
+        <a class="btnLink" href="https://cgviviana.github.io/Asignaturas-FUAA/PtoComp/Tec4.0/IOT/IoTCocina/" target="_blank" rel="noopener">Ver más</a>
       </div>
 
       <!-- Puerta -->
@@ -233,6 +254,8 @@
   </div>
 </div>
 
+<footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+
 <script>
   // Tabs
   const bMapa=document.getElementById('bMapa');
@@ -245,10 +268,7 @@
   // Selector de casos
   const chips=document.querySelectorAll('.chip');
   function resetDots(){
-    [cafDot,luzSalaDot,sirenaDot,gasDot].forEach(d=>{
-      d.classList.remove('on','py','pr');
-      d.classList.add('off');
-    });
+    [cafDot,luzSalaDot,sirenaDot,gasDot].forEach(d=>{d.classList.remove('on','py','pr');d.classList.add('off');});
     document.getElementById('miniLuzRect')?.classList.remove('glow');
     ['sw1','sw2'].forEach(id=>{const p=document.getElementById(id);p&&p.classList.remove('on');});
     bGas.style.display='none';logGas.innerHTML='';
@@ -276,9 +296,7 @@
   document.getElementById('case-gas').addEventListener('click', ()=>{
     bGas.style.display='inline-block';
     logGas.innerHTML='<li>Umbral superado</li><li>Alerta en app</li><li>Sirena activada</li>';
-    // ondas de sonido
     ['sw1','sw2'].forEach(id=>document.getElementById(id).classList.add('on'));
-    // mapa: gas y sirena en rojo pulsante
     [gasDot,sirenaDot].forEach(d=>{d.classList.remove('off'); d.classList.add('on','pr');});
   });
 
@@ -296,7 +314,6 @@
       document.getElementById('miniLuzRect').classList.add('glow');
       bMov.style.display='inline-block';
       logMov.innerHTML='<li>Movimiento detectado</li><li>Aviso en app</li><li>Luz de sala encendida</li>';
-      // mapa: luz sala en pulso amarillo
       luzSalaDot.classList.remove('off'); luzSalaDot.classList.add('on','py');
     }, 900);
   });
@@ -308,8 +325,8 @@
   document.getElementById('case-cafetera').addEventListener('click', ()=>{
     bCaf.style.display='inline-block';
     logCaf.innerHTML='<li>Comando enviado</li><li>Cafetera encendida</li>';
-    cafMiniRect.classList.add('glow');             // mini panel
-    cafDot.classList.remove('off'); cafDot.classList.add('on','py'); // mapa pulso amarillo
+    cafMiniRect.classList.add('glow');
+    cafDot.classList.remove('off'); cafDot.classList.add('on','py');
   });
 
   // Estado inicial
@@ -317,4 +334,3 @@
 </script>
 </body>
 </html>
-
