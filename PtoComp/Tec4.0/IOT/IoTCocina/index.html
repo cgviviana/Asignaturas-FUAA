@@ -13,22 +13,37 @@
     --br:18px;
   }
   *{box-sizing:border-box}
+  html,body{height:100%}
   body{
-    margin:0; color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    background:
-      radial-gradient(1400px 900px at 10% 0%, #16243d 10%, transparent 55%),
-      radial-gradient(1200px 800px at 90% 100%, #102030 10%, transparent 55%),
-      url('Fondo.png') center/cover fixed no-repeat,
-      linear-gradient(180deg,var(--bg1),var(--bg2));
+    margin:0; color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background: linear-gradient(180deg,var(--bg1),var(--bg2));
   }
-  h1{font-size:clamp(20px,3vw,26px); text-align:center; margin:18px 0 8px}
+  /* Fondo */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:
+      radial-gradient(1200px 800px at 12% 0%, rgba(0,217,255,.08), transparent 55%),
+      radial-gradient(1000px 700px at 85% 100%, rgba(255,91,91,.07), transparent 55%),
+      url('Fondo.png') center/cover no-repeat;
+    opacity:.9; transform:scale(1.02); filter:saturate(120%);
+  }
+
+  h1{
+    font-size:clamp(20px,3vw,26px); text-align:center; margin:18px 0 10px;
+    text-shadow:0 2px 12px rgba(0,0,0,.45);
+  }
+
+  /* GRID: 2 columnas;2 animaciones */
   .wrap{
     width:min(1400px, 95vw);
-    margin:0 auto 24px;
+    margin:0 auto 28px;
     display:grid; gap:24px;
-    grid-template-columns: 1.05fr 1fr;   /* imagen | animación */
+    grid-template-columns: 1.05fr 1fr;  /* izquierda | derecha */
+    grid-auto-rows:auto;
   }
-  /* Card contenedor */
+
+  /* tarjetas */
   .card{
     position:relative; border-radius:var(--br);
     background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -40,21 +55,22 @@
   .card::before{
     content:""; position:absolute; inset:0; pointer-events:none;
     border-radius:inherit; padding:1px;
-    background:linear-gradient(135deg, rgba(0,217,255,.6), rgba(255,91,91,.45));
+    background:linear-gradient(135deg, rgba(0,217,255,.55), rgba(255,91,91,.45));
     -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
   }
-  .card h3{
-    margin:6px 8px 12px; font-size:clamp(16px,2.1vw,18px); color:var(--muted); font-weight:600;
-  }
 
-  /* Imagen */
+  /* Ubicaciones en la grid */
+  .pic-card{ grid-column:1; grid-row:1 / span 2; }     /* ocupa 2 filas a la izquierda */
+  .anim-card{ grid-column:2; }                          /* derecha (fila 1 y 2) */
+
+  /* Contenido imagen */
   .pic{
     width:100%; height:auto; display:block;
     border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.35);
   }
 
-  /* Contenedor de la animación dentro del card */
+  /* Contenedor animación */
   .anim-box{
     background:linear-gradient(180deg, var(--card), var(--card2));
     border-radius:12px; padding:10px;
@@ -62,9 +78,9 @@
     box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
   }
   svg{width:100%; height:auto; display:block}
-  .box{
-    fill:#12233a; stroke:#2a3c56; stroke-width:2; rx:12; ry:12;
-  }
+
+  /* Estilos SVG (ambas animaciones) */
+  .box{ fill:#12233a; stroke:#2a3c56; stroke-width:2; rx:12; ry:12; }
   .hdr{ fill:#2b3f5c; }
   .title{ font:700 14px/1.2 ui-sans-serif,system-ui; fill:#e6f0ff; }
   .sub{ font:12px/1.2 ui-sans-serif,system-ui; fill:#cfe2ff; }
@@ -81,39 +97,40 @@
   }
   @keyframes flow{ to{ stroke-dashoffset:-110; } }
 
-  .legend{
-    margin:10px 4px 2px; font-size:12px; color:var(--muted); text-align:center;
-  }
+  /* Segunda animación (pipeline) */
+  .n { fill:#13243b; stroke:#29405b; stroke-width:2; rx:10; ry:10; }
+  .nt{ font:600 13px ui-sans-serif,system-ui; fill:#eaf3ff; }
+  .mini{ fill:none; stroke:#00d9ff; stroke-width:3; marker-end:url(#flechaMini);
+         stroke-dasharray:7 7; animation:flow 2.6s linear infinite; }
 
   /* Responsive */
   @media (max-width: 980px){
     .wrap{ grid-template-columns: 1fr; }
+    .pic-card{ grid-row:auto; }
   }
 </style>
 </head>
 <body>
 
-<h1>Animación: Sistema IoT en la cocina para detectar gas</h1>
+<h1>Sistema IoT </h1>
 
 <div class="wrap">
 
-  <!-- CONTENEDOR IZQUIERDO: IMAGEN -->
-  <figure class="card">
-    <h3>Esquema (ilustración)</h3>
+  <!-- IZQUIERDA: IMAGEN (ocupa 2 filas) -->
+  <figure class="card pic-card">
     <img class="pic" src="IoTGas.png" alt="Esquema de IoT para detección de gas">
   </figure>
 
-  <!-- CONTENEDOR DERECHO: ANIMACIÓN EN CARD -->
-  <section class="card">
-    <h3>Animación (flujo de datos y alarma)</h3>
+  <!-- DERECHA: ANIMACIÓN #1 -->
+  <section class="card anim-card">
     <div class="anim-box">
-      <svg viewBox="0 0 900 420" aria-label="Animación del flujo IoT">
+      <svg viewBox="0 0 900 420" aria-label="Animación IoT 1">
         <defs>
           <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
-            <path d="M0,0 L10,5 L0,10 Z" fill="var(--c1)"/>
+            <path d="M0,0 L10,5 L0,10 Z" fill="#00d9ff"/>
           </marker>
           <marker id="arrowAlert" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
-            <path d="M0,0 L10,5 L0,10 Z" fill="var(--c2)"/>
+            <path d="M0,0 L10,5 L0,10 Z" fill="#ff5b5b"/>
           </marker>
         </defs>
 
@@ -164,9 +181,61 @@
         <line class="wire" x1="780" y1="156" x2="780" y2="260" />
         <line class="wire-alert" x1="480" y1="210" x2="605" y2="315" />
       </svg>
-      <p class="legend">Flujo azul = envío de datos y notificación &nbsp;|&nbsp; Flujo rojo = activación de alarma</p>
     </div>
   </section>
+
+  <!-- DERECHA: ANIMACIÓN #2 (debajo de la anterior) -->
+  <section class="card anim-card">
+    <div class="anim-box">
+      <svg viewBox="0 0 900 140" aria-label="Animación IoT 2">
+        <defs>
+          <marker id="flechaMini" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#00d9ff"/>
+          </marker>
+        </defs>
+
+        <!-- Pipeline: Dispositivo -> Internet -> Nube -> App -> Acción -->
+        <g transform="translate(20,35)">
+          <rect class="n" width="150" height="70" />
+          <text class="nt" x="12" y="28">Dispositivo IoT</text>
+          <text class="nt" x="12" y="48" style="font-weight:400; fill:#cfe2ff">Sensor</text>
+        </g>
+
+        <line class="mini" x1="170" y1="70" x2="230" y2="70" marker-end="url(#flechaMini)"/>
+
+        <g transform="translate(230,35)">
+          <rect class="n" width="120" height="70" />
+          <text class="nt" x="12" y="28">Internet</text>
+          <text class="nt" x="12" y="48" style="font-weight:400; fill:#cfe2ff">Wi-Fi / 4G</text>
+        </g>
+
+        <line class="mini" x1="350" y1="70" x2="410" y2="70" marker-end="url(#flechaMini)"/>
+
+        <g transform="translate(410,35)">
+          <rect class="n" width="140" height="70" />
+          <text class="nt" x="12" y="28">Nube</text>
+          <text class="nt" x="12" y="48" style="font-weight:400; fill:#cfe2ff">Procesa</text>
+        </g>
+
+        <line class="mini" x1="550" y1="70" x2="610" y2="70" marker-end="url(#flechaMini)"/>
+
+        <g transform="translate(610,35)">
+          <rect class="n" width="120" height="70" />
+          <text class="nt" x="12" y="28">App</text>
+          <text class="nt" x="12" y="48" style="font-weight:400; fill:#cfe2ff">Alerta</text>
+        </g>
+
+        <line class="mini" x1="730" y1="70" x2="790" y2="70" marker-end="url(#flechaMini)"/>
+
+        <g transform="translate(790,35)">
+          <rect class="n" width="90" height="70" />
+          <text class="nt" x="12" y="28">Acción</text>
+          <text class="nt" x="12" y="48" style="font-weight:400; fill:#cfe2ff">Decisión</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
 </div>
 </body>
 </html>
