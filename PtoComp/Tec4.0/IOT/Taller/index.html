@@ -1,1 +1,396 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taller</title>
+<style>
+  :root{
+    --ink:#eaf2ff; --muted:#b6c3e6; --pane:rgba(15,25,48,.86);
+    --edge:#27406f; --card:#101e39; --ok:#22c55e; --bad:#ff4d4d;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;color:var(--ink);
+    background:#0b1324 url('Fondo.jpeg') center/cover no-repeat fixed;
+  }
+  .wrap{max-width:1100px;margin:auto;padding:20px}
+  h1,h2{margin:0 0 10px}
+  .lead{color:var(--muted);margin:0 0 14px}
+  .page{background:var(--pane);border:1px solid var(--edge);border-radius:16px;padding:18px;margin-top:12px}
+  .grid{display:grid;gap:16px}
+  .grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .card{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:14px}
+
+  /* Botones */
+  .btn{border:1px solid #2d4d89;background:#15305f;color:#eaf2ff;border-radius:10px;
+       padding:8px 12px;text-decoration:none;cursor:pointer}
+  .btn.primary{background:#2563eb;border-color:#1e40af}
+  .btn.ghost{background:#0e1c36}
+  .result{font-weight:800}
+
+  /* Tabs */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .tab{border:1px solid #2d4d89;background:#15305f;color:#eaf2ff;border-radius:10px;
+       padding:8px 12px;cursor:pointer;opacity:.9}
+  .tab[aria-selected="true"]{background:#34a0ff;border-color:#1e40af;opacity:1;box-shadow:0 0 0 2px rgba(52,160,255,.25) inset}
+  .tabpane{display:none}
+  .tabpane.active{display:block}
+
+  /* Parte A: opción múltiple */
+  .q{position:relative}
+  .q h4{margin:0 0 6px}
+  .opts{display:grid;gap:6px;margin-top:8px}
+  .opt{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid #2a467d;border-radius:10px;background:#0f1c36}
+  .opt input{margin-top:2px;accent-color:#5aa2ff}
+  .q.ok{border:1px solid rgba(34,197,94,.7);box-shadow:0 0 0 3px rgba(34,197,94,.18) inset}
+  .q.bad{border:1px solid rgba(255,77,77,.7);box-shadow:0 0 0 3px rgba(255,77,77,.18) inset}
+  .explain{margin-top:8px;font-size:.92rem;display:none}
+  .explain.show{display:block}
+  .legend{display:flex;gap:8px;align-items:center;font-size:.9rem;color:var(--muted)}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .dot.ok{background:var(--ok)} .dot.bad{background:var(--bad)}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+
+  /* Parte B: ordenar pasos */
+  .task{margin:10px 0}
+  .steps{display:grid;gap:8px;margin-top:8px}
+  .step{padding:10px;border:1px dashed #31528f;border-radius:10px;background:#0f1c36;cursor:grab}
+  .step:active{cursor:grabbing}
+  .step.drag-over{outline:2px solid #7aa2ff}
+  .task.ok{border:1px solid rgba(34,197,94,.7)}
+  .task.bad{border:1px solid rgba(255,77,77,.7)}
+  .tiny{color:#9fb4e8;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="page" role="region" aria-labelledby="titulo">
+    <h1 id="titulo">Taller: “El cerebro de la casa”</h1>
+    <p class="lead">Aprendiendo con @LaProfeVivy.</p>
+
+    <!-- Tabs -->
+    <div class="tabs" role="tablist" aria-label="Pestañas del taller">
+      <button class="tab" id="tabA" role="tab" aria-controls="paneA" aria-selected="true">Parte A</button>
+      <button class="tab" id="tabB" role="tab" aria-controls="paneB" aria-selected="false">Parte B</button>
+    </div>
+
+    <!-- PANE A -->
+    <div id="paneA" class="tabpane active" role="tabpanel" aria-labelledby="tabA">
+      <h2>Parte A — Opción múltiple</h2>
+      <div class="legend" style="margin:6px 0 10px">
+        <span class="dot ok"></span>Correcta <span class="dot bad"></span>Incorrecta
+      </div>
+
+      <div class="grid grid-2" id="quizA">
+        <!-- 1 -->
+        <div class="card q" data-q="1" data-correct="A" data-explain="Gas > umbral: sirena + alerta a la App.">
+          <h4>1) Lectura: 600 ppm de metano en la cocina.</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa1" value="A"> A) Encender sirena y avisar a la App.</label>
+            <label class="opt"><input type="radio" name="qa1" value="B"> B) Encender cafetera.</label>
+            <label class="opt"><input type="radio" name="qa1" value="C"> C) No hacer nada.</label>
+            <label class="opt"><input type="radio" name="qa1" value="D"> D) Apagar ventilador.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+        <!-- 2 -->
+        <div class="card q" data-q="2" data-correct="B" data-explain="Con T > 30 °C, se enciende el ventilador.">
+          <h4>2) Lectura: 32 °C en la habitación.</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa2" value="A"> A) Encender calefacción.</label>
+            <label class="opt"><input type="radio" name="qa2" value="B"> B) Encender ventilador.</label>
+            <label class="opt"><input type="radio" name="qa2" value="C"> C) Apagar ventilación.</label>
+            <label class="opt"><input type="radio" name="qa2" value="D"> D) Enviar alerta de ruido.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+        <!-- 3 -->
+        <div class="card q" data-q="3" data-correct="C" data-explain="Suelo < 40% → activar riego ~5 min.">
+          <h4>3) Humedad del suelo 30%.</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa3" value="A"> A) Encender luz exterior.</label>
+            <label class="opt"><input type="radio" name="qa3" value="B"> B) Enviar alerta de CO₂.</label>
+            <label class="opt"><input type="radio" name="qa3" value="C"> C) Activar riego 5 minutos.</label>
+            <label class="opt"><input type="radio" name="qa3" value="D"> D) Abrir puerta principal.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+        <!-- 4 -->
+        <div class="card q" data-q="4" data-correct="D" data-explain="PIR de noche → luz pasillo 2 min.">
+          <h4>4) Noche. PIR detecta movimiento en el pasillo.</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa4" value="A"> A) Apagar sirena.</label>
+            <label class="opt"><input type="radio" name="qa4" value="B"> B) Enviar alerta de gas.</label>
+            <label class="opt"><input type="radio" name="qa4" value="C"> C) Activar riego.</label>
+            <label class="opt"><input type="radio" name="qa4" value="D"> D) Encender luz del pasillo 2 min.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+        <!-- 5 -->
+        <div class="card q" data-q="5" data-correct="A" data-explain="Luz < 200 lux → lámpara ON.">
+          <h4>5) Lectura: 150 lux en la sala (oscuro).</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa5" value="A"> A) Encender lámpara de sala.</label>
+            <label class="opt"><input type="radio" name="qa5" value="B"> B) Encender cafetera.</label>
+            <label class="opt"><input type="radio" name="qa5" value="C"> C) Abrir válvula de agua.</label>
+            <label class="opt"><input type="radio" name="qa5" value="D"> D) Apagar extractor.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+        <!-- 6 -->
+        <div class="card q" data-q="6" data-correct="C" data-explain="Distancia < 30 cm → abrir portón/contar.">
+          <h4>6) Persona a 20 cm del portón.</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa6" value="A"> A) Encender sirena.</label>
+            <label class="opt"><input type="radio" name="qa6" value="B"> B) Enviar alerta de CO₂.</label>
+            <label class="opt"><input type="radio" name="qa6" value="C"> C) Abrir portón/contar persona.</label>
+            <label class="opt"><input type="radio" name="qa6" value="D"> D) Encender calefacción.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+        <!-- 7 -->
+        <div class="card q" data-q="7" data-correct="B" data-explain="Puerta abierta de noche (casa vacía) → alerta y/o luz exterior.">
+          <h4>7) 23:00 y la puerta se abre (casa vacía).</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa7" value="A"> A) Activar riego.</label>
+            <label class="opt"><input type="radio" name="qa7" value="B"> B) Enviar alerta y encender luz exterior.</label>
+            <label class="opt"><input type="radio" name="qa7" value="C"> C) Encender cafetera.</label>
+            <label class="opt"><input type="radio" name="qa7" value="D"> D) Apagar ventilador.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+        <!-- 8 -->
+        <div class="card q" data-q="8" data-correct="D" data-explain="Ruido > 80 dB → advertencia/registro.">
+          <h4>8) Pico de 85 dB en la sala.</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa8" value="A"> A) Encender lámpara.</label>
+            <label class="opt"><input type="radio" name="qa8" value="B"> B) Encender calefacción.</label>
+            <label class="opt"><input type="radio" name="qa8" value="C"> C) Abrir portón.</label>
+            <label class="opt"><input type="radio" name="qa8" value="D"> D) Enviar advertencia a la App.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+        <!-- 9 -->
+        <div class="card q" data-q="9" data-correct="A" data-explain="CO₂ > 1000 ppm → extractor/ventilación ON.">
+          <h4>9) CO₂ = 1200 ppm en el estudio.</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa9" value="A"> A) Encender extractor/ventilación.</label>
+            <label class="opt"><input type="radio" name="qa9" value="B"> B) Encender cafetera.</label>
+            <label class="opt"><input type="radio" name="qa9" value="C"> C) Enviar alerta de humedad.</label>
+            <label class="opt"><input type="radio" name="qa9" value="D"> D) Apagar luz exterior.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+        <!-- 10 -->
+        <div class="card q" data-q="10" data-correct="C" data-explain="Agua detectada → cerrar válvula/bomba y avisar.">
+          <h4>10) Charco detectado bajo el lavadero.</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa10" value="A"> A) Encender calefacción.</label>
+            <label class="opt"><input type="radio" name="qa10" value="B"> B) Encender lámpara de sala.</label>
+            <label class="opt"><input type="radio" name="qa10" value="C"> C) Cerrar válvula y enviar aviso.</label>
+            <label class="opt"><input type="radio" name="qa10" value="D"> D) Abrir portón.</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button id="evalA" class="btn primary">Mostrar resultados (Parte A)</button>
+        <button id="resetA" class="btn ghost">Reintentar (A)</button>
+        <span id="scoreA" class="result"></span>
+      </div>
+    </div>
+
+    <!-- PANE B -->
+    <div id="paneB" class="tabpane" role="tabpanel" aria-labelledby="tabB">
+      <h2>Parte B — Ordena las instrucciones</h2>
+      <p class="tiny">Arrastra para ordenar los pasos (1 arriba → 4 abajo). Luego pulsa “Revisar”.</p>
+
+      <div id="quizB" class="grid">
+        <!-- B1 Gas -->
+        <div class="card task" data-key="B1" data-answer="A,B,C,D">
+          <h4>B1) Fuga de gas en cocina</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Sensor de gas supera el umbral.</div>
+            <div class="step" draggable="true" data-step="B">B) Hub recibe alerta y clasifica como “peligro”.</div>
+            <div class="step" draggable="true" data-step="C">C) Sirena ON y notificación a la App.</div>
+            <div class="step" draggable="true" data-step="D">D) Usuario ventila y confirma en la App.</div>
+          </div>
+        </div>
+        <!-- B2 PIR noche -->
+        <div class="card task" data-key="B2" data-answer="B,A,D,C">
+          <h4>B2) Movimiento nocturno en pasillo</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Hub enciende luz del pasillo por 2 min.</div>
+            <div class="step" draggable="true" data-step="B">B) PIR detecta presencia durante la noche.</div>
+            <div class="step" draggable="true" data-step="C">C) Luz se apaga automáticamente.</div>
+            <div class="step" draggable="true" data-step="D">D) Hub registra evento y hora.</div>
+          </div>
+        </div>
+        <!-- B3 CO2 alto -->
+        <div class="card task" data-key="B3" data-answer="C,A,D,B">
+          <h4>B3) CO₂ elevado en aula</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Hub activa extractor/ventilación.</div>
+            <div class="step" draggable="true" data-step="B">B) Al bajar CO₂, extractor OFF.</div>
+            <div class="step" draggable="true" data-step="C">C) Sensor CO₂ supera 1000 ppm.</div>
+            <div class="step" draggable="true" data-step="D">D) Notificación “Ventilar” en la App.</div>
+          </div>
+        </div>
+        <!-- B4 Fuga de agua -->
+        <div class="card task" data-key="B4" data-answer="D,A,C,B">
+          <h4>B4) Fuga de agua en lavadero</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Hub ordena cerrar válvula principal.</div>
+            <div class="step" draggable="true" data-step="B">B) App solicita revisión y confirma cierre.</div>
+            <div class="step" draggable="true" data-step="C">C) Enviar aviso al usuario.</div>
+            <div class="step" draggable="true" data-step="D">D) Sensor detecta agua en el piso.</div>
+          </div>
+        </div>
+        <!-- B5 Puerta noche -->
+        <div class="card task" data-key="B5" data-answer="A,C,D,B">
+          <h4>B5) Puerta abierta de noche (casa vacía)</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Sensor magnético detecta apertura.</div>
+            <div class="step" draggable="true" data-step="B">B) Hub cierra alerta cuando detecta puerta cerrada.</div>
+            <div class="step" draggable="true" data-step="C">C) Hub enciende luz exterior.</div>
+            <div class="step" draggable="true" data-step="D">D) App envía aviso de seguridad.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button id="evalB" class="btn primary">Revisar (Parte B)</button>
+        <button id="resetB" class="btn ghost">Reintentar (B)</button>
+        <span id="scoreB" class="result"></span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // ===== Tabs =====
+  const tabA = document.getElementById('tabA');
+  const tabB = document.getElementById('tabB');
+  const paneA = document.getElementById('paneA');
+  const paneB = document.getElementById('paneB');
+
+  function activate(tab, pane){
+    [tabA, tabB].forEach(t=>t.setAttribute('aria-selected','false'));
+    [paneA, paneB].forEach(p=>p.classList.remove('active'));
+    tab.setAttribute('aria-selected','true');
+    pane.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  tabA.addEventListener('click', ()=>activate(tabA,paneA));
+  tabB.addEventListener('click', ()=>activate(tabB,paneB));
+
+  // ===== Parte A: Opción múltiple =====
+  const evalA = document.getElementById('evalA');
+  const resetA = document.getElementById('resetA');
+  const scoreA = document.getElementById('scoreA');
+
+  function evaluateA(){
+    const qs = Array.from(document.querySelectorAll('#quizA .q'));
+    let ok=0,total=qs.length, firstWrong=null;
+    qs.forEach(q=>{
+      q.classList.remove('ok','bad');
+      const name = 'qa'+q.dataset.q;
+      const corr = q.dataset.correct;
+      const picked = q.querySelector('input[name="'+name+'"]:checked');
+      const ex = q.querySelector('.explain'); ex.classList.add('show');
+      if(picked && picked.value===corr){
+        q.classList.add('ok'); ex.textContent='✔ Correcto. '+(q.dataset.explain||''); ok++;
+      }else{
+        q.classList.add('bad'); ex.textContent='✖ Incorrecto. '+(q.dataset.explain||'')+' (Respuesta: '+corr+')';
+        if(!firstWrong) firstWrong=q;
+      }
+    });
+    scoreA.textContent = `Puntaje A: ${ok} / ${total}`;
+    if(firstWrong) firstWrong.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function resetQuizA(){
+    scoreA.textContent='';
+    document.querySelectorAll('#quizA .q').forEach(q=>{
+      q.classList.remove('ok','bad');
+      q.querySelectorAll('input[type="radio"]').forEach(r=>r.checked=false);
+      const ex=q.querySelector('.explain'); ex.textContent=''; ex.classList.remove('show');
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  evalA.addEventListener('click', evaluateA);
+  resetA.addEventListener('click', resetQuizA);
+
+  // ===== Parte B: Ordenar (drag & drop nativo) =====
+  const tasks = Array.from(document.querySelectorAll('.task'));
+
+  function handleDragStart(e){
+    e.dataTransfer.effectAllowed='move';
+    e.dataTransfer.setData('text/plain', this.dataset.step||'');
+    this.classList.add('dragging');
+  }
+  function handleDragOver(e){ e.preventDefault(); this.classList.add('drag-over'); }
+  function handleDragLeave(){ this.classList.remove('drag-over'); }
+  function handleDrop(e){
+    e.preventDefault(); this.classList.remove('drag-over');
+    const list = this.parentElement;
+    const dragging = list.querySelector('.dragging');
+    if(dragging && dragging!==this){
+      const nodes = Array.from(list.children);
+      const srcIndex = nodes.indexOf(dragging);
+      const tgtIndex = nodes.indexOf(this);
+      if(srcIndex < tgtIndex) list.insertBefore(dragging, this.nextSibling);
+      else list.insertBefore(dragging, this);
+    }
+  }
+  function handleDragEnd(){ this.classList.remove('dragging'); }
+
+  function attachDnD(container){
+    container.querySelectorAll('.step').forEach(s=>{
+      s.addEventListener('dragstart', handleDragStart);
+      s.addEventListener('dragover', handleDragOver);
+      s.addEventListener('dragleave', handleDragLeave);
+      s.addEventListener('drop', handleDrop);
+      s.addEventListener('dragend', handleDragEnd);
+    });
+  }
+  tasks.forEach(t=> attachDnD(t));
+
+  const evalB = document.getElementById('evalB');
+  const resetB = document.getElementById('resetB');
+  const scoreB = document.getElementById('scoreB');
+
+  function evaluateB(){
+    let ok=0,total=tasks.length, firstWrong=null;
+    tasks.forEach(task=>{
+      task.classList.remove('ok','bad');
+      const answer = (task.dataset.answer||'').split(',');
+      const current = Array.from(task.querySelectorAll('.step')).map(s=>s.dataset.step);
+      const good = answer.join(',')===current.join(',');
+      if(good){ task.classList.add('ok'); ok++; }
+      else { task.classList.add('bad'); if(!firstWrong) firstWrong=task; }
+    });
+    scoreB.textContent = `Puntaje B: ${ok} / ${total} (arrastra para reordenar y vuelve a revisar)`;
+    if(firstWrong) firstWrong.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+
+  function resetQuizB(){
+    scoreB.textContent='';
+    tasks.forEach(task=>{
+      task.classList.remove('ok','bad');
+      // Restablecer alfabético (A,B,C,D):
+      const steps = Array.from(task.querySelectorAll('.step')).sort((a,b)=>a.dataset.step.localeCompare(b.dataset.step));
+      const cont = task.querySelector('.steps');
+      steps.forEach(s=>cont.appendChild(s));
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  evalB.addEventListener('click', evaluateB);
+  resetB.addEventListener('click', resetQuizB);
+</script>
+</body>
+</html>
 
