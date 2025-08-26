@@ -1,1 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Casos Narrativos · Licencias</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body{
+    font-family: Arial, sans-serif;
+    background: url('Fondo.png') center/cover no-repeat fixed;
+    margin:0;
+    padding:20px;
+  }
+  .wrap{max-width:900px;margin:auto;padding-bottom:60px}
+  h1{text-align:center;color:#003366;margin-bottom:20px;text-shadow:1px 1px #fff}
+  .card{
+    background:rgba(255,255,255,0.9);
+    border-radius:12px;
+    padding:20px;
+    margin:20px 0;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  }
+  input[type="text"]{
+    width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;
+  }
+  .btn{
+    display:inline-block;margin-top:12px;padding:10px 18px;border:0;
+    border-radius:8px;background:#007BFF;color:#fff;font-weight:600;cursor:pointer;
+  }
+  .btn:hover{background:#0056b3}
+  .btn-ghost{
+    background:transparent;border:1px solid #007BFF;color:#007BFF;
+  }
+  .qtitle{font-weight:bold;margin-bottom:10px}
+  .instr{color:#555;margin-bottom:10px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  label.option{
+    background:#f2f6fc;padding:10px;border-radius:8px;border:1px solid #ccd;
+    cursor:pointer;display:block;
+  }
+  .progress{margin:8px 0 14px;height:10px;background:#eee;border-radius:6px;overflow:hidden}
+  .bar{height:100%;background:#007BFF;width:0%;transition:width .3s}
+  .toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  #feedback{margin-top:12px;font-weight:bold}
+  #resultado{font-weight:bold;font-size:18px;text-align:center;margin-top:20px}
+  #resumen{margin-top:20px}
+  #resumen h3{margin-bottom:10px;color:#003366}
+  #resumen ul{padding-left:20px}
+  footer{
+    text-align:center;
+    padding:10px;
+    background:rgba(255,255,255,0.85);
+    position:fixed;
+    bottom:0;left:0;right:0;
+    font-weight:bold;
+    color:#003366;
+  }
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Casos Narrativos de Licencias</h1>
+
+    <div id="inicio" class="card">
+      <p><strong>Nombre completo</strong></p>
+      <input id="nombre" type="text" placeholder="Escribe tu nombre completo">
+      <button class="btn" onclick="iniciar()">Iniciar</button>
+      <p class="instr">Se barajan preguntas y opciones en cada intento.</p>
+    </div>
+
+    <div id="quiz" class="card" style="display:none"></div>
+    <div id="resultado"></div>
+    <div id="resumen"></div>
+  </div>
+
+  <footer>Aprendiendo con @LaProfeVivy</footer>
+
+<script>
+const CASOS = [
+  {caso:"Pablo pintó una obra y la registró legalmente. Pedro hizo copias y las vendió sin permiso. Pablo quiere exigir todos los derechos reservados.", correcta:"Copyright", explicacion:"Es Copyright porque el autor se reserva todos los derechos."},
+  {caso:"Ana escribió un libro de recetas y decidió liberarlo totalmente para que cualquiera lo copie, lo traduzca o lo venda sin permiso ni atribución.", correcta:"CC0", explicacion:"CC0 coloca la obra en dominio público."},
+  {caso:"Marta creó infografías y permite todo tipo de uso (incluso comercial), siempre que se le dé crédito.", correcta:"CC BY", explicacion:"CC BY permite cualquier uso siempre con atribución."},
+  {caso:"Luis diseñó un cómic y acepta adaptaciones, pero exige que toda obra derivada mantenga la misma licencia libre.", correcta:"CC BY-SA", explicacion:"Share Alike obliga a licenciar derivadas bajo la misma licencia."},
+  {caso:"Claudia publicó un documental que se puede usar y adaptar, pero prohíbe el uso comercial.", correcta:"CC BY-NC", explicacion:"NC prohíbe usos comerciales."},
+  {caso:"Sofía compartió una guía: permite adaptaciones solo sin fines comerciales y exige mantener la misma licencia.", correcta:"CC BY-NC-SA", explicacion:"Combina NC y SA."},
+  {caso:"Daniel publicó una canción: se puede compartir, pero no se permiten cambios ni usos comerciales.", correcta:"CC BY-NC-ND", explicacion:"ND prohíbe modificaciones; NC uso comercial."},
+  {caso:"Iván liberó el logo: permite uso incluso comercial, pero sin alteraciones y con atribución.", correcta:"CC BY-ND", explicacion:"ND impide realizar obras derivadas."},
+  {caso:"Laura lanzó un software educativo y quiere que toda versión modificada siga siendo libre.", correcta:"Copyleft", explicacion:"Copyleft obliga a mantener la libertad en derivadas."},
+  {caso:"Pedro subió un banco de íconos al dominio público para cualquier uso sin restricciones.", correcta:"CC0", explicacion:"CC0 = renuncia total de derechos."}
+];
+
+const OPCIONES = ["Copyright","Copyleft","CC BY","CC BY-NC","CC BY-NC-SA","CC BY-NC-ND","CC BY-SA","CC BY-ND","CC0"];
+let preguntas=[]; let idx=0; let aciertos=0; let ultimoIncorrecto=null;
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function iniciar(){
+  const nombre=document.getElementById('nombre').value.trim();
+  if(!nombre){alert("Escribe tu nombre completo.");return;}
+  preguntas=shuffle([...CASOS]); idx=0; aciertos=0; ultimoIncorrecto=null;
+  document.getElementById('inicio').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  render();
+}
+
+function render(){
+  const total=preguntas.length;
+  const q=preguntas[idx];
+  const opciones=shuffle([...OPCIONES]);
+  const progreso=(idx/total*100).toFixed(1);
+  document.getElementById('quiz').innerHTML=`
+    <div class="toprow">
+      <div><strong>Pregunta ${idx+1} de ${total}</strong></div>
+      <div>${Math.round(progreso)}%</div>
+    </div>
+    <div class="progress"><div class="bar" style="width:${progreso}%"></div></div>
+    <div class="qtitle">${q.caso}</div>
+    <div class="instr">Elige la opción correcta:</div>
+    <div class="grid" id="optGrid">
+      ${opciones.map(op=>`<label class="option"><input type="radio" name="resp" value="${op}"> ${op}</label>`).join('')}
+    </div>
+    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" onclick="verificar()">Responder</button>
+      <button class="btn btn-ghost" onclick="verRecomendacion()">Ver retroalimentación</button>
+      <button class="btn btn-ghost" onclick="reintentar()">Reintentar</button>
+    </div>
+    <div id="feedback"></div>
+  `;
+}
+
+function verificar(){
+  const elegido=(document.querySelector('input[name="resp"]:checked')||{}).value;
+  const fb=document.getElementById('feedback');
+  if(!elegido){fb.textContent="⚠️ Selecciona una opción.";fb.style.color="#d9534f";return;}
+  const q=preguntas[idx];
+  if(elegido===q.correcta){
+    aciertos++; ultimoIncorrecto=null; idx++;
+    if(idx<preguntas.length){render();}else{terminar();}
+  }else{
+    fb.textContent="❌ Incorrecto. Puedes reintentar o pedir retroalimentación.";
+    fb.style.color="#d9534f"; ultimoIncorrecto=q.explicacion;
+  }
+}
+
+function reintentar(){
+  const grid=document.getElementById('optGrid');
+  const opciones=shuffle([...OPCIONES]);
+  grid.innerHTML=opciones.map(op=>`<label class="option"><input type="radio" name="resp" value="${op}"> ${op}</label>`).join('');
+  document.getElementById('feedback').textContent="🔁 Intenta de nuevo."; 
+  document.getElementById('feedback').style.color="#5cb85c";
+}
+
+function verRecomendacion(){
+  const fb=document.getElementById('feedback');
+  if(ultimoIncorrecto){fb.textContent="🛈 "+ultimoIncorrecto;fb.style.color="#f0ad4e";}
+  else{fb.textContent="Aún no fallaste esta pregunta.";fb.style.color="#5bc0de";}
+}
+
+function terminar(){
+  const nombre=document.getElementById('nombre').value.trim();
+  const nota=(aciertos/preguntas.length*5).toFixed(2);
+  document.getElementById('quiz').style.display='none';
+  document.getElementById('resultado').innerHTML=
+    `${nombre}, tu puntaje final es <strong>${nota}</strong> sobre 5 (${aciertos}/${preguntas.length}).`;
+  
+  // resumen de respuestas correctas
+  let resumenHtml="<h3>Repaso de respuestas correctas:</h3><ul>";
+  preguntas.forEach((q,i)=>{
+    resumenHtml+=`<li><strong>${i+1}.</strong> ${q.caso}<br>
+    ✅ Respuesta correcta: <em>${q.correcta}</em></li>`;
+  });
+  resumenHtml+="</ul>";
+  document.getElementById('resumen').innerHTML=resumenHtml;
+}
+</script>
+</body>
+</html>
 
