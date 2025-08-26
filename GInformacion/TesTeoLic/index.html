@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ejercicio Licencias Creative Commons</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f6fa;
+      color: #333;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h1 { text-align: center; color: #0056b3; }
+    .question { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 10px; background: #f9fbff;}
+    .options { margin-top: 10px; }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #0056b3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover { background: #003f80; }
+    #resultado { font-weight: bold; margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>Licencias Creative Commons</h1>
+  <div id="inicio">
+    <p>Escribe tu nombre completo:</p>
+    <input type="text" id="nombre" placeholder="Nombre completo">
+    <button onclick="iniciar()">Iniciar Ejercicio</button>
+  </div>
+
+  <div id="quiz" style="display:none;"></div>
+  <div id="resultado"></div>
+
+<script>
+const preguntas = [
+  {pregunta: "¿Qué significa el símbolo (C)?", opciones: ["Copyleft","Copyright","CC0","Creative Commons"], correcta: "Copyright"},
+  {pregunta: "¿Qué significa el símbolo (↺ con C)?", opciones: ["Copyleft","CC BY-SA","Copyright","CC0"], correcta: "Copyleft"},
+  {pregunta: "¿Qué licencia permite uso con atribución?", opciones: ["CC BY","CC BY-NC","CC BY-ND","CC0"], correcta: "CC BY"},
+  {pregunta: "¿Qué licencia permite uso con atribución pero sin fines comerciales?", opciones: ["CC BY-NC","CC BY-SA","CC BY-ND","CC0"], correcta: "CC BY-NC"},
+  {pregunta: "¿Qué licencia permite uso con atribución, sin fines comerciales y compartiendo igual?", opciones: ["CC BY-NC-SA","CC BY-ND","CC BY-SA","Copyright"], correcta: "CC BY-NC-SA"},
+  {pregunta: "¿Qué licencia permite uso con atribución, sin fines comerciales y sin cambios?", opciones: ["CC BY-NC-ND","CC BY-SA","CC BY","CC0"], correcta: "CC BY-NC-ND"},
+  {pregunta: "¿Qué licencia permite uso con atribución y compartir igual?", opciones: ["CC BY-SA","CC BY-NC","CC BY","CC0"], correcta: "CC BY-SA"},
+  {pregunta: "¿Qué licencia permite uso con atribución pero sin cambios?", opciones: ["CC BY-ND","CC BY-NC-ND","CC BY-SA","Copyright"], correcta: "CC BY-ND"},
+  {pregunta: "¿Qué licencia permite renunciar a todos los derechos?", opciones: ["CC0","Copyleft","CC BY-SA","CC BY"], correcta: "CC0"},
+  {pregunta: "¿Qué es el objetivo de las licencias CC?", opciones: ["Prohibir todo uso","Facilitar compartir con condiciones","Eliminar el copyright","Permitir solo uso comercial"], correcta: "Facilitar compartir con condiciones"}
+];
+
+// Mezclar array (Fisher-Yates)
+function mezclar(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function iniciar() {
+  const nombre = document.getElementById("nombre").value.trim();
+  if (!nombre) {
+    alert("Por favor escribe tu nombre.");
+    return;
+  }
+
+  document.getElementById("inicio").style.display = "none";
+  const quizDiv = document.getElementById("quiz");
+  quizDiv.style.display = "block";
+
+  // Tomar copia mezclada de preguntas
+  const preguntasMezcladas = mezclar([...preguntas]);
+  let html = "";
+  preguntasMezcladas.forEach((p, index) => {
+    const opcionesMezcladas = mezclar([...p.opciones]);
+    html += `<div class="question">
+               <p><strong>${index+1}. ${p.pregunta}</strong></p>
+               <div class="options">`;
+    opcionesMezcladas.forEach(op => {
+      html += `<label><input type="radio" name="q${index}" value="${op}"> ${op}</label><br>`;
+    });
+    html += `</div></div>`;
+  });
+  html += `<button onclick="calificar('${nombre}')">Enviar</button>`;
+  quizDiv.innerHTML = html;
+}
+
+function calificar(nombre) {
+  let correctas = 0;
+  const preguntasMezcladas = document.querySelectorAll(".question");
+  preguntasMezcladas.forEach((div, index) => {
+    const seleccion = document.querySelector(`input[name="q${index}"]:checked`);
+    if (seleccion && seleccion.value === preguntas[index].correcta) {
+      correctas++;
+    }
+  });
+  const nota = (correctas/10*5).toFixed(2);
+  document.getElementById("resultado").innerHTML =
+    `${nombre}, tu puntaje es ${nota} sobre 5 (${correctas}/10 correctas).`;
+}
+</script>
+</body>
+</html>
 
