@@ -1,1 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Técnicas de Búsqueda · OVA</title>
+<style>
+  :root{
+    --ink:#0e1b2b; --muted:#5a6b83;
+    --accent:#4a74ff; --accent2:#8b8bd6;
+    --card:#fff; --veil:rgba(255,255,255,.86);
+    --shadow:0 12px 30px rgba(7,16,35,.18);
+    --radius:18px; --maxw:1220px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--ink); font-family:Segoe UI,system-ui,Arial,sans-serif;
+    background:#eef3ff url('Fondo.png') center/cover no-repeat fixed;
+  }
+  .wrap{
+    max-width:var(--maxw);
+    margin: clamp(16px,4vh,32px) auto;
+    padding: clamp(12px,2vw,22px);
+    background:var(--veil);
+    border:1px solid #e7ebf6; border-radius:24px; box-shadow: var(--shadow);
+    backdrop-filter: blur(3px);
+  }
+  h1{margin:0 0 12px; font-size:clamp(22px,3.2vw,30px); color:#123a91}
+  .kicker{color:var(--muted); font-size:.95rem; margin-bottom:8px}
+
+  /* Subpestañas */
+  .subtabs{display:flex;gap:10px;flex-wrap:wrap;background:#eef2ff;padding:8px;border:1px solid #dfe6ff;border-radius:14px}
+  .subtab{padding:10px 14px;border-radius:12px;border:1px solid #ccd7ff;background:#fff;color:#123a91;
+          font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(18,58,145,.06);transition:.2s}
+  .subtab:hover{transform:translateY(-1px)}
+  .subtab.active{background:linear-gradient(90deg,#4a74ff,#8b8bd6);color:#fff;border-color:transparent}
+
+  .panel{display:none;margin-top:14px;background:var(--card);border-radius:var(--radius);border:1px solid #e8ecf8;padding:18px;box-shadow: var(--shadow)}
+  .panel.active{display:block}
+
+  /* Grids, tarjetas, acordeones */
+  .grid{display:grid;gap:16px}
+  @media(min-width:900px){ .grid.cols-2{grid-template-columns:1fr 1fr} }
+  .card{background:#fff;border:1px solid #e8ecf8;border-radius:16px;padding:16px;box-shadow:0 6px 16px rgba(10,20,40,.08)}
+  .tag{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.8rem;font-weight:600;background:#f3f6ff;color:#123a91;border:1px solid #e1e9ff;margin-right:6px}
+  .hl{background:#f4f7ff;border-left:4px solid var(--accent);padding:10px;border-radius:12px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace;background:#f6f7fb;padding:2px 6px;border-radius:8px;border:1px solid #e7e8f1}
+  a{color:#0d47ff;text-decoration:none} a:hover{text-decoration:underline}
+
+  details{
+    background:#fff;border:1px solid #e8ecf8;border-radius:14px;padding:10px 12px;box-shadow:0 6px 16px rgba(10,20,40,.06)
+  }
+  details:not([open]) .fold{display:none}
+  summary{list-style:none;cursor:pointer;font-weight:700;color:#123a91;display:flex;align-items:center;gap:8px}
+  summary::before{content:"▸";display:inline-block;color:#4a74ff;font-weight:900}
+  details[open] summary::before{content:"▾"}
+  summary:hover{opacity:.9}
+
+  /* Embeds */
+  .embed{position:relative;width:100%;padding-top:56.25%;border-radius:16px;overflow:hidden;border:1px solid #e8ecf8;box-shadow:0 6px 16px rgba(10,20,40,.08)}
+  .embed > iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+  footer{margin-top:18px;text-align:center;color:#123a91;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="kicker">Búsquedas de Información</div>
+  <h1>Técnicas de Búsqueda</h1>
+
+  <div class="subtabs" role="tablist">
+    <button class="subtab active" onclick="openTab(event,'que')">¿Qué son?</button>
+    <button class="subtab" onclick="openTab(event,'donde')">¿Dónde buscar?</button>
+    <button class="subtab" onclick="openTab(event,'basicas')">Téc. Básicas</button>
+    <button class="subtab" onclick="openTab(event,'avanzadas')">Téc. Avanzadas</button>
+    <button class="subtab" onclick="openTab(event,'ia')">Con IA</button>
+    <button class="subtab" onclick="openTab(event,'practica')">Práctica</button>
+    <button class="subtab" onclick="openTab(event,'ejercicio')">Ejercicio</button>
+  </div>
+
+  <!-- ¿QUÉ SON? -->
+  <section id="que" class="panel active">
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Definición</h3>
+        <p>Las <b>técnicas de búsqueda</b> son estrategias para <b>formular consultas</b> (ecuaciones) y <b>elegir fuentes</b> que permitan hallar información pertinente y verificable.</p>
+        <div class="hl"><b>Objetivo:</b> obtener <b>resultados útiles</b> y reducir el <b>ruido</b> (resultados irrelevantes).</div>
+      </div>
+      <div class="card">
+        <h3>Pasos clave</h3>
+        <ol>
+          <li>Define la <b>pregunta</b> y el nivel de evidencia.</li>
+          <li>Identifica <b>palabras clave</b>, sinónimos y <b>descriptores</b>.</li>
+          <li>Construye la <b>ecuación</b> (operadores, campos, filtros).</li>
+          <li>Elige la <b>fuente</b> adecuada (especializada, datos abiertos, IA).</li>
+          <li><b>Refina</b> y <b>verifica</b> (fecha, DOI, citas, calidad).</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ¿DÓNDE BUSCAR? (dos columnas, todo en desplegables) -->
+  <section id="donde" class="panel">
+    <h3>Buscadores y fuentes por área/tipo</h3>
+    <div class="grid cols-2">
+      <details>
+        <summary>Salud</summary>
+        <div class="fold">
+          <ul>
+            <li><b>PubMed</b> — biomedicina y salud.</li>
+            <li><b>Cochrane Library</b> — revisiones sistemáticas y guías.</li>
+            <li><b>ERIC</b> (educación sanitaria) — pedagogía/currículos.</li>
+          </ul>
+          <p class="hl"><b>Úsalo cuando:</b> busques evidencia clínica o guías.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Ingeniería / Computación</summary>
+        <div class="fold">
+          <ul>
+            <li><b>IEEE Xplore</b> — ingeniería, IoT, telecom.</li>
+            <li><b>ACM DL</b> — informática y HCI.</li>
+            <li><b>arXiv</b> — preprints en física/CS/IA.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Multidisciplinar</summary>
+        <div class="fold">
+          <ul>
+            <li><b>Scopus</b>, <b>Web of Science</b> — índices con métricas.</li>
+            <li><b>DOAJ</b>, <b>BASE</b>, <b>CORE</b> — acceso abierto.</li>
+            <li><b>Google Scholar</b> — punto de partida rápido.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Patentes</summary>
+        <div class="fold">
+          <ul>
+            <li><b>Google Patents</b>, <b>Espacenet</b> — innovación registrada.</li>
+          </ul>
+          <p class="hl"><b>Úsalo cuando:</b> debas validar novedad.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Derecho</summary>
+        <div class="fold">
+          <ul>
+            <li><b>VLex</b>, <b>Westlaw</b>, <b>Legis</b> — normativa y jurisprudencia.</li>
+            <li><b>HeinOnline</b> — journals y tratados legales.</li>
+            <li><b>JSTOR Law</b> — historia del derecho/políticas públicas.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Deporte / Ejercicio</summary>
+        <div class="fold">
+          <ul>
+            <li><b>SPORTDiscus</b> — entrenamiento, biomecánica, psicología del deporte.</li>
+            <li><b>PubMed Sports Medicine</b> — medicina del deporte.</li>
+            <li><b>ERIC</b> — educación física y currículo.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Negocios / Economía</summary>
+        <div class="fold">
+          <ul>
+            <li><b>ABI/INFORM</b>, <b>Business Source</b> — administración, marketing, finanzas.</li>
+            <li><b>EconLit</b> — economía académica.</li>
+            <li><b>Statista</b>, <b>OECD Data</b> — datos e informes de mercado.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Datos abiertos</summary>
+        <div class="fold">
+          <ul>
+            <li><b>datos.gov.co</b> — portal de datos abiertos de Colombia.</li>
+            <li><b>data.gov</b> — datos abiertos de EE. UU.</li>
+            <li><b>OpenAIRE / Zenodo</b> — datos y publicaciones en acceso abierto.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- Téc. Básicas -->
+  <section id="basicas" class="panel">
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Operadores esenciales</h3>
+        <ul>
+          <li><b>"Frase exacta"</b> → <span class="mono">"cambio climático"</span></li>
+          <li><b>AND</b> → <span class="mono">energía AND solar</span></li>
+          <li><b>OR</b> → <span class="mono">universidad OR instituto</span></li>
+          <li><b>NOT / -</b> → <span class="mono">café -descafeinado</span></li>
+          <li><b>*</b> → <span class="mono">educ*</span></li>
+          <li><b>( )</b> → <span class="mono">(niños OR adolescentes) AND deporte</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Ecuación base + ejemplo</h3>
+        <p class="hl"><b>Plantilla:</b> <span class="mono">("A" OR sinónimosA) AND ("B" OR sinónimosB) -exclusión</span></p>
+        <p><b>Ejemplo:</b> <span class="mono">("energía solar" OR "paneles solares") AND Colombia -publicidad</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Téc. Avanzadas -->
+  <section id="avanzadas" class="panel">
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Campos y filtros</h3>
+        <ul>
+          <li><b>title:</b> <span class="mono">title:"inteligencia artificial"</span></li>
+          <li><b>author:</b> <span class="mono">author:"Turing"</span></li>
+          <li><b>site:</b> <span class="mono">site:.gov "open data"</span></li>
+          <li><b>Rangos:</b> año, idioma, tipo (artículo, revisión, tesis).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Proximidad / truncamiento / tesauros</h3>
+        <ul>
+          <li><b>Proximidad:</b> <span class="mono">energía NEAR/5 renovable</span></li>
+          <li><b>Truncamientos:</b> <span class="mono">wom?n</span> → woman/women</li>
+          <li><b>Tesauros:</b> MeSH, ERIC Thesaurus, etc. para elevar precisión.</li>
+        </ul>
+        <p class="hl"><b>Ejemplo:</b> <span class="mono">("computational thinking" OR "pensamiento computacional") NEAR/3 primaria</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Con IA -->
+  <section id="ia" class="panel">
+    <div class="card" style="margin-bottom:14px">
+      <h3>¿Qué son estos “buscadores con IA”?</h3>
+      <p>Son <b>asistentes de investigación</b> que combinan modelos de lenguaje con bases académicas o la web para <b>entender preguntas</b>, <b>encontrar evidencia</b> y <b>resumirla con citas</b>.</p>
+      <div class="hl"><b>Variables:</b> son los elementos que mides/defines en tu pregunta. 
+        Ej.: <u>población</u> (adolescentes), <u>intervención</u> (boxeo recreativo), <u>comparador</u> (educación física usual) y <u>resultado</u> (función ejecutiva). 
+        Pedirlas explícitas mejora la calidad de la respuesta.</div>
+    </div>
+
+    <div class="grid cols-2">
+      <details>
+        <summary>Consensus</summary>
+        <div class="fold">
+          <p><a href="https://consensus.app" target="_blank" rel="noopener">consensus.app</a></p>
+          <p><b>Qué es:</b> sintetiza conclusiones basadas en <b>papers</b>.</p>
+          <p><b>Cuándo usar:</b> necesitas <b>síntesis rápida</b> con citas.</p>
+          <p><b>Cómo usar:</b> pregunta en lenguaje natural, abre los <b>DOI</b> y filtra por año/área.</p>
+          <p><b>Prompt:</b> <span class="mono">En adolescentes, ¿el boxeo recreativo mejora la función ejecutiva frente a EF tradicional? Dame 5 estudios con DOI (2019–2025).</span></p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Perplexity</summary>
+        <div class="fold">
+          <p><a href="https://www.perplexity.ai" target="_blank" rel="noopener">perplexity.ai</a></p>
+          <p><b>Qué es:</b> buscador conversacional con <b>citas</b> a web/literatura.</p>
+          <p><b>Cuándo usar:</b> panorama general con enlaces verificables.</p>
+          <p><b>Cómo usar:</b> formula, revisa <b>citas</b>, repregunta para afinar.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Elicit</summary>
+        <div class="fold">
+          <p><a href="https://elicit.org" target="_blank" rel="noopener">elicit.org</a></p>
+          <p><b>Qué es:</b> arma tablas para <b>revisión de literatura</b> (abstracts, variables).</p>
+          <p><b>Cuándo usar:</b> construir marco teórico / mapa de evidencia.</p>
+          <p><b>Cómo usar:</b> inicia con una pregunta; exporta tabla y anota variables.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Scite</summary>
+        <div class="fold">
+          <p><a href="https://scite.ai" target="_blank" rel="noopener">scite.ai</a></p>
+          <p><b>Qué es:</b> muestra si un artículo está <b>apoyado/refutado</b> por otros y el <b>contexto</b> de la cita.</p>
+          <p><b>Cuándo usar:</b> evaluar la <b>robustez</b> de la evidencia.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>ResearchRabbit / Connected Papers</summary>
+        <div class="fold">
+          <p><a href="https://www.researchrabbit.ai" target="_blank" rel="noopener">researchrabbit.ai</a> · <a href="https://www.connectedpapers.com" target="_blank" rel="noopener">connectedpapers.com</a></p>
+          <p><b>Qué es:</b> mapas de <b>redes de artículos</b> y autores.</p>
+          <p><b>Cuándo usar:</b> descubrimiento de literatura relacionada.</p>
+          <p><b>Cómo usar:</b> elige un paper semilla y explora el grafo.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>ScholarAI (plugins/extensiones)</summary>
+        <div class="fold">
+          <p><b>Qué es:</b> integraciones para consultar papers desde el chat.</p>
+          <p><b>Cuándo usar:</b> búsquedas rápidas con referencias dentro del flujo de trabajo.</p>
+          <p><b>Cómo usar:</b> pide <b>DOIs</b>, filtros por año y resúmenes con <b>limitaciones</b>.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- Práctica: embeber una página -->
+  <section id="practica" class="panel">
+    <h3>Práctica (página embebida)</h3>
+    <div class="embed">
+      <!-- Reemplazar la URL por practica -->
+      <iframe src="https://TU-PAGINA-PRACTICA.com" title="Práctica"></iframe>
+    </div>
+  </section>
+
+  <!-- Ejercicio: embeber un Word desde Google Drive -->
+  <section id="ejercicio" class="panel">
+    <h3>Ejercicio (Word de Drive embebido)</h3>
+    <div class="embed">
+      <!-- Reemplazra ENLACE de Drive -->
+      <iframe src="https://docs.google.com/gview?embedded=1&url=ENLACE_DIRECTO_DOCX" title="Ejercicio Word"></iframe>
+    </div>
+    <p class="hl"><b>Nota:</b> en Drive visible en <b>en Moodle .docx</b>. 
+  </section>
+
+  <footer>Aprendiendo con @LaProfeVivy</footer>
+</div>
+
+<script>
+function openTab(e,id){
+  const panels=document.querySelectorAll('.panel');
+  const tabs=document.querySelectorAll('.subtab');
+  panels.forEach(p=>p.classList.remove('active'));
+  tabs.forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  e.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>
 
