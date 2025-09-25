@@ -1,1 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bitnarys · Pilar 3: Reconocimiento de Patrones</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#eaf2ff; --muted:#a9b9e6; --bg:#050913;
+    --glass:rgba(15,27,60,.55); --line:#2a3c74;
+    --ok:#22c55e; --warn:#facc15; --err:#ef4444;
+    --neon:#4ade80;
+  }
+  body{margin:0;font-family:Poppins,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  #starfield{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;background:#000;}
+  .halo{position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(800px 500px at 80% 8%, rgba(96,165,250,.25), transparent 45%),
+               radial-gradient(700px 460px at 10% 90%, rgba(167,139,250,.22), transparent 50%);
+    mix-blend-mode:screen;}
+  header{padding:12px 16px;background:rgba(10,18,38,.75);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:20px;color:var(--neon);font-family:"Orbitron",sans-serif}
+  .sub{font-size:13px;color:var(--muted)}
+  main{padding:12px;display:grid;gap:12px}
+  .panel{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:12px;
+         box-shadow:0 0 12px rgba(74,222,128,.35), inset 0 0 8px rgba(96,165,250,.15)}
+  .tray{display:flex;flex-wrap:wrap;gap:10px;padding:8px}
+  .chip{user-select:none;cursor:grab;border-radius:10px;padding:10px;text-align:center;
+        background:#12204b;border:1px solid #2c3f79;
+        box-shadow:0 0 6px rgba(96,165,250,.45),0 0 12px rgba(74,222,128,.25)}
+  .zone{border:1.2px dashed #2e3f76;border-radius:10px;padding:8px;min-height:60px;display:flex;flex-wrap:wrap;gap:6px}
+  .system{padding:10px;border-radius:10px;margin-top:8px;font-weight:bold;text-align:center}
+  .offSys{background:#311b1b;color:#f87171}
+  .onSys{background:#052e16;color:#4ade80}
+  .biobot{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;
+          background:rgba(14,26,62,.8);border:1px solid var(--line);
+          box-shadow:0 0 14px rgba(74,222,128,.35), inset 0 0 8px rgba(96,165,250,.25)}
+  .face{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+        background:radial-gradient(circle,#4ade80,#166534);color:#062315;font-weight:bold;font-family:"Orbitron",sans-serif}
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="halo"></div>
 
+<header>
+  <h1>Bitnarys · Pilar 3: Reconocimiento de Patrones</h1>
+  <div class="sub">Repara los sistemas de la nave identificando patrones</div>
+</header>
+
+<main>
+  <!-- Fase 1 -->
+  <section class="panel" id="phase1">
+    <h3>Fase 1 · Identificación</h3>
+    <p class="sub">Clasifica las tarjetas en <b>Energía</b>, <b>Comunicación</b>, <b>Navegación</b> o <b>No pertenece</b>.</p>
+    <div id="toolbox" class="tray"></div>
+    <div class="zone" data-accept="energia" id="bucket-energia"><h4>⚡ Energía</h4></div>
+    <div class="zone" data-accept="comunicacion" id="bucket-comunicacion"><h4>📡 Comunicación</h4></div>
+    <div class="zone" data-accept="navegacion" id="bucket-navegacion"><h4>🧭 Navegación</h4></div>
+    <div class="zone" data-accept="ruido" id="bucket-ruido"><h4>🗑️ No pertenece</h4></div>
+    <button id="toPhase2">Ir a Fase 2</button>
+  </section>
+
+  <!-- Fase 2 -->
+  <section class="panel" id="phase2" style="display:none">
+    <h3>Fase 2 · Reconexión de Patrones</h3>
+    <p class="sub">Arrastra los componentes al sistema correcto para repararlo.</p>
+    <div id="linkBoard" class="zone"><h4>Componentes disponibles</h4></div>
+    <div class="zone" data-accept="energia" id="zone-energia"><h4>⚡ Energía</h4></div>
+    <div class="zone" data-accept="comunicacion" id="zone-comunicacion"><h4>📡 Comunicación</h4></div>
+    <div class="zone" data-accept="navegacion" id="zone-navegacion"><h4>🧭 Navegación</h4></div>
+
+    <div id="systems">
+      <div id="sys-energia" class="system offSys">⚡ Energía: Desactivado</div>
+      <div id="sys-comunicacion" class="system offSys">📡 Comunicación: Desactivado</div>
+      <div id="sys-navegacion" class="system offSys">🧭 Navegación: Desactivado</div>
+    </div>
+    <button id="evaluate">Evaluar misión</button>
+  </section>
+
+  <!-- Biobot -->
+  <section class="panel">
+    <h3>Biobot</h3>
+    <div class="biobot"><div class="face">◎</div><div id="biobotMsg">Cargando…</div></div>
+  </section>
+</main>
+
+<script>
+/* Fondo estelar animado */
+(function(){
+  const c=document.getElementById('starfield'), ctx=c.getContext('2d');
+  function resize(){ c.width=innerWidth; c.height=innerHeight; }
+  resize(); addEventListener('resize',resize);
+  const stars=[...Array(120)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()*1+0.25}));
+  function step(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const s of stars){
+      s.x+=s.z*0.3; s.y+=s.z*0.15;
+      if(s.x>c.width) s.x=0;
+      if(s.y>c.height) s.y=0;
+      ctx.fillStyle="#cfe0ff"; ctx.globalAlpha=0.55; ctx.fillRect(s.x,s.y,1.4,1.4);
+    }
+    requestAnimationFrame(step);
+  }
+  step();
+})();
+
+/* Tarjetas */
+const CARDS=[
+  {t:"🔋 Batería solar",type:"energia"},
+  {t:"⚡ Panel eléctrico",type:"energia"},
+  {t:"📡 Antena larga",type:"comunicacion"},
+  {t:"🎙️ Micrófono de cabina",type:"comunicacion"},
+  {t:"🧭 Giroscopio",type:"navegacion"},
+  {t:"🛰️ GPS",type:"navegacion"},
+  {t:"🎤 Karaoke",type:"ruido"},
+  {t:"📸 Selfie espacial",type:"ruido"}
+];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+const toolbox=document.getElementById('toolbox');
+shuffle(CARDS).forEach(c=>{
+  const el=document.createElement('div');
+  el.className='chip'; el.draggable=true; el.textContent=c.t;
+  el.dataset.type=c.type; toolbox.appendChild(el);
+});
+
+/* Drag & Drop */
+let dragItem=null;
+function initDrag(root){
+  root.querySelectorAll('.chip').forEach(ch=>{
+    ch.addEventListener('dragstart',()=>{dragItem=ch});
+    ch.addEventListener('dragend',()=>{dragItem=null});
+  });
+}
+initDrag(toolbox);
+document.querySelectorAll('.zone').forEach(z=>{
+  z.addEventListener('dragover',e=>e.preventDefault());
+  z.addEventListener('drop',e=>{
+    e.preventDefault();
+    if(dragItem && dragItem.dataset.type===z.dataset.accept){
+      z.appendChild(dragItem);
+      initDrag(z); // asegurar re-drag
+    }
+  });
+});
+
+/* Biobot */
+const biobot=document.getElementById('biobotMsg');
+function say(html){ biobot.innerHTML=html; }
+say("🤖 <b>Explorador</b>, el sistema de la nave está fallando. " +
+    "Debes <b>reconocer patrones</b> en los componentes para repararla. " +
+    "Primero clasifica, luego arrastra cada pieza al sistema correcto.");
+
+/* Paso a Fase 2 */
+document.getElementById('toPhase2').onclick=()=>{
+  const energia=[...document.querySelectorAll('#bucket-energia .chip')].length;
+  const comunicacion=[...document.querySelectorAll('#bucket-comunicacion .chip')].length;
+  const navegacion=[...document.querySelectorAll('#bucket-navegacion .chip')].length;
+  if(energia<2 || comunicacion<2 || navegacion<2){
+    say("⚠️ Revisa, aún no has identificado correctamente todos los patrones.");
+    return;
+  }
+  const linkBoard=document.getElementById('linkBoard');
+  document.querySelectorAll('#bucket-energia .chip, #bucket-comunicacion .chip, #bucket-navegacion .chip').forEach(ch=>{
+    ch.draggable=true;
+    linkBoard.appendChild(ch);
+  });
+  document.getElementById('phase2').style.display="block";
+  say("🔧 Ahora coloca cada componente en su sistema. Cuando completes un patrón, se encenderá.");
+};
+
+/* Evaluación */
+document.getElementById('evaluate').onclick=()=>{
+  const energia=[...document.querySelectorAll('#zone-energia .chip')].length;
+  const comunicacion=[...document.querySelectorAll('#zone-comunicacion .chip')].length;
+  const navegacion=[...document.querySelectorAll('#zone-navegacion .chip')].length;
+
+  if(energia===2){document.getElementById("sys-energia").className="system onSys";document.getElementById("sys-energia").textContent="⚡ Energía: Activado";}
+  if(comunicacion===2){document.getElementById("sys-comunicacion").className="system onSys";document.getElementById("sys-comunicacion").textContent="📡 Comunicación: Activado";}
+  if(navegacion===2){document.getElementById("sys-navegacion").className="system onSys";document.getElementById("sys-navegacion").textContent="🧭 Navegación: Activado";}
+
+  if(energia===2 && comunicacion===2 && navegacion===2){
+    say("🎉 <b>¡Misión completada!</b><br><br>" +
+        "Has reconocido los patrones y reparado la nave. " +
+        "En la vida real, el <b>Reconocimiento de Patrones</b> te ayuda a aplicar soluciones conocidas a problemas nuevos.<br><br>" +
+        "🚀 ¡Felicitaciones explorador, la nave está lista para despegar!");
+  }else{
+    say("⏳ Aún faltan sistemas por completar. Revisa los patrones restantes.");
+  }
+};
+</script>
+</body>
+</html>
