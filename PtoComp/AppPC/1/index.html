@@ -13,15 +13,12 @@
   body{margin:0;font-family:Poppins,Arial,sans-serif;background:var(--bg);color:var(--ink)}
   #starfield{position:fixed;inset:0;z-index:-1}
 
-  /* Encabezado */
   header{padding:16px;text-align:center;border-bottom:1px solid var(--line);background:rgba(10,18,38,.55)}
   header h1{margin:0;color:#4ade80;font-size:22px}
   header .sub{margin-top:6px;color:var(--muted)}
 
-  /* Panel */
   .panel{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px}
 
-  /* Chips */
   .tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}
   .chip{user-select:none;cursor:grab;border-radius:12px;padding:10px 12px;
         font-size:.95rem;background:rgba(20,32,70,.6);border:1px solid #2c3f79;
@@ -29,7 +26,6 @@
   .chip:hover{transform:scale(1.05)}
   .chip:active{cursor:grabbing;transform:scale(.97)}
 
-  /* Zonas */
   .zones{display:grid;gap:14px;padding:12px}
   @media(min-width:860px){.zones{grid-template-columns:1fr 1fr 1fr}}
   .zone{min-height:140px;border:1.5px dashed #2e3f76;border-radius:14px;padding:10px;
@@ -37,22 +33,22 @@
   .zone h3{text-align:center;margin:0 0 6px;color:var(--muted)}
   .bucket{min-height:80px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 
-  /* Consolas Fase 2 */
   .console{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;
            background:var(--glass)}
   .state{margin-top:6px;font-weight:bold;text-align:center}
   .ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}
 
-  /* Botones */
   button{margin:12px;padding:10px 14px;background:#238636;color:#fff;border:none;border-radius:10px;cursor:pointer}
   button:hover{background:#2ea043}
 
-  /* Biobot */
   .biobot{display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;
           background:rgba(14,26,62,.7);border:1px solid var(--line);margin:12px}
   .face{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
         background:radial-gradient(circle,#4ade80,#166534);color:#062315;font-weight:bold}
-  #resultado{margin:16px;padding:14px;border-radius:12px;background:var(--glass)}
+  #resultado{margin:16px;padding:14px;border-radius:12px;background:var(--glass);text-align:center;font-size:1.1rem}
+
+  #navePanel{text-align:center;margin:16px;padding:14px;border-radius:12px;background:var(--glass);font-size:1.2rem}
+  #nave{font-size:2rem;margin-top:8px}
 </style>
 </head>
 <body>
@@ -102,17 +98,23 @@
 </div>
 
 <div class="actions">
-  <button onclick="goPhase2()">Ir a vincular subtareas</button>
+  <button onclick="goPhase2()">Ir a revisar módulos</button>
 </div>
 
 <!-- Fase 2 -->
 <div id="phase2" style="display:none;padding:12px">
-  <h2>Fase 2 · Vinculación</h2>
+  <h2>Fase 2 · Revisión de sistemas</h2>
   <div id="modulesArea"></div>
-  <button onclick="evaluar()">Evaluar misión</button>
+  <button onclick="evaluar()">Finalizar misión</button>
 </div>
 
 <div id="resultado"></div>
+
+<!-- Estado de la nave (abajo) -->
+<div id="navePanel">
+  <h2>Estado de la nave</h2>
+  <div id="nave">🚀❌ Averiada</div>
+</div>
 
 <script>
 /* Fondo estelar */
@@ -167,12 +169,6 @@ function shuffleChildren(container){
   }
 }
 
-document.addEventListener("DOMContentLoaded",()=>{
-  const toolbox=document.getElementById("toolbox");
-  shuffleChildren(toolbox);
-  bindDrag();
-});
-
 /* Ir a fase 2 */
 function goPhase2(){
   const mods=[...document.getElementById('bucket-mods').querySelectorAll('.chip[data-type="mod"]')];
@@ -181,7 +177,9 @@ function goPhase2(){
   mods.forEach(m=>{
     const div=document.createElement('div');
     div.className="console";div.dataset.mod=m.dataset.key;
-    div.innerHTML=`<h3>${m.textContent}</h3><div class="bucket"></div><div class="state warn" id="st-${m.dataset.key}">⏳ Incompleto</div>`;
+    div.innerHTML=`<h3>${m.textContent}</h3>
+      <div class="bucket"></div>
+      <div class="state warn" id="st-${m.dataset.key}">🔴 Averiado</div>`;
     area.appendChild(div);
     div.addEventListener('dragover',e=>e.preventDefault());
     div.addEventListener('drop',e=>{
@@ -193,7 +191,7 @@ function goPhase2(){
     });
   });
   document.getElementById('phase2').style.display="block";
-  biobotSpeak("Ahora vincula cada subtarea al módulo correcto.");
+  biobotSpeak("Ahora revisa cada módulo: arrastra sus subtareas correctas para repararlo.");
 }
 
 function checkModule(modKey){
@@ -202,8 +200,8 @@ function checkModule(modKey){
   const st=document.getElementById(`st-${modKey}`);
   const extras=placed.filter(p=>!expected.has(p));
   if(extras.length){
-    st.textContent="⚠️ Error en módulo";st.className="state err";
-    biobotSpeak(`Error en ${modKey}. Esa subtarea no corresponde.`);
+    st.textContent="⚠️ Error detectado";st.className="state err";
+    biobotSpeak(`El módulo ${modKey} aún tiene fallos.`);
     return;
   }
   let ok=placed.filter(p=>expected.has(p)).length;
@@ -211,47 +209,64 @@ function checkModule(modKey){
     st.textContent="⏳ Incompleto";st.className="state warn";
   }
   if(ok===expected.size){
-    st.textContent="✅ Completado";st.className="state ok";
+    st.textContent="🟢 Reparado";st.className="state ok";
+    biobotSpeak(`El módulo ${modKey} quedó reparado.`);
   }
 }
 
 function evaluar(){
-  let completos=0,err=0,incom=0;
+  let completos=0,err=0;
   for(const [mod] of Object.entries(CORRECT)){
     const st=document.getElementById(`st-${mod}`);
     if(!st) continue;
     if(st.classList.contains("ok")) completos++;
     else if(st.classList.contains("err")) err++;
-    else incom++;
   }
-  document.getElementById("resultado").innerHTML=
-    `<p>Completados: ${completos} ✅ · Incompletos: ${incom} ⏳ · Errores: ${err} ⚠️</p>`;
-  biobotSpeak("Misión completada. Has aplicado la descomposición para organizar un sistema complejo en partes simples. En la vida real, este pilar se usa cuando divides un proyecto en tareas, cuando organizas un entrenamiento por fases o cuando estructuras una investigación en secciones.");
+
+  if(completos===4 && err===0){
+    document.getElementById("nave").innerHTML="🚀✨ Lista para despegar";
+    document.getElementById("resultado").innerHTML=
+      "¡Misión cumplida! Reparaste la nave revisando cada módulo por separado.";
+    biobotSpeak("Excelente trabajo. La nave está lista gracias a que revisaste cada sistema de manera independiente.");
+  }else{
+    document.getElementById("nave").innerHTML="🚀❌ Averiada";
+    document.getElementById("resultado").innerHTML="Aún hay módulos con fallos o incompletos.";
+    biobotSpeak("Todavía quedan sistemas averiados. Revisa de nuevo las subtareas.");
+  }
 }
 
-/* Biobot con voz */
-let selectedVoice=null;
-function pickSpanishVoice(){
-  const vs=window.speechSynthesis.getVoices();
-  selectedVoice = vs.find(v=>/^es(-|_|$)/i.test(v.lang)) || vs[0] || null;
+/* --- Biobot con voz --- */
+let selectedVoice = null;
+function pickSpanishVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  selectedVoice = voices.find(v => /^es(-|_|$)/i.test(v.lang)) || voices[0] || null;
 }
-if('speechSynthesis' in window){
+if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = pickSpanishVoice;
   pickSpanishVoice();
 }
-function biobotSpeak(msg){
-  const bio=document.getElementById("biobotMsg");
-  bio.innerHTML=msg;
-  if('speechSynthesis' in window){
+
+const biobot = document.getElementById("biobotMsg");
+function biobotSpeak(msg) {
+  biobot.innerHTML = msg;
+  if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(msg.replace(/<[^>]+>/g,''));
-    if(selectedVoice) u.voice=selectedVoice;
-    u.lang= selectedVoice?.lang || "es-ES"; u.rate=1;
-    setTimeout(()=>window.speechSynthesis.speak(u),300);
+    const u = new SpeechSynthesisUtterance(msg.replace(/<[^>]+>/g,""));
+    if (selectedVoice) u.voice = selectedVoice;
+    u.lang = selectedVoice?.lang || "es-ES";
+    u.rate = 1;
+    setTimeout(()=>window.speechSynthesis.speak(u),200);
   }
 }
-/* Mensaje inicial */
-biobotSpeak("Soy Biobot. En el Pilar 1 trabajaremos la Descomposición: dividir un problema complejo en partes más pequeñas y manejables. Tu misión es clasificar los módulos de la nave y luego vincular cada subtarea en el lugar correcto.");
+
+/* Inicio */
+document.addEventListener("DOMContentLoaded",()=>{
+  const toolbox=document.getElementById("toolbox");
+  shuffleChildren(toolbox); // barajar tarjetas al inicio
+  bindDrag();
+  biobotSpeak("Soy Biobot. En el Pilar 1 trabajaremos la Descomposición, que significa dividir un problema complejo en partes más pequeñas y manejables.
+              Tu misión es reparar la nave que está averiada, revisando cada módulo y asignando sus subtareas correctas.");
+});
 </script>
 </body>
 </html>
