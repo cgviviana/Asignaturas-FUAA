@@ -1,247 +1,313 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bitnarys · Pilar 2: Abstracción</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bitnarys · Pilar 1: Descomposición</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#070b16; --ink:#eaf2ff; --line:#2a3c74;
-    --neon1:#4b5dbd; --neon2:#9f7fff; --neon3:#6ea8ff;
+    --ink:#eaf2ff; --muted:#a9b9e6; --bg:#050913;
+    --glass:rgba(15,27,60,.55); --line:#2a3c74;
+    --ok:#22c55e; --warn:#facc15; --err:#ef4444;
+    --neon:#4ade80;
   }
-  body{margin:0;font-family:Poppins,Arial,sans-serif;color:var(--ink);background:var(--bg)}
-  #starfield{position:fixed;inset:0;z-index:-1}
-  h1{padding:16px;margin:0;text-align:center;letter-spacing:.5px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Poppins,Arial,sans-serif;background:var(--bg);color:var(--ink)}
 
-  .brief{
-    margin:16px; padding:16px;
-    border:1px solid var(--line); border-radius:14px;
-    background:rgba(15,27,60,.55);
-    box-shadow:0 0 22px rgba(0,0,0,.35), inset 0 0 18px rgba(110,168,255,.15);
+  /* Fondo galáctico asegurado */
+  #starfield{
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    z-index:-2; background:#000;
   }
-  .brief h2{margin:0 0 8px;font-size:1.1rem;text-align:center;text-shadow:0 0 8px var(--neon3)}
-
-  /* Tablero 4x5 */
-  .tray{
-    display:grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap:16px;
-    padding:16px;
+  .halo{
+    position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:
+      radial-gradient(800px 500px at 80% 8%, rgba(96,165,250,.25), transparent 45%),
+      radial-gradient(700px 460px at 10% 90%, rgba(167,139,250,.22), transparent 50%);
+    mix-blend-mode:screen;
   }
-  @media (max-width:1000px){.tray{grid-template-columns: repeat(2,1fr);}}
-  @media (max-width:600px){.tray{grid-template-columns: 1fr;}}
 
+  header{padding:12px 16px;background:rgba(10,18,38,.75);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:20px;color:var(--neon);font-family:"Orbitron",sans-serif;letter-spacing:1px}
+  .sub{font-size:13px;color:var(--muted)}
+
+  main{padding:12px;display:grid;gap:12px}
+
+  /* Panel galáctico */
+  .panel{
+    background:var(--glass); border:1px solid var(--line); border-radius:12px; padding:12px;
+    box-shadow:0 0 12px rgba(74,222,128,.35), inset 0 0 8px rgba(96,165,250,.15)
+  }
+
+  /* Bandeja tarjetas (Fase 1 fluida) */
+  .tray{display:flex;flex-wrap:wrap;gap:10px;padding:8px}
   .chip{
-    background:rgba(20,32,70,.65);
-    border:1px solid var(--neon1);
-    box-shadow:0 0 12px var(--neon1), inset 0 0 24px rgba(77,108,200,.3);
-    border-radius:12px;
-    padding:12px;
-    text-align:center;
-    cursor:grab;
-    transition:all .2s ease;
-    font-size:.95rem;
+    user-select:none; cursor:grab; border-radius:10px; padding:10px; text-align:center;
+    background:#12204b; border:1px solid #2c3f79;
+    box-shadow:0 0 6px rgba(96,165,250,.45), 0 0 12px rgba(74,222,128,.25)
   }
-  .chip:hover{
-    box-shadow:0 0 18px var(--neon2), inset 0 0 36px rgba(120,100,255,.4);
-    transform:scale(1.05);
-  }
-  .chip:active{cursor:grabbing;transform:scale(.97)}
 
   /* Zonas */
-  .zones{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:18px;
-    padding:20px;
-  }
-  .zone{
-    min-height:220px;
-    border:2px dashed var(--neon1);
-    background:rgba(10,18,40,.55);
-    border-radius:14px;
-    padding:16px;
-    box-shadow:0 0 20px var(--neon1), inset 0 0 28px rgba(100,120,255,.25);
-    transition:.3s;
-  }
-  .zone:hover{
-    box-shadow:0 0 28px var(--neon2), inset 0 0 36px rgba(120,100,255,.35);
-  }
-  .zone h3{
-    text-align:center;
-    margin-bottom:12px;
-    text-shadow:0 0 10px var(--neon3);
-    font-size:1.05rem;
-  }
-  .bucket{min-height:150px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .zones{display:grid;gap:10px}
+  .zone{border:1.2px dashed #2e3f76; border-radius:10px; padding:8px; box-shadow:inset 0 0 8px rgba(96,165,250,.2)}
+  .bucket{min-height:50px; display:flex; flex-wrap:wrap; gap:6px}
 
-  /* Botones */
-  .actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}
-  button{
-    padding:10px 14px;
-    background:rgba(20,32,70,.65);
-    color:var(--ink);
-    border:1px solid var(--neon1);
-    border-radius:10px;
-    cursor:pointer;
-    letter-spacing:.2px;
-    box-shadow:0 0 12px var(--neon1), inset 0 0 18px rgba(110,168,255,.25);
-    transition:.25s;
+  /* Consolas Fase 2 en tablero 2×2 (responsive a 1 col. en pantallas muy pequeñas) */
+  #linking{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+  @media(max-width:420px){#linking{grid-template-columns:1fr}}
+  .console{
+    background:rgba(16,28,62,.7); border:1px solid var(--line); border-radius:10px; padding:10px;
+    box-shadow:0 0 8px rgba(74,222,128,.25), inset 0 0 8px rgba(167,139,250,.15)
   }
-  button:hover{box-shadow:0 0 18px var(--neon2), inset 0 0 24px rgba(159,127,255,.35)}
-  button:active{transform:translateY(1px)}
+  .state{margin-top:6px; font-weight:bold; font-family:"Orbitron",sans-serif}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
 
-  /* Reporte */
-  .report{margin:16px;padding:16px;border-radius:14px;border:1px solid var(--line);
-    background:rgba(15,27,60,.65);box-shadow:0 0 18px var(--neon1), inset 0 0 28px rgba(100,120,255,.25)}
-  .report h3{text-align:center;margin:0 0 12px;text-shadow:0 0 8px var(--neon3)}
-  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
-  .card{padding:10px;border:1px solid var(--line);border-radius:10px;text-align:center;
-    background:rgba(20,32,70,.55);box-shadow:inset 0 0 12px rgba(120,140,255,.2)}
-  .status{text-align:center;margin-top:12px;padding:8px;border:1px dashed var(--line);border-radius:10px}
-  .muted{opacity:.85;font-size:.9rem}
+  /* Progreso */
+  .meter{height:10px; background:#0b1535; border:1px solid #203064; border-radius:999px; overflow:hidden}
+  .bar{height:100%; width:0%; background:linear-gradient(90deg,#22c55e,#4ade80)}
+  .stars{display:flex; gap:4px; font-size:18px; margin-top:6px}
+  .stars .off{opacity:.35}
+
+  /* Biobot */
+  .biobot{
+    display:flex; gap:10px; align-items:center; padding:10px; border-radius:10px;
+    background:rgba(14,26,62,.8); border:1px solid var(--line);
+    box-shadow:0 0 14px rgba(74,222,128,.35), inset 0 0 8px rgba(96,165,250,.25)
+  }
+  .face{
+    width:40px; height:40px; border-radius:50%; display:grid; place-items:center;
+    background:radial-gradient(circle,#4ade80,#166534); color:#062315; font-weight:bold; font-family:"Orbitron",sans-serif
+  }
 </style>
 </head>
 <body>
 <canvas id="starfield"></canvas>
+<div class="halo"></div>
 
-<h1>BITNARYS · Pilar 2: ABSTRACCIÓN</h1>
+<header>
+  <h1>Bitnarys · Pilar 1: Descomposición</h1>
+  <div class="sub">Fase 1 clásica · Fase 2 en tablero 2×2</div>
+</header>
 
-<div class="brief">
-  <h2>Briefing de misión</h2>
-  <p>La <b>abstracción</b> consiste en ignorar lo irrelevante y enfocarse en lo esencial. En el Pensamiento Computacional permite crear <b>modelos simplificados</b> de sistemas complejos.</p>
-  <p><b>Misión:</b> Construir el <b>Mapa Simplificado de Vuelo</b>, clasificando las 20 señales recibidas en: <b>Crítico</b>, <b>Importante</b> o <b>Irrelevante</b>.</p>
-</div>
+<main>
+  <section class="panel">
+    <h3>Fase 1 · Clasificación</h3>
+    <p class="sub">Arrastra tarjetas a <b>Módulos</b>, <b>Subtareas</b> o <b>No pertenece</b>.</p>
+    <div id="toolbox" class="tray"></div>
 
-<!-- Bandeja 4x5 -->
-<div id="toolbox" class="tray">
-  <!-- Crítico -->
-  <div class="chip" draggable="true" data-type="critico">⚡ Nivel de energía</div>
-  <div class="chip" draggable="true" data-type="critico">🫁 Presión de oxígeno</div>
-  <div class="chip" draggable="true" data-type="critico">🚀 Velocidad de propulsores</div>
-  <div class="chip" draggable="true" data-type="critico">🛰️ Estado de antenas</div>
-  <div class="chip" draggable="true" data-type="critico">🛡️ Integridad estructural</div>
-  <div class="chip" draggable="true" data-type="critico">🧭 Coordenadas de navegación</div>
+    <div class="zones">
+      <div class="zone" data-accept="mod"><h4>Módulos</h4><div class="bucket" id="bucket-mods"></div></div>
+      <div class="zone" data-accept="sub"><h4>Subtareas</h4><div class="bucket" id="bucket-subs"></div></div>
+      <div class="zone" data-accept="ruido"><h4>No pertenece</h4><div class="bucket" id="bucket-ruido"></div></div>
+    </div>
+    <button id="toPhase2">Ir a Fase 2</button>
+  </section>
 
-  <!-- Importante -->
-  <div class="chip" draggable="true" data-type="importante">🌡️ Temperatura de cabina</div>
-  <div class="chip" draggable="true" data-type="importante">📐 Calibración de sensores</div>
-  <div class="chip" draggable="true" data-type="importante">⏱ Sincronización de reloj atómico</div>
-  <div class="chip" draggable="true" data-type="importante">⤴ Trayectoria de reserva</div>
-  <div class="chip" draggable="true" data-type="importante">⛽ Margen de combustible</div>
+  <section class="panel" id="phase2" style="display:none">
+    <h3>Fase 2 · Vinculación</h3>
+    <p class="sub">Arrastra cada subtarea a su módulo correspondiente.</p>
+    <div id="linking"></div>
+    <button id="evaluate">Evaluar misión</button>
+  </section>
 
-  <!-- Irrelevante -->
-  <div class="chip" draggable="true" data-type="ruido">🎶 Playlist de karaoke</div>
-  <div class="chip" draggable="true" data-type="ruido">📸 Selfies de la tripulación</div>
-  <div class="chip" draggable="true" data-type="ruido">🎨 Color del casco</div>
-  <div class="chip" draggable="true" data-type="ruido">🕹️ Ranking de videojuegos</div>
-  <div class="chip" draggable="true" data-type="ruido">🍽 Menú del día</div>
-  <div class="chip" draggable="true" data-type="ruido">✦ Horóscopo estelar</div>
-  <div class="chip" draggable="true" data-type="ruido">🗞 Chismes de hangar</div>
-  <div class="chip" draggable="true" data-type="ruido">🎯 Puntuación en dardos</div>
-  <div class="chip" draggable="true" data-type="ruido">🌱 Jardinería de a bordo</div>
-</div>
+  <section class="panel">
+    <h3>Progreso</h3>
+    <div class="meter"><div id="bar" class="bar"></div></div>
+    <div class="stars" id="stars"><span class="off">★</span><span class="off">★</span><span class="off">★</span><span class="off">★</span></div>
+  </section>
 
-<!-- Contenedores en columnas -->
-<div class="zones">
-  <div class="zone" data-accept="critico"><h3>CRÍTICO</h3><div class="bucket" id="bucket-critico"></div></div>
-  <div class="zone" data-accept="importante"><h3>IMPORTANTE</h3><div class="bucket" id="bucket-importante"></div></div>
-  <div class="zone" data-accept="ruido"><h3>IRRELEVANTE</h3><div class="bucket" id="bucket-ruido"></div></div>
-</div>
+  <section class="panel">
+    <h3>Biobot</h3>
+    <div class="biobot"><div class="face">◎</div><div id="biobotMsg">Cargando…</div></div>
+  </section>
 
-<div class="actions">
-  <button id="shuffleBtn">Barajar señales</button>
-  <button id="resetBtn">Reiniciar</button>
-  <button id="evalBtn">Evaluar modelo</button>
-</div>
-
-<div id="resultado" class="report" style="display:none"></div>
+  <section class="panel" id="summary" style="display:none">
+    <h3>Informe de misión</h3>
+    <div id="resume" class="sub">Aún sin evaluar…</div>
+  </section>
+</main>
 
 <script>
-/* Starfield */
+/* Fondo estelar animado (robusto) */
 (function(){
-  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
-  function resize(){c.width=innerWidth;c.height=innerHeight}resize();
-  addEventListener('resize',resize);
-  const stars=[...Array(140)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()*1.3+.2,r:Math.random()*1.4+.2}));
+  const c=document.getElementById('starfield'), ctx=c.getContext('2d');
+  function resize(){ c.width=innerWidth; c.height=innerHeight; }
+  resize(); addEventListener('resize',resize);
+  const stars=[...Array(140)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()*1+0.25}));
   function step(){
     ctx.clearRect(0,0,c.width,c.height);
     for(const s of stars){
-      s.x+=s.z*0.22; s.y+=s.z*0.10;
-      if(s.x>c.width) s.x=0; if(s.y>c.height) s.y=0;
-      ctx.globalAlpha=.35+s.z*.45; ctx.fillStyle='#bcd7ff';
-      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+      s.x+=s.z*0.3; s.y+=s.z*0.15;
+      if(s.x>c.width) s.x=0;
+      if(s.y>c.height) s.y=0;
+      ctx.fillStyle="#cfe0ff"; ctx.globalAlpha=0.55; ctx.fillRect(s.x,s.y,1.4,1.4);
     }
     requestAnimationFrame(step);
-  } step();
+  }
+  step();
 })();
 
-/* Correcto */
+/* Datos de tarjetas */
+const CARDS=[
+  {t:"⚡ Energía",type:"mod",key:"energia"},
+  {t:"🔧 Motor",type:"mod",key:"motor"},
+  {t:"📡 Comunicaciones",type:"mod",key:"comunicaciones"},
+  {t:"🧭 Navegación",type:"mod",key:"navegacion"},
+  {t:"Verificar baterías",type:"sub",key:"bateria"},
+  {t:"Revisar paneles",type:"sub",key:"paneles"},
+  {t:"Calibrar propulsores",type:"sub",key:"propulsores"},
+  {t:"Chequear aceite",type:"sub",key:"aceite"},
+  {t:"Alinear antenas",type:"sub",key:"antenas"},
+  {t:"Configurar frecuencias",type:"sub",key:"frecuencias"},
+  {t:"Sincronizar sensores",type:"sub",key:"sensores"},
+  {t:"Cargar ruta",type:"sub",key:"ruta"},
+  {t:"Pintar casco",type:"ruido",key:"pintar"},
+  {t:"Luces de neón",type:"ruido",key:"neon"},
+  {t:"Tomar selfies",type:"ruido",key:"selfies"},
+  {t:"Organizar karaoke",type:"ruido",key:"karaoke"}
+];
 const CORRECT={
-  critico:["Nivel de energía","Presión de oxígeno","Velocidad de propulsores","Estado de antenas","Integridad estructural","Coordenadas de navegación"],
-  importante:["Temperatura de cabina","Calibración de sensores","Sincronización de reloj atómico","Trayectoria de reserva","Margen de combustible"],
-  ruido:["Playlist de karaoke","Selfies de la tripulación","Color del casco","Ranking de videojuegos","Menú del día","Horóscopo estelar","Chismes de hangar","Puntuación en dardos","Jardinería de a bordo"]
+  energia:new Set(['bateria','paneles']),
+  motor:new Set(['propulsores','aceite']),
+  comunicaciones:new Set(['antenas','frecuencias']),
+  navegacion:new Set(['sensores','ruta'])
 };
-function textOfChip(el){return el.textContent.replace(/^[^ ]* /,"").trim()}
+const MODULE_ORDER=['energia','motor','comunicaciones','navegacion'];
 
-/* Drag */
+/* Utilidades */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+const toolbox=document.getElementById('toolbox');
+shuffle(CARDS).forEach(c=>{
+  const el=document.createElement('div');
+  el.className='chip'; el.draggable=true; el.textContent=c.t;
+  el.dataset.type=c.type; el.dataset.key=c.key;
+  toolbox.appendChild(el);
+});
+
+/* Drag & Drop */
 let dragItem=null;
-function bindDrag(){
-  document.querySelectorAll('.chip').forEach(c=>{
-    c.addEventListener('dragstart',()=>dragItem=c);
-    c.addEventListener('dragend',()=>dragItem=null);
+function initDrag(root){
+  root.querySelectorAll('.chip').forEach(ch=>{
+    ch.addEventListener('dragstart',()=>{dragItem=ch});
+    ch.addEventListener('dragend',()=>{dragItem=null});
   });
-  document.querySelectorAll('.zone').forEach(z=>{
+}
+initDrag(toolbox);
+
+document.querySelectorAll('.zone').forEach(z=>{
+  z.addEventListener('dragover',e=>e.preventDefault());
+  z.addEventListener('drop',e=>{
+    e.preventDefault();
+    if(dragItem && dragItem.dataset.type===z.dataset.accept){
+      z.querySelector('.bucket').appendChild(dragItem);
+    }
+  });
+});
+
+/* Biobot */
+const biobot=document.getElementById('biobotMsg');
+function say(html){ biobot.innerHTML = html; } // <= Muestra SIEMPRE el mensaje
+
+/* Mensaje pedagógico inicial (visible al cargar) */
+say(
+  "🤖 <b>Hola explorador</b>. Hoy trabajaremos el pilar de la <b>Descomposición</b> en el pensamiento computacional. " +
+  "Significa <b>dividir un problema grande</b> en partes más pequeñas para resolverlo paso a paso.<br><br>" +
+  "🚀 <b>Misión:</b> 1) Clasifica los <b>Módulos</b> principales de la nave. 2) Coloca las <b>Subtareas</b> correctas en cada módulo. " +
+  "3) Envía a <b>No pertenece</b> lo que sea ruido."
+);
+
+/* Fase 2: tablero 2×2 */
+const linking=document.getElementById('linking');
+document.getElementById('toPhase2').onclick=()=>{
+  const mods=[...document.getElementById('bucket-mods').querySelectorAll('.chip[data-type="mod"]')].map(m=>m.dataset.key);
+  if(mods.length<4){ say("⚠️ Aún faltan <b>módulos</b> en la zona de Módulos para avanzar."); return; }
+  linking.innerHTML="";
+  MODULE_ORDER.forEach(k=>{
+    if(!mods.includes(k)) return;
+    const div=document.createElement('div');
+    div.className="console"; div.dataset.mod=k;
+    div.innerHTML=`<h4 style="font-family:Orbitron;margin:0 0 6px">${k.toUpperCase()}</h4>
+      <div class="zone" data-accept="sub" data-link="${k}"><div class="bucket"></div></div>
+      <div class="state warn" id="st-${k}">⏳ Incompleto</div>`;
+    linking.appendChild(div);
+  });
+  document.getElementById('phase2').style.display="block";
+  initDrag(linking);
+  linking.querySelectorAll('.zone').forEach(z=>{
     z.addEventListener('dragover',e=>e.preventDefault());
     z.addEventListener('drop',e=>{
       e.preventDefault();
-      if(dragItem && z.dataset.accept===dragItem.dataset.type){
+      if(dragItem && dragItem.dataset.type==="sub"){
         z.querySelector('.bucket').appendChild(dragItem);
+        checkModule(z.dataset.link);
       }
     });
   });
-}
-function shuffleChildren(c){
-  const a=[...c.children];
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));c.appendChild(a[j]);}
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  const toolbox=document.getElementById('toolbox');
-  shuffleChildren(toolbox); bindDrag();
-  document.getElementById('shuffleBtn').onclick=()=>{document.querySelectorAll('.bucket .chip').forEach(ch=>toolbox.appendChild(ch));shuffleChildren(toolbox)};
-  document.getElementById('resetBtn').onclick=()=>{document.querySelectorAll('.bucket .chip').forEach(ch=>toolbox.appendChild(ch));shuffleChildren(toolbox);document.getElementById('resultado').style.display='none'};
-  document.getElementById('evalBtn').onclick=evaluar;
-});
+  say("🔧 Vincula cada <b>subtarea</b> con su <b>módulo</b> correspondiente.");
+};
 
-/* Evaluar */
-function evaluar(){
-  const buckets={
-    critico:[...document.querySelectorAll('#bucket-critico .chip')].map(textOfChip),
-    importante:[...document.querySelectorAll('#bucket-importante .chip')].map(textOfChip),
-    ruido:[...document.querySelectorAll('#bucket-ruido .chip')].map(textOfChip)
-  };
-  let aciertos=0, errores=0, faltantes=0, total=0;
-  for(const tipo in CORRECT){
-    total+=CORRECT[tipo].length;
-    buckets[tipo].forEach(c=>CORRECT[tipo].includes(c)?aciertos++:errores++);
-    CORRECT[tipo].forEach(e=>{if(!buckets[tipo].includes(e)) faltantes++});
+/* Estados por módulo */
+function checkModule(k){
+  const expected=CORRECT[k];
+  const placed=[...document.querySelectorAll(`.zone[data-link="${k}"] .bucket .chip`)].map(c=>c.dataset.key);
+  const st=document.getElementById("st-"+k);
+  if(placed.some(p=>!expected.has(p))){
+    st.textContent="⚠️ Error"; st.className="state err";
+    say("❌ Hay elementos que <b>no corresponden</b> en <b>"+k+"</b>. Retíralos.");
+    return;
   }
-  const precision=Math.round((aciertos/total)*100);
-  let estatus="Modelo operativo"; if(precision<80) estatus="Modelo inestable"; if(precision<50) estatus="Modelo fallido";
+  if(placed.length<expected.size){
+    st.textContent="⏳ Incompleto"; st.className="state warn";
+    say("⏳ Aún faltan subtareas en <b>"+k+"</b>.");
+  }else{
+    st.textContent="✅ Completado"; st.className="state ok";
+    say("✔️ <b>"+k+"</b> quedó correcto.");
+  }
+  setProgress();
+}
 
-  let out=`<h3>Informe técnico</h3>
-    <div class="kpi">
-      <div class="card">✔ Aciertos<br>${aciertos}</div>
-      <div class="card">✖ Errores<br>${errores}</div>
-      <div class="card">… Faltantes<br>${faltantes}</div>
-    </div>
-    <div class="card">Precisión<br>${precision}%</div>
-    <div class="status">Estado: ${estatus}</div>
-    <p class="muted">La abstracción reduce complejidad: de 20 señales a un modelo simplificado para la misión.</p>`;
-  document.getElementById('resultado').innerHTML=out;
-  document.getElementById('resultado').style.display='block';
+/* Evaluación general */
+document.getElementById('evaluate').onclick=()=>{
+  let ok=0,err=0,warn=0;
+  MODULE_ORDER.forEach(k=>{
+    const st=document.getElementById("st-"+k);
+    if(!st) warn++;
+    else if(st.classList.contains("ok")) ok++;
+    else if(st.classList.contains("err")) err++;
+    else warn++;
+  });
+
+  document.getElementById("resume").innerHTML=`Completados: ${ok} ✅ · Incompletos: ${warn} ⏳ · Errores: ${err} ⚠️`;
+  document.getElementById("summary").style.display="block";
+
+  const stars=document.getElementById("stars").children;
+  let score = (ok===4 && err===0) ? 4 : (ok===3 && err===0) ? 3 : (ok>=2 && err<=1) ? 2 : ok ? 1 : 0;
+  for(let i=0;i<4;i++) stars[i].classList.toggle("off", i>=score);
+
+  if(ok===4 && err===0){
+    say("🎉 <b>¡Misión completada con éxito!</b><br><br>" +
+        "La <b>Descomposición</b> te permitió organizar un problema complejo en partes más simples. " +
+        "En la vida real se aplica al <b>planear proyectos</b>, <b>estudiar temas difíciles</b> o <b>resolver retos paso a paso</b>.<br><br>" +
+        "🚀 <b>¡Felicitaciones, has terminado la misión en Bitnarys!</b>");
+  }else if(err>0){
+    say("❌ Corrige los módulos con <b>Error</b> y vuelve a evaluar.");
+  }else{
+    say("⏳ Aún quedan módulos <b>Incompletos</b>. Revisa las subtareas faltantes.");
+  }
+};
+
+/* Progreso visual */
+function setProgress(){
+  let pct=0, hasErr=false;
+  MODULE_ORDER.forEach(k=>{
+    const st=document.getElementById("st-"+k);
+    if(st && st.classList.contains("ok")) pct+=25;
+    if(st && st.classList.contains("err")) hasErr=true;
+  });
+  if(hasErr) pct=Math.max(0,pct-10);
+  document.getElementById("bar").style.width=pct+"%";
 }
 </script>
 </body>
 </html>
-
