@@ -4,87 +4,107 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Bitnarys · Pilar 4: Diseño de Algoritmos</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#eaf2ff; --muted:#a9b9e6; --bg:#050913;
-    --glass:rgba(15,27,60,.55); --line:#2a3c74;
-    --ok:#22c55e; --err:#ef4444; --neon:#4ade80;
+    /* Igual que Pilares 1–3 */
+    --ink:#eaf2ff; --muted:#a9b9e6; --bg:#070b16;
+    --glass:rgba(15,27,60,.45); --line:#2a3c74;
+    --ok:#22c55e; --warn:#facc15; --err:#ef4444;
   }
   body{margin:0;background:var(--bg);color:var(--ink);font-family:Poppins,Arial,sans-serif}
-  #starfield{position:fixed;inset:0;z-index:-2;background:#000}
-  .halo{position:fixed;inset:0;z-index:-1;pointer-events:none;
-    background:radial-gradient(800px 500px at 80% 8%, rgba(96,165,250,.25), transparent 45%),
-               radial-gradient(700px 460px at 10% 90%, rgba(167,139,250,.22), transparent 50%);
-    mix-blend-mode:screen}
-  header{padding:12px 16px;background:rgba(10,18,38,.75);border-bottom:1px solid var(--line)}
-  h1{margin:0;font-size:20px;color:var(--neon);font-family:Orbitron,system-ui}
-  .sub{font-size:13px;color:var(--muted)}
-  main{padding:12px;display:grid;gap:12px}
-  .panel{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:12px}
+  #starfield{position:fixed;inset:0;z-index:-1}
 
-  .tray{display:flex;flex-wrap:wrap;gap:10px;min-height:64px;padding:8px}
+  /* Encabezado unificado */
+  header{padding:16px 12px;text-align:center;border-bottom:1px solid var(--line);background:rgba(10,18,38,.55)}
+  header h1{margin:0;color:#4ade80;font-size:22px;letter-spacing:.3px}
+  header .sub{margin-top:6px;color:var(--muted);font-size:14px}
+
+  /* Paneles, botones, chips, zonas — igual que los anteriores */
+  .panel{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px}
+
+  .tray{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:8px}
+  @media (max-width:1000px){.tray{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:600px){.tray{grid-template-columns:1fr}}
+
   .chip{
-    user-select:none;cursor:grab;border-radius:10px;padding:10px;text-align:center;
-    background:#12204b;border:1px solid #2c3f79;
-    box-shadow:0 0 6px rgba(96,165,250,.45),0 0 12px rgba(74,222,128,.25);
-    font-weight:600
+    user-select:none;cursor:grab;border-radius:12px;padding:10px 12px;text-align:center;
+    background:rgba(20,32,70,.60);border:1px solid #2c3f79;box-shadow:0 4px 12px rgba(0,0,0,.4);
+    transition:transform .15s ease;font-size:.95rem
   }
-  .slots{display:grid;gap:8px}
+  .chip:hover{transform:scale(1.05)}
+  .chip:active{cursor:grabbing;transform:scale(.97)}
+
+  .slots{display:grid;gap:10px}
   .slot{
-    min-height:54px;border:1px dashed #4b5a97;border-radius:10px;
+    min-height:58px;border:1.5px dashed #2e3f76;border-radius:12px;
     display:flex;align-items:center;justify-content:center;
-    color:#8ba0db;background:rgba(16,28,62,.55)
+    background:rgba(15,27,60,.4);padding:6px
   }
-  .slot h4{margin:0;font-weight:600}
+  .slot h4{margin:0;color:var(--muted);font-weight:600}
 
-  .stars{display:flex;gap:4px;font-size:20px;margin-top:8px}
-  .stars .off{opacity:.3}
-
-  .biobot{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;
-    background:rgba(14,26,62,.8);border:1px solid var(--line)}
-  .face{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
-    background:radial-gradient(circle,#4ade80,#166534);color:#062315;font-weight:bold;font-family:Orbitron}
-
+  .actions{display:flex;gap:10px;justify-content:center;padding:8px 12px}
   button{
-    background:#0f1c3c;border:1px solid #3251a3;color:#cfe0ff;border-radius:10px;
-    padding:8px 12px;cursor:pointer;font-weight:600;margin-top:6px
+    padding:10px 14px;background:#238636;color:#fff;border:none;border-radius:10px;cursor:pointer
   }
-  button:hover{filter:brightness(1.1)}
+  button:hover{background:#2ea043}
 
-  /* Overlay despegue */
+  /* Biobot (igual que P1–P3) */
+  .biobot{
+    margin:12px;padding:14px;border-radius:14px;background:rgba(14,26,62,.7);
+    border:1px solid var(--line);box-shadow:0 0 14px rgba(74,222,128,.35);display:flex;gap:10px;align-items:center
+  }
+  .face{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+        background:radial-gradient(circle,#4ade80,#166534);color:#062315;font-weight:bold}
+
+  /* Sistemas encendido/apagado (para efecto final) */
+  .system{padding:10px;border-radius:10px;margin:8px 0;font-weight:600;text-align:center}
+  .offSys{background:#311b1b;color:#f87171}
+  .onSys{background:#052e16;color:#4ade80}
+
+  /* Resultado simple */
+  #resultado{margin:12px;padding:12px;border-radius:12px;background:var(--glass);border:1px solid var(--line)}
+
+  /* Overlay de despegue (extra divertido, mantiene uniformidad) */
   #launchOverlay{
     position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;place-items:center;z-index:10
   }
-  .rocket{
-    width:120px;height:120px;display:grid;place-items:center;
-    animation:lift 3s ease-in forwards
-  }
+  .rocket{width:120px;height:120px;display:grid;place-items:center;animation:lift 3s ease-in forwards}
   .rocket::after{content:"🚀";font-size:80px}
   @keyframes lift{
     0%{transform:translateY(200px) scale(.9);opacity:.8}
     60%{transform:translateY(-200px) scale(1);opacity:1}
-    100%{transform:translateY(-400px) scale(1.1);opacity:0}
+    100%{transform:translateY(-420px) scale(1.1);opacity:0}
   }
 </style>
 </head>
 <body>
 <canvas id="starfield"></canvas>
-<div class="halo"></div>
 
 <header>
   <h1>Bitnarys · Pilar 4: Diseño de Algoritmos</h1>
   <div class="sub">Construye el algoritmo correcto · Solo así la nave podrá despegar</div>
 </header>
 
+<!-- Biobot arriba -->
+<section class="panel" id="bioPanel">
+  <div class="biobot">
+    <div class="face">◎</div>
+    <div id="biobotMsg">Cargando…</div>
+  </div>
+</section>
+
 <main>
   <section class="panel">
-    <h3>Pasos disponibles</h3>
+    <h3 style="text-align:center;margin:6px 0 8px">Pasos disponibles</h3>
+    <div class="actions">
+      <button id="shuffleBtn">Barajar pasos</button>
+      <button id="resetBtn">Reiniciar</button>
+    </div>
     <div id="toolbox" class="tray"></div>
   </section>
 
   <section class="panel">
-    <h3>Tablero del algoritmo</h3>
+    <h3 style="text-align:center;margin:6px 0 8px">Tablero del algoritmo</h3>
     <div class="slots" id="algoBoard">
       <div class="slot" data-pos="0"><h4>Paso 1</h4></div>
       <div class="slot" data-pos="1"><h4>Paso 2</h4></div>
@@ -92,35 +112,46 @@
       <div class="slot" data-pos="3"><h4>Paso 4</h4></div>
       <div class="slot" data-pos="4"><h4>Paso 5</h4></div>
     </div>
-    <button id="evaluate">Evaluar misión</button>
-    <div class="stars" id="stars"><span class="off">★</span><span class="off">★</span><span class="off">★</span><span class="off">★</span></div>
+    <div class="actions"><button id="evaluate">Evaluar misión</button></div>
+  </section>
+
+  <section class="panel">
+    <div id="resultado"></div>
+    <div id="systems">
+      <div id="sys-energia" class="system offSys">⚡ Motor de secuencia: Desactivado</div>
+      <div id="sys-comunicacion" class="system offSys">📡 Validación de chequeos: Desactivado</div>
+      <div id="sys-navegacion" class="system offSys">🧭 Autorización de despegue: Desactivado</div>
+    </div>
   </section>
 
   <section class="panel">
     <h3>Biobot</h3>
-    <div class="biobot"><div class="face">◎</div><div id="biobotMsg">Cargando…</div></div>
+    <div class="biobot">
+      <div class="face">◎</div>
+      <div id="biobotMsgBottom">Listo para evaluar…</div>
+    </div>
   </section>
 </main>
 
 <div id="launchOverlay"><div class="rocket"></div></div>
 
 <script>
-/* Fondo estelar */
+/* Fondo estelar (mismo de Pilares 1–3) */
 (function(){
   const c=document.getElementById('starfield'), ctx=c.getContext('2d');
-  function resize(){c.width=innerWidth;c.height=innerHeight;} resize(); addEventListener('resize',resize);
-  const stars=[...Array(120)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()+.3}));
+  function resize(){c.width=innerWidth;c.height=innerHeight} resize();
+  addEventListener('resize',resize);
+  const stars=[...Array(120)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()*1.2+.2,r:Math.random()*1.4+.2}));
   function step(){
     ctx.clearRect(0,0,c.width,c.height);
     for(const s of stars){
-      s.x+=s.z*0.3; s.y+=s.z*0.15;
-      if(s.x>c.width) s.x=0;
-      if(s.y>c.height) s.y=0;
-      ctx.fillStyle="#cfe0ff"; ctx.fillRect(s.x,s.y,1.2,1.2);
+      s.x+=s.z*0.25; s.y+=s.z*0.12;
+      if(s.x>c.width) s.x=0; if(s.y>c.height) s.y=0;
+      ctx.globalAlpha=.35+s.z*.45; ctx.fillStyle='#bcd7ff';
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
     }
     requestAnimationFrame(step);
-  }
-  step();
+  } step();
 })();
 
 /* Pasos y orden correcto */
@@ -133,19 +164,20 @@ const STEPS=[
 ];
 const ORDER=["energia","diagnostico","propulsores","coms","despegue"];
 
-/* Render inicial */
+/* Render y barajado */
 const toolbox=document.getElementById('toolbox');
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
-function render(){
+function makeChip(s){
+  const el=document.createElement('div');
+  el.className="chip"; el.draggable=true; el.textContent=s.t; el.dataset.key=s.key;
+  return el;
+}
+function renderShuffled(){
   toolbox.innerHTML="";
-  shuffle([...STEPS]).forEach(s=>{
-    const el=document.createElement('div');
-    el.className="chip"; el.draggable=true; el.textContent=s.t; el.dataset.key=s.key;
-    toolbox.appendChild(el);
-  });
+  shuffle([...STEPS]).forEach(s=>toolbox.appendChild(makeChip(s)));
   bindDrag(toolbox);
 }
-render();
+renderShuffled();
 
 /* Drag & Drop */
 let dragItem=null;
@@ -158,8 +190,7 @@ function bindDrag(root){
 function makeDroppable(el){
   el.addEventListener('dragover',e=>e.preventDefault());
   el.addEventListener('drop',e=>{
-    e.preventDefault();
-    if(!dragItem) return;
+    e.preventDefault(); if(!dragItem) return;
     if(el.classList.contains('slot')){
       const existing=el.querySelector('.chip');
       if(existing) toolbox.appendChild(existing);
@@ -173,44 +204,104 @@ function makeDroppable(el){
 makeDroppable(toolbox);
 document.querySelectorAll('.slot').forEach(makeDroppable);
 
-/* Biobot */
-const biobot=document.getElementById('biobotMsg');
-function say(m){biobot.innerHTML=m;}
-say("🤖 <b>Explorador</b>, hoy trabajamos <b>Diseño de Algoritmos</b>. " +
-    "Tu misión es ordenar los pasos correctos para el despegue de la nave.");
+/* Reset: devuelve todo al toolbox y repone rótulos de pasos */
+function resetBoard(){
+  document.querySelectorAll('.slot').forEach((slot,i)=>{
+    const chip=slot.querySelector('.chip'); if(chip) toolbox.appendChild(chip);
+    slot.innerHTML=`<h4>Paso ${i+1}</h4>`;
+  });
+  document.getElementById('resultado').innerHTML="";
+  setSystems(false,false,false);
+}
 
-/* Evaluar misión */
+/* Botones de acciones */
+document.getElementById('shuffleBtn').onclick=()=>{ resetBoard(); renderShuffled(); biobotSpeak("He barajado los pasos. Ordena el algoritmo para lograr el despegue."); };
+document.getElementById('resetBtn').onclick=()=>{ resetBoard(); biobotSpeak("Tablero reiniciado. Vuelve a intentar construir el algoritmo."); };
+
+/* Biobot con voz (igual que P1–P3) */
+let selectedVoice=null;
+function pickSpanishVoice(){
+  const vs=window.speechSynthesis.getVoices();
+  selectedVoice = vs.find(v=>/^es(-|_|$)/i.test(v.lang)) || vs[0] || null;
+}
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged = pickSpanishVoice;
+  pickSpanishVoice();
+}
+function biobotSpeak(msg){
+  const top=document.getElementById('biobotMsg');
+  const bottom=document.getElementById('biobotMsgBottom');
+  top.innerHTML = msg; bottom.innerHTML = msg;
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(msg.replace(/<[^>]+>/g,'')); // sin HTML
+    if(selectedVoice) u.voice=selectedVoice;
+    u.lang= selectedVoice?.lang || "es-ES"; u.rate=1;
+    setTimeout(()=>window.speechSynthesis.speak(u),300);
+  }
+}
+/* Mensaje inicial */
+biobotSpeak("Soy Biobot. En el Pilar 4 trabajaremos el Diseño de Algoritmos: ordenar pasos precisos para alcanzar un objetivo. Tu misión: ordenar el protocolo de despegue.");
+
+/* Helper de sistemas (indicadores visuales) */
+function setSystems(seqOK, checksOK, authOK){
+  const a=document.getElementById('sys-energia');
+  const b=document.getElementById('sys-comunicacion');
+  const c=document.getElementById('sys-navegacion');
+  a.className="system "+(seqOK?"onSys":"offSys");
+  b.className="system "+(checksOK?"onSys":"offSys");
+  c.className="system "+(authOK?"onSys":"offSys");
+  a.textContent = (seqOK?"⚡ Motor de secuencia: Activado":"⚡ Motor de secuencia: Desactivado");
+  b.textContent = (checksOK?"📡 Validación de chequeos: Activado":"📡 Validación de chequeos: Desactivado");
+  c.textContent = (authOK?"🧭 Autorización de despegue: Activado":"🧭 Autorización de despegue: Desactivado");
+}
+
+/* Evaluación */
 document.getElementById('evaluate').onclick=()=>{
   const placed=[...document.querySelectorAll('.slot')].map(s=>s.querySelector('.chip')?.dataset.key||null);
-  if(placed.includes(null)){ say("⏳ Aún faltan pasos en el tablero."); return; }
 
-  let ok=true, firstError=-1;
-  for(let i=0;i<ORDER.length;i++){ if(placed[i]!==ORDER[i]){ ok=false; firstError=i; break; } }
+  const total=ORDER.length;
+  const incompletos = placed.filter(p=>p===null).length;
+  let correctas=0;
+  for(let i=0;i<total;i++){ if(placed[i]===ORDER[i]) correctas++; }
+  const errores = total - correctas - incompletos;
 
-  const stars=document.getElementById("stars").children;
-  for(let i=0;i<4;i++) stars[i].classList.add("off");
+  // Encendidos parciales como feedback (no afecta uniformidad)
+  const seqOK = placed[0]==="energia";
+  const checksOK = placed[1]==="diagnostico" && placed[3]==="coms";
+  const authOK = placed[4]==="despegue";
+  setSystems(seqOK, checksOK, authOK);
 
-  if(ok){
-    for(let i=0;i<4;i++) stars[i].classList.remove("off");
-    say("🎉 ¡Algoritmo correcto! La nave inicia el protocolo de despegue...");
-    document.getElementById('launchOverlay').style.display="grid";
-    setTimeout(()=>{
-      document.getElementById('launchOverlay').style.display="none";
-      say("🚀 <b>¡Misión completada!</b> Diseñaste un algoritmo que permitió el despegue. " +
-          "En la vida real, los algoritmos organizan soluciones paso a paso.");
+  document.getElementById('resultado').innerHTML =
+    `<p>Completados: ${correctas} ✅ · Incompletos: ${incompletos} ⏳ · Errores: ${errores} ⚠️</p>`;
+
+  if(incompletos>0){
+    biobotSpeak("Aún faltan pasos por ubicar. Completa todos los slots del algoritmo antes de evaluar.");
+    return;
+  }
+
+  if(correctas===total){
+    biobotSpeak("¡Algoritmo correcto! La nave inicia el protocolo de despegue… En la vida real, un buen algoritmo reduce errores y hace los procesos repetibles.");
+    const overlay=document.getElementById('launchOverlay');
+    overlay.style.display="grid";
+    setTimeout(()=>{ overlay.style.display="none";
+      biobotSpeak("¡Misión completada! Diseñaste un algoritmo preciso: energía → diagnóstico → calibración → comunicaciones → despegue. Así se construyen soluciones paso a paso.");
     },3000);
   }else{
+    // Primera pista en el primer fallo
+    let firstErrorIndex = ORDER.findIndex((k,i)=>placed[i]!==null && placed[i]!==k);
+    if(firstErrorIndex===-1) firstErrorIndex = ORDER.findIndex((k,i)=>placed[i]===null?false:(placed[i]!==k));
     const hints=[
-      "Primero se necesita energía.",
-      "Antes de calibrar, se debe diagnosticar.",
-      "Los propulsores se calibran antes de verificar comunicaciones.",
-      "Las comunicaciones deben confirmarse antes del despegue.",
-      "El despegue es el último paso."
+      "El algoritmo siempre inicia encendiendo la energía.",
+      "Antes de calibrar, es imprescindible diagnosticar los sistemas.",
+      "La calibración de propulsores ocurre antes de verificar comunicaciones.",
+      "Las comunicaciones deben estar correctas antes del despegue.",
+      "El despegue es el último paso del algoritmo."
     ];
-    say("❌ Error en <b>Paso "+(firstError+1)+"</b>. "+hints[firstError]);
+    const paso = (firstErrorIndex>=0? firstErrorIndex+1 : 1);
+    biobotSpeak(`Hay un error en el Paso ${paso}. ${hints[firstErrorIndex>=0?firstErrorIndex:0]}`);
   }
 };
 </script>
 </body>
 </html>
-
