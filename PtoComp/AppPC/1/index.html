@@ -1,1 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bitnarys · Pilar 2: Abstracción</title>
+<style>
+  :root{
+    --bg:#070b16; --ink:#eaf2ff; --line:#2a3c74;
+    --neon1:#4b5dbd; --neon2:#9f7fff; --neon3:#6ea8ff;
+  }
+  body{margin:0;font-family:Poppins,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  #starfield{position:fixed;inset:0;z-index:-1}
+  h1{padding:16px;margin:0;text-align:center;letter-spacing:.5px}
+
+  .brief{
+    margin:16px; padding:16px;
+    border:1px solid var(--line); border-radius:14px;
+    background:rgba(15,27,60,.55);
+    box-shadow:0 0 22px rgba(0,0,0,.35), inset 0 0 18px rgba(110,168,255,.15);
+  }
+  .brief h2{margin:0 0 8px;font-size:1.1rem;text-align:center;text-shadow:0 0 8px var(--neon3)}
+
+  /* Tablero 4x5 */
+  .tray{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:16px;
+    padding:16px;
+  }
+  @media (max-width:1000px){.tray{grid-template-columns: repeat(2,1fr);}}
+  @media (max-width:600px){.tray{grid-template-columns: 1fr;}}
+
+  .chip{
+    background:rgba(20,32,70,.65);
+    border:1px solid var(--neon1);
+    box-shadow:0 0 12px var(--neon1), inset 0 0 24px rgba(77,108,200,.3);
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+    cursor:grab;
+    transition:all .2s ease;
+    font-size:.95rem;
+  }
+  .chip:hover{
+    box-shadow:0 0 18px var(--neon2), inset 0 0 36px rgba(120,100,255,.4);
+    transform:scale(1.05);
+  }
+  .chip:active{cursor:grabbing;transform:scale(.97)}
+
+  /* Zonas */
+  .zones{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:18px;
+    padding:20px;
+  }
+  .zone{
+    min-height:220px;
+    border:2px dashed var(--neon1);
+    background:rgba(10,18,40,.55);
+    border-radius:14px;
+    padding:16px;
+    box-shadow:0 0 20px var(--neon1), inset 0 0 28px rgba(100,120,255,.25);
+    transition:.3s;
+  }
+  .zone:hover{
+    box-shadow:0 0 28px var(--neon2), inset 0 0 36px rgba(120,100,255,.35);
+  }
+  .zone h3{
+    text-align:center;
+    margin-bottom:12px;
+    text-shadow:0 0 10px var(--neon3);
+    font-size:1.05rem;
+  }
+  .bucket{min-height:150px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+
+  /* Botones */
+  .actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}
+  button{
+    padding:10px 14px;
+    background:rgba(20,32,70,.65);
+    color:var(--ink);
+    border:1px solid var(--neon1);
+    border-radius:10px;
+    cursor:pointer;
+    letter-spacing:.2px;
+    box-shadow:0 0 12px var(--neon1), inset 0 0 18px rgba(110,168,255,.25);
+    transition:.25s;
+  }
+  button:hover{box-shadow:0 0 18px var(--neon2), inset 0 0 24px rgba(159,127,255,.35)}
+  button:active{transform:translateY(1px)}
+
+  /* Reporte */
+  .report{margin:16px;padding:16px;border-radius:14px;border:1px solid var(--line);
+    background:rgba(15,27,60,.65);box-shadow:0 0 18px var(--neon1), inset 0 0 28px rgba(100,120,255,.25)}
+  .report h3{text-align:center;margin:0 0 12px;text-shadow:0 0 8px var(--neon3)}
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+  .card{padding:10px;border:1px solid var(--line);border-radius:10px;text-align:center;
+    background:rgba(20,32,70,.55);box-shadow:inset 0 0 12px rgba(120,140,255,.2)}
+  .status{text-align:center;margin-top:12px;padding:8px;border:1px dashed var(--line);border-radius:10px}
+  .muted{opacity:.85;font-size:.9rem}
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<h1>BITNARYS · Pilar 2: ABSTRACCIÓN</h1>
+
+<div class="brief">
+  <h2>Briefing de misión</h2>
+  <p>La <b>abstracción</b> consiste en ignorar lo irrelevante y enfocarse en lo esencial. En el Pensamiento Computacional permite crear <b>modelos simplificados</b> de sistemas complejos.</p>
+  <p><b>Misión:</b> Construir el <b>Mapa Simplificado de Vuelo</b>, clasificando las 20 señales recibidas en: <b>Crítico</b>, <b>Importante</b> o <b>Irrelevante</b>.</p>
+</div>
+
+<!-- Bandeja 4x5 -->
+<div id="toolbox" class="tray">
+  <!-- Crítico -->
+  <div class="chip" draggable="true" data-type="critico">⚡ Nivel de energía</div>
+  <div class="chip" draggable="true" data-type="critico">🫁 Presión de oxígeno</div>
+  <div class="chip" draggable="true" data-type="critico">🚀 Velocidad de propulsores</div>
+  <div class="chip" draggable="true" data-type="critico">🛰️ Estado de antenas</div>
+  <div class="chip" draggable="true" data-type="critico">🛡️ Integridad estructural</div>
+  <div class="chip" draggable="true" data-type="critico">🧭 Coordenadas de navegación</div>
+
+  <!-- Importante -->
+  <div class="chip" draggable="true" data-type="importante">🌡️ Temperatura de cabina</div>
+  <div class="chip" draggable="true" data-type="importante">📐 Calibración de sensores</div>
+  <div class="chip" draggable="true" data-type="importante">⏱ Sincronización de reloj atómico</div>
+  <div class="chip" draggable="true" data-type="importante">⤴ Trayectoria de reserva</div>
+  <div class="chip" draggable="true" data-type="importante">⛽ Margen de combustible</div>
+
+  <!-- Irrelevante -->
+  <div class="chip" draggable="true" data-type="ruido">🎶 Playlist de karaoke</div>
+  <div class="chip" draggable="true" data-type="ruido">📸 Selfies de la tripulación</div>
+  <div class="chip" draggable="true" data-type="ruido">🎨 Color del casco</div>
+  <div class="chip" draggable="true" data-type="ruido">🕹️ Ranking de videojuegos</div>
+  <div class="chip" draggable="true" data-type="ruido">🍽 Menú del día</div>
+  <div class="chip" draggable="true" data-type="ruido">✦ Horóscopo estelar</div>
+  <div class="chip" draggable="true" data-type="ruido">🗞 Chismes de hangar</div>
+  <div class="chip" draggable="true" data-type="ruido">🎯 Puntuación en dardos</div>
+  <div class="chip" draggable="true" data-type="ruido">🌱 Jardinería de a bordo</div>
+</div>
+
+<!-- Contenedores en columnas -->
+<div class="zones">
+  <div class="zone" data-accept="critico"><h3>CRÍTICO</h3><div class="bucket" id="bucket-critico"></div></div>
+  <div class="zone" data-accept="importante"><h3>IMPORTANTE</h3><div class="bucket" id="bucket-importante"></div></div>
+  <div class="zone" data-accept="ruido"><h3>IRRELEVANTE</h3><div class="bucket" id="bucket-ruido"></div></div>
+</div>
+
+<div class="actions">
+  <button id="shuffleBtn">Barajar señales</button>
+  <button id="resetBtn">Reiniciar</button>
+  <button id="evalBtn">Evaluar modelo</button>
+</div>
+
+<div id="resultado" class="report" style="display:none"></div>
+
+<script>
+/* Starfield */
+(function(){
+  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}resize();
+  addEventListener('resize',resize);
+  const stars=[...Array(140)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()*1.3+.2,r:Math.random()*1.4+.2}));
+  function step(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const s of stars){
+      s.x+=s.z*0.22; s.y+=s.z*0.10;
+      if(s.x>c.width) s.x=0; if(s.y>c.height) s.y=0;
+      ctx.globalAlpha=.35+s.z*.45; ctx.fillStyle='#bcd7ff';
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+    }
+    requestAnimationFrame(step);
+  } step();
+})();
+
+/* Correcto */
+const CORRECT={
+  critico:["Nivel de energía","Presión de oxígeno","Velocidad de propulsores","Estado de antenas","Integridad estructural","Coordenadas de navegación"],
+  importante:["Temperatura de cabina","Calibración de sensores","Sincronización de reloj atómico","Trayectoria de reserva","Margen de combustible"],
+  ruido:["Playlist de karaoke","Selfies de la tripulación","Color del casco","Ranking de videojuegos","Menú del día","Horóscopo estelar","Chismes de hangar","Puntuación en dardos","Jardinería de a bordo"]
+};
+function textOfChip(el){return el.textContent.replace(/^[^ ]* /,"").trim()}
+
+/* Drag */
+let dragItem=null;
+function bindDrag(){
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('dragstart',()=>dragItem=c);
+    c.addEventListener('dragend',()=>dragItem=null);
+  });
+  document.querySelectorAll('.zone').forEach(z=>{
+    z.addEventListener('dragover',e=>e.preventDefault());
+    z.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(dragItem && z.dataset.accept===dragItem.dataset.type){
+        z.querySelector('.bucket').appendChild(dragItem);
+      }
+    });
+  });
+}
+function shuffleChildren(c){
+  const a=[...c.children];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));c.appendChild(a[j]);}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const toolbox=document.getElementById('toolbox');
+  shuffleChildren(toolbox); bindDrag();
+  document.getElementById('shuffleBtn').onclick=()=>{document.querySelectorAll('.bucket .chip').forEach(ch=>toolbox.appendChild(ch));shuffleChildren(toolbox)};
+  document.getElementById('resetBtn').onclick=()=>{document.querySelectorAll('.bucket .chip').forEach(ch=>toolbox.appendChild(ch));shuffleChildren(toolbox);document.getElementById('resultado').style.display='none'};
+  document.getElementById('evalBtn').onclick=evaluar;
+});
+
+/* Evaluar */
+function evaluar(){
+  const buckets={
+    critico:[...document.querySelectorAll('#bucket-critico .chip')].map(textOfChip),
+    importante:[...document.querySelectorAll('#bucket-importante .chip')].map(textOfChip),
+    ruido:[...document.querySelectorAll('#bucket-ruido .chip')].map(textOfChip)
+  };
+  let aciertos=0, errores=0, faltantes=0, total=0;
+  for(const tipo in CORRECT){
+    total+=CORRECT[tipo].length;
+    buckets[tipo].forEach(c=>CORRECT[tipo].includes(c)?aciertos++:errores++);
+    CORRECT[tipo].forEach(e=>{if(!buckets[tipo].includes(e)) faltantes++});
+  }
+  const precision=Math.round((aciertos/total)*100);
+  let estatus="Modelo operativo"; if(precision<80) estatus="Modelo inestable"; if(precision<50) estatus="Modelo fallido";
+
+  let out=`<h3>Informe técnico</h3>
+    <div class="kpi">
+      <div class="card">✔ Aciertos<br>${aciertos}</div>
+      <div class="card">✖ Errores<br>${errores}</div>
+      <div class="card">… Faltantes<br>${faltantes}</div>
+    </div>
+    <div class="card">Precisión<br>${precision}%</div>
+    <div class="status">Estado: ${estatus}</div>
+    <p class="muted">La abstracción reduce complejidad: de 20 señales a un modelo simplificado para la misión.</p>`;
+  document.getElementById('resultado').innerHTML=out;
+  document.getElementById('resultado').style.display='block';
+}
+</script>
+</body>
+</html>
 
