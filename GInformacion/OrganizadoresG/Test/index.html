@@ -3,70 +3,152 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Organizadores gráficos · Drag & Drop (18 ítems)</title>
+  <title>Organizadores gráficos · Drag & Drop</title>
   <style>
     :root{
-      --bg:#0b1220;
-      --panel:#0f1b3c;
-      --card:#111b33;
-      --ink:#eaf2ff;
-      --muted:#a9b9e6;
-      --brand:#5b9cff;
-      --ok:#22c55e;
-      --err:#ef4444;
+      --bg:#0a0f1c;
+      --panel:#111b2c;
+      --card:#1a2542;
+      --ink:#f0f4ff;
+      --muted:#8fa3d8;
+      --brand:#4cc9f0;
+      --ok:#4ade80;
+      --err:#f87171;
       --line:#1f2b52;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-    header{padding:16px;text-align:center;border-bottom:1px solid var(--line)}
-    .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:12px;padding:12px}
-    .bank,.board{display:grid;gap:12px}
-    .bank{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
-    .pill{background:var(--card);padding:10px;border-radius:8px;cursor:grab;text-align:center}
-    .drop{background:#0d162b;padding:16px;min-height:60px;border:2px dashed #334; border-radius:8px}
-    .drop.dragover{border-color:var(--brand)}
-    .drop.lock.ok{border-color:var(--ok)}
-    .drop.lock.err{border-color:var(--err)}
-    .stats{display:flex;gap:16px;margin:12px}
-    .stats div{flex:1;text-align:center;background:var(--card);padding:8px;border-radius:8px}
-    button{margin:8px;padding:8px 12px;border:0;border-radius:8px;cursor:pointer;background:var(--brand);color:#fff}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:"Poppins",sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    header{
+      padding:20px;
+      text-align:center;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,0.02);
+    }
+    header h1{font-size:1.6rem;color:var(--brand)}
+    header p{font-size:.9rem;color:var(--muted)}
+
+    main{flex:1;padding:16px;display:grid;gap:16px}
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 4px 12px rgba(0,0,0,.4);
+    }
+
+    .bank,.board{
+      display:grid;
+      gap:10px;
+    }
+    .bank{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+    .board{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+
+    .pill{
+      background:var(--card);
+      padding:8px;
+      border-radius:10px;
+      cursor:grab;
+      text-align:center;
+      font-size:.85rem;
+      transition:.25s ease;
+      box-shadow:inset 0 0 4px rgba(255,255,255,.05),0 3px 6px rgba(0,0,0,.6);
+    }
+    .pill:hover{transform:scale(1.05);background:#223055}
+
+    .drop{
+      background:#0d162b;
+      padding:14px;
+      min-height:70px;
+      border:2px dashed #334;
+      border-radius:12px;
+      font-size:.85rem;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      transition:border .25s, transform .2s;
+    }
+    .drop.dragover{border-color:var(--brand);transform:scale(1.02)}
+    .drop.lock.ok{border-color:var(--ok);background:rgba(74,222,128,.15)}
+    .drop.lock.err{border-color:var(--err);background:rgba(248,113,113,.15)}
+
+    .stats{
+      display:flex;
+      gap:12px;
+    }
+    .stats div{
+      flex:1;
+      text-align:center;
+      background:var(--card);
+      padding:10px;
+      border-radius:10px;
+      font-size:.85rem;
+    }
+
+    button{
+      margin:10px auto;
+      display:block;
+      padding:10px 18px;
+      border:0;
+      border-radius:10px;
+      cursor:pointer;
+      background:var(--brand);
+      color:#fff;
+      font-weight:600;
+      transition:.25s;
+    }
+    button:hover{background:#38bdf8;transform:scale(1.05)}
+
+    #result{
+      margin-top:12px;
+      text-align:center;
+      font-size:.9rem;
+      line-height:1.4;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>Organizadores gráficos · Arrastra y suelta</h1>
-    <p>Arrastra <strong>el nombre</strong> y suéltalo en la definición correspondiente.</p>
+    <p>Une <strong>nombre</strong> con su definición correcta.</p>
   </header>
 
   <main>
     <div class="panel">
-      <label>Tu nombre: <input id="name" type="text"></label>
+      <label>Tu nombre: <input id="name" type="text" style="padding:6px;border-radius:8px;border:1px solid #333"></label>
       <button id="btnStart">Iniciar</button>
     </div>
 
     <div class="panel">
-      <h2>Banco de nombres</h2>
+      <h2 style="margin-bottom:8px;font-size:1rem;color:var(--brand)">Banco de nombres</h2>
       <div id="bank" class="bank"></div>
     </div>
 
     <div class="panel">
-      <h2>Definiciones</h2>
+      <h2 style="margin-bottom:8px;font-size:1rem;color:var(--brand)">Definiciones</h2>
       <div id="board" class="board"></div>
     </div>
 
     <div class="stats">
-      <div>Aciertos: <span id="ok">0</span></div>
-      <div>Desaciertos: <span id="err">0</span></div>
-      <div>Restantes: <span id="left">18</span></div>
+      <div>✅ Aciertos: <span id="ok">0</span></div>
+      <div>❌ Desaciertos: <span id="err">0</span></div>
+      <div>🔄 Restantes: <span id="left">18</span></div>
     </div>
 
     <button id="btnFinish">Finalizar</button>
-
     <div id="result"></div>
   </main>
 
   <script>
-    const ITEMS=[
+    const ITEMS=[ /* mismos 18 items de tu código original */ 
       {key:"mapa_mental",term:"Mapa mental",def:"Estructura radial que parte de una idea central."},
       {key:"mapa_conceptual",term:"Mapa conceptual",def:"Red de conceptos jerárquicos unidos con palabras enlace."},
       {key:"cuadro_comparativo",term:"Cuadro comparativo",def:"Tabla que muestra semejanzas y diferencias."},
@@ -88,7 +170,6 @@
     ];
 
     let STATE={ok:0,err:0,left:ITEMS.length,name:"",locked:new Set(),used:new Set()};
-
     const bank=document.getElementById('bank');
     const board=document.getElementById('board');
     const ok=document.getElementById('ok');
@@ -110,7 +191,7 @@
       shuffle(ITEMS).forEach(it=>{
         const z=document.createElement('div');
         z.className='drop'; z.dataset.ans=it.key; z.textContent=it.def;
-        z.addEventListener('dragover',e=>{if(!STATE.locked.has(it.key)){e.preventDefault();z.classList.add('dragover')}});
+        z.addEventListener('dragover',e=>{if(!STATE.locked.has(it.key)){e.preventDefault();z.classList.add('dragover')}})
         z.addEventListener('dragleave',()=>z.classList.remove('dragover'));
         z.addEventListener('drop',e=>{
           e.preventDefault();z.classList.remove('dragover');
@@ -134,8 +215,13 @@
 
     document.getElementById('btnFinish').onclick=()=>{
       const when=new Date().toLocaleString('es-CO');
-      document.getElementById('result').innerHTML=`<div class="panel">Nombre: <b>${STATE.name}</b><br>Aciertos: ${STATE.ok}<br>Desaciertos: ${STATE.err}<br>Fecha y hora: ${when}</div>`;
+      document.getElementById('result').innerHTML=
+        `<div class="panel">👤 <b>${STATE.name}</b><br>
+         ✅ Aciertos: ${STATE.ok}<br>
+         ❌ Desaciertos: ${STATE.err}<br>
+         📅 ${when}</div>`;
     };
   </script>
 </body>
 </html>
+
