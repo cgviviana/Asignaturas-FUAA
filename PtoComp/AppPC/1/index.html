@@ -3,61 +3,75 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pilares del Pensamiento computacional</title>
+<title>Pilar 1 · Descomposición</title>
 <style>
   :root{
+    --ink:#eaf2ff; --muted:#a9b9e6; --bg:#070b16;
+    --glass:rgba(15,27,60,.45); --line:#2a3c74;
     --ok:#22c55e; --warn:#facc15; --err:#ef4444;
-    --bg:#070b16; --glass:rgba(15,27,60,.45); --line:#2a3c74;
   }
-  body{margin:0;font-family:Poppins,Arial,sans-serif;color:#eaf2ff;background:var(--bg)}
+  body{margin:0;font-family:Poppins,Arial,sans-serif;background:var(--bg);color:var(--ink)}
   #starfield{position:fixed;inset:0;z-index:-1}
-  h1{color:#4ade80;padding:16px;margin:0;text-align:center}
-  .sub{color:#a9b9e6;padding:0 16px 16px;text-align:center}
-  .biobot{
-    margin:16px;padding:14px;border-radius:14px;
-    background:rgba(14,26,62,.7);border:1px solid var(--line);
-    box-shadow:0 0 14px rgba(74,222,128,.35);
-  }
-  .biobot h2{margin:0 0 6px;text-shadow:0 0 6px #4ade80}
-  .tray{display:flex;flex-wrap:wrap;gap:10px;padding:12px;justify-content:center}
-  .chip{
-    user-select:none;cursor:grab;border-radius:12px;padding:10px 12px;
-    font-size:.95rem;background:rgba(20,32,70,.6);border:1px solid #2c3f79;
-    box-shadow:0 4px 12px rgba(0,0,0,.4)
-  }
+
+  /* Encabezado */
+  header{padding:16px;text-align:center;border-bottom:1px solid var(--line);background:rgba(10,18,38,.55)}
+  header h1{margin:0;color:#4ade80;font-size:22px}
+  header .sub{margin-top:6px;color:var(--muted)}
+
+  /* Panel */
+  .panel{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px}
+
+  /* Chips */
+  .tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}
+  .chip{user-select:none;cursor:grab;border-radius:12px;padding:10px 12px;
+        font-size:.95rem;background:rgba(20,32,70,.6);border:1px solid #2c3f79;
+        box-shadow:0 4px 12px rgba(0,0,0,.4)}
+  .chip:hover{transform:scale(1.05)}
   .chip:active{cursor:grabbing;transform:scale(.97)}
+
+  /* Zonas */
   .zones{display:grid;gap:14px;padding:12px}
   @media(min-width:860px){.zones{grid-template-columns:1fr 1fr 1fr}}
-  .zone{
-    min-height:140px;border:1.5px dashed #2e3f76;border-radius:14px;padding:10px;
-    background:rgba(15,27,60,.4);transition:.2s
-  }
-  .zone.active{border-color:#4ade80;box-shadow:0 0 8px #4ade80}
-  .zone h3{margin:0 0 6px;text-align:center}
-  .bucket{min-height:60px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-  .console{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;
-    background:var(--glass);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .zone{min-height:140px;border:1.5px dashed #2e3f76;border-radius:14px;padding:10px;
+        background:rgba(15,27,60,.4)}
+  .zone h3{text-align:center;margin:0 0 6px;color:var(--muted)}
+  .bucket{min-height:80px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+
+  /* Consolas Fase 2 */
+  .console{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;
+           background:var(--glass)}
   .state{margin-top:6px;font-weight:bold;text-align:center}
   .ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}
+
+  /* Botones */
   button{margin:12px;padding:10px 14px;background:#238636;color:#fff;border:none;border-radius:10px;cursor:pointer}
   button:hover{background:#2ea043}
+
+  /* Biobot */
+  .biobot{display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;
+          background:rgba(14,26,62,.7);border:1px solid var(--line);margin:12px}
+  .face{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+        background:radial-gradient(circle,#4ade80,#166534);color:#062315;font-weight:bold}
   #resultado{margin:16px;padding:14px;border-radius:12px;background:var(--glass)}
 </style>
 </head>
 <body>
 <canvas id="starfield"></canvas>
 
-<h1>Pilar 1: Descomposición</h1>
-<div class="sub">Clasifica y vincula los elementos de la nave.</div>
+<header>
+  <h1>Pilar 1: Descomposición</h1>
+  <div class="sub">Divide un problema complejo en partes manejables</div>
+</header>
 
-<!-- Biobot al inicio -->
-<div id="biobot" class="biobot">
-  <h2>🤖 Biobot</h2>
-  <p>Bienvenido al <b>Pilar 1: Descomposición</b>.  
-  "Soy Biobot y en esta pilar realizaras la <b>Descomposición</b>, que significa dividir un problema complejo en partes más pequeñas y manejables.  <br><br>
-  <b>Tu Misión:</b> Clasificar los módulos de la nave y vincular cada subtarea en el lugar correcto.</p>
-</div>
+<!-- Biobot -->
+<section class="panel">
+  <div class="biobot">
+    <div class="face">◎</div>
+    <div id="biobotMsg">Cargando…</div>
+  </div>
+</section>
 
+<!-- Tarjetas -->
 <div id="toolbox" class="tray">
   <!-- Módulos -->
   <div class="chip" draggable="true" data-type="mod" data-key="energia">⚡ Energía</div>
@@ -80,14 +94,18 @@
   <div class="chip" draggable="true" data-type="ruido" data-key="karaoke">Organizar karaoke</div>
 </div>
 
+<!-- Zonas -->
 <div class="zones">
   <div class="zone" data-accept="mod"><h3>Módulos</h3><div class="bucket" id="bucket-mods"></div></div>
   <div class="zone" data-accept="sub"><h3>Subtareas</h3><div class="bucket" id="bucket-subs"></div></div>
   <div class="zone" data-accept="ruido"><h3>No pertenece</h3><div class="bucket" id="bucket-ruido"></div></div>
 </div>
 
-<button onclick="goPhase2()">Ir a vincular subtareas</button>
+<div class="actions">
+  <button onclick="goPhase2()">Ir a vincular subtareas</button>
+</div>
 
+<!-- Fase 2 -->
 <div id="phase2" style="display:none;padding:12px">
   <h2>Fase 2 · Vinculación</h2>
   <div id="modulesArea"></div>
@@ -151,7 +169,7 @@ function shuffleChildren(container){
 
 document.addEventListener("DOMContentLoaded",()=>{
   const toolbox=document.getElementById("toolbox");
-  shuffleChildren(toolbox); // barajar al cargar
+  shuffleChildren(toolbox);
   bindDrag();
 });
 
@@ -191,11 +209,9 @@ function checkModule(modKey){
   let ok=placed.filter(p=>expected.has(p)).length;
   if(ok<expected.size){
     st.textContent="⏳ Incompleto";st.className="state warn";
-    biobotSpeak(`El módulo ${modKey} aún está incompleto.`);
   }
   if(ok===expected.size){
     st.textContent="✅ Completado";st.className="state ok";
-    biobotSpeak(`¡Bien hecho! El módulo ${modKey} está completo.`);
   }
 }
 
@@ -210,21 +226,32 @@ function evaluar(){
   }
   document.getElementById("resultado").innerHTML=
     `<p>Completados: ${completos} ✅ · Incompletos: ${incom} ⏳ · Errores: ${err} ⚠️</p>`;
-  biobotSpeak("Misión completada. Has aplicado la descomposición para organizar un sistema complejo en partes simples. En la vida real, este pilar se usa cuando divides un proyecto en tareas, cuando organizas un entrenamiento por fases o cuando estructuras una investigación en secciones. Así los problemas grandes se vuelven manejables.");
+  biobotSpeak("Misión completada. Has aplicado la descomposición para organizar un sistema complejo en partes simples. En la vida real, este pilar se usa cuando divides un proyecto en tareas, cuando organizas un entrenamiento por fases o cuando estructuras una investigación en secciones.");
 }
 
 /* Biobot con voz */
+let selectedVoice=null;
+function pickSpanishVoice(){
+  const vs=window.speechSynthesis.getVoices();
+  selectedVoice = vs.find(v=>/^es(-|_|$)/i.test(v.lang)) || vs[0] || null;
+}
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged = pickSpanishVoice;
+  pickSpanishVoice();
+}
 function biobotSpeak(msg){
-  const bio=document.getElementById("biobot");
-  bio.innerHTML=`<h2>🤖 Biobot</h2><p>${msg}</p>`;
+  const bio=document.getElementById("biobotMsg");
+  bio.innerHTML=msg;
   if('speechSynthesis' in window){
-    const utter=new SpeechSynthesisUtterance(msg);
-    utter.lang="es-ES";
-    utter.rate=1;
     window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utter);
+    const u=new SpeechSynthesisUtterance(msg.replace(/<[^>]+>/g,''));
+    if(selectedVoice) u.voice=selectedVoice;
+    u.lang= selectedVoice?.lang || "es-ES"; u.rate=1;
+    setTimeout(()=>window.speechSynthesis.speak(u),300);
   }
 }
+/* Mensaje inicial */
+biobotSpeak("Soy Biobot. En el Pilar 1 trabajaremos la Descomposición: dividir un problema complejo en partes más pequeñas y manejables. Tu misión es clasificar los módulos de la nave y luego vincular cada subtarea en el lugar correcto.");
 </script>
 </body>
 </html>
