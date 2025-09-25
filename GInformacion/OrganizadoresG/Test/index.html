@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Organizadores gráficos · Drag & Drop (18 ítems)</title>
+  <style>
+    :root{
+      --bg:#0b1220;          /* fondo base */
+      --panel:#0f1b3c;       /* paneles */
+      --card:#111b33;        /* tarjetas */
+      --ink:#eaf2ff;         /* texto principal */
+      --muted:#a9b9e6;       /* texto secundario */
+      --brand:#5b9cff;       /* acentos */
+      --ok:#22c55e;          /* aciertos */
+      --err:#ef4444;         /* desaciertos */
+      --warn:#f59e0b;        /* advertencias */
+      --line:#1f2b52;        /* bordes */
+      --shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.02);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink); background:radial-gradient(1200px 600px at 20% -10%, #152449 0%, transparent 50%),
+                        radial-gradient(1000px 500px at 120% 10%, #0d1b36 0%, transparent 55%), var(--bg);
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter:saturate(140%) blur(6px);
+      background:linear-gradient(0deg, rgba(9,15,30,.6), rgba(9,15,30,.6));
+      border-bottom:1px solid var(--line);
+      box-shadow:var(--shadow);
+    }
+    .wrap{max-width:1200px; margin:0 auto; padding:16px 20px}
+    h1{margin:4px 0 2px; font-weight:800; letter-spacing:.2px; font-size:clamp(20px, 2vw, 28px)}
+    .sub{margin:0; color:var(--muted); font-size:14px}
+
+    /* Panels */
+    .panel{
+      background:linear-gradient(180deg, rgba(20,33,70,.8), rgba(14,23,47,.8));
+      border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow);
+    }
+    .grid{
+      display:grid; gap:16px; grid-template-columns: 1.05fr .95fr; align-items:start
+    }
+
+    /* Start form */
+    .start{display:flex; gap:12px; align-items:center; padding:14px}
+    .input{
+      flex:1; background:var(--card); border:1px solid var(--line); color:var(--ink);
+      padding:12px 14px; border-radius:12px; outline:none;
+    }
+    .btn{
+      background:linear-gradient(180deg, #6aa5ff, #4d89ea); color:#061127;
+      font-weight:700; border:0; padding:12px 16px; border-radius:12px; cursor:pointer;
+      transition:transform .06s ease; box-shadow:0 6px 20px rgba(91,156,255,.35)
+    }
+    .btn:active{ transform:translateY(1px) }
+    .btn.ghost{
+      background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:none
+    }
+
+    /* Bank & Dropzones */
+    .bank, .board{ padding:16px }
+    .bank{
+      min-height: 420px; display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px
+    }
+    .pill{
+      user-select:none; background:linear-gradient(180deg, #1a2c57, #132346);
+      border:1px solid var(--line); color:var(--ink); padding:10px 12px; border-radius:12px;
+      box-shadow:var(--shadow); font-weight:600; letter-spacing:.2px; display:flex; align-items:center; gap:8px;
+    }
+    .pill[draggable="true"]{ cursor:grab }
+    .pill .tag{ font-size:11px; color:#cfe0ff; opacity:.8; padding:2px 6px; border:1px solid #2b437e; border-radius:999px }
+
+    .board{
+      display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px
+    }
+    .drop{
+      background:linear-gradient(180deg, #101a34, #0d162b);
+      border:1px dashed #2b3c68; border-radius:14px; padding:12px; min-height:78px; position:relative;
+      transition: border-color .2s ease, background .2s ease; box-shadow:var(--shadow)
+    }
+    .drop:hover{ border-color:#3f60a8 }
+    .drop.dragover{ border-color:var(--brand); background:#0f1e3d }
+    .drop h4{ margin:0 0 8px; font-size:13px; letter-spacing:.3px; color:#cfe0ff; font-weight:700 }
+    .def{ margin:0; color:var(--muted); font-size:13px; line-height:1.35 }
+
+    .drop.lock.ok{ border-style:solid; border-color:rgba(34,197,94,.6) }
+    .drop.lock.err{ border-style:solid; border-color:rgba(239,68,68,.6) }
+
+    /* Sidebar */
+    aside{ padding:16px; border-left:1px solid var(--line) }
+    .stat{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      background:linear-gradient(180deg, #16244a, #0f1b38); border:1px solid var(--line);
+      padding:10px 12px; border-radius:12px; margin-bottom:10px
+    }
+    .k{ color:#cfe0ff; font-size:12px }
+    .v{ font-weight:800 }
+    .v.ok{ color:var(--ok) } .v.err{ color:var(--err) }
+    .hint{ color:var(--muted); font-size:12px; margin-top:6px }
+
+    .footer-actions{ display:flex; gap:8px; margin-top:12px }
+
+    /* Result modal */
+    dialog{ border:0; border-radius:18px; padding:0; overflow:hidden; box-shadow:0 40px 120px rgba(0,0,0,.6) }
+    .modal{ background:linear-gradient(180deg, #0d1730, #0b1328); color:var(--ink); min-width: min(560px, 92vw) }
+    .modal header{ position:unset; border:0; box-shadow:none }
+    .score{
+      display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px
+    }
+    .badge{ font-weight:800; font-size:13px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:#132246; width:max-content }
+    .badge.ok{ border-color:rgba(34,197,94,.5) } .badge.err{ border-color:rgba(239,68,68,.5) }
+    .badge.time{ border-color:#315091 }
+    .sep{ height:1px; background:var(--line); margin:8px 0 }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr }
+      aside{ border-left:0; border-top:1px solid var(--line) }
+      .bank{ grid-template-columns: 1fr }
+      .board{ grid-template-columns: 1fr }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Organizadores gráficos · Arrastra y suelta (18 ítems)</h1>
+      <p class="sub">Completa el emparejamiento: arrastra <strong>el nombre</strong> al <strong>contenedor de su definición</strong>. Sin repetir. Se califican aciertos y desaciertos.</p>
+    </div>
+  </header>
+
+  <main class="wrap" id="app">
+    <!-- Start panel -->
+    <section class="panel" aria-labelledby="startTitle">
+      <div class="start">
+        <h2 id="startTitle" style="margin:0;font-size:16px;white-space:nowrap">Tu nombre:</h2>
+        <input id="name" class="input" placeholder="Escribe tu nombre" autocomplete="name" />
+        <button id="btnStart" class="btn" aria-label="Iniciar actividad">Iniciar</button>
+        <button id="btnReset" class="btn ghost" style="display:none">Reiniciar</button>
+      </div>
+    </section>
+
+    <div style="height:12px"></div>
+
+    <!-- Game area -->
+    <section class="grid" aria-live="polite" aria-atomic="true">
+      <div class="panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)">
+          <strong>Banco de tarjetas (nombres)</strong>
+          <span id="leftCount" class="badge">18 por ubicar</span>
+        </div>
+        <div id="bank" class="bank" aria-label="Banco de elementos para arrastrar"></div>
+      </div>
+
+      <div class="panel">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line)">
+          <strong>Contenedores (definiciones)</strong>
+        </div>
+        <div id="board" class="board"></div>
+      </div>
+
+      <aside class="panel" style="grid-column: 1 / -1">
+        <div class="stat"><span class="k">Aciertos</span><span id="ok" class="v ok">0</span></div>
+        <div class="stat"><span class="k">Desaciertos</span><span id="err" class="v err">0</span></div>
+        <div class="stat"><span class="k">Restantes</span><span id="left" class="v">18</span></div>
+        <p class="hint">Consejo: lee con atención cada definición antes de soltar la tarjeta. Una vez sueltas, el intento cuenta y el contenedor se bloquea.</p>
+        <div class="footer-actions">
+          <button id="btnFinish" class="btn">Finalizar</button>
+          <button id="btnScramble" class="btn ghost">Revolver tarjetas</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- Result modal -->
+  <dialog id="dlg">
+    <div class="modal">
+      <header>
+        <div class="wrap" style="padding:14px 18px">
+          <h1 style="margin:0">Resultado</h1>
+          <p class="sub" id="resultSub">Resumen de la actividad</p>
+        </div>
+      </header>
+      <div class="score">
+        <div>
+          <div id="rName" class="badge"></div>
+          <div style="height:8px"></div>
+          <div id="rTime" class="badge time"></div>
+        </div>
+        <div>
+          <div id="rOk" class="badge ok"></div>
+          <div style="height:8px"></div>
+          <div id="rErr" class="badge err"></div>
+        </div>
+      </div>
+      <div class="wrap" style="padding-bottom:18px">
+        <div class="sep"></div>
+        <p class="sub">¡Gracias por participar! Puedes cerrar este cuadro o reiniciar para intentarlo de nuevo.</p>
+        <div style="display:flex; gap:8px; justify-content:flex-end; padding:8px 0 18px">
+          <button class="btn ghost" onclick="dlg.close()">Cerrar</button>
+          <button class="btn" onclick="location.reload()">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    // --- Datos base: 18 organizadores ---
+    const ITEMS = [
+      { key:"mapa_mental", term:"Mapa mental", def:"Estructura radial que parte de una idea central y ramas asociativas con palabras clave e imágenes.", tag:"Ideas" },
+      { key:"mapa_conceptual", term:"Mapa conceptual", def:"Red de conceptos conectados por líneas con palabras enlace que explican la relación jerárquica y proposicional.", tag:"Relaciones" },
+      { key:"cuadro_comparativo", term:"Cuadro comparativo", def:"Tabla para contrastar semejanzas y diferencias entre dos o más elementos.", tag:"Comparación" },
+      { key:"venn", term:"Diagrama de Venn", def:"Conjuntos representados como círculos superpuestos para mostrar intersecciones y exclusiones.", tag:"Conjuntos" },
+      { key:"linea_tiempo", term:"Línea de tiempo", def:"Secuencia cronológica de eventos ordenados por fechas clave.", tag:"Secuencia" },
+      { key:"jerarquico", term:"Organizador jerárquico", def:"Estructura en niveles de mayor a menor generalidad para clasificar información.", tag:"Jerarquía" },
+      { key:"flujo", term:"Diagrama de flujo", def:"Pasos de un proceso con símbolos y flechas que indican decisiones y rutas.", tag:"Procesos" },
+      { key:"sinoptico", term:"Cuadro sinóptico", def:"Esquema de llaves que resume y organiza contenidos del todo a las partes.", tag:"Síntesis" },
+      { key:"tabla_t", term:"Tabla T", def:"Columna doble para listar pros/contras o antes/después, facilitando decisiones.", tag:"Comparación" },
+      { key:"mapa_semantico", term:"Mapa semántico", def:"Red temática que agrupa términos por campos semánticos y relaciones de significado.", tag:"Vocabulario" },
+      { key:"arbol_problemas", term:"Árbol de problemas", def:"Visualiza causa–efecto de un problema: raíces (causas), tronco (problema), copa (efectos).", tag:"Análisis" },
+      { key:"dofa", term:"Matriz DOFA", def:"Cuadrante para diagnosticar Debilidades, Oportunidades, Fortalezas y Amenazas.", tag:"Estrategia" },
+      { key:"ishikawa", term:"Diagrama causa–efecto", def:"Espina de pescado que agrupa causas por categorías para explicar un efecto.", tag:"Análisis" },
+      { key:"infografia", term:"Infografía", def:"Composición visual que integra texto, datos e imágenes para explicar un tema.", tag:"Visual" },
+      { key:"telarana", term:"Telaraña (web)", def:"Radial con ejes de criterios para valorar o perfilar un objeto respecto a varios atributos.", tag:"Perfiles" },
+      { key:"rueda_atributos", term:"Rueda de atributos", def:"Círculo dividido en secciones que describen cualidades de un concepto central.", tag:"Perfiles" },
+      { key:"priorizacion", term:"Matriz de priorización", def:"Cuadrante que cruza impacto y esfuerzo (u otros criterios) para decidir qué hacer primero.", tag:"Decisión" },
+      { key:"doble_entrada", term:"Matriz de doble entrada", def:"Tabla con categorías en filas y columnas para clasificar información interseccional.", tag:"Clasificación" },
+    ];
+
+    // Estado
+    let STATE = {
+      name: "",
+      ok: 0,
+      err: 0,
+      left: ITEMS.length,
+      lockedDrops: new Set(),
+      usedCards: new Set()
+    };
+
+    // Utilidades
+    const $ = (q, el=document) => el.querySelector(q);
+    const $$ = (q, el=document) => Array.from(el.querySelectorAll(q));
+    const fmtNow = () => new Intl.DateTimeFormat('es-CO', {
+      dateStyle:'full', timeStyle:'short', timeZone:'America/Bogota'
+    }).format(new Date());
+    const shuffle = arr => arr.map(v=>[Math.random(), v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+
+    // Construcción de interfaz
+    const bank = $('#bank');
+    const board = $('#board');
+    const leftBadge = $('#leftCount');
+    const ok = $('#ok');
+    const err = $('#err');
+    const left = $('#left');
+    const btnStart = $('#btnStart');
+    const btnReset = $('#btnReset');
+    const nameInput = $('#name');
+    const btnFinish = $('#btnFinish');
+    const btnScramble = $('#btnScramble');
+    const dlg = $('#dlg');
+
+    function renderBank(cards){
+      bank.innerHTML = '';
+      cards.forEach(item => {
+        if(STATE.usedCards.has(item.key)) return; // no repetir
+        const pill = document.createElement('div');
+        pill.className = 'pill';
+        pill.draggable = true;
+        pill.id = 'card_'+item.key;
+        pill.dataset.key = item.key;
+        pill.innerHTML = `<span class="tag">${item.tag}</span> ${item.term}`;
+        pill.addEventListener('dragstart', ev => {
+          ev.dataTransfer.setData('text/plain', item.key);
+          ev.dataTransfer.effectAllowed = 'move';
+        });
+        bank.appendChild(pill);
+      });
+      leftBadge.textContent = `${STATE.left} por ubicar`;
+    }
+
+    function renderBoard(items){
+      board.innerHTML = '';
+      // Las definiciones se muestran en orden mezclado también
+      shuffle(items).forEach(item => {
+        const z = document.createElement('div');
+        z.className = 'drop';
+        z.id = 'drop_'+item.key;
+        z.dataset.answer = item.key;
+        z.innerHTML = `<h4>${item.term}</h4><p class="def">${item.def}</p>`; // Mostramos término + definición para claridad ped.
+
+        z.addEventListener('dragover', ev=>{
+          if(STATE.lockedDrops.has(z.id)) return;
+          ev.preventDefault();
+          z.classList.add('dragover');
+        });
+        z.addEventListener('dragleave', ()=> z.classList.remove('dragover'));
+        z.addEventListener('drop', ev=>{
+          if(STATE.lockedDrops.has(z.id)) return;
+          ev.preventDefault();
+          z.classList.remove('dragover');
+          const key = ev.dataTransfer.getData('text/plain');
+          evaluateDrop(key, z);
+        });
+        board.appendChild(z);
+      });
+    }
+
+    function evaluateDrop(cardKey, zone){
+      // Seguridad: si ya usamos esa carta, ignorar
+      if(STATE.usedCards.has(cardKey)) return;
+      const correct = zone.dataset.answer === cardKey;
+      // Bloquear zona y registrar intento
+      zone.classList.add('lock');
+      STATE.lockedDrops.add(zone.id);
+
+      const cardEl = document.getElementById('card_'+cardKey);
+      if(cardEl){ cardEl.draggable = false; cardEl.style.opacity = .6; }
+
+      if(correct){
+        zone.classList.add('ok');
+        STATE.ok++;
+      }else{
+        zone.classList.add('err');
+        STATE.err++;
+      }
+      STATE.left--;
+      STATE.usedCards.add(cardKey);
+
+      // Quitar del banco visualmente
+      if(cardEl) cardEl.remove();
+
+      // Actualizar métricas
+      ok.textContent = STATE.ok;
+      err.textContent = STATE.err;
+      left.textContent = STATE.left;
+      leftBadge.textContent = `${STATE.left} por ubicar`;
+
+      // Autocierre si termina
+      if(STATE.left === 0){ showResult(); }
+    }
+
+    function showResult(){
+      const when = fmtNow();
+      $('#resultSub').textContent = 'Actividad completada';
+      $('#rName').textContent = `Participante: ${STATE.name || '—'}`;
+      $('#rTime').textContent = `Fecha y hora (Bogotá): ${when}`;
+      $('#rOk').textContent = `Aciertos: ${STATE.ok}`;
+      $('#rErr').textContent = `Desaciertos: ${STATE.err}`;
+      if(typeof dlg.showModal === 'function') dlg.showModal(); else alert(`${STATE.name} | Aciertos: ${STATE.ok} | Desaciertos: ${STATE.err} | ${when}`);
+    }
+
+    // Eventos
+    btnStart.addEventListener('click', ()=>{
+      STATE.name = (nameInput.value || '').trim();
+      if(!STATE.name){
+        nameInput.focus();
+        nameInput.setAttribute('aria-invalid','true');
+        nameInput.placeholder = 'Por favor, escribe tu nombre';
+        return;
+      }
+      btnStart.disabled = true;
+      nameInput.disabled = true;
+      btnReset.style.display = '';
+      renderBank(shuffle(ITEMS));
+      renderBoard(ITEMS);
+    });
+
+    btnReset.addEventListener('click', ()=>{ location.reload() });
+    btnFinish.addEventListener('click', showResult);
+    btnScramble.addEventListener('click', ()=>{ renderBank(shuffle(ITEMS)); });
+
+    // Accesibilidad básica con teclado: mover última tarjeta enfocada a la zona enfocada con Enter
+    let lastFocusCardKey = null;
+    bank.addEventListener('focusin', (e)=>{
+      const el = e.target.closest('.pill');
+      if(el) lastFocusCardKey = el.dataset.key;
+    });
+    board.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){
+        const z = e.target.closest('.drop');
+        if(z && lastFocusCardKey && !STATE.lockedDrops.has(z.id)){
+          evaluateDrop(lastFocusCardKey, z);
+        }
+      }
+    });
+    // Hacer focuseables
+    const obs = new MutationObserver(()=>{
+      $$('.pill').forEach(p=> p.setAttribute('tabindex','0'));
+      $$('.drop').forEach(d=> d.setAttribute('tabindex','0'));
+    });
+    obs.observe(document.body, {subtree:true, childList:true});
+  </script>
+</body>
+</html>
