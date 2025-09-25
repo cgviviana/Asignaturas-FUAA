@@ -3,120 +3,79 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pilares del Pensamiento computacional</title>
+<title>Pilar 2 · Abstracción</title>
 <style>
   :root{
+    --ink:#eaf2ff; --muted:#a9b9e6; --bg:#070b16;
+    --glass:rgba(15,27,60,.45); --line:#2a3c74;
     --ok:#22c55e; --warn:#facc15; --err:#ef4444;
-    --bg:#070b16; --glass:rgba(15,27,60,.45); --line:#2a3c74;
-    --neon1:#4b5dbd; --neon2:#9f7fff; --neon3:#6ea8ff;
   }
-  body{margin:0;font-family:Poppins,Arial,sans-serif;color:#eaf2ff;background:var(--bg)}
+  body{margin:0;font-family:Poppins,Arial,sans-serif;background:var(--bg);color:var(--ink)}
   #starfield{position:fixed;inset:0;z-index:-1}
-  h1{color:#4ade80;padding:16px;margin:0;text-align:center}
-  .sub{color:#a9b9e6;padding:0 16px 16px;text-align:center}
-  .biobot{
-    margin:16px;padding:14px;border-radius:14px;
-    background:rgba(14,26,62,.7);border:1px solid var(--line);
-    box-shadow:0 0 14px rgba(74,222,128,.35);
-  }
-  .biobot h2{margin:0 0 6px;text-shadow:0 0 6px #4ade80}
 
-  /* Tablero 4x5 */
-  .tray{
-    display:grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap:16px;
-    padding:16px;
-  }
-  @media (max-width:1000px){.tray{grid-template-columns: repeat(2,1fr);}}
-  @media (max-width:600px){.tray{grid-template-columns: 1fr;}}
+  /* Encabezado unificado */
+  header{padding:16px 12px;text-align:center;border-bottom:1px solid var(--line);background:rgba(10,18,38,.55)}
+  header h1{margin:0;color:#4ade80;font-size:22px;letter-spacing:.3px}
+  header .sub{margin-top:6px;color:var(--muted);font-size:14px}
+
+  /* Paneles */
+  .panel{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px}
+
+  /* Bandeja 4xN */
+  .tray{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:8px}
+  @media (max-width:1000px){.tray{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:600px){.tray{grid-template-columns:1fr}}
 
   .chip{
-    background:rgba(20,32,70,.65);
-    border:1px solid var(--neon1);
-    box-shadow:0 0 12px var(--neon1), inset 0 0 24px rgba(77,108,200,.3);
-    border-radius:12px;
-    padding:12px;
-    text-align:center;
-    cursor:grab;
-    transition:all .2s ease;
-    font-size:.95rem;
+    user-select:none;cursor:grab;border-radius:12px;padding:10px 12px;text-align:center;
+    background:rgba(20,32,70,.60);border:1px solid #2c3f79;box-shadow:0 4px 12px rgba(0,0,0,.4);
+    transition:transform .15s ease;font-size:.95rem
   }
-  .chip:hover{
-    box-shadow:0 0 18px var(--neon2), inset 0 0 36px rgba(120,100,255,.4);
-    transform:scale(1.05);
-  }
+  .chip:hover{transform:scale(1.05)}
   .chip:active{cursor:grabbing;transform:scale(.97)}
 
   /* Zonas */
-  .zones{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:18px;
-    padding:20px;
-  }
-  .zone{
-    min-height:220px;
-    border:2px dashed var(--neon1);
-    background:rgba(10,18,40,.55);
-    border-radius:14px;
-    padding:16px;
-    box-shadow:0 0 20px var(--neon1), inset 0 0 28px rgba(100,120,255,.25);
-    transition:.3s;
-  }
-  .zone:hover{
-    box-shadow:0 0 28px var(--neon2), inset 0 0 36px rgba(120,100,255,.35);
-  }
-  .zone h3{
-    text-align:center;
-    margin-bottom:12px;
-    text-shadow:0 0 10px var(--neon3);
-    font-size:1.05rem;
-  }
-  .bucket{min-height:150px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .zones{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:12px}
+  .zone{border:1.5px dashed #2e3f76;border-radius:12px;padding:10px;min-height:180px;
+        background:rgba(15,27,60,.4);transition:.2s}
+  .zone h3{text-align:center;margin:0 0 8px;color:var(--muted)}
+
+  .bucket{min-height:120px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 
   /* Botones */
-  .actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}
-  button{
-    padding:10px 14px;
-    background:rgba(20,32,70,.65);
-    color:var(--ink);
-    border:1px solid var(--neon1);
-    border-radius:10px;
-    cursor:pointer;
-    letter-spacing:.2px;
-    box-shadow:0 0 12px var(--neon1), inset 0 0 18px rgba(110,168,255,.25);
-    transition:.25s;
-  }
-  button:hover{box-shadow:0 0 18px var(--neon2), inset 0 0 24px rgba(159,127,255,.35)}
-  button:active{transform:translateY(1px)}
+  .actions{display:flex;gap:10px;justify-content:center;padding:12px}
+  button{padding:10px 14px;background:#238636;color:#fff;border:none;border-radius:10px;cursor:pointer}
+  button:hover{background:#2ea043}
 
-  /* Reporte */
-  .report{margin:16px;padding:16px;border-radius:14px;border:1px solid var(--line);
-    background:rgba(15,27,60,.65);box-shadow:0 0 18px var(--neon1), inset 0 0 28px rgba(100,120,255,.25)}
-  .report h3{text-align:center;margin:0 0 12px;text-shadow:0 0 8px var(--neon3)}
-  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
-  .card{padding:10px;border:1px solid var(--line);border-radius:10px;text-align:center;
-    background:rgba(20,32,70,.55);box-shadow:inset 0 0 12px rgba(120,140,255,.2)}
-  .status{text-align:center;margin-top:12px;padding:8px;border:1px dashed var(--line);border-radius:10px}
-  .muted{opacity:.85;font-size:.9rem}
+  /* Biobot */
+  .biobot{
+    margin:12px;padding:14px;border-radius:14px;background:rgba(14,26,62,.7);
+    border:1px solid var(--line);box-shadow:0 0 14px rgba(74,222,128,.35);display:flex;gap:10px;align-items:center
+  }
+  .face{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+        background:radial-gradient(circle,#4ade80,#166534);color:#062315;font-weight:bold}
+
+  /* Resultado */
+  #resultado{margin:12px;padding:12px;border-radius:12px;background:var(--glass);border:1px solid var(--line)}
 </style>
 </head>
 <body>
 <canvas id="starfield"></canvas>
 
-<h1>Pilar 2: Abstracción</h1>
-<div class="sub">Filtra lo esencial de lo irrelevante.</div>
+<header>
+  <h1>Pilar 2: Abstracción</h1>
+  <div class="sub">Filtra lo esencial de lo irrelevante</div>
+</header>
 
 <!-- Biobot -->
-<div id="biobot" class="biobot">
-  <h2>🤖 Biobot</h2>
-  <p>Bienvenido al <b>Pilar 2: Abstracción</b>.  
-  Hola soy Biobot, ahora aprenderas sobre <b>  La Abstracción</b>  que significa ignorar lo irrelevante y enfocarse en lo esencial.  <br><br>
-  <b>Tu Misión:</b> Clasificar las 20 señales en Crítico, Importante o Irrelevante para construir el mapa simplificado de vuelo.</p>
-</div>
+<section class="panel">
+  <div class="biobot">
+    <div class="face">◎</div>
+    <div id="biobotMsg">Cargando…</div>
+  </div>
+</section>
 
-<!-- Bandeja 4x5 -->
+<!-- Bandeja -->
 <div id="toolbox" class="tray">
   <!-- Crítico -->
   <div class="chip" draggable="true" data-type="critico">⚡ Nivel de energía</div>
@@ -145,20 +104,21 @@
   <div class="chip" draggable="true" data-type="ruido">🌱 Jardinería de a bordo</div>
 </div>
 
-<!-- Contenedores -->
+<!-- Zonas -->
 <div class="zones">
   <div class="zone" data-accept="critico"><h3>CRÍTICO</h3><div class="bucket" id="bucket-critico"></div></div>
   <div class="zone" data-accept="importante"><h3>IMPORTANTE</h3><div class="bucket" id="bucket-importante"></div></div>
   <div class="zone" data-accept="ruido"><h3>IRRELEVANTE</h3><div class="bucket" id="bucket-ruido"></div></div>
 </div>
 
+<!-- Acciones -->
 <div class="actions">
   <button id="shuffleBtn">Barajar señales</button>
   <button id="resetBtn">Reiniciar</button>
   <button id="evalBtn">Evaluar modelo</button>
 </div>
 
-<div id="resultado" class="report" style="display:none"></div>
+<div id="resultado"></div>
 
 <script>
 /* Fondo estelar */
@@ -212,7 +172,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const toolbox=document.getElementById('toolbox');
   shuffleChildren(toolbox); bindDrag();
   document.getElementById('shuffleBtn').onclick=()=>{document.querySelectorAll('.bucket .chip').forEach(ch=>toolbox.appendChild(ch));shuffleChildren(toolbox)};
-  document.getElementById('resetBtn').onclick=()=>{document.querySelectorAll('.bucket .chip').forEach(ch=>toolbox.appendChild(ch));shuffleChildren(toolbox);document.getElementById('resultado').style.display='none'};
+  document.getElementById('resetBtn').onclick=()=>{document.querySelectorAll('.bucket .chip').forEach(ch=>toolbox.appendChild(ch));shuffleChildren(toolbox);document.getElementById('resultado').innerHTML=""};
   document.getElementById('evalBtn').onclick=evaluar;
 });
 
@@ -229,38 +189,36 @@ function evaluar(){
     buckets[tipo].forEach(c=>CORRECT[tipo].includes(c)?aciertos++:errores++);
     CORRECT[tipo].forEach(e=>{if(!buckets[tipo].includes(e)) faltantes++});
   }
-  const precision=Math.round((aciertos/total)*100);
-  let estatus="Modelo operativo"; if(precision<80) estatus="Modelo inestable"; if(precision<50) estatus="Modelo fallido";
-
-  let out=`<h3>Informe técnico</h3>
-    <div class="kpi">
-      <div class="card">✔ Aciertos<br>${aciertos}</div>
-      <div class="card">✖ Errores<br>${errores}</div>
-      <div class="card">… Faltantes<br>${faltantes}</div>
-    </div>
-    <div class="card">Precisión<br>${precision}%</div>
-    <div class="status">Estado: ${estatus}</div>
-    <p class="muted">La abstracción reduce complejidad: de 20 señales a un modelo simplificado para la misión.</p>`;
-  document.getElementById('resultado').innerHTML=out;
-  document.getElementById('resultado').style.display='block';
-
-  biobotSpeak("Misión completada. La abstracción te permitió reducir información compleja a lo esencial. En la vida real la usamos cuando filtramos datos en un informe, cuando resumimos un texto sin perder lo importante, o cuando nos enfocamos solo en las variables críticas de un entrenamiento. Así logramos modelos claros y manejables.");
+  const completos=aciertos;
+  const incompletos=faltantes;
+  document.getElementById("resultado").innerHTML=
+    `<p>Completados: ${completos} ✅ · Incompletos: ${incompletos} ⏳ · Errores: ${errores} ⚠️</p>`;
+  biobotSpeak("Misión completada. La abstracción te permitió reducir información compleja a lo esencial. En la vida real la usamos cuando filtramos datos en un informe, resumimos un texto sin perder lo importante o nos enfocamos solo en las variables críticas de un entrenamiento.");
 }
 
 /* Biobot con voz */
+let selectedVoice=null;
+function pickSpanishVoice(){
+  const vs=window.speechSynthesis.getVoices();
+  selectedVoice = vs.find(v=>/^es(-|_|$)/i.test(v.lang)) || vs[0] || null;
+}
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged = pickSpanishVoice;
+  pickSpanishVoice();
+}
 function biobotSpeak(msg){
-  const bio=document.getElementById("biobot");
-  bio.innerHTML=`<h2>🤖 Biobot</h2><p>${msg}</p>`;
+  const bio=document.getElementById("biobotMsg");
+  bio.innerHTML=msg;
   if('speechSynthesis' in window){
     window.speechSynthesis.cancel();
-    const utter=new SpeechSynthesisUtterance(msg);
-    utter.lang="es-ES"; utter.rate=1;
-    const voces=window.speechSynthesis.getVoices();
-    const vozEsp=voces.find(v=>v.lang.startsWith("es"));
-    if(vozEsp) utter.voice=vozEsp;
-    setTimeout(()=>window.speechSynthesis.speak(utter),300);
+    const u=new SpeechSynthesisUtterance(msg.replace(/<[^>]+>/g,''));
+    if(selectedVoice) u.voice=selectedVoice;
+    u.lang= selectedVoice?.lang || "es-ES"; u.rate=1;
+    setTimeout(()=>window.speechSynthesis.speak(u),300);
   }
 }
+/* Mensaje inicial */
+biobotSpeak("Soy Biobot. En el Pilar 2 trabajaremos la Abstracción: enfocarse en lo esencial e ignorar lo irrelevante. Tu misión es clasificar 20 señales en Crítico, Importante o Irrelevante para simplificar el modelo de vuelo.");
 </script>
 </body>
 </html>
