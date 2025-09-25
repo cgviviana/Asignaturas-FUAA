@@ -1,1 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bitnarys · Pilar 4: Diseño de Algoritmos</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#eaf2ff; --muted:#a9b9e6; --bg:#050913;
+    --glass:rgba(15,27,60,.55); --line:#2a3c74;
+    --ok:#22c55e; --err:#ef4444; --neon:#4ade80;
+  }
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Poppins,Arial,sans-serif}
+  #starfield{position:fixed;inset:0;z-index:-2;background:#000}
+  .halo{position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(800px 500px at 80% 8%, rgba(96,165,250,.25), transparent 45%),
+               radial-gradient(700px 460px at 10% 90%, rgba(167,139,250,.22), transparent 50%);
+    mix-blend-mode:screen}
+  header{padding:12px 16px;background:rgba(10,18,38,.75);border-bottom:1px solid var(--line)}
+  h1{margin:0;font-size:20px;color:var(--neon);font-family:Orbitron,system-ui}
+  .sub{font-size:13px;color:var(--muted)}
+  main{padding:12px;display:grid;gap:12px}
+  .panel{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:12px}
+
+  .tray{display:flex;flex-wrap:wrap;gap:10px;min-height:64px;padding:8px}
+  .chip{
+    user-select:none;cursor:grab;border-radius:10px;padding:10px;text-align:center;
+    background:#12204b;border:1px solid #2c3f79;
+    box-shadow:0 0 6px rgba(96,165,250,.45),0 0 12px rgba(74,222,128,.25);
+    font-weight:600
+  }
+  .slots{display:grid;gap:8px}
+  .slot{
+    min-height:54px;border:1px dashed #4b5a97;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    color:#8ba0db;background:rgba(16,28,62,.55)
+  }
+  .slot h4{margin:0;font-weight:600}
+
+  .stars{display:flex;gap:4px;font-size:20px;margin-top:8px}
+  .stars .off{opacity:.3}
+
+  .biobot{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;
+    background:rgba(14,26,62,.8);border:1px solid var(--line)}
+  .face{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+    background:radial-gradient(circle,#4ade80,#166534);color:#062315;font-weight:bold;font-family:Orbitron}
+
+  button{
+    background:#0f1c3c;border:1px solid #3251a3;color:#cfe0ff;border-radius:10px;
+    padding:8px 12px;cursor:pointer;font-weight:600;margin-top:6px
+  }
+  button:hover{filter:brightness(1.1)}
+
+  /* Overlay despegue */
+  #launchOverlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;place-items:center;z-index:10
+  }
+  .rocket{
+    width:120px;height:120px;display:grid;place-items:center;
+    animation:lift 3s ease-in forwards
+  }
+  .rocket::after{content:"🚀";font-size:80px}
+  @keyframes lift{
+    0%{transform:translateY(200px) scale(.9);opacity:.8}
+    60%{transform:translateY(-200px) scale(1);opacity:1}
+    100%{transform:translateY(-400px) scale(1.1);opacity:0}
+  }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="halo"></div>
+
+<header>
+  <h1>Bitnarys · Pilar 4: Diseño de Algoritmos</h1>
+  <div class="sub">Construye el algoritmo correcto · Solo así la nave podrá despegar</div>
+</header>
+
+<main>
+  <section class="panel">
+    <h3>Pasos disponibles</h3>
+    <div id="toolbox" class="tray"></div>
+  </section>
+
+  <section class="panel">
+    <h3>Tablero del algoritmo</h3>
+    <div class="slots" id="algoBoard">
+      <div class="slot" data-pos="0"><h4>Paso 1</h4></div>
+      <div class="slot" data-pos="1"><h4>Paso 2</h4></div>
+      <div class="slot" data-pos="2"><h4>Paso 3</h4></div>
+      <div class="slot" data-pos="3"><h4>Paso 4</h4></div>
+      <div class="slot" data-pos="4"><h4>Paso 5</h4></div>
+    </div>
+    <button id="evaluate">Evaluar misión</button>
+    <div class="stars" id="stars"><span class="off">★</span><span class="off">★</span><span class="off">★</span><span class="off">★</span></div>
+  </section>
+
+  <section class="panel">
+    <h3>Biobot</h3>
+    <div class="biobot"><div class="face">◎</div><div id="biobotMsg">Cargando…</div></div>
+  </section>
+</main>
+
+<div id="launchOverlay"><div class="rocket"></div></div>
+
+<script>
+/* Fondo estelar */
+(function(){
+  const c=document.getElementById('starfield'), ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight;} resize(); addEventListener('resize',resize);
+  const stars=[...Array(120)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()+.3}));
+  function step(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const s of stars){
+      s.x+=s.z*0.3; s.y+=s.z*0.15;
+      if(s.x>c.width) s.x=0;
+      if(s.y>c.height) s.y=0;
+      ctx.fillStyle="#cfe0ff"; ctx.fillRect(s.x,s.y,1.2,1.2);
+    }
+    requestAnimationFrame(step);
+  }
+  step();
+})();
+
+/* Pasos y orden correcto */
+const STEPS=[
+  {t:"🔋 Encender energía principal",key:"energia"},
+  {t:"🧪 Diagnóstico de sistemas",key:"diagnostico"},
+  {t:"🛠️ Calibrar propulsores",key:"propulsores"},
+  {t:"🛰️ Verificar comunicaciones",key:"coms"},
+  {t:"🚀 Despegar",key:"despegue"}
+];
+const ORDER=["energia","diagnostico","propulsores","coms","despegue"];
+
+/* Render inicial */
+const toolbox=document.getElementById('toolbox');
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+function render(){
+  toolbox.innerHTML="";
+  shuffle([...STEPS]).forEach(s=>{
+    const el=document.createElement('div');
+    el.className="chip"; el.draggable=true; el.textContent=s.t; el.dataset.key=s.key;
+    toolbox.appendChild(el);
+  });
+  bindDrag(toolbox);
+}
+render();
+
+/* Drag & Drop */
+let dragItem=null;
+function bindDrag(root){
+  root.querySelectorAll('.chip').forEach(ch=>{
+    ch.addEventListener('dragstart',()=>{dragItem=ch});
+    ch.addEventListener('dragend',()=>{dragItem=null});
+  });
+}
+function makeDroppable(el){
+  el.addEventListener('dragover',e=>e.preventDefault());
+  el.addEventListener('drop',e=>{
+    e.preventDefault();
+    if(!dragItem) return;
+    if(el.classList.contains('slot')){
+      const existing=el.querySelector('.chip');
+      if(existing) toolbox.appendChild(existing);
+      el.innerHTML=""; el.appendChild(dragItem);
+    }else{
+      el.appendChild(dragItem);
+    }
+    bindDrag(el);
+  });
+}
+makeDroppable(toolbox);
+document.querySelectorAll('.slot').forEach(makeDroppable);
+
+/* Biobot */
+const biobot=document.getElementById('biobotMsg');
+function say(m){biobot.innerHTML=m;}
+say("🤖 <b>Explorador</b>, hoy trabajamos <b>Diseño de Algoritmos</b>. " +
+    "Tu misión es ordenar los pasos correctos para el despegue de la nave.");
+
+/* Evaluar misión */
+document.getElementById('evaluate').onclick=()=>{
+  const placed=[...document.querySelectorAll('.slot')].map(s=>s.querySelector('.chip')?.dataset.key||null);
+  if(placed.includes(null)){ say("⏳ Aún faltan pasos en el tablero."); return; }
+
+  let ok=true, firstError=-1;
+  for(let i=0;i<ORDER.length;i++){ if(placed[i]!==ORDER[i]){ ok=false; firstError=i; break; } }
+
+  const stars=document.getElementById("stars").children;
+  for(let i=0;i<4;i++) stars[i].classList.add("off");
+
+  if(ok){
+    for(let i=0;i<4;i++) stars[i].classList.remove("off");
+    say("🎉 ¡Algoritmo correcto! La nave inicia el protocolo de despegue...");
+    document.getElementById('launchOverlay').style.display="grid";
+    setTimeout(()=>{
+      document.getElementById('launchOverlay').style.display="none";
+      say("🚀 <b>¡Misión completada!</b> Diseñaste un algoritmo que permitió el despegue. " +
+          "En la vida real, los algoritmos organizan soluciones paso a paso.");
+    },3000);
+  }else{
+    const hints=[
+      "Primero se necesita energía.",
+      "Antes de calibrar, se debe diagnosticar.",
+      "Los propulsores se calibran antes de verificar comunicaciones.",
+      "Las comunicaciones deben confirmarse antes del despegue.",
+      "El despegue es el último paso."
+    ];
+    say("❌ Error en <b>Paso "+(firstError+1)+"</b>. "+hints[firstError]);
+  }
+};
+</script>
+</body>
+</html>
 
