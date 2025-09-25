@@ -1,312 +1,229 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bitnarys · Pilar 1: Descomposición</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#eaf2ff; --muted:#a9b9e6; --bg:#050913;
-    --glass:rgba(15,27,60,.55); --line:#2a3c74;
     --ok:#22c55e; --warn:#facc15; --err:#ef4444;
-    --neon:#4ade80;
+    --bg:#070b16; --glass:rgba(15,27,60,.45); --line:#2a3c74;
   }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Poppins,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-
-  /* Fondo galáctico asegurado */
-  #starfield{
-    position:fixed; top:0; left:0; width:100%; height:100%;
-    z-index:-2; background:#000;
-  }
-  .halo{
-    position:fixed; inset:0; z-index:-1; pointer-events:none;
-    background:
-      radial-gradient(800px 500px at 80% 8%, rgba(96,165,250,.25), transparent 45%),
-      radial-gradient(700px 460px at 10% 90%, rgba(167,139,250,.22), transparent 50%);
-    mix-blend-mode:screen;
-  }
-
-  header{padding:12px 16px;background:rgba(10,18,38,.75);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
-  h1{margin:0;font-size:20px;color:var(--neon);font-family:"Orbitron",sans-serif;letter-spacing:1px}
-  .sub{font-size:13px;color:var(--muted)}
-
-  main{padding:12px;display:grid;gap:12px}
-
-  /* Panel galáctico */
-  .panel{
-    background:var(--glass); border:1px solid var(--line); border-radius:12px; padding:12px;
-    box-shadow:0 0 12px rgba(74,222,128,.35), inset 0 0 8px rgba(96,165,250,.15)
-  }
-
-  /* Bandeja tarjetas (Fase 1 fluida) */
-  .tray{display:flex;flex-wrap:wrap;gap:10px;padding:8px}
-  .chip{
-    user-select:none; cursor:grab; border-radius:10px; padding:10px; text-align:center;
-    background:#12204b; border:1px solid #2c3f79;
-    box-shadow:0 0 6px rgba(96,165,250,.45), 0 0 12px rgba(74,222,128,.25)
-  }
-
-  /* Zonas */
-  .zones{display:grid;gap:10px}
-  .zone{border:1.2px dashed #2e3f76; border-radius:10px; padding:8px; box-shadow:inset 0 0 8px rgba(96,165,250,.2)}
-  .bucket{min-height:50px; display:flex; flex-wrap:wrap; gap:6px}
-
-  /* Consolas Fase 2 en tablero 2×2 (responsive a 1 col. en pantallas muy pequeñas) */
-  #linking{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
-  @media(max-width:420px){#linking{grid-template-columns:1fr}}
-  .console{
-    background:rgba(16,28,62,.7); border:1px solid var(--line); border-radius:10px; padding:10px;
-    box-shadow:0 0 8px rgba(74,222,128,.25), inset 0 0 8px rgba(167,139,250,.15)
-  }
-  .state{margin-top:6px; font-weight:bold; font-family:"Orbitron",sans-serif}
-  .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
-
-  /* Progreso */
-  .meter{height:10px; background:#0b1535; border:1px solid #203064; border-radius:999px; overflow:hidden}
-  .bar{height:100%; width:0%; background:linear-gradient(90deg,#22c55e,#4ade80)}
-  .stars{display:flex; gap:4px; font-size:18px; margin-top:6px}
-  .stars .off{opacity:.35}
-
-  /* Biobot */
+  body{margin:0;font-family:Poppins,Arial,sans-serif;color:#eaf2ff;background:var(--bg)}
+  #starfield{position:fixed;inset:0;z-index:-1}
+  h1{color:#4ade80;padding:16px;margin:0;text-align:center}
+  .sub{color:#a9b9e6;padding:0 16px 16px;text-align:center}
   .biobot{
-    display:flex; gap:10px; align-items:center; padding:10px; border-radius:10px;
-    background:rgba(14,26,62,.8); border:1px solid var(--line);
-    box-shadow:0 0 14px rgba(74,222,128,.35), inset 0 0 8px rgba(96,165,250,.25)
+    margin:16px;padding:14px;border-radius:14px;
+    background:rgba(14,26,62,.7);border:1px solid var(--line);
+    box-shadow:0 0 14px rgba(74,222,128,.35);
   }
-  .face{
-    width:40px; height:40px; border-radius:50%; display:grid; place-items:center;
-    background:radial-gradient(circle,#4ade80,#166534); color:#062315; font-weight:bold; font-family:"Orbitron",sans-serif
+  .biobot h2{margin:0 0 6px;text-shadow:0 0 6px #4ade80}
+  .tray{display:flex;flex-wrap:wrap;gap:10px;padding:12px;justify-content:center}
+  .chip{
+    user-select:none;cursor:grab;border-radius:12px;padding:10px 12px;
+    font-size:.95rem;background:rgba(20,32,70,.6);border:1px solid #2c3f79;
+    box-shadow:0 4px 12px rgba(0,0,0,.4)
   }
+  .chip:active{cursor:grabbing;transform:scale(.97)}
+  .zones{display:grid;gap:14px;padding:12px}
+  @media(min-width:860px){.zones{grid-template-columns:1fr 1fr 1fr}}
+  .zone{
+    min-height:140px;border:1.5px dashed #2e3f76;border-radius:14px;padding:10px;
+    background:rgba(15,27,60,.4);transition:.2s
+  }
+  .zone.active{border-color:#4ade80;box-shadow:0 0 8px #4ade80}
+  .zone h3{margin:0 0 6px;text-align:center}
+  .bucket{min-height:60px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .console{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;
+    background:var(--glass);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .state{margin-top:6px;font-weight:bold;text-align:center}
+  .ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}
+  button{margin:12px;padding:10px 14px;background:#238636;color:#fff;border:none;border-radius:10px;cursor:pointer}
+  button:hover{background:#2ea043}
+  #resultado{margin:16px;padding:14px;border-radius:12px;background:var(--glass)}
 </style>
 </head>
 <body>
 <canvas id="starfield"></canvas>
-<div class="halo"></div>
 
-<header>
-  <h1>Bitnarys · Pilar 1: Descomposición</h1>
-  <div class="sub">Fase 1 clásica · Fase 2 en tablero 2×2</div>
-</header>
+<h1>Bitnarys · Pilar 1: Descomposición</h1>
+<div class="sub">Clasifica y vincula los elementos de la nave.</div>
 
-<main>
-  <section class="panel">
-    <h3>Fase 1 · Clasificación</h3>
-    <p class="sub">Arrastra tarjetas a <b>Módulos</b>, <b>Subtareas</b> o <b>No pertenece</b>.</p>
-    <div id="toolbox" class="tray"></div>
+<!-- Biobot al inicio -->
+<div id="biobot" class="biobot">
+  <h2>🤖 Biobot</h2>
+  <p>Bienvenido al <b>Pilar 1: Descomposición</b>.  
+  La descomposición significa dividir un problema complejo en partes más pequeñas y manejables.  
+  <b>Misión:</b> Clasifica los módulos de la nave y vincula cada subtarea en el lugar correcto.</p>
+</div>
 
-    <div class="zones">
-      <div class="zone" data-accept="mod"><h4>Módulos</h4><div class="bucket" id="bucket-mods"></div></div>
-      <div class="zone" data-accept="sub"><h4>Subtareas</h4><div class="bucket" id="bucket-subs"></div></div>
-      <div class="zone" data-accept="ruido"><h4>No pertenece</h4><div class="bucket" id="bucket-ruido"></div></div>
-    </div>
-    <button id="toPhase2">Ir a Fase 2</button>
-  </section>
+<div id="toolbox" class="tray">
+  <!-- Módulos -->
+  <div class="chip" draggable="true" data-type="mod" data-key="energia">⚡ Energía</div>
+  <div class="chip" draggable="true" data-type="mod" data-key="motor">🔧 Motor</div>
+  <div class="chip" draggable="true" data-type="mod" data-key="comunicaciones">📡 Comunicaciones</div>
+  <div class="chip" draggable="true" data-type="mod" data-key="navegacion">🧭 Navegación</div>
+  <!-- Subtareas -->
+  <div class="chip" draggable="true" data-type="sub" data-key="bateria">Verificar baterías</div>
+  <div class="chip" draggable="true" data-type="sub" data-key="paneles">Revisar paneles</div>
+  <div class="chip" draggable="true" data-type="sub" data-key="propulsores">Calibrar propulsores</div>
+  <div class="chip" draggable="true" data-type="sub" data-key="aceite">Chequear aceite</div>
+  <div class="chip" draggable="true" data-type="sub" data-key="antenas">Alinear antenas</div>
+  <div class="chip" draggable="true" data-type="sub" data-key="frecuencias">Configurar frecuencias</div>
+  <div class="chip" draggable="true" data-type="sub" data-key="sensores">Sincronizar sensores</div>
+  <div class="chip" draggable="true" data-type="sub" data-key="ruta">Cargar ruta</div>
+  <!-- Distractores -->
+  <div class="chip" draggable="true" data-type="ruido" data-key="pintar">Pintar casco</div>
+  <div class="chip" draggable="true" data-type="ruido" data-key="neon">Luces de neón</div>
+  <div class="chip" draggable="true" data-type="ruido" data-key="selfies">Tomar selfies</div>
+  <div class="chip" draggable="true" data-type="ruido" data-key="karaoke">Organizar karaoke</div>
+</div>
 
-  <section class="panel" id="phase2" style="display:none">
-    <h3>Fase 2 · Vinculación</h3>
-    <p class="sub">Arrastra cada subtarea a su módulo correspondiente.</p>
-    <div id="linking"></div>
-    <button id="evaluate">Evaluar misión</button>
-  </section>
+<div class="zones">
+  <div class="zone" data-accept="mod"><h3>Módulos</h3><div class="bucket" id="bucket-mods"></div></div>
+  <div class="zone" data-accept="sub"><h3>Subtareas</h3><div class="bucket" id="bucket-subs"></div></div>
+  <div class="zone" data-accept="ruido"><h3>No pertenece</h3><div class="bucket" id="bucket-ruido"></div></div>
+</div>
 
-  <section class="panel">
-    <h3>Progreso</h3>
-    <div class="meter"><div id="bar" class="bar"></div></div>
-    <div class="stars" id="stars"><span class="off">★</span><span class="off">★</span><span class="off">★</span><span class="off">★</span></div>
-  </section>
+<button onclick="goPhase2()">Ir a vincular subtareas</button>
 
-  <section class="panel">
-    <h3>Biobot</h3>
-    <div class="biobot"><div class="face">◎</div><div id="biobotMsg">Cargando…</div></div>
-  </section>
+<div id="phase2" style="display:none;padding:12px">
+  <h2>Fase 2 · Vinculación</h2>
+  <div id="modulesArea"></div>
+  <button onclick="evaluar()">Evaluar misión</button>
+</div>
 
-  <section class="panel" id="summary" style="display:none">
-    <h3>Informe de misión</h3>
-    <div id="resume" class="sub">Aún sin evaluar…</div>
-  </section>
-</main>
+<div id="resultado"></div>
 
 <script>
-/* Fondo estelar animado (robusto) */
+/* Fondo estelar */
 (function(){
-  const c=document.getElementById('starfield'), ctx=c.getContext('2d');
-  function resize(){ c.width=innerWidth; c.height=innerHeight; }
-  resize(); addEventListener('resize',resize);
-  const stars=[...Array(140)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()*1+0.25}));
+  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}resize();
+  addEventListener('resize',resize);
+  const stars=[...Array(120)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()*1.2+.2,r:Math.random()*1.4+.2}));
   function step(){
     ctx.clearRect(0,0,c.width,c.height);
     for(const s of stars){
-      s.x+=s.z*0.3; s.y+=s.z*0.15;
-      if(s.x>c.width) s.x=0;
-      if(s.y>c.height) s.y=0;
-      ctx.fillStyle="#cfe0ff"; ctx.globalAlpha=0.55; ctx.fillRect(s.x,s.y,1.4,1.4);
-    }
-    requestAnimationFrame(step);
-  }
-  step();
+      s.x+=s.z*0.25;s.y+=s.z*0.12;
+      if(s.x>c.width) s.x=0;if(s.y>c.height) s.y=0;
+      ctx.globalAlpha=.35+s.z*.45;ctx.fillStyle='#bcd7ff';
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+    }requestAnimationFrame(step);
+  }step();
 })();
 
-/* Datos de tarjetas */
-const CARDS=[
-  {t:"⚡ Energía",type:"mod",key:"energia"},
-  {t:"🔧 Motor",type:"mod",key:"motor"},
-  {t:"📡 Comunicaciones",type:"mod",key:"comunicaciones"},
-  {t:"🧭 Navegación",type:"mod",key:"navegacion"},
-  {t:"Verificar baterías",type:"sub",key:"bateria"},
-  {t:"Revisar paneles",type:"sub",key:"paneles"},
-  {t:"Calibrar propulsores",type:"sub",key:"propulsores"},
-  {t:"Chequear aceite",type:"sub",key:"aceite"},
-  {t:"Alinear antenas",type:"sub",key:"antenas"},
-  {t:"Configurar frecuencias",type:"sub",key:"frecuencias"},
-  {t:"Sincronizar sensores",type:"sub",key:"sensores"},
-  {t:"Cargar ruta",type:"sub",key:"ruta"},
-  {t:"Pintar casco",type:"ruido",key:"pintar"},
-  {t:"Luces de neón",type:"ruido",key:"neon"},
-  {t:"Tomar selfies",type:"ruido",key:"selfies"},
-  {t:"Organizar karaoke",type:"ruido",key:"karaoke"}
-];
+/* Datos correctos */
 const CORRECT={
   energia:new Set(['bateria','paneles']),
   motor:new Set(['propulsores','aceite']),
   comunicaciones:new Set(['antenas','frecuencias']),
   navegacion:new Set(['sensores','ruta'])
 };
-const MODULE_ORDER=['energia','motor','comunicaciones','navegacion'];
-
-/* Utilidades */
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
-const toolbox=document.getElementById('toolbox');
-shuffle(CARDS).forEach(c=>{
-  const el=document.createElement('div');
-  el.className='chip'; el.draggable=true; el.textContent=c.t;
-  el.dataset.type=c.type; el.dataset.key=c.key;
-  toolbox.appendChild(el);
-});
-
-/* Drag & Drop */
 let dragItem=null;
-function initDrag(root){
-  root.querySelectorAll('.chip').forEach(ch=>{
-    ch.addEventListener('dragstart',()=>{dragItem=ch});
-    ch.addEventListener('dragend',()=>{dragItem=null});
+
+/* Drag básico */
+function bindDrag(){
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('dragstart',()=>dragItem=c);
+    c.addEventListener('dragend',()=>dragItem=null);
   });
-}
-initDrag(toolbox);
-
-document.querySelectorAll('.zone').forEach(z=>{
-  z.addEventListener('dragover',e=>e.preventDefault());
-  z.addEventListener('drop',e=>{
-    e.preventDefault();
-    if(dragItem && dragItem.dataset.type===z.dataset.accept){
-      z.querySelector('.bucket').appendChild(dragItem);
-    }
-  });
-});
-
-/* Biobot */
-const biobot=document.getElementById('biobotMsg');
-function say(html){ biobot.innerHTML = html; } // <= Muestra SIEMPRE el mensaje
-
-/* Mensaje pedagógico inicial (visible al cargar) */
-say(
-  "🤖 <b>Hola explorador</b>. Hoy trabajaremos el pilar de la <b>Descomposición</b> en el pensamiento computacional. " +
-  "Significa <b>dividir un problema grande</b> en partes más pequeñas para resolverlo paso a paso.<br><br>" +
-  "🚀 <b>Misión:</b> 1) Clasifica los <b>Módulos</b> principales de la nave. 2) Coloca las <b>Subtareas</b> correctas en cada módulo. " +
-  "3) Envía a <b>No pertenece</b> lo que sea ruido."
-);
-
-/* Fase 2: tablero 2×2 */
-const linking=document.getElementById('linking');
-document.getElementById('toPhase2').onclick=()=>{
-  const mods=[...document.getElementById('bucket-mods').querySelectorAll('.chip[data-type="mod"]')].map(m=>m.dataset.key);
-  if(mods.length<4){ say("⚠️ Aún faltan <b>módulos</b> en la zona de Módulos para avanzar."); return; }
-  linking.innerHTML="";
-  MODULE_ORDER.forEach(k=>{
-    if(!mods.includes(k)) return;
-    const div=document.createElement('div');
-    div.className="console"; div.dataset.mod=k;
-    div.innerHTML=`<h4 style="font-family:Orbitron;margin:0 0 6px">${k.toUpperCase()}</h4>
-      <div class="zone" data-accept="sub" data-link="${k}"><div class="bucket"></div></div>
-      <div class="state warn" id="st-${k}">⏳ Incompleto</div>`;
-    linking.appendChild(div);
-  });
-  document.getElementById('phase2').style.display="block";
-  initDrag(linking);
-  linking.querySelectorAll('.zone').forEach(z=>{
+  document.querySelectorAll('.zone').forEach(z=>{
     z.addEventListener('dragover',e=>e.preventDefault());
     z.addEventListener('drop',e=>{
       e.preventDefault();
-      if(dragItem && dragItem.dataset.type==="sub"){
+      if(dragItem && z.dataset.accept===dragItem.dataset.type){
         z.querySelector('.bucket').appendChild(dragItem);
-        checkModule(z.dataset.link);
       }
     });
   });
-  say("🔧 Vincula cada <b>subtarea</b> con su <b>módulo</b> correspondiente.");
-};
-
-/* Estados por módulo */
-function checkModule(k){
-  const expected=CORRECT[k];
-  const placed=[...document.querySelectorAll(`.zone[data-link="${k}"] .bucket .chip`)].map(c=>c.dataset.key);
-  const st=document.getElementById("st-"+k);
-  if(placed.some(p=>!expected.has(p))){
-    st.textContent="⚠️ Error"; st.className="state err";
-    say("❌ Hay elementos que <b>no corresponden</b> en <b>"+k+"</b>. Retíralos.");
-    return;
-  }
-  if(placed.length<expected.size){
-    st.textContent="⏳ Incompleto"; st.className="state warn";
-    say("⏳ Aún faltan subtareas en <b>"+k+"</b>.");
-  }else{
-    st.textContent="✅ Completado"; st.className="state ok";
-    say("✔️ <b>"+k+"</b> quedó correcto.");
-  }
-  setProgress();
 }
 
-/* Evaluación general */
-document.getElementById('evaluate').onclick=()=>{
-  let ok=0,err=0,warn=0;
-  MODULE_ORDER.forEach(k=>{
-    const st=document.getElementById("st-"+k);
-    if(!st) warn++;
-    else if(st.classList.contains("ok")) ok++;
-    else if(st.classList.contains("err")) err++;
-    else warn++;
-  });
-
-  document.getElementById("resume").innerHTML=`Completados: ${ok} ✅ · Incompletos: ${warn} ⏳ · Errores: ${err} ⚠️`;
-  document.getElementById("summary").style.display="block";
-
-  const stars=document.getElementById("stars").children;
-  let score = (ok===4 && err===0) ? 4 : (ok===3 && err===0) ? 3 : (ok>=2 && err<=1) ? 2 : ok ? 1 : 0;
-  for(let i=0;i<4;i++) stars[i].classList.toggle("off", i>=score);
-
-  if(ok===4 && err===0){
-    say("🎉 <b>¡Misión completada con éxito!</b><br><br>" +
-        "La <b>Descomposición</b> te permitió organizar un problema complejo en partes más simples. " +
-        "En la vida real se aplica al <b>planear proyectos</b>, <b>estudiar temas difíciles</b> o <b>resolver retos paso a paso</b>.<br><br>" +
-        "🚀 <b>¡Felicitaciones, has terminado la misión en Bitnarys!</b>");
-  }else if(err>0){
-    say("❌ Corrige los módulos con <b>Error</b> y vuelve a evaluar.");
-  }else{
-    say("⏳ Aún quedan módulos <b>Incompletos</b>. Revisa las subtareas faltantes.");
+/* Barajar tarjetas */
+function shuffleChildren(container){
+  const nodes = Array.from(container.children);
+  for(let i=nodes.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    container.appendChild(nodes[j]);
   }
-};
+}
 
-/* Progreso visual */
-function setProgress(){
-  let pct=0, hasErr=false;
-  MODULE_ORDER.forEach(k=>{
-    const st=document.getElementById("st-"+k);
-    if(st && st.classList.contains("ok")) pct+=25;
-    if(st && st.classList.contains("err")) hasErr=true;
+document.addEventListener("DOMContentLoaded",()=>{
+  const toolbox=document.getElementById("toolbox");
+  shuffleChildren(toolbox); // barajar al cargar
+  bindDrag();
+});
+
+/* Ir a fase 2 */
+function goPhase2(){
+  const mods=[...document.getElementById('bucket-mods').querySelectorAll('.chip[data-type="mod"]')];
+  if(mods.length<4){alert("Clasifica los 4 módulos primero.");return;}
+  const area=document.getElementById('modulesArea');area.innerHTML="";
+  mods.forEach(m=>{
+    const div=document.createElement('div');
+    div.className="console";div.dataset.mod=m.dataset.key;
+    div.innerHTML=`<h3>${m.textContent}</h3><div class="bucket"></div><div class="state warn" id="st-${m.dataset.key}">⏳ Incompleto</div>`;
+    area.appendChild(div);
+    div.addEventListener('dragover',e=>e.preventDefault());
+    div.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(dragItem && dragItem.dataset.type==="sub"){
+        div.querySelector('.bucket').appendChild(dragItem);
+        checkModule(div.dataset.mod);
+      }
+    });
   });
-  if(hasErr) pct=Math.max(0,pct-10);
-  document.getElementById("bar").style.width=pct+"%";
+  document.getElementById('phase2').style.display="block";
+  biobotSpeak("Ahora vincula cada subtarea al módulo correcto.");
+}
+
+function checkModule(modKey){
+  const expected=CORRECT[modKey];
+  const placed=[...document.querySelectorAll(`.console[data-mod="${modKey}"] .bucket .chip`)].map(c=>c.dataset.key);
+  const st=document.getElementById(`st-${modKey}`);
+  const extras=placed.filter(p=>!expected.has(p));
+  if(extras.length){
+    st.textContent="⚠️ Error en módulo";st.className="state err";
+    biobotSpeak(`Error en ${modKey}. Esa subtarea no corresponde.`);
+    return;
+  }
+  let ok=placed.filter(p=>expected.has(p)).length;
+  if(ok<expected.size){
+    st.textContent="⏳ Incompleto";st.className="state warn";
+    biobotSpeak(`El módulo ${modKey} aún está incompleto.`);
+  }
+  if(ok===expected.size){
+    st.textContent="✅ Completado";st.className="state ok";
+    biobotSpeak(`¡Bien hecho! El módulo ${modKey} está completo.`);
+  }
+}
+
+function evaluar(){
+  let completos=0,err=0,incom=0;
+  for(const [mod] of Object.entries(CORRECT)){
+    const st=document.getElementById(`st-${mod}`);
+    if(!st) continue;
+    if(st.classList.contains("ok")) completos++;
+    else if(st.classList.contains("err")) err++;
+    else incom++;
+  }
+  document.getElementById("resultado").innerHTML=
+    `<p>Completados: ${completos} ✅ · Incompletos: ${incom} ⏳ · Errores: ${err} ⚠️</p>`;
+  biobotSpeak("Misión completada. Has aplicado la descomposición para organizar un sistema complejo en partes simples. En la vida real, este pilar se usa cuando divides un proyecto en tareas, cuando organizas un entrenamiento por fases o cuando estructuras una investigación en secciones. Así los problemas grandes se vuelven manejables.");
+}
+
+/* Biobot con voz */
+function biobotSpeak(msg){
+  const bio=document.getElementById("biobot");
+  bio.innerHTML=`<h2>🤖 Biobot</h2><p>${msg}</p>`;
+  if('speechSynthesis' in window){
+    const utter=new SpeechSynthesisUtterance(msg);
+    utter.lang="es-ES";
+    utter.rate=1;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  }
 }
 </script>
 </body>
