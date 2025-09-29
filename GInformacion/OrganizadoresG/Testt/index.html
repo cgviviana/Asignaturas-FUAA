@@ -1,1 +1,147 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test: Herramientas y Definiciones</title>
+  <style>
+    :root{
+      --bg:#0a0f1c; --panel:#111b2c; --card:#1a2542;
+      --ink:#f0f4ff; --muted:#8fa3d8; --brand:#4cc9f0;
+      --ok:#4ade80; --err:#f87171; --line:#1f2b52;
+    }
+    body{
+      font-family:Poppins, sans-serif;
+      background:var(--bg); color:var(--ink);
+      margin:0; padding:20px;
+    }
+    header{text-align:center;margin-bottom:20px}
+    header h1{color:var(--brand)}
+    header p{color:var(--muted);font-size:.9rem}
+
+    .panel{background:var(--panel);padding:16px;border-radius:12px;margin-bottom:16px}
+    .question{margin-bottom:14px;padding:12px;background:var(--card);border-radius:10px}
+    .question p{margin-bottom:6px;font-size:.85rem}
+    select{
+      width:100%;padding:8px;border-radius:8px;border:1px solid var(--line);
+      background:#0d162b;color:var(--ink)
+    }
+    .stats{display:flex;gap:12px;margin-top:16px}
+    .stats div{flex:1;text-align:center;background:var(--card);padding:10px;border-radius:10px}
+    button{
+      margin:12px auto;display:block;
+      padding:10px 18px;border:0;border-radius:10px;
+      cursor:pointer;background:var(--brand);color:#fff;font-weight:600
+    }
+    button:hover{background:#38bdf8}
+    #result{text-align:center;margin-top:12px;font-size:.9rem}
+    .ok{border:2px solid var(--ok)}
+    .err{border:2px solid var(--err)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Herramientas vs Definiciones</h1>
+    <p>Lee la definición y selecciona la <b>herramienta correcta</b>.</p>
+  </header>
+
+  <main>
+    <div class="panel">
+      <label>Tu nombre: <input id="name" type="text" style="padding:6px;border-radius:8px;border:1px solid #333"></label>
+      <button id="btnStart">Iniciar</button>
+    </div>
+
+    <form id="quiz" class="panel" style="display:none"></form>
+
+    <div class="stats">
+      <div>✅ Aciertos: <span id="ok">0</span></div>
+      <div>❌ Desaciertos: <span id="err">0</span></div>
+      <div>🔄 Restantes: <span id="left">0</span></div>
+    </div>
+
+    <button id="btnFinish" style="display:none">Finalizar</button>
+    <div id="result"></div>
+  </main>
+
+  <script>
+    const ITEMS=[
+      {key:"mapa_mental",term:"Mapa mental",def:"Estructura radial que parte de una idea central."},
+      {key:"mapa_conceptual",term:"Mapa conceptual",def:"Red de conceptos jerárquicos unidos con palabras enlace."},
+      {key:"cuadro_comparativo",term:"Cuadro comparativo",def:"Tabla que muestra semejanzas y diferencias."},
+      {key:"venn",term:"Diagrama de Venn",def:"Círculos superpuestos que muestran intersecciones."},
+      {key:"linea_tiempo",term:"Línea de tiempo",def:"Secuencia cronológica de eventos."},
+      {key:"jerarquico",term:"Organizador jerárquico",def:"Clasificación en niveles de generalidad."},
+      {key:"flujo",term:"Diagrama de flujo",def:"Pasos de un proceso representados con símbolos."},
+      {key:"sinoptico",term:"Cuadro sinóptico",def:"Esquema de llaves que resume contenidos."},
+      {key:"tabla_t",term:"Tabla T",def:"Dos columnas para comparar aspectos."},
+      {key:"mapa_semantico",term:"Mapa semántico",def:"Red de términos agrupados por significado."},
+      {key:"arbol_problemas",term:"Árbol de problemas",def:"Raíces=causas, tronco=problema, copa=efectos."},
+      {key:"dofa",term:"Matriz DOFA",def:"Cuatro cuadrantes: Debilidades, Oportunidades, Fortalezas, Amenazas."},
+      {key:"ishikawa",term:"Diagrama causa–efecto",def:"Espina de pescado que organiza causas de un efecto."},
+      {key:"infografia",term:"Infografía",def:"Composición visual de texto, datos e imágenes."},
+      {key:"telarana",term:"Telaraña",def:"Radial con ejes que muestran atributos de un objeto."},
+      {key:"rueda_atributos",term:"Rueda de atributos",def:"Círculo dividido en secciones de cualidades."},
+      {key:"priorizacion",term:"Matriz de priorización",def:"Cuadrante impacto/esfuerzo para decidir prioridades."},
+      {key:"doble_entrada",term:"Matriz de doble entrada",def:"Tabla con filas y columnas para clasificar info."}
+    ];
+
+    const quiz=document.getElementById('quiz');
+    const ok=document.getElementById('ok');
+    const err=document.getElementById('err');
+    const left=document.getElementById('left');
+
+    let STATE={ok:0,err:0,left:ITEMS.length,name:""};
+
+    function renderQuiz(){
+      quiz.innerHTML="";
+      ITEMS.forEach((it,i)=>{
+        const div=document.createElement('div');
+        div.className='question';
+        div.innerHTML=`<p>${i+1}. ${it.def}</p>
+        <select data-ans="${it.key}">
+          <option value="">-- Selecciona --</option>
+          ${ITEMS.map(x=>`<option value="${x.key}">${x.term}</option>`).join("")}
+        </select>`;
+        quiz.appendChild(div);
+      });
+      left.textContent=ITEMS.length;
+    }
+
+    document.getElementById('btnStart').onclick=()=>{
+      STATE.name=document.getElementById('name').value.trim();
+      if(!STATE.name){alert("Escribe tu nombre");return;}
+      quiz.style.display="block";
+      document.getElementById('btnFinish').style.display="block";
+      renderQuiz();
+    };
+
+    document.getElementById('btnFinish').onclick=(e)=>{
+      e.preventDefault();
+      STATE.ok=0;STATE.err=0;STATE.left=0;
+      document.querySelectorAll('.question').forEach(div=>{
+        const sel=div.querySelector('select');
+        const ans=sel.dataset.ans;
+        if(sel.value){
+          if(sel.value===ans){STATE.ok++;div.classList.add('ok');div.classList.remove('err');}
+          else{STATE.err++;div.classList.add('err');div.classList.remove('ok');}
+        }else{
+          STATE.left++;
+          div.classList.remove('ok','err');
+        }
+      });
+      ok.textContent=STATE.ok;
+      err.textContent=STATE.err;
+      left.textContent=STATE.left;
+      const when=new Date().toLocaleString('es-CO');
+      document.getElementById('result').innerHTML=
+        `<div class="panel">👤 <b>${STATE.name}</b><br>
+         ✅ Aciertos: ${STATE.ok}<br>
+         ❌ Desaciertos: ${STATE.err}<br>
+         🔄 Sin responder: ${STATE.left}<br>
+         📅 ${when}</div>`;
+    };
+  </script>
+</body>
+</html>
+
