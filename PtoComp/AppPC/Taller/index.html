@@ -1,1 +1,477 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taller · Pensamiento Computacional</title>
+<style>
+  :root{
+    /* Paleta “espacial” con acentos neón */
+    --bg:#0a0f1c;           /* fondo general */
+    --bg2:#0d1528;          /* paneles oscuros */
+    --card:#0f1c36;         /* tarjetas */
+    --edge:#233a68;         /* borde sutil */
+    --ink:#eaf2ff;          /* texto principal */
+    --muted:#a9bee9;        /* texto tenue */
+    --accent:#67f7a1;       /* verde neón */
+    --accent-weak:#9cf8c4;
+    --accent-glow:0 0 18px rgba(103,247,161,.35), 0 0 34px rgba(103,247,161,.18);
+    --warning:#ffd166;
+    --ok:#28d37f;
+    --bad:#ff5b6e;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--ink); font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 10% 10%, #101833 0%, transparent 60%),
+      radial-gradient(900px 500px at 90% 20%, #0e1a33 0%, transparent 55%),
+      radial-gradient(900px 600px at 40% 90%, #0a142b 0%, transparent 60%),
+      var(--bg);
+    overflow-x:hidden;
+  }
+
+  /* Estrellas */
+  .stars::before,.stars::after{
+    content:"";
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(2px 2px at 20% 30%, #bfe3ff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 60% 70%, #d2eeff 50%, transparent 52%),
+      radial-gradient(1.5px 1.5px at 80% 25%, #cfe8ff 50%, transparent 52%),
+      radial-gradient(1.7px 1.7px at 15% 80%, #cfe8ff 50%, transparent 52%),
+      radial-gradient(1.4px 1.4px at 35% 55%, #bfe3ff 50%, transparent 52%),
+      radial-gradient(1.6px 1.6px at 75% 45%, #cfe8ff 50%, transparent 52%);
+    opacity:.6;
+    animation: twinkle 8s linear infinite alternate;
+  }
+  .stars::after{ animation-duration:11s; opacity:.35 }
+  @keyframes twinkle{ from{transform:translateY(0)} to{transform:translateY(-10px)} }
+
+  .wrap{max-width:1100px;margin:28px auto;padding:0 16px; position:relative; z-index:1}
+
+  .title{
+    text-align:center; margin:0 0 6px; font-weight:900; letter-spacing:.2px;
+    font-size:1.9rem; color:#dbecff;
+    text-shadow:0 2px 0 rgba(0,0,0,.3), var(--accent-glow);
+  }
+  .subtitle{ text-align:center; margin:0 0 18px; color:var(--muted) }
+
+  .grid{display:grid; gap:16px}
+  .grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .panel{
+    background:linear-gradient(180deg, rgba(18,28,52,.92), rgba(15,23,44,.92));
+    border:1px solid var(--edge); border-radius:18px; padding:16px;
+    box-shadow:0 20px 40px rgba(0,0,0,.45);
+  }
+
+  /* Tabs */
+  .tabs{display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 14px}
+  .tab{
+    background:#101b38; border:1px solid #1e335e; color:#eaf2ff;
+    padding:10px 14px; border-radius:12px; cursor:pointer;
+    transition:transform .15s ease, box-shadow .2s ease; font-weight:700;
+  }
+  .tab[aria-selected="true"]{
+    background:#142552; border-color:#2e4d8c; box-shadow:var(--accent-glow);
+  }
+  .tab:hover{ transform:translateY(-1px) }
+
+  .tabpane{ display:none }
+  .tabpane.active{ display:block }
+
+  /* Tarjetas/Componentes */
+  .card{
+    background:var(--card); border:1px solid var(--edge); border-radius:16px; padding:14px;
+    position:relative;
+  }
+  .card h3{ margin:2px 0 8px }
+  .muted{ color:var(--muted) }
+
+  /* Botones */
+  .btn{
+    border:1px solid #2d4d89; background:#162a54; color:#eaf2ff; border-radius:12px;
+    padding:8px 12px; cursor:pointer; text-decoration:none; font-weight:700;
+  }
+  .btn.primary{ background:#1f5ed4; border-color:#1b47a4 }
+  .btn.ghost{ background:#0e1c36 }
+  .toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px }
+
+  /* Parte A: Clasificar en los 4 pilares */
+  .q{ position:relative }
+  .q h4{ margin:0 0 8px }
+  .opts{ display:grid; gap:8px; margin-top:8px }
+  .opt{ display:flex; gap:8px; padding:10px; border:1px solid #2a467d; border-radius:12px; background:#0f1c36; cursor:pointer }
+  .opt input{ accent-color:#67a7ff; transform:translateY(2px) }
+  .chip-pilar{
+    display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px;
+    background:rgba(103,247,161,.12); border:1px solid rgba(103,247,161,.35); color:var(--accent-weak);
+    font-weight:700; font-size:.82rem; letter-spacing:.2px
+  }
+  .q.ok{ outline:2px solid rgba(40,211,127,.65); box-shadow:0 0 0 3px rgba(40,211,127,.15) inset }
+  .q.bad{ outline:2px solid rgba(255,91,110,.65); box-shadow:0 0 0 3px rgba(255,91,110,.12) inset }
+  .explain{ margin-top:8px; font-size:.92rem; display:none }
+  .explain.show{ display:block }
+
+  .legend{ display:flex; gap:10px; align-items:center; color:var(--muted); font-size:.9rem }
+  .dot{ width:10px; height:10px; border-radius:50% }
+  .dot.ok{ background:var(--ok) } .dot.bad{ background:var(--bad) }
+
+  /* Parte B: Ordena pasos (drag & drop) */
+  .task{ margin:10px 0 }
+  .steps{ display:grid; gap:8px; margin-top:8px }
+  .step{
+    padding:10px; border:1px dashed #31528f; border-radius:12px; background:#0f1c36; cursor:grab;
+  }
+  .step:active{ cursor:grabbing }
+  .step.drag-over{ outline:2px solid #7aa2ff }
+  .task.ok{ border:1px solid rgba(34,197,94,.7) }
+  .task.bad{ border:1px solid rgba(255,77,77,.7) }
+
+  .footer{
+    text-align:center; color:var(--muted); margin:18px 0 28px; font-weight:700; letter-spacing:.2px
+  }
+
+  /* Iconos neón para títulos de pilares */
+  .neon{
+    width:34px;height:34px; display:inline-block; vertical-align:-7px; margin-right:6px;
+    filter: drop-shadow(0 0 8px rgba(103,247,161,.6));
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <h1 class="title">Hacia el corazón del Pensamiento Computacional</h1>
+  <p class="subtitle">Selecciona una parte y desarrolla tu misión · De Bitarys <span style="opacity:.6">❤</span> a Codara</p>
+
+  <section class="panel" aria-label="Taller">
+    <div class="tabs" role="tablist" aria-label="Partes del taller">
+      <button id="tabA" class="tab" role="tab" aria-controls="paneA" aria-selected="true">Parte A · Clasifica el pilar</button>
+      <button id="tabB" class="tab" role="tab" aria-controls="paneB" aria-selected="false">Parte B · Ordena los pasos</button>
+    </div>
+
+    <!-- =================== PARTE A =================== -->
+    <div id="paneA" class="tabpane active" role="tabpanel" aria-labelledby="tabA">
+      <div class="legend" style="margin-bottom:10px">
+        <span class="chip-pilar">
+          <!-- icon puntos -->
+          <svg class="neon" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2" stroke="none" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="18" cy="12" r="2" fill="currentColor"/></svg>
+          Pilares: Descomposición · Abstracción · Patrones · Algoritmos
+        </span>
+        <span style="margin-left:auto"><span class="dot ok"></span> Correcta · <span class="dot bad"></span> Incorrecta</span>
+      </div>
+
+      <div class="grid grid-2" id="quizA">
+
+        <!-- 1 -->
+        <div class="card q" data-q="1" data-correct="Descomposición" data-explain="Separar un problema grande en partes pequeñas y manejables.">
+          <h3><svg class="neon" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2" fill="currentColor"/><circle cx="6" cy="17" r="2" fill="currentColor"/><circle cx="14" cy="12" r="2" fill="currentColor"/><path d="M8 7h4M8 17h4M12 9v6" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>1) Plan para una **mudanza**: lista de habitaciones, cajas, transporte y tiempos.</h3>
+          <p class="muted">¿Qué pilar estás aplicando?</p>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa1" value="Descomposición">Descomposición</label>
+            <label class="opt"><input type="radio" name="qa1" value="Abstracción">Abstracción</label>
+            <label class="opt"><input type="radio" name="qa1" value="Patrones">Patrones</label>
+            <label class="opt"><input type="radio" name="qa1" value="Algoritmos">Algoritmos</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+
+        <!-- 2 -->
+        <div class="card q" data-q="2" data-correct="Abstracción" data-explain="Ignorar detalles irrelevantes y centrarse en lo esencial.">
+          <h3><svg class="neon" viewBox="0 0 24 24"><path d="M6 5h12l-4 6v6H10v-6L6 5z" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>2) En **mapas**, solo ves calles principales y estaciones, no cada casa.</h3>
+          <p class="muted">¿Qué pilar estás aplicando?</p>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa2" value="Descomposición">Descomposición</label>
+            <label class="opt"><input type="radio" name="qa2" value="Abstracción">Abstracción</label>
+            <label class="opt"><input type="radio" name="qa2" value="Patrones">Patrones</label>
+            <label class="opt"><input type="radio" name="qa2" value="Algoritmos">Algoritmos</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+
+        <!-- 3 -->
+        <div class="card q" data-q="3" data-correct="Patrones" data-explain="Buscar similitudes para reutilizar soluciones.">
+          <h3><svg class="neon" viewBox="0 0 24 24"><rect x="5" y="5" width="5" height="5" rx="1" stroke="currentColor" fill="none"/><rect x="14" y="5" width="5" height="5" rx="1" stroke="currentColor" fill="none"/><rect x="5" y="14" width="5" height="5" rx="1" stroke="currentColor" fill="none"/><rect x="14" y="14" width="5" height="5" rx="1" stroke="currentColor" fill="none"/></svg>3) En **exámenes**, detectas que siempre hay fracciones típicas y aplicas el mismo método.</h3>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa3" value="Descomposición">Descomposición</label>
+            <label class="opt"><input type="radio" name="qa3" value="Abstracción">Abstracción</label>
+            <label class="opt"><input type="radio" name="qa3" value="Patrones">Patrones</label>
+            <label class="opt"><input type="radio" name="qa3" value="Algoritmos">Algoritmos</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+
+        <!-- 4 -->
+        <div class="card q" data-q="4" data-correct="Algoritmos" data-explain="Secuencia clara y finita de pasos para lograr un objetivo.">
+          <h3><svg class="neon" viewBox="0 0 24 24"><path d="M4 6h10l3 3-3 3H4zM14 12h6M4 18h10l3-3" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>4) **Receta**: paso 1 mezclar, paso 2 hornear 30 min, paso 3 decorar.</h3>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa4" value="Descomposición">Descomposición</label>
+            <label class="opt"><input type="radio" name="qa4" value="Abstracción">Abstracción</label>
+            <label class="opt"><input type="radio" name="qa4" value="Patrones">Patrones</label>
+            <label class="opt"><input type="radio" name="qa4" value="Algoritmos">Algoritmos</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+
+        <!-- 5 -->
+        <div class="card q" data-q="5" data-correct="Abstracción" data-explain="Modelar algo complejo con variables esenciales.">
+          <h3>5) Para **simular** el tráfico solo usas velocidad, densidad y semáforos (no el color de los autos).</h3>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa5" value="Descomposición">Descomposición</label>
+            <label class="opt"><input type="radio" name="qa5" value="Abstracción">Abstracción</label>
+            <label class="opt"><input type="radio" name="qa5" value="Patrones">Patrones</label>
+            <label class="opt"><input type="radio" name="qa5" value="Algoritmos">Algoritmos</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+
+        <!-- 6 -->
+        <div class="card q" data-q="6" data-correct="Descomposición" data-explain="Partir un todo en módulos que se pueden asignar/evaluar.">
+          <h3>6) En un **proyecto grupal**, divides: investigación, diseño, pruebas y presentación.</h3>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa6" value="Descomposición">Descomposición</label>
+            <label class="opt"><input type="radio" name="qa6" value="Abstracción">Abstracción</label>
+            <label class="opt"><input type="radio" name="qa6" value="Patrones">Patrones</label>
+            <label class="opt"><input type="radio" name="qa6" value="Algoritmos">Algoritmos</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+
+        <!-- 7 -->
+        <div class="card q" data-q="7" data-correct="Patrones" data-explain="Detectar regularidades entre problemas que parecen distintos.">
+          <h3>7) En **finanzas personales**, notas que a fin de mes siempre falta por gastos hormiga.</h3>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa7" value="Descomposición">Descomposición</label>
+            <label class="opt"><input type="radio" name="qa7" value="Abstracción">Abstracción</label>
+            <label class="opt"><input type="radio" name="qa7" value="Patrones">Patrones</label>
+            <label class="opt"><input type="radio" name="qa7" value="Algoritmos">Algoritmos</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+
+        <!-- 8 -->
+        <div class="card q" data-q="8" data-correct="Algoritmos" data-explain="Pasos ordenados, con condiciones y decisión.">
+          <h3>8) **Protocolo** del laboratorio: si temperatura &gt; 60°C, apagar; si no, continuar prueba.</h3>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa8" value="Descomposición">Descomposición</label>
+            <label class="opt"><input type="radio" name="qa8" value="Abstracción">Abstracción</label>
+            <label class="opt"><input type="radio" name="qa8" value="Patrones">Patrones</label>
+            <label class="opt"><input type="radio" name="qa8" value="Algoritmos">Algoritmos</label>
+          </div>
+          <div class="explain"></div>
+        </div>
+
+      </div>
+
+      <div class="toolbar">
+        <button id="evalA" class="btn primary">Mostrar resultados (Parte A)</button>
+        <button id="resetA" class="btn ghost">Reintentar (A)</button>
+        <span id="scoreA" style="font-weight:800"></span>
+      </div>
+    </div>
+
+    <!-- =================== PARTE B =================== -->
+    <div id="paneB" class="tabpane" role="tabpanel" aria-labelledby="tabB">
+      <p class="muted" style="margin:0 0 8px">Arrastra para ordenar los pasos (1 arriba → último abajo). Cuando termines, pulsa “Revisar”.</p>
+
+      <div id="quizB" class="grid">
+
+        <!-- B1: Evento escolar -->
+        <div class="card task" data-key="B1" data-answer="A,B,D,C,E">
+          <h3><svg class="neon" viewBox="0 0 24 24"><path d="M4 6h16v4H4zM6 12h12v6H6z" stroke="currentColor" fill="none"/></svg> B1) Organizar una **feria escolar**</h3>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Definir objetivos y áreas (ciencia, arte, deportes).</div>
+            <div class="step" draggable="true" data-step="B">B) Dividir equipos: logística, difusión, seguridad, stands.</div>
+            <div class="step" draggable="true" data-step="C">C) Ejecutar el evento y monitorear.</div>
+            <div class="step" draggable="true" data-step="D">D) Crear cronograma y asignar recursos.</div>
+            <div class="step" draggable="true" data-step="E">E) Evaluar resultados y mejoras.</div>
+          </div>
+        </div>
+
+        <!-- B2: App de domicilios -->
+        <div class="card task" data-key="B2" data-answer="B,E,A,C,D">
+          <h3>B2) Pedido en **app de domicilios**</h3>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Repartidor recoge y entrega el pedido.</div>
+            <div class="step" draggable="true" data-step="B">B) Usuario elige restaurante y productos.</div>
+            <div class="step" draggable="true" data-step="C">C) Cocina prepara el pedido.</div>
+            <div class="step" draggable="true" data-step="D">D) Usuario califica el servicio.</div>
+            <div class="step" draggable="true" data-step="E">E) Se procesa el pago y se confirma la orden.</div>
+          </div>
+        </div>
+
+        <!-- B3: Estudio para examen -->
+        <div class="card task" data-key="B3" data-answer="C,A,E,B,D">
+          <h3>B3) **Plan de estudio** para examen final</h3>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Dividir temario por días/horas.</div>
+            <div class="step" draggable="true" data-step="B">B) Practicar con simulacros.</div>
+            <div class="step" draggable="true" data-step="C">C) Revisar objetivos y contenidos del examen.</div>
+            <div class="step" draggable="true" data-step="D">D) Descansar y repasar lo esencial.</div>
+            <div class="step" draggable="true" data-step="E">E) Preparar materiales y recursos.</div>
+          </div>
+        </div>
+
+        <!-- B4: Viaje en carretera -->
+        <div class="card task" data-key="B4" data-answer="D,A,C,B,E">
+          <h3>B4) **Viaje por carretera** con amigos</h3>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Definir ruta y paradas (gasolina, comida, descanso).</div>
+            <div class="step" draggable="true" data-step="B">B) Equipar el vehículo (botiquín, herramientas, documentación).</div>
+            <div class="step" draggable="true" data-step="C">C) Estimar tiempos/costos y roles de conducción.</div>
+            <div class="step" draggable="true" data-step="D">D) Elegir destino/fechas y asistentes.</div>
+            <div class="step" draggable="true" data-step="E">E) Evaluar el viaje para futuras mejoras.</div>
+          </div>
+        </div>
+
+        <!-- B5: Proyecto de reciclaje -->
+        <div class="card task" data-key="B5" data-answer="A,D,B,E,C">
+          <h3>B5) **Proyecto de reciclaje** en el barrio</h3>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Diagnóstico: tipos de residuos y puntos críticos.</div>
+            <div class="step" draggable="true" data-step="B">B) Implementar contenedores/horarios.</div>
+            <div class="step" draggable="true" data-step="C">C) Medir impacto (kg/mes, participación).</div>
+            <div class="step" draggable="true" data-step="D">D) Plan con metas, roles y aliados.</div>
+            <div class="step" draggable="true" data-step="E">E) Campaña educativa y de incentivos.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="toolbar">
+        <button id="evalB" class="btn primary">Revisar (Parte B)</button>
+        <button id="resetB" class="btn ghost">Reintentar (B)</button>
+        <span id="scoreB" style="font-weight:800"></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">Aprendiendo con @LaProfeVivy · Estilo espacial neón</div>
+</div>
+
+<script>
+  // ===== Navegación de pestañas =====
+  const tabA=document.getElementById('tabA');
+  const tabB=document.getElementById('tabB');
+  const paneA=document.getElementById('paneA');
+  const paneB=document.getElementById('paneB');
+
+  function activate(tab, pane){
+    [tabA,tabB].forEach(t=>t.setAttribute('aria-selected','false'));
+    [paneA,paneB].forEach(p=>p.classList.remove('active'));
+    tab.setAttribute('aria-selected','true');
+    pane.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  tabA.onclick=()=>activate(tabA,paneA);
+  tabB.onclick=()=>activate(tabB,paneB);
+
+  // ===== Parte A: Clasificación =====
+  const evalA=document.getElementById('evalA');
+  const resetA=document.getElementById('resetA');
+  const scoreA=document.getElementById('scoreA');
+
+  function evaluateA(){
+    const qs=[...document.querySelectorAll('#quizA .q')];
+    let ok=0,total=qs.length, firstWrong=null;
+    qs.forEach(q=>{
+      q.classList.remove('ok','bad');
+      const name='qa'+q.dataset.q;
+      const corr=q.dataset.correct;
+      const picked=q.querySelector('input[name="'+name+'"]:checked');
+      const ex=q.querySelector('.explain'); ex.classList.add('show');
+      if(picked && picked.value===corr){
+        q.classList.add('ok'); ex.textContent='✔ Correcto. '+(q.dataset.explain||'');
+        ok++;
+      }else{
+        q.classList.add('bad');
+        ex.textContent='✖ Incorrecto. '+(q.dataset.explain||'')+' (Respuesta: '+corr+')';
+        if(!firstWrong) firstWrong=q;
+      }
+    });
+    scoreA.textContent=`Puntaje A: ${ok} / ${total}`;
+    if(firstWrong) firstWrong.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  function resetQuizA(){
+    scoreA.textContent='';
+    document.querySelectorAll('#quizA .q').forEach(q=>{
+      q.classList.remove('ok','bad');
+      q.querySelectorAll('input[type="radio"]').forEach(r=>r.checked=false);
+      const ex=q.querySelector('.explain'); ex.textContent=''; ex.classList.remove('show');
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  evalA?.addEventListener('click', evaluateA);
+  resetA?.addEventListener('click', resetQuizA);
+
+  // ===== Parte B: Drag & Drop =====
+  const tasks=[...document.querySelectorAll('.task')];
+
+  function handleDragStart(e){
+    e.dataTransfer.effectAllowed='move';
+    e.dataTransfer.setData('text/plain', this.dataset.step||'');
+    this.classList.add('dragging');
+  }
+  function handleDragOver(e){ e.preventDefault(); this.classList.add('drag-over'); }
+  function handleDragLeave(){ this.classList.remove('drag-over'); }
+  function handleDrop(e){
+    e.preventDefault(); this.classList.remove('drag-over');
+    const list=this.parentElement;
+    const dragging=list.querySelector('.dragging');
+    if(dragging && dragging!==this){
+      const nodes=[...list.children];
+      const si=nodes.indexOf(dragging);
+      const ti=nodes.indexOf(this);
+      if(si<ti) this.after(dragging); else this.before(dragging);
+    }
+  }
+  function handleDragEnd(){ this.classList.remove('dragging'); }
+
+  function attachDnD(container){
+    container.querySelectorAll('.step').forEach(s=>{
+      s.addEventListener('dragstart',handleDragStart);
+      s.addEventListener('dragover',handleDragOver);
+      s.addEventListener('dragleave',handleDragLeave);
+      s.addEventListener('drop',handleDrop);
+      s.addEventListener('dragend',handleDragEnd);
+    });
+  }
+  tasks.forEach(t=>attachDnD(t));
+
+  const evalB=document.getElementById('evalB');
+  const resetB=document.getElementById('resetB');
+  const scoreB=document.getElementById('scoreB');
+
+  function evaluateB(){
+    let ok=0,total=tasks.length, firstWrong=null;
+    tasks.forEach(task=>{
+      task.classList.remove('ok','bad');
+      const answer=(task.dataset.answer||'').split(',');
+      const current=[...task.querySelectorAll('.step')].map(s=>s.dataset.step);
+      const good = answer.join(',')===current.join(',');
+      if(good){ task.classList.add('ok'); ok++; }
+      else { task.classList.add('bad'); if(!firstWrong) firstWrong=task; }
+    });
+    scoreB.textContent=`Puntaje B: ${ok} / ${total} — puedes reordenar y volver a revisar`;
+    if(firstWrong) firstWrong.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function resetQuizB(){
+    scoreB.textContent='';
+    tasks.forEach(task=>{
+      task.classList.remove('ok','bad');
+      const steps=[...task.querySelectorAll('.step')].sort((a,b)=>a.dataset.step.localeCompare(b.dataset.step));
+      const cont=task.querySelector('.steps');
+      steps.forEach(s=>cont.appendChild(s));
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  evalB?.addEventListener('click', evaluateB);
+  resetB?.addEventListener('click', resetQuizB);
+</script>
+</body>
+</html>
 
