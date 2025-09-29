@@ -1,1 +1,289 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mapa de la IA — flujo de datos y aprendizaje</title>
+<style>
+  :root{
+    --bg1:#14223d; --bg2:#0e1a33;
+    --panel:#0f1930; --ink:#eef3ff; --muted:#b8c6e5;
+    --zone:#14233f; --edge:#2b4475;
+    --data:#00b3ff; --act:#22c55e; --alert:#ff3344; --y:#ffd95e;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink); font-family:Inter,system-ui,Segoe UI,Arial;
+    background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  }
+  .wrap{max-width:1100px;margin:24px auto;padding:16px}
+  h1{margin:0 0 8px;font-size:1.5rem;text-align:center}
+  .muted{color:var(--muted);margin:0 0 12px;text-align:center}
+
+  .tabs{display:flex;gap:10px;margin:0 0 12px;justify-content:flex-start}
+  .btn{background:#162541;border:1px solid #233a68;color:#e7efff;padding:8px 14px;border-radius:10px;cursor:pointer}
+  .btn.active{background:#203a6a;border-color:#3f67b1}
+
+  .panel{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:14px}
+  svg{width:100%;height:auto;display:block}
+  .hide{display:none}
+
+  .zone{fill:var(--zone);stroke:var(--edge);stroke-width:2;rx:16;ry:16}
+  .label{font:800 16px/1.2 Inter,system-ui;fill:#f2f6ff}
+  .small{font:600 12px/1.2 Inter,system-ui;fill:#d2def7}
+  .node{fill:#152a4d;stroke:#2e4a80;stroke-width:1.5;rx:10;ry:10}
+  .clickable{cursor:pointer}
+
+  .wire{fill:none;stroke:var(--data);stroke-width:3;stroke-dasharray:10 8;animation:flow 2.2s linear infinite;marker-end:url(#arrB)}
+  .wireAct{fill:none;stroke:var(--act);stroke-width:3;stroke-dasharray:10 8;animation:flow 2.6s linear infinite;marker-end:url(#arrG)}
+  .wireBack{fill:none;stroke:#9aa8c9;stroke-width:3;stroke-dasharray:8 10;animation:flow 3s linear infinite;marker-end:url(#arrGray);opacity:.9}
+  @keyframes flow{to{stroke-dashoffset:-200}}
+
+  .off{opacity:.45}
+  .on{opacity:1}
+  .py{fill:var(--y); animation:py 1.4s ease-in-out infinite alternate}
+  @keyframes py{from{opacity:.35}to{opacity:1}}
+
+  .cases{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .chip{background:#162541;border:1px solid #233a68;color:#e7efff;padding:6px 12px;border-radius:999px;cursor:pointer;font-size:.9rem}
+  .chip.active{background:#203a6a;border-color:#3f67b1}
+
+  .card{background:#0f1c36;border:1px solid var(--edge);border-radius:12px;padding:12px}
+  .card h3{margin:0 0 6px;font-size:1.05rem}
+  .card p{margin:4px 0;color:#bcd0f2;font-size:.95rem}
+
+  .phone{margin-top:8px;border:1px solid var(--edge);border-radius:12px;background:#0f1c36;padding:8px}
+  .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.82rem;margin-bottom:6px}
+  .bInfo{background:rgba(0,179,255,.12);border:1px solid var(--data);color:#d8f7ff}
+  .bOk{background:rgba(34,197,94,.12);border:1px solid var(--act);color:#caffea}
+
+  .btnLink{
+    display:inline-block;margin-top:8px;background:#162541;border:1px solid #233a68;
+    color:#e7efff;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:600
+  }
+
+  .footer{
+    max-width:1100px;margin:18px auto 24px;padding:10px 16px;border-top:1px solid var(--edge);
+    text-align:center;color:var(--muted);font-weight:600;letter-spacing:.2px
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Mapa de la IA</h1>
+  <p class="muted">Cómo se produce: datos → preparación → modelo → resultados → retroalimentación</p>
+
+  <div class="tabs">
+    <button id="bMapa" class="btn active">Mapa</button>
+    <button id="bPanel" class="btn">Panel</button>
+  </div>
+
+  <div class="panel">
+    <!-- ============== MAPA ============== -->
+    <svg id="mapa" viewBox="0 0 1100 520" aria-label="Mapa del ciclo de IA">
+      <defs>
+        <marker id="arrB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#00b3ff"/></marker>
+        <marker id="arrG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#22c55e"/></marker>
+        <marker id="arrGray" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#9aa8c9"/></marker>
+      </defs>
+
+      <!-- Contenedor -->
+      <rect class="zone" x="20" y="40" width="1060" height="360"/>
+      <text class="label" x="40" y="70">Ciclo de IA</text>
+      <text class="small" x="40" y="92">De la recolección de datos a la mejora continua</text>
+
+      <!-- Bloques -->
+      <g id="bDatos" class="clickable" transform="translate(60,140)">
+        <rect class="node" x="0" y="0" width="170" height="70" rx="12"/>
+        <text class="label" x="14" y="30">Datos</text>
+        <text class="small" x="14" y="52">texto, imágenes, audio…</text>
+      </g>
+
+      <g id="bPrep" class="clickable" transform="translate(260,140)">
+        <rect class="node" x="0" y="0" width="200" height="70" rx="12"/>
+        <text class="label" x="14" y="30">Preprocesamiento</text>
+        <text class="small" x="14" y="52">limpieza, etiquetado, split</text>
+      </g>
+
+      <g id="bModelo" class="clickable" transform="translate(490,140)">
+        <rect class="node" x="0" y="0" width="200" height="70" rx="12"/>
+        <text class="label" x="14" y="30">Modelo entrenado</text>
+        <text class="small" x="14" y="52">redes, árboles, etc.</text>
+      </g>
+
+      <g id="bSalida" class="clickable" transform="translate(720,140)">
+        <rect class="node" x="0" y="0" width="190" height="70" rx="12"/>
+        <text class="label" x="14" y="30">Resultado / Acción</text>
+        <text class="small" x="14" y="52">respuesta, imagen, decisión</text>
+      </g>
+
+      <g id="bFeed" class="clickable" transform="translate(930,140)">
+        <rect class="node" x="0" y="0" width="120" height="70" rx="12"/>
+        <text class="label" x="14" y="30">Feedback</text>
+        <text class="small" x="14" y="52">mejora</text>
+      </g>
+
+      <!-- Flechas (flujo) -->
+      <path id="w1" class="wire" d="M230,175 H260"/>
+      <path id="w2" class="wire" d="M460,175 H490"/>
+      <path id="w3" class="wireAct" d="M690,175 H720"/>
+      <path id="w4" class="wireBack" d="M990,210 C980,330 220,330 160,210 C150,190 150,170 160,155" />
+
+      <!-- Indicadores (puntos animados) -->
+      <circle id="dotDatos"  cx="145" cy="220" r="6" class="off"/>
+      <circle id="dotPrep"   cx="360" cy="220" r="6" class="off"/>
+      <circle id="dotModelo" cx="590" cy="220" r="6" class="off"/>
+      <circle id="dotSalida" cx="815" cy="220" r="6" class="off"/>
+      <circle id="dotFeed"   cx="990" cy="220" r="6" class="off"/>
+
+      <!-- Leyenda -->
+      <g transform="translate(60,260)">
+        <rect class="node" x="0" y="0" width="320" height="72"/>
+        <text class="small" x="12" y="22">Azul = flujo de datos · Verde = decisión/acción · Gris = retroalimentación</text>
+        <text class="small" x="12" y="44">Haz clic en cada bloque o usa el Panel para ver casos</text>
+      </g>
+    </svg>
+
+    <!-- ============== PANEL ============== -->
+    <div id="panel" class="hide">
+      <div class="cases">
+        <button class="chip active" data-case="chatgpt">Caso: ChatGPT (texto → respuesta)</button>
+        <button class="chip" data-case="medico">Caso: Diagnóstico médico (imagen → sugerencia)</button>
+        <button class="chip" data-case="netflix">Caso: Netflix (historial → recomendación)</button>
+      </div>
+
+      <!-- ChatGPT -->
+      <div class="card case" id="case-chatgpt">
+        <h3>Texto → Modelo de lenguaje → Respuesta generada</h3>
+        <p>Ingresas un <b>prompt</b>; el modelo (entrenado con muchos textos) estima la palabra más probable siguiente y construye una respuesta coherente.</p>
+        <svg viewBox="0 0 560 120">
+          <defs>
+            <marker id="arrTB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#00b3ff"/></marker>
+            <marker id="arrTG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#22c55e"/></marker>
+          </defs>
+          <rect x="10" y="16" width="150" height="46" rx="10" fill="#152a4d" stroke="#2e4a80"/><text x="28" y="44" fill="#d2def7" font-size="12" font-weight="700">Prompt (texto)</text>
+          <rect x="190" y="16" width="170" height="46" rx="10" fill="#152a4d" stroke="#2e4a80"/><text x="220" y="44" fill="#d2def7" font-size="12" font-weight="700">Modelo de lenguaje</text>
+          <rect x="390" y="16" width="160" height="46" rx="10" fill="#152a4d" stroke="#2e4a80"/><text x="414" y="44" fill="#d2def7" font-size="12" font-weight="700">Respuesta</text>
+          <path class="wire" marker-end="url(#arrTB)" d="M160,39 H190" />
+          <path class="wireAct" marker-end="url(#arrTG)" d="M360,39 H390" />
+        </svg>
+        <div class="phone">
+          <div class="badge bInfo" id="bChat">Flujo de texto</div>
+          <ul id="logChat" style="margin:6px 0 0;padding-left:18px;font-size:.9rem;color:#e9efff">
+            <li>Entrada: “Resume un cuento en 3 líneas”.</li>
+            <li>Procesamiento: tokenización, contexto, predicción.</li>
+            <li>Salida: respuesta coherente y estructurada.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Diagnóstico médico -->
+      <div class="card case hide" id="case-medico">
+        <h3>Imagen médica → Modelo → Sugerencia de diagnóstico (con validación humana)</h3>
+        <p>Una radiografía se preprocesa (escalado/normalización); el modelo sugiere posibles hallazgos; el personal médico valida.</p>
+        <svg viewBox="0 0 560 120">
+          <defs>
+            <marker id="arrMB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#00b3ff"/></marker>
+            <marker id="arrMG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#22c55e"/></marker>
+          </defs>
+          <rect x="10" y="16" width="150" height="46" rx="10" fill="#152a4d" stroke="#2e4a80"/><text x="24" y="44" fill="#d2def7" font-size="12" font-weight="700">Radiografía</text>
+          <rect x="190" y="16" width="170" height="46" rx="10" fill="#152a4d" stroke="#2e4a80"/><text x="205" y="44" fill="#d2def7" font-size="12" font-weight="700">Modelo visión médica</text>
+          <rect x="390" y="16" width="160" height="46" rx="10" fill="#152a4d" stroke="#2e4a80"/><text x="402" y="44" fill="#d2def7" font-size="12" font-weight="700">Sugerencia</text>
+          <path class="wire" marker-end="url(#arrMB)" d="M160,39 H190" />
+          <path class="wireAct" marker-end="url(#arrMG)" d="M360,39 H390" />
+        </svg>
+        <div class="phone">
+          <div class="badge bOk" id="bMed">Práctica clínica aumentada</div>
+          <ul id="logMed" style="margin:6px 0 0;padding-left:18px;font-size:.9rem;color:#e9efff">
+            <li>Entrada: radiografía preprocesada.</li>
+            <li>Modelo: CNN/transformer entrenado.</li>
+            <li>Salida: hallazgos probables → revisión humana.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Netflix -->
+      <div class="card case hide" id="case-netflix">
+        <h3>Historial de usuario → Modelo → Recomendación personalizada</h3>
+        <p>Con tu historial y perfiles similares, el modelo estima qué títulos te gustarán y ordena el catálogo para ti.</p>
+        <svg viewBox="0 0 560 120">
+          <defs>
+            <marker id="arrNB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#00b3ff"/></marker>
+            <marker id="arrNG" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 6,3 0,6Z" fill="#22c55e"/></marker>
+          </defs>
+          <rect x="10" y="16" width="150" height="46" rx="10" fill="#152a4d" stroke="#2e4a80"/><text x="18" y="44" fill="#d2def7" font-size="12" font-weight="700">Historial + perfil</text>
+          <rect x="190" y="16" width="170" height="46" rx="10" fill="#152a4d" stroke="#2e4a80"/><text x="206" y="44" fill="#d2def7" font-size="12" font-weight="700">Sistema de recomendación</text>
+          <rect x="390" y="16" width="160" height="46" rx="10" fill="#152a4d" stroke="#2e4a80"/><text x="402" y="44" fill="#d2def7" font-size="12" font-weight="700">Lista sugerida</text>
+          <path class="wire" marker-end="url(#arrNB)" d="M160,39 H190" />
+          <path class="wireAct" marker-end="url(#arrNG)" d="M360,39 H390" />
+        </svg>
+        <div class="phone">
+          <div class="badge bInfo" id="bNfx">Personalización</div>
+          <ul id="logNfx" style="margin:6px 0 0;padding-left:18px;font-size:.9rem;color:#e9efff">
+            <li>Entrada: clicks, vistas, géneros favoritos.</li>
+            <li>Modelo: filtrado colaborativo / embeddings.</li>
+            <li>Salida: ranking de títulos por afinidad.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+
+<script>
+  // Tabs
+  const bMapa=document.getElementById('bMapa');
+  const bPanel=document.getElementById('bPanel');
+  const mapa=document.getElementById('mapa');
+  const panel=document.getElementById('panel');
+  bMapa.onclick=()=>{bMapa.classList.add('active');bPanel.classList.remove('active');mapa.classList.remove('hide');panel.classList.add('hide');};
+  bPanel.onclick=()=>{bPanel.classList.add('active');bMapa.classList.remove('active');panel.classList.remove('hide');mapa.classList.add('hide');};
+
+  // Dots del mapa
+  const dotDatos  = document.getElementById('dotDatos');
+  const dotPrep   = document.getElementById('dotPrep');
+  const dotModelo = document.getElementById('dotModelo');
+  const dotSalida = document.getElementById('dotSalida');
+  const dotFeed   = document.getElementById('dotFeed');
+
+  function resetDots(){
+    [dotDatos,dotPrep,dotModelo,dotSalida,dotFeed].forEach(d=>{d.classList.remove('on','py');d.classList.add('off');});
+  }
+  function pulse(el){ el.classList.remove('off'); el.classList.add('on','py'); }
+
+  // Clicks en bloques del mapa → activar panel correspondiente
+  const blockMap = {
+    bDatos: ()=>{ showCase('chatgpt'); pulse(dotDatos); },
+    bPrep:  ()=>{ showCase('chatgpt'); pulse(dotPrep);  },
+    bModelo:()=>{ showCase('chatgpt'); pulse(dotModelo);},
+    bSalida:()=>{ showCase('chatgpt'); pulse(dotSalida);},
+    bFeed:  ()=>{ showCase('chatgpt'); pulse(dotFeed);  },
+  };
+  Object.keys(blockMap).forEach(id=>{
+    const el=document.getElementById(id);
+    el.addEventListener('click', ()=>{
+      resetDots(); blockMap[id]();
+      // Llevar al panel para que vean el caso
+      bPanel.click();
+    });
+  });
+
+  // Selector de casos del Panel
+  const chips=document.querySelectorAll('.chip');
+  function showCase(name){
+    document.querySelectorAll('.case').forEach(c=>c.classList.add('hide'));
+    document.getElementById('case-'+name).classList.remove('hide');
+    chips.forEach(ch=>ch.classList.toggle('active', ch.dataset.case===name));
+  }
+  chips.forEach(ch=>ch.onclick=()=>showCase(ch.dataset.case));
+
+  // Estado inicial
+  showCase('chatgpt');
+  // Dejar algunos dots activos al inicio para “vida”
+  pulse(dotDatos); pulse(dotModelo);
+</script>
+</body>
+</html>
 
