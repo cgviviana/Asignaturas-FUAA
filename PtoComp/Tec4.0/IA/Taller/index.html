@@ -1,1 +1,324 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taller de Inteligencia Artificial</title>
+<style>
+  :root{
+    --ink:#eaf2ff; --muted:#b6c3e6; --pane:rgba(15,25,48,.86);
+    --edge:#27406f; --card:#101e39; --ok:#22c55e; --bad:#ff4d4d;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;color:var(--ink);
+    background:#0b1324 url('FondoIA.jpeg') center/cover no-repeat fixed;
+  }
+  .wrap{max-width:1100px;margin:auto;padding:20px}
+  h1,h2{margin:0 0 10px}
+  .lead{color:var(--muted);margin:0 0 14px}
+  .page{background:var(--pane);border:1px solid var(--edge);border-radius:16px;padding:18px;margin-top:12px}
+  .grid{display:grid;gap:16px}
+  .grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .card{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:14px}
+
+  /* Botones */
+  .btn{border:1px solid #2d4d89;background:#15305f;color:#eaf2ff;border-radius:10px;
+       padding:8px 12px;text-decoration:none;cursor:pointer}
+  .btn.primary{background:#2563eb;border-color:#1e40af}
+  .btn.ghost{background:#0e1c36}
+  .result{font-weight:800}
+
+  /* Tabs */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .tab{border:1px solid #2d4d89;background:#15305f;color:#eaf2ff;border-radius:10px;
+       padding:8px 12px;cursor:pointer;opacity:.9}
+  .tab[aria-selected="true"]{background:#34a0ff;border-color:#1e40af;opacity:1;box-shadow:0 0 0 2px rgba(52,160,255,.25) inset}
+  .tabpane{display:none}
+  .tabpane.active{display:block}
+
+  /* Parte A */
+  .q{position:relative}
+  .q h4{margin:0 0 6px}
+  .opts{display:grid;gap:6px;margin-top:8px}
+  .opt{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid #2a467d;border-radius:10px;background:#0f1c36}
+  .opt input{margin-top:2px;accent-color:#5aa2ff}
+  .q.ok{border:1px solid rgba(34,197,94,.7);box-shadow:0 0 0 3px rgba(34,197,94,.18) inset}
+  .q.bad{border:1px solid rgba(255,77,77,.7);box-shadow:0 0 0 3px rgba(255,77,77,.18) inset}
+  .explain{margin-top:8px;font-size:.92rem;display:none}
+  .explain.show{display:block}
+  .legend{display:flex;gap:8px;align-items:center;font-size:.9rem;color:var(--muted)}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .dot.ok{background:var(--ok)} .dot.bad{background:var(--bad)}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+
+  /* Parte B */
+  .task{margin:10px 0}
+  .steps{display:grid;gap:8px;margin-top:8px}
+  .step{padding:10px;border:1px dashed #31528f;border-radius:10px;background:#0f1c36;cursor:grab}
+  .step:active{cursor:grabbing}
+  .step.drag-over{outline:2px solid #7aa2ff}
+  .task.ok{border:1px solid rgba(34,197,94,.7)}
+  .task.bad{border:1px solid rgba(255,77,77,.7)}
+  .tiny{color:#9fb4e8;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="page">
+    <h1>Taller: “Inteligencia Artificial en Acción”</h1>
+    <p class="lead">Aprendiendo con @LaProfeVivy.</p>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" id="tabA" aria-controls="paneA" aria-selected="true">Parte A</button>
+      <button class="tab" id="tabB" aria-controls="paneB" aria-selected="false">Parte B</button>
+    </div>
+
+    <!-- PANE A -->
+    <div id="paneA" class="tabpane active">
+      <h2>Parte A — Opción múltiple</h2>
+      <div class="legend">
+        <span class="dot ok"></span>Correcta <span class="dot bad"></span>Incorrecta
+      </div>
+
+      <div class="grid grid-2" id="quizA">
+        <!-- 10 preguntas IA -->
+        <div class="card q" data-q="1" data-correct="A" data-explain="IA Estrecha se especializa en una sola tarea.">
+          <h4>1) ¿Qué es la IA Estrecha?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa1" value="A">A) IA enfocada en una tarea.</label>
+            <label class="opt"><input type="radio" name="qa1" value="B">B) IA con consciencia.</label>
+            <label class="opt"><input type="radio" name="qa1" value="C">C) IA que no aprende.</label>
+            <label class="opt"><input type="radio" name="qa1" value="D">D) IA que razona como humano.</label>
+          </div><div class="explain"></div>
+        </div>
+
+        <div class="card q" data-q="2" data-correct="B" data-explain="La IA General aprende y se adapta a múltiples tareas.">
+          <h4>2) ¿Qué caracteriza a la IA General?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa2" value="A">A) Solo sirve en juegos.</label>
+            <label class="opt"><input type="radio" name="qa2" value="B">B) Se adapta a cualquier tarea.</label>
+            <label class="opt"><input type="radio" name="qa2" value="C">C) No usa memoria.</label>
+            <label class="opt"><input type="radio" name="qa2" value="D">D) Está en desuso.</label>
+          </div><div class="explain"></div>
+        </div>
+
+        <div class="card q" data-q="3" data-correct="C" data-explain="IA Reactiva responde a estímulos sin memoria.">
+          <h4>3) ¿Qué es una IA Reactiva?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa3" value="A">A) Crea imágenes.</label>
+            <label class="opt"><input type="radio" name="qa3" value="B">B) Recuerda experiencias pasadas.</label>
+            <label class="opt"><input type="radio" name="qa3" value="C">C) Responde sin memoria.</label>
+            <label class="opt"><input type="radio" name="qa3" value="D">D) Genera código.</label>
+          </div><div class="explain"></div>
+        </div>
+
+        <div class="card q" data-q="4" data-correct="D" data-explain="La IA con Memoria Limitada aprende de datos recientes.">
+          <h4>4) ¿Qué tipo de IA aprende de datos pasados recientes?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa4" value="A">A) IA Reactiva.</label>
+            <label class="opt"><input type="radio" name="qa4" value="B">B) IA Estrecha.</label>
+            <label class="opt"><input type="radio" name="qa4" value="C">C) IA General.</label>
+            <label class="opt"><input type="radio" name="qa4" value="D">D) IA con Memoria Limitada.</label>
+          </div><div class="explain"></div>
+        </div>
+
+        <div class="card q" data-q="5" data-correct="A" data-explain="El Aprendizaje Supervisado usa datos etiquetados.">
+          <h4>5) ¿Qué caracteriza al Aprendizaje Supervisado?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa5" value="A">A) Usa datos etiquetados.</label>
+            <label class="opt"><input type="radio" name="qa5" value="B">B) No necesita datos.</label>
+            <label class="opt"><input type="radio" name="qa5" value="C">C) Solo clasifica imágenes.</label>
+            <label class="opt"><input type="radio" name="qa5" value="D">D) Usa refuerzos.</label>
+          </div><div class="explain"></div>
+        </div>
+
+        <div class="card q" data-q="6" data-correct="B" data-explain="El Aprendizaje No Supervisado descubre patrones ocultos.">
+          <h4>6) ¿Qué hace el Aprendizaje No Supervisado?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa6" value="A">A) Usa etiquetas fijas.</label>
+            <label class="opt"><input type="radio" name="qa6" value="B">B) Encuentra patrones ocultos.</label>
+            <label class="opt"><input type="radio" name="qa6" value="C">C) Ignora los datos.</label>
+            <label class="opt"><input type="radio" name="qa6" value="D">D) Controla robots.</label>
+          </div><div class="explain"></div>
+        </div>
+
+        <div class="card q" data-q="7" data-correct="C" data-explain="El Aprendizaje por Refuerzo usa recompensas y castigos.">
+          <h4>7) ¿Qué usa el Aprendizaje por Refuerzo?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa7" value="A">A) Fotos.</label>
+            <label class="opt"><input type="radio" name="qa7" value="B">B) Datos tabulares.</label>
+            <label class="opt"><input type="radio" name="qa7" value="C">C) Recompensas y castigos.</label>
+            <label class="opt"><input type="radio" name="qa7" value="D">D) Ningún dato.</label>
+          </div><div class="explain"></div>
+        </div>
+
+        <div class="card q" data-q="8" data-correct="D" data-explain="La IA Generativa crea texto, imágenes o música nueva.">
+          <h4>8) ¿Qué hace la IA Generativa?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa8" value="A">A) Calcula sumas.</label>
+            <label class="opt"><input type="radio" name="qa8" value="B">B) Solo traduce idiomas.</label>
+            <label class="opt"><input type="radio" name="qa8" value="C">C) Ejecuta programas.</label>
+            <label class="opt"><input type="radio" name="qa8" value="D">D) Crea contenido nuevo.</label>
+          </div><div class="explain"></div>
+        </div>
+
+        <div class="card q" data-q="9" data-correct="A" data-explain="Los sistemas expertos usan reglas SI/ENTONCES.">
+          <h4>9) ¿Qué usan los sistemas expertos?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa9" value="A">A) Reglas lógicas.</label>
+            <label class="opt"><input type="radio" name="qa9" value="B">B) Solo datos no etiquetados.</label>
+            <label class="opt"><input type="radio" name="qa9" value="C">C) Nada de memoria.</label>
+            <label class="opt"><input type="radio" name="qa9" value="D">D) Videojuegos.</label>
+          </div><div class="explain"></div>
+        </div>
+
+        <div class="card q" data-q="10" data-correct="B" data-explain="La ética de la IA busca un uso responsable, justo y seguro.">
+          <h4>10) ¿Qué busca la ética en la IA?</h4>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="qa10" value="A">A) Hacer la IA más rápida.</label>
+            <label class="opt"><input type="radio" name="qa10" value="B">B) Uso responsable y justo.</label>
+            <label class="opt"><input type="radio" name="qa10" value="C">C) Crear más juegos.</label>
+            <label class="opt"><input type="radio" name="qa10" value="D">D) Quitar datos.</label>
+          </div><div class="explain"></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button id="evalA" class="btn primary">Mostrar resultados (Parte A)</button>
+        <button id="resetA" class="btn ghost">Reintentar (A)</button>
+        <span id="scoreA" class="result"></span>
+      </div>
+    </div>
+
+    <!-- PANE B -->
+    <div id="paneB" class="tabpane">
+      <h2>Parte B — Ordena los pasos</h2>
+      <p class="tiny">Arrastra para ordenar los pasos (1 arriba → último abajo).</p>
+
+      <div id="quizB" class="grid">
+        <div class="card task" data-key="B1" data-answer="A,B,C,D">
+          <h4>B1) Entrenamiento supervisado</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Recolectar datos etiquetados.</div>
+            <div class="step" draggable="true" data-step="B">B) Entrenar modelo.</div>
+            <div class="step" draggable="true" data-step="C">C) Evaluar desempeño.</div>
+            <div class="step" draggable="true" data-step="D">D) Ajustar parámetros.</div>
+          </div>
+        </div>
+
+        <div class="card task" data-key="B2" data-answer="B,A,C,D">
+          <h4>B2) Sistema recomendador</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Algoritmo predice preferencias.</div>
+            <div class="step" draggable="true" data-step="B">B) Usuario genera historial.</div>
+            <div class="step" draggable="true" data-step="C">C) Se comparan patrones.</div>
+            <div class="step" draggable="true" data-step="D">D) Sistema recomienda contenido.</div>
+          </div>
+        </div>
+
+        <div class="card task" data-key="B3" data-answer="C,A,D,B">
+          <h4>B3) Proceso de IA Generativa</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Modelo genera texto/imágenes.</div>
+            <div class="step" draggable="true" data-step="B">B) Usuario evalúa y retroalimenta.</div>
+            <div class="step" draggable="true" data-step="C">C) Entrenamiento con grandes datos.</div>
+            <div class="step" draggable="true" data-step="D">D) Ajustes finos del resultado.</div>
+          </div>
+        </div>
+
+        <div class="card task" data-key="B4" data-answer="D,A,C,B">
+          <h4>B4) Aprendizaje por Refuerzo</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) El agente prueba una acción.</div>
+            <div class="step" draggable="true" data-step="B">B) Ajusta estrategia.</div>
+            <div class="step" draggable="true" data-step="C">C) Recibe recompensa o castigo.</div>
+            <div class="step" draggable="true" data-step="D">D) Agente observa el entorno.</div>
+          </div>
+        </div>
+
+        <div class="card task" data-key="B5" data-answer="A,C,D,B">
+          <h4>B5) Ética en la IA</h4>
+          <div class="steps">
+            <div class="step" draggable="true" data-step="A">A) Identificar posibles sesgos.</div>
+            <div class="step" draggable="true" data-step="B">B) Diseñar uso responsable.</div>
+            <div class="step" draggable="true" data-step="C">C) Evaluar impactos sociales.</div>
+            <div class="step" draggable="true" data-step="D">D) Ajustar regulaciones.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button id="evalB" class="btn primary">Revisar (Parte B)</button>
+        <button id="resetB" class="btn ghost">Reintentar (B)</button>
+        <span id="scoreB" class="result"></span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // Tabs
+  const tabA=document.getElementById('tabA'), tabB=document.getElementById('tabB');
+  const paneA=document.getElementById('paneA'), paneB=document.getElementById('paneB');
+  function activate(tab,pane){
+    [tabA,tabB].forEach(t=>t.setAttribute('aria-selected','false'));
+    [paneA,paneB].forEach(p=>p.classList.remove('active'));
+    tab.setAttribute('aria-selected','true'); pane.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  tabA.onclick=()=>activate(tabA,paneA);
+  tabB.onclick=()=>activate(tabB,paneB);
+
+  // Parte A
+  const evalA=document.getElementById('evalA'), resetA=document.getElementById('resetA'), scoreA=document.getElementById('scoreA');
+  function evaluateA(){
+    const qs=document.querySelectorAll('#quizA .q'); let ok=0,total=qs.length,firstWrong=null;
+    qs.forEach(q=>{
+      q.classList.remove('ok','bad');
+      const corr=q.dataset.correct, picked=q.querySelector('input:checked');
+      const ex=q.querySelector('.explain'); ex.classList.add('show');
+      if(picked && picked.value===corr){q.classList.add('ok'); ex.textContent='✔ Correcto. '+q.dataset.explain; ok++;}
+      else{q.classList.add('bad'); ex.textContent='✖ Incorrecto. '+q.dataset.explain; if(!firstWrong) firstWrong=q;}
+    });
+    scoreA.textContent=`Puntaje A: ${ok}/${total}`;
+    if(firstWrong) firstWrong.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  evalA.onclick=evaluateA;
+  resetA.onclick=()=>{scoreA.textContent='';document.querySelectorAll('#quizA .q').forEach(q=>{q.classList.remove('ok','bad');q.querySelectorAll('input').forEach(r=>r.checked=false);q.querySelector('.explain').textContent='';q.querySelector('.explain').classList.remove('show');});};
+
+  // Parte B
+  const tasks=document.querySelectorAll('.task');
+  tasks.forEach(task=>{
+    task.querySelectorAll('.step').forEach(step=>{
+      step.addEventListener('dragstart',e=>{e.dataTransfer.setData('text',step.dataset.step);step.classList.add('dragging');});
+      step.addEventListener('dragend',()=>step.classList.remove('dragging'));
+      step.addEventListener('dragover',e=>{e.preventDefault();step.classList.add('drag-over');});
+      step.addEventListener('dragleave',()=>step.classList.remove('drag-over'));
+      step.addEventListener('drop',e=>{
+        e.preventDefault();step.classList.remove('drag-over');
+        const dragging=task.querySelector('.dragging'); if(dragging&&dragging!==step){
+          const steps=Array.from(task.querySelectorAll('.step'));
+          const si=steps.indexOf(dragging), ti=steps.indexOf(step);
+          if(si<ti) step.after(dragging); else step.before(dragging);
+        }
+      });
+    });
+  });
+  const evalB=document.getElementById('evalB'), resetB=document.getElementById('resetB'), scoreB=document.getElementById('scoreB');
+  evalB.onclick=()=>{
+    let ok=0,total=tasks.length,firstWrong=null;
+    tasks.forEach(task=>{
+      task.classList.remove('ok','bad');
+      const ans=task.dataset.answer.split(','), curr=[...task.querySelectorAll('.step')].map(s=>s.dataset.step);
+      if(ans.join(',')===curr.join(',')){task.classList.add('ok');ok++;}else{task.classList.add('bad');if(!firstWrong) firstWrong=task;}
+    });
+    scoreB.textContent=`Puntaje B: ${ok}/${total}`;
+    if(firstWrong) firstWrong.scrollIntoView({behavior:'smooth',block:'center'});
+  };
+  resetB.onclick=()=>{scoreB.textContent='';tasks.forEach(task=>{task.classList.remove('ok','bad');const steps=[...task.querySelectorAll('.step')].sort((a,b)=>a.dataset.step.localeCompare(b.dataset.step));steps.forEach(s=>task.querySelector('.steps').appendChild(s));});};
+</script>
+</body>
+</html>
 
