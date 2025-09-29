@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deck Futurista · Información</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-1:#0b1020; --bg-2:#0f172a; --ink:#e5f6ff;
+      --accent:#00eaff; --accent-dim:#0ab3c2; --line:rgba(0,234,255,.18);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--ink);
+      background: radial-gradient(1200px 600px at 15% 10%, #0e1a2f 0%, var(--bg-1) 45%, var(--bg-2) 100%);
+      font-family:Poppins,system-ui,Segoe UI,Arial,sans-serif; overflow:hidden;
+    }
+    /* grid de fondo sutil animado */
+    .gridfx{position:fixed;inset:0;pointer-events:none;background:
+      linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px) 0 0/24px 24px,
+      linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px) 0 0/24px 24px;
+      mask: radial-gradient(420px 420px at 20% 20%, #000 0%, transparent 72%);
+      animation: pan 24s linear infinite;
+    }
+    @keyframes pan{0%{background-position:0 0,0 0}100%{background-position:480px 240px, 240px 480px}}
+
+    .slides{display:flex;height:100vh;transition:transform .9s cubic-bezier(.22,.61,.36,1);}
+    .slide{
+      position:relative; width:100vw;height:100vh;flex-shrink:0;padding:56px 7.5vw 80px;
+      display:flex;flex-direction:column;gap:16px;justify-content:center;
+    }
+    .card{
+      max-width:1100px;border:1px solid var(--line);border-radius:22px;
+      padding:26px 30px;background:linear-gradient(180deg, rgba(4,18,30,.55), rgba(8,20,34,.35));
+      box-shadow:0 0 0 1px rgba(0,234,255,.06), 0 10px 40px rgba(0,0,0,.35), inset 0 0 45px rgba(0,234,255,.05);
+      animation: floatIn .9s ease both;
+    }
+    @keyframes floatIn{from{opacity:0; transform:translateY(20px)}to{opacity:1; transform:translateY(0)}}
+
+    h1.title{
+      font-family:Orbitron, Poppins, sans-serif; letter-spacing:.02em; margin:0 0 10px;
+      font-size:clamp(28px,3.2vw,46px); color:var(--accent);
+      text-shadow:0 0 12px color-mix(in oklab, var(--accent) 65%, transparent), 0 0 24px color-mix(in oklab, var(--accent) 35%, transparent);
+    }
+
+    /* ilustración */
+    .hero{display:flex;gap:16px;align-items:center;margin:6px 0 10px}
+    .hero p{margin:0;font-size:clamp(13px,1.2vw,16px);opacity:.85}
+    svg.ill{width:140px;height:100px;flex:0 0 auto}
+    .ill *{vector-effect:non-scaling-stroke}
+    .st{stroke:var(--accent);stroke-width:2;fill:none}
+    .glow{filter:drop-shadow(0 0 6px rgba(0,234,255,.45))}
+
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:10px}
+    .box{
+      border:1px solid rgba(0,234,255,.16); border-radius:16px; padding:14px 16px;
+      background:rgba(3,18,28,.35)
+    }
+    .box h3{
+      font:600 12px/1 Orbitron; letter-spacing:.18em; text-transform:uppercase;
+      color:var(--accent-dim); margin:0 0 8px
+    }
+    .box ul{margin:0; padding-left:18px}
+    .box li{margin:6px 0}
+
+    .controls{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); display:flex; gap:14px; z-index:30}
+    .btn{
+      background:rgba(2,14,26,.65); border:1px solid rgba(0,234,255,.35); color:var(--ink);
+      padding:10px 16px; border-radius:12px; font:600 12px/1 Orbitron; letter-spacing:.12em;
+      text-transform:uppercase; cursor:pointer; transition:filter .25s, box-shadow .25s, transform .15s
+    }
+    .btn:hover{filter:saturate(130%); box-shadow:0 0 16px rgba(0,234,255,.25)}
+    .btn:active{transform:translateY(1px)}
+    .dots{position:fixed; bottom:22px; right:22px; display:flex; gap:8px}
+    .dot{width:8px;height:8px;border-radius:50%; background:rgba(0,234,255,.25)}
+    .dot.active{background:var(--accent); box-shadow:0 0 8px var(--accent)}
+
+    footer.footer{
+      margin-top:18px; text-align:center; font-family:Orbitron, sans-serif;
+      font-size:14px; color:var(--accent-dim); letter-spacing:.1em;
+    }
+
+    @media (max-width:980px){ .grid{grid-template-columns:1fr} .hero{flex-direction:row} svg.ill{width:120px;height:90px} }
+    @media (max-width:640px){ .hero{flex-direction:column; align-items:flex-start} }
+  </style>
+</head>
+<body>
+  <div class="gridfx"></div>
+
+  <div class="slides" id="slides">
+
+    <!-- 1: Información -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Información</h1>
+      <div class="hero">
+        <!-- SVG: cilindro (datos) + ojo (significado) -->
+        <svg class="ill" viewBox="0 0 200 140" role="img" aria-label="Información">
+          <ellipse class="st glow" cx="70" cy="30" rx="40" ry="12"/>
+          <path class="st" d="M30,30v50c0,7 18,12 40,12s40-5 40-12V30"/>
+          <path class="st glow" d="M140,85c14-18 38-18 52,0c-14,18-38,18-52,0z"/>
+          <circle class="st" cx="166" cy="85" r="8"/>
+        </svg>
+        <p><b>Idea fuerza:</b> datos procesados que adquieren significado y permiten comprender, decidir y comunicar.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Definición</h3>
+          <ul>
+            <li>Dato + contexto + interpretación = <b>información</b>.</li>
+            <li>Se transforma en <b>conocimiento</b> cuando se integra con la experiencia.</li>
+          </ul></div>
+        <div class="box"><h3>Criterios de calidad</h3>
+          <ul>
+            <li><b>Validez</b> y <b>fiabilidad</b> de la fuente.</li>
+            <li><b>Actualidad</b>, <b>relevancia</b> y ausencia de sesgos.</li>
+            <li><b>Completitud</b> y <b>consistencia</b> (sin contradicciones).</li>
+          </ul></div>
+        <div class="box"><h3>¿De dónde se obtiene?</h3>
+          <ul>
+            <li>Libros, artículos, bases de datos, repositorios abiertos.</li>
+            <li>Experimentos, observación, encuestas y sensores.</li>
+            <li>Web/medios (con verificación y trazabilidad).</li>
+          </ul></div>
+        <div class="box"><h3>¿Para qué sirve?</h3>
+          <ul>
+            <li><b>Tomar decisiones</b> y <b>resolver problemas</b>.</li>
+            <li>Diseñar productos/servicios y evaluar resultados.</li>
+            <li>Generar <b>nuevo conocimiento</b> (investigación).</li>
+          </ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 2: Organización de la información -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Organización de la información</h1>
+      <div class="hero">
+        <!-- SVG: nodos jerárquicos -->
+        <svg class="ill" viewBox="0 0 200 120" role="img" aria-label="Organización">
+          <circle class="st glow" cx="100" cy="20" r="10"/>
+          <line class="st" x1="100" y1="30" x2="50" y2="60"/><line class="st" x1="100" y1="30" x2="150" y2="60"/>
+          <circle class="st" cx="50" cy="60" r="9"/><circle class="st" cx="150" cy="60" r="9"/>
+          <line class="st" x1="50" y1="69" x2="35" y2="95"/><line class="st" x1="50" y1="69" x2="65" y2="95"/>
+          <line class="st" x1="150" y1="69" x2="135" y2="95"/><line class="st" x1="150" y1="69" x2="165" y2="95"/>
+          <circle class="st" cx="35" cy="95" r="7"/><circle class="st" cx="65" cy="95" r="7"/><circle class="st" cx="135" cy="95" r="7"/><circle class="st" cx="165" cy="95" r="7"/>
+        </svg>
+        <p><b>Idea fuerza:</b> estructurar, clasificar y jerarquizar para ver relaciones y reducir la complejidad.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Definición</h3><ul>
+          <li>Proceso de <b>clasificar, agrupar y jerarquizar</b> datos/ideas.</li>
+          <li>Construye una <b>estructura lógica</b> (taxonomías, árboles, matrices).</li>
+        </ul></div>
+        <div class="box"><h3>Estrategias</h3><ul>
+          <li>Chunking (trocear), categorización, ordenamiento por criterios.</li>
+          <li>Relaciones: causa–efecto, parte–todo, prioridad, dependencia.</li>
+        </ul></div>
+        <div class="box"><h3>Pasos sugeridos</h3><ul>
+          <li>Inventariar datos → depurar → etiquetar → agrupar → jerarquizar → validar.</li>
+          <li>Usar esquemas visuales para iterar rápido.</li>
+        </ul></div>
+        <div class="box"><h3>Errores comunes</h3><ul>
+          <li>Demasiadas categorías o solapamientos.</li>
+          <li>Jerarquías confusas y criterios no explícitos.</li>
+        </ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 3: Mapa Conceptual -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Mapa Conceptual</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Mapa conceptual">
+          <rect class="st glow" x="88" y="12" width="24" height="16" rx="3"/>
+          <rect class="st" x="20" y="50" width="40" height="16" rx="3"/>
+          <rect class="st" x="140" y="50" width="40" height="16" rx="3"/>
+          <rect class="st" x="20" y="88" width="40" height="16" rx="3"/>
+          <rect class="st" x="140" y="88" width="40" height="16" rx="3"/>
+          <path class="st" d="M100,28 L40,50 M100,28 L160,50 M40,66 L40,88 M160,66 L160,88"/>
+        </svg>
+        <p>Jerarquía + <b>palabras–enlace</b> que forman proposiciones con sentido.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Estructura</h3><ul><li>De lo general a lo específico.</li><li>Cruces y enlaces etiquetados.</li></ul></div>
+        <div class="box"><h3>Componentes</h3><ul><li>Conceptos, palabras–enlace, proposiciones.</li><li>Ejemplos y enlaces cruzados.</li></ul></div>
+        <div class="box"><h3>Buenas prácticas</h3><ul><li>Usar <b>pocas palabras</b> por concepto.</li><li>Verbos en enlaces; revisar coherencia semántica.</li></ul></div>
+        <div class="box"><h3>Evaluación</h3><ul><li>Número/calidad de proposiciones válidas.</li><li>Claridad de jerarquía y enlaces cruzados.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 4: Mapa Mental -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Mapa Mental</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Mapa mental">
+          <circle class="st glow" cx="100" cy="60" r="12"/>
+          <path class="st" d="M100,48 L60,30 M100,48 L140,28 M100,72 L60,90 M100,72 L140,92"/>
+          <circle class="st" cx="60" cy="30" r="8"/><circle class="st" cx="140" cy="28" r="8"/>
+          <circle class="st" cx="60" cy="90" r="8"/><circle class="st" cx="140" cy="92" r="8"/>
+        </svg>
+        <p>Radial, palabras clave e imágenes que activan <b>memoria visual</b>.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Uso</h3><ul><li>Ideación, síntesis rápida, notas visuales.</li></ul></div>
+        <div class="box"><h3>Estilo</h3><ul><li>Ramas orgánicas, color por categorías, iconografía.</li></ul></div>
+        <div class="box"><h3>Tips</h3><ul><li>Una idea por rama; ir de grueso a fino.</li></ul></div>
+        <div class="box"><h3>Evitar</h3><ul><li>Párrafos largos; perder jerarquía.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 5: Cuadro Sinóptico -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Cuadro Sinóptico</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Cuadro sinóptico">
+          <path class="st glow" d="M20,30 h60"/>
+          <path class="st" d="M80,30 c20,0 20,20 0,20 M80,50 h60"/>
+          <path class="st" d="M140,50 c20,0 20,20 0,20 M140,70 h40"/>
+          <rect class="st" x="20" y="22" width="20" height="16" rx="3"/>
+          <rect class="st" x="140" y="42" width="20" height="16" rx="3"/>
+          <rect class="st" x="180" y="62" width="14" height="14" rx="3"/>
+        </svg>
+        <p>Jerarquías con <b>llaves</b> que agrupan conceptos y subtemas.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Cuándo usar</h3><ul><li>Resumir unidades con subcategorías claras.</li></ul></div>
+        <div class="box"><h3>Diseño</h3><ul><li>Nivel 1 → 2 → 3 (sin saltos).</li><li>Alineación y simetría.</li></ul></div>
+        <div class="box"><h3>Ventaja</h3><ul><li>Lectura rápida y estructurada.</li></ul></div>
+        <div class="box"><h3>Limitación</h3><ul><li>Poco útil para relaciones cruzadas.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 6: Cuadro Comparativo -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Cuadro Comparativo</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Cuadro comparativo">
+          <rect class="st glow" x="20" y="20" width="160" height="80" rx="6"/>
+          <line class="st" x1="100" y1="20" x2="100" y2="100"/><line class="st" x1="20" y1="46" x2="180" y2="46"/>
+          <line class="st" x1="20" y1="68" x2="180" y2="68"/><line class="st" x1="20" y1="86" x2="180" y2="86"/>
+        </svg>
+        <p>Contrasta <b>criterios</b> para evaluar opciones de forma objetiva.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Estructura</h3><ul><li>Criterios (filas) × alternativas (columnas).</li></ul></div>
+        <div class="box"><h3>Profundidad</h3><ul><li>Ponderación y justificación por celda.</li></ul></div>
+        <div class="box"><h3>Fortalezas</h3><ul><li>Transparencia en la decisión.</li></ul></div>
+        <div class="box"><h3>Errores</h3><ul><li>Criterios ambiguos o no medibles.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 7: Línea de Tiempo -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Línea de Tiempo</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Línea de tiempo">
+          <line class="st glow" x1="20" y1="60" x2="180" y2="60"/>
+          <circle class="st" cx="40" cy="60" r="7"/><circle class="st" cx="100" cy="60" r="7"/><circle class="st" cx="160" cy="60" r="7"/>
+          <line class="st" x1="40" y1="53" x2="40" y2="30"/><line class="st" x1="100" y1="67" x2="100" y2="90"/><line class="st" x1="160" y1="53" x2="160" y2="30"/>
+        </svg>
+        <p>Secuencia cronológica de <b>hitos</b>, duración y dependencias.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Usos</h3><ul><li>Historia, biografías, roadmaps de proyecto.</li></ul></div>
+        <div class="box"><h3>Claves</h3><ul><li>Escala temporal correcta y consistencia de fechas.</li></ul></div>
+        <div class="box"><h3>Complementos</h3><ul><li>Dependencias, responsables, hitos críticos.</li></ul></div>
+        <div class="box"><h3>Evitar</h3><ul><li>Sobrecarga de texto y marcas indistinguibles.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 8: Representación de la información -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Representación de la información</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Representación">
+          <rect class="st glow" x="25" y="70" width="20" height="28"/><rect class="st" x="55" y="56" width="20" height="42"/>
+          <rect class="st" x="85" y="44" width="20" height="54"/><rect class="st" x="115" y="34" width="20" height="64"/>
+          <circle class="st" cx="160" cy="54" r="18"/>
+          <path class="st" d="M160,54 L160,36 A18,18 0 0 1 178,54 Z"/>
+        </svg>
+        <p>Comunicar con precisión y claridad lo que la organización ya estructuró.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Principios</h3><ul>
+          <li><b>Correspondencia</b> (el gráfico correcto para el dato).</li>
+          <li><b>Jerarquía visual</b>, contraste y preatención.</li>
+        </ul></div>
+        <div class="box"><h3>Selección de gráfico</h3><ul>
+          <li>Barras: comparación; líneas: series; dispersión: relación.</li>
+        </ul></div>
+        <div class="box"><h3>Buenas prácticas</h3><ul>
+          <li>Ejes proporcionales, etiquetas legibles, unidades visibles.</li>
+        </ul></div>
+        <div class="box"><h3>Errores</h3><ul>
+          <li>3D innecesario, colores confusos, ejes truncados engañosos.</li>
+        </ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 9: Gráficas estadísticas -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Gráficas estadísticas</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Gráficas">
+          <rect class="st glow" x="30" y="65" width="18" height="30"/>
+          <rect class="st" x="60" y="50" width="18" height="45"/>
+          <rect class="st" x="90" y="40" width="18" height="55"/>
+          <polyline class="st" points="30,30 60,46 90,28 120,40 150,20"/>
+        </svg>
+        <p>Barras, líneas, dispersión, boxplot: cada una responde una <b>pregunta</b> distinta.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Elegir según</h3><ul><li>Tipo de variable (categórica/numérica) y tarea (comparar, seguir, relacionar).</li></ul></div>
+        <div class="box"><h3>Detallitos clave</h3><ul><li>Etiquetas, escala, banda de error si aplica.</li></ul></div>
+        <div class="box"><h3>Valida</h3><ul><li>Tamaño de muestra y outliers.</li></ul></div>
+        <div class="box"><h3>Evita</h3><ul><li>Tarta para muchas categorías; ejes truncados.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 10: Infografías -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Infografías</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Infografía">
+          <rect class="st glow" x="20" y="20" width="160" height="80" rx="8"/>
+          <rect class="st" x="30" y="30" width="60" height="20" rx="4"/>
+          <rect class="st" x="30" y="56" width="60" height="34" rx="4"/>
+          <rect class="st" x="100" y="30" width="70" height="60" rx="6"/>
+        </svg>
+        <p>Sintetiza datos + texto + visuales con una <b>narrativa</b> clara.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Estructura</h3><ul><li>Título, lead, secciones, cierre/llamado.</li></ul></div>
+        <div class="box"><h3>Lenguaje visual</h3><ul><li>Íconos coherentes, tipografía jerarquizada.</li></ul></div>
+        <div class="box"><h3>Verifica</h3><ul><li>Fuentes y licencias de los gráficos.</li></ul></div>
+        <div class="box"><h3>Evita</h3><ul><li>Saturar de elementos o color.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 11: Diagrama de Gantt -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Diagrama de Gantt</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Gantt">
+          <line class="st glow" x1="20" y1="30" x2="180" y2="30"/>
+          <rect class="st" x="30" y="40" width="60" height="12" rx="3"/>
+          <rect class="st" x="50" y="60" width="90" height="12" rx="3"/>
+          <rect class="st" x="80" y="80" width="70" height="12" rx="3"/>
+        </svg>
+        <p>Planifica tareas con <b>duración</b>, <b>dependencias</b> y responsables.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Cuándo</h3><ul><li>Gestión de proyectos y cronogramas.</li></ul></div>
+        <div class="box"><h3>Claves</h3><ul><li>Ruta crítica, holguras, hitos.</li></ul></div>
+        <div class="box"><h3>Actualiza</h3><ul><li>Progreso real vs plan (baseline).</li></ul></div>
+        <div class="box"><h3>Evita</h3><ul><li>Barras sin fechas ni dependencias.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 12: Organigrama -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Organigrama</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Organigrama">
+          <rect class="st glow" x="80" y="12" width="40" height="16" rx="3"/>
+          <line class="st" x1="100" y1="28" x2="100" y2="45"/>
+          <rect class="st" x="30" y="45" width="40" height="16" rx="3"/>
+          <rect class="st" x="80" y="45" width="40" height="16" rx="3"/>
+          <rect class="st" x="130" y="45" width="40" height="16" rx="3"/>
+          <line class="st" x1="50" y1="61" x2="50" y2="90"/>
+          <rect class="st" x="40" y="90" width="20" height="16" rx="3"/>
+        </svg>
+        <p>Muestra roles y relaciones formales (vertical, matricial o circular).</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Diseño</h3><ul><li>Niveles claros, alineación, legibilidad.</li></ul></div>
+        <div class="box"><h3>Buen uso</h3><ul><li>Clarificar responsabilidades y canales.</li></ul></div>
+        <div class="box"><h3>Limitación</h3><ul><li>No refleja flujos informales.</li></ul></div>
+        <div class="box"><h3>Consejo</h3><ul><li>Agregar “span of control” y funciones clave.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 13: Dashboards -->
+    <section class="slide"><header class="card">
+      <h1 class="title">Dashboards</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Dashboard">
+          <rect class="st glow" x="20" y="20" width="160" height="80" rx="8"/>
+          <rect class="st" x="30" y="30" width="50" height="25" rx="4"/>
+          <rect class="st" x="90" y="30" width="80" height="25" rx="4"/>
+          <rect class="st" x="30" y="60" width="60" height="30" rx="4"/>
+          <rect class="st" x="100" y="60" width="70" height="30" rx="4"/>
+        </svg>
+        <p>Panel de <b>KPI</b> con vistas comparables y actualizables.</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Principios</h3><ul><li>Ver lo esencial de un vistazo; consistencia de escalas.</li></ul></div>
+        <div class="box"><h3>Diseño</h3><ul><li>Grillas, espacios en blanco, filtros.</li></ul></div>
+        <div class="box"><h3>Datos</h3><ul><li>Fuente única confiable; refresh programado.</li></ul></div>
+        <div class="box"><h3>Evita</h3><ul><li>Decoración excesiva (chartjunk) y 20 KPIs a la vez.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+    <!-- 14: ¿Organizadores gráficos...? -->
+    <section class="slide"><header class="card">
+      <h1 class="title">¿Organizadores gráficos: organización o representación?</h1>
+      <div class="hero">
+        <svg class="ill" viewBox="0 0 200 120" aria-label="Híbrido">
+          <!-- mitad izquierda: árbol (organización) -->
+          <circle class="st glow" cx="60" cy="30" r="8"/><line class="st" x1="60" y1="38" x2="40" y2="60"/><line class="st" x1="60" y1="38" x2="80" y2="60"/>
+          <circle class="st" cx="40" cy="60" r="7"/><circle class="st" cx="80" cy="60" r="7"/>
+          <!-- mitad derecha: barras/pie (representación) -->
+          <rect class="st glow" x="120" y="60" width="12" height="30"/><rect class="st" x="136" y="48" width="12" height="42"/><rect class="st" x="152" y="36" width="12" height="54"/>
+          <circle class="st" cx="170" cy="30" r="10"/>
+          <path class="st" d="M170,30 L170,20 A10,10 0 0 1 180,30 Z"/>
+        </svg>
+        <p><b>Conclusión:</b> son <b>herramientas híbridas</b>. Cuando se <b>construyen</b> ordenan ideas (organización). Cuando se <b>usan</b> para mostrar, representan información (representación).</p>
+      </div>
+      <div class="grid">
+        <div class="box"><h3>Como organización</h3><ul><li>Clasifican, jerarquizan, relacionan (mapa conceptual, cuadro sinóptico).</li></ul></div>
+        <div class="box"><h3>Como representación</h3><ul><li>Comunican resultados (infografía, línea de tiempo, organigrama).</li></ul></div>
+        <div class="box"><h3>Criterio práctico</h3><ul><li>¿Los estás <b>creando</b> para pensar? → Organización.</li><li>¿Los estás <b>mostrando</b> para explicar? → Representación.</li></ul></div>
+        <div class="box"><h3>Tip docente</h3><ul><li>Evalúa <b>proceso</b> (construcción) y <b>producto</b> (claridad visual) por separado.</li></ul></div>
+      </div>
+      <footer class="footer">Aprendiendo con @LaProfeVivy</footer>
+    </header></section>
+
+  </div>
+
+  <div class="controls">
+    <button class="btn" onclick="prevSlide()">⟵ Anterior</button>
+    <button class="btn" onclick="nextSlide()">Siguiente ⟶</button>
+  </div>
+  <div class="dots" id="dots"></div>
+
+  <script>
+    // ajustar ancho según número de slides
+    const slidesEl = document.getElementById('slides');
+    const slideCount = document.querySelectorAll('.slide').length;
+    slidesEl.style.width = (slideCount * 100) + 'vw';
+
+    // paginación
+    let index = 0;
+    const dotsEl = document.getElementById('dots');
+    for(let i=0;i<slideCount;i++){
+      const d=document.createElement('div');
+      d.className='dot'+(i===0?' active':'');
+      dotsEl.appendChild(d);
+    }
+    const dots=[...dotsEl.children];
+
+    function update(){
+      slidesEl.style.transform = `translateX(-${index * 100}vw)`;
+      dots.forEach((d,i)=>d.classList.toggle('active', i===index));
+    }
+    function nextSlide(){ index = Math.min(slideCount-1, index+1); update(); }
+    function prevSlide(){ index = Math.max(0, index-1); update(); }
+    document.addEventListener('keydown', e=>{
+      if(e.key==='ArrowRight') nextSlide();
+      if(e.key==='ArrowLeft') prevSlide();
+    });
+    // clic en dots
+    dots.forEach((d,i)=>d.addEventListener('click', ()=>{ index=i; update(); }));
+  </script>
+</body>
+</html>
