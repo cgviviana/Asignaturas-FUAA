@@ -1,1 +1,435 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test Futurista · LaProfeVivy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#0f172a; --panel:#101a2d; --card:#16233f;
+    --ink:#e5f6ff; --accent:#00eaff; --accent-dim:#0ab3c2;
+    --ok:#47e389; --bad:#ff6b6b; --muted:#8aa6b2;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--ink); background: radial-gradient(1100px 560px at 15% 10%, #0e1a2f 0%, var(--bg) 45%, var(--bg2) 100%);
+    font-family:Poppins,system-ui,Segoe UI,Arial,sans-serif; display:flex; flex-direction:column;
+  }
+  header{
+    padding:18px 20px; text-align:center; border-bottom:1px solid rgba(0,234,255,.18);
+    background:rgba(255,255,255,.02)
+  }
+  h1{font-family:Orbitron, Poppins, sans-serif; color:var(--accent); margin:0}
+  .wrap{flex:1; display:flex; flex-direction:column; align-items:center; padding:18px}
+  .page{width:clamp(320px, 88vw, 980px); display:none}
+  .page.active{display:block}
+  .card{
+    background:linear-gradient(180deg, rgba(4,18,30,.55), rgba(8,20,34,.35));
+    border:1px solid rgba(0,234,255,.2); border-radius:16px; padding:18px 18px; margin:14px 0;
+    box-shadow:0 0 0 1px rgba(0,234,255,.06), 0 10px 32px rgba(0,0,0,.35), inset 0 0 30px rgba(0,234,255,.04);
+  }
+  .row{display:flex; gap:12px; align-items:center; justify-content:space-between}
+  .q-label{flex:1}
+  select, input[type=text]{
+    background:#0f1527; color:var(--ink); border:1px solid #223257; border-radius:10px; padding:10px 12px; min-width:220px;
+    outline:none;
+  }
+  .check{width:22px; height:22px; border-radius:50%; border:2px solid #27425f; display:flex; align-items:center; justify-content:center; font-weight:700}
+  .check.ok{border-color:var(--ok); color:var(--ok)}
+  .check.bad{border-color:var(--bad); color:var(--bad)}
+  .btns{display:flex; gap:10px; justify-content:center; margin:18px 0}
+  button{
+    background:var(--accent); color:#05212b; border:0; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;
+  }
+  button.secondary{background:#11213b; color:var(--ink); border:1px solid rgba(0,234,255,.25)}
+  button:hover{filter:brightness(1.1)}
+  .hint{color:var(--muted); font-size:14px; margin-top:6px}
+
+  /* Drag & Drop */
+  .dd-wrap{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  .drop{min-height:54px; border:1px dashed var(--accent-dim); border-radius:10px; padding:10px; background:#0f1527}
+  .drag{background:#142544; border:1px solid #2a436a; border-radius:10px; padding:8px 10px; cursor:grab; margin:6px 0}
+  .pair{display:flex; gap:12px; align-items:center}
+  .col{background:transparent}
+
+  /* Opción múltiple A-D */
+  .mc-card .opt{display:block; padding:10px 12px; background:#101a2d; border:1px solid #223257; border-radius:10px; margin-top:8px}
+  .mc-card input{margin-right:8px}
+
+  /* Progreso */
+  .progress{width:clamp(320px, 88vw, 980px); margin-top:8px}
+  .bar{height:8px; background:#0d1a2f; border:1px solid #1c3855; border-radius:999px; overflow:hidden}
+  .bar>span{display:block; height:100%; width:0%; background:linear-gradient(90deg, #00eaff, #0ab3c2)}
+  .bar-legend{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:6px}
+
+  footer{padding:16px; text-align:center; color:var(--accent-dim); font-family:Orbitron, Poppins, sans-serif; letter-spacing:.08em}
+</style>
+</head>
+<body>
+  <header><h1>Test Futurista · Aprendiendo con @LaProfeVivy</h1></header>
+  <div class="wrap">
+
+    <!-- Barra de progreso -->
+    <div class="progress">
+      <div class="bar"><span id="barfill"></span></div>
+      <div class="bar-legend"><span id="legendL">Inicio</span><span id="legendR">0%</span></div>
+    </div>
+
+    <!-- Página 0: Nombre -->
+    <section class="page active" id="p0">
+      <div class="card">
+        <h2>Antes de comenzar</h2>
+        <p>Escribe tu <b>nombre completo</b> y presiona “Empezar”.</p>
+        <input type="text" id="nombre" placeholder="Nombre completo">
+        <p class="hint">Este nombre aparecerá en el reporte final.</p>
+      </div>
+      <div class="btns">
+        <button onclick="startTest()">Empezar</button>
+      </div>
+    </section>
+
+    <!-- Página 1: 10 preguntas tipo SELECT con check ✅/❌ -->
+    <section class="page" id="p1">
+      <h2>Sección 1 · Relaciona definición → organizador (SELECT)</h2>
+
+      <div id="s1">
+        <!-- Preguntas (definición + select con opciones comunes) -->
+        <!-- Cada .card tiene un data-answer con la respuesta correcta -->
+        <div class="card row" data-answer="Mapa mental">
+          <div class="q-label">1) Estructura <b>radial</b> que parte de una idea central.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+
+        <div class="card row" data-answer="Mapa conceptual">
+          <div class="q-label">2) Red de conceptos jerárquicos unidos con <b>palabras-enlace</b>.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+
+        <div class="card row" data-answer="Cuadro comparativo">
+          <div class="q-label">3) Tabla que muestra <b>semejanzas y diferencias</b>.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+
+        <div class="card row" data-answer="Diagrama de Venn">
+          <div class="q-label">4) Círculos superpuestos que muestran <b>intersecciones</b>.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+
+        <div class="card row" data-answer="Línea de tiempo">
+          <div class="q-label">5) <b>Secuencia cronológica</b> de eventos.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+
+        <div class="card row" data-answer="Dashboards">
+          <div class="q-label">6) Panel visual de <b>KPI</b> para monitoreo.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+
+        <div class="card row" data-answer="Gráficas estadísticas">
+          <div class="q-label">7) Barras, líneas o dispersión para <b>datos numéricos</b>.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+
+        <div class="card row" data-answer="Organigrama">
+          <div class="q-label">8) Representa la <b>estructura jerárquica</b> de roles.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+
+        <div class="card row" data-answer="Cuadro sinóptico">
+          <div class="q-label">9) Esquema jerárquico con <b>llaves</b> que agrupan conceptos.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+
+        <div class="card row" data-answer="Infografía">
+          <div class="q-label">10) Síntesis visual: <b>datos + texto + gráficos</b> con narrativa.</div>
+          <select><option value="">-- Selecciona --</option></select>
+          <div class="check"></div>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button class="secondary" onclick="prevPage()">Anterior</button>
+        <button onclick="gradeS1()">Calificar sección 1</button>
+        <button onclick="nextPage()">Siguiente</button>
+      </div>
+    </section>
+
+    <!-- Página 2: Drag & Drop (10) -->
+    <section class="page" id="p2">
+      <h2>Sección 2 · Arrastra el concepto a su definición (10)</h2>
+      <div class="dd-wrap" id="s2">
+        <div class="col">
+          <div class="card"><div class="pair"><div class="q-label">A) Ordenar y jerarquizar datos para dar coherencia.</div><div class="check"></div></div><div class="drop" data-answer="Organización de la información"></div></div>
+          <div class="card"><div class="pair"><div class="q-label">B) Mostrar visualmente información ya estructurada.</div><div class="check"></div></div><div class="drop" data-answer="Representación de la información"></div></div>
+          <div class="card"><div class="pair"><div class="q-label">C) Dato + contexto + interpretación.</div><div class="check"></div></div><div class="drop" data-answer="Información"></div></div>
+          <div class="card"><div class="pair"><div class="q-label">D) Red jerárquica de conceptos con palabras-enlace.</div><div class="check"></div></div><div class="drop" data-answer="Mapa conceptual"></div></div>
+          <div class="card"><div class="pair"><div class="q-label">E) Estructura radial desde una idea central.</div><div class="check"></div></div><div class="drop" data-answer="Mapa mental"></div></div>
+        </div>
+        <div class="col">
+          <div class="card"><div class="pair"><div class="q-label">F) Tabla que compara opciones por criterios.</div><div class="check"></div></div><div class="drop" data-answer="Cuadro comparativo"></div></div>
+          <div class="card"><div class="pair"><div class="q-label">G) Cronología de hitos y duración.</div><div class="check"></div></div><div class="drop" data-answer="Línea de tiempo"></div></div>
+          <div class="card"><div class="pair"><div class="q-label">H) Panel de indicadores clave de desempeño.</div><div class="check"></div></div><div class="drop" data-answer="Dashboards"></div></div>
+          <div class="card"><div class="pair"><div class="q-label">I) Estructura formal de roles y niveles.</div><div class="check"></div></div><div class="drop" data-answer="Organigrama"></div></div>
+          <div class="card"><div class="pair"><div class="q-label">J) Síntesis visual con datos, texto e imágenes.</div><div class="check"></div></div><div class="drop" data-answer="Infografía"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Conceptos para arrastrar</h3>
+        <div id="bank">
+          <!-- Se llena por JS con 10 tarjetas .drag -->
+        </div>
+        <p class="hint">Arrastra cada tarjeta hacia su definición correspondiente.</p>
+      </div>
+
+      <div class="btns">
+        <button class="secondary" onclick="prevPage()">Anterior</button>
+        <button onclick="gradeS2()">Calificar sección 2</button>
+        <button onclick="nextPage()">Siguiente</button>
+      </div>
+    </section>
+
+    <!-- Página 3: Opción múltiple A-D (10) -->
+    <section class="page" id="p3">
+      <h2>Sección 3 · Opción múltiple (A, B, C, D)</h2>
+      <div id="s3">
+        <div class="card mc-card" data-answer="B">
+          <p>1) La información se convierte en conocimiento cuando…</p>
+          <label class="opt"><input type="radio" name="m1" value="A"> A) se representa gráficamente</label>
+          <label class="opt"><input type="radio" name="m1" value="B"> B) se integra con la experiencia</label>
+          <label class="opt"><input type="radio" name="m1" value="C"> C) se recopila de internet</label>
+          <label class="opt"><input type="radio" name="m1" value="D"> D) se imprime</label>
+          <div class="check"></div>
+        </div>
+
+        <div class="card mc-card" data-answer="A">
+          <p>2) Principio clave de una buena representación gráfica:</p>
+          <label class="opt"><input type="radio" name="m2" value="A"> A) correspondencia entre gráfico y dato</label>
+          <label class="opt"><input type="radio" name="m2" value="B"> B) usar 3D para lucir mejor</label>
+          <label class="opt"><input type="radio" name="m2" value="C"> C) tantos colores como sea posible</label>
+          <label class="opt"><input type="radio" name="m2" value="D"> D) eliminar etiquetas</label>
+          <div class="check"></div>
+        </div>
+
+        <div class="card mc-card" data-answer="C">
+          <p>3) El cuadro sinóptico se caracteriza por…</p>
+          <label class="opt"><input type="radio" name="m3" value="A"> A) porcentajes y proporciones</label>
+          <label class="opt"><input type="radio" name="m3" value="B"> B) cronologías</label>
+          <label class="opt"><input type="radio" name="m3" value="C"> C) llaves jerárquicas que agrupan</label>
+          <label class="opt"><input type="radio" name="m3" value="D"> D) series temporales</label>
+          <div class="check"></div>
+        </div>
+
+        <div class="card mc-card" data-answer="D">
+          <p>4) ¿Cuál <b>no</b> es una herramienta de organización?</p>
+          <label class="opt"><input type="radio" name="m4" value="A"> A) mapa conceptual</label>
+          <label class="opt"><input type="radio" name="m4" value="B"> B) cuadro sinóptico</label>
+          <label class="opt"><input type="radio" name="m4" value="C"> C) cuadro comparativo</label>
+          <label class="opt"><input type="radio" name="m4" value="D"> D) gráfico de pastel</label>
+          <div class="check"></div>
+        </div>
+
+        <div class="card mc-card" data-answer="A">
+          <p>5) El organizador gráfico es “híbrido” porque…</p>
+          <label class="opt"><input type="radio" name="m5" value="A"> A) sirve para organizar y para representar</label>
+          <label class="opt"><input type="radio" name="m5" value="B"> B) mezcla audio y video</label>
+          <label class="opt"><input type="radio" name="m5" value="C"> C) solo organiza</label>
+          <label class="opt"><input type="radio" name="m5" value="D"> D) solo representa</label>
+          <div class="check"></div>
+        </div>
+
+        <div class="card mc-card" data-answer="B">
+          <p>6) Para comparar 4 alternativas por 5 criterios conviene usar…</p>
+          <label class="opt"><input type="radio" name="m6" value="A"> A) mapa mental</label>
+          <label class="opt"><input type="radio" name="m6" value="B"> B) cuadro comparativo</label>
+          <label class="opt"><input type="radio" name="m6" value="C"> C) línea de tiempo</label>
+          <label class="opt"><input type="radio" name="m6" value="D"> D) infografía</label>
+          <div class="check"></div>
+        </div>
+
+        <div class="card mc-card" data-answer="D">
+          <p>7) Para mostrar la <b>ruta crítica</b> en un proyecto se usa…</p>
+          <label class="opt"><input type="radio" name="m7" value="A"> A) mapa conceptual</label>
+          <label class="opt"><input type="radio" name="m7" value="B"> B) organigrama</label>
+          <label class="opt"><input type="radio" name="m7" value="C"> C) dashboard</label>
+          <label class="opt"><input type="radio" name="m7" value="D"> D) diagrama de Gantt</label>
+          <div class="check"></div>
+        </div>
+
+        <div class="card mc-card" data-answer="C">
+          <p>8) En representación, lo más crítico es…</p>
+          <label class="opt"><input type="radio" name="m8" value="A"> A) usar 3D y sombras</label>
+          <label class="opt"><input type="radio" name="m8" value="B"> B) agregar mucho texto</label>
+          <label class="opt"><input type="radio" name="m8" value="C"> C) claridad y precisión visual</label>
+          <label class="opt"><input type="radio" name="m8" value="D"> D) eliminar unidades</label>
+          <div class="check"></div>
+        </div>
+
+        <div class="card mc-card" data-answer="B">
+          <p>9) Si quiero ver relaciones <b>parte–todo</b> y <b>enlaces</b> semánticos uso…</p>
+          <label class="opt"><input type="radio" name="m9" value="A"> A) cuadro sinóptico</label>
+          <label class="opt"><input type="radio" name="m9" value="B"> B) mapa conceptual</label>
+          <label class="opt"><input type="radio" name="m9" value="C"> C) organigrama</label>
+          <label class="opt"><input type="radio" name="m9" value="D"> D) línea de tiempo</label>
+          <div class="check"></div>
+        </div>
+
+        <div class="card mc-card" data-answer="A">
+          <p>10) La representación “correcta” se decide principalmente por…</p>
+          <label class="opt"><input type="radio" name="m10" value="A"> A) la tarea analítica (comparar, seguir, relacionar)</label>
+          <label class="opt"><input type="radio" name="m10" value="B"> B) el color institucional</label>
+          <label class="opt"><input type="radio" name="m10" value="C"> C) la moda de diseño</label>
+          <label class="opt"><input type="radio" name="m10" value="D"> D) la cantidad de emojis</label>
+          <div class="check"></div>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button class="secondary" onclick="prevPage()">Anterior</button>
+        <button onclick="gradeS3()">Calificar sección 3</button>
+        <button onclick="finish()">Finalizar</button>
+      </div>
+    </section>
+
+    <!-- RESULTADO -->
+    <section class="page" id="pres">
+      <div class="card" id="resumen"></div>
+      <div class="btns">
+        <button class="secondary" onclick="location.reload()">Reiniciar</button>
+      </div>
+    </section>
+
+  </div>
+  <footer>Aprendiendo con @LaProfeVivy</footer>
+
+<script>
+  /* ======= Estado general ======= */
+  const pages=["p0","p1","p2","p3","pres"];
+  let idx=0, nameUser=""; 
+  let scoreS1=0, scoreS2=0, scoreS3=0;      // cada sección 0..10
+  const bar = document.getElementById('barfill'), legendR=document.getElementById('legendR'), legendL=document.getElementById('legendL');
+
+  function showPage(i){
+    document.getElementById(pages[idx]).classList.remove('active');
+    idx=i;
+    document.getElementById(pages[idx]).classList.add('active');
+    const percent = Math.round((idx/(pages.length-1))*100);
+    bar.style.width = percent + "%";
+    legendR.textContent = percent + "%";
+    legendL.textContent = ["Inicio","Sección 1","Sección 2","Sección 3","Resultado"][idx];
+  }
+  function nextPage(){ if(idx < pages.length-2) showPage(idx+1); }
+  function prevPage(){ if(idx > 0) showPage(idx-1); }
+
+  function startTest(){
+    const n = document.getElementById('nombre').value.trim();
+    nameUser = n || "Anónimo";
+    showPage(1);
+  }
+
+  /* ======= Sección 1: SELECT (10) ======= */
+  const opcionesS1 = ["Mapa mental","Mapa conceptual","Cuadro comparativo","Diagrama de Venn","Línea de tiempo","Dashboards","Gráficas estadísticas","Organigrama","Cuadro sinóptico","Infografía"];
+  // Rellenar todos los <select>
+  document.querySelectorAll('#s1 select').forEach(sel=>{
+    opcionesS1.forEach(o=>{
+      const opt=document.createElement('option'); opt.value=o; opt.textContent=o; sel.appendChild(opt);
+    });
+  });
+
+  function gradeS1(){
+    scoreS1=0;
+    document.querySelectorAll('#s1 .card').forEach(card=>{
+      const correct = card.dataset.answer;
+      const sel = card.querySelector('select');
+      const chk = card.querySelector('.check');
+      if(sel.value === correct){ scoreS1++; chk.className = 'check ok'; chk.textContent='✓'; }
+      else { chk.className='check bad'; chk.textContent='✗'; }
+    });
+    alert(`Sección 1: ${scoreS1}/10 correctas`);
+  }
+
+  /* ======= Sección 2: Drag & Drop (10) ======= */
+  const bank = document.getElementById('bank');
+  const conceptos = [
+    "Organización de la información","Representación de la información","Información",
+    "Mapa conceptual","Mapa mental","Cuadro comparativo","Línea de tiempo",
+    "Dashboards","Organigrama","Infografía"
+  ];
+  // Mezclar y crear tarjetas arrastrables
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
+  shuffle([...conceptos]).forEach(txt=>{
+    const d=document.createElement('div'); d.className='drag'; d.draggable=true; d.textContent=txt;
+    d.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', txt); });
+    bank.appendChild(d);
+  });
+  // Activar drops
+  document.querySelectorAll('#s2 .drop').forEach(zone=>{
+    zone.addEventListener('dragover', e=>e.preventDefault());
+    zone.addEventListener('drop', e=>{
+      e.preventDefault();
+      const txt = e.dataTransfer.getData('text/plain');
+      zone.textContent = txt;
+      zone.dataset.choice = txt;
+    });
+  });
+
+  function gradeS2(){
+    scoreS2=0;
+    document.querySelectorAll('#s2 .card').forEach(card=>{
+      const correct = card.querySelector('.drop').dataset.answer;
+      const chosen = card.querySelector('.drop').dataset.choice || '';
+      const chk = card.querySelector('.check');
+      if(correct === chosen){ scoreS2++; chk.className='check ok'; chk.textContent='✓'; }
+      else { chk.className='check bad'; chk.textContent='✗'; }
+    });
+    alert(`Sección 2: ${scoreS2}/10 correctas`);
+  }
+
+  /* ======= Sección 3: Multiple Choice (10) ======= */
+  function gradeS3(){
+    scoreS3=0;
+    document.querySelectorAll('#s3 .mc-card').forEach(card=>{
+      const ans = card.dataset.answer;
+      const name = card.querySelector('input[type=radio]').name;
+      const checked = card.querySelector(`input[name=${name}]:checked`);
+      const chk = card.querySelector('.check');
+      if(checked && checked.value===ans){ scoreS3++; chk.className='check ok'; chk.textContent='✓'; }
+      else { chk.className='check bad'; chk.textContent='✗'; }
+    });
+    alert(`Sección 3: ${scoreS3}/10 correctas`);
+  }
+
+  /* ======= Final ======= */
+  function finish(){
+    // Autocalificar por si el/la estudiante no presionó los botones de calificar
+    gradeS1(); gradeS2(); gradeS3();
+    const correctas = scoreS1 + scoreS2 + scoreS3;   // 0..30
+    const nota = (correctas/30*5).toFixed(2);
+    const ahora = new Date().toLocaleString();
+
+    const res = `
+      <h2>Resultado Final</h2>
+      <p><b>${nameUser}</b></p>
+      <p>Sección 1: ${scoreS1}/10 · Sección 2: ${scoreS2}/10 · Sección 3: ${scoreS3}/10</p>
+      <p><b>Puntaje:</b> ${nota} / 5.00</p>
+      <p>Correctas totales: ${correctas} de 30</p>
+      <p><small>Fecha y hora de realización: ${ahora}</small></p>
+    `;
+    document.getElementById('resumen').innerHTML = res;
+    showPage(4);
+  }
+</script>
+</body>
+</html>
