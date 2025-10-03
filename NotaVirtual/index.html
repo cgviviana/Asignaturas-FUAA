@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Simulador de Notas · Dini</title>
+<style>
+  :root{
+    --ink:#1a2340; --brand:#0a3d62; --line:#e6ebf5; --accent:#145a8d;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:"Poppins", system-ui, Arial, sans-serif; color:var(--ink);
+    background: linear-gradient(180deg,#f8fbff 0%, #f4f7fb 100%);
+  }
+  header{
+    background:var(--brand); color:#fff; text-align:center; padding:18px 12px;
+  }
+  main{
+    display:grid; grid-template-columns: 1fr; gap:22px; padding:24px; max-width:1100px; margin:0 auto;
+  }
+  @media (min-width: 960px){
+    main{ grid-template-columns: 1.1fr .9fr; align-items:center; min-height:70vh;}
+  }
+  .panel{
+    background:#fff; border:1px solid var(--line); border-radius:16px; padding:22px;
+    box-shadow:0 10px 30px rgba(10,61,98,.06);
+  }
+  .panel h2{margin:0 0 12px}
+  .field{margin:14px 0}
+  label{display:block; font-weight:600; margin-bottom:6px}
+  input[type="number"], input[type="text"]{
+    width:100%; padding:10px 12px; border:1px solid #cfd8ea; border-radius:10px; font-size:1rem;
+  }
+  .actions{margin-top:14px; display:flex; gap:10px}
+  button{
+    background:var(--brand); color:#fff; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600;
+  }
+  button:hover{background:var(--accent)}
+  .resultado{margin-top:16px; padding:14px; border:1px dashed #cfd8ea; border-radius:12px; background:#fbfdff}
+  .art{display:flex; align-items:center; justify-content:center; padding:16px;}
+  .card-illus{width:100%; max-width:520px;}
+  footer{text-align:center; padding:12px; background:var(--brand); color:#fff; font-size:.95rem}
+  .bubble{font-size:1.05rem; line-height:1.4;}
+</style>
+</head>
+<body>
+  <header>
+    <h1>Simulador de Notas</h1>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Digita el puntaje obtenido</h2>
+      <div class="field">
+        <label for="eje">Eje/tema (opcional)</label>
+        <input type="text" id="eje" placeholder="Ej.: Eje 2 · Organización de la información">
+      </div>
+      <div class="field">
+        <label for="puntaje">Ingresa tu puntaje del eje (0–20)</label>
+        <input type="number" id="puntaje" min="0" max="20" step="0.1" placeholder="Ej.: 15">
+      </div>
+      <div class="actions">
+        <button id="btnCalc">Calcular nota</button>
+        <button id="btnClear" type="button" style="background:#6b7a99">Limpiar</button>
+      </div>
+      <div class="resultado" id="resultado">
+        Dini tiene algo que decirte, lee con atención 👉
+      </div>
+    </section>
+
+    <!-- Personita con nombre y globo -->
+    <section class="art">
+      <div class="card-illus">
+        <svg viewBox="0 0 620 440" width="100%" height="100%">
+          <!-- Personita -->
+          <g transform="translate(70,130)">
+            <ellipse cx="120" cy="190" rx="70" ry="24" fill="#dfe8f7"/>
+            <rect x="88" y="80" width="64" height="90" rx="18" fill="#145a8d"/>
+            <circle cx="120" cy="54" r="34" fill="#ffd7b5"/>
+            <path d="M92,58 q28 -40 56 0 v8 q-28 14 -56 0 z" fill="#1a2340"/>
+            <circle cx="110" cy="54" r="3.2" fill="#1a2340"/>
+            <circle cx="130" cy="54" r="3.2" fill="#1a2340"/>
+            <path d="M108,66 q12 10 24 0" stroke="#1a2340" stroke-width="2.5" fill="none"/>
+            <!-- Rótulo Dini (azul fijo) -->
+            <rect x="90" y="200" width="60" height="22" rx="6" fill="#0a3d62"/>
+            <text x="120" y="216" text-anchor="middle" fill="#fff" 
+                  font-family="Poppins, Arial" font-size="13" font-weight="600">Dini</text>
+          </g>
+
+          <!-- Globo con flecha a la izquierda -->
+          <g transform="translate(260,60)">
+            <rect x="0" y="0" width="330" height="200" rx="14" fill="#ffffff" stroke="#cfd8ea"/>
+            <!-- flechita hacia la izquierda -->
+            <path d="M0,100 L-20,90 L-20,110 Z" fill="#ffffff" stroke="#cfd8ea"/>
+            <foreignObject x="14" y="14" width="302" height="172">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="bubble" id="bubbleText">
+                Hola 👋 Ingresa tu puntaje del eje y presiona <b>Calcular nota</b>.
+              </div>
+            </foreignObject>
+          </g>
+        </svg>
+      </div>
+    </section>
+  </main>
+
+  <footer>Aprendiendo con @LaProfeVivy</footer>
+
+<script>
+  const puntajeEl = document.getElementById('puntaje');
+  const ejeEl = document.getElementById('eje');
+  const resultadoDiv = document.getElementById('resultado');
+  const bubble = document.getElementById('bubbleText');
+  const btnCalc = document.getElementById('btnCalc');
+  const btnClear = document.getElementById('btnClear');
+
+  function mensajePorNota(nota){
+    if (nota <= 2.9) {
+      return "No vas bien, revisa el material y si es necesario tu grupo puede solicitar una mini-tutoría grupal de 10 minutos para aclarar dudas.";
+    } else if (nota >= 3.0 && nota <= 3.9) {
+      return "Tu desempeño es regular. Revisa con atención las indicaciones dadas en el encuentro para fortalecer lo aprendido.";
+    } else if (nota <= 4.5) {
+      return "¡Muy bien! Se nota el esfuerzo. Mantengan el ritmo repasando lo visto en los encuentros.";
+    } else {
+      return "¡Excelente trabajo! Tu dedicación se nota. Sigue aprovechando cada encuentro para consolidar tu aprendizaje.";
+    }
+  }
+
+  function calcularNota(){
+    const raw = parseFloat(puntajeEl.value);
+    if (isNaN(raw) || raw < 0 || raw > 20){
+      const msg = "⚠️ Por favor ingresa un puntaje válido entre 0 y 20.";
+      resultadoDiv.innerHTML = "Dini tiene algo que decirte, lee con atención 👉";
+      bubble.textContent = msg;
+      return;
+    }
+    if (raw === 1) {
+      const msg = "⚠️ Atención: 1 no es un puntaje válido, sino un aviso de que algo pasó. Lean muy bien la retroalimentación y sigan las indicaciones de la docente para poder ser recalificados. La idea no es solo subir la nota, sino aprender de verdad.";
+      resultadoDiv.innerHTML = "Dini tiene algo que decirte, lee con atención 👉";
+      bubble.textContent = msg;
+      return;
+    }
+    const nota = +( (raw * 5) / 20 ).toFixed(2);
+    const eje = ejeEl.value?.trim();
+    const mensaje = mensajePorNota(nota);
+    const encabezado = eje ? `En el ${eje}, tu puntaje de ${raw} equivale a una nota de ${nota}.` :
+                             `Tu puntaje de ${raw} equivale a una nota de ${nota}.`;
+    resultadoDiv.innerHTML = "Dini tiene algo que decirte, lee con atención 👉";
+    bubble.innerHTML = `${encabezado}<br>${mensaje}`;
+  }
+
+  btnCalc.addEventListener('click', calcularNota);
+  btnClear.addEventListener('click', ()=>{
+    puntajeEl.value = "";
+    ejeEl.value = "";
+    resultadoDiv.textContent = "Dini tiene algo que decirte, lee con atención 👉";
+    bubble.textContent = "Hola 👋 Ingresa tu puntaje del eje y presiona Calcular nota.";
+  });
+
+  // Permitir Enter además del click
+  puntajeEl.addEventListener('keyup', (e)=>{
+    if(e.key === 'Enter'){ calcularNota(); }
+  });
+</script>
+</body>
+</html>
