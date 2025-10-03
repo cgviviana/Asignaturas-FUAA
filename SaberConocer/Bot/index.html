@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Chat · Eje 1: Bit Transformador</title>
+<style>
+  :root{
+    --wa-bg:#e5ddd5; --wa-chat:#ffffff; --wa-me:#dcf8c6;
+    --ink:#0f1a33; --muted:#6b7a99;
+    --brand:#075e54; --brand-dark:#064c45;
+    --line:#dfe5ec;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Roboto,Poppins,Arial,sans-serif;background:var(--wa-bg);color:var(--ink)}
+  header{background:var(--brand);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px}
+  .dini-avatar{width:34px;height:34px;border-radius:50%;background:#34b7f1;display:grid;place-items:center;font-weight:700}
+  .title{font-weight:600}.subtitle{font-size:.8rem;opacity:.9}
+  .wrap{max-width:900px;margin:0 auto;padding:10px}
+  /* Fondo sin URLs: patrón con gradientes */
+  .chat{
+    background:
+      linear-gradient(0deg, #efeae2 0%, #efeae2 100%),
+      repeating-linear-gradient(45deg, #f3eee8 0, #f3eee8 8px, #efeae2 8px, #efeae2 16px);
+    border:1px solid var(--line);border-radius:14px;min-height:70vh;
+    padding:14px;display:flex;flex-direction:column;gap:10px;overflow:auto
+  }
+  .row{display:flex;align-items:flex-end;gap:8px}
+  .bot{justify-content:flex-start}
+  .me{justify-content:flex-end}
+  .bubble{max-width:78%;padding:10px 12px;border-radius:10px;line-height:1.4;font-size:15px;
+          box-shadow:0 1px 0 rgba(0,0,0,.04)}
+  .bubble.bot{background:var(--wa-chat);border-top-left-radius:0}
+  .bubble.me{background:var(--wa-me);border-top-right-radius:0}
+  .stamp{font-size:.75rem;color:#7a869a;margin-top:4px}
+  .menu{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+  @media (min-width:640px){.menu{grid-template-columns:1fr 1fr}}
+  .opt{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;
+       border-radius:8px;padding:10px 12px;cursor:pointer;font-weight:600;text-align:left}
+  .opt svg{width:18px;height:18px;stroke:#075e54;flex:none}
+  .opt:hover{background:#f6fafb}
+  footer{text-align:center;color:#fff;background:var(--brand);padding:10px;font-size:.95rem;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="dini-avatar">D</div>
+  <div><div class="title">Dini · Eje 1: Bit Transformador</div>
+       <div class="subtitle">Asistente de @LaProfeVivy</div></div>
+</header>
+
+<main class="wrap">
+  <section class="chat" id="chat"></section>
+</main>
+
+<footer>Aprendiendo con @LaProfeVivy</footer>
+
+<script>
+/* ---------- Utilidades ---------- */
+const chat = document.getElementById('chat');
+const recordatorio = "<div style='margin-top:6px;font-size:.9rem;color:#555'><em>🔔 Recuerda que debes ver el encuentro, pues las instrucciones y recomendaciones ampliadas junto con el cómo se va a evaluar se han dado en el encuentro sincrónico.</em></div>";
+
+function timeNow(){const d=new Date();return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
+function clearChat(){ chat.innerHTML = ''; }
+function addBot(msgHTML){
+  const row=document.createElement('div'); row.className='row bot';
+  const b=document.createElement('div'); b.className='bubble bot';
+  b.innerHTML=msgHTML+`<div class="stamp">${timeNow()}</div>`;
+  row.appendChild(b); chat.appendChild(row); chat.scrollTop=chat.scrollHeight;
+}
+function addUser(txt){
+  const row=document.createElement('div'); row.className='row me';
+  const b=document.createElement('div'); b.className='bubble me';
+  b.textContent=txt; b.insertAdjacentHTML('beforeend',`<div class="stamp">${timeNow()}</div>`);
+  row.appendChild(b); chat.appendChild(row); chat.scrollTop=chat.scrollHeight;
+}
+function addMenu(options){
+  const wrap=document.createElement('div'); wrap.className='menu';
+  options.forEach(opt=>{
+    const btn=document.createElement('button'); btn.className='opt';
+    btn.innerHTML=opt.icon + opt.label;
+    btn.addEventListener('click', ()=>opt.onClick());
+    btn.addEventListener('keyup', (e)=>{ if(e.key==='Enter') btn.click(); });
+    wrap.appendChild(btn);
+  });
+  chat.appendChild(wrap); chat.scrollTop=chat.scrollHeight;
+}
+
+/* ---------- Íconos SVG embebidos (sin URLs) ---------- */
+const svgDoc  = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/></svg>';
+const svgCog  = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09c.7 0 1.31-.4 1.51-1a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06c.51.51 1.21.66 1.82.33.6-.3 1-.91 1-1.51V3a2 2 0 1 1 4 0v.09c0 .7.4 1.31 1 1.51.61.33 1.31.18 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06c-.51.51-.66 1.21-.33 1.82.3.6.91 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.7 0-1.31.4-1.51 1z"/></svg>';
+const svgEval = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9a3 3 0 0 0-3-3H9a3 3 0 0 0-3 3v8"/></svg>';
+const svgList = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="3" cy="18" r="1"/></svg>';
+const svgLight= '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.61 2 4.79 4.68 5.5H14.3C17 13.8 19 11.6 19 9a7 7 0 0 0-7-7z"/><path d="M9 22h6M10 18h4"/></svg>';
+const svgCheck= '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>';
+const svgWarn = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+const svgGroup= '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+const svgBack = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>';
+
+/* ---------- Menú principal y secciones (limpia pantalla) ---------- */
+function menuPrincipal(){
+  clearChat();
+  addBot("<b>Hola 👋 Soy Dini</b>. Vamos a revisar el <b>Eje 1: Bit Transformador</b>. Elige un tema general:"+recordatorio);
+  addMenu([
+    {label:"📝 Sobre qué debes trabajar", icon:svgDoc,  onClick:menuTrabajar},
+    {label:"⚙️ Cómo debes trabajar",    icon:svgCog,  onClick:menuComo},
+    {label:"📊 Qué se va a evaluar",     icon:svgEval, onClick:menuEvaluar},
+    {label:"🎯 Mini-quiz opcional",      icon:svgCheck,onClick:menuQuiz}
+  ]);
+}
+
+function menuTrabajar(){
+  clearChat();
+  addBot("Bloque: <b>Sobre qué debes trabajar</b>. Selecciona una pregunta:"+recordatorio);
+  addMenu([
+    {label:"¿Qué hay que hacer en el Eje 1?", icon:svgDoc,
+      onClick:()=>resp("En equipo, definan una <b>problemática real y complicada</b> y propongan una <b>solución en formato app con enfoque comercial</b>.")},
+    {label:"¿Cuáles son las partes a entregar?", icon:svgList,
+      onClick:()=>resp("Incluye: <b>autoría</b> según formato, <b>ideas de cada estudiante y elección final</b>, <b>árbol de problemas</b> con fuentes consultadas, <b>objetivos</b>, <b>hipótesis de solución</b> y la <b>pregunta problema</b>.")},
+    {label:"¿Cuál es la idea central?", icon:svgLight,
+      onClick:()=>resp("Elegir una <b>problemática complicada</b> y viable de resolver mediante un <b>aplicativo móvil</b> original, orientado a aportar valor comercial.")}
+  ]);
+  backToMain();
+}
+
+function menuComo(){
+  clearChat();
+  addBot("Bloque: <b>Cómo debes trabajar</b>. Selecciona una pregunta:"+recordatorio);
+  addMenu([
+    {label:"¿Dónde consigo la plantilla?", icon:svgDoc,
+      onClick:()=>resp("La <b>plantilla Bit Transformador</b> la entrega la docente en el <b>encuentro sincrónico</b> y la aloja en el documento de <b>Drive</b> de la asignatura.")},
+    {label:"¿Cómo es la entrega correcta?", icon:svgCheck,
+      onClick:()=>resp("Mediante un <b>enlace de Drive funcional</b>, compartido <b>como editor</b> a la docente, para verificar la participación de cada integrante en el historial.")},
+    {label:"¿Qué pasa si el enlace no funciona?", icon:svgWarn,
+      onClick:()=>resp("La docente <b>no podrá visualizar</b> el trabajo y <b>no podrá evaluarlo</b>.")},
+    {label:"¿Qué pasa si no se ve el historial?", icon:svgWarn,
+      onClick:()=>resp("La docente <b>no puede verificar</b> ni evaluar la participación en grupo.")},
+    {label:"¿Qué pasa si trabajo solo?", icon:svgWarn,
+      onClick:()=>resp("No se puede evaluar la <b>competencia de trabajo en equipo</b>.")}
+  ]);
+  backToMain();
+}
+
+function menuEvaluar(){
+  clearChat();
+  addBot("Bloque: <b>Qué se va a evaluar</b>. Selecciona un aspecto:"+recordatorio);
+  addMenu([
+    {label:"Normatividad de la estructura", icon:svgDoc,
+      onClick:()=>resp("Sigue la <b>normatividad</b> de cada parte de la estructura indicada en el encuentro y en la plantilla.")},
+    {label:"Trabajo en equipo", icon:svgGroup,
+      onClick:()=>resp("Se evalúa la <b>competencia de trabajo en equipo</b>; el trabajo individual no permite verificarla.")},
+    {label:"Seguimiento de instrucciones", icon:svgCheck,
+      onClick:()=>resp("Cumple con las <b>instrucciones</b> dadas en el encuentro y en la plantilla, sin omitir pasos.")},
+    {label:"Idea viable y complicada", icon:svgLight,
+      onClick:()=>resp("Debe ser una <b>problemática complicada</b> con solución <b>viable</b> en app y con <b>originalidad</b>.")},
+    {label:"Trabajo verificable en grupo", icon:svgGroup,
+      onClick:()=>resp("Se revisará el <b>historial</b> en Drive para verificar la participación de cada integrante.")},
+    {label:"Uso correcto de la plantilla", icon:svgDoc,
+      onClick:()=>resp("Usa la <b>plantilla oficial Bit Transformador</b> entregada por la docente.")}
+  ]);
+  backToMain();
+}
+
+/* ---------- Quiz opcional ---------- */
+function menuQuiz(){
+  clearChat();
+  addBot("🎯 Mini-quiz (opcional). Pregunta 1/1: Si entregas un enlace sin <b>permiso de editor</b>, ¿qué sucede?"+recordatorio);
+  addMenu([
+    {label:"A) Nada, igual lo revisan.", icon:svgWarn, onClick:()=>quizAnswer('A')},
+    {label:"B) La docente no podrá visualizar ni verificar.", icon:svgCheck, onClick:()=>quizAnswer('B')}
+  ]);
+  backToMain();
+}
+function quizAnswer(opt){
+  addUser(opt==='A' ? 'A) Nada, igual lo revisan.' : 'B) La docente no podrá visualizar ni verificar.');
+  if(opt==='B'){
+    addBot(`<div><b>¡Correcto!</b> Debe tener permiso de editor para ver el historial y validar la participación.</div>`+recordatorio);
+  }else{
+    addBot(`<div><b>No es correcto.</b> Sin permiso de editor, la docente no puede visualizar ni verificar el historial.</div>`+recordatorio);
+  }
+}
+
+/* ---------- Respuesta + volver ---------- */
+function resp(text){
+  addUser("Ver respuesta");
+  addBot(text + recordatorio);
+}
+function backToMain(){
+  addMenu([{label:"⬅️ Volver al menú principal", icon:svgBack, onClick:menuPrincipal}]);
+}
+
+/* ---------- Inicio ---------- */
+menuPrincipal();
+</script>
+</body>
+</html>
