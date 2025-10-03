@@ -17,11 +17,8 @@
   .dini-avatar{width:34px;height:34px;border-radius:50%;background:#34b7f1;display:grid;place-items:center;font-weight:700}
   .title{font-weight:600}.subtitle{font-size:.8rem;opacity:.9}
   .wrap{max-width:900px;margin:0 auto;padding:10px}
-  /* Fondo sin URLs: patrón con gradientes */
   .chat{
-    background:
-      linear-gradient(0deg, #efeae2 0%, #efeae2 100%),
-      repeating-linear-gradient(45deg, #f3eee8 0, #f3eee8 8px, #efeae2 8px, #efeae2 16px);
+    background:#efeae2;
     border:1px solid var(--line);border-radius:14px;min-height:70vh;
     padding:14px;display:flex;flex-direction:column;gap:10px;overflow:auto
   }
@@ -33,12 +30,35 @@
   .bubble.bot{background:var(--wa-chat);border-top-left-radius:0}
   .bubble.me{background:var(--wa-me);border-top-right-radius:0}
   .stamp{font-size:.75rem;color:#7a869a;margin-top:4px}
-  .menu{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
-  @media (min-width:640px){.menu{grid-template-columns:1fr 1fr}}
-  .opt{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;
-       border-radius:8px;padding:10px 12px;cursor:pointer;font-weight:600;text-align:left}
-  .opt svg{width:18px;height:18px;stroke:#075e54;flex:none}
-  .opt:hover{background:#f6fafb}
+  .menu{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  @media (max-width:640px){.menu{grid-template-columns:1fr}}
+  .opt {
+    display:flex;align-items:center;gap:8px;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:8px;
+    padding:10px 12px;
+    cursor:pointer;
+    font-weight:500;
+    text-align:left;
+    color:#222;
+    transition: all 0.2s ease;
+  }
+  .opt svg{width:18px;height:18px;stroke:#444;flex:none}
+  .opt:hover{background:#f0f7fb;border-color:#b5d6e8}
+
+  /* Botón de volver diferenciado */
+  .menu-back{display:flex;justify-content:center;margin-top:12px}
+  .opt-back{
+    background:#f5f5f5;
+    border:1px solid #075e54;
+    color:#075e54;
+    font-weight:600;
+    width:60%;
+    justify-content:center;
+  }
+  .opt-back svg{stroke:#075e54}
+  .opt-back:hover{background:#e0f0ed}
   footer{text-align:center;color:#fff;background:var(--brand);padding:10px;font-size:.95rem;margin-top:8px}
 </style>
 </head>
@@ -77,16 +97,27 @@ function addUser(txt){
 function addMenu(options){
   const wrap=document.createElement('div'); wrap.className='menu';
   options.forEach(opt=>{
-    const btn=document.createElement('button'); btn.className='opt';
+    const btn=document.createElement('button'); 
+    btn.className='opt ' + (opt.extraClass || "");
     btn.innerHTML=opt.icon + opt.label;
     btn.addEventListener('click', ()=>opt.onClick());
-    btn.addEventListener('keyup', (e)=>{ if(e.key==='Enter') btn.click(); });
     wrap.appendChild(btn);
   });
   chat.appendChild(wrap); chat.scrollTop=chat.scrollHeight;
 }
 
-/* ---------- Íconos SVG embebidos (sin URLs) ---------- */
+/* Menú diferenciado para volver */
+function addBackButton(){
+  const wrap=document.createElement('div'); wrap.className='menu-back';
+  const btn=document.createElement('button');
+  btn.className='opt opt-back';
+  btn.innerHTML=svgBack + " Volver al menú principal";
+  btn.addEventListener('click', ()=>menuPrincipal());
+  wrap.appendChild(btn);
+  chat.appendChild(wrap); chat.scrollTop=chat.scrollHeight;
+}
+
+/* ---------- Íconos SVG ---------- */
 const svgDoc  = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/></svg>';
 const svgCog  = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09c.7 0 1.31-.4 1.51-1a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06c.51.51 1.21.66 1.82.33.6-.3 1-.91 1-1.51V3a2 2 0 1 1 4 0v.09c0 .7.4 1.31 1 1.51.61.33 1.31.18 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06c-.51.51-.66 1.21-.33 1.82.3.6.91 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.7 0-1.31.4-1.51 1z"/></svg>';
 const svgEval = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9a3 3 0 0 0-3-3H9a3 3 0 0 0-3 3v8"/></svg>';
@@ -97,18 +128,19 @@ const svgWarn = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox
 const svgGroup= '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
 const svgBack = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>';
 
-/* ---------- Menú principal y secciones (limpia pantalla) ---------- */
+/* ---------- Menú principal ---------- */
 function menuPrincipal(){
   clearChat();
   addBot("<b>Hola 👋 Soy Dini</b>. Vamos a revisar el <b>Eje 1: Bit Transformador</b>. Elige un tema general:"+recordatorio);
   addMenu([
-    {label:"📝 Sobre qué debes trabajar", icon:svgDoc,  onClick:menuTrabajar},
-    {label:"⚙️ Cómo debes trabajar",    icon:svgCog,  onClick:menuComo},
-    {label:"📊 Qué se va a evaluar",     icon:svgEval, onClick:menuEvaluar},
-    {label:"🎯 Mini-quiz opcional",      icon:svgCheck,onClick:menuQuiz}
+    {label:"Sobre qué debes trabajar", icon:svgDoc,  onClick:menuTrabajar},
+    {label:"Cómo debes trabajar",    icon:svgCog,  onClick:menuComo},
+    {label:"Qué se va a evaluar",     icon:svgEval, onClick:menuEvaluar},
+    {label:"Mini-quiz opcional",      icon:svgCheck,onClick:menuQuiz}
   ]);
 }
 
+/* ---------- Submenús ---------- */
 function menuTrabajar(){
   clearChat();
   addBot("Bloque: <b>Sobre qué debes trabajar</b>. Selecciona una pregunta:"+recordatorio);
@@ -118,9 +150,9 @@ function menuTrabajar(){
     {label:"¿Cuáles son las partes a entregar?", icon:svgList,
       onClick:()=>resp("Incluye: <b>autoría</b> según formato, <b>ideas de cada estudiante y elección final</b>, <b>árbol de problemas</b> con fuentes consultadas, <b>objetivos</b>, <b>hipótesis de solución</b> y la <b>pregunta problema</b>.")},
     {label:"¿Cuál es la idea central?", icon:svgLight,
-      onClick:()=>resp("Elegir una <b>problemática complicada</b> y viable de resolver mediante un <b>aplicativo móvil</b> original, orientado a aportar valor comercial.")}
+      onClick:()=>resp("Elegir una <b>problemática complicada</b> y viable de resolver mediante un <b>aplicativo móvil</b> original.")}
   ]);
-  backToMain();
+  addBackButton();
 }
 
 function menuComo(){
@@ -128,9 +160,9 @@ function menuComo(){
   addBot("Bloque: <b>Cómo debes trabajar</b>. Selecciona una pregunta:"+recordatorio);
   addMenu([
     {label:"¿Dónde consigo la plantilla?", icon:svgDoc,
-      onClick:()=>resp("La <b>plantilla Bit Transformador</b> la entrega la docente en el <b>encuentro sincrónico</b> y la aloja en el documento de <b>Drive</b> de la asignatura.")},
+      onClick:()=>resp("La <b>plantilla Bit Transformador</b> la entrega la docente en el <b>encuentro sincrónico</b> y la aloja en el documento de <b>Drive</b>.")},
     {label:"¿Cómo es la entrega correcta?", icon:svgCheck,
-      onClick:()=>resp("Mediante un <b>enlace de Drive funcional</b>, compartido <b>como editor</b> a la docente, para verificar la participación de cada integrante en el historial.")},
+      onClick:()=>resp("Mediante un <b>enlace de Drive funcional</b>, compartido <b>como editor</b> a la docente, para verificar la participación de cada integrante.")},
     {label:"¿Qué pasa si el enlace no funciona?", icon:svgWarn,
       onClick:()=>resp("La docente <b>no podrá visualizar</b> el trabajo y <b>no podrá evaluarlo</b>.")},
     {label:"¿Qué pasa si no se ve el historial?", icon:svgWarn,
@@ -138,7 +170,7 @@ function menuComo(){
     {label:"¿Qué pasa si trabajo solo?", icon:svgWarn,
       onClick:()=>resp("No se puede evaluar la <b>competencia de trabajo en equipo</b>.")}
   ]);
-  backToMain();
+  addBackButton();
 }
 
 function menuEvaluar(){
@@ -146,11 +178,11 @@ function menuEvaluar(){
   addBot("Bloque: <b>Qué se va a evaluar</b>. Selecciona un aspecto:"+recordatorio);
   addMenu([
     {label:"Normatividad de la estructura", icon:svgDoc,
-      onClick:()=>resp("Sigue la <b>normatividad</b> de cada parte de la estructura indicada en el encuentro y en la plantilla.")},
+      onClick:()=>resp("Sigue la <b>normatividad</b> de cada parte de la estructura indicada en el encuentro.")},
     {label:"Trabajo en equipo", icon:svgGroup,
       onClick:()=>resp("Se evalúa la <b>competencia de trabajo en equipo</b>; el trabajo individual no permite verificarla.")},
     {label:"Seguimiento de instrucciones", icon:svgCheck,
-      onClick:()=>resp("Cumple con las <b>instrucciones</b> dadas en el encuentro y en la plantilla, sin omitir pasos.")},
+      onClick:()=>resp("Cumple con las <b>instrucciones</b> dadas en el encuentro y en la plantilla.")},
     {label:"Idea viable y complicada", icon:svgLight,
       onClick:()=>resp("Debe ser una <b>problemática complicada</b> con solución <b>viable</b> en app y con <b>originalidad</b>.")},
     {label:"Trabajo verificable en grupo", icon:svgGroup,
@@ -158,18 +190,18 @@ function menuEvaluar(){
     {label:"Uso correcto de la plantilla", icon:svgDoc,
       onClick:()=>resp("Usa la <b>plantilla oficial Bit Transformador</b> entregada por la docente.")}
   ]);
-  backToMain();
+  addBackButton();
 }
 
-/* ---------- Quiz opcional ---------- */
+/* ---------- Quiz ---------- */
 function menuQuiz(){
   clearChat();
-  addBot("🎯 Mini-quiz (opcional). Pregunta 1/1: Si entregas un enlace sin <b>permiso de editor</b>, ¿qué sucede?"+recordatorio);
+  addBot("🎯 Mini-quiz (opcional). Pregunta: Si entregas un enlace sin <b>permiso de editor</b>, ¿qué sucede?"+recordatorio);
   addMenu([
     {label:"A) Nada, igual lo revisan.", icon:svgWarn, onClick:()=>quizAnswer('A')},
     {label:"B) La docente no podrá visualizar ni verificar.", icon:svgCheck, onClick:()=>quizAnswer('B')}
   ]);
-  backToMain();
+  addBackButton();
 }
 function quizAnswer(opt){
   addUser(opt==='A' ? 'A) Nada, igual lo revisan.' : 'B) La docente no podrá visualizar ni verificar.');
@@ -178,16 +210,11 @@ function quizAnswer(opt){
   }else{
     addBot(`<div><b>No es correcto.</b> Sin permiso de editor, la docente no puede visualizar ni verificar el historial.</div>`+recordatorio);
   }
+  addBackButton();
 }
 
-/* ---------- Respuesta + volver ---------- */
-function resp(text){
-  addUser("Ver respuesta");
-  addBot(text + recordatorio);
-}
-function backToMain(){
-  addMenu([{label:"⬅️ Volver al menú principal", icon:svgBack, onClick:menuPrincipal}]);
-}
+/* ---------- Respuesta ---------- */
+function resp(text){ addUser("Ver respuesta"); addBot(text + recordatorio); addBackButton(); }
 
 /* ---------- Inicio ---------- */
 menuPrincipal();
