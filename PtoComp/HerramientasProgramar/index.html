@@ -1,1 +1,286 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratorio de Programación: del Bloque al Código · Areandina</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  /* ===== Paleta Areandina (inspirada) ===== */
+  :root{
+    --ara-green:#29b36b; --ara-green-dark:#1d8a52;
+    --ara-ink:#1b2733; --ara-muted:#5c6b7a;
+    --ara-bg:#f7faf7; --ara-paper:#ffffff; --ara-line:#e6eee8;
+    --ara-accent:#2b6cb0;
+    --shadow:0 10px 24px rgba(0,0,0,.06);
+    --shadow-soft:0 2px 10px rgba(0,0,0,.05);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--ara-bg);color:var(--ara-ink);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;line-height:1.65}
+
+  /* ===== Banner (sin circuitos; motivo de código) ===== */
+  .banner{background:linear-gradient(140deg,#e9f7ef 0%,#f4fbf6 70%);border-bottom:1px solid var(--ara-line)}
+  .banner .wrap{max-width:1100px;margin:0 auto;padding:28px 16px 24px;position:relative}
+  .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:center}
+  .hero h1{font-family:Poppins,Inter,sans-serif;font-weight:800;letter-spacing:.2px;margin:0 0 8px;font-size:1.9rem;color:#0f2a1f}
+  .hero p{margin:0;color:var(--ara-muted)}
+  .badge{display:inline-block;background:var(--ara-green);color:#fff;font-weight:800;border-radius:999px;padding:6px 12px;font-size:.82rem;margin-bottom:10px}
+  .code-graphic{width:100%;height:auto}
+  /* gráfico abstracto de programación */
+  .code-graphic text{font-family:ui-monospace,Consolas,monospace}
+
+  /* ===== Contenedor principal ===== */
+  main{max-width:1100px;margin:18px auto 28px;padding:0 16px}
+
+  /* ===== Tabs (arriba) ===== */
+  .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px;position:sticky;top:0;z-index:5;padding:10px 0;background:transparent}
+  .tab{appearance:none;border:1px solid var(--ara-line);background:var(--ara-paper);color:var(--ara-ink);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:800;letter-spacing:.2px;box-shadow:var(--shadow-soft)}
+  .tab[aria-selected="true"]{background:var(--ara-green);color:#fff;border-color:var(--ara-green)}
+  .tab:focus{outline:2px solid #bfead1;outline-offset:2px}
+
+  /* ===== Paneles ===== */
+  .panel{background:var(--ara-paper);border:1px solid var(--ara-line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:18px}
+  .tabpane{display:none} .tabpane.active{display:block}
+  h2{font-family:Poppins,Inter,sans-serif;font-weight:800;font-size:1.35rem;margin:2px 0 10px;display:flex;align-items:center;gap:10px;color:#0f2a1f}
+  h3{font-weight:800;margin:8px 0}
+  h4{margin:10px 0 6px;font-weight:700}
+  p.lead{color:var(--ara-muted);margin:0 0 8px}
+
+  .grid{display:grid;gap:14px}
+  .grid-2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .card{background:var(--ara-paper);border:1px solid var(--ara-line);border-radius:12px;padding:14px;box-shadow:var(--shadow-soft)}
+  ul{margin:0 0 10px 18px} ol{margin:0 0 10px 18px}
+  .muted{color:var(--ara-muted)}
+  .badge-mini{display:inline-block;border:1px solid var(--ara-line);border-radius:999px;padding:2px 8px;font-size:.75rem;color:var(--ara-muted);margin-left:6px}
+
+  /* Etiquetas de plataforma */
+  .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.72rem;font-weight:700;border:1px solid var(--ara-line);margin-right:6px}
+  .tag.web{background:#f0f6ff;color:#1a4d86}
+  .tag.mobile{background:#edfdf6;color:#0e6d43}
+  .tag.hw{background:#fffaf0;color:#7a4b00}
+
+  /* Código sobrio */
+  .code{background:#f4f8f5;border-left:4px solid var(--ara-green);padding:10px 12px;border-radius:10px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92rem;overflow:auto;margin:8px 0}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:800;padding:9px 12px;border-radius:10px;border:1px solid var(--ara-line)}
+  .btn.primary{background:var(--ara-green);color:#fff}
+  .btn.ghost{background:#fff;color:var(--ara-ink)}
+  .btn + .btn{margin-left:8px}
+
+  .icon{width:26px;height:26px;color:var(--ara-green-dark)}
+  .callout{border:1px dashed var(--ara-line);border-left:4px solid var(--ara-accent);border-radius:12px;padding:12px;background:#f6f9ff}
+
+  footer{text-align:center;color:var(--ara-muted);padding:22px 0 28px;border-top:1px solid var(--ara-line);font-weight:800}
+  a:focus,button:focus{outline:2px solid #bfead1;outline-offset:2px}
+</style>
+</head>
+<body>
+  <!-- ===== Encabezado / Banner (sin electrónica) ===== -->
+  <section class="banner" role="banner">
+    <div class="wrap">
+      <div class="hero">
+        <div>
+          <span class="badge">Recurso de clase · Areandina</span>
+          <h1>Laboratorio de Programación: del Bloque al Código</h1>
+          <p>Material académico con profundidad conceptual y guías de aplicación para <strong>programación visual</strong>, <strong>por código</strong> y <strong>mixta</strong>, articulado con los pilares del <em>Pensamiento Computacional</em>.</p>
+        </div>
+        <!-- Gráfico abstracto de programación (sin PCB) -->
+        <svg class="code-graphic" viewBox="0 0 520 220" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="518" height="218" rx="18" stroke="#cfe8db" stroke-width="2"/>
+          <text x="40" y="70" fill="#29b36b" font-size="18">&lt;algoritmo&gt;</text>
+          <rect x="40" y="85" width="180" height="26" rx="6" stroke="#29b36b" stroke-width="2"/>
+          <rect x="40" y="118" width="140" height="26" rx="6" stroke="#2b6cb0" stroke-width="2"/>
+          <rect x="40" y="151" width="220" height="26" rx="6" stroke="#7ccfa8" stroke-width="2"/>
+          <text x="250" y="100" fill="#2b6cb0" font-size="16">if (condición) { ... } else { ... }</text>
+          <text x="250" y="135" fill="#1d8a52" font-size="16">for i in rango: acción()</text>
+          <text x="250" y="170" fill="#5c6b7a" font-size="14">función(params) → resultado</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <!-- ===== Tabs (orden: Visual → Código → Mixta) ===== -->
+    <nav class="tabs" role="tablist" aria-label="Secciones del laboratorio">
+      <button id="tabV" class="tab" role="tab" aria-controls="paneV" aria-selected="true">Visual</button>
+      <button id="tabC" class="tab" role="tab" aria-controls="paneC" aria-selected="false">Código</button>
+      <button id="tabM" class="tab" role="tab" aria-controls="paneM" aria-selected="false">Mixta</button>
+    </nav>
+
+    <!-- ===================== VISUAL ===================== -->
+    <section id="paneV" class="panel tabpane active" role="tabpanel" aria-labelledby="tabV">
+      <h2>
+        <!-- icono bloques -->
+        <svg class="icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="8" height="6" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="5" width="8" height="6" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="13" width="18" height="6" rx="2" stroke="currentColor" stroke-width="1.7"/></svg>
+        Programación Visual (Scratch · Blockly · App Inventor)
+      </h2>
+      <p class="lead">Aprender lógica sin fricción sintáctica: bloques que representan <em>secuencias</em>, <em>condiciones</em>, <em>bucles</em> y <em>eventos</em>.</p>
+
+      <div class="grid grid-2">
+        <article class="card">
+          <h3>Scratch <span class="badge-mini">Creatividad</span> <span class="tag web">Web/Escritorio</span></h3>
+          <p>Entorno del MIT para historias, juegos y simulaciones. Ideal para introducir pensamiento algorítmico y eventos.</p>
+          <div class="code">/* Idea de bloques (equivalente textual)
+evento bandera → por siempre:
+  mover 10 pasos
+  si toca borde → rebotar */</div>
+          <p><a class="btn primary" href="https://scratch.mit.edu/create" target="_blank" rel="noopener">Abrir Scratch</a>
+             <a class="btn ghost" href="https://scratch.mit.edu" target="_blank" rel="noopener">Sitio oficial</a></p>
+        </article>
+
+        <article class="card">
+          <h3>Blockly <span class="badge-mini">Genera código</span> <span class="tag web">Web</span></h3>
+          <p>Biblioteca para construir <em>editores por bloques</em> que exportan a JavaScript/Python, etc. Excelente para ejercicios a medida.</p>
+          <div class="code">// Bloque “repetir 10 veces” → código
+for (let i=0;i<10;i++){ mover(1); }</div>
+          <p><a class="btn primary" href="https://blockly-demo.appspot.com/static/demos/index.html" target="_blank" rel="noopener">Demos</a>
+             <a class="btn ghost" href="https://developers.google.com/blockly" target="_blank" rel="noopener">Documentación</a></p>
+        </article>
+
+        <article class="card">
+          <h3>MIT App Inventor <span class="badge-mini">Prototipado rápido</span> <span class="tag mobile">Móvil (Android)</span></h3>
+          <p>Plataforma por bloques para crear aplicaciones Android. Integra diseño de pantallas, componentes y pruebas con AI Companion.</p>
+          <div class="code">/* Flujo típico
+Botón.Click → si campo ≠ vacío → Notificador("Hola, "+nombre) */</div>
+          <p><a class="btn primary" href="https://ai2.appinventor.mit.edu/" target="_blank" rel="noopener">Abrir Creador</a>
+             <a class="btn ghost" href="https://appinventor.mit.edu/" target="_blank" rel="noopener">Sitio</a></p>
+        </article>
+
+        <article class="card">
+          <h3>Conexión con el Pensamiento Computacional</h3>
+          <ul>
+            <li><strong>Descomposición:</strong> sprites/escenas/eventos; pantallas/componentes.</li>
+            <li><strong>Abstracción:</strong> bloques/funciones personalizadas para ocultar detalles.</li>
+            <li><strong>Patrones:</strong> bucles de juego, detección de colisión, manejadores de eventos.</li>
+            <li><strong>Algoritmos:</strong> secuencias, decisiones e iteraciones visibles.</li>
+          </ul>
+        </article>
+      </div>
+
+      <article class="card">
+        <h3>¿Cuándo usar cada una? (Visual)</h3>
+        <ul>
+          <li><strong>Web/Escritorio:</strong> Scratch, Blockly (demostraciones, lógica básica, ejercicios personalizados).</li>
+          <li><strong>Móvil:</strong> App Inventor (formularios, sensores de teléfono, mapas, prototipos).</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- ===================== CÓDIGO ===================== -->
+    <section id="paneC" class="panel tabpane" role="tabpanel" aria-labelledby="tabC">
+      <h2>
+        <!-- icono código -->
+        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M8 5 3 12l5 7M16 5l5 7-5 7" stroke="currentColor" stroke-width="1.7"/></svg>
+        Programación por Código (Python · Arduino · Kivy)
+      </h2>
+      <p class="lead">Control, escalabilidad y ecosistemas maduros; requiere dominio de sintaxis, librerías y herramientas.</p>
+
+      <div class="grid grid-2">
+        <article class="card">
+          <h3>Python <span class="badge-mini">Multipropósito</span> <span class="tag web">Web/Escritorio</span></h3>
+          <p>Lenguaje legible con gran ecosistema (datos, automatización, web). Excelente para enseñar algoritmia con claridad.</p>
+          <div class="code"># Decisión + composición (FizzBuzz)
+for i in range(1, 21):
+    out = ("Fizz" if i%3==0 else "") + ("Buzz" if i%5==0 else "")
+    print(out or i)</div>
+          <p><a class="btn primary" href="https://www.python.org/" target="_blank" rel="noopener">Python.org</a>
+             <a class="btn ghost" href="https://docs.python.org/3/" target="_blank" rel="noopener">Documentación</a></p>
+        </article>
+
+        <article class="card">
+          <h3>Arduino (C/C++) <span class="badge-mini">Microcontroladores</span> <span class="tag hw">Hardware/Robótica</span></h3>
+          <p>Programa microcontroladores para leer sensores y actuar sobre salidas. Útil cuando el curso incluye interacción con dispositivos físicos.</p>
+          <div class="code">// Blink
+void setup(){ pinMode(LED_BUILTIN, OUTPUT); }
+void loop(){ digitalWrite(LED_BUILTIN, HIGH); delay(500);
+             digitalWrite(LED_BUILTIN, LOW);  delay(500); }</div>
+          <p><a class="btn primary" href="https://www.arduino.cc/" target="_blank" rel="noopener">Arduino.cc</a>
+             <a class="btn ghost" href="https://create.arduino.cc/editor" target="_blank" rel="noopener">Web Editor</a></p>
+        </article>
+
+        <article class="card">
+          <h3>Python con Kivy <span class="badge-mini">GUI</span> <span class="tag web">Escritorio</span> <span class="tag mobile">Móvil (Android/iOS)</span></h3>
+          <p>Framework para crear interfaces y apps multiplataforma con Python. Aporta transición de scripts a aplicaciones con UI.</p>
+          <div class="code">from kivy.app import App
+from kivy.uix.label import Label
+class HolaApp(App):
+    def build(self): return Label(text="Hola Kivy")
+if __name__ == "__main__": HolaApp().run()</div>
+          <p><a class="btn primary" href="https://kivy.org/" target="_blank" rel="noopener">Kivy.org</a>
+             <a class="btn ghost" href="https://kivy.org/doc/stable/" target="_blank" rel="noopener">Documentación</a></p>
+        </article>
+
+        <article class="card">
+          <h3>¿Cuándo usar cada una? (Código)</h3>
+          <ul>
+            <li><strong>Web/Escritorio:</strong> Python (scripts, análisis, backends); Kivy (apps con UI).</li>
+            <li><strong>Móvil:</strong> Kivy (empaquetado adicional para Android/iOS).</li>
+            <li><strong>Hardware/Robótica:</strong> Arduino (cuando el curso contemple electrónica básica/IoT educativo).</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== MIXTA (al final) ===================== -->
+    <section id="paneM" class="panel tabpane" role="tabpanel" aria-labelledby="tabM">
+      <h2>
+        <!-- icono puente bloques-código -->
+        <svg class="icon" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.7"/><path d="M9 8h6" stroke="currentColor" stroke-width="1.7"/><rect x="15" y="6" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.7"/><path d="M3 16c5-4 13-4 18 0" stroke="currentColor" stroke-width="1.7"/></svg>
+        Programación Mixta (mBlock)
+      </h2>
+      <p class="lead">Puente bloques ↔ código: observar la equivalencia semántica para comprender cómo se traduce la lógica visual al texto.</p>
+
+      <div class="grid grid-2">
+        <article class="card">
+          <h3>mBlock <span class="badge-mini">Transición</span> <span class="tag hw">Hardware/Robótica</span></h3>
+          <p>Basado en Scratch, añade soporte para Arduino/micro:bit y permite alternar a C++/Python. Ideal para cursos STEAM que combinan lógica y dispositivos.</p>
+          <div class="code">/* mBlock → Arduino (conceptual)
+cada 1s:
+  luz = analogRead(A0)
+  if luz < 300 → LED ON
+  else → LED OFF */</div>
+          <p><a class="btn primary" href="https://www.mblock.cc/" target="_blank" rel="noopener">mBlock · Sitio oficial</a>
+             <a class="btn ghost" href="https://www.mblock.cc/doc/en/" target="_blank" rel="noopener">Documentación</a></p>
+        </article>
+
+        <article class="card">
+          <h3>Conexión con Pensamiento Computacional</h3>
+          <ul>
+            <li><strong>Descomposición:</strong> separar lectura de sensores, lógica y actuadores.</li>
+            <li><strong>Abstracción:</strong> umbrales y estados como constantes/variables.</li>
+            <li><strong>Patrones:</strong> ciclo lectura→decisión→acción; temporizaciones y antirrebote.</li>
+            <li><strong>Algoritmos:</strong> <em>if/else</em>, máquinas de estado, pruebas de casos límite.</li>
+          </ul>
+          <div class="callout"><strong>Nota:</strong> usar Mixta cuando el objetivo incluya hardware/robótica o transición guiada del bloque al texto.</div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>Aprendiendo con @LaProfeVivy · 2025</footer>
+
+  <script>
+    // ===== Tabs accesibles con orden: Visual → Código → Mixta =====
+    const tabs = [
+      {btn:'tabV', pane:'paneV'},
+      {btn:'tabC', pane:'paneC'},
+      {btn:'tabM', pane:'paneM'},
+    ];
+    function activate(id){
+      tabs.forEach(t=>{
+        const b=document.getElementById(t.btn), p=document.getElementById(t.pane);
+        const on=(t.btn===id);
+        b.setAttribute('aria-selected', on?'true':'false');
+        p.classList.toggle('active', on);
+      });
+      window.scrollTo({top:document.querySelector('.banner').offsetHeight - 10, behavior:'smooth'});
+    }
+    tabs.forEach(t=>{
+      document.getElementById(t.btn).addEventListener('click', ()=>activate(t.btn));
+    });
+  </script>
+</body>
+</html>
 
