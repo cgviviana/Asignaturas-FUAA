@@ -1,1 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversor de Presupuesto · Areandina</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --verde-oscuro:#00573a;
+    --verde-medio:#009b4c;
+    --verde-claro:#b6e3c2;
+    --gris:#f6f6f6;
+    --texto:#1a1a1a;
+    --blanco:#ffffff;
+    --borde:#d9dfdb;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(180deg,var(--verde-claro) 0%, var(--gris) 100%);
+    color:var(--texto);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+  }
+  .card{
+    background:var(--blanco);
+    border-radius:18px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    padding:32px 26px;
+    width:min(460px, 95vw);
+    text-align:center;
+  }
+  .logo{width:190px;margin:0 auto 8px auto;display:block}
+  h2{margin:6px 0 14px 0;color:var(--verde-oscuro);font-size:1.28rem;font-weight:700}
+  label{display:block;text-align:left;margin-top:14px;font-weight:600}
+  .input-wrap{
+    display:flex;align-items:center;gap:10px;margin-top:6px;
+    border:1px solid var(--borde);border-radius:12px;padding:10px 12px;background:#fff;
+  }
+  input[type="number"]{
+    flex:1;border:none;outline:none;background:transparent;font:inherit;color:var(--texto);
+  }
+  .ico{width:22px;height:22px;stroke:var(--verde-medio);stroke-width:1.6;fill:none}
+  .btn{
+    width:100%;margin-top:18px;padding:12px 14px;border-radius:12px;font-weight:700;
+    border:none;background:var(--verde-medio);color:var(--blanco);cursor:pointer;font-size:1rem;
+  }
+  .btn:hover{background:var(--verde-oscuro)}
+  .resultado{
+    margin-top:18px;padding:16px;border-radius:12px;background:var(--gris);
+  }
+  .row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 0;border-bottom:1px dashed #cfd3d1;
+  }
+  .row:last-child{border-bottom:none}
+  .lbl{font-weight:600;color:#333}
+  .num{font-weight:700;color:var(--verde-oscuro);font-variant-numeric:tabular-nums}
+  .footer{margin-top:14px;color:#555;font-size:.9rem}
+</style>
+</head>
+<body>
+  <div class="card">
+    <!-- Logo Areandina SVG -->
+    <svg class="logo" viewBox="0 0 500 110" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path fill="#009B4C" d="M54.3 86.9c-4.5 0-8.1-3.6-8.1-8.1V46.2c0-1.7 1.4-3 3-3h10.2c1.7 0 3 1.4 3 3v32.6c0 4.4-3.6 8.1-8.1 8.1zM44.2 43.2h-8.5c-1.7 0-3-1.4-3-3V27.1c0-1.7 1.4-3 3-3h8.5c1.7 0 3 1.4 3 3v13.1c0 1.7-1.4 3-3 3zM64.5 43.2H73c1.7 0 3-1.4 3-3V27.1c0-1.7-1.4-3-3-3h-8.5c-1.7 0-3 1.4-3 3v13.1c0 1.7 1.3 3 3 3z"/>
+      <text x="100" y="70" fill="#00573A" font-size="48" font-weight="700" font-family="Poppins, sans-serif">AREANDINA</text>
+    </svg>
 
+    <h2>Conversor de Presupuesto </h2>
+
+    <label for="sueldo">Sueldo mensual (COP)</label>
+    <div class="input-wrap">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 19V5h6.5a4.5 4.5 0 0 1 0 9H6m0-4h6.2M6 15h6.5"/>
+      </svg>
+      <input id="sueldo" type="number" min="0" step="0.01" placeholder="Ej. 3,000,000">
+    </div>
+
+    <label for="horas">Horas semanales dedicadas</label>
+    <div class="input-wrap">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="8"/>
+        <line x1="12" y1="12" x2="12" y2="8"/>
+        <line x1="12" y1="12" x2="15.5" y2="13.5"/>
+      </svg>
+      <input id="horas" type="number" min="0" step="0.01" placeholder="Ej. 2">
+    </div>
+
+    <button class="btn" id="btn">Calcular</button>
+
+    <div class="resultado">
+      <div class="row">
+        <span class="lbl">Valor de la hora</span>
+        <span class="num" id="outHora">—</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Total del presupuesto</span>
+        <span class="num" id="outTotal">—</span>
+      </div>
+    </div>
+
+    <div class="footer">Aprendiendo con @LaProfeVivy · </div>
+  </div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const fmtCOP = n => Number.isFinite(n)
+    ? n.toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0})
+    : "—";
+
+  function calcular(){
+    const sueldo = parseFloat($("sueldo").value);
+    const horas = parseFloat($("horas").value);
+    const outHora = $("outHora");
+    const outTotal = $("outTotal");
+
+    if(!(sueldo>0) || !(horas>0)){
+      outHora.textContent = "—";
+      outTotal.textContent = "—";
+      return;
+    }
+
+    // Valor de la hora = sueldo mensual / 30 días / 8 horas diarias
+    const valorHora = sueldo / 30 / 8;
+
+    // Total del presupuesto = horas semanales × 32 semanas × valorHora
+    const total = horas * 32 * valorHora;
+
+    outHora.textContent = fmtCOP(valorHora);
+    outTotal.textContent = fmtCOP(total);
+  }
+
+  $("btn").addEventListener("click", calcular);
+  ["sueldo","horas"].forEach(id => $(id).addEventListener("input", calcular));
+})();
+</script>
+</body>
+</html>
