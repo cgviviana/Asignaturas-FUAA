@@ -1,1 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OVA – Ensayo Académico</title>
+  <style>
+    :root{
+      --panel:#ffffff;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --accent:#3b82f6;   /* azul profesional */
+      --accent-2:#38bdf8; /* celeste */
+      --card:#ffffff;
+      --shadow:0 4px 10px rgba(0,0,0,.08);
+      --radius:14px;
+      --bg-img:url('Fondo.png'); /* Cambia aquí tu fondo si lo necesitas */
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+      background: var(--bg-img) no-repeat center center fixed;
+      background-size: cover;
+      color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+      padding:16px;
+    }
+    .wrap{max-width:1100px; margin:0 auto;}
+    .head{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:12px; padding:12px 14px; background:#ffffff;
+      border:1px solid #e5e7eb; border-radius:var(--radius); box-shadow:var(--shadow);
+    }
+    .head h1{font-size:20px; margin:0; font-weight:700; letter-spacing:.2px; color:var(--accent);}
+    .head small{color:var(--muted)}
 
+    .tabs{
+      position:sticky; top:8px; z-index:10;
+      overflow:auto; display:flex; gap:8px; padding:8px; margin-bottom:12px;
+      background:#ffffff; border:1px solid #e5e7eb; border-radius:var(--radius); box-shadow:var(--shadow);
+      scroll-snap-type:x mandatory;
+    }
+    .tab-btn{
+      flex:1 0 170px; scroll-snap-align:start;
+      white-space:nowrap; text-overflow:ellipsis; overflow:hidden;
+      background:#f3f4f6; color:var(--ink);
+      border:1px solid #d1d5db; border-radius:10px; padding:8px 10px; cursor:pointer;
+      transition: all .15s ease; font-weight:600; font-size:14px;
+    }
+    .tab-btn[aria-selected="true"]{ background:var(--accent); color:#fff; border-color:var(--accent); }
+    .tab-btn:hover{ background:#e0e7ff; }
+
+    .panel{
+      display:none; background:#ffffff; border:1px solid #e5e7eb; border-radius:var(--radius);
+      padding:18px; box-shadow:var(--shadow); animation:fade .25s ease;
+    }
+    .panel.active{display:block;}
+    @keyframes fade{from{opacity:.6; transform:translateY(2px)} to{opacity:1; transform:none}}
+
+    .kicker{display:inline-flex; gap:8px; align-items:center; color:var(--muted); font-weight:600; letter-spacing:.3px; text-transform:uppercase; font-size:12px}
+    .title{font-size:22px; margin:.2rem 0 1rem; color:var(--accent)}
+    .sub{margin:.4rem 0 .25rem; font-weight:700; color:#111827;}
+
+    .card{background:#f9fafb; border:1px solid #e5e7eb; border-radius:12px; padding:14px; margin:10px 0; box-shadow:var(--shadow);}
+    .grid{display:grid; gap:12px; grid-template-columns:repeat(12,1fr);}
+    .col-4{grid-column:span 4;}
+    .col-6{grid-column:span 6;}
+    .col-8{grid-column:span 8;}
+    .col-12{grid-column:span 12;}
+    @media (max-width:900px){ .col-4,.col-6,.col-8{grid-column:span 12;} }
+
+    .embed{display:grid; place-items:center; background:#fff; border:1px dashed #cbd5e1; border-radius:12px; min-height:220px; padding:8px;}
+    .embed iframe{width:100%; height:420px; border:0; border-radius:10px;}
+
+    .muted{color:var(--muted)}
+    ul.tight li, ol.tight li{margin-bottom:6px;}
+
+    footer{margin:18px auto 4px; padding:12px 14px; text-align:center; color:var(--muted); border-top:1px dashed #d1d5db;}
+  </style>
+</head>
+
+<body>
+  <div class="wrap" role="application">
+    <div class="head">
+      <h1>Ensayo Académico</h1>
+      <small>OVA | @LaProfeVivy</small>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" role="tablist" aria-label="Navegación de pestañas">
+      <button class="tab-btn" aria-selected="true"  aria-controls="p1"  id="t1">Introducción</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p2"  id="t2">Tipos</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p3"  id="t3">Pasos previos</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p4"  id="t4">Revisión de literatura</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p5"  id="t5">Estructura</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p6"  id="t6">Redacción y estilo</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p7"  id="t7">Ejemplo guiado</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p8"  id="t8">Práctica</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p9"  id="t9">Referentes</button>
+    </div>
+
+    <!-- P1 INTRODUCCIÓN -->
+    <section class="panel active" id="p1" role="tabpanel" aria-labelledby="t1">
+      <span class="kicker">Pestaña 1</span>
+      <h2 class="title">Introducción</h2>
+      <div class="card">
+        <p>El <strong>ensayo académico</strong> es un texto argumentativo donde el autor sostiene una <em>tesis</em> (afirmación central) con razonamientos y evidencias. Su objetivo es demostrar capacidad de análisis, pensamiento crítico y manejo de fuentes.</p>
+      </div>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">¿Para qué sirve?</h3>
+          <ul class="tight">
+            <li>Desarrollar y evaluar pensamiento crítico y argumentación.</li>
+            <li>Integrar literatura académica con postura propia.</li>
+          </ul>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Producto esperado</h3>
+          <ul class="tight">
+            <li>Texto coherente, con tesis clara y evidencias citadas (APA 7).</li>
+            <li>Conclusión que sintetiza hallazgos y proyecta implicaciones.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- P2 TIPOS -->
+    <section class="panel" id="p2" role="tabpanel" aria-labelledby="t2">
+      <span class="kicker">Pestaña 2</span>
+      <h2 class="title">Tipos de ensayo (con ejemplos)</h2>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">Argumentativo</h3>
+          <p>Defiende una tesis con razones y evidencias.</p>
+          <p class="muted"><em>Ejemplo de tesis:</em> “La evaluación formativa mejora el aprendizaje cuando hay retroalimentación oportuna”.</p>
+          <h3 class="sub">Expositivo</h3>
+          <p>Explica un tema con orden lógico y claridad, sin juicio fuerte.</p>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Crítico</h3>
+          <p>Analiza y valora teorías/obras con criterios explícitos.</p>
+          <h3 class="sub">Científico/divulgativo</h3>
+          <p>Aborda un tema académico apoyado en estudios y datos, con lenguaje accesible.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- P3 PASOS PREVIOS (DETALLADO) -->
+    <section class="panel" id="p3" role="tabpanel" aria-labelledby="t3">
+      <span class="kicker">Pestaña 3</span>
+      <h2 class="title">Pasos previos (planificación estratégica)</h2>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">1) Tema → Pregunta → Tesis</h3>
+          <ul class="tight">
+            <li><strong>Elige tema</strong> acotado (evita generalidades).<br><span class="muted">Amplio: “evaluación” → Acotado: “retroalimentación inmediata en cursos universitarios”.</span></li>
+            <li><strong>Formula una pregunta</strong> que oriente la investigación.<br><span class="muted">Ej.: ¿Cómo impacta la retroalimentación inmediata en la motivación y desempeño?</span></li>
+            <li><strong>Redacta la tesis</strong> (afirmación defendible).<br><span class="muted">Ej.: La retroalimentación inmediata potencia motivación y desempeño al guiar la autorregulación.</span></li>
+          </ul>
+
+          <h3 class="sub">2) Objetivo y alcance</h3>
+          <ul class="tight">
+            <li>Define <em>qué demostrar</em> y <em>hasta dónde</em> (población, contexto, límites).</li>
+            <li>Evita abarcar demasiados subtemas.</li>
+          </ul>
+
+          <h3 class="sub">3) Audiencia y tono</h3>
+          <ul class="tight">
+            <li>Académico, claro y preciso; evita ambigüedad.</li>
+            <li>Selecciona ejemplos pertinentes para esa audiencia.</li>
+          </ul>
+        </div>
+
+        <div class="col-6 card">
+          <h3 class="sub">4) Plan de argumentos</h3>
+          <ol class="tight">
+            <li>Lista 2–4 razones principales que respalden la tesis.</li>
+            <li>Asigna evidencias a cada razón (estudios, datos, ejemplos).</li>
+            <li>Prevé objeciones y tu réplica.</li>
+          </ol>
+
+          <h3 class="sub">5) Esquema (outline)</h3>
+          <ol class="tight">
+            <li><strong>Introducción:</strong> contexto + problema + tesis.</li>
+            <li><strong>Desarrollo:</strong> párrafo 1 (razón A + evidencia), párrafo 2 (razón B + evidencia), etc.</li>
+            <li><strong>Contraste:</strong> objeciones y refutaciones.</li>
+            <li><strong>Conclusión:</strong> síntesis + implicaciones.</li>
+          </ol>
+
+          <h3 class="sub">6) Gestión del tiempo</h3>
+          <ul class="tight">
+            <li>40% búsqueda/lectura, 40% borradores, 20% revisión.</li>
+            <li>Fechas de corte para cerrar bibliografía y pasar a redacción.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="sub">¿Qué es “tesis” y cómo redactarla?</h3>
+        <p><strong>Tesis:</strong> afirmación central que vas a defender con argumentos y evidencias. Debe ser <em>delimitada, discutible y sustentable</em>.</p>
+        <ul class="tight">
+          <li><strong>Mala:</strong> “La retroalimentación es buena”. (vaga, no discutible)</li>
+          <li><strong>Mejor:</strong> “La retroalimentación inmediata mejora la motivación y el desempeño en cursos universitarios, al promover la autorregulación del estudiante”.</li>
+        </ul>
+        <p class="muted"><em>Tip:</em> Prueba de tesis: ¿alguien razonable podría discrepar? Si no, no es una tesis, es una obviedad.</p>
+      </div>
+    </section>
+
+    <!-- P4 REVISIÓN DE LITERATURA (DETALLADO) -->
+    <section class="panel" id="p4" role="tabpanel" aria-labelledby="t4">
+      <span class="kicker">Pestaña 4</span>
+      <h2 class="title">Revisión de literatura (buscar, evaluar, organizar)</h2>
+
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">1) Dónde buscar</h3>
+          <ul class="tight">
+            <li><strong>Académico:</strong> Google Scholar, Scielo, Redalyc, DOAJ, ERIC, PubMed, IEEE Xplore (según área).</li>
+            <li><strong>Biblioteca institucional:</strong> catálogos y bases suscritas.</li>
+          </ul>
+
+          <h3 class="sub">2) Estrategias de búsqueda</h3>
+          <ul class="tight">
+            <li>Palabras clave + sinónimos + operadores: <code>"feedback inmediato" AND motivación</code>; <code>(formativa OR "assessment for learning")</code>.</li>
+            <li>Filtros: fecha (últimos 5–10 años), tipo (artículos, revisiones), idioma.</li>
+            <li>Revisa referencias de los mejores artículos (snowballing).</li>
+          </ul>
+
+          <h3 class="sub">3) Criterios de calidad</h3>
+          <ul class="tight">
+            <li>Autoridad (revista, afiliación, peer review).</li>
+            <li>Actualidad y relevancia para tu <em>tesis</em>.</li>
+            <li>Metodología y solidez de resultados.</li>
+          </ul>
+        </div>
+
+        <div class="col-6 card">
+          <h3 class="sub">4) Fichado y citación (APA 7)</h3>
+          <ul class="tight">
+            <li>Crea fichas: referencia completa, idea clave, cita textual (página), comentario propio, palabras clave.</li>
+            <li>Decide si usarás gestor (Zotero, Mendeley) o planilla.</li>
+          </ul>
+
+          <h3 class="sub">5) Organización según tu tesis</h3>
+          <ol class="tight">
+            <li>Agrupa las fichas por <strong>razones</strong> que respaldan tu tesis.</li>
+            <li>Separa un bloque de <strong>objeciones</strong> + evidencia contraria (sirve para tu réplica).</li>
+            <li>Ordena los bloques (de más fuerte a menos, o de general a específico).</li>
+          </ol>
+
+          <h3 class="sub">6) Qué citar / cómo citar</h3>
+          <ul class="tight">
+            <li>Cita <em>ideas ajenas</em> y <em>datos específicos</em> (parentética o narrativa, APA 7).</li>
+            <li>Evita saturar de citas textuales: prioriza <strong>paráfrasis con crédito</strong>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="sub">Mini-ejemplo de matriz de literatura (según tesis)</h3>
+        <ul class="tight">
+          <li><strong>Razón A:</strong> La retroalimentación inmediata incrementa motivación → (Autor1, 2021; Autor2, 2020).</li>
+          <li><strong>Razón B:</strong> Mejora desempeño al clarificar metas → (Autor3, 2019; Autor4, 2022).</li>
+          <li><strong>Objeción:</strong> Puede generar dependencia del docente → (Autor5, 2018). <em>Réplica:</em> mitigable con rúbricas y autoevaluación (Autor6, 2023).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- P5 ESTRUCTURA (DETALLADO) -->
+    <section class="panel" id="p5" role="tabpanel" aria-labelledby="t5">
+      <span class="kicker">Pestaña 5</span>
+      <h2 class="title">Estructura del ensayo (modelo aplicable)</h2>
+
+      <div class="grid">
+        <div class="col-12 card">
+          <h3 class="sub">Plantilla base</h3>
+          <ol class="tight">
+            <li><strong>Introducción (1–2 párrafos):</strong> Contexto, problema y <strong>tesis</strong>. Opcional: mapa de argumentos.</li>
+            <li><strong>Desarrollo (3–5 párrafos):</strong> Cada párrafo = 1 idea principal (razón) + evidencia + explicación. Incluye <strong>objeciones</strong> y <strong>réplica</strong>.</li>
+            <li><strong>Conclusión (1 párrafo):</strong> Síntesis, reafirmación de la tesis y proyección/implicaciones.</li>
+          </ol>
+        </div>
+
+        <div class="col-6 card">
+          <h3 class="sub">Introducción: ejemplo</h3>
+          <p><em>En la educación universitaria, la calidad de la retroalimentación docente incide en la motivación del estudiante. Este ensayo sostiene que la retroalimentación inmediata potencia la autorregulación y, con ello, el desempeño académico. Para ello, se revisan evidencias recientes y se discuten condiciones de implementación.</em></p>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Desarrollo: ejemplo (párrafo tipo)</h3>
+          <p><em>Primero, la retroalimentación inmediata aumenta la motivación al reducir la incertidumbre sobre el desempeño (Autor1, 2021). Estudios cuasi-experimentales reportan mejoras significativas en tareas secuenciales (Autor2, 2020). Esta claridad promueve metas específicas y refuerza la percepción de progreso.</em></p>
+        </div>
+
+        <div class="col-12 card">
+          <h3 class="sub">Conexión entre párrafos (cohesión)</h3>
+          <ul class="tight">
+            <li>Usa conectores: <em>en primer lugar, además, por otra parte, sin embargo, por consiguiente</em>.</li>
+            <li>Evita saltos: cada párrafo debe enlazar con la tesis y el anterior.</li>
+          </ul>
+        </div>
+
+        <div class="col-12 card">
+          <h3 class="sub">Conclusión: ejemplo</h3>
+          <p><em>En síntesis, la retroalimentación inmediata favorece la motivación y el desempeño al orientar la autorregulación. No obstante, su efectividad depende de criterios claros y oportunidades de autoevaluación. Futuras investigaciones deberían comparar efectos por disciplina y nivel de curso.</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- P6 REDACCIÓN Y ESTILO -->
+    <section class="panel" id="p6" role="tabpanel" aria-labelledby="t6">
+      <span class="kicker">Pestaña 6</span>
+      <h2 class="title">Redacción y estilo</h2>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">Argumentar bien</h3>
+          <ul class="tight">
+            <li>Afirma → justifica con evidencia → explica por qué esa evidencia respalda la tesis.</li>
+            <li>Trata objeciones fuertes (no espantapájaros).</li>
+          </ul>
+          <h3 class="sub">Citas (APA 7)</h3>
+          <ul class="tight">
+            <li>Narrativa: Autor (2022) sostiene que…</li>
+            <li>Parentética: (Autor, 2022, p. 45).</li>
+          </ul>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Estilo</h3>
+          <ul class="tight">
+            <li>Claridad > adornos. Evita vaguedades.</li>
+            <li>Usa conectores y define términos clave.</li>
+            <li>Revisa ortografía, puntuación y formato.</li>
+          </ul>
+          <h3 class="sub">Evita</h3>
+          <ul class="tight"><li>Plagio (cita todo lo ajeno).</li><li>Exceso de citas textuales; prioriza paráfrasis.</li><li>Falacias (generalizaciones, falsas causas).</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- P7 EJEMPLO GUIADO -->
+    <section class="panel" id="p7" role="tabpanel" aria-labelledby="t7">
+      <span class="kicker">Pestaña 7</span>
+      <h2 class="title">Ejemplo guiado (mini-modelo)</h2>
+      <div class="card">
+        <h3 class="sub">Tesis</h3>
+        <p><em>La retroalimentación inmediata incrementa la motivación y el desempeño en cursos universitarios al facilitar la autorregulación.</em></p>
+      </div>
+      <div class="grid">
+        <div class="col-4 card">
+          <h3 class="sub">Introducción</h3>
+          <p>Contextualiza el problema, delimita el enfoque y declara la tesis.</p>
+        </div>
+        <div class="col-4 card">
+          <h3 class="sub">Desarrollo (2–3 párrafos)</h3>
+          <ul class="tight">
+            <li>Razón A + evidencia + explicación.</li>
+            <li>Razón B + evidencia + explicación.</li>
+            <li>Objeción + réplica.</li>
+          </ul>
+        </div>
+        <div class="col-4 card">
+          <h3 class="sub">Conclusión</h3>
+          <p>Síntesis de hallazgos, reafirmación de tesis y proyección.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- P8 PRÁCTICA -->
+    <section class="panel" id="p8" role="tabpanel" aria-labelledby="t8">
+      <span class="kicker">Pestaña 8</span>
+      <h2 class="title">Práctica</h2>
+      <div class="embed">
+        <!-- Inserta aquí tu documento de Google Drive con el paso a paso / guía -->
+        <!-- Ej.: <iframe src="https://docs.google.com/document/d/ID/preview" title="Guía de práctica – Ensayo" allowfullscreen></iframe> -->
+      </div>
+    </section>
+
+    <!-- P9 REFERENTES -->
+    <section class="panel" id="p9" role="tabpanel" aria-labelledby="t9">
+      <span class="kicker">Pestaña 9</span>
+      <h2 class="title">Referentes (APA 7)</h2>
+      <div class="card">
+        <ul class="tight">
+          <li>American Psychological Association. (2020). <em>Publication Manual of the American Psychological Association</em> (7th ed.).</li>
+          <li>Eco, U. (2015). <em>Cómo se hace una tesis</em>. Gedisa.</li>
+          <li>Hyland, K. (2019). <em>Academic Discourse</em>. Bloomsbury.</li>
+          <li>Swales, J. M., & Feak, C. B. (2012). <em>Academic Writing for Graduate Students</em>. University of Michigan Press.</li>
+          <li>Gómez, M., & Pérez, L. (2021). Escritura académica: géneros, estructura y estilo. <em>Revista de Educación Superior</em>, 50(2), 45–62.</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>Aprendiendo con <strong>@LaProfeVivy</strong></footer>
+  </div>
+
+  <script>
+    // Tabs accesibles
+    const btns=[...document.querySelectorAll('.tab-btn')];
+    const panels=[...document.querySelectorAll('.panel')];
+
+    function activate(i){
+      btns.forEach((b,ix)=>{
+        const sel = ix===i;
+        b.setAttribute('aria-selected', sel);
+        panels[ix].classList.toggle('active', sel);
+      });
+    }
+    btns.forEach((b,i)=>{
+      b.addEventListener('click', ()=>activate(i));
+      b.addEventListener('keydown', (e)=>{
+        if(e.key==='ArrowRight'){ e.preventDefault(); btns[(i+1)%btns.length].focus(); }
+        if(e.key==='ArrowLeft'){ e.preventDefault(); btns[(i-1+btns.length)%btns.length].focus(); }
+        if(e.key==='Home'){ e.preventDefault(); btns[0].focus(); }
+        if(e.key==='End'){ e.preventDefault(); btns[btns.length-1].focus(); }
+        if(e.key==='Enter' || e.key===' '){ e.preventDefault(); activate(i); }
+      });
+    });
+
+    // Navegación con hash (#pX)
+    function openFromHash(){
+      const id = location.hash.replace('#','');
+      const idx = panels.findIndex(p=>p.id===id);
+      if(idx>=0) activate(idx);
+    }
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
+  </script>
+</body>
+</html>
