@@ -3,55 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Producciones Escritas</title>
+  <title>OVA Multipestaña – Producciones Escritas</title>
   <style>
     :root{
       --panel:#ffffff;
       --ink:#1f2937;
       --muted:#6b7280;
-      --accent:#3b82f6;  /* azul profesional */
+      --accent:#3b82f6;   /* azul profesional */
       --accent-2:#38bdf8; /* celeste */
       --card:#ffffff;
       --shadow:0 4px 10px rgba(0,0,0,.08);
       --radius:14px;
+      --bg-img:url('Fondo.png'); /* Reemplaza 'Fondo.png' por tu archivo si cambias el fondo */
     }
     html,body{height:100%;}
     body{
       margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
-      background:url('Fondo.png') no-repeat center center fixed;
-      background-size:cover;
+      background: var(--bg-img) no-repeat center center fixed;
+      background-size: cover;
       color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
       padding:16px;
     }
     .wrap{max-width:1100px; margin:0 auto;}
-    .head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;padding:12px 14px;background:#ffffff;
-      border:1px solid #e5e7eb;border-radius:var(--radius);box-shadow:var(--shadow);}
-    .head h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.2px;color:var(--accent);}
-    .head small{color:var(--muted);}
-    .tabs{position:sticky;top:8px;z-index:10;overflow:auto;display:flex;gap:8px;padding:8px;margin-bottom:12px;
-      background:#ffffff;border:1px solid #e5e7eb;border-radius:var(--radius);box-shadow:var(--shadow);scroll-snap-type:x mandatory;}
-    .tab-btn{flex:1 0 170px;scroll-snap-align:start;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;background:#f3f4f6;color:var(--ink);
-      border:1px solid #d1d5db;border-radius:10px;padding:8px 10px;cursor:pointer;transition:all .15s ease;font-weight:600;font-size:14px;}
-    .tab-btn[aria-selected="true"]{background:var(--accent);color:#fff;border-color:var(--accent);}
-    .tab-btn:hover{background:#e0e7ff;}
-    .panel{display:none;background:#ffffff;border:1px solid #e5e7eb;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);animation:fade .25s ease;}
+    .head{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:12px; padding:12px 14px; background:#ffffff;
+      border:1px solid #e5e7eb; border-radius:var(--radius); box-shadow:var(--shadow);
+    }
+    .head h1{font-size:20px; margin:0; font-weight:700; letter-spacing:.2px; color:var(--accent);}
+    .head small{color:var(--muted)}
+
+    .tabs{
+      position:sticky; top:8px; z-index:10;
+      overflow:auto; display:flex; gap:8px; padding:8px; margin-bottom:12px;
+      background:#ffffff; border:1px solid #e5e7eb; border-radius:var(--radius); box-shadow:var(--shadow);
+      scroll-snap-type:x mandatory;
+    }
+    .tab-btn{
+      flex:1 0 170px; scroll-snap-align:start;
+      white-space:nowrap; text-overflow:ellipsis; overflow:hidden;
+      background:#f3f4f6; color:var(--ink);
+      border:1px solid #d1d5db; border-radius:10px; padding:8px 10px; cursor:pointer;
+      transition: all .15s ease; font-weight:600; font-size:14px;
+    }
+    .tab-btn[aria-selected="true"]{ background:var(--accent); color:#fff; border-color:var(--accent); }
+    .tab-btn:hover{ background:#e0e7ff; }
+
+    .panel{
+      display:none; background:#ffffff; border:1px solid #e5e7eb; border-radius:var(--radius);
+      padding:18px; box-shadow:var(--shadow); animation:fade .25s ease;
+    }
     .panel.active{display:block;}
-    @keyframes fade{from{opacity:.6;transform:translateY(2px)}to{opacity:1;transform:none}}
-    .kicker{display:inline-flex;gap:8px;align-items:center;color:var(--muted);font-weight:600;letter-spacing:.3px;text-transform:uppercase;font-size:12px}
-    .title{font-size:22px;margin:.2rem 0 1rem;color:var(--accent);}
-    .card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin:10px 0;box-shadow:var(--shadow);}
-    .grid{display:grid;gap:12px;grid-template-columns:repeat(12,1fr);}
+    @keyframes fade{from{opacity:.6; transform:translateY(2px)} to{opacity:1; transform:none}}
+
+    .kicker{display:inline-flex; gap:8px; align-items:center; color:var(--muted); font-weight:600; letter-spacing:.3px; text-transform:uppercase; font-size:12px}
+    .title{font-size:22px; margin:.2rem 0 1rem; color:var(--accent)}
+
+    .card{background:#f9fafb; border:1px solid #e5e7eb; border-radius:12px; padding:14px; margin:10px 0; box-shadow:var(--shadow);}
+    .grid{display:grid; gap:12px; grid-template-columns:repeat(12,1fr);}
     .col-6{grid-column:span 6;}
     .col-12{grid-column:span 12;}
-    @media (max-width:900px){.col-6{grid-column:span 12;}}
-    .embed{display:grid;place-items:center;background:#fff;border:1px dashed #cbd5e1;border-radius:12px;min-height:220px;padding:8px;}
-    .embed iframe{width:100%;height:420px;border:0;border-radius:10px;}
-    .btn{display:inline-flex;align-items:center;gap:8px;cursor:pointer;padding:8px 12px;border-radius:10px;border:1px solid var(--accent);
-      background:var(--accent);color:#fff;text-decoration:none;font-weight:600;font-size:14px;transition:background .12s ease,transform .12s ease;}
-    .btn:hover{background:var(--accent-2);transform:translateY(-1px);}
-    .muted{color:var(--muted);}
+    @media (max-width:900px){ .col-6{grid-column:span 12;} }
+
+    .embed{display:grid; place-items:center; background:#fff; border:1px dashed #cbd5e1; border-radius:12px; min-height:220px; padding:8px;}
+    .embed iframe{width:100%; height:420px; border:0; border-radius:10px;}
+
+    .muted{color:var(--muted)}
     ul.tight li{margin-bottom:6px;}
-    footer{margin:18px auto 4px;padding:12px 14px;text-align:center;color:var(--muted);border-top:1px dashed #d1d5db;}
+    ol.tight li{margin-bottom:6px;}
+
+    footer{margin:18px auto 4px; padding:12px 14px; text-align:center; color:var(--muted); border-top:1px dashed #d1d5db;}
+    .sub{margin:.5rem 0 .25rem; font-weight:700; color:#111827;}
   </style>
 </head>
 
@@ -59,136 +81,334 @@
   <div class="wrap" role="application">
     <div class="head">
       <h1>Producciones Escritas</h1>
-      
+      <small>OVA | @LaProfeVivy</small>
     </div>
 
+    <!-- Tabs -->
     <div class="tabs" role="tablist" aria-label="Navegación de pestañas">
-      <button class="tab-btn" aria-selected="true" aria-controls="p1" id="t1">Introducción</button>
-      <button class="tab-btn" aria-controls="p2" id="t2">Ensayo</button>
-      <button class="tab-btn" aria-controls="p3" id="t3">Monografía</button>
-      <button class="tab-btn" aria-controls="p4" id="t4">Resumen</button>
-      <button class="tab-btn" aria-controls="p5" id="t5">Reseña</button>
-      <button class="tab-btn" aria-controls="p6" id="t6">Informe</button>
-      <button class="tab-btn" aria-controls="p7" id="t7">Artículo académico</button>
-      <button class="tab-btn" aria-controls="p8" id="t8">Ficha de lectura</button>
-      <button class="tab-btn" aria-controls="p9" id="t9">Bitácora / Diario</button>
-      <button class="tab-btn" aria-controls="p10" id="t10">Práctica</button>
-      <button class="tab-btn" aria-controls="p11" id="t11">Referentes</button>
+      <button class="tab-btn" aria-selected="true"  aria-controls="p1"  id="t1">Introducción</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p2"  id="t2">Ensayo</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p3"  id="t3">Monografía</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p4"  id="t4">Resumen</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p5"  id="t5">Reseña</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p6"  id="t6">Informe</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p7"  id="t7">Artículo académico</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p8"  id="t8">Ficha de lectura</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p9"  id="t9">Bitácora / Diario</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p10" id="t10">Práctica</button>
+      <button class="tab-btn" aria-selected="false" aria-controls="p11" id="t11">Referentes</button>
     </div>
 
     <!-- INTRODUCCIÓN -->
-    <section class="panel active" id="p1">
+    <section class="panel active" id="p1" role="tabpanel" aria-labelledby="t1">
       <span class="kicker">Pestaña 1</span>
       <h2 class="title">Introducción</h2>
-      <p>Las <strong>producciones escritas</strong> son herramientas clave para demostrar comprensión, análisis y capacidad de argumentar en el ámbito académico.</p>
+      <p>Las <strong>producciones escritas</strong> permiten evidenciar comprensión, análisis y capacidad de argumentación. En este OVA encontrarás pautas prácticas y concisas para elaborar: ensayo, monografía, resumen, reseña, informe, artículo académico, ficha de lectura y bitácora reflexiva.</p>
       <div class="card">
-        <h3>Objetivo general</h3>
-        <p>Reconocer las características, normas y estructura de las principales producciones escritas utilizadas.</p>
+        <h3 class="sub">Objetivo general</h3>
+        <p>Reconocer propósito, estructura y normas de los principales géneros académicos y aplicarlos en la redacción de documentos universitarios.</p>
       </div>
     </section>
 
     <!-- ENSAYO -->
-    <section class="panel" id="p2">
+    <section class="panel" id="p2" role="tabpanel" aria-labelledby="t2">
       <span class="kicker">Pestaña 2</span>
       <h2 class="title">Ensayo</h2>
       <div class="grid">
         <div class="col-6 card">
-          <h3>Origen</h3><p>Surge con Montaigne y Bacon como forma de reflexión libre y razonada.</p>
-          <h3>Concepto</h3><p>Texto argumentativo donde el autor defiende una tesis mediante razonamientos y evidencias.</p>
-          <h3>Características</h3>
-          <ul class="tight"><li>Tesis clara.</li><li>Argumentos sustentados.</li><li>Conclusión reflexiva.</li></ul>
+          <h3 class="sub">Origen</h3>
+          <p>Modernidad europea (Montaigne, Bacon). Género flexible de reflexión y crítica.</p>
+          <h3 class="sub">Concepto</h3>
+          <p>Texto <strong>argumentativo</strong> que sostiene una tesis con evidencias y razonamiento propio.</p>
+          <h3 class="sub">Características</h3>
+          <ul class="tight">
+            <li>Tesis explícita o implícita.</li>
+            <li>Argumentos, contraargumentos y evidencias.</li>
+            <li>Voz autoral y análisis crítico.</li>
+            <li>Coherencia y cohesión.</li>
+          </ul>
         </div>
         <div class="col-6 card">
-          <h3>Normas</h3><p>Formato académico, referencias en APA 7, coherencia y unidad.</p>
-          <h3>Uso</h3><p>Evaluar pensamiento crítico o análisis de problemas teóricos.</p>
-          <h3>Redacción</h3><p>Introducción (tesis), desarrollo (argumentos), cierre (conclusión).</p>
+          <h3 class="sub">Normativas</h3>
+          <ul class="tight">
+            <li>Formato académico (márgenes, tipografía legible, interlineado).</li>
+            <li>Citación y referencias en <strong>APA 7</strong> cuando aplique.</li>
+          </ul>
+          <h3 class="sub">Cuándo se usa</h3>
+          <ul class="tight"><li>Evaluar pensamiento crítico y argumentación.</li><li>Debate teórico o análisis de problemas actuales.</li></ul>
+          <h3 class="sub">Qué necesita</h3>
+          <ul class="tight"><li>Lectura previa y selección de fuentes clave.</li><li>Mapa de argumentos y evidencias.</li></ul>
+        </div>
+        <div class="col-12 card">
+          <h3 class="sub">Cómo se redacta</h3>
+          <ol class="tight">
+            <li><strong>Introducción:</strong> contexto + tesis.</li>
+            <li><strong>Desarrollo:</strong> argumentos (y réplica a objeciones) con evidencias citadas.</li>
+            <li><strong>Conclusión:</strong> síntesis y proyección.</li>
+          </ol>
+          <h3 class="sub">Ejemplo breve</h3>
+          <p><em>Tesis:</em> La evaluación formativa mejora la autorregulación del estudiante; la literatura reciente reporta efectos positivos en motivación y desempeño cuando hay retroalimentación oportuna.</p>
         </div>
       </div>
     </section>
 
     <!-- MONOGRAFÍA -->
-    <section class="panel" id="p3">
+    <section class="panel" id="p3" role="tabpanel" aria-labelledby="t3">
       <span class="kicker">Pestaña 3</span>
       <h2 class="title">Monografía</h2>
-      <div class="card">
-        <p>Trabajo investigativo que describe y analiza un tema específico basándose en fuentes confiables. Incluye introducción, desarrollo por capítulos, conclusiones y referencias APA.</p>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">Origen</h3>
+          <p>Tradición académica de síntesis expositiva centrada en un <em>tema único</em>.</p>
+          <h3 class="sub">Concepto</h3>
+          <p>Documento que <strong>describe y analiza</strong> un tema específico integrando fuentes confiables.</p>
+          <h3 class="sub">Características</h3>
+          <ul class="tight">
+            <li>Delimitación precisa del objeto de estudio.</li>
+            <li>Revisión de literatura y organización por capítulos.</li>
+            <li>Tono expositivo y comparativo (no necesariamente investigación original).</li>
+          </ul>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Normativas</h3>
+          <ul class="tight">
+            <li>Estructura sugerida: portada, índice, introducción, capítulos, conclusiones, <strong>referencias (APA 7)</strong>.</li>
+            <li>Tablas/figuras con numeración, título y fuente.</li>
+          </ul>
+          <h3 class="sub">Cuándo se usa</h3>
+          <ul class="tight"><li>Profundización temática en cursos o trabajos previos al grado.</li></ul>
+          <h3 class="sub">Qué necesita</h3>
+          <ul class="tight"><li>Plan de contenidos, criterios de selección de fuentes, fichas de lectura.</li></ul>
+        </div>
+        <div class="col-12 card">
+          <h3 class="sub">Cómo se redacta</h3>
+          <ol class="tight">
+            <li>Define tema, objetivos y alcance.</li>
+            <li>Organiza capítulos por subtemas.</li>
+            <li>Integra, compara y sintetiza la literatura; cierra con conclusiones.</li>
+          </ol>
+          <h3 class="sub">Ejemplo breve</h3>
+          <p><em>Monografía sobre aprendizaje basado en proyectos:</em> fundamentos, evidencias empíricas, diseño instruccional, retos y buenas prácticas.</p>
+        </div>
       </div>
     </section>
 
     <!-- RESUMEN -->
-    <section class="panel" id="p4">
+    <section class="panel" id="p4" role="tabpanel" aria-labelledby="t4">
       <span class="kicker">Pestaña 4</span>
       <h2 class="title">Resumen</h2>
-      <div class="card">
-        <p>Texto breve que sintetiza ideas principales de un documento sin emitir juicios. Se usa en artículos, abstracts y revisiones. Debe ser objetivo, fiel y conciso.</p>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">Origen</h3><p>Práctica académica de <em>síntesis</em> informativa.</p>
+          <h3 class="sub">Concepto</h3><p>Presentación <strong>breve y fiel</strong> de ideas esenciales de un texto sin opinión personal.</p>
+          <h3 class="sub">Características</h3>
+          <ul class="tight"><li>Objetividad y concisión.</li><li>Paráfrasis controlada.</li><li>No introduce información nueva.</li></ul>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Normativas</h3>
+          <ul class="tight"><li>Extensión sugerida (p. ej., 150–250 palabras para abstract).</li><li>Mencionar o referenciar la fuente si procede.</li></ul>
+          <h3 class="sub">Cuándo se usa</h3>
+          <ul class="tight"><li>Abstracts, reseñas, notas de lectura y difusiones.</li></ul>
+          <h3 class="sub">Qué necesita</h3>
+          <ul class="tight"><li>Identificar objetivo/tésis, ideas nucleares y conclusiones del texto base.</li></ul>
+        </div>
+        <div class="col-12 card">
+          <h3 class="sub">Cómo se redacta</h3>
+          <ol class="tight">
+            <li>Lectura global; subraya ideas clave.</li>
+            <li>Paráfrasis por bloques temáticos.</li>
+            <li>Revisa fidelidad y elimina repeticiones.</li>
+          </ol>
+          <h3 class="sub">Ejemplo breve</h3>
+          <p><em>Resumen de artículo sobre aula invertida:</em> objetivo, método, resultados (mejora de desempeño/participación), conclusión (eficacia depende del diseño y apoyo docente).</p>
+        </div>
       </div>
     </section>
 
     <!-- RESEÑA -->
-    <section class="panel" id="p5">
+    <section class="panel" id="p5" role="tabpanel" aria-labelledby="t5">
       <span class="kicker">Pestaña 5</span>
       <h2 class="title">Reseña</h2>
-      <div class="card">
-        <p>Combina resumen y valoración crítica de una obra (libro, película, artículo). Presenta datos básicos, breve sinopsis y juicio argumentado. Cita siempre la fuente reseñada.</p>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">Origen</h3><p>Divulgación crítica en prensa y academia.</p>
+          <h3 class="sub">Concepto</h3><p>Texto que combina <strong>síntesis</strong> de una obra con <strong>valoración</strong> argumentada.</p>
+          <h3 class="sub">Características</h3>
+          <ul class="tight"><li>Datos de la obra + resumen mínimo.</li><li>Criterios explícitos de valoración.</li><li>Juicio final y recomendación.</li></ul>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Normativas</h3>
+          <ul class="tight"><li>Estilo claro y preciso; citar la obra reseñada en referencias.</li><li>Extensión breve-media según medio.</li></ul>
+          <h3 class="sub">Cuándo se usa</h3>
+          <ul class="tight"><li>Cursos, revistas, blogs académicos, suplementos culturales.</li></ul>
+          <h3 class="sub">Qué necesita</h3>
+          <ul class="tight"><li>Lectura completa y criterios de evaluación (originalidad, rigor, aporte, estilo).</li></ul>
+        </div>
+        <div class="col-12 card">
+          <h3 class="sub">Cómo se redacta</h3>
+          <ol class="tight">
+            <li>Datos de la obra y contexto.</li>
+            <li>Resumen mínimo (sin revelar giros clave si aplica).</li>
+            <li>Análisis crítico con criterios.</li>
+            <li>Juicio global y recomendación.</li>
+          </ol>
+          <h3 class="sub">Ejemplo breve</h3>
+          <p><em>Reseña de libro de divulgación científica:</em> muy claro para público general; limitado en profundidad técnica; útil en cursos introductorios.</p>
+        </div>
       </div>
     </section>
 
     <!-- INFORME -->
-    <section class="panel" id="p6">
+    <section class="panel" id="p6" role="tabpanel" aria-labelledby="t6">
       <span class="kicker">Pestaña 6</span>
       <h2 class="title">Informe</h2>
-      <div class="card">
-        <p>Documento expositivo que reporta resultados, diagnósticos o avances. Estructura: portada, objetivo, metodología, resultados, conclusiones y anexos. Lenguaje claro y objetivo.</p>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">Origen</h3><p>Tradición técnico-administrativa y científica para reportar procesos y resultados.</p>
+          <h3 class="sub">Concepto</h3><p>Documento <strong>expositivo</strong> que organiza datos y evidencias para informar decisiones.</p>
+          <h3 class="sub">Características</h3>
+          <ul class="tight"><li>Estructura fija y secciones rotuladas.</li><li>Lenguaje objetivo; tablas/figuras y anexos.</li></ul>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Normativas</h3>
+          <ul class="tight"><li>Formato institucional; referenciar en APA si usa fuentes.</li><li>Numeración de secciones y anexos.</li></ul>
+          <h3 class="sub">Cuándo se usa</h3>
+          <ul class="tight"><li>Laboratorio, auditorías, prácticas, seguimiento de proyectos.</li></ul>
+          <h3 class="sub">Qué necesita</h3>
+          <ul class="tight"><li>Objetivo claro, datos verificados, evidencias (fotos, registros).</li></ul>
+        </div>
+        <div class="col-12 card">
+          <h3 class="sub">Cómo se redacta</h3>
+          <ol class="tight">
+            <li>Objetivo y alcance.</li>
+            <li>Metodología y resultados con soportes.</li>
+            <li>Análisis, conclusiones y recomendaciones.</li>
+          </ol>
+          <h3 class="sub">Ejemplo breve</h3>
+          <p><em>Informe de laboratorio:</em> objetivo, materiales/métodos, resultados, discusión, conclusiones, referencias, anexos.</p>
+        </div>
       </div>
     </section>
 
-    <!-- ARTÍCULO -->
-    <section class="panel" id="p7">
+    <!-- ARTÍCULO ACADÉMICO -->
+    <section class="panel" id="p7" role="tabpanel" aria-labelledby="t7">
       <span class="kicker">Pestaña 7</span>
       <h2 class="title">Artículo académico</h2>
-      <div class="card">
-        <p>Presenta resultados de investigación o revisión teórica. Estructura IMRyD (introducción, métodos, resultados, discusión). Requiere originalidad, rigor y referencias actualizadas.</p>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">Origen</h3><p>Comunicación científica en revistas con <em>peer review</em>.</p>
+          <h3 class="sub">Concepto</h3><p>Informe de <strong>resultados originales</strong> o revisión sistemática, con método trazable.</p>
+          <h3 class="sub">Características</h3>
+          <ul class="tight"><li>Estructura IMRyD u otra según disciplina.</li><li>Ética de publicación, originalidad y trazabilidad de datos.</li></ul>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Normativas</h3>
+          <ul class="tight"><li>Ajustarse a la “Guía para autores” (plantilla, extensión, estilo).</li><li>Referencias según la revista (APA/IEEE/Vancouver).</li></ul>
+          <h3 class="sub">Cuándo se usa</h3>
+          <ul class="tight"><li>Divulgar hallazgos y aportar a la comunidad científica.</li></ul>
+          <h3 class="sub">Qué necesita</h3>
+          <ul class="tight"><li>Pregunta clara, diseño metodológico, datos válidos, análisis y discusión.</li></ul>
+        </div>
+        <div class="col-12 card">
+          <h3 class="sub">Cómo se redacta</h3>
+          <ol class="tight">
+            <li>Introducción (estado del arte y objetivo/pregunta).</li>
+            <li>Método (diseño, instrumentos, procedimiento).</li>
+            <li>Resultados (tablas/figuras claras).</li>
+            <li>Discusión (interpretación, límites, trabajos futuros).</li>
+            <li>Conclusiones y referencias.</li>
+          </ol>
+          <h3 class="sub">Ejemplo breve</h3>
+          <p><em>IMRyD sobre analítica de aprendizaje:</em> RQ, dataset, métricas, resultados comparativos, discusión de validez.</p>
+        </div>
       </div>
     </section>
 
-    <!-- FICHA -->
-    <section class="panel" id="p8">
+    <!-- FICHA DE LECTURA -->
+    <section class="panel" id="p8" role="tabpanel" aria-labelledby="t8">
       <span class="kicker">Pestaña 8</span>
       <h2 class="title">Ficha de lectura</h2>
-      <div class="card">
-        <p>Registro de información clave de una fuente (autor, año, idea, cita). Facilita organización de lecturas y redacción de informes o trabajos académicos.</p>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">Origen</h3><p>Herramienta de gestión de información en estudio e investigación.</p>
+          <h3 class="sub">Concepto</h3><p>Registro estructurado de <strong>datos bibliográficos</strong>, ideas clave, citas y comentarios.</p>
+          <h3 class="sub">Características</h3>
+          <ul class="tight"><li>Campos consistentes (autor, año, idea, cita, página).</li><li>Facilita síntesis y citación posterior.</li></ul>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Normativas</h3>
+          <ul class="tight"><li>Consistencia en formato; referencias en APA en el trabajo final.</li></ul>
+          <h3 class="sub">Cuándo se usa</h3>
+          <ul class="tight"><li>Revisiones de literatura, seminarios, proyectos.</li></ul>
+          <h3 class="sub">Qué necesita</h3>
+          <ul class="tight"><li>Plantilla unificada, control de versiones y organización por palabras clave.</li></ul>
+        </div>
+        <div class="col-12 card">
+          <h3 class="sub">Cómo se redacta</h3>
+          <ol class="tight">
+            <li>Anota datos bibliográficos completos.</li>
+            <li>Registra ideas clave y citas con página.</li>
+            <li>Agrega notas de uso (cómo encaja en tu escrito).</li>
+          </ol>
+          <h3 class="sub">Ejemplo breve</h3>
+          <p><em>Ficha:</em> (Autor, Año). Idea: “La retroalimentación inmediata mejora la autorregulación”. Cita: p. 45. Palabras clave: evaluación formativa.</p>
+        </div>
       </div>
     </section>
 
-    <!-- BITÁCORA -->
-    <section class="panel" id="p9">
+    <!-- BITÁCORA / DIARIO -->
+    <section class="panel" id="p9" role="tabpanel" aria-labelledby="t9">
       <span class="kicker">Pestaña 9</span>
       <h2 class="title">Bitácora / Diario reflexivo</h2>
-      <div class="card">
-        <p>Registro cronológico de actividades y reflexiones durante proyectos o prácticas. Incluye descripción de hechos, análisis y aprendizajes. Útil para evaluar procesos.</p>
+      <div class="grid">
+        <div class="col-6 card">
+          <h3 class="sub">Origen</h3><p>Registros de campo y práctica profesional orientados a la reflexión.</p>
+          <h3 class="sub">Concepto</h3><p>Documento cronológico que narra <strong>hechos, decisiones y aprendizajes</strong> para mejorar la práctica.</p>
+          <h3 class="sub">Características</h3>
+          <ul class="tight"><li>Descripciones + análisis crítico.</li><li>Evidencias (fotos, anexos) cuando apliquen.</li></ul>
+        </div>
+        <div class="col-6 card">
+          <h3 class="sub">Normativas</h3>
+          <ul class="tight"><li>Formato acordado por la asignatura/institución.</li><li>Protección de datos sensibles y anonimización.</li></ul>
+          <h3 class="sub">Cuándo se usa</h3>
+          <ul class="tight"><li>Prácticas, proyectos, laboratorio, trabajo de campo.</li></ul>
+          <h3 class="sub">Qué necesita</h3>
+          <ul class="tight"><li>Frecuencia de registro, rúbrica y evidencias.</li></ul>
+        </div>
+        <div class="col-12 card">
+          <h3 class="sub">Cómo se redacta</h3>
+          <ol class="tight">
+            <li>Hechos (qué, cuándo, con quién).</li>
+            <li>Análisis (por qué, alternativas, impacto).</li>
+            <li>Conclusión (aprendizajes y próximos pasos).</li>
+          </ol>
+          <h3 class="sub">Ejemplo breve</h3>
+          <p><em>Entrada semanal:</em> Dificultad de coordinación → adopción de tablero Kanban → mejora en cumplimiento de tareas.</p>
+        </div>
       </div>
     </section>
 
     <!-- PRÁCTICA -->
-    <section class="panel" id="p10">
+    <section class="panel" id="p10" role="tabpanel" aria-labelledby="t10">
       <span class="kicker">Pestaña 10</span>
       <h2 class="title">Práctica</h2>
-      <p>Espacio destinado a visualizar el paso a paso del desarrollo de un documento.</p>
       <div class="embed">
-        <!-- Aquí irá el enlace embebido al documento de Drive con el paso a paso -->
-        <!-- <iframe src="URL_DE_TU_DOCUMENTO" title="Paso a paso del documento" allowfullscreen></iframe> -->
+        <!-- Inserta aquí tu documento de Google Drive con el paso a paso -->
+        <!-- Ejemplo: <iframe src="https://docs.google.com/document/d/ID/preview" title="Paso a paso del documento" allowfullscreen></iframe> -->
       </div>
     </section>
 
     <!-- REFERENTES -->
-    <section class="panel" id="p11">
+    <section class="panel" id="p11" role="tabpanel" aria-labelledby="t11">
       <span class="kicker">Pestaña 11</span>
       <h2 class="title">Referentes (APA 7)</h2>
       <div class="card">
         <ul class="tight">
-          <li>American Psychological Association. (2020). <em>Publication Manual of the American Psychological Association</em> (7ª ed.).</li>
+          <li>American Psychological Association. (2020). <em>Publication Manual of the American Psychological Association</em> (7th ed.).</li>
           <li>Eco, U. (2015). <em>Cómo se hace una tesis</em>. Gedisa.</li>
-          <li>Gómez, M. & Pérez, L. (2021). Escritura académica: géneros, estructura y estilo. <em>Revista de Educación Superior</em>, 50(2), 45–62.</li>
+          <li>Hyland, K. (2019). <em>Academic Discourse</em>. Bloomsbury.</li>
+          <li>Swales, J. M., & Feak, C. B. (2012). <em>Academic Writing for Graduate Students</em>. University of Michigan Press.</li>
+          <li>Gómez, M., & Pérez, L. (2021). Escritura académica: géneros, estructura y estilo. <em>Revista de Educación Superior</em>, 50(2), 45–62.</li>
         </ul>
       </div>
     </section>
@@ -197,12 +417,38 @@
   </div>
 
   <script>
+    // Tabs accesibles
     const btns=[...document.querySelectorAll('.tab-btn')];
     const panels=[...document.querySelectorAll('.panel')];
-    function activate(i){btns.forEach((b,ix)=>{b.setAttribute('aria-selected',ix===i);panels[ix].classList.toggle('active',ix===i);});}
-    btns.forEach((b,i)=>b.addEventListener('click',()=>activate(i)));
-    function openFromHash(){const id=location.hash.replace('#','');const idx=panels.findIndex(p=>p.id===id);if(idx>=0)activate(idx);}
-    window.addEventListener('hashchange',openFromHash);openFromHash();
+
+    function activate(i){
+      btns.forEach((b,ix)=>{
+        const sel = ix===i;
+        b.setAttribute('aria-selected', sel);
+        panels[ix].classList.toggle('active', sel);
+      });
+    }
+    btns.forEach((b,i)=>{
+      b.addEventListener('click', ()=>activate(i));
+      b.addEventListener('keydown', (e)=>{
+        if(e.key==='ArrowRight'){ e.preventDefault(); btns[(i+1)%btns.length].focus(); }
+        if(e.key==='ArrowLeft'){ e.preventDefault(); btns[(i-1+btns.length)%btns.length].focus(); }
+        if(e.key==='Home'){ e.preventDefault(); btns[0].focus(); }
+        if(e.key==='End'){ e.preventDefault(); btns[btns.length-1].focus(); }
+        if(e.key==='Enter' || e.key===' '){ e.preventDefault(); activate(i); }
+      });
+    });
+
+    // Navegación con hash (#pX)
+    function openFromHash(){
+      const id = location.hash.replace('#','');
+      const idx = panels.findIndex(p=>p.id===id);
+      if(idx>=0) activate(idx);
+    }
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
   </script>
 </body>
 </html>
+
+     
