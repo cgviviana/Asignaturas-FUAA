@@ -11,24 +11,25 @@
       background: transparent;
       overflow: hidden;
       font-family: "Poppins", sans-serif;
+      font-size: 13px;
+      color: #004d2b;
     }
 
     .barra {
       background: #e8f5e9;
       border: 1px solid #006241;
-      border-radius: 8px;
-      color: #004d2b;
+      border-radius: 6px;
+      padding: 4px 10px;
       text-align: center;
       white-space: nowrap;
-      padding: 6px 10px;
-      font-size: 14px;
-      line-height: 1.2;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.4;
     }
 
     strong {
       color: #006241;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -40,28 +41,23 @@
     const fin = new Date("2025-11-21");
     const hoy = new Date();
 
-    function formatearFecha(fecha) {
-      return fecha.toLocaleDateString("es-ES", {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      });
+    function formatearFecha(f) {
+      return f.toLocaleDateString("es-ES", { day: 'numeric', month: 'short' });
     }
 
     function calcularSemana() {
-      if (hoy < inicio) return "El periodo académico aún no ha iniciado.";
-      if (hoy > fin) return "El periodo académico ha finalizado.";
+      if (hoy < inicio) return "⏳ Aún no inicia el periodo académico.";
+      if (hoy > fin) return "✅ Periodo académico finalizado.";
 
       const diff = hoy - inicio;
       const numSemana = Math.floor(diff / (1000 * 60 * 60 * 24 * 7)) + 1;
 
-      const inicioSem = new Date(inicio);
-      inicioSem.setDate(inicio.getDate() + (numSemana - 1) * 7);
+      const ini = new Date(inicio);
+      ini.setDate(inicio.getDate() + (numSemana - 1) * 7);
+      const finSem = new Date(ini);
+      finSem.setDate(ini.getDate() + 6);
 
-      const finSem = new Date(inicioSem);
-      finSem.setDate(inicioSem.getDate() + 6);
-
-      return `📅 Semana <strong>${numSemana}</strong> — del ${formatearFecha(inicioSem)} al ${formatearFecha(finSem)}`;
+      return `📅 Semana <strong>${numSemana}</strong> — ${formatearFecha(ini)} a ${formatearFecha(finSem)} de 2025`;
     }
 
     document.getElementById("resultado").innerHTML = calcularSemana();
