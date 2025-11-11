@@ -1,1 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Modelo de Negocio – MediStockYa (App móvil)</title>
+<style>
+  body{
+    background: linear-gradient(to bottom, #e0f4ff, #b3e6ff);
+    color:#002b36;
+    font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    margin:0;
+  }
+  .header{
+    background:#24B6FF; /* barra de título */
+    color:#000;
+    text-align:center;
+    font-size:2em;
+    font-weight:600;
+    padding:15px 0;
+    border:1px solid #0aa0e6;
+    margin-bottom:30px;
+  }
+  .container{ padding:40px; }
+  .canvas-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  .block{
+    background:#fff;
+    border:1px solid #d9eeff;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 3px 8px rgba(0,102,204,.1);
+    position:relative;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .block:hover{
+    transform:translateY(-4px);
+    box-shadow:0 6px 14px rgba(0,122,204,.25);
+  }
+  .block h2{ color:#005f99; font-size:1.2em; margin:0 0 8px; }
+  .block p{ font-size:.95em; line-height:1.5; text-align:justify; margin:0; }
 
+  /* Botón info */
+  .info-btn{
+    position:absolute; top:10px; right:15px;
+    background:#009fe3; color:#fff; border:none; cursor:pointer;
+    width:24px; height:24px; border-radius:50%; font-weight:700;
+  }
+  /* Popup */
+  .info-popup{
+    display:none; opacity:0;
+    position:absolute; top:40px; left:0; width:100%;
+    background:#f2faff; color:#003049;
+    padding:15px; border-radius:10px; border:1px solid #a3d3ff;
+    font-size:.9em; line-height:1.5; z-index:10;
+    box-shadow:0 2px 6px rgba(0,102,204,.2);
+    transition:opacity .3s ease;
+  }
+  .info-popup.show{ display:block; opacity:1; }
+
+  /* Firma */
+  .brand{
+    text-align:center; margin:20px 0 28px; font-size:1em;
+    color:#004c66; font-weight:600;
+  }
+
+  /* Responsivo */
+  @media (max-width: 992px){ .canvas-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width: 640px){ .canvas-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+  <div class="header">Modelo de Negocio – MediStockYa</div>
+
+  <div class="container">
+    <div class="canvas-grid">
+      <!-- 1 Propuesta de valor -->
+      <div class="block">
+        <h2>1️⃣ Propuesta de valor</h2>
+        <button class="info-btn" onclick="toggleInfo(this)">i</button>
+        <p>Permite a afiliados a EPS consultar si su medicamento ya está disponible en el punto de entrega y, si hay demora, comparar precios en farmacias para decidir.</p>
+        <div class="info-popup">ℹ️ <b>Qué es:</b> el beneficio principal para el usuario. <b>En esta app:</b> acceso rápido a la disponibilidad del medicamento en EPS y un comparador de precios como plan B.</div>
+      </div>
+
+      <!-- 2 Segmento de clientes -->
+      <div class="block">
+        <h2>2️⃣ Segmento de clientes</h2>
+        <button class="info-btn" onclick="toggleInfo(this)">i</button>
+        <p>Pacientes afiliados, cuidadores y familias que necesitan información confiable y oportuna sobre sus medicamentos formulados.</p>
+        <div class="info-popup">ℹ️ <b>Qué es:</b> para quién se diseña la app. <b>Aquí:</b> usuarios del sistema EPS y sus cuidadores que desean evitar filas y desplazamientos innecesarios.</div>
+      </div>
+
+      <!-- 3 Canales -->
+      <div class="block">
+        <h2>3️⃣ Canales de distribución</h2>
+        <button class="info-btn" onclick="toggleInfo(this)">i</button>
+        <p>App Android (Play Store o enlace directo). Difusión en redes, grupos de pacientes y comunicación comunitaria.</p>
+        <div class="info-popup">ℹ️ <b>Qué es:</b> por dónde llega el servicio. <b>Aquí:</b> canales 100% digitales y comunitarios, sin depender de EPS.</div>
+      </div>
+
+      <!-- 4 Relación -->
+      <div class="block">
+        <h2>4️⃣ Relación con los usuarios</h2>
+        <button class="info-btn" onclick="toggleInfo(this)">i</button>
+        <p>Colaborativa y transparente: los usuarios comparten y validan informes de disponibilidad y tiempos de entrega.</p>
+        <div class="info-popup">ℹ️ <b>Qué es:</b> cómo se mantiene el vínculo. <b>Aquí:</b> comunidad que aporta datos útiles y recibe alertas/favoritos.</div>
+      </div>
+
+      <!-- 5 Ingresos -->
+      <div class="block">
+        <h2>5️⃣ Fuentes de ingresos</h2>
+        <button class="info-btn" onclick="toggleInfo(this)">i</button>
+        <p>Publicidad ética de salud, aportes voluntarios y opción de visibilidad para farmacias en el comparador.</p>
+        <div class="info-popup">ℹ️ <b>Qué es:</b> cómo se sostiene económicamente. <b>Aquí:</b> micropublicidad responsable + contribuciones.</div>
+      </div>
+
+      <!-- 6 Recursos -->
+      <div class="block">
+        <h2>6️⃣ Recursos clave</h2>
+        <button class="info-btn" onclick="toggleInfo(this)">i</button>
+        <p>Base de datos de <b>informes de usuarios</b>, comparador de precios, backend en la nube y equipo técnico mínimo.</p>
+        <div class="info-popup">ℹ️ <b>Qué es:</b> lo indispensable para operar. <b>Aquí:</b> tecnología + datos reportados/verificados por la comunidad.</div>
+      </div>
+
+      <!-- 7 Actividades -->
+      <div class="block">
+        <h2>7️⃣ Actividades clave</h2>
+        <button class="info-btn" onclick="toggleInfo(this)">i</button>
+        <p>Recolección y validación de informes, actualización de precios, mantenimiento y difusión en comunidades.</p>
+        <div class="info-popup">ℹ️ <b>Qué es:</b> tareas críticas del día a día. <b>Aquí:</b> calidad de datos, estabilidad técnica y participación activa.</div>
+      </div>
+
+      <!-- 8 Socios -->
+      <div class="block">
+        <h2>8️⃣ Socios estratégicos</h2>
+        <button class="info-btn" onclick="toggleInfo(this)">i</button>
+        <p>Usuarios activos, farmacias locales interesadas en visibilidad y comunidades digitales de salud.</p>
+        <div class="info-popup">ℹ️ <b>Qué es:</b> aliados que fortalecen el servicio. <b>Aquí:</b> actores locales; no depende de convenios grandes.</div>
+      </div>
+
+      <!-- 9 Costos -->
+      <div class="block">
+        <h2>9️⃣ Estructura de costos</h2>
+        <button class="info-btn" onclick="toggleInfo(this)">i</button>
+        <p>Desarrollo, mantenimiento, nube, validación de información y administración del comparador.</p>
+        <div class="info-popup">ℹ️ <b>Qué es:</b> gastos necesarios para operar. <b>Aquí:</b> foco en tecnología y calidad de datos.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="brand">Aprendiendo con @LaProfeVivy</div>
+
+<script>
+  function toggleInfo(btn){
+    const popup = btn.nextElementSibling.nextElementSibling;
+    popup.classList.toggle("show");
+  }
+</script>
+</body>
+</html>
