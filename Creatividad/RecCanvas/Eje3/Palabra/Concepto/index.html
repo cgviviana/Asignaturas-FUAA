@@ -1,1 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ordenar Letras de conceptos — Eje 3</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: #1a1a1a;
+        overflow-x: hidden;
+    }
 
+    /* Fondo estilo Educaplay */
+    .bg {
+        position: fixed;
+        inset: 0;
+        background: url('https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=1600&q=60') center/cover no-repeat;
+        filter: blur(4px) brightness(0.7);
+        z-index: -1;
+    }
+
+    .game-wrapper {
+        max-width: 980px;
+        margin: 40px auto;
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(6px);
+        border-radius: 14px;
+        padding: 20px 30px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+    }
+
+    .header-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #222;
+        line-height: 1.2;
+    }
+
+    .info {
+        font-size: 0.9rem;
+        color: #444;
+        text-align: right;
+    }
+
+    /* Temporizador */
+    .timer {
+        margin-top: 6px;
+        font-size: 1rem;
+        font-weight: bold;
+        padding: 6px 12px;
+        background: #fff;
+        border-radius: 20px;
+        border: 2px solid #e0e0e0;
+        display: inline-block;
+    }
+
+    /* Pista */
+    .clue-box {
+        margin-top: 18px;
+        padding: 14px;
+        background: #f7f7f7;
+        border-left: 4px solid #6ba8ff;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #333;
+    }
+
+    /* Contenedor de letras */
+    .letters-container {
+        margin-top: 28px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    /* Letra estilo  */
+    .letter {
+        width: 60px;
+        height: 60px;
+        background: #ffffff;
+        border-radius: 8px;
+        font-size: 1.6rem;
+        color: #222;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        cursor: pointer;
+        transition: transform 0.1s;
+        user-select: none;
+    }
+
+    .letter:hover {
+        transform: scale(1.05);
+    }
+
+    .answer-container {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        min-height: 70px;
+    }
+
+    /* Casilla destino */
+    .slot {
+        width: 60px;
+        height: 60px;
+        background: #eaeaea;
+        border-radius: 8px;
+        border: 2px dashed #bdbdbd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.6rem;
+        font-weight: bold;
+        color: #333;
+        transition: .1s;
+    }
+
+    .btns {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background: #6ba8ff;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #5895e6;
+    }
+
+    #feedback {
+        font-size: 1.3rem;
+        margin-top: 20px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .ok { color: #009b4c; }
+    .bad { color: #cc0000; }
+
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="game-wrapper">
+
+    <div class="header-box">
+        <div class="title">
+            DESARROLLO, CREATIVIDAD  E INNOVACIÓN I<br>
+           
+        </div>
+        <div class="info">
+            <div>Palabra <span id="qNum">1</span> / <span id="qTotal">1</span></div>
+            <div class="timer">⏱ <span id="time">60</span>s</div>
+        </div>
+    </div>
+
+    <div class="clue-box" id="clueText">
+        Pista de ejemplo...
+    </div>
+
+    <div class="letters-container" id="lettersPool"></div>
+
+    <div class="answer-container" id="answerSlots"></div>
+
+    <div class="btns">
+        <button onclick="checkAnswer()">✔ Comprobar</button>
+        <button onclick="resetWord()">⟲ Reiniciar</button>
+        <button onclick="nextWord()">Siguiente ➜</button>
+    </div>
+
+    <div id="feedback"></div>
+</div>
+
+<script>
+
+const words = [
+    {
+        answer: "CREATIVIDAD",
+        clue: "Capacidad para generar ideas nuevas."
+    },
+    {
+        answer: "INNOVACION",
+        clue: "Aplicar ideas creativas para mejorar."
+    },
+    {
+        answer: "COMPETITIVIDAD",
+        clue: "Capacidad para destacar frente a otros."
+    },
+    {
+        answer: "PRODUCTIVIDAD",
+        clue: "Obtener mejores resultados con los recursos."
+    },
+    {
+        answer: "SINERGIA",
+        clue: "El conjunto supera a la suma de las partes."
+    }
+];
+
+let index = 0;
+let timer;
+let timeLeft = 60;
+
+document.getElementById("qTotal").textContent = words.length;
+
+/* ------------------------------ */
+function loadWord() {
+    const data = words[index];
+    document.getElementById("qNum").textContent = index + 1;
+    document.getElementById("clueText").textContent = data.clue;
+
+    const pool = document.getElementById("lettersPool");
+    const slots = document.getElementById("answerSlots");
+
+    pool.innerHTML = "";
+    slots.innerHTML = "";
+    document.getElementById("feedback").textContent = "";
+
+    const letters = shuffle(data.answer.split(""));
+
+    letters.forEach(ch => {
+        const div = document.createElement("div");
+        div.className = "letter";
+        div.textContent = ch;
+        div.onclick = () => moveToSlot(div);
+        pool.appendChild(div);
+    });
+
+    for (let i = 0; i < data.answer.length; i++) {
+        const div = document.createElement("div");
+        div.className = "slot";
+        div.onclick = () => returnLetter(div);
+        slots.appendChild(div);
+    }
+
+    resetTimer();
+}
+
+/* ------------------------------ */
+function shuffle(arr){
+    return arr.sort(()=> Math.random() - 0.5);
+}
+
+/* ------------------------------ */
+function moveToSlot(letter){
+    const correctWord = words[index].answer;
+    const slots = [...document.querySelectorAll(".slot")];
+
+    const slot = slots.find(s => s.textContent === "");
+    if (!slot) return;
+
+    slot.textContent = letter.textContent;
+    letter.remove();
+
+    const pos = slots.indexOf(slot);
+    const correctLetter = correctWord[pos];
+
+    if (letter.textContent === correctLetter) {
+        slot.style.border = "3px solid #009b4c";   // VERDE
+        slot.style.background = "#e6ffef";
+    } else {
+        slot.style.border = "3px solid #d7263d";   // ROJO
+        slot.style.background = "#ffe6e6";
+    }
+}
+
+/* ------------------------------ */
+function returnLetter(slot){
+    if (slot.textContent === "") return;
+
+    const pool = document.getElementById("lettersPool");
+
+    const div = document.createElement("div");
+    div.className = "letter";
+    div.textContent = slot.textContent;
+    div.onclick = () => moveToSlot(div);
+
+    pool.appendChild(div);
+
+    slot.textContent = "";
+    slot.style.border = "2px dashed #bdbdbd";
+    slot.style.background = "#eaeaea";
+}
+
+/* ------------------------------ */
+function checkAnswer(){
+    const correct = words[index].answer;
+    let user = "";
+    document.querySelectorAll(".slot").forEach(s => user += s.textContent);
+
+    const fb = document.getElementById("feedback");
+
+    if (user === correct){
+        fb.textContent = "✔ Correcto";
+        fb.className = "ok";
+        clearInterval(timer);
+    } else {
+        fb.textContent = "✘ Incorrecto, revisa las letras rojas.";
+        fb.className = "bad";
+    }
+}
+
+/* ------------------------------ */
+function resetWord(){
+    loadWord();
+}
+
+/* ------------------------------ */
+function nextWord(){
+    if (index < words.length - 1) {
+        index++;
+        loadWord();
+    }
+}
+
+/* ------------------------------ */
+function resetTimer(){
+    clearInterval(timer);
+    timeLeft = 60;
+    document.getElementById("time").textContent = timeLeft;
+    timer = setInterval(()=>{
+        timeLeft--;
+        document.getElementById("time").textContent = timeLeft;
+        if (timeLeft <= 0){
+            clearInterval(timer);
+            document.getElementById("feedback").textContent = "⏱ Tiempo agotado";
+            document.getElementById("feedback").className = "bad";
+        }
+    },1000);
+}
+
+/* ------------------------------ */
+loadWord();
+</script>
+
+</body>
+</html>
