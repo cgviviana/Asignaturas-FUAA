@@ -1,0 +1,467 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Calendario Académico Areandina</title>
+<style>
+  :root {
+    --bg: #fff7fb;
+    --panel: #ffffff;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --line: #f1d7e6;
+    --shadow: 0 10px 30px rgba(31,41,55,.08);
+    --pink2: #ffd6e8;
+    --blue2: #e8f1ff;
+    --head: #ffe4f2;
+    --icon: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans";
+    color: var(--ink);
+    background:
+      radial-gradient(1100px 520px at 10% -10%, var(--pink2) 0%, transparent 55%),
+      radial-gradient(900px 520px at 100% 0%, var(--blue2) 0%, transparent 55%),
+      var(--bg);
+  }
+  .wrap { max-width: 1200px; margin:0 auto; padding:18px; }
+  .titleRow { display:flex; align-items:center; gap:10px; }
+  .mascot { width:30px;height:30px;border-radius:12px;background:linear-gradient(135deg,var(--pink2),var(--blue2));box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center; }
+  h1 { font-size:18px; margin:0; }
+  .sub { font-size:13px; color:var(--muted); margin-top:6px; max-width: 920px; }
+
+  /* Legend table */
+  .legendTable {
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    background: rgba(255,255,255,.88);
+    box-shadow: var(--shadow);
+    margin: 14px 0;
+  }
+  .legendHead {
+    background: var(--head);
+    padding: 10px 12px;
+    font-weight: 900;
+    border-bottom:1px solid var(--line);
+    color:#334155;
+  }
+  .legendGrid { display:grid; grid-template-columns: repeat(7, 1fr); }
+  .legendCell {
+    padding: 10px 8px;
+    border-right: 1px solid var(--line);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    font-weight:900;
+    color:#334155;
+  }
+  .legendCell:nth-child(7n) { border-right:none; }
+  .swatch { width:10px;height:10px;border-radius:999px; }
+  .icon { width:14px;height:14px; display:inline-block; }
+  svg { width:14px;height:14px; fill:none; stroke: var(--icon); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* Controls */
+  .controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 10px 0 14px; }
+  .pill { background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); padding:8px 10px; display:flex; gap:8px; align-items:center; }
+  select { border:none; outline:none; background:transparent; font-size:13px; color:var(--ink); font-weight:800; }
+
+  /* Calendar */
+  .cal { background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); overflow:hidden; }
+  .calHead { display:grid; grid-template-columns: repeat(7,1fr); background: var(--head); border-bottom:1px solid var(--line); }
+  .calHead div { padding: 10px 8px; text-align:center; font-weight: 950; font-size:12px; color:#334155; }
+
+  .grid { display:grid; grid-template-columns: repeat(7,1fr); grid-auto-rows: 110px; }
+  .cell {
+    padding: 8px;
+    border-right: 1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    min-width:0;
+  }
+  .cell:nth-child(7n) { border-right:none; }
+  .holidayCell { background: rgba(100,116,139,.06); }
+
+  .cellTop {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap: 8px;
+  }
+  .dayBtn {
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    font-weight:950;
+    font-size:12px;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+  .dayBtn:hover { background: rgba(255,107,176,.10); }
+  .muted { color: var(--muted); font-weight:850; font-size:11px; }
+
+  /* Right-side icon bar (horizontal) */
+  .bar {
+    display:flex;
+    gap:6px;
+    align-items:center;
+    justify-content:flex-end;
+    flex-wrap:wrap;
+    max-width: 70%;
+  }
+  .dotBtn {
+    width: 22px;
+    height: 22px;
+    border-radius: 10px;
+    border: 1px solid rgba(241,215,230,.95);
+    background: rgba(255,255,255,.92);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .dotBtn:hover { outline: 2px solid rgba(255,107,176,.18); }
+
+  /* Named tag (first/last day) */
+  .tags {
+    margin-top: 8px;
+    display:flex;
+    flex-direction:column;
+    gap: 6px;
+    overflow: hidden;
+  }
+  .tag {
+    display:flex;
+    align-items:center;
+    gap:6px;
+    border: 1px solid rgba(241,215,230,.95);
+    background: rgba(255,255,255,.92);
+    border-radius: 12px;
+    padding: 6px 8px;
+    font-size: 11px;
+    font-weight: 850;
+    color:#334155;
+    min-width:0;
+    cursor:pointer;
+  }
+  .tag:hover { outline: 2px solid rgba(255,107,176,.18); }
+  .tag .txt { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* kind colors (left accent) */
+  .k-notes { border-left: 4px solid #16a34a; }
+  .k-eval  { border-left: 4px solid #e11d48; }
+  .k-eje   { border-left: 4px solid #ea580c; }
+  .k-cohort{ border-left: 4px solid #7c3aed; }
+  .k-doc   { border-left: 4px solid #0f766e; }
+  .k-holiday { border-left: 4px solid #64748b; }
+  .k-period { border-left: 4px solid #2563eb; }
+
+  .dot-notes { box-shadow: inset 0 0 0 2px rgba(22,163,74,.25); }
+  .dot-eval  { box-shadow: inset 0 0 0 2px rgba(225,29,72,.25); }
+  .dot-eje   { box-shadow: inset 0 0 0 2px rgba(234,88,12,.25); }
+  .dot-cohort{ box-shadow: inset 0 0 0 2px rgba(124,58,237,.25); }
+  .dot-doc  { box-shadow: inset 0 0 0 2px rgba(15,118,110,.25); }
+  .dot-holiday { box-shadow: inset 0 0 0 2px rgba(100,116,139,.25); }
+  .dot-period { box-shadow: inset 0 0 0 2px rgba(37,99,235,.25); }
+
+  /* Modal */
+  .overlay { position:fixed; inset:0; background: rgba(31,41,55,.25); display:none; align-items:center; justify-content:center; padding:18px; }
+  .overlay.show { display:flex; }
+  .modal { width:min(620px,100%); background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:14px; }
+  .modalTop { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+  .modal h2 { font-size:14px; margin:0; }
+  .meta { font-size:12px; color:var(--muted); margin-top:4px; }
+  .desc { font-size:13px; margin-top:10px; line-height:1.35; white-space:pre-line; }
+  .btn { border:1px solid var(--line); background: rgba(255,255,255,.9); border-radius:12px; padding:6px 10px; cursor:pointer; font-weight:900; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="titleRow">
+    <div class="mascot" aria-hidden="true">🎀</div>
+    <h1>Calendario Académico Areandina</h1>
+  </div>
+  <div class="sub">
+    Calendario del periodo escolar (26-Jan-2026 → 16-Jun-2026).
+    En rangos: <b>primer y último día</b> muestran texto; días intermedios solo icono (barra derecha).
+  </div>
+
+  <div class="legendTable">
+    <div class="legendHead">Leyenda (icono + color)</div>
+    <div class="legendGrid" id="legendGrid"></div>
+  </div>
+
+  <div class="controls">
+    <div class="pill">
+      <span style="font-size:12px;color:var(--muted);font-weight:950;">Mes</span>
+      <select id="monthSel"></select>
+    </div>
+    <div class="pill">
+      <span style="font-size:12px;color:var(--muted);font-weight:950;">Filtro</span>
+      <select id="filterSel">
+        <option value="all">Todo</option>
+        <option value="notes">Notas</option>
+        <option value="eval">Evaluación</option>
+        <option value="eje">Tarea eje</option>
+        <option value="cohort">Cohorte</option>
+        <option value="doc">Eval. docente</option>
+        <option value="holiday">Festivos</option>
+        <option value="period">Periodo presencial</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="cal">
+    <div class="calHead">
+      <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+    </div>
+    <div id="grid" class="grid"></div>
+  </div>
+</div>
+
+<div id="overlay" class="overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modalTop">
+      <div>
+        <h2 id="mTitle"></h2>
+        <div class="meta" id="mMeta"></div>
+      </div>
+      <button class="btn" id="closeBtn">Cerrar</button>
+    </div>
+    <div class="desc" id="mDesc"></div>
+  </div>
+</div>
+
+<script>
+const DATA = {"period_start": "2026-01-26", "period_end": "2026-06-16", "ranges": [{"kind": "period", "start": "2026-02-02", "end": "2026-05-30", "title_start": "Inicio periodo presencial", "title_mid": "Periodo presencial", "title_end": "Fin periodo presencial", "detail": "Periodo presencial: 2026-02-02 → 2026-05-30."}, {"kind": "eval", "start": "2026-03-09", "end": "2026-03-14", "title_start": "Inicio Evaluación Corte 1", "title_mid": "Evaluación Corte 1", "title_end": "Fin Evaluación Corte 1", "detail": "Evaluación Corte 1: 2026-03-09 → 2026-03-14."}, {"kind": "notes", "start": "2026-03-16", "end": "2026-03-21", "title_start": "Inicio Notas Corte 1", "title_mid": "Notas Corte 1", "title_end": "Fin Notas Corte 1", "detail": "Notas Corte 1: 2026-03-16 → 2026-03-21."}, {"kind": "eval", "start": "2026-04-20", "end": "2026-04-25", "title_start": "Inicio Evaluación Corte 2", "title_mid": "Evaluación Corte 2", "title_end": "Fin Evaluación Corte 2", "detail": "Evaluación Corte 2: 2026-04-20 → 2026-04-25."}, {"kind": "notes", "start": "2026-04-27", "end": "2026-05-02", "title_start": "Inicio Notas Corte 2", "title_mid": "Notas Corte 2", "title_end": "Fin Notas Corte 2", "detail": "Notas Corte 2: 2026-04-27 → 2026-05-02."}, {"kind": "eval", "start": "2026-05-25", "end": "2026-05-30", "title_start": "Inicio Evaluación Corte 3", "title_mid": "Evaluación Corte 3", "title_end": "Fin Evaluación Corte 3", "detail": "Evaluación Corte 3: 2026-05-25 → 2026-05-30."}, {"kind": "notes", "start": "2026-06-01", "end": "2026-06-05", "title_start": "Inicio Notas Corte 3", "title_mid": "Notas Corte 3", "title_end": "Fin Notas Corte 3", "detail": "Notas Corte 3: 2026-06-01 → 2026-06-05."}, {"kind": "doc", "start": "2026-03-30", "end": "2026-05-16", "title_start": "Inicio evaluación docente", "title_mid": "Evaluación docente", "title_end": "Fin evaluación docente", "detail": "Evaluación docente: 2026-03-30 → 2026-05-16."}, {"kind": "cohort", "start": "2026-02-02", "end": "2026-04-12", "title_start": "Inicio Cohorte 1 (1A)", "title_mid": "Cohorte 1 (1A)", "title_end": "Fin Cohorte 1 (1A)", "detail": "Cohorte 1 (1A): 2026-02-02 → 2026-04-12."}, {"kind": "cohort", "start": "2026-04-06", "end": "2026-06-07", "title_start": "Inicio Cohorte 2", "title_mid": "Cohorte 2", "title_end": "Fin Cohorte 2", "detail": "Cohorte 2: 2026-04-06 → 2026-06-07."}, {"kind": "cohort", "start": "2026-04-27", "end": "2026-06-28", "title_start": "Inicio Cohorte 3 (1B)", "title_mid": "Cohorte 3 (1B)", "title_end": "Fin Cohorte 3 (1B)", "detail": "Cohorte 3 (1B): 2026-04-27 → 2026-06-28."}], "single": [{"date": "2026-02-23", "kind": "eje", "title": "Tarea eje 1 (Cohorte 1 (1A))", "detail": "Cohorte 1 (1A) · Entrega Tarea eje 1. Fecha: 2026-02-23 (lunes)."}, {"date": "2026-03-09", "kind": "eje", "title": "Tarea eje 2 (Cohorte 1 (1A))", "detail": "Cohorte 1 (1A) · Entrega Tarea eje 2. Fecha: 2026-03-09 (lunes)."}, {"date": "2026-03-23", "kind": "eje", "title": "Tarea eje 3 (Cohorte 1 (1A))", "detail": "Cohorte 1 (1A) · Entrega Tarea eje 3. Fecha: 2026-03-23 (lunes)."}, {"date": "2026-04-27", "kind": "eje", "title": "Tarea eje 1 (Cohorte 2)", "detail": "Cohorte 2 · Entrega Tarea eje 1. Fecha: 2026-04-27 (lunes)."}, {"date": "2026-05-11", "kind": "eje", "title": "Tarea eje 2 (Cohorte 2)", "detail": "Cohorte 2 · Entrega Tarea eje 2. Fecha: 2026-05-11 (lunes)."}, {"date": "2026-05-25", "kind": "eje", "title": "Tarea eje 3 (Cohorte 2)", "detail": "Cohorte 2 · Entrega Tarea eje 3. Fecha: 2026-05-25 (lunes)."}, {"date": "2026-05-18", "kind": "eje", "title": "Tarea eje 1 (Cohorte 3 (1B))", "detail": "Cohorte 3 (1B) · Entrega Tarea eje 1. Fecha: 2026-05-18 (lunes)."}, {"date": "2026-06-01", "kind": "eje", "title": "Tarea eje 2 (Cohorte 3 (1B))", "detail": "Cohorte 3 (1B) · Entrega Tarea eje 2. Fecha: 2026-06-01 (lunes)."}, {"date": "2026-06-15", "kind": "eje", "title": "Tarea eje 3 (Cohorte 3 (1B))", "detail": "Cohorte 3 (1B) · Entrega Tarea eje 3. Fecha: 2026-06-15 (lunes)."}], "holidays": [{"date": "2026-03-23", "kind": "holiday", "title": "Festivo: San José", "detail": "San José"}, {"date": "2026-03-31", "kind": "holiday", "title": "Festivo: Semana Santa (receso)", "detail": "Semana Santa (receso)"}, {"date": "2026-04-02", "kind": "holiday", "title": "Festivo: Jueves Santo", "detail": "Jueves Santo"}, {"date": "2026-04-03", "kind": "holiday", "title": "Festivo: Viernes Santo", "detail": "Viernes Santo"}, {"date": "2026-05-01", "kind": "holiday", "title": "Festivo: Día del Trabajo", "detail": "Día del Trabajo"}, {"date": "2026-05-18", "kind": "holiday", "title": "Festivo: Ascensión", "detail": "Ascensión"}, {"date": "2026-06-08", "kind": "holiday", "title": "Festivo: Corpus Christi", "detail": "Corpus Christi"}, {"date": "2026-06-15", "kind": "holiday", "title": "Festivo: Sagrado Corazón", "detail": "Sagrado Corazón"}], "cohorts": [{"name": "Cohorte 1 (1A)", "start": "2026-02-02", "end": "2026-04-12"}, {"name": "Cohorte 2", "start": "2026-04-06", "end": "2026-06-07"}, {"name": "Cohorte 3 (1B)", "start": "2026-04-27", "end": "2026-06-28"}], "corte2_eval_start": "2026-04-20", "corte3_eval_start": "2026-05-25", "legend": [{"kind": "notes", "label": "Notas", "color": "#16a34a", "icon": "bell"}, {"kind": "eval", "label": "Evaluación", "color": "#e11d48", "icon": "check"}, {"kind": "eje", "label": "Tarea eje", "color": "#ea580c", "icon": "flag"}, {"kind": "cohort", "label": "Cohorte", "color": "#7c3aed", "icon": "book"}, {"kind": "doc", "label": "Eval. docente", "color": "#0f766e", "icon": "book"}, {"kind": "holiday", "label": "Festivo", "color": "#64748b", "icon": "flag"}, {"kind": "period", "label": "Periodo presencial", "color": "#2563eb", "icon": "flag"}]};
+
+const PERIOD_START = new Date(DATA.period_start + "T00:00:00");
+const PERIOD_END   = new Date(DATA.period_end   + "T00:00:00");
+const monthsEs = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const pad2 = n => String(n).padStart(2,'0');
+
+function dateKey(d) { return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function parseISO(s) { return new Date(s+"T00:00:00"); }
+function sameDay(d, iso) {
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const y = parseISO(iso);
+  return x.getTime() === y.getTime();
+}
+function inISO(d, a, b) {
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  return x >= parseISO(a) && x <= parseISO(b);
+}
+function dayInRange(d) {
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  return x >= PERIOD_START && x <= PERIOD_END;
+}
+function monthStart(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+function monthEnd(d) { return new Date(d.getFullYear(), d.getMonth()+1, 0); }
+
+function svgIcon(name) {
+  if (name === "bell") return `<span class="icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
+  </span>`;
+  if (name === "flag") return `<span class="icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M4 22V2"></path><path d="M4 4h12l-1 5 1 5H4"></path></svg>
+  </span>`;
+  if (name === "check") return `<span class="icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg>
+  </span>`;
+  if (name === "book") return `<span class="icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path></svg>
+  </span>`;
+  return svgIcon("flag");
+}
+
+const KIND = {
+  notes:  { icon:"bell",  cls:"k-notes", dot:"dot-notes" },
+  eval:   { icon:"check", cls:"k-eval",  dot:"dot-eval" },
+  eje:    { icon:"flag",  cls:"k-eje",   dot:"dot-eje" },
+  cohort: { icon:"book",  cls:"k-cohort",dot:"dot-cohort" },
+  doc:    { icon:"book",  cls:"k-doc",   dot:"dot-doc" },
+  holiday:{ icon:"flag",  cls:"k-holiday",dot:"dot-holiday" },
+  period: { icon:"flag",  cls:"k-period",dot:"dot-period" },
+};
+
+function openModal(title, dateISO, detail) {
+  const dt = parseISO(dateISO);
+  document.getElementById("mTitle").textContent = title;
+  document.getElementById("mMeta").textContent = dt.toLocaleDateString("es-CO", {weekday:"long", year:"numeric", month:"short", day:"numeric"});
+  document.getElementById("mDesc").textContent = detail || "";
+  document.getElementById("overlay").classList.add("show");
+}
+function closeModal() { document.getElementById("overlay").classList.remove("show"); }
+document.getElementById("closeBtn").addEventListener("click", closeModal);
+document.getElementById("overlay").addEventListener("click", (e)=>{ if(e.target.id==="overlay") closeModal(); });
+
+function corteFor(d) {
+  // threshold dates
+  if (d < parseISO(DATA.corte2_eval_start)) return "Corte 1";
+  if (d < parseISO(DATA.corte3_eval_start)) return "Corte 2";
+  return "Corte 3";
+}
+function cohortsFor(d) {
+  const out = [];
+  for (const c of DATA.cohorts) {
+    if (inISO(d, c.start, c.end)) out.push(c.name);
+  }
+  return out;
+}
+
+function buildLegend() {
+  const grid = document.getElementById("legendGrid");
+  grid.innerHTML = "";
+  for (const it of DATA.legend) {
+    const cell = document.createElement("div");
+    cell.className = "legendCell";
+    cell.innerHTML = `
+      <span class="swatch" style="background:${it.color}"></span>
+      ${svgIcon(it.icon)}
+      <span>${it.label}</span>
+    `;
+    grid.appendChild(cell);
+  }
+}
+
+function buildMonthOptions() {
+  const sel = document.getElementById("monthSel");
+  sel.innerHTML = "";
+  let cur = new Date(PERIOD_START.getFullYear(), PERIOD_START.getMonth(), 1);
+  const end = new Date(PERIOD_END.getFullYear(), PERIOD_END.getMonth(), 1);
+  while (cur <= end) {
+    const opt = document.createElement("option");
+    opt.value = `${cur.getFullYear()}-${pad2(cur.getMonth()+1)}`;
+    opt.textContent = `${monthsEs[cur.getMonth()]} ${cur.getFullYear()}`;
+    sel.appendChild(opt);
+    cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
+  }
+  sel.value = `${PERIOD_START.getFullYear()}-${pad2(PERIOD_START.getMonth()+1)}`;
+}
+
+function dailyItems(d) {
+  const iso = dateKey(d);
+  const filter = document.getElementById("filterSel").value;
+  const dots = [];
+  const tags = [];
+
+  // ranges: dot every day; text on start/end
+  for (const r of DATA.ranges) {
+    if (!inISO(d, r.start, r.end)) continue;
+    if (filter !== "all" && filter !== r.kind) continue;
+    const k = KIND[r.kind];
+    dots.push({ kind: r.kind, title: r.title_mid, detail: r.detail, date: iso });
+    if (sameDay(d, r.start)) {
+      tags.push({ kind: r.kind, title: r.title_start, detail: r.detail, date: iso });
+    } else if (sameDay(d, r.end)) {
+      tags.push({ kind: r.kind, title: r.title_end, detail: r.detail, date: iso });
+    }
+  }
+
+  // single events: show as tag (icon+text) and also dot (optional). We'll show as tag only (clean).
+  for (const e of DATA.single) {
+    if (e.date !== iso) continue;
+    if (filter !== "all" && filter !== e.kind) continue;
+    tags.push({ kind: e.kind, title: e.title, detail: e.detail, date: iso });
+  }
+
+  // holidays: dot only, plus holiday background
+  for (const h of DATA.holidays) {
+    if (h.date !== iso) continue;
+    if (filter !== "all" && filter !== "holiday") continue;
+    dots.push({ kind: "holiday", title: h.title, detail: h.detail, date: iso });
+  }
+
+  return {dots, tags};
+}
+
+function render() {
+  const monthSel = document.getElementById("monthSel").value;
+  const [y,m] = monthSel.split("-").map(Number);
+  const focus = new Date(y, m-1, 1);
+
+  const ms = monthStart(focus);
+  const me = monthEnd(focus);
+  const start = new Date(ms); start.setDate(ms.getDate() - ms.getDay());
+  const end = new Date(me);  end.setDate(me.getDate() + (6 - me.getDay()));
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    const iso = dateKey(d);
+    const inMonth = d.getMonth() === focus.getMonth();
+
+    // holiday background if any holiday regardless of filter
+    if (DATA.holidays.some(h => h.date === iso) && dayInRange(d)) cell.classList.add("holidayCell");
+
+    const top = document.createElement("div");
+    top.className = "cellTop";
+
+    const dayBtn = document.createElement("div");
+    dayBtn.className = "dayBtn";
+    dayBtn.innerHTML = `<span>${d.getDate()}</span><span class="muted">${inMonth ? "" : monthsEs[d.getMonth()].slice(0,3)}</span>`;
+    dayBtn.addEventListener("click", ()=> {
+      const corte = corteFor(d);
+      const cs = cohortsFor(d);
+      const hol = DATA.holidays.find(h => h.date === iso);
+      let detail = `Proceso: ${corte}.`;
+      detail += `\nCohorte(s): ${cs.length ? cs.join(", ") : "ninguna"}.`;
+      if (hol && dayInRange(d)) detail += `\nFestivo/Receso: ${hol.detail}.`;
+      openModal("Estado del día", iso, detail);
+    });
+
+    const bar = document.createElement("div");
+    bar.className = "bar";
+
+    const items = dailyItems(d);
+
+    // dots in bar (right side)
+    for (const dot of items.dots) {
+      const k = KIND[dot.kind];
+      const btn = document.createElement("div");
+      btn.className = `dotBtn ${k.dot}`;
+      btn.innerHTML = svgIcon(k.icon);
+      btn.title = dot.title;
+      btn.addEventListener("click", ()=> openModal(dot.title, iso, dot.detail));
+      bar.appendChild(btn);
+    }
+
+    top.appendChild(dayBtn);
+    top.appendChild(bar);
+    cell.appendChild(top);
+
+    // tags (text) only for start/end of ranges and for single events (tasks)
+    const tagsWrap = document.createElement("div");
+    tagsWrap.className = "tags";
+    for (const t of items.tags) {
+      const k = KIND[t.kind];
+      const tag = document.createElement("div");
+      tag.className = `tag ${k.cls}`;
+      tag.innerHTML = svgIcon(k.icon) + `<span class="txt">${t.title}</span>`;
+      tag.addEventListener("click", ()=> openModal(t.title, iso, t.detail));
+      tagsWrap.appendChild(tag);
+    }
+    cell.appendChild(tagsWrap);
+
+    grid.appendChild(cell);
+  }
+}
+
+buildLegend();
+buildMonthOptions();
+render();
+document.getElementById("monthSel").addEventListener("change", render);
+document.getElementById("filterSel").addEventListener("change", render);
+</script>
+</body>
+</html>
