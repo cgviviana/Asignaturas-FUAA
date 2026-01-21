@@ -23,7 +23,7 @@
     margin:0;
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans";
     color: var(--ink);
-    
+    /* Fondo externo (coloca fondo.png junto al HTML) */
     background-image: url('fondo.png');
     background-size: cover;
     background-position: center;
@@ -205,6 +205,18 @@
     line-height: 1.35;
     white-space: pre-line;
   }
+
+  .todayHeart{
+    position:absolute;
+    left:50%;
+    top:56%;
+    transform: translate(-50%, -50%);
+    font-size: 26px;
+    line-height: 1;
+    pointer-events:none;
+    filter: drop-shadow(0 6px 14px rgba(225,29,72,.18));
+  }
+  .cell{ position: relative; }
 </style>
 </head>
 <body>
@@ -212,7 +224,7 @@
 <div class="wrap">
   <div class="titleRow">
     <div class="mascot" aria-hidden="true">🎀</div>
-    <h1>Calendario Académico Areandina 26_01</h1>
+    <h1>Calendario Académico Areandina 2026_01</h1>
   </div>
   <div class="sub">Fechas principales.</div>
 
@@ -410,7 +422,14 @@ function buildMonthOptions() {
     sel.appendChild(opt);
     cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
   }
-  sel.value = `${PERIOD_START.getFullYear()}-${pad2(PERIOD_START.getMonth()+1)}`;
+  // Mes por defecto: mes actual si cae dentro del periodo visible, si no, el inicio del periodo
+  const now = new Date();
+  const nowFirst = new Date(now.getFullYear(), now.getMonth(), 1);
+  const visFirst = new Date(PERIOD_START.getFullYear(), PERIOD_START.getMonth(), 1);
+  const visLast  = new Date(PERIOD_END.getFullYear(), PERIOD_END.getMonth(), 1);
+  const within = nowFirst >= visFirst && nowFirst <= visLast;
+  const base = within ? now : PERIOD_START;
+  sel.value = `${base.getFullYear()}-${pad2(base.getMonth()+1)}`;
 }
 
 function render() {
@@ -453,7 +472,17 @@ function render() {
       cell.className = "cell";
       const dk = dateKey(d);
       const inMonth = d.getMonth() === focus.getMonth();
-      if (holidayMap.has(dk) && dayInRange(d)) cell.classList.add("holidayCell");
+      
+      // Corazón para "hoy" (si el mes mostrado incluye hoy)
+      const _now = new Date();
+      const _todayKey = dateKey(_now);
+      if (dk === _todayKey){
+        const heart = document.createElement("div");
+        heart.className = "todayHeart";
+        heart.textContent = "❤️";
+        cell.appendChild(heart);
+      }
+if (holidayMap.has(dk) && dayInRange(d)) cell.classList.add("holidayCell");
 
       const head = document.createElement("div");
       head.className = "dateRow";
@@ -516,18 +545,32 @@ function render() {
 buildLegend();
 buildMonthOptions();
 
-// Fecha actual en cabecera (siempre visible)
+// Fecha actual en cabecera (siempre visible) + semana (SEM) si aplica
 (function setToday(){
   const el = document.getElementById("todayText");
   if (!el) return;
   const now = new Date();
+
   const opts = { weekday:"long", year:"numeric", month:"long", day:"numeric" };
-  // Capitalizar primera letra (opcional)
   let s = now.toLocaleDateString("es-CO", opts);
   s = s.charAt(0).toUpperCase() + s.slice(1);
-  el.textContent = s;
-})();
 
+  // Semana (SEM) si estamos en periodo académico presencial (según SEM_MAP)
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function dateKey(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+  function semForDate(d){
+    // domingo de la semana visual
+    const sunday = new Date(d);
+    sunday.setDate(d.getDate() - d.getDay());
+    // lunes de esa fila
+    const monday = new Date(sunday);
+    monday.setDate(sunday.getDate() + 1);
+    const mk = dateKey(monday);
+    return (typeof SEM_MAP !== "undefined" && SEM_MAP[mk]) ? SEM_MAP[mk] : "";
+  }
+  const sem = semForDate(now);
+  el.textContent = sem ? `Semana ${sem} · ${s}` : s;
+})();
 render();
 document.getElementById("monthSel").addEventListener("change", render);
 document.getElementById("filterSel").addEventListener("change", render);
