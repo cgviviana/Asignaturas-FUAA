@@ -2,8 +2,8 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Calendario Académico Areandina</title>
 <style>
   :root {
@@ -15,182 +15,234 @@
     --shadow: 0 10px 30px rgba(31,41,55,.08);
     --pink2: #ffd6e8;
     --blue2: #e8f1ff;
-    --head: #ffe4f2;
     --icon: #6b7280;
+    --head: #ffe4f2;
   }
   * { box-sizing: border-box; }
-  body {
+  body{
     margin:0;
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans";
     color: var(--ink);
-    background:
-      radial-gradient(1100px 520px at 10% -10%, var(--pink2) 0%, transparent 55%),
-      radial-gradient(900px 520px at 100% 0%, var(--blue2) 0%, transparent 55%),
-      var(--bg);
+    
+    background-image: url('fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
   }
-  .wrap { max-width: 1200px; margin:0 auto; padding:18px; }
+  .wrap { max-width: 1220px; margin: 0 auto; padding: 18px; }
   .titleRow { display:flex; align-items:center; gap:10px; }
   .mascot { width:30px;height:30px;border-radius:12px;background:linear-gradient(135deg,var(--pink2),var(--blue2));box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center; }
-  h1 { font-size:18px; margin:0; }
-  .sub { font-size:13px; color:var(--muted); margin-top:6px; max-width: 920px; }
+  h1 { font-size: 18px; margin:0; }
+  .sub { font-size: 13px; color: var(--muted); margin-top: 6px; max-width: 980px; }
 
-  /* Legend table */
   .legendTable {
-    width:100%;
-    border:1px solid var(--line);
-    border-radius:14px;
-    overflow:hidden;
-    background: rgba(255,255,255,.88);
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(255,255,255,.85);
     box-shadow: var(--shadow);
     margin: 14px 0;
   }
   .legendHead {
     background: var(--head);
     padding: 10px 12px;
-    font-weight: 900;
-    border-bottom:1px solid var(--line);
-    color:#334155;
+    font-weight: 800;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
   }
   .legendGrid { display:grid; grid-template-columns: repeat(7, 1fr); }
   .legendCell {
-    padding: 10px 8px;
+    padding: 10px 10px;
     border-right: 1px solid var(--line);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:8px;
-    font-size:12px;
-    font-weight:900;
-    color:#334155;
+    display:flex; gap:8px; align-items:center; justify-content:center;
+    text-align:center; font-size: 12px; min-width:0;
   }
   .legendCell:nth-child(7n) { border-right:none; }
-  .swatch { width:10px;height:10px;border-radius:999px; }
-  .icon { width:14px;height:14px; display:inline-block; }
-  svg { width:14px;height:14px; fill:none; stroke: var(--icon); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .swatch { width: 10px; height: 10px; border-radius: 999px; }
+  .icon { width: 14px; height: 14px; display:inline-block; }
+  svg { width:14px; height:14px; fill:none; stroke: var(--icon); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 
-  /* Controls */
   .controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 10px 0 14px; }
   .pill { background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); padding:8px 10px; display:flex; gap:8px; align-items:center; }
-  select { border:none; outline:none; background:transparent; font-size:13px; color:var(--ink); font-weight:800; }
+  select { border:none; outline:none; background:transparent; font-size:13px; color:var(--ink); }
 
-  /* Calendar */
   .cal { background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); overflow:hidden; }
-  .calHead { display:grid; grid-template-columns: repeat(7,1fr); background: var(--head); border-bottom:1px solid var(--line); }
-  .calHead div { padding: 10px 8px; text-align:center; font-weight: 950; font-size:12px; color:#334155; }
+  .calHead {
+    display:grid;
+    grid-template-columns: 42px repeat(7, 1fr); /* SEM + 7 days */
+    background: var(--head);
+    border-bottom:1px solid var(--line);
+  }
+  .calHead div { padding: 10px 8px; text-align:center; font-weight:900; font-size:12px; color: #334155; }
+  .calHead .semHead { font-weight:1000; }
 
-  .grid { display:grid; grid-template-columns: repeat(7,1fr); grid-auto-rows: 110px; }
+  .grid {
+    display:grid;
+    grid-template-columns: 42px repeat(7, 1fr);
+    grid-auto-rows: 110px;
+  }
+  .semCell {
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding-top: 10px;
+    font-weight: 1000;
+    color: #334155;
+    font-size: 12px;
+    background: #f9a8d4;
+  }
   .cell {
     padding: 8px;
     border-right: 1px solid var(--line);
-    border-bottom:1px solid var(--line);
-    min-width:0;
-  }
-  .cell:nth-child(7n) { border-right:none; }
-  .holidayCell { background: rgba(100,116,139,.06); }
-
-  .cellTop {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap: 8px;
-  }
-  .dayBtn {
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    cursor:pointer;
-    font-weight:950;
-    font-size:12px;
-    padding: 2px 6px;
-    border-radius: 10px;
-  }
-  .dayBtn:hover { background: rgba(255,107,176,.10); }
-  .muted { color: var(--muted); font-weight:850; font-size:11px; }
-
-  /* Right-side icon bar (horizontal) */
-  .bar {
-    display:flex;
-    gap:6px;
-    align-items:center;
-    justify-content:flex-end;
-    flex-wrap:wrap;
-    max-width: 70%;
-  }
-  .dotBtn {
-    width: 22px;
-    height: 22px;
-    border-radius: 10px;
-    border: 1px solid rgba(241,215,230,.95);
-    background: rgba(255,255,255,.92);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-  }
-  .dotBtn:hover { outline: 2px solid rgba(255,107,176,.18); }
-
-  /* Named tag (first/last day) */
-  .tags {
-    margin-top: 8px;
+    border-bottom: 1px solid var(--line);
     display:flex;
     flex-direction:column;
-    gap: 6px;
-    overflow: hidden;
-  }
-  .tag {
-    display:flex;
-    align-items:center;
     gap:6px;
-    border: 1px solid rgba(241,215,230,.95);
-    background: rgba(255,255,255,.92);
+    min-width:0;
+  }
+  .cell:nth-child(8n) { border-right:none; } /* last col in 8-col grid */
+  .holidayCell { background: rgba(100,116,139,.06); }
+
+  .dateRow { display:flex; justify-content:space-between; align-items:center; font-weight:900; font-size:12px; }
+  .dateNum { display:inline-flex; gap:6px; align-items:center; cursor:pointer; padding: 2px 6px; border-radius: 10px; }
+  .dateNum:hover { background: rgba(255,107,176,.10); }
+  .muted { color: var(--muted); font-weight:800; font-size:11px; }
+
+  .chips { display:flex; flex-direction:column; gap:6px; overflow:auto; padding-right:2px; }
+  .chip {
     border-radius: 12px;
     padding: 6px 8px;
     font-size: 11px;
-    font-weight: 850;
-    color:#334155;
-    min-width:0;
+    display:flex;
+    gap:6px;
+    align-items:center;
+    background: rgba(255,255,255,.92);
+    border:1px solid rgba(241,215,230,.95);
     cursor:pointer;
+    user-select:none;
+    min-width:0;
+    width: max-content;
+    max-width: 100%;
   }
-  .tag:hover { outline: 2px solid rgba(255,107,176,.18); }
-  .tag .txt { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .chip:hover { outline:2px solid rgba(255,107,176,.18); }
+  .chip.iconOnly { padding: 6px 6px; width: 28px; justify-content:center; }
+  .label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-  /* kind colors (left accent) */
-  .k-notes { border-left: 4px solid #16a34a; }
-  .k-eval  { border-left: 4px solid #e11d48; }
-  .k-eje   { border-left: 4px solid #ea580c; }
-  .k-cohort{ border-left: 4px solid #7c3aed; }
-  .k-doc   { border-left: 4px solid #0f766e; }
-  .k-holiday { border-left: 4px solid #64748b; }
-  .k-period { border-left: 4px solid #2563eb; }
+  .notes { --c: #16a34a; }
+  .eval  { --c: #e11d48; }
+  .eje   { --c: #ea580c; }
+  .cohort{ --c: #7c3aed; }
+  .doc   { --c: #0f766e; }
+  .hol   { --c: #64748b; }
+  .period{ --c: #2563eb; }
+  .chip { border-left: 4px solid var(--c, #94a3b8); }
 
-  .dot-notes { box-shadow: inset 0 0 0 2px rgba(22,163,74,.25); }
-  .dot-eval  { box-shadow: inset 0 0 0 2px rgba(225,29,72,.25); }
-  .dot-eje   { box-shadow: inset 0 0 0 2px rgba(234,88,12,.25); }
-  .dot-cohort{ box-shadow: inset 0 0 0 2px rgba(124,58,237,.25); }
-  .dot-doc  { box-shadow: inset 0 0 0 2px rgba(15,118,110,.25); }
-  .dot-holiday { box-shadow: inset 0 0 0 2px rgba(100,116,139,.25); }
-  .dot-period { box-shadow: inset 0 0 0 2px rgba(37,99,235,.25); }
-
-  /* Modal */
   .overlay { position:fixed; inset:0; background: rgba(31,41,55,.25); display:none; align-items:center; justify-content:center; padding:18px; }
   .overlay.show { display:flex; }
-  .modal { width:min(620px,100%); background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:14px; }
+  .modal { width:min(580px,100%); background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:14px; }
   .modalTop { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
   .modal h2 { font-size:14px; margin:0; }
   .meta { font-size:12px; color:var(--muted); margin-top:4px; }
   .desc { font-size:13px; margin-top:10px; line-height:1.35; white-space:pre-line; }
-  .btn { border:1px solid var(--line); background: rgba(255,255,255,.9); border-radius:12px; padding:6px 10px; cursor:pointer; font-weight:900; }
+  .btn { border:1px solid var(--line); background: rgba(255,255,255,.9); border-radius:12px; padding:6px 10px; cursor:pointer; font-weight:800; }
+
+  .backdrop{
+    min-height: 100vh;
+    background:
+      radial-gradient(1100px 520px at 10% -10%, rgba(255,214,232,.80) 0%, transparent 55%),
+      radial-gradient(900px 520px at 100% 0%, rgba(232,241,255,.75) 0%, transparent 55%),
+      rgba(255,247,251,.75);
+    backdrop-filter: blur(2px);
+  }
+
+  .drops{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top: 12px;
+  }
+  details.drop{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    min-width: min(520px, 100%);
+    flex: 1 1 520px;
+  }
+  details.drop summary{
+    list-style: none;
+    cursor: pointer;
+    padding: 10px 12px;
+    font-weight: 900;
+    font-size: 13px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap:10px;
+    user-select:none;
+  }
+  details.drop summary::-webkit-details-marker{ display:none; }
+  .caret{
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #334155;
+    opacity: .85;
+    transform: rotate(0deg);
+    transition: transform .18s ease;
+    flex: 0 0 auto;
+  }
+  details.drop[open] .caret{ transform: rotate(180deg); }
+  .dropBody{
+    padding: 10px 12px 12px;
+    border-top: 1px solid var(--line);
+    font-size: 12.5px;
+    color: #334155;
+    line-height: 1.35;
+    white-space: pre-line;
+  }
 </style>
 </head>
 <body>
+<div class="backdrop">
 <div class="wrap">
   <div class="titleRow">
     <div class="mascot" aria-hidden="true">🎀</div>
     <h1>Calendario Académico Areandina</h1>
   </div>
-  <div class="sub">
-    Calendario del periodo escolar (26-Jan-2026 → 16-Jun-2026).
-    En rangos: <b>primer y último día</b> muestran texto; días intermedios solo icono (barra derecha).
+  <div class="sub">Fechas principales organizadas por secciones desplegables.</div>
+
+  <div class="drops">
+    <details class="drop" open>
+      <summary>
+        <span>Periodo presencial: 02-feb-2026 → 30-may-2026</span>
+        <span class="caret" aria-hidden="true"></span>
+      </summary>
+      <div class="dropBody">Presencial
+• Inicio: 02-feb-2026
+• Fin: 30-may-2026
+Cortes (fechas)
+• Corte 1: Evaluación 09–14 mar | Notas 16–21 mar
+• Corte 2: Evaluación 20–25 abr | Notas 27-abr–02-may
+• Final: Evaluación 25–30 may | Notas 01–05 jun
+Evaluación docente
+• 30-mar → 16-may</div>
+    </details>
+
+    <details class="drop">
+      <summary>
+        <span>Periodo virtual: Cohortes 1–3</span>
+        <span class="caret" aria-hidden="true"></span>
+      </summary>
+      <div class="dropBody">Virtual (por cohorte)
+• Cohorte 1 (1A): 02-feb-2026 → 12-abr-2026
+• Cohorte 2: 06-abr-2026 → 07-jun-2026
+• Cohorte 3 (1B): 27-abr-2026 → 28-jun-2026</div>
+    </details>
   </div>
 
   <div class="legendTable">
@@ -200,11 +252,11 @@
 
   <div class="controls">
     <div class="pill">
-      <span style="font-size:12px;color:var(--muted);font-weight:950;">Mes</span>
+      <span style="font-size:12px;color:var(--muted);font-weight:900;">Mes</span>
       <select id="monthSel"></select>
     </div>
     <div class="pill">
-      <span style="font-size:12px;color:var(--muted);font-weight:950;">Filtro</span>
+      <span style="font-size:12px;color:var(--muted);font-weight:900;">Filtro</span>
       <select id="filterSel">
         <option value="all">Todo</option>
         <option value="notes">Notas</option>
@@ -212,14 +264,20 @@
         <option value="eje">Tarea eje</option>
         <option value="cohort">Cohorte</option>
         <option value="doc">Eval. docente</option>
-        <option value="holiday">Festivos</option>
+        <option value="hol">Festivos</option>
         <option value="period">Periodo presencial</option>
       </select>
     </div>
+    <div class="pill" id="todayPill" title="Fecha actual">
+      <span style="font-size:12px;color:var(--muted);font-weight:900;">Hoy</span>
+      <span id="todayText" style="font-size:13px;font-weight:900;"></span>
+    </div>
+
   </div>
 
   <div class="cal">
     <div class="calHead">
+      <div class="semHead">SEM</div>
       <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
     </div>
     <div id="grid" class="grid"></div>
@@ -240,23 +298,28 @@
 </div>
 
 <script>
-const DATA = {"period_start": "2026-01-26", "period_end": "2026-06-16", "ranges": [{"kind": "period", "start": "2026-02-02", "end": "2026-05-30", "title_start": "Inicio periodo presencial", "title_mid": "Periodo presencial", "title_end": "Fin periodo presencial", "detail": "Periodo presencial: 2026-02-02 → 2026-05-30."}, {"kind": "eval", "start": "2026-03-09", "end": "2026-03-14", "title_start": "Inicio Evaluación Corte 1", "title_mid": "Evaluación Corte 1", "title_end": "Fin Evaluación Corte 1", "detail": "Evaluación Corte 1: 2026-03-09 → 2026-03-14."}, {"kind": "notes", "start": "2026-03-16", "end": "2026-03-21", "title_start": "Inicio Notas Corte 1", "title_mid": "Notas Corte 1", "title_end": "Fin Notas Corte 1", "detail": "Notas Corte 1: 2026-03-16 → 2026-03-21."}, {"kind": "eval", "start": "2026-04-20", "end": "2026-04-25", "title_start": "Inicio Evaluación Corte 2", "title_mid": "Evaluación Corte 2", "title_end": "Fin Evaluación Corte 2", "detail": "Evaluación Corte 2: 2026-04-20 → 2026-04-25."}, {"kind": "notes", "start": "2026-04-27", "end": "2026-05-02", "title_start": "Inicio Notas Corte 2", "title_mid": "Notas Corte 2", "title_end": "Fin Notas Corte 2", "detail": "Notas Corte 2: 2026-04-27 → 2026-05-02."}, {"kind": "eval", "start": "2026-05-25", "end": "2026-05-30", "title_start": "Inicio Evaluación Corte 3", "title_mid": "Evaluación Corte 3", "title_end": "Fin Evaluación Corte 3", "detail": "Evaluación Corte 3: 2026-05-25 → 2026-05-30."}, {"kind": "notes", "start": "2026-06-01", "end": "2026-06-05", "title_start": "Inicio Notas Corte 3", "title_mid": "Notas Corte 3", "title_end": "Fin Notas Corte 3", "detail": "Notas Corte 3: 2026-06-01 → 2026-06-05."}, {"kind": "doc", "start": "2026-03-30", "end": "2026-05-16", "title_start": "Inicio evaluación docente", "title_mid": "Evaluación docente", "title_end": "Fin evaluación docente", "detail": "Evaluación docente: 2026-03-30 → 2026-05-16."}, {"kind": "cohort", "start": "2026-02-02", "end": "2026-04-12", "title_start": "Inicio Cohorte 1 (1A)", "title_mid": "Cohorte 1 (1A)", "title_end": "Fin Cohorte 1 (1A)", "detail": "Cohorte 1 (1A): 2026-02-02 → 2026-04-12."}, {"kind": "cohort", "start": "2026-04-06", "end": "2026-06-07", "title_start": "Inicio Cohorte 2", "title_mid": "Cohorte 2", "title_end": "Fin Cohorte 2", "detail": "Cohorte 2: 2026-04-06 → 2026-06-07."}, {"kind": "cohort", "start": "2026-04-27", "end": "2026-06-28", "title_start": "Inicio Cohorte 3 (1B)", "title_mid": "Cohorte 3 (1B)", "title_end": "Fin Cohorte 3 (1B)", "detail": "Cohorte 3 (1B): 2026-04-27 → 2026-06-28."}], "single": [{"date": "2026-02-23", "kind": "eje", "title": "Tarea eje 1 (Cohorte 1 (1A))", "detail": "Cohorte 1 (1A) · Entrega Tarea eje 1. Fecha: 2026-02-23 (lunes)."}, {"date": "2026-03-09", "kind": "eje", "title": "Tarea eje 2 (Cohorte 1 (1A))", "detail": "Cohorte 1 (1A) · Entrega Tarea eje 2. Fecha: 2026-03-09 (lunes)."}, {"date": "2026-03-23", "kind": "eje", "title": "Tarea eje 3 (Cohorte 1 (1A))", "detail": "Cohorte 1 (1A) · Entrega Tarea eje 3. Fecha: 2026-03-23 (lunes)."}, {"date": "2026-04-27", "kind": "eje", "title": "Tarea eje 1 (Cohorte 2)", "detail": "Cohorte 2 · Entrega Tarea eje 1. Fecha: 2026-04-27 (lunes)."}, {"date": "2026-05-11", "kind": "eje", "title": "Tarea eje 2 (Cohorte 2)", "detail": "Cohorte 2 · Entrega Tarea eje 2. Fecha: 2026-05-11 (lunes)."}, {"date": "2026-05-25", "kind": "eje", "title": "Tarea eje 3 (Cohorte 2)", "detail": "Cohorte 2 · Entrega Tarea eje 3. Fecha: 2026-05-25 (lunes)."}, {"date": "2026-05-18", "kind": "eje", "title": "Tarea eje 1 (Cohorte 3 (1B))", "detail": "Cohorte 3 (1B) · Entrega Tarea eje 1. Fecha: 2026-05-18 (lunes)."}, {"date": "2026-06-01", "kind": "eje", "title": "Tarea eje 2 (Cohorte 3 (1B))", "detail": "Cohorte 3 (1B) · Entrega Tarea eje 2. Fecha: 2026-06-01 (lunes)."}, {"date": "2026-06-15", "kind": "eje", "title": "Tarea eje 3 (Cohorte 3 (1B))", "detail": "Cohorte 3 (1B) · Entrega Tarea eje 3. Fecha: 2026-06-15 (lunes)."}], "holidays": [{"date": "2026-03-23", "kind": "holiday", "title": "Festivo: San José", "detail": "San José"}, {"date": "2026-03-31", "kind": "holiday", "title": "Festivo: Semana Santa (receso)", "detail": "Semana Santa (receso)"}, {"date": "2026-04-02", "kind": "holiday", "title": "Festivo: Jueves Santo", "detail": "Jueves Santo"}, {"date": "2026-04-03", "kind": "holiday", "title": "Festivo: Viernes Santo", "detail": "Viernes Santo"}, {"date": "2026-05-01", "kind": "holiday", "title": "Festivo: Día del Trabajo", "detail": "Día del Trabajo"}, {"date": "2026-05-18", "kind": "holiday", "title": "Festivo: Ascensión", "detail": "Ascensión"}, {"date": "2026-06-08", "kind": "holiday", "title": "Festivo: Corpus Christi", "detail": "Corpus Christi"}, {"date": "2026-06-15", "kind": "holiday", "title": "Festivo: Sagrado Corazón", "detail": "Sagrado Corazón"}], "cohorts": [{"name": "Cohorte 1 (1A)", "start": "2026-02-02", "end": "2026-04-12"}, {"name": "Cohorte 2", "start": "2026-04-06", "end": "2026-06-07"}, {"name": "Cohorte 3 (1B)", "start": "2026-04-27", "end": "2026-06-28"}], "corte2_eval_start": "2026-04-20", "corte3_eval_start": "2026-05-25", "legend": [{"kind": "notes", "label": "Notas", "color": "#16a34a", "icon": "bell"}, {"kind": "eval", "label": "Evaluación", "color": "#e11d48", "icon": "check"}, {"kind": "eje", "label": "Tarea eje", "color": "#ea580c", "icon": "flag"}, {"kind": "cohort", "label": "Cohorte", "color": "#7c3aed", "icon": "book"}, {"kind": "doc", "label": "Eval. docente", "color": "#0f766e", "icon": "book"}, {"kind": "holiday", "label": "Festivo", "color": "#64748b", "icon": "flag"}, {"kind": "period", "label": "Periodo presencial", "color": "#2563eb", "icon": "flag"}]};
+const PERIOD_START = new Date("2026-01-26T00:00:00");
+const PERIOD_END   = new Date("2026-06-16T00:00:00");
+const EVENTS = [{"date": "2026-02-02", "kind": "period", "title": "Inicio periodo presencial", "detail": "Inicio del periodo académico presencial: 2026-02-02 (fin: 2026-05-30).", "priority": 2, "iconOnly": true}, {"date": "2026-05-30", "kind": "period", "title": "Fin periodo presencial", "detail": "Fin del periodo académico presencial: 2026-05-30 (inicio: 2026-02-02).", "priority": 2, "iconOnly": true}, {"date": "2026-03-09", "kind": "eval", "title": "Inicio evaluación 1er corte", "detail": "evaluación 1er corte: 2026-03-09 → 2026-03-14.", "priority": 2, "iconOnly": true}, {"date": "2026-03-14", "kind": "eval", "title": "Fin evaluación 1er corte", "detail": "evaluación 1er corte: 2026-03-09 → 2026-03-14.", "priority": 3, "iconOnly": true}, {"date": "2026-03-16", "kind": "notes", "title": "Inicio notas 1er corte", "detail": "notas 1er corte: 2026-03-16 → 2026-03-21.", "priority": 1, "iconOnly": true}, {"date": "2026-03-21", "kind": "notes", "title": "Fin notas 1er corte", "detail": "notas 1er corte: 2026-03-16 → 2026-03-21.", "priority": 2, "iconOnly": true}, {"date": "2026-04-20", "kind": "eval", "title": "Inicio evaluación 2do corte", "detail": "evaluación 2do corte: 2026-04-20 → 2026-04-25.", "priority": 2, "iconOnly": true}, {"date": "2026-04-25", "kind": "eval", "title": "Fin evaluación 2do corte", "detail": "evaluación 2do corte: 2026-04-20 → 2026-04-25.", "priority": 3, "iconOnly": true}, {"date": "2026-04-27", "kind": "notes", "title": "Inicio notas 2do corte", "detail": "notas 2do corte: 2026-04-27 → 2026-05-02.", "priority": 1, "iconOnly": true}, {"date": "2026-05-02", "kind": "notes", "title": "Fin notas 2do corte", "detail": "notas 2do corte: 2026-04-27 → 2026-05-02.", "priority": 2, "iconOnly": true}, {"date": "2026-05-25", "kind": "eval", "title": "Inicio evaluación final", "detail": "evaluación final: 2026-05-25 → 2026-05-30.", "priority": 2, "iconOnly": true}, {"date": "2026-05-30", "kind": "eval", "title": "Fin evaluación final", "detail": "evaluación final: 2026-05-25 → 2026-05-30.", "priority": 3, "iconOnly": true}, {"date": "2026-06-01", "kind": "notes", "title": "Inicio notas final", "detail": "notas final: 2026-06-01 → 2026-06-05.", "priority": 1, "iconOnly": true}, {"date": "2026-06-05", "kind": "notes", "title": "Fin notas final", "detail": "notas final: 2026-06-01 → 2026-06-05.", "priority": 2, "iconOnly": true}, {"date": "2026-03-30", "kind": "doc", "title": "Inicio evaluación docente", "detail": "Evaluación docente: 2026-03-30 → 2026-05-16.", "priority": 3, "iconOnly": true}, {"date": "2026-05-16", "kind": "doc_end_text", "title": "Fin evaluación docente", "detail": "Evaluación docente: 2026-03-30 → 2026-05-16.", "priority": 3, "iconOnly": false}, {"date": "2026-02-02", "kind": "cohort", "title": "Inicio Cohorte 1 (1A)", "detail": "Cohorte 1 (1A): 2026-02-02 → 2026-04-12.", "priority": 3, "iconOnly": true}, {"date": "2026-04-12", "kind": "cohort", "title": "Fin Cohorte 1 (1A)", "detail": "Cohorte 1 (1A): 2026-02-02 → 2026-04-12.", "priority": 3, "iconOnly": true}, {"date": "2026-04-06", "kind": "cohort", "title": "Inicio Cohorte 2", "detail": "Cohorte 2: 2026-04-06 → 2026-06-07.", "priority": 3, "iconOnly": true}, {"date": "2026-06-07", "kind": "cohort", "title": "Fin Cohorte 2", "detail": "Cohorte 2: 2026-04-06 → 2026-06-07.", "priority": 3, "iconOnly": true}, {"date": "2026-04-27", "kind": "cohort", "title": "Inicio Cohorte 3 (1B)", "detail": "Cohorte 3 (1B): 2026-04-27 → 2026-06-28.", "priority": 3, "iconOnly": true}, {"date": "2026-06-28", "kind": "cohort", "title": "Fin Cohorte 3 (1B)", "detail": "Cohorte 3 (1B): 2026-04-27 → 2026-06-28.", "priority": 3, "iconOnly": true}, {"date": "2026-02-02", "kind": "eje", "title": "Tarea eje 1 · Cohorte 1 (1A)", "detail": "Tarea eje 1 (Cohorte 1 (1A)). Fecha: 2026-02-02 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-02-16", "kind": "eje", "title": "Tarea eje 2 · Cohorte 1 (1A)", "detail": "Tarea eje 2 (Cohorte 1 (1A)). Fecha: 2026-02-16 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-03-02", "kind": "eje", "title": "Tarea eje 3 · Cohorte 1 (1A)", "detail": "Tarea eje 3 (Cohorte 1 (1A)). Fecha: 2026-03-02 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-03-16", "kind": "eje", "title": "Tarea eje 4 · Cohorte 1 (1A)", "detail": "Tarea eje 4 (Cohorte 1 (1A)). Fecha: 2026-03-16 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-03-16", "kind": "notes", "title": "Entrega de notas (Eje 4) · Cohorte 1 (1A)", "detail": "Entrega de notas asociadas a la semana de Tarea eje 4. Plazo: 2026-03-16 → 2026-03-18 (hasta miércoles).", "priority": 1, "iconOnly": true}, {"date": "2026-03-18", "kind": "notes", "title": "Cierre notas (Eje 4) · Cohorte 1 (1A)", "detail": "Último día (miércoles) para entregar notas de la semana de Tarea eje 4 (Cohorte 1 (1A)).", "priority": 2, "iconOnly": true}, {"date": "2026-04-06", "kind": "eje", "title": "Tarea eje 1 · Cohorte 2", "detail": "Tarea eje 1 (Cohorte 2). Fecha: 2026-04-06 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-04-20", "kind": "eje", "title": "Tarea eje 2 · Cohorte 2", "detail": "Tarea eje 2 (Cohorte 2). Fecha: 2026-04-20 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-05-04", "kind": "eje", "title": "Tarea eje 3 · Cohorte 2", "detail": "Tarea eje 3 (Cohorte 2). Fecha: 2026-05-04 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-05-18", "kind": "eje", "title": "Tarea eje 4 · Cohorte 2", "detail": "Tarea eje 4 (Cohorte 2). Fecha: 2026-05-18 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-05-18", "kind": "notes", "title": "Entrega de notas (Eje 4) · Cohorte 2", "detail": "Entrega de notas asociadas a la semana de Tarea eje 4. Plazo: 2026-05-18 → 2026-05-20 (hasta miércoles).", "priority": 1, "iconOnly": true}, {"date": "2026-05-20", "kind": "notes", "title": "Cierre notas (Eje 4) · Cohorte 2", "detail": "Último día (miércoles) para entregar notas de la semana de Tarea eje 4 (Cohorte 2).", "priority": 2, "iconOnly": true}, {"date": "2026-04-27", "kind": "eje", "title": "Tarea eje 1 · Cohorte 3 (1B)", "detail": "Tarea eje 1 (Cohorte 3 (1B)). Fecha: 2026-04-27 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-05-11", "kind": "eje", "title": "Tarea eje 2 · Cohorte 3 (1B)", "detail": "Tarea eje 2 (Cohorte 3 (1B)). Fecha: 2026-05-11 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-05-25", "kind": "eje", "title": "Tarea eje 3 · Cohorte 3 (1B)", "detail": "Tarea eje 3 (Cohorte 3 (1B)). Fecha: 2026-05-25 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-06-08", "kind": "eje", "title": "Tarea eje 4 · Cohorte 3 (1B)", "detail": "Tarea eje 4 (Cohorte 3 (1B)). Fecha: 2026-06-08 (lunes).", "priority": 3, "iconOnly": true}, {"date": "2026-06-08", "kind": "notes", "title": "Entrega de notas (Eje 4) · Cohorte 3 (1B)", "detail": "Entrega de notas asociadas a la semana de Tarea eje 4. Plazo: 2026-06-08 → 2026-06-10 (hasta miércoles).", "priority": 1, "iconOnly": true}, {"date": "2026-06-10", "kind": "notes", "title": "Cierre notas (Eje 4) · Cohorte 3 (1B)", "detail": "Último día (miércoles) para entregar notas de la semana de Tarea eje 4 (Cohorte 3 (1B)).", "priority": 2, "iconOnly": true}];
+const HOLIDAYS = [{"date": "2026-01-01", "name": "Año Nuevo"}, {"date": "2026-01-12", "name": "Reyes Magos"}, {"date": "2026-03-23", "name": "San José"}, {"date": "2026-03-31", "name": "Semana Santa (receso)"}, {"date": "2026-04-02", "name": "Jueves Santo"}, {"date": "2026-04-03", "name": "Viernes Santo"}, {"date": "2026-05-01", "name": "Día del Trabajo"}, {"date": "2026-05-18", "name": "Ascensión"}, {"date": "2026-06-08", "name": "Corpus Christi"}, {"date": "2026-06-15", "name": "Sagrado Corazón"}];
+const LEGEND = [{"key": "notes", "label": "Notas", "color": "#16a34a", "icon": "bell"}, {"key": "eval", "label": "Evaluación", "color": "#e11d48", "icon": "check"}, {"key": "eje", "label": "Tarea eje", "color": "#ea580c", "icon": "flag"}, {"key": "cohort", "label": "Cohorte", "color": "#7c3aed", "icon": "book"}, {"key": "doc", "label": "Eval. docente", "color": "#0f766e", "icon": "book"}, {"key": "hol", "label": "Festivo", "color": "#64748b", "icon": "flag"}, {"key": "period", "label": "Periodo presencial", "color": "#2563eb", "icon": "flag"}];
+const SEM_MAP = {"2026-02-02": 1, "2026-02-09": 2, "2026-02-16": 3, "2026-02-23": 4, "2026-03-02": 5, "2026-03-09": 6, "2026-03-16": 7, "2026-03-23": 8, "2026-04-06": 9, "2026-04-13": 10, "2026-04-20": 11, "2026-04-27": 12, "2026-05-04": 13, "2026-05-11": 14, "2026-05-18": 15, "2026-05-25": 16};
 
-const PERIOD_START = new Date(DATA.period_start + "T00:00:00");
-const PERIOD_END   = new Date(DATA.period_end   + "T00:00:00");
+const cortes = {"corte1_eval": ["2026-03-09", "2026-03-14"], "corte1_notas": ["2026-03-16", "2026-03-21"], "corte2_eval": ["2026-04-20", "2026-04-25"], "corte2_notas": ["2026-04-27", "2026-05-02"], "corte3_eval": ["2026-05-25", "2026-05-30"], "corte3_notas": ["2026-06-01", "2026-06-05"]};
+
+const COHORTS = [{"name": "Cohorte 1 (1A)", "start": "2026-02-02", "end": "2026-04-12"}, {"name": "Cohorte 2", "start": "2026-04-06", "end": "2026-06-07"}, {"name": "Cohorte 3 (1B)", "start": "2026-04-27", "end": "2026-06-28"}];
+const ACADEMIC = {"start": "2026-02-02", "end": "2026-05-30", "skip_start": "2026-03-30", "skip_end": "2026-04-05"};
+
+const holidayMap = new Map(HOLIDAYS.map(h => [h.date, h.name]));
 const monthsEs = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 const pad2 = n => String(n).padStart(2,'0');
 
 function dateKey(d) { return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
 function parseISO(s) { return new Date(s+"T00:00:00"); }
-function sameDay(d, iso) {
+function inISO(d, s, e) {
   const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const y = parseISO(iso);
-  return x.getTime() === y.getTime();
-}
-function inISO(d, a, b) {
-  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  return x >= parseISO(a) && x <= parseISO(b);
+  const a = parseISO(s), b = parseISO(e);
+  return x >= a && x <= b;
 }
 function dayInRange(d) {
   const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -264,6 +327,29 @@ function dayInRange(d) {
 }
 function monthStart(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
 function monthEnd(d) { return new Date(d.getFullYear(), d.getMonth()+1, 0); }
+
+function corteFor(d) {
+  if (inISO(d, cortes.corte1_eval[0], cortes.corte1_eval[1]) || inISO(d, cortes.corte1_notas[0], cortes.corte1_notas[1]) || d < parseISO(cortes.corte2_eval[0])) return "Corte 1";
+  if (inISO(d, cortes.corte2_eval[0], cortes.corte2_eval[1]) || inISO(d, cortes.corte2_notas[0], cortes.corte2_notas[1]) || d < parseISO(cortes.corte3_eval[0])) return "Corte 2";
+  return "Corte 3";
+}
+function cohortsFor(d) {
+  const out = [];
+  for (const c of COHORTS) if (inISO(d, c.start, c.end)) out.push(c.name);
+  return out;
+}
+
+function mondayOfRowStart(sunday) {
+  const m = new Date(sunday);
+  m.setDate(sunday.getDate() + 1); // Monday in that displayed week
+  return m;
+}
+
+function semForRow(sunday) {
+  const mon = mondayOfRowStart(sunday);
+  const monKey = dateKey(mon);
+  return SEM_MAP[monKey] || ""; // blank if outside/skip
+}
 
 function svgIcon(name) {
   if (name === "bell") return `<span class="icon" aria-hidden="true">
@@ -280,19 +366,18 @@ function svgIcon(name) {
   </span>`;
   return svgIcon("flag");
 }
-
-const KIND = {
-  notes:  { icon:"bell",  cls:"k-notes", dot:"dot-notes" },
-  eval:   { icon:"check", cls:"k-eval",  dot:"dot-eval" },
-  eje:    { icon:"flag",  cls:"k-eje",   dot:"dot-eje" },
-  cohort: { icon:"book",  cls:"k-cohort",dot:"dot-cohort" },
-  doc:    { icon:"book",  cls:"k-doc",   dot:"dot-doc" },
-  holiday:{ icon:"flag",  cls:"k-holiday",dot:"dot-holiday" },
-  period: { icon:"flag",  cls:"k-period",dot:"dot-period" },
-};
+function kindToClassAndIcon(kind) {
+  if (kind === "notes") return {cls:"notes", icon:"bell"};
+  if (kind === "eval") return {cls:"eval", icon:"check"};
+  if (kind === "eje") return {cls:"eje", icon:"flag"};
+  if (kind === "cohort") return {cls:"cohort", icon:"book"};
+  if (kind === "doc" || kind === "doc_end_text") return {cls:"doc", icon:"book"};
+  if (kind === "period") return {cls:"period", icon:"flag"};
+  return {cls:"", icon:"flag"};
+}
 
 function openModal(title, dateISO, detail) {
-  const dt = parseISO(dateISO);
+  const dt = new Date(dateISO+"T00:00:00");
   document.getElementById("mTitle").textContent = title;
   document.getElementById("mMeta").textContent = dt.toLocaleDateString("es-CO", {weekday:"long", year:"numeric", month:"short", day:"numeric"});
   document.getElementById("mDesc").textContent = detail || "";
@@ -300,34 +385,16 @@ function openModal(title, dateISO, detail) {
 }
 function closeModal() { document.getElementById("overlay").classList.remove("show"); }
 document.getElementById("closeBtn").addEventListener("click", closeModal);
-document.getElementById("overlay").addEventListener("click", (e)=>{ if(e.target.id==="overlay") closeModal(); });
-
-function corteFor(d) {
-  // threshold dates
-  if (d < parseISO(DATA.corte2_eval_start)) return "Corte 1";
-  if (d < parseISO(DATA.corte3_eval_start)) return "Corte 2";
-  return "Corte 3";
-}
-function cohortsFor(d) {
-  const out = [];
-  for (const c of DATA.cohorts) {
-    if (inISO(d, c.start, c.end)) out.push(c.name);
-  }
-  return out;
-}
+document.getElementById("overlay").addEventListener("click", (e)=>{ if (e.target.id==="overlay") closeModal(); });
 
 function buildLegend() {
   const grid = document.getElementById("legendGrid");
   grid.innerHTML = "";
-  for (const it of DATA.legend) {
-    const cell = document.createElement("div");
-    cell.className = "legendCell";
-    cell.innerHTML = `
-      <span class="swatch" style="background:${it.color}"></span>
-      ${svgIcon(it.icon)}
-      <span>${it.label}</span>
-    `;
-    grid.appendChild(cell);
+  for (const it of LEGEND) {
+    const c = document.createElement("div");
+    c.className = "legendCell";
+    c.innerHTML = `<span class="swatch" style="background:${it.color}"></span>${svgIcon(it.icon)}<span style="font-weight:900;color:#334155;white-space:nowrap;">${it.label}</span>`;
+    grid.appendChild(c);
   }
 }
 
@@ -346,122 +413,125 @@ function buildMonthOptions() {
   sel.value = `${PERIOD_START.getFullYear()}-${pad2(PERIOD_START.getMonth()+1)}`;
 }
 
-function dailyItems(d) {
-  const iso = dateKey(d);
-  const filter = document.getElementById("filterSel").value;
-  const dots = [];
-  const tags = [];
-
-  // ranges: dot every day; text on start/end
-  for (const r of DATA.ranges) {
-    if (!inISO(d, r.start, r.end)) continue;
-    if (filter !== "all" && filter !== r.kind) continue;
-    const k = KIND[r.kind];
-    dots.push({ kind: r.kind, title: r.title_mid, detail: r.detail, date: iso });
-    if (sameDay(d, r.start)) {
-      tags.push({ kind: r.kind, title: r.title_start, detail: r.detail, date: iso });
-    } else if (sameDay(d, r.end)) {
-      tags.push({ kind: r.kind, title: r.title_end, detail: r.detail, date: iso });
-    }
-  }
-
-  // single events: show as tag (icon+text) and also dot (optional). We'll show as tag only (clean).
-  for (const e of DATA.single) {
-    if (e.date !== iso) continue;
-    if (filter !== "all" && filter !== e.kind) continue;
-    tags.push({ kind: e.kind, title: e.title, detail: e.detail, date: iso });
-  }
-
-  // holidays: dot only, plus holiday background
-  for (const h of DATA.holidays) {
-    if (h.date !== iso) continue;
-    if (filter !== "all" && filter !== "holiday") continue;
-    dots.push({ kind: "holiday", title: h.title, detail: h.detail, date: iso });
-  }
-
-  return {dots, tags};
-}
-
 function render() {
+  const filter = document.getElementById("filterSel").value;
   const monthSel = document.getElementById("monthSel").value;
   const [y,m] = monthSel.split("-").map(Number);
   const focus = new Date(y, m-1, 1);
 
   const ms = monthStart(focus);
   const me = monthEnd(focus);
-  const start = new Date(ms); start.setDate(ms.getDate() - ms.getDay());
-  const end = new Date(me);  end.setDate(me.getDate() + (6 - me.getDay()));
+
+  const start = new Date(ms);
+  start.setDate(ms.getDate() - ms.getDay()); // sunday
+  const end = new Date(me);
+  end.setDate(me.getDate() + (6 - me.getDay()));
+
+  const byDate = new Map();
+  for (const ev of EVENTS) {
+    if (!byDate.has(ev.date)) byDate.set(ev.date, []);
+    byDate.get(ev.date).push(ev);
+  }
+  for (const [k,v] of byDate.entries()) v.sort((a,b)=>(a.priority??3)-(b.priority??3));
 
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    const iso = dateKey(d);
-    const inMonth = d.getMonth() === focus.getMonth();
+  for (let weekStart = new Date(start); weekStart <= end; weekStart.setDate(weekStart.getDate()+7)) {
+    // SEM column
+    const sem = semForRow(weekStart);
+    const semCell = document.createElement("div");
+    semCell.className = "semCell";
+    semCell.textContent = sem;
+    grid.appendChild(semCell);
 
-    // holiday background if any holiday regardless of filter
-    if (DATA.holidays.some(h => h.date === iso) && dayInRange(d)) cell.classList.add("holidayCell");
+    // 7 day cells
+    for (let i=0;i<7;i++) {
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate()+i);
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      const dk = dateKey(d);
+      const inMonth = d.getMonth() === focus.getMonth();
+      if (holidayMap.has(dk) && dayInRange(d)) cell.classList.add("holidayCell");
 
-    const top = document.createElement("div");
-    top.className = "cellTop";
+      const head = document.createElement("div");
+      head.className = "dateRow";
 
-    const dayBtn = document.createElement("div");
-    dayBtn.className = "dayBtn";
-    dayBtn.innerHTML = `<span>${d.getDate()}</span><span class="muted">${inMonth ? "" : monthsEs[d.getMonth()].slice(0,3)}</span>`;
-    dayBtn.addEventListener("click", ()=> {
-      const corte = corteFor(d);
-      const cs = cohortsFor(d);
-      const hol = DATA.holidays.find(h => h.date === iso);
-      let detail = `Proceso: ${corte}.`;
-      detail += `\nCohorte(s): ${cs.length ? cs.join(", ") : "ninguna"}.`;
-      if (hol && dayInRange(d)) detail += `\nFestivo/Receso: ${hol.detail}.`;
-      openModal("Estado del día", iso, detail);
-    });
+      const num = document.createElement("div");
+      num.className = "dateNum";
+      num.innerHTML = `<span>${d.getDate()}</span><span class="muted">${inMonth ? "" : monthsEs[d.getMonth()].slice(0,3)}</span>`;
+      num.addEventListener("click", () => {
+        const corte = corteFor(d);
+        const cs = cohortsFor(d);
+        const hol = (holidayMap.has(dk) && dayInRange(d)) ? holidayMap.get(dk) : "";
+        let detail = `Proceso: ${corte}.`;
+        detail += `\nCohorte(s): ${cs.length ? cs.join(", ") : "ninguna"}.`;
+        if (hol) detail += `\nFestivo/Receso: ${hol}.`;
+        // SEM value (if any) for this date's week
+        const ws = new Date(d); ws.setDate(d.getDate()-d.getDay()); // sunday
+        const semv = semForRow(ws);
+        if (semv) detail += `\nSemana (SEM): ${semv}.`;
+        openModal("Estado del día", dk, detail);
+      });
 
-    const bar = document.createElement("div");
-    bar.className = "bar";
+      head.appendChild(num);
+      cell.appendChild(head);
 
-    const items = dailyItems(d);
+      const chips = document.createElement("div");
+      chips.className = "chips";
 
-    // dots in bar (right side)
-    for (const dot of items.dots) {
-      const k = KIND[dot.kind];
-      const btn = document.createElement("div");
-      btn.className = `dotBtn ${k.dot}`;
-      btn.innerHTML = svgIcon(k.icon);
-      btn.title = dot.title;
-      btn.addEventListener("click", ()=> openModal(dot.title, iso, dot.detail));
-      bar.appendChild(btn);
+      if (holidayMap.has(dk) && dayInRange(d) && (filter === "all" || filter === "hol")) {
+        const ch = document.createElement("div");
+        ch.className = "chip hol iconOnly";
+        ch.innerHTML = svgIcon("flag");
+        ch.title = "Festivo";
+        ch.addEventListener("click", () => openModal("Festivo", dk, holidayMap.get(dk)));
+        chips.appendChild(ch);
+      }
+
+      const todays = byDate.get(dk) || [];
+      for (const ev of todays) {
+        const map = kindToClassAndIcon(ev.kind);
+        if (filter !== "all" && map.cls !== filter) continue;
+        const iconOnly = ev.iconOnly === true;
+        const ch = document.createElement("div");
+        ch.className = `chip ${map.cls} ${iconOnly ? "iconOnly" : ""}`;
+        if (iconOnly) {
+          ch.innerHTML = svgIcon(map.icon);
+          ch.title = ev.title;
+        } else {
+          ch.innerHTML = svgIcon(map.icon) + `<span class="label">${ev.title}</span>`;
+        }
+        ch.addEventListener("click", () => openModal(ev.title, dk, ev.detail));
+        chips.appendChild(ch);
+      }
+
+      cell.appendChild(chips);
+      grid.appendChild(cell);
     }
-
-    top.appendChild(dayBtn);
-    top.appendChild(bar);
-    cell.appendChild(top);
-
-    // tags (text) only for start/end of ranges and for single events (tasks)
-    const tagsWrap = document.createElement("div");
-    tagsWrap.className = "tags";
-    for (const t of items.tags) {
-      const k = KIND[t.kind];
-      const tag = document.createElement("div");
-      tag.className = `tag ${k.cls}`;
-      tag.innerHTML = svgIcon(k.icon) + `<span class="txt">${t.title}</span>`;
-      tag.addEventListener("click", ()=> openModal(t.title, iso, t.detail));
-      tagsWrap.appendChild(tag);
-    }
-    cell.appendChild(tagsWrap);
-
-    grid.appendChild(cell);
   }
 }
 
 buildLegend();
 buildMonthOptions();
+
+// Fecha actual en cabecera (siempre visible)
+(function setToday(){
+  const el = document.getElementById("todayText");
+  if (!el) return;
+  const now = new Date();
+  const opts = { weekday:"long", year:"numeric", month:"long", day:"numeric" };
+  // Capitalizar primera letra (opcional)
+  let s = now.toLocaleDateString("es-CO", opts);
+  s = s.charAt(0).toUpperCase() + s.slice(1);
+  el.textContent = s;
+})();
+
 render();
 document.getElementById("monthSel").addEventListener("change", render);
 document.getElementById("filterSel").addEventListener("change", render);
 </script>
+</div>
 </body>
 </html>
