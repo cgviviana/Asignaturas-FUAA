@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Normativa de Clase</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: 'Merriweather', serif;
@@ -28,23 +30,70 @@
       padding: 5px 20px;
       color: #3a2618;
     }
-    section {
+
+    /* Acordeón contenedor */
+    .accordion {
       background: rgba(255, 250, 235, 0.92);
       border: 2px solid #b89b5e;
       border-radius: 6px;
-      padding: 25px;
-      margin-bottom: 30px;
       box-shadow: inset 0 0 15px rgba(70,45,20,0.25);
+      overflow: hidden;
     }
-    h2 {
+
+    /* <details> con estilo “medieval” */
+    details {
+      border-top: 1px solid #b89b5e;
+      background: transparent;
+    }
+    details:first-child {
+      border-top: none;
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 18px;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: #fff5db;
+    }
+    summary::-webkit-details-marker { display: none; }
+
+    .summary-title {
       font-family: 'UnifrakturCook', cursive;
-      font-size: 1.5em;
-      margin-top: 0;
-      border-bottom: 2px solid #b89b5e;
-      padding-bottom: 6px;
+      font-size: 1.4em;
       color: #4b2f1a;
+      margin: 0;
+      line-height: 1.2;
     }
+
+    .chev {
+      width: 34px;
+      height: 34px;
+      border: 1px solid #b89b5e;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: #fdfaf3;
+      flex: 0 0 auto;
+      transition: transform .2s ease;
+      color: #4b2f1a;
+      font-weight: 700;
+    }
+    details[open] .chev {
+      transform: rotate(180deg);
+    }
+
+    .panel {
+      padding: 18px 22px 24px;
+      background: rgba(255, 250, 235, 0.65);
+    }
+
     ul { padding-left: 25px; }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -62,6 +111,7 @@
       color: #fff;
     }
     tr:nth-child(even) td { background: #f4ecd7; }
+
     .nota {
       background: #fff5db;
       border-left: 6px solid #a87432;
@@ -85,133 +135,237 @@
       margin-top: 0;
       color: #4a2c19;
     }
+
+    /* Accesibilidad: foco visible */
+    summary:focus {
+      outline: 3px solid rgba(168, 116, 50, 0.55);
+      outline-offset: 2px;
+    }
   </style>
 </head>
-<body>
 
+<body>
   <header>
     <h1>Normativa de Clase</h1>
   </header>
 
-  <section>
-    <h2>1. Entrega de trabajos</h2>
-    <ul>
-      <li>Todos los trabajos deben entregarse en la <b>fecha indicada en la plataforma Canvas</b>.</li>
-      <li>No se aceptan entregas por otros medios distintos a Canvas, salvo autorización institucional y/o con excusa válida para tramitar.</li>
-      <li>No se aceptan entregas de otros grupos, ni asignaturas .</li>
-      <li>La <b>entrega de la actividad será mediante enlace funcional del documento</b> compartido a la docente para verificar la participación de integrantes.</li>
-      <li>toda actividad evaluativa tendrá explicación de rúbirca el segundo encuentro de cada eje y debe seguir sus lineamientos pues serán los que se tendrán en cuenta </li>
-      <li>El documento de actividad <b>"plantilla BiT transformador" de cada eje</b>, se entregará en el encuentro y se dejará en el documento de asignatura (google sheets)  en el drive</li>
-      <li>Quien suba el documento de actividad, debe asegurarse de un <b>envío correcto</b> para evitar disminución en la calificación (a partir del eje 2). Igualmente es responsabilidad de todos los integrantes.</li>
-      <li>El mensaje de envío de actividad debe incluir el <b>número de grupo</b> y la lista de <b>integrantes</b> y/o documento de participación</li>
-      <li>La evaluación de actividad (complementaria) del 5%, se toma en cuenta según lo solicitado y explicado en el encuentro sincrónico.</b>
-       <li><b>Nota: </b> Si se evalua la actividad con <b>1 punto</b>, no es la calificación o puntuación  definitiva, significa que no se ha podido dar calificación real por algún motivo y el estudiante debe revisar 
-         en la retroalimentación lo faltante para poder recalificar.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>2. Participación en encuentros</h2>
-    <ul>
-      <li>Es necesario (no obligatorio) asistir a los <b>encuentros sincrónicos</b> o ver las grabaciones disponibles.</li>
-      <li>De no poder asistir al encuentro por cruces puede verse el mismo (si hay disponibilidad), en horario alterno, el cual estará dispuesto en el documento de la asinatura.</li>
-      <li>Los puntos obtenidos en el encuentro sincrónico se asocian a la calificación de actividad complementaria (cuestionario de 5 puntos).</li>
-      <li>Las <b>grabaciones se encuentran en tres lugares</b>:  
+  <div class="accordion" id="accordion">
+    <!-- 1 -->
+    <details open>
+      <summary>
+        <span class="summary-title">1. Entrega de trabajos</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
         <ul>
-          <li>El calendario académico (Calendar).</li>
-          <li>El documento en Google Drive de la asignatura.</li>
-          <li>El espacio de Canvas.</li>
+          <li>Todos los trabajos deben entregarse en la <b>fecha indicada en la plataforma Canvas</b>.</li>
+          <li>No se aceptan entregas por otros medios distintos a Canvas, salvo autorización institucional y/o con excusa válida para tramitar.</li>
+          <li>No se aceptan entregas de otros grupos ni de otras asignaturas.</li>
+          <li>La <b>entrega de la actividad será mediante enlace funcional del documento</b> compartido a la docente para verificar la participación de integrantes.</li>
+          <li>Toda actividad evaluativa tendrá explicación de la <b>rúbrica</b> en el segundo encuentro de cada eje y debe seguir sus lineamientos, pues serán los que se tendrán en cuenta.</li>
+          <li>El documento de actividad <b>“Plantilla BiT Transformador” de cada eje</b> se entregará en el encuentro y se dejará en el documento de la asignatura (Google Sheets) en el Drive.</li>
+          <li>Quien suba el documento de actividad debe asegurarse de un <b>envío correcto</b> para evitar disminución en la calificación (a partir del eje 2). Igualmente, es responsabilidad de todos los integrantes.</li>
+          <li>El mensaje de envío de actividad debe incluir el <b>número de grupo</b> y la lista de <b>integrantes</b> y/o documento de participación.</li>
+          <li>La evaluación de actividad complementaria (5%) se toma en cuenta según lo solicitado y explicado en el encuentro sincrónico.</li>
+          <li><b>Nota:</b> Si se evalúa la actividad con <b>1 punto</b>, no es la calificación o puntuación definitiva; significa que no se ha podido asignar calificación real por algún motivo y el estudiante debe revisar la retroalimentación para poder recalificar.</li>
         </ul>
-      </li>
-    </ul>
-  </section>
+      </div>
+    </details>
 
-  <section>
-    <h2>3. Canales de comunicación</h2>
-    <p> Tener en cuenta el NRC de la asignatura <b> nombre, Modalidad <br> Ejemplo: NRC 1422 virt.  Informática Excusa Médica </br>  y comunicarse solo por  estos medios</p>
-    <ul>
-      <li><b>Correo institucional:</b> crojas40@areandina.edu.co</li>
-      <li><b>Mensajería interna de Canvas</b>.</li>
-      <b>Nota: </b> Las <b>minitutorías</b>  Son espacios de 10 minutos máximo por grupo para (asesoría, revisión de caso, etc.), serán grabadas y deben solicitarse por correo, siguiendo las instrucciones (en asunto) especificados en documento de asignatura para poder agendar.<br> Ejemplo: NRC 1422 virt.  Informática Tutoría G4 </br> </li>
-    </ul>
-  </section>
+    <!-- 2 -->
+    <details>
+      <summary>
+        <span class="summary-title">2. Participación en encuentros</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
+        <ul>
+          <li>Es recomendable (no obligatorio) asistir a los <b>encuentros sincrónicos</b> o ver las grabaciones disponibles.</li>
+          <li>De no poder asistir al encuentro por cruces, puede verse el mismo (si hay disponibilidad) en horario alterno, el cual estará dispuesto en el documento de la asignatura.</li>
+          <li>Los puntos obtenidos en el encuentro sincrónico se asocian a la calificación de actividad complementaria (cuestionario de 5 puntos).</li>
+          <li>Las <b>grabaciones se encuentran en tres lugares</b>:
+            <ul>
+              <li>El calendario académico (Calendar).</li>
+              <li>El documento en Google Drive de la asignatura.</li>
+              <li>El espacio de Canvas.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </details>
 
-  <section>
-    <h2>4. Documentación académica</h2>
-    <p>Todo el proceso académico desarrollado cada semana, se encuentra consignado en el <b>Documento (google sheets) en línea de la asignatura</b>, el cual esta disponible en el 
-      <b>Foro de Discusiones</b>, llamado <i>“Encuentros sincrónicos e información importante Att: Tutora Viviana Rojas". </i>.
-    </p>
-  </section>
+    <!-- 3 -->
+    <details>
+      <summary>
+        <span class="summary-title">3. Canales de comunicación</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
+        <p>
+          Tener en cuenta el NRC de la asignatura: <b>nombre</b> y <b>modalidad</b>.<br>
+          Ejemplo: <b>NRC 1422 virt. Informática Excusa Médica</b>.<br>
+          Comunicarse solo por estos medios:
+        </p>
+        <ul>
+          <li><b>Correo institucional:</b> crojas40@areandina.edu.co</li>
+          <li><b>Mensajería interna de Canvas</b>.</li>
+        </ul>
+        <div class="nota">
+          <b>Nota:</b> Las <b>minitutorías</b> son espacios de 10 minutos máximo por grupo (asesoría, revisión de caso, etc.).
+          Serán grabadas y deben solicitarse por correo, siguiendo las instrucciones (en asunto) especificadas en el documento de la asignatura para poder agendar.<br>
+          Ejemplo: <b>NRC 1422 virt. Informática Tutoría G4</b>.
+        </div>
+      </div>
+    </details>
 
-  <section>
-    <h2>5. Conformación de grupos</h2>
-    <p>La distribución oficial de los grupos de trabajo estará disponible en el <b>Documento de la asignatura en drive (google sheets), no se acceptan participantes 
-      de otros cursos que no correspondan al NRC de la asignatura</b>. 
-    
-  </section>
+    <!-- 4 -->
+    <details>
+      <summary>
+        <span class="summary-title">4. Documentación académica</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
+        <p>
+          Todo el proceso académico desarrollado cada semana se encuentra consignado en el
+          <b>documento (Google Sheets) en línea de la asignatura</b>, el cual está disponible en el
+          <b>Foro de Discusiones</b>, llamado:
+          <i>“Encuentros sincrónicos e información importante Att: Tutora Viviana Rojas”.</i>
+        </p>
+      </div>
+    </details>
 
-  <section>
-    <h2>6. Evaluación y calificación</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Eje</th>
-          <th>Tarea principal</th>
-          <th>Avtividad complementaria (Clase / Cuestionario)</th>
-          <th>Total por eje</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Eje 1</td><td>20 pts</td><td>5 pts</td><td>25 pts</td></tr>
-        <tr><td>Eje 2</td><td>20 pts</td><td>5 pts</td><td>25 pts</td></tr>
-        <tr><td>Eje 3</td><td>20 pts</td><td>5 pts</td><td>25 pts</td></tr>
-        <tr><td>Eje 4</td><td>20 pts</td><td>5 pts</td><td>25 pts</td></tr>
-        <tr><th colspan="3">Total asignatura</th><th>100 pts</th></tr>
-      </tbody>
-    </table>
-    <div class="nota">
-      ✅ Se aprueba con mínimo <b>60 puntos acumulados</b>.  
-   </div>
-  </section>
+    <!-- 5 -->
+    <details>
+      <summary>
+        <span class="summary-title">5. Conformación de grupos</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
+        <p>
+          La distribución oficial de los grupos de trabajo estará disponible en el <b>documento de la asignatura en Drive (Google Sheets)</b>.
+          No se aceptan participantes de otros cursos que no correspondan al NRC de la asignatura.
+        </p>
+      </div>
+    </details>
 
-  <section>
-    <h2>7. Uso responsable de información</h2>
-    <ul>
-      <li>Todo trabajo debe incluir <b>citas y referencias correctas</b> según normativa académica.</li>
-      <li>Se prohíbe el plagio, entendido como el uso de ideas o textos sin la debida atribución, o uso de ella superior al 20%.</li>
-      <li>El uso de <b>herramientas de redacción automática o inteligencia artificial</b> debe hacerse de manera ética y nunca como sustituto del aporte propio y no debe superar el 20%.</li>
-    </ul>
-  </section>
+    <!-- 6 -->
+    <details>
+      <summary>
+        <span class="summary-title">6. Evaluación y calificación</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th>Eje</th>
+              <th>Tarea principal</th>
+              <th>Actividad complementaria (clase / cuestionario)</th>
+              <th>Total por eje</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Eje 1</td><td>20 pts</td><td>5 pts</td><td>25 pts</td></tr>
+            <tr><td>Eje 2</td><td>20 pts</td><td>5 pts</td><td>25 pts</td></tr>
+            <tr><td>Eje 3</td><td>20 pts</td><td>5 pts</td><td>25 pts</td></tr>
+            <tr><td>Eje 4</td><td>20 pts</td><td>5 pts</td><td>25 pts</td></tr>
+            <tr><th colspan="3">Total asignatura</th><th>100 pts</th></tr>
+          </tbody>
+        </table>
+        <div class="nota">✅ Se aprueba con mínimo <b>60 puntos acumulados</b>.</div>
+      </div>
+    </details>
 
-  <section>
-    <h2>8. Manejo de conflictos en grupo</h2>
-    <p>En caso de <b>problemas o desacuerdos</b> dentro del grupo, se puede recurrir a la docente para mediación.  
-    Si se requiere separación, debe manifestarse a tiempo vía correo, con copia a todos los integrantes del grupo y a la docente, dejando constancia formal sin perjuicios académicos.</p>
-  </section>
+    <!-- 7 -->
+    <details>
+      <summary>
+        <span class="summary-title">7. Uso responsable de información</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
+        <ul>
+          <li>Todo trabajo debe incluir <b>citas y referencias correctas</b> según normativa académica.</li>
+          <li>Se prohíbe el plagio, entendido como el uso de ideas o textos sin la debida atribución o con un nivel de coincidencia superior al 20%.</li>
+          <li>El uso de <b>herramientas de redacción automática o inteligencia artificial</b> debe hacerse de manera ética y nunca como sustituto del aporte propio. No debe superar el 20%.</li>
+        </ul>
+      </div>
+    </details>
 
-  <section>
-    <h2>📊 Conversión de puntos a nota</h2>
-    <div class="conversor">
-      <h3>Equivalencia de la tarea principal (20 pts → escala 0 a 5)</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Puntos obtenidos</th>
-            <th>Nota equivalente</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>20</td><td>5,0</td></tr>
-          <tr><td>16</td><td>4,0</td></tr>
-          <tr><td>12</td><td>3,0</td></tr>
-          <tr><td>8</td><td>2,0</td></tr>
-          <tr><td>4</td><td>1,0</td></tr>
-          <tr><td>0</td><td>0,0</td></tr>
-        </tbody>
-      </table>
-      <p><i>La conversión es proporcional. Ejemplo: 18 puntos ≈ 4,5 de nota.</i></p>
-    </div>
-  </section>
+    <!-- 8 -->
+    <details>
+      <summary>
+        <span class="summary-title">8. Manejo de conflictos en grupo</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
+        <p>
+          En caso de <b>problemas o desacuerdos</b> dentro del grupo, se puede recurrir a la docente para mediación.
+          Si se requiere separación, debe manifestarse a tiempo vía correo, con copia a todos los integrantes del grupo y a la docente,
+          dejando constancia formal sin perjuicios académicos.
+        </p>
+      </div>
+    </details>
 
+    <!-- 9 -->
+    <details>
+      <summary>
+        <span class="summary-title">* Conversión de puntos a nota</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
+        <div class="conversor">
+          <h3>Equivalencia de la tarea principal (20 pts → escala 0 a 5)</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Puntos obtenidos</th>
+                <th>Nota equivalente</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>20</td><td>5,0</td></tr>
+              <tr><td>16</td><td>4,0</td></tr>
+              <tr><td>12</td><td>3,0</td></tr>
+              <tr><td>8</td><td>2,0</td></tr>
+              <tr><td>4</td><td>1,0</td></tr>
+              <tr><td>0</td><td>0,0</td></tr>
+            </tbody>
+          </table>
+          <p><i>La conversión es proporcional. Ejemplo: 18 puntos ≈ 4,5 de nota.</i></p>
+        </div>
+      </div>
+    </details>
+
+    <!-- 10 -->
+    <details>
+      <summary>
+        <span class="summary-title">* Salud mental</span>
+        <span class="chev">⌄</span>
+      </summary>
+      <div class="panel">
+        <p>
+          No importa si tienes un problema pequeño o uno grande: puedes apoyarte en tus docentes/tutores cuando necesites ayuda,
+          ya sea para colaborarte directamente o para dirigirte a un apoyo nuevo.
+        </p>
+      </div>
+    </details>
+  </div>
+
+  <script>
+    // Acordeón “uno a la vez”: al abrir uno, cierra los demás.
+    (function () {
+      const accordion = document.getElementById('accordion');
+      const items = Array.from(accordion.querySelectorAll('details'));
+
+      items.forEach((item) => {
+        item.addEventListener('toggle', () => {
+          if (!item.open) return;
+          items.forEach((other) => {
+            if (other !== item) other.open = false;
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
