@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Diapositivas</title>
+  <title>Pensamiento algorítmico: aventuras con Ide</title>
 
   <style>
     :root{
@@ -35,7 +35,6 @@
       overflow-x:hidden;
     }
 
-    /* Halo suave */
     .halo{
       position:fixed;
       inset:-220px;
@@ -56,16 +55,24 @@
       gap:14px;
     }
 
-    /* Marcador fuera del marco */
+    /* ENCABEZADO (FUERA DEL MARCO) */
     .topbar{
       width:min(1040px, 100%);
       margin:0 auto;
       display:flex;
-      align-items:center;
+      align-items:flex-end;
       justify-content:space-between;
       gap:12px;
       padding:8px 4px;
     }
+
+    .headerTitle{
+      margin:0;
+      font-size: clamp(22px, 3.2vw, 36px);
+      line-height:1.05;
+      letter-spacing:-0.4px;
+    }
+
     .counter{
       padding:10px 14px;
       border-radius:999px;
@@ -76,6 +83,8 @@
       -webkit-backdrop-filter: blur(10px);
       font-weight: 800;
       letter-spacing: .2px;
+      white-space:nowrap;
+      height: fit-content;
     }
 
     /* Escenario: botones fuera del marco */
@@ -116,7 +125,7 @@
     }
     .arrow.next{ transform: rotate(-45deg); }
 
-    /* Marco de diapositiva */
+    /* Marco */
     .frame{
       border-radius: var(--radius);
       background: linear-gradient(180deg, var(--cardA), var(--cardB));
@@ -154,10 +163,10 @@
       position:relative;
     }
 
-    /* INTERIOR: SOLO título + imagen */
+    /* interior */
     .title{
       margin:0;
-      font-size: clamp(24px, 3.4vw, 38px);
+      font-size: clamp(26px, 3.6vw, 40px);
       line-height:1.05;
       letter-spacing:-0.4px;
       position:relative;
@@ -173,7 +182,7 @@
       overflow:hidden;
       position:relative;
       z-index:1;
-      height: 360px;
+      height: clamp(240px, 38vh, 420px);
     }
     .imgBox::before{
       content:"";
@@ -192,6 +201,14 @@
       display:block;
       position:relative;
       z-index:1;
+    }
+
+    /* Slide 1: sin título interno */
+    .slide.noInnerTitle .imgBox{ margin-top: 0; }
+
+    /* Slide 3: un poco más grande */
+    .slide.lastBig .imgBox{
+      height: clamp(280px, 46vh, 520px);
     }
 
     /* Footer fijo */
@@ -216,17 +233,20 @@
       letter-spacing:.2px;
     }
 
+    /* Responsive */
     @media (max-width: 860px){
-      .stage{ grid-template-columns: 1fr; }
-      .navRow{
-        display:flex;
-        justify-content:space-between;
-        gap:12px;
-        margin-bottom: 10px;
+      .stage{
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "prev next"
+          "frame frame";
+        align-items:stretch;
       }
-      .frame{ min-height: 560px; }
-      .imgBox{ height: 280px; }
+      #prevBtn{ grid-area: prev; justify-self:start; }
+      #nextBtn{ grid-area: next; justify-self:end; }
+      .frame{ grid-area: frame; min-height: 560px; }
       .navBtn{ width:64px; height:64px; }
+      .topbar{ align-items:flex-start; }
     }
   </style>
 </head>
@@ -236,25 +256,24 @@
 
   <main class="app">
     <div class="topbar">
-      <div class="counter" id="slideCounter">1 / 3</div>
-      <div></div>
+      <h1 class="headerTitle">Pensamiento algorítmico: aventuras con Ide</h1>
+      <div class="counter" id="slideCounter">1 / 4</div>
     </div>
 
     <section class="stage" aria-label="Diapositivas">
-      <div class="navRow" style="display:none;"></div>
-
       <button class="navBtn" id="prevBtn" type="button" aria-label="Retroceso">
         <span class="arrow"></span>
       </button>
 
       <div class="frame" id="frame">
-        <article class="slide active" data-title="Pensamiento algorítmico: aventuras con Ice">
-          <h1 class="title">Pensamiento algorítmico: aventuras con Ice</h1>
+        <!-- Slide 1: SOLO imagen -->
+        <article class="slide active noInnerTitle" data-title="Slide 1">
           <div class="imgBox">
             <img src="img1.jpg" alt="" onerror="this.style.display='none'">
           </div>
         </article>
 
+        <!-- Slide 2 -->
         <article class="slide" data-title="¿Para qué sirve?">
           <h1 class="title">¿Para qué sirve?</h1>
           <div class="imgBox">
@@ -262,10 +281,19 @@
           </div>
         </article>
 
-        <article class="slide" data-title="¿Cómo se hace?">
+        <!-- Slide 3 (más grande) -->
+        <article class="slide lastBig" data-title="¿Cómo se hace?">
           <h1 class="title">¿Cómo se hace?</h1>
           <div class="imgBox">
             <img src="img3.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 4 -->
+        <article class="slide" data-title="Pasos: Análisis del entorno.">
+          <h1 class="title">Pasos: Análisis del entorno.</h1>
+          <div class="imgBox">
+            <img src="img4.jpg" alt="" onerror="this.style.display='none'">
           </div>
         </article>
       </div>
@@ -306,7 +334,7 @@
         if (e.key === "ArrowRight") setActive(index + 1);
       });
 
-      // Swipe básico
+      // Swipe
       let startX = null;
       frame.addEventListener("touchstart", (e) => {
         startX = e.touches?.[0]?.clientX ?? null;
@@ -322,33 +350,6 @@
       }, {passive:true});
 
       setActive(0);
-
-      // Responsive: si la grilla se colapsa, mostramos botones en fila (opcional)
-      const mq = window.matchMedia("(max-width: 860px)");
-      function adapt(){
-        const stage = document.querySelector(".stage");
-        const navRow = stage.querySelector(".navRow");
-        if (mq.matches){
-          navRow.style.display = "flex";
-          navRow.className = "navRow";
-          // mueve botones a navRow
-          if (!navRow.contains(prevBtn)) navRow.appendChild(prevBtn);
-          if (!navRow.contains(nextBtn)) navRow.appendChild(nextBtn);
-          stage.insertBefore(navRow, frame.parentNode);
-          stage.insertBefore(navRow, stage.children[0]);
-        } else {
-          navRow.style.display = "none";
-          // devuelve botones a su lugar original: izquierda/derecha
-          const children = Array.from(stage.children);
-          const frameIndex = children.indexOf(frame);
-          if (frameIndex !== -1){
-            stage.insertBefore(prevBtn, frame);
-            stage.insertBefore(nextBtn, frame.nextSibling);
-          }
-        }
-      }
-      mq.addEventListener?.("change", adapt);
-      adapt();
     })();
   </script>
 </body>
