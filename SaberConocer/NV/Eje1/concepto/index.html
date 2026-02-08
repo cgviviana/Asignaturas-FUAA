@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pensamiento algorítmico: aventuras con Ide</title>
+  <title>Pensamiento Algorítmico</title>
 
   <style>
     :root{
@@ -65,14 +65,12 @@
       gap:12px;
       padding:8px 4px;
     }
-
     .headerTitle{
       margin:0;
       font-size: clamp(22px, 3.2vw, 36px);
       line-height:1.05;
       letter-spacing:-0.4px;
     }
-
     .counter{
       padding:10px 14px;
       border-radius:999px;
@@ -132,11 +130,13 @@
       border: var(--border);
       box-shadow: var(--shadow);
       overflow:hidden;
-      min-height: 520px;
-      padding: 28px 28px 26px;
       position:relative;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+
+      /* más adaptable: alto mínimo en función del dispositivo */
+      min-height: clamp(420px, 62vh, 620px);
+      padding: 28px;
     }
     .frame::before{
       content:"";
@@ -152,10 +152,16 @@
     .slide{
       position:absolute;
       inset:0;
-      padding: 28px 28px 26px;
+      padding: 28px;
       opacity:0;
       transform: translateX(16px);
       transition: opacity .22s ease, transform .22s ease;
+
+      /* IMPORTANTE: interior simple y centrado */
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      justify-content:flex-start; /* evita “corte” arriba */
     }
     .slide.active{
       opacity:1;
@@ -163,7 +169,7 @@
       position:relative;
     }
 
-    /* interior */
+    /* Título dentro (solo cuando hay) */
     .title{
       margin:0;
       font-size: clamp(26px, 3.6vw, 40px);
@@ -173,8 +179,8 @@
       z-index:1;
     }
 
+    /* Caja de imagen: MÁS GRANDE + CENTRADA */
     .imgBox{
-      margin-top: 18px;
       border-radius: 26px;
       border: 1px solid rgba(255,255,255,0.65);
       background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.30));
@@ -182,7 +188,16 @@
       overflow:hidden;
       position:relative;
       z-index:1;
-      height: clamp(240px, 38vh, 420px);
+
+      /* la imagen ocupa el “resto” del alto de la slide */
+      flex: 1;
+      min-height: clamp(260px, 52vh, 520px);
+
+      /* centra la imagen dentro */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px;
     }
     .imgBox::before{
       content:"";
@@ -194,21 +209,32 @@
       opacity:.65;
       pointer-events:none;
     }
+
+    /* Por defecto: NO recorta (evita “cortada”) */
     .imgBox img{
-      width:100%;
-      height:100%;
-      object-fit: cover;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
       display:block;
       position:relative;
       z-index:1;
+      border-radius: 18px;
+      background: transparent;
     }
 
-    /* Slide 1: sin título interno */
-    .slide.noInnerTitle .imgBox{ margin-top: 0; }
+    /* Si quieres que alguna imagen “llene” recortando, agrega class="cover" al img */
+    .imgBox img.cover{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      border-radius: 0;
+    }
 
-    /* Slide 3: un poco más grande */
-    .slide.lastBig .imgBox{
-      height: clamp(280px, 46vh, 520px);
+    /* Slide 3 (última “más grande”) */
+    .slide.big .imgBox{
+      min-height: clamp(300px, 58vh, 600px);
     }
 
     /* Footer fijo */
@@ -233,7 +259,7 @@
       letter-spacing:.2px;
     }
 
-    /* Responsive */
+    /* Responsive: botones arriba y marco debajo */
     @media (max-width: 860px){
       .stage{
         grid-template-columns: 1fr 1fr;
@@ -244,7 +270,8 @@
       }
       #prevBtn{ grid-area: prev; justify-self:start; }
       #nextBtn{ grid-area: next; justify-self:end; }
-      .frame{ grid-area: frame; min-height: 560px; }
+      .frame{ grid-area: frame; padding: 20px; }
+      .slide{ padding: 20px; }
       .navBtn{ width:64px; height:64px; }
       .topbar{ align-items:flex-start; }
     }
@@ -255,8 +282,9 @@
   <div class="halo" aria-hidden="true"></div>
 
   <main class="app">
+    <!-- Encabezado FUERA de la diapositiva -->
     <div class="topbar">
-      <h1 class="headerTitle">Pensamiento algorítmico: aventuras con Ide</h1>
+      <h1 class="headerTitle">Pensamiento Algorítmico</h1>
       <div class="counter" id="slideCounter">1 / 4</div>
     </div>
 
@@ -266,8 +294,9 @@
       </button>
 
       <div class="frame" id="frame">
-        <!-- Slide 1: SOLO imagen -->
-        <article class="slide active noInnerTitle" data-title="Slide 1">
+        <!-- Slide 1: título + imagen (centrada, sin corte) -->
+        <article class="slide active" data-title="Aventuras con Súper Ice">
+          <h1 class="title">Aventuras con Súper Ice</h1>
           <div class="imgBox">
             <img src="img1.jpg" alt="" onerror="this.style.display='none'">
           </div>
@@ -281,8 +310,8 @@
           </div>
         </article>
 
-        <!-- Slide 3 (más grande) -->
-        <article class="slide lastBig" data-title="¿Cómo se hace?">
+        <!-- Slide 3: un poco más grande -->
+        <article class="slide big" data-title="¿Cómo se hace?">
           <h1 class="title">¿Cómo se hace?</h1>
           <div class="imgBox">
             <img src="img3.jpg" alt="" onerror="this.style.display='none'">
