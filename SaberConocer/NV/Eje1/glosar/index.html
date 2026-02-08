@@ -265,4 +265,101 @@
   <main class="app">
     <div class="topbar">
       <h1 class="headerTitle">Pensamiento Algorítmico</h1>
-      <div class="counter" id="sl
+      <div class="counter" id="slideCounter">1 / 4</div>
+    </div>
+
+    <section class="stage" aria-label="Diapositivas">
+      <button class="navBtn" id="prevBtn" type="button" aria-label="Retroceso">
+        <span class="arrow"></span>
+      </button>
+
+      <div class="frame" id="frame">
+        <!-- 1 -->
+        <article class="slide active" data-title="Datos según formato">
+          <h1 class="title">Datos según formato</h1>
+          <div class="imgBox">
+            <img src="imga.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- 2 -->
+        <article class="slide" data-title="Variable y Abstracción">
+          <h1 class="title">Variable y Abstracción</h1>
+          <div class="imgBox">
+            <img src="imgb.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- 3 -->
+        <article class="slide" data-title="Tipos de datos según">
+          <h1 class="title">Tipos de datos según</h1>
+          <div class="imgBox">
+            <img src="imgc.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- 4 -->
+        <article class="slide" data-title="Proceso">
+          <h1 class="title">Proceso</h1>
+          <div class="imgBox">
+            <img src="imgd.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+      </div>
+
+      <button class="navBtn" id="nextBtn" type="button" aria-label="Avance">
+        <span class="arrow next"></span>
+      </button>
+    </section>
+  </main>
+
+  <footer class="globalFooter">
+    <div class="bar">Aprendiendo con @LaProfeVivy</div>
+  </footer>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const counter = document.getElementById("slideCounter");
+      const frame = document.getElementById("frame");
+
+      let index = 0;
+
+      function setActive(i){
+        index = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s,k) => s.classList.toggle("active", k === index));
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === slides.length - 1;
+        counter.textContent = `${index + 1} / ${slides.length}`;
+      }
+
+      prevBtn.addEventListener("click", () => setActive(index - 1));
+      nextBtn.addEventListener("click", () => setActive(index + 1));
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") setActive(index - 1);
+        if (e.key === "ArrowRight") setActive(index + 1);
+      });
+
+      // Swipe
+      let startX = null;
+      frame.addEventListener("touchstart", (e) => {
+        startX = e.touches?.[0]?.clientX ?? null;
+      }, {passive:true});
+      frame.addEventListener("touchend", (e) => {
+        if (startX == null) return;
+        const endX = e.changedTouches?.[0]?.clientX ?? startX;
+        const dx = endX - startX;
+        const t = 50;
+        if (dx > t) setActive(index - 1);
+        if (dx < -t) setActive(index + 1);
+        startX = null;
+      }, {passive:true});
+
+      setActive(0);
+    })();
+  </script>
+</body>
+</html>
