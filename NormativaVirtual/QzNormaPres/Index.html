@@ -1,1 +1,729 @@
 
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cuestionario — Normativa</title>
+  <style>
+    :root{
+      --bg: rgba(255,255,255,.78);
+      --card: rgba(255,255,255,.92);
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-2: #1d4ed8;
+      --ok: #16a34a;
+      --warn: #f59e0b;
+      --danger:#dc2626;
+      --border: rgba(17,24,39,.12);
+      --shadow: 0 12px 35px rgba(17,24,39,.12);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      min-height:100vh;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.30), rgba(255,255,255,.55)),
+        url("Fondo.jpg");
+      background-size: cover;
+      background-position:center;
+      background-attachment: fixed;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 32px 18px 46px; }
+    .topbar{
+      display:flex; justify-content:space-between; align-items:center; gap: 10px;
+      padding: 14px 16px; border:1px solid var(--border);
+      background: var(--bg); border-radius: var(--radius);
+      box-shadow: var(--shadow); backdrop-filter: blur(8px);
+    }
+    .brand{ display:flex; align-items:center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
+    .pill{
+      font-family: var(--mono); font-size: 12px; padding: 6px 10px;
+      border-radius: 999px; border:1px solid var(--border);
+      background: rgba(255,255,255,.85); color: var(--muted);
+    }
+    .timer{
+      font-family: var(--mono); font-weight: 700;
+      padding: 8px 12px; border-radius: 999px;
+      border:1px solid var(--border); background: rgba(255,255,255,.92);
+      min-width: 132px; text-align:center;
+    }
+    .timer.warn{ color: #92400e; background: rgba(255,251,235,.95); border-color: rgba(245,158,11,.35); }
+    .timer.danger{ color: #7f1d1d; background: rgba(254,242,242,.95); border-color: rgba(220,38,38,.35); }
+    .card{
+      margin-top: 18px; padding: 18px; border-radius: var(--radius);
+      border:1px solid var(--border); background: var(--card);
+      box-shadow: var(--shadow); backdrop-filter: blur(8px);
+    }
+    h1,h2{ margin: 0 0 10px; }
+    h1{ font-size: 20px; }
+    h2{ font-size: 18px; }
+    p{ margin: 6px 0 0; color: var(--muted); line-height: 1.5; }
+    .row{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 720px){ .row{ grid-template-columns: 1fr; } }
+    label{ display:block; font-size: 13px; color: var(--muted); margin: 12px 0 6px;}
+    input{
+      width:100%; padding: 12px 12px; border-radius: 12px;
+      border: 1px solid var(--border); background: rgba(255,255,255,.92);
+      font-size: 14px; outline: none;
+    }
+    input:focus{ border-color: rgba(37,99,235,.45); box-shadow: 0 0 0 4px rgba(37,99,235,.12); }
+    .btnbar{ display:flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    button{
+      border:0; padding: 12px 14px; border-radius: 12px;
+      font-weight: 700; cursor:pointer;
+      transition: transform .05s ease, box-shadow .2s ease, background .2s ease;
+    }
+    button:active{ transform: translateY(1px); }
+    .btn-primary{ background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(37,99,235,.18); }
+    .btn-primary:hover{ background: var(--primary-2); }
+    .btn-ghost{ background: rgba(255,255,255,.92); border:1px solid var(--border); color: var(--text); }
+    .btn-danger{ background: var(--danger); color:white; }
+    .btn-muted{ background: rgba(17,24,39,.06); color: var(--text); border:1px solid var(--border); }
+    .small{ font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .q{
+      padding: 14px; border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.92); margin-top: 12px;
+    }
+    .qhead{ display:flex; justify-content: space-between; gap: 10px; align-items:flex-start; margin-bottom: 10px; }
+    .qtitle{ font-weight: 800; }
+    .qmeta{ color: var(--muted); font-family: var(--mono); font-size: 12px; white-space: nowrap; }
+    .opts{ display:grid; gap: 8px; }
+    .opt{
+      border: 1px solid var(--border); background: rgba(255,255,255,.95);
+      border-radius: 12px; padding: 10px 10px;
+      display:flex; gap: 10px; align-items:flex-start; cursor:pointer;
+    }
+    .opt input{ width: auto; margin-top: 2px; }
+    .opt:hover{ border-color: rgba(37,99,235,.30); }
+    .divider{ height: 1px; background: rgba(17,24,39,.10); margin: 14px 0; }
+    .notice{
+      border-left: 4px solid rgba(37,99,235,.65);
+      padding: 10px 12px; border-radius: 12px;
+      background: rgba(239,246,255,.75); color: var(--text);
+      margin-top: 10px;
+    }
+    .locked{ border-left: 4px solid rgba(220,38,38,.65); background: rgba(254,242,242,.86); }
+    .table{
+      width:100%; border-collapse: collapse; margin-top: 10px;
+      overflow:hidden; border-radius: 14px; border: 1px solid var(--border);
+    }
+    .table th, .table td{
+      padding: 10px 12px; border-bottom: 1px solid rgba(17,24,39,.08);
+      text-align:left; font-size: 14px;
+    }
+    .table th{ background: rgba(17,24,39,.04); color: var(--muted); font-weight: 800; }
+    .badge{
+      display:inline-flex; align-items:center; gap: 6px;
+      padding: 6px 10px; border-radius: 999px;
+      border:1px solid var(--border); background: rgba(255,255,255,.92);
+      font-family: var(--mono); font-size: 12px; color: var(--muted);
+    }
+    .badge.ok{ color:#065f46; background: rgba(236,253,245,.95); border-color: rgba(16,185,129,.35); }
+    .badge.warn{ color:#92400e; background: rgba(255,251,235,.95); border-color: rgba(245,158,11,.35); }
+    .badge.danger{ color:#7f1d1d; background: rgba(254,242,242,.95); border-color: rgba(220,38,38,.35); }
+    .footer{ margin-top: 14px; color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .hidden{ display:none !important; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div style="width:34px;height:34px;border-radius:12px;background:rgba(37,99,235,.12);display:grid;place-items:center;border:1px solid rgba(37,99,235,.20)">
+          <span style="font-weight:900;color:var(--primary)">Q</span>
+        </div>
+        <div>
+          <div style="font-size:14px">Cuestionario — Normativa</div>
+          <div style="font-size:12px;color:var(--muted)">Acceso con código · 2 intentos máx. · 6:00 min</div>
+        </div>
+      </div>
+      <div class="pill" id="attemptPill">Intentos: 0/2</div>
+      <div class="timer hidden" id="timer">06:00</div>
+    </div>
+
+    <div class="card hidden" id="viewLocked">
+      <h1>Acceso bloqueado en este navegador</h1>
+      <div class="notice locked">
+        Este cuestionario ya fue cerrado y no puede abrirse de nuevo en este mismo navegador.
+      </div>
+      <div id="lockedSummary"></div>
+      <div class="footer">
+        Nota: el bloqueo depende del almacenamiento local del navegador. Si se borra el almacenamiento, el bloqueo puede perderse.
+      </div>
+    </div>
+
+    <div class="card" id="viewAccess">
+      <h1>Ingreso con código</h1>
+      <p>Escribe el código de acceso para continuar.</p>
+      <label for="accessCode">Código</label>
+      <input id="accessCode" autocomplete="off" placeholder="Ej: ProfeVivy" />
+      <div class="btnbar">
+        <button class="btn-primary" id="btnAccess">Continuar</button>
+        <button class="btn-ghost" id="btnReset">Reiniciar en este navegador</button>
+      </div>
+      <div class="small">Coloca este archivo HTML y <span style="font-family:var(--mono)">Fondo.jpg</span> en la misma carpeta.</div>
+    </div>
+
+    <div class="card hidden" id="viewInfo">
+      <h1>Datos del estudiante</h1>
+      <p>Completa los datos antes de iniciar. Se registran en el resumen final.</p>
+      <div class="row">
+        <div>
+          <label for="studentName">Nombre completo</label>
+          <input id="studentName" placeholder="Nombre y apellidos" />
+        </div>
+        <div>
+          <label for="studentGroup">Grupo</label>
+          <input id="studentGroup" placeholder="Ej: 301 / Grupo A / NRC..." />
+        </div>
+      </div>
+      <div class="btnbar">
+        <button class="btn-primary" id="btnStart">Iniciar cuestionario</button>
+        <button class="btn-ghost" id="btnBackToAccess">Volver</button>
+      </div>
+      <div class="notice">
+        Al iniciar, se activa un cronómetro global de <b>6:00</b> minutos (incluye ambos intentos). Al agotarse el tiempo o completar 2 intentos, el acceso se bloquea en este navegador.
+      </div>
+    </div>
+
+    <div class="card hidden" id="viewQuiz">
+      <h1 id="quizTitle">Intento 1</h1>
+      <p id="quizSubtitle">Responde todas las preguntas. Las opciones están en orden aleatorio.</p>
+
+      <div id="quizContainer"></div>
+
+      <div class="divider"></div>
+      <div class="btnbar">
+        <button class="btn-primary" id="btnSubmit">Finalizar intento</button>
+        <button class="btn-muted" id="btnClearSelection">Limpiar selecciones</button>
+      </div>
+      <div class="footer" id="quizFooter"></div>
+    </div>
+
+    <div class="card hidden" id="viewResults">
+      <h1>Resultados</h1>
+      <div id="resultsHeader" class="notice"></div>
+
+      <table class="table" id="resultsTable">
+        <thead>
+          <tr>
+            <th>Intento</th>
+            <th>Puntaje</th>
+            <th>Duración</th>
+            <th>Fecha y hora</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="divider"></div>
+      <div class="btnbar" id="resultsButtons"></div>
+
+      <div class="footer">
+        <b>Nota válida:</b> la calificación corresponde al <b>último intento</b> registrado.
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const ACCESS_CODE = "ProfeVivy";
+  const MAX_ATTEMPTS = 2;
+  const QUIZ_SECONDS_TOTAL = 6 * 60;
+  const STORAGE_KEY = "vivy_normativa_quiz_v1";
+
+  const QUESTION_BANK = [
+    {
+      id: "Q1P1",
+      text: "Para gestionar una excusa por inasistencia conforme a la normativa, ¿qué combinación de canal y datos mínimos es la más adecuada?",
+      options: [
+        { text: "Correo institucional a la docente indicando NRC, asignatura, modalidad, día de clase y asunto; y notificación en el grupo de WhatsApp de que el correo fue enviado.", correct: true },
+        { text: "Registro en Drive (pestaña Notas) con soportes y comunicación general en WhatsApp indicando que quedó cargado.", correct: false },
+        { text: "Mensaje en WhatsApp al grupo con soportes y posterior envío de un correo institucional solo si la docente lo solicita.", correct: false },
+        { text: "Publicación en Moodle con soportes y envío de correo institucional con NRC y asignatura únicamente.", correct: false }
+      ]
+    },
+    {
+      id: "Q1P2",
+      text: "De acuerdo con la normativa, ¿cuál describe mejor el uso esperado del grupo de WhatsApp del curso?",
+      options: [
+        { text: "Canal para avisos y comunicación general mediante mensajes en el grupo; no se contempla como canal de llamadas ni comunicación individual.", correct: true },
+        { text: "Canal para resolver dudas individuales con la docente, y para coordinar retroalimentación personalizada.", correct: false },
+        { text: "Canal principal para reportar entregas y justificar retrasos, dejando el correo solo para casos excepcionales.", correct: false },
+        { text: "Canal de coordinación académica donde se validan reemplazos y ajustes de calificación antes de formalizarlos.", correct: false }
+      ]
+    },
+    {
+      id: "Q1P3",
+      text: "Para cumplir la normativa de entrega de evidencias, ¿qué práctica es la más adecuada?",
+      options: [
+        { text: "Publicar las entregas en las plataformas definidas (Moodle y Drive del estudiante) dentro de las fechas establecidas.", correct: true },
+        { text: "Publicar en Drive y compartir el enlace; Moodle se usa solo si la entrega es un examen.", correct: false },
+        { text: "Publicar en Moodle; Drive se usa únicamente para trabajo colaborativo, no como evidencia final.", correct: false },
+        { text: "Enviar por correo institucional y respaldar en Drive; la evidencia se considera válida si el correo queda registrado.", correct: false }
+      ]
+    },
+    {
+      id: "Q1P4",
+      text: "Si la docente deja observaciones en un documento en Drive, ¿qué se espera del estudiante para el siguiente corte/entrega?",
+      options: [
+        { text: "Revisar las observaciones, corregir lo indicado y actualizar la evidencia en la siguiente entrega, verificando el avance en las pestañas de Drive Docente/Estudiante.", correct: true },
+        { text: "Responder cada observación solicitando aprobación previa antes de modificar el documento, para evitar inconsistencias.", correct: false },
+        { text: "Aplicar solo correcciones que afecten la nota; lo demás puede quedar para el trabajo final.", correct: false },
+        { text: "Trasladar las observaciones al chat del grupo para que el subgrupo acuerde cuáles cambios son obligatorios.", correct: false }
+      ]
+    },
+    {
+      id: "Q1P5",
+      text: "Respecto a reemplazos y reprogramaciones, ¿cuál afirmación es más consistente con la normativa?",
+      options: [
+        { text: "Los reemplazos no aplican salvo justificación validada por la universidad; en ese caso se acuerda evaluación/fecha dentro de los límites institucionales.", correct: true },
+        { text: "Los reemplazos aplican si el estudiante informa al subgrupo con antelación y se evidencia avance en Drive.", correct: false },
+        { text: "Los reemplazos aplican cuando el estudiante entrega una versión mejorada antes del cierre del corte, aunque esté fuera de fecha.", correct: false },
+        { text: "Los reemplazos se habilitan si el estudiante presenta soportes y el subgrupo avala la reprogramación por correo.", correct: false }
+      ]
+    }
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  function nowISO(){ return new Date().toISOString(); }
+  function fmtDateTime(iso){ return new Date(iso).toLocaleString(); }
+  function fmtDuration(seconds){
+    seconds = Math.max(0, Math.floor(seconds));
+    const m = String(Math.floor(seconds/60)).padStart(2,"0");
+    const s = String(seconds%60).padStart(2,"0");
+    return `${m}:${s}`;
+  }
+  function deepCopy(obj){ return JSON.parse(JSON.stringify(obj)); }
+  function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+
+  function loadState(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; }
+    catch(e){ return null; }
+  }
+  function saveState(st){ localStorage.setItem(STORAGE_KEY, JSON.stringify(st)); }
+  function resetState(){ localStorage.removeItem(STORAGE_KEY); location.reload(); }
+
+  function defaultState(){
+    return {
+      locked:false, lockedAt:null, lockReason:null,
+      accessGranted:false,
+      student:{name:"", group:""},
+      quiz:{
+        startedAt:null, endsAt:null,
+        currentAttempt:0,
+        attemptHistory:[],
+        lastValidScore:null
+      }
+    };
+  }
+
+  let state = loadState() || defaultState();
+
+  const viewLocked = $("viewLocked");
+  const viewAccess = $("viewAccess");
+  const viewInfo   = $("viewInfo");
+  const viewQuiz   = $("viewQuiz");
+  const viewResults= $("viewResults");
+
+  const timerEl = $("timer");
+  const attemptPill = $("attemptPill");
+
+  let tickHandle = null;
+  let attemptStartTs = null;
+  let renderedQuestions = [];
+  let selected = {};
+  let attemptInProgress = false;
+
+  function setAttemptPill(){
+    const a = state.quiz.currentAttempt || 0;
+    attemptPill.textContent = `Intentos: ${a}/2`;
+  }
+  function showOnly(view){
+    [viewLocked, viewAccess, viewInfo, viewQuiz, viewResults].forEach(v => v.classList.add("hidden"));
+    view.classList.remove("hidden");
+  }
+  function lockQuiz(reason){
+    state.locked = true;
+    state.lockedAt = nowISO();
+    state.lockReason = reason || "Cierre";
+    saveState(state);
+    stopTimer();
+    renderLocked();
+  }
+  function renderLocked(){
+    showOnly(viewLocked);
+    timerEl.classList.add("hidden");
+    setAttemptPill();
+
+    const s = state.student || {name:"", group:""};
+    const hist = state.quiz.attemptHistory || [];
+    let html = `<div class="divider"></div>
+      <div class="row" style="margin-top:10px">
+        <div><span class="badge">Nombre: ${escapeHtml(s.name || "-")}</span></div>
+        <div><span class="badge">Grupo: ${escapeHtml(s.group || "-")}</span></div>
+      </div>
+      <div style="margin-top:10px">
+        <span class="badge danger">Estado: bloqueado</span>
+        <span class="badge">Motivo: ${escapeHtml(state.lockReason || "Cierre")}</span>
+        <span class="badge">Bloqueado: ${escapeHtml(fmtDateTime(state.lockedAt || nowISO()))}</span>
+      </div>`;
+
+    if(hist.length){
+      const last = hist[hist.length-1];
+      html += `<div class="divider"></div>
+        <div class="notice">
+          <b>Último intento:</b> ${last.attemptNo} ·
+          <b>Nota válida (último intento):</b> ${last.percent}% ·
+          <b>Duración:</b> ${fmtDuration(last.durationSec)} ·
+          <b>Fecha/hora:</b> ${escapeHtml(fmtDateTime(last.finishedAt))}
+        </div>
+        <table class="table" style="margin-top:12px">
+          <thead><tr><th>Intento</th><th>Puntaje</th><th>Duración</th><th>Fecha y hora</th></tr></thead>
+          <tbody>
+            ${hist.map(r => `
+              <tr>
+                <td>${r.attemptNo}</td>
+                <td>${r.score}/${r.total} (${r.percent}%)</td>
+                <td>${fmtDuration(r.durationSec)}</td>
+                <td>${escapeHtml(fmtDateTime(r.finishedAt))}</td>
+              </tr>`).join("")}
+          </tbody>
+        </table>`;
+    } else {
+      html += `<div class="notice locked" style="margin-top:12px">No hay intentos registrados en este navegador.</div>`;
+    }
+
+    $("lockedSummary").innerHTML = html;
+  }
+
+  function startGlobalTimerIfNeeded(){
+    if(state.quiz.startedAt && state.quiz.endsAt) return;
+    const start = Date.now();
+    state.quiz.startedAt = new Date(start).toISOString();
+    state.quiz.endsAt = new Date(start + QUIZ_SECONDS_TOTAL*1000).toISOString();
+    saveState(state);
+  }
+  function remainingGlobalSeconds(){
+    if(!state.quiz.endsAt) return QUIZ_SECONDS_TOTAL;
+    const end = new Date(state.quiz.endsAt).getTime();
+    return Math.max(0, Math.floor((end - Date.now())/1000));
+  }
+
+  function stopTimer(){
+    if(tickHandle){ clearInterval(tickHandle); tickHandle = null; }
+  }
+  function updateTimerUI(){
+    const rem = remainingGlobalSeconds();
+    timerEl.textContent = fmtDuration(rem);
+    timerEl.classList.remove("warn","danger");
+    if(rem <= 60 && rem > 15) timerEl.classList.add("warn");
+    if(rem <= 15) timerEl.classList.add("danger");
+    if(rem === 0){
+      if(attemptInProgress){ finalizeAttempt(true); }
+      lockQuiz("Tiempo agotado (6:00).");
+    }
+  }
+  function startTimer(){
+    timerEl.classList.remove("hidden");
+    updateTimerUI();
+    stopTimer();
+    tickHandle = setInterval(updateTimerUI, 250);
+  }
+
+  function buildAttemptQuestions(){
+    const qs = deepCopy(QUESTION_BANK);
+    shuffle(qs);
+    qs.forEach(q => shuffle(q.options));
+    return qs;
+  }
+
+  function renderQuiz(){
+    const attemptNo = state.quiz.currentAttempt;
+    $("quizTitle").textContent = `Intento ${attemptNo}`;
+    $("quizSubtitle").textContent = "Responde todas las preguntas. Preguntas y opciones se ordenan al azar en cada intento.";
+    $("quizFooter").innerHTML = `
+      <span class="badge">Nombre: ${escapeHtml(state.student.name)}</span>
+      <span class="badge">Grupo: ${escapeHtml(state.student.group)}</span>
+      <span class="badge">Nota válida: último intento</span>
+    `;
+
+    const container = $("quizContainer");
+    container.innerHTML = "";
+
+    renderedQuestions.forEach((q, idx) => {
+      const qDiv = document.createElement("div");
+      qDiv.className = "q";
+      qDiv.innerHTML = `
+        <div class="qhead">
+          <div>
+            <div class="qtitle">${escapeHtml(q.id)} · Pregunta ${idx+1}/${renderedQuestions.length}</div>
+            <div style="margin-top:6px">${escapeHtml(q.text)}</div>
+          </div>
+          <div class="qmeta">1 punto</div>
+        </div>
+        <div class="opts" id="opts_${q.id}"></div>
+      `;
+      container.appendChild(qDiv);
+
+      const opts = qDiv.querySelector(`#opts_${CSS.escape(q.id)}`);
+      q.options.forEach((opt, oi) => {
+        const optId = `${q.id}_${oi}`;
+        const label = document.createElement("label");
+        label.className = "opt";
+        label.setAttribute("for", optId);
+        label.innerHTML = `
+          <input type="radio" name="${escapeHtml(q.id)}" id="${escapeHtml(optId)}" />
+          <div><b>${String.fromCharCode(65+oi)}.</b> ${escapeHtml(opt.text)}</div>
+        `;
+        label.addEventListener("click", () => { selected[q.id] = oi; saveRuntime(); });
+        opts.appendChild(label);
+
+        const input = label.querySelector("input");
+        input.addEventListener("change", () => { selected[q.id] = oi; saveRuntime(); });
+      });
+    });
+
+    // restore selections
+    renderedQuestions.forEach(q => {
+      if(selected[q.id] !== undefined){
+        const oi = selected[q.id];
+        const el = document.getElementById(`${q.id}_${oi}`);
+        if(el) el.checked = true;
+      }
+    });
+  }
+
+  function saveRuntime(){
+    state.runtime = {
+      selected,
+      renderedQuestions,
+      attemptStartTs,
+      attemptInProgress
+    };
+    saveState(state);
+  }
+  function restoreRuntime(){
+    if(state.runtime && state.runtime.attemptInProgress){
+      selected = state.runtime.selected || {};
+      renderedQuestions = state.runtime.renderedQuestions || [];
+      attemptStartTs = state.runtime.attemptStartTs || Date.now();
+      attemptInProgress = true;
+      return renderedQuestions.length > 0;
+    }
+    return false;
+  }
+  function clearRuntime(){
+    if(state.runtime){ delete state.runtime; saveState(state); }
+  }
+
+  function scoreAttempt(){
+    const total = renderedQuestions.length;
+    let score = 0;
+    renderedQuestions.forEach(q => {
+      const chosen = selected[q.id];
+      if(chosen === undefined) return;
+      if(q.options[chosen] && q.options[chosen].correct) score += 1;
+    });
+    return { score, total, percent: Math.round((score/total)*100) };
+  }
+
+  function finalizeAttempt(auto=false){
+    const attemptNo = state.quiz.currentAttempt;
+    const endTs = Date.now();
+    const startedAtIso = new Date(attemptStartTs).toISOString();
+    const finishedAtIso = new Date(endTs).toISOString();
+    const durationSec = Math.max(0, Math.floor((endTs - attemptStartTs)/1000));
+    const {score, total, percent} = scoreAttempt();
+
+    state.quiz.attemptHistory.push({
+      attemptNo, score, total, percent,
+      startedAt: startedAtIso,
+      finishedAt: finishedAtIso,
+      durationSec,
+      autoSubmitted: !!auto
+    });
+    state.quiz.lastValidScore = percent;
+    attemptInProgress = false;
+    clearRuntime();
+    saveState(state);
+    renderResults();
+  }
+
+  function renderResults(){
+    showOnly(viewResults);
+    setAttemptPill();
+
+    const s = state.student;
+    const hist = state.quiz.attemptHistory;
+    const last = hist[hist.length-1];
+    const used = hist.length;
+    const remAttempts = MAX_ATTEMPTS - used;
+    const remTime = remainingGlobalSeconds();
+
+    $("resultsHeader").innerHTML = `
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <span class="badge">Nombre: ${escapeHtml(s.name)}</span>
+        <span class="badge">Grupo: ${escapeHtml(s.group)}</span>
+        <span class="badge">Intentos usados: ${used}/${MAX_ATTEMPTS}</span>
+        <span class="badge ok">Nota válida (último intento): ${last.percent}%</span>
+        <span class="badge">Tiempo restante global: ${fmtDuration(remTime)}</span>
+        ${last.autoSubmitted ? `<span class="badge warn">Autoentrega por tiempo</span>` : ``}
+      </div>
+      <div style="margin-top:10px">
+        Último intento: <b>${last.score}/${last.total}</b> (${last.percent}%) · Duración: <b>${fmtDuration(last.durationSec)}</b> · Fecha/hora: <b>${escapeHtml(fmtDateTime(last.finishedAt))}</b>
+      </div>
+    `;
+
+    const tbody = $("resultsTable").querySelector("tbody");
+    tbody.innerHTML = hist.map(r => `
+      <tr>
+        <td>${r.attemptNo}</td>
+        <td>${r.score}/${r.total} (${r.percent}%)</td>
+        <td>${fmtDuration(r.durationSec)}</td>
+        <td>${escapeHtml(fmtDateTime(r.finishedAt))}</td>
+      </tr>
+    `).join("");
+
+    const btns = $("resultsButtons");
+    btns.innerHTML = "";
+
+    if(remAttempts > 0 && remTime > 0 && !state.locked){
+      const b = document.createElement("button");
+      b.className = "btn-primary";
+      b.textContent = "Iniciar siguiente intento";
+      b.addEventListener("click", () => startAttempt());
+      btns.appendChild(b);
+    }
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "btn-danger";
+    closeBtn.textContent = "Cerrar y bloquear";
+    closeBtn.addEventListener("click", () => lockQuiz("Cierre manual después de ver resultados."));
+    btns.appendChild(closeBtn);
+
+    if(remAttempts <= 0){
+      lockQuiz("Límite de intentos alcanzado (2/2).");
+    }
+  }
+
+  function startAttempt(){
+    if(state.locked){ renderLocked(); return; }
+
+    const used = state.quiz.attemptHistory.length;
+    if(used >= MAX_ATTEMPTS){ lockQuiz("Límite de intentos alcanzado (2/2)."); return; }
+    if(remainingGlobalSeconds() <= 0){ lockQuiz("Tiempo agotado (6:00)."); return; }
+
+    state.quiz.currentAttempt = used + 1;
+    saveState(state);
+    setAttemptPill();
+
+    selected = {};
+    renderedQuestions = buildAttemptQuestions();
+    attemptStartTs = Date.now();
+    attemptInProgress = true;
+    saveRuntime();
+
+    showOnly(viewQuiz);
+    startTimer();
+    renderQuiz();
+  }
+
+  // Buttons
+  $("btnReset").addEventListener("click", resetState);
+
+  $("btnAccess").addEventListener("click", () => {
+    const code = ($("accessCode").value || "").trim();
+    if(code !== ACCESS_CODE){ alert("Código incorrecto."); return; }
+    state.accessGranted = true;
+    saveState(state);
+    showOnly(viewInfo);
+  });
+
+  $("btnBackToAccess").addEventListener("click", () => showOnly(viewAccess));
+
+  $("btnStart").addEventListener("click", () => {
+    const name = ($("studentName").value || "").trim();
+    const group = ($("studentGroup").value || "").trim();
+    if(!name || !group){ alert("Completa nombre y grupo."); return; }
+
+    state.student = {name, group};
+    saveState(state);
+
+    startGlobalTimerIfNeeded();
+    startTimer();
+    startAttempt();
+  });
+
+  $("btnSubmit").addEventListener("click", () => {
+    if(!attemptInProgress) return;
+    const unanswered = renderedQuestions.filter(q => selected[q.id] === undefined).length;
+    if(unanswered > 0){
+      const ok = confirm(`Te faltan ${unanswered} pregunta(s) por responder. ¿Finalizar de todos modos?`);
+      if(!ok) return;
+    }
+    finalizeAttempt(false);
+  });
+
+  $("btnClearSelection").addEventListener("click", () => {
+    if(!attemptInProgress) return;
+    selected = {};
+    saveRuntime();
+    renderedQuestions.forEach(q => {
+      document.querySelectorAll(`input[name="${CSS.escape(q.id)}"]`).forEach(r => r.checked = false);
+    });
+  });
+
+  // Init
+  function init(){
+    if(state.locked){ renderLocked(); return; }
+    setAttemptPill();
+
+    // if time already over
+    if(state.quiz.endsAt && remainingGlobalSeconds() <= 0){
+      lockQuiz("Tiempo agotado (6:00).");
+      return;
+    }
+
+    // resume
+    if(state.accessGranted && state.student && state.student.name){
+      startTimer();
+      if(restoreRuntime()){
+        showOnly(viewQuiz);
+        renderQuiz();
+        return;
+      }
+      if(state.quiz.attemptHistory && state.quiz.attemptHistory.length){
+        renderResults();
+        return;
+      }
+      showOnly(viewInfo);
+      return;
+    }
+    showOnly(viewAccess);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
+
