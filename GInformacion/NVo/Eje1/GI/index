@@ -1,1 +1,1095 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de la Información - Froggy Jump</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #4ECDC4 0%, #44A08D 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        /* Header profesional */
+        .main-title {
+            background: linear-gradient(135deg, #1a4d1f 0%, #2C5F2D 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .main-title h1 {
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2C5F2D 0%, #97BC62 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .lives-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .lives-label {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lives-count {
+            background: white;
+            color: #2C5F2D;
+            font-weight: bold;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+
+        .points-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .points-label {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .points-count {
+            background: white;
+            color: #2C5F2D;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* Área del juego */
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .progress-bar-container {
+            background: rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2C5F2D, #97BC62);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .question-number {
+            color: #2C5F2D;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        /* Estilo Froggy Jump - Nenúfares flotantes */
+        .lily-pads-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            position: relative;
+        }
+
+        .lily-pad {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .lily-pad:hover:not(.answered) {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .lily-pad.correct {
+            animation: correctJump 0.6s ease;
+        }
+
+        .lily-pad.incorrect {
+            animation: incorrectShake 0.6s ease;
+            opacity: 0.5;
+        }
+
+        @keyframes correctJump {
+            0%, 100% { transform: translateY(0) scale(1); }
+            30% { transform: translateY(-30px) scale(1.1); }
+            60% { transform: translateY(-15px) scale(1.05); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-15px) rotate(-5deg); }
+            75% { transform: translateX(15px) rotate(5deg); }
+        }
+
+        .lily-content {
+            background: #2C5F2D;
+            border-radius: 50%;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: relative;
+            border: 5px solid #97BC62;
+        }
+
+        .lily-content::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: rgba(151, 188, 98, 0.3);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .option-label {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #97BC62;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .option-svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
+        }
+
+        .option-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.4;
+            padding: 0 10px;
+        }
+
+        /* Rana (frog) */
+        .frog-container {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            transition: all 0.5s ease;
+        }
+
+        .frog-svg {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+        }
+
+        /* Timer */
+        .timer-container {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-icon {
+            width: 25px;
+            height: 25px;
+        }
+
+        .timer-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2C5F2D;
+        }
+
+        /* Explicación */
+        .explanation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .explanation-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .explanation-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .explanation-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2C5F2D;
+        }
+
+        .explanation-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #2C5F2D, #97BC62);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .next-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(44, 95, 45, 0.4);
+        }
+
+        /* Pantalla final */
+        .final-screen {
+            display: none;
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            max-width: 700px;
+            margin: 50px auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .final-screen.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .final-title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2C5F2D;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 72px;
+            font-weight: bold;
+            color: #97BC62;
+            margin: 30px 0;
+        }
+
+        .final-message {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #2C5F2D, #97BC62);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .restart-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(44, 95, 45, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1a4d1f 0%, #2C5F2D 100%);
+            padding: 20px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+        }
+
+        .footer-text {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .footer-handle {
+            color: #97BC62;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .lily-pads-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .question-text {
+                font-size: 20px;
+            }
+            
+            .lily-content {
+                min-height: 250px;
+                padding: 30px 15px;
+            }
+
+            .footer-text {
+                font-size: 16px;
+            }
+
+            .footer-handle {
+                font-size: 18px;
+            }
+
+            .main-title h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Title -->
+    <div class="main-title">
+        <h1>Gestión de la Información</h1>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="lives-container">
+            <span class="lives-label">VIDAS</span>
+            <div class="lives-count" id="lives">5</div>
+        </div>
+        <div class="category-title" id="categoryTitle">Era Digital</div>
+        <div class="points-container">
+            <span class="points-label">PUNTOS</span>
+            <div class="points-count" id="points">0.000</div>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container" id="gameArea">
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer-container">
+            <svg class="timer-icon" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#2C5F2D" stroke-width="2"/>
+                <path d="M12 6v6l4 2" stroke="#2C5F2D" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="timer-text" id="timer">00:00:15</span>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card">
+            <div class="question-number" id="questionNumber">1 / 15</div>
+            <div class="question-text" id="questionText"></div>
+        </div>
+
+        <!-- Lily Pads (Options) -->
+        <div class="lily-pads-container" id="lilyPadsContainer"></div>
+    </div>
+
+    <!-- Final Screen -->
+    <div class="final-screen" id="finalScreen">
+        <div class="final-title">¡JUEGO COMPLETADO!</div>
+        <div class="final-score" id="finalScore"></div>
+        <div class="final-message" id="finalMessage"></div>
+        <button class="restart-button" onclick="location.reload()">🔄 JUGAR DE NUEVO</button>
+    </div>
+
+    <!-- Frog -->
+    <div class="frog-container" id="frogContainer">
+        <svg class="frog-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="100" cy="120" rx="60" ry="50" fill="#97BC62"/>
+            <ellipse cx="100" cy="80" rx="50" ry="40" fill="#97BC62"/>
+            <ellipse cx="85" cy="65" rx="15" ry="20" fill="white"/>
+            <ellipse cx="115" cy="65" rx="15" ry="20" fill="white"/>
+            <circle cx="85" cy="70" r="8" fill="#2C5F2D"/>
+            <circle cx="115" cy="70" r="8" fill="#2C5F2D"/>
+            <path d="M 80 90 Q 100 100 120 90" stroke="#2C5F2D" stroke-width="3" fill="none"/>
+            <ellipse cx="70" cy="140" rx="12" ry="25" fill="#2C5F2D"/>
+            <ellipse cx="130" cy="140" rx="12" ry="25" fill="#2C5F2D"/>
+            <ellipse cx="60" cy="150" rx="20" ry="15" fill="#2C5F2D"/>
+            <ellipse cx="140" cy="150" rx="20" ry="15" fill="#2C5F2D"/>
+        </svg>
+    </div>
+
+    <!-- Explanation Modal -->
+    <div class="explanation-modal" id="explanationModal">
+        <div class="explanation-content">
+            <div class="explanation-header" id="explanationHeader"></div>
+            <div class="explanation-text" id="explanationText"></div>
+            <button class="next-button" id="nextButton">SIGUIENTE PREGUNTA ➜</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p class="footer-text">Aprendiendo con <span class="footer-handle">@LaProfevivy</span></p>
+    </div>
+
+    <script>
+        const questions = [
+            // CAMBIOS DE LA ERA MODERNA
+            {
+                category: "🌐 Cambios de la Era Moderna",
+                question: "¿Cuál es el problema principal que enfrentamos hoy con la información?",
+                options: [
+                    { text: "No hay suficiente información", svg: "empty" },
+                    { text: "Confiar en la información y usarla sin perder tiempo ni riesgos", svg: "trust" },
+                    { text: "La información es muy cara", svg: "money" },
+                    { text: "Solo hay información en inglés", svg: "language" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Hoy el problema NO es tener información, sino poder CONFIAR en ella y usarla de forma segura, rápida y con evidencia. La información bien gestionada genera valor."
+            },
+            {
+                category: "🌐 Cambios de la Era Moderna",
+                question: "¿Qué significa 'explosión de información digital'?",
+                options: [
+                    { text: "Que la información explota como bomba", svg: "bomb" },
+                    { text: "Que cada día se genera muchísima información nueva en internet", svg: "growth" },
+                    { text: "Que las computadoras se dañan fácilmente", svg: "broken" },
+                    { text: "Que la información cuesta más", svg: "expensive" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Explosión de información significa que cada día se crean millones de datos nuevos: videos, fotos, documentos, mensajes. ¡Es como una avalancha de información!"
+            },
+            {
+                category: "🌐 Cambios de la Era Moderna",
+                question: "¿Qué es el 'trabajo distribuido y colaboración en nube'?",
+                options: [
+                    { text: "Trabajar solo desde casa sin hablar con nadie", svg: "alone" },
+                    { text: "Trabajar en equipo desde diferentes lugares usando internet", svg: "team" },
+                    { text: "Trabajar en las nubes del cielo", svg: "cloud" },
+                    { text: "No usar computadoras para trabajar", svg: "notech" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Hoy podemos trabajar en equipo aunque estemos en ciudades diferentes. Usamos herramientas en la nube como Google Drive, Zoom o Teams para compartir archivos y reunirnos."
+            },
+            {
+                category: "🌐 Cambios de la Era Moderna",
+                question: "¿Qué significa tomar 'decisiones basadas en datos'?",
+                options: [
+                    { text: "Adivinar qué hacer sin información", svg: "guess" },
+                    { text: "Usar números y evidencia para decidir mejor", svg: "data" },
+                    { text: "Solo hacer lo que dice el jefe", svg: "boss" },
+                    { text: "Copiar lo que hacen otras empresas", svg: "copy" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Las buenas decisiones se basan en DATOS reales, no en corazonadas. Por ejemplo: ver cuántos clientes prefieren un producto antes de producir más."
+            },
+            {
+                category: "🌐 Cambios de la Era Moderna",
+                question: "¿Cómo ayuda la IA (Inteligencia Artificial) en el flujo de información?",
+                options: [
+                    { text: "Hace todo el trabajo sola sin humanos", svg: "robot" },
+                    { text: "Ayuda a organizar, resumir y encontrar información rápido", svg: "assistant" },
+                    { text: "Solo sirve para jugar videojuegos", svg: "game" },
+                    { text: "Reemplaza completamente a las personas", svg: "replace" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: La IA es como un asistente inteligente que te ayuda a buscar, resumir y analizar información más rápido. Pero TÚ sigues siendo quien decide y verifica."
+            },
+
+            // INFORMACIÓN COMO ACTIVO ESTRATÉGICO - VALOR
+            {
+                category: "💎 Información como Valor",
+                question: "¿Qué significa que la información es un 'activo estratégico'?",
+                options: [
+                    { text: "Que la información no sirve para nada", svg: "trash" },
+                    { text: "Que la información bien usada tiene valor y genera ventajas", svg: "value" },
+                    { text: "Que solo las empresas grandes tienen información", svg: "building" },
+                    { text: "Que la información es gratis siempre", svg: "free" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: La información es como un tesoro. Bien gestionada te ayuda a tomar mejores decisiones, ahorrar tiempo, ser más eficiente e innovar. ¡Es capital valioso!"
+            },
+            {
+                category: "💎 Información como Valor",
+                question: "¿Cuál es una VENTAJA de gestionar bien la información?",
+                options: [
+                    { text: "Tomar decisiones más lentas", svg: "slow" },
+                    { text: "Tomar decisiones mejores y más rápidas", svg: "fast" },
+                    { text: "No necesitar internet nunca", svg: "offline" },
+                    { text: "Gastar más dinero en todo", svg: "waste" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Con buena información puedes decidir más rápido y mejor. Ejemplo: si sabes qué productos se venden más, produces solo esos y ahorras recursos."
+            },
+            {
+                category: "💎 Información como Valor",
+                question: "¿Qué significa 'eficiencia' en gestión de información?",
+                options: [
+                    { text: "Hacer las cosas muy lento", svg: "turtle" },
+                    { text: "Lograr resultados usando menos tiempo y recursos", svg: "efficient" },
+                    { text: "Complicar todo lo posible", svg: "complicated" },
+                    { text: "Hacer muchas cosas sin terminar ninguna", svg: "messy" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Eficiencia es hacer más con menos. Ejemplo: si organizas bien tus archivos, encuentras lo que necesitas en segundos en lugar de buscar 30 minutos."
+            },
+            {
+                category: "💎 Información como Valor",
+                question: "¿Cómo ayuda la buena gestión de información a la INNOVACIÓN?",
+                options: [
+                    { text: "No ayuda, la innovación es solo suerte", svg: "luck" },
+                    { text: "Te muestra qué necesita la gente y qué funciona", svg: "idea" },
+                    { text: "Hace que todo sea más complicado", svg: "complex" },
+                    { text: "Solo sirve para copiar a otros", svg: "copycat" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Analizar datos te muestra necesidades reales y oportunidades. Por ejemplo: Netflix vio qué series gustaban más y creó contenido nuevo basado en esos datos."
+            },
+            {
+                category: "💎 Información como Valor",
+                question: "¿Qué es dar 'mejor servicio al cliente' con buena información?",
+                options: [
+                    { text: "Ignorar lo que piden los clientes", svg: "ignore" },
+                    { text: "Conocer sus necesidades y responder rápido", svg: "service" },
+                    { text: "Vender productos más caros", svg: "pricey" },
+                    { text: "No contestar sus preguntas", svg: "silence" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Si guardas historial de clientes, sabes qué les gusta, qué han comprado y puedes ayudarles mejor. Ejemplo: Amazon te recomienda productos según tus compras anteriores."
+            },
+
+            // COMPETITIVIDAD
+            {
+                category: "🏆 Competitividad",
+                question: "¿Qué es 'velocidad' en gestión de información?",
+                options: [
+                    { text: "Correr muy rápido físicamente", svg: "runner" },
+                    { text: "Acceder y compartir información al instante", svg: "speed" },
+                    { text: "No planear nada, solo actuar", svg: "chaos" },
+                    { text: "Hacer todo sin pensar", svg: "rush" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Velocidad es tener la información que necesitas CUANDO la necesitas. En negocios, quien responde más rápido con datos correctos, gana."
+            },
+            {
+                category: "🏆 Competitividad",
+                question: "¿Qué significa 'precisión' en la información?",
+                options: [
+                    { text: "Que la información puede tener errores, no importa", svg: "error" },
+                    { text: "Que la información es exacta y confiable", svg: "accurate" },
+                    { text: "Que la información es bonita visualmente", svg: "pretty" },
+                    { text: "Que hay mucha información repetida", svg: "duplicate" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Precisión significa que los datos son correctos. Un error puede costar mucho: imagina enviar un pedido a la dirección equivocada por un dato malo."
+            },
+            {
+                category: "🏆 Competitividad",
+                question: "¿Qué es 'continuidad' en gestión de información?",
+                options: [
+                    { text: "Que la información desaparece cada semana", svg: "vanish" },
+                    { text: "Que la información está disponible siempre que la necesitas", svg: "available" },
+                    { text: "Que solo algunos tienen acceso", svg: "exclusive" },
+                    { text: "Que se borra toda la información mensualmente", svg: "delete" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Continuidad significa que tus archivos y sistemas están disponibles 24/7. Ejemplo: hacer respaldos para que aunque se dañe una computadora, no pierdas todo."
+            },
+            {
+                category: "🏆 Competitividad",
+                question: "¿Por qué es importante la 'coordinación' con buena información?",
+                options: [
+                    { text: "Para que todos trabajen sin hablar entre sí", svg: "separate" },
+                    { text: "Para que todos sepan qué hacer y trabajen juntos", svg: "coordinate" },
+                    { text: "Para complicar el trabajo en equipo", svg: "difficult" },
+                    { text: "Para competir entre compañeros", svg: "compete" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Coordinación significa que todos tienen la misma información actualizada. Ejemplo: un equipo médico ve el mismo expediente del paciente en tiempo real."
+            },
+            {
+                category: "🏆 Competitividad",
+                question: "¿Qué significa 'seguridad controlada' en información?",
+                options: [
+                    { text: "Que cualquiera puede ver todo", svg: "public" },
+                    { text: "Que solo las personas autorizadas acceden a información sensible", svg: "secure" },
+                    { text: "Que no hay contraseñas nunca", svg: "open" },
+                    { text: "Que se comparte todo en redes sociales", svg: "share" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Seguridad controlada protege información privada. Ejemplo: datos médicos solo los ve el doctor, no todo el hospital. Se usan contraseñas y permisos."
+            },
+
+            // RIESGOS
+            {
+                category: "⚠️ Riesgos de Mala Gestión",
+                question: "¿Qué pasa si hay 'mala calidad' en la información?",
+                options: [
+                    { text: "No pasa nada importante", svg: "nothing" },
+                    { text: "Se toman decisiones equivocadas que cuestan dinero", svg: "mistake" },
+                    { text: "La información se vuelve más valiosa", svg: "gold" },
+                    { text: "Todo funciona mejor", svg: "perfect" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Información mala = decisiones malas. Ejemplo: si tienes mal el inventario, puedes pedir productos que ya tienes o quedarte sin lo que sí necesitas."
+            },
+            {
+                category: "⚠️ Riesgos de Mala Gestión",
+                question: "¿Qué es 'fuga de información'?",
+                options: [
+                    { text: "Que el agua se sale de las tuberías", svg: "leak" },
+                    { text: "Que información confidencial llega a personas no autorizadas", svg: "breach" },
+                    { text: "Que guardas mucha información", svg: "storage" },
+                    { text: "Que compartes fotos en redes sociales", svg: "social" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Fuga de información es cuando datos privados se filtran. Ejemplo: que se publiquen contraseñas de clientes, datos de tarjetas o secretos de la empresa."
+            },
+            {
+                category: "⚠️ Riesgos de Mala Gestión",
+                question: "¿Qué es 'desinformación'?",
+                options: [
+                    { text: "No tener ninguna información", svg: "empty" },
+                    { text: "Información falsa que se presenta como verdadera", svg: "fake" },
+                    { text: "Tener demasiada información", svg: "overflow" },
+                    { text: "Información en otro idioma", svg: "translate" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Desinformación son noticias falsas o datos inventados que confunden. Es peligroso porque la gente puede creer mentiras y actuar en base a ellas."
+            },
+            {
+                category: "⚠️ Riesgos de Mala Gestión",
+                question: "¿Qué significa 'dependencia de IA' como riesgo?",
+                options: [
+                    { text: "Usar IA para todo sin verificar ni pensar", svg: "robot" },
+                    { text: "Nunca usar tecnología moderna", svg: "oldschool" },
+                    { text: "Trabajar solo con papeles físicos", svg: "paper" },
+                    { text: "No confiar en nada digital", svg: "distrust" }
+                ],
+                correct: 0,
+                explanation: "✅ CORRECTO: Depender 100% de IA sin verificar es peligroso porque puede inventar información (alucinar). Siempre debes revisar lo que te da la IA con fuentes reales."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let points = 0;
+        let lives = 5;
+        let timer;
+        let timeLeft = 15;
+        let answered = false;
+
+        const svgIcons = {
+            // Iconos generales
+            empty: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="50" height="45" rx="3" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="5,5"/><text x="50" y="60" font-size="40" fill="#97BC62" text-anchor="middle">?</text></svg>',
+            trust: '<svg viewBox="0 0 100 100"><path d="M 50 25 L 65 35 L 65 55 Q 65 75 50 85 Q 35 75 35 55 L 35 35 Z" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 40 50 L 47 57 L 60 42" stroke="#2C5F2D" stroke-width="3" fill="none"/></svg>',
+            money: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff" stroke="#97BC62" stroke-width="3"/><text x="50" y="65" font-size="35" fill="#2C5F2D" text-anchor="middle" font-weight="bold">$</text></svg>',
+            language: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="50" y1="25" x2="50" y2="75" stroke="#2C5F2D" stroke-width="2"/><path d="M 25 50 Q 50 35 75 50" stroke="#2C5F2D" stroke-width="2" fill="none"/><path d="M 25 50 Q 50 65 75 50" stroke="#2C5F2D" stroke-width="2" fill="none"/></svg>',
+            bomb: '<svg viewBox="0 0 100 100"><circle cx="50" cy="60" r="20" fill="#fff"/><rect x="48" y="30" width="4" height="15" fill="#97BC62"/><circle cx="50" cy="25" r="4" fill="#ff4444"/><path d="M 45 55 L 40 50 M 55 55 L 60 50" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            growth: '<svg viewBox="0 0 100 100"><path d="M 30 70 L 40 60 L 50 50 L 60 40 L 70 30" stroke="#fff" stroke-width="3" fill="none"/><circle cx="30" cy="70" r="4" fill="#97BC62"/><circle cx="40" cy="60" r="4" fill="#97BC62"/><circle cx="50" cy="50" r="4" fill="#97BC62"/><circle cx="60" cy="40" r="4" fill="#97BC62"/><circle cx="70" cy="30" r="4" fill="#97BC62"/><path d="M 60 30 L 70 30 L 70 40" stroke="#fff" stroke-width="3" fill="none"/></svg>',
+            broken: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="2" fill="#fff"/><path d="M 35 45 L 45 55 M 45 45 L 35 55 M 55 45 L 65 55 M 65 45 L 55 55" stroke="#ff4444" stroke-width="3"/><line x1="30" y1="50" x2="70" y2="50" stroke="#2C5F2D" stroke-width="2" stroke-dasharray="3,3"/></svg>',
+            expensive: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#FFD700" stroke="#fff" stroke-width="2"/><text x="50" y="65" font-size="30" fill="#2C5F2D" text-anchor="middle" font-weight="bold">$$</text></svg>',
+            alone: '<svg viewBox="0 0 100 100"><circle cx="50" cy="40" r="12" fill="#fff"/><path d="M 35 55 Q 50 70 65 55" fill="#97BC62"/><rect x="30" y="65" width="40" height="3" fill="#2C5F2D"/></svg>',
+            team: '<svg viewBox="0 0 100 100"><circle cx="35" cy="35" r="8" fill="#fff"/><circle cx="65" cy="35" r="8" fill="#fff"/><circle cx="50" cy="55" r="8" fill="#97BC62"/><path d="M 25 45 Q 35 55 45 45" fill="#97BC62"/><path d="M 55 45 Q 65 55 75 45" fill="#97BC62"/><path d="M 40 65 Q 50 75 60 65" fill="#2C5F2D"/></svg>',
+            cloud: '<svg viewBox="0 0 100 100"><path d="M 30 55 Q 30 40 40 40 Q 40 30 50 30 Q 60 30 60 40 Q 70 40 70 55 Q 70 65 60 65 L 40 65 Q 30 65 30 55" fill="#fff" stroke="#97BC62" stroke-width="2"/></svg>',
+            notech: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="25" y1="30" x2="75" y2="70" stroke="#ff4444" stroke-width="4"/></svg>',
+            guess: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff"/><circle cx="45" cy="45" r="3" fill="#97BC62"/><circle cx="55" cy="45" r="3" fill="#97BC62"/><path d="M 40 60 Q 50 55 60 60" stroke="#2C5F2D" stroke-width="3" fill="none"/></svg>',
+            data: '<svg viewBox="0 0 100 100"><rect x="25" y="35" width="15" height="30" fill="#fff"/><rect x="42" y="25" width="15" height="40" fill="#97BC62"/><rect x="59" y="30" width="15" height="35" fill="#2C5F2D"/></svg>',
+            boss: '<svg viewBox="0 0 100 100"><circle cx="50" cy="35" r="12" fill="#fff"/><rect x="40" y="48" width="20" height="25" fill="#97BC62"/><rect x="45" y="28" width="10" height="5" fill="#FFD700"/></svg>',
+            copy: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="30" height="35" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="40" y="35" width="30" height="35" rx="2" fill="none" stroke="#97BC62" stroke-width="2"/></svg>',
+            robot: '<svg viewBox="0 0 100 100"><rect x="35" y="40" width="30" height="30" rx="3" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="43" cy="52" r="3" fill="#2C5F2D"/><circle cx="57" cy="52" r="3" fill="#2C5F2D"/><rect x="40" y="60" width="20" height="3" fill="#2C5F2D"/><rect x="48" y="30" width="4" height="10" fill="#97BC62"/><circle cx="50" cy="28" r="4" fill="#ff4444"/></svg>',
+            assistant: '<svg viewBox="0 0 100 100"><circle cx="50" cy="45" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="43" cy="42" r="3" fill="#2C5F2D"/><circle cx="57" cy="42" r="3" fill="#2C5F2D"/><path d="M 40 52 Q 50 58 60 52" stroke="#2C5F2D" stroke-width="2" fill="none"/><path d="M 30 60 L 25 70 M 70 60 L 75 70" stroke="#97BC62" stroke-width="3"/></svg>',
+            game: '<svg viewBox="0 0 100 100"><rect x="25" y="40" width="50" height="25" rx="5" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="38" cy="52" r="4" fill="#2C5F2D"/><rect x="55" y="48" width="8" height="3" fill="#2C5F2D"/><rect x="58" y="45" width="3" height="8" fill="#2C5F2D"/></svg>',
+            replace: '<svg viewBox="0 0 100 100"><circle cx="40" cy="45" r="12" fill="#fff"/><circle cx="60" cy="45" r="12" fill="#97BC62"/><path d="M 45 45 L 55 45" stroke="#2C5F2D" stroke-width="3"/><path d="M 52 42 L 55 45 L 52 48" stroke="#2C5F2D" stroke-width="2" fill="none"/></svg>',
+            trash: '<svg viewBox="0 0 100 100"><rect x="35" y="35" width="30" height="35" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="32" y="32" width="36" height="5" fill="#97BC62"/><line x1="42" y1="42" x2="42" y2="62" stroke="#2C5F2D" stroke-width="2"/><line x1="50" y1="42" x2="50" y2="62" stroke="#2C5F2D" stroke-width="2"/><line x1="58" y1="42" x2="58" y2="62" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            value: '<svg viewBox="0 0 100 100"><path d="M 50 25 L 40 35 L 45 35 L 45 55 L 55 55 L 55 35 L 60 35 Z" fill="#FFD700"/><rect x="35" y="58" width="30" height="15" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="65" r="4" fill="#2C5F2D"/></svg>',
+            building: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="45" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="37" y="38" width="8" height="8" fill="#2C5F2D"/><rect x="52" y="38" width="8" height="8" fill="#2C5F2D"/><rect x="37" y="50" width="8" height="8" fill="#2C5F2D"/><rect x="52" y="50" width="8" height="8" fill="#2C5F2D"/><rect x="42" y="62" width="12" height="13" fill="#97BC62"/></svg>',
+            free: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff" stroke="#97BC62" stroke-width="2"/><text x="50" y="60" font-size="20" fill="#2C5F2D" text-anchor="middle" font-weight="bold">0$</text></svg>',
+            slow: '<svg viewBox="0 0 100 100"><circle cx="50" cy="55" r="15" fill="#fff"/><ellipse cx="50" cy="72" rx="10" ry="5" fill="#97BC62"/><circle cx="45" cy="52" r="2" fill="#2C5F2D"/><circle cx="55" cy="52" r="2" fill="#2C5F2D"/><line x1="30" y1="45" x2="38" y2="48" stroke="#2C5F2D" stroke-width="2"/><line x1="70" y1="45" x2="62" y2="48" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            fast: '<svg viewBox="0 0 100 100"><path d="M 30 50 L 70 50" stroke="#fff" stroke-width="4"/><path d="M 60 40 L 75 50 L 60 60" fill="#97BC62"/><circle cx="30" cy="50" r="6" fill="#2C5F2D"/></svg>',
+            offline: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="none" stroke="#fff" stroke-width="3"/><line x1="30" y1="30" x2="70" y2="70" stroke="#ff4444" stroke-width="4"/></svg>',
+            waste: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><text x="50" y="62" font-size="25" fill="#ff4444" text-anchor="middle" font-weight="bold">$$$</text></svg>',
+            turtle: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="20" ry="15" fill="#97BC62"/><circle cx="35" cy="50" r="8" fill="#fff"/><circle cx="65" cy="50" r="8" fill="#fff"/><circle cx="50" cy="42" r="3" fill="#2C5F2D"/></svg>',
+            efficient: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 40 50 L 48 58 L 62 42" stroke="#2C5F2D" stroke-width="3" fill="none"/><path d="M 65 35 L 75 25" stroke="#FFD700" stroke-width="3"/><path d="M 70 40 L 80 30" stroke="#FFD700" stroke-width="3"/></svg>',
+            complicated: '<svg viewBox="0 0 100 100"><path d="M 30 50 Q 40 30 50 50 T 70 50" stroke="#fff" stroke-width="3" fill="none"/><circle cx="30" cy="50" r="4" fill="#97BC62"/><circle cx="50" cy="50" r="4" fill="#97BC62"/><circle cx="70" cy="50" r="4" fill="#97BC62"/></svg>',
+            messy: '<svg viewBox="0 0 100 100"><line x1="25" y1="30" x2="75" y2="40" stroke="#fff" stroke-width="2"/><line x1="30" y1="50" x2="70" y2="55" stroke="#97BC62" stroke-width="2"/><line x1="28" y1="65" x2="72" y2="60" stroke="#2C5F2D" stroke-width="2"/><circle cx="25" cy="30" r="3" fill="#ff4444"/><circle cx="75" cy="40" r="3" fill="#ff4444"/></svg>',
+            luck: '<svg viewBox="0 0 100 100"><path d="M 50 28 L 54 42 L 68 42 L 57 50 L 61 64 L 50 56 L 39 64 L 43 50 L 32 42 L 46 42 Z" fill="#FFD700"/><circle cx="50" cy="50" r="6" fill="#fff"/></svg>',
+            idea: '<svg viewBox="0 0 100 100"><circle cx="50" cy="45" r="15" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="45" y="60" width="10" height="8" fill="#97BC62"/><rect x="42" y="68" width="16" height="3" fill="#2C5F2D"/><line x1="35" y1="30" x2="30" y2="25" stroke="#FFD700" stroke-width="2"/><line x1="65" y1="30" x2="70" y2="25" stroke="#FFD700" stroke-width="2"/><line x1="50" y1="25" x2="50" y2="20" stroke="#FFD700" stroke-width="2"/></svg>',
+            complex: '<svg viewBox="0 0 100 100"><rect x="25" y="35" width="50" height="30" fill="none" stroke="#fff" stroke-width="2"/><rect x="30" y="40" width="15" height="10" fill="#97BC62"/><rect x="50" y="40" width="15" height="10" fill="#97BC62"/><rect x="30" y="52" width="15" height="10" fill="#2C5F2D"/><rect x="50" y="52" width="15" height="10" fill="#2C5F2D"/></svg>',
+            copycat: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="25" height="30" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="50" y="35" width="25" height="30" fill="none" stroke="#97BC62" stroke-width="2" stroke-dasharray="3,3"/><path d="M 45 45 L 52 45" stroke="#2C5F2D" stroke-width="2"/><path d="M 48 42 L 52 45 L 48 48" stroke="#2C5F2D" stroke-width="2" fill="none"/></svg>',
+            ignore: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff"/><circle cx="45" cy="45" r="3" fill="#2C5F2D"/><circle cx="55" cy="45" r="3" fill="#2C5F2D"/><line x1="40" y1="58" x2="60" y2="58" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            service: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="45" cy="45" r="2" fill="#2C5F2D"/><circle cx="55" cy="45" r="2" fill="#2C5F2D"/><path d="M 40 55 Q 50 62 60 55" stroke="#2C5F2D" stroke-width="2" fill="none"/><path d="M 50 30 Q 40 35 35 45" stroke="#97BC62" stroke-width="2" fill="none"/></svg>',
+            pricey: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="3" fill="#fff" stroke="#97BC62" stroke-width="2"/><text x="50" y="58" font-size="28" fill="#ff4444" text-anchor="middle" font-weight="bold">$$$</text></svg>',
+            silence: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff"/><line x1="35" y1="50" x2="45" y2="50" stroke="#2C5F2D" stroke-width="2"/><line x1="55" y1="50" x2="65" y2="50" stroke="#2C5F2D" stroke-width="2"/><line x1="40" y1="60" x2="60" y2="60" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            runner: '<svg viewBox="0 0 100 100"><circle cx="55" cy="35" r="8" fill="#fff"/><path d="M 50 43 L 45 55 L 40 68" stroke="#97BC62" stroke-width="3" fill="none"/><path d="M 55 48 L 68 50" stroke="#97BC62" stroke-width="3" fill="none"/><path d="M 45 55 L 52 62" stroke="#2C5F2D" stroke-width="3" fill="none"/></svg>',
+            speed: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 30 50 L 45 50 M 48 47 L 45 50 L 48 53" stroke="#2C5F2D" stroke-width="3" fill="none"/><line x1="60" y1="40" x2="65" y2="35" stroke="#FFD700" stroke-width="2"/><line x1="65" y1="45" x2="70" y2="40" stroke="#FFD700" stroke-width="2"/></svg>',
+            chaos: '<svg viewBox="0 0 100 100"><path d="M 30 30 L 70 70 M 70 30 L 30 70 M 50 25 L 50 75 M 25 50 L 75 50" stroke="#fff" stroke-width="2"/><circle cx="50" cy="50" r="8" fill="#ff4444"/></svg>',
+            rush: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff"/><text x="50" y="62" font-size="35" fill="#ff4444" text-anchor="middle" font-weight="bold">!</text></svg>',
+            error: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ff4444" stroke-width="3"/><line x1="40" y1="40" x2="60" y2="60" stroke="#ff4444" stroke-width="3"/><line x1="60" y1="40" x2="40" y2="60" stroke="#ff4444" stroke-width="3"/></svg>',
+            accurate: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="50" r="12" fill="none" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="50" r="4" fill="#2C5F2D"/></svg>',
+            pretty: '<svg viewBox="0 0 100 100"><path d="M 50 30 L 54 42 L 66 42 L 56 50 L 60 62 L 50 54 L 40 62 L 44 50 L 34 42 L 46 42 Z" fill="#FFD700"/><circle cx="50" cy="50" r="8" fill="#fff"/></svg>',
+            duplicate: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="25" height="30" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="45" y="35" width="25" height="30" fill="#fff" stroke="#97BC62" stroke-width="2"/></svg>',
+            vanish: '<svg viewBox="0 0 100 100"><circle cx="40" cy="50" r="15" fill="#fff" opacity="0.5"/><circle cx="60" cy="50" r="10" fill="#97BC62" opacity="0.3"/><circle cx="75" cy="50" r="5" fill="#2C5F2D" opacity="0.1"/></svg>',
+            available: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 40 50 L 47 57 L 60 42" stroke="#2C5F2D" stroke-width="3" fill="none"/><text x="50" y="75" font-size="12" fill="#97BC62" text-anchor="middle">24/7</text></svg>',
+            exclusive: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#FFD700" stroke-width="2"/><text x="50" y="60" font-size="25" fill="#2C5F2D" text-anchor="middle" font-weight="bold">VIP</text></svg>',
+            delete: '<svg viewBox="0 0 100 100"><rect x="35" y="35" width="30" height="30" fill="#fff" stroke="#ff4444" stroke-width="2"/><line x1="42" y1="42" x2="58" y2="58" stroke="#ff4444" stroke-width="3"/><line x1="58" y1="42" x2="42" y2="58" stroke="#ff4444" stroke-width="3"/></svg>',
+            separate: '<svg viewBox="0 0 100 100"><circle cx="35" cy="50" r="10" fill="#fff"/><circle cx="65" cy="50" r="10" fill="#97BC62"/><line x1="45" y1="50" x2="55" y2="50" stroke="#2C5F2D" stroke-width="2" stroke-dasharray="3,3"/></svg>',
+            coordinate: '<svg viewBox="0 0 100 100"><circle cx="35" cy="35" r="8" fill="#fff"/><circle cx="65" cy="35" r="8" fill="#fff"/><circle cx="50" cy="60" r="8" fill="#97BC62"/><line x1="35" y1="35" x2="50" y2="60" stroke="#2C5F2D" stroke-width="2"/><line x1="65" y1="35" x2="50" y2="60" stroke="#2C5F2D" stroke-width="2"/><line x1="35" y1="35" x2="65" y2="35" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            difficult: '<svg viewBox="0 0 100 100"><path d="M 30 50 L 40 35 L 50 55 L 60 30 L 70 50" stroke="#fff" stroke-width="3" fill="none"/><circle cx="50" cy="50" r="5" fill="#ff4444"/></svg>',
+            compete: '<svg viewBox="0 0 100 100"><circle cx="40" cy="45" r="12" fill="#fff"/><circle cx="60" cy="45" r="12" fill="#97BC62"/><path d="M 35 40 L 30 35 M 40 35 L 35 30" stroke="#ff4444" stroke-width="2"/><path d="M 65 40 L 70 35 M 60 35 L 65 30" stroke="#ff4444" stroke-width="2"/></svg>',
+            public: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="5,5"/><circle cx="40" cy="45" r="3" fill="#97BC62"/><circle cx="50" cy="45" r="3" fill="#97BC62"/><circle cx="60" cy="45" r="3" fill="#97BC62"/></svg>',
+            secure: '<svg viewBox="0 0 100 100"><rect x="40" y="45" width="20" height="20" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 45 45 L 45 40 Q 45 32 50 32 Q 55 32 55 40 L 55 45" stroke="#97BC62" stroke-width="2" fill="none"/><circle cx="50" cy="57" r="3" fill="#2C5F2D"/></svg>',
+            open: '<svg viewBox="0 0 100 100"><rect x="40" y="50" width="20" height="20" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 45 50 L 45 40 Q 45 32 50 32 Q 55 32 55 40" stroke="#97BC62" stroke-width="2" fill="none"/></svg>',
+            share: '<svg viewBox="0 0 100 100"><circle cx="50" cy="35" r="8" fill="#fff"/><circle cx="35" cy="60" r="8" fill="#97BC62"/><circle cx="65" cy="60" r="8" fill="#97BC62"/><line x1="45" y1="40" x2="40" y2="55" stroke="#2C5F2D" stroke-width="2"/><line x1="55" y1="40" x2="60" y2="55" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            nothing: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="none" stroke="#fff" stroke-width="2"/><line x1="35" y1="50" x2="45" y2="50" stroke="#97BC62" stroke-width="2"/><line x1="55" y1="50" x2="65" y2="50" stroke="#97BC62" stroke-width="2"/></svg>',
+            mistake: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ff4444" stroke-width="2"/><text x="50" y="62" font-size="35" fill="#ff4444" text-anchor="middle" font-weight="bold">✗</text></svg>',
+            gold: '<svg viewBox="0 0 100 100"><rect x="35" y="45" width="30" height="20" fill="#FFD700" stroke="#fff" stroke-width="2"/><rect x="30" y="40" width="10" height="5" fill="#FFD700"/><rect x="60" y="40" width="10" height="5" fill="#FFD700"/></svg>',
+            perfect: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 40 50 L 47 57 L 62 42" stroke="#2C5F2D" stroke-width="3" fill="none"/><path d="M 60 35 L 68 28 M 65 40 L 73 33" stroke="#FFD700" stroke-width="2"/></svg>',
+            leak: '<svg viewBox="0 0 100 100"><rect x="35" y="30" width="30" height="25" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="60" r="3" fill="#4ECDC4"/><circle cx="50" cy="68" r="2" fill="#4ECDC4"/><circle cx="50" cy="74" r="1" fill="#4ECDC4"/></svg>',
+            breach: '<svg viewBox="0 0 100 100"><rect x="35" y="45" width="30" height="25" rx="2" fill="#fff" stroke="#ff4444" stroke-width="2"/><path d="M 40 45 L 40 38 Q 40 30 50 30 Q 60 30 60 38 L 60 45" stroke="#ff4444" stroke-width="2" fill="none"/><line x1="45" y1="50" x2="55" y2="65" stroke="#ff4444" stroke-width="3"/></svg>',
+            storage: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="15" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="30" y="47" width="40" height="15" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="30" y="64" width="40" height="15" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/></svg>',
+            social: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="43" cy="45" r="3" fill="#2C5F2D"/><circle cx="57" cy="45" r="3" fill="#2C5F2D"/><path d="M 40 55 Q 50 62 60 55" stroke="#2C5F2D" stroke-width="2" fill="none"/></svg>',
+            fake: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="2" fill="#fff" stroke="#ff4444" stroke-width="2"/><line x1="35" y1="45" x2="55" y2="45" stroke="#ff4444" stroke-width="2"/><line x1="35" y1="52" x2="65" y2="52" stroke="#ff4444" stroke-width="2"/><line x1="35" y1="59" x2="50" y2="59" stroke="#ff4444" stroke-width="2"/><text x="68" y="58" font-size="25" fill="#ff4444" font-weight="bold">?</text></svg>',
+            overflow: '<svg viewBox="0 0 100 100"><rect x="30" y="40" width="40" height="30" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="48" x2="65" y2="48" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="53" x2="65" y2="53" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="58" x2="65" y2="58" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="63" x2="65" y2="63" stroke="#2C5F2D" stroke-width="1.5"/><path d="M 45 35 L 50 30 L 55 35" fill="#ff4444"/></svg>',
+            translate: '<svg viewBox="0 0 100 100"><text x="30" y="55" font-size="25" fill="#fff" font-weight="bold">A</text><path d="M 50 45 L 55 50 L 50 55" stroke="#97BC62" stroke-width="2" fill="none"/><text x="60" y="55" font-size="25" fill="#97BC62" font-weight="bold">語</text></svg>',
+            oldschool: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="43" x2="65" y2="43" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="50" x2="65" y2="50" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="57" x2="65" y2="57" stroke="#2C5F2D" stroke-width="1.5"/></svg>',
+            paper: '<svg viewBox="0 0 100 100"><rect x="35" y="30" width="30" height="40" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="40" y1="40" x2="60" y2="40" stroke="#2C5F2D" stroke-width="1.5"/><line x1="40" y1="47" x2="60" y2="47" stroke="#2C5F2D" stroke-width="1.5"/><line x1="40" y1="54" x2="60" y2="54" stroke="#2C5F2D" stroke-width="1.5"/><line x1="40" y1="61" x2="55" y2="61" stroke="#2C5F2D" stroke-width="1.5"/></svg>',
+            distrust: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ff4444" stroke-width="2"/><line x1="42" y1="45" x2="48" y2="45" stroke="#ff4444" stroke-width="2"/><line x1="52" y1="45" x2="58" y2="45" stroke="#ff4444" stroke-width="2"/><path d="M 42 58 Q 50 52 58 58" stroke="#ff4444" stroke-width="2" fill="none"/></svg>'
+        };
+
+        function loadQuestion() {
+            answered = false;
+            timeLeft = 15;
+            const q = questions[currentQuestion];
+            
+            document.getElementById('categoryTitle').textContent = q.category;
+            document.getElementById('questionNumber').textContent = `${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionText').textContent = q.question;
+            
+            const container = document.getElementById('lilyPadsContainer');
+            container.innerHTML = '';
+            
+            const labels = ['A', 'B', 'C', 'D'];
+            
+            q.options.forEach((option, index) => {
+                const lilyPad = document.createElement('button');
+                lilyPad.className = 'lily-pad';
+                lilyPad.onclick = () => checkAnswer(index);
+                
+                lilyPad.innerHTML = `
+                    <div class="lily-content">
+                        <div class="option-label">${labels[index]}</div>
+                        <div class="option-svg">${svgIcons[option.svg]}</div>
+                        <div class="option-text">${option.text}</div>
+                    </div>
+                `;
+                
+                container.appendChild(lilyPad);
+            });
+            
+            updateProgress();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('timer').textContent = 
+                    `00:00:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (!answered) {
+                        handleTimeout();
+                    }
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            answered = true;
+            lives--;
+            document.getElementById('lives').textContent = lives;
+            
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            lilyPads.forEach((pad, index) => {
+                pad.classList.add('answered');
+                if (index === questions[currentQuestion].correct) {
+                    pad.classList.add('correct');
+                }
+            });
+            
+            showExplanation(false);
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 2000);
+            }
+        }
+
+        function checkAnswer(selected) {
+            if (answered) return;
+            answered = true;
+            clearInterval(timer);
+            
+            const q = questions[currentQuestion];
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            
+            lilyPads.forEach((pad, index) => {
+                pad.classList.add('answered');
+                if (index === selected) {
+                    if (selected === q.correct) {
+                        pad.classList.add('correct');
+                        points += timeLeft * 100;
+                        animateFrog(pad);
+                    } else {
+                        pad.classList.add('incorrect');
+                        lives--;
+                    }
+                }
+                if (index === q.correct && selected !== q.correct) {
+                    pad.classList.add('correct');
+                }
+            });
+            
+            document.getElementById('points').textContent = points.toLocaleString('es-CO', {minimumFractionDigits: 3});
+            document.getElementById('lives').textContent = lives;
+            
+            showExplanation(selected === q.correct);
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 2000);
+            }
+        }
+
+        function animateFrog(targetPad) {
+            const frog = document.getElementById('frogContainer');
+            const rect = targetPad.getBoundingClientRect();
+            frog.style.left = rect.left + rect.width/2 - 60 + 'px';
+            frog.style.bottom = window.innerHeight - rect.top - rect.height/2 - 60 + 'px';
+            
+            setTimeout(() => {
+                frog.style.left = '50%';
+                frog.style.bottom = '80px';
+            }, 1000);
+        }
+
+        function showExplanation(correct) {
+            const modal = document.getElementById('explanationModal');
+            const header = document.getElementById('explanationHeader');
+            const text = document.getElementById('explanationText');
+            
+            header.textContent = correct ? '¡Correcto! 🎉' : 'Incorrecto 😔';
+            header.style.color = correct ? '#2C5F2D' : '#ff4444';
+            text.textContent = questions[currentQuestion].explanation;
+            
+            modal.classList.add('show');
+        }
+
+        function nextQuestion() {
+            document.getElementById('explanationModal').classList.remove('show');
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length && lives > 0) {
+                loadQuestion();
+            } else {
+                showFinalScreen();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = `${currentQuestion + 1}/${questions.length}`;
+        }
+
+        function showGameOver() {
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('frogContainer').style.display = 'none';
+            showFinalScreen();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('frogContainer').style.display = 'none';
+            const finalScreen = document.getElementById('finalScreen');
+            finalScreen.classList.add('show');
+            
+            document.getElementById('finalScore').textContent = points.toLocaleString('es-CO') + ' PUNTOS';
+            
+            let message = '';
+            if (lives <= 0) {
+                message = '¡Sigue intentándolo! La práctica hace al maestro en gestión de información.';
+            } else if (points >= 12000) {
+                message = '🏆 ¡EXPERTO EN GESTIÓN DE INFORMACIÓN! Dominas perfectamente todos los conceptos de la era digital.';
+            } else if (points >= 8000) {
+                message = '⭐ ¡EXCELENTE! Comprendes muy bien cómo gestionar información en el mundo moderno.';
+            } else if (points >= 5000) {
+                message = '👍 ¡MUY BIEN! Vas por buen camino. Entiendes los fundamentos de la gestión de información.';
+            } else {
+                message = '📚 Buen intento. Cada juego te ayuda a entender mejor cómo funciona la información hoy.';
+            }
+            
+            document.getElementById('finalMessage').textContent = message;
+        }
+
+        document.getElementById('nextButton').onclick = nextQuestion;
+        
+        loadQuestion();
+    </script>
+</body>
+</html>
