@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alfabetización Digital - Froggy Jump</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #4ECDC4 0%, #44A08D 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header profesional */
+        .header {
+            background: linear-gradient(135deg, #2C5F2D 0%, #97BC62 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .lives-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .lives-label {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lives-count {
+            background: white;
+            color: #2C5F2D;
+            font-weight: bold;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+
+        .points-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .points-label {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .points-count {
+            background: white;
+            color: #2C5F2D;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* Área del juego */
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .progress-bar-container {
+            background: rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2C5F2D, #97BC62);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .question-number {
+            color: #2C5F2D;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        /* Estilo Froggy Jump - Nenúfares flotantes */
+        .lily-pads-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            position: relative;
+        }
+
+        .lily-pad {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .lily-pad:hover:not(.answered) {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .lily-pad.correct {
+            animation: correctJump 0.6s ease;
+        }
+
+        .lily-pad.incorrect {
+            animation: incorrectShake 0.6s ease;
+            opacity: 0.5;
+        }
+
+        @keyframes correctJump {
+            0%, 100% { transform: translateY(0) scale(1); }
+            30% { transform: translateY(-30px) scale(1.1); }
+            60% { transform: translateY(-15px) scale(1.05); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-15px) rotate(-5deg); }
+            75% { transform: translateX(15px) rotate(5deg); }
+        }
+
+        .lily-content {
+            background: #2C5F2D;
+            border-radius: 50%;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: relative;
+            border: 5px solid #97BC62;
+        }
+
+        .lily-content::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: rgba(151, 188, 98, 0.3);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .option-label {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #97BC62;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .option-svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
+        }
+
+        .option-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.4;
+            padding: 0 10px;
+        }
+
+        /* Rana (frog) */
+        .frog-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            transition: all 0.5s ease;
+        }
+
+        .frog-svg {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+        }
+
+        /* Timer */
+        .timer-container {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-icon {
+            width: 25px;
+            height: 25px;
+        }
+
+        .timer-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2C5F2D;
+        }
+
+        /* Explicación */
+        .explanation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .explanation-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .explanation-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .explanation-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2C5F2D;
+        }
+
+        .explanation-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #2C5F2D, #97BC62);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .next-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(44, 95, 45, 0.4);
+        }
+
+        /* Pantalla final */
+        .final-screen {
+            display: none;
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            max-width: 700px;
+            margin: 50px auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .final-screen.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .final-title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2C5F2D;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 72px;
+            font-weight: bold;
+            color: #97BC62;
+            margin: 30px 0;
+        }
+
+        .final-message {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #2C5F2D, #97BC62);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .restart-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(44, 95, 45, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1a4d1f 0%, #2C5F2D 100%);
+            padding: 20px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+        }
+
+        .footer-text {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .footer-handle {
+            color: #97BC62;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        /* Ajuste para el contenedor del juego con footer */
+        body {
+            padding-bottom: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .lily-pads-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .question-text {
+                font-size: 20px;
+            }
+            
+            .lily-content {
+                min-height: 250px;
+                padding: 30px 15px;
+            }
+
+            .footer-text {
+                font-size: 16px;
+            }
+
+            .footer-handle {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Title -->
+    <div style="background: linear-gradient(135deg, #1a4d1f 0%, #2C5F2D 100%); padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <h1 style="color: #fff; font-size: 32px; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 2px;">Gestión de la Información</h1>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="lives-container">
+            <span class="lives-label">VIDAS</span>
+            <div class="lives-count" id="lives">5</div>
+        </div>
+        <div class="category-title" id="categoryTitle">Fuentes de información</div>
+        <div class="points-container">
+            <span class="points-label">PUNTOS</span>
+            <div class="points-count" id="points">0.000</div>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container" id="gameArea">
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer-container">
+            <svg class="timer-icon" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#2C5F2D" stroke-width="2"/>
+                <path d="M12 6v6l4 2" stroke="#2C5F2D" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="timer-text" id="timer">00:00:10</span>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card">
+            <div class="question-number" id="questionNumber">1 / 10</div>
+            <div class="question-text" id="questionText"></div>
+        </div>
+
+        <!-- Lily Pads (Options) -->
+        <div class="lily-pads-container" id="lilyPadsContainer"></div>
+    </div>
+
+    <!-- Final Screen -->
+    <div class="final-screen" id="finalScreen">
+        <div class="final-title">¡JUEGO COMPLETADO!</div>
+        <div class="final-score" id="finalScore"></div>
+        <div class="final-message" id="finalMessage"></div>
+        <button class="restart-button" onclick="location.reload()">🔄 JUGAR DE NUEVO</button>
+    </div>
+
+    <!-- Frog -->
+    <div class="frog-container" id="frogContainer">
+        <svg class="frog-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Frog body -->
+            <ellipse cx="100" cy="120" rx="60" ry="50" fill="#97BC62"/>
+            <!-- Frog head -->
+            <ellipse cx="100" cy="80" rx="50" ry="40" fill="#97BC62"/>
+            <!-- Eyes -->
+            <ellipse cx="85" cy="65" rx="15" ry="20" fill="white"/>
+            <ellipse cx="115" cy="65" rx="15" ry="20" fill="white"/>
+            <circle cx="85" cy="70" r="8" fill="#2C5F2D"/>
+            <circle cx="115" cy="70" r="8" fill="#2C5F2D"/>
+            <!-- Mouth -->
+            <path d="M 80 90 Q 100 100 120 90" stroke="#2C5F2D" stroke-width="3" fill="none"/>
+            <!-- Front legs -->
+            <ellipse cx="70" cy="140" rx="12" ry="25" fill="#2C5F2D"/>
+            <ellipse cx="130" cy="140" rx="12" ry="25" fill="#2C5F2D"/>
+            <!-- Back legs -->
+            <ellipse cx="60" cy="150" rx="20" ry="15" fill="#2C5F2D"/>
+            <ellipse cx="140" cy="150" rx="20" ry="15" fill="#2C5F2D"/>
+        </svg>
+    </div>
+
+    <!-- Explanation Modal -->
+    <div class="explanation-modal" id="explanationModal">
+        <div class="explanation-content">
+            <div class="explanation-header" id="explanationHeader"></div>
+            <div class="explanation-text" id="explanationText"></div>
+            <button class="next-button" id="nextButton">SIGUIENTE PREGUNTA ➜</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // ALFABETIZACIÓN INFORMACIONAL
+            {
+                category: "📚 Alfabetización Informacional",
+                question: "Un estudiante busca información sobre cambio climático y encuentra un artículo en la primera página de Google. ¿Cuál es la MEJOR práctica antes de usarlo?",
+                options: [
+                    { text: "Usarlo inmediatamente porque está en la primera página", svg: "fast" },
+                    { text: "Verificar autor, fecha, fuentes y metodología del artículo", svg: "verify" },
+                    { text: "Solo leer el resumen y copiar las conclusiones", svg: "copy" },
+                    { text: "Buscar solo artículos con títulos llamativos", svg: "title" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: La posición en buscadores NO garantiza calidad. Debes verificar credenciales del autor, fecha de publicación, si cita fuentes verificables y si la metodología es sólida. Esta es alfabetización informacional en acción."
+            },
+            {
+                category: "📚 Alfabetización Informacional",
+                question: "¿Cuál de estas preguntas demuestra MEJOR formulación de búsqueda informacional?",
+                options: [
+                    { text: "Dame información sobre educación", svg: "basic" },
+                    { text: "¿Qué estrategias de aprendizaje activo mejoran retención en estudiantes universitarios de ciencias?", svg: "target" },
+                    { text: "Todo sobre escuelas", svg: "school" },
+                    { text: "Cosas de profesores", svg: "teacher" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Una buena pregunta define QUÉ necesitas (estrategias), PARA QUÉ (mejorar retención), CON QUÉ ALCANCE (universitarios de ciencias). Esto enfoca la búsqueda y ahorra tiempo."
+            },
+            {
+                category: "📚 Alfabetización Informacional",
+                question: "Encuentras dos artículos con conclusiones opuestas sobre un tema. ¿Qué hacer?",
+                options: [
+                    { text: "Elegir el que confirme lo que ya pensabas", svg: "question" },
+                    { text: "Usar solo el más reciente", svg: "calendar" },
+                    { text: "Comparar metodologías, contextos, sesgos y buscar más fuentes", svg: "advanced" },
+                    { text: "Ignorar ambos y buscar uno neutral", svg: "no" }
+                ],
+                correct: 2,
+                explanation: "✅ CORRECTO: Los desacuerdos académicos son normales. Debes evaluar la calidad metodológica, contextos diferentes, posibles sesgos de financiación o autor, y ampliar con más fuentes para construir una visión informada."
+            },
+            {
+                category: "📚 Alfabetización Informacional",
+                question: "Usas ideas de un autor en tu trabajo sin copiar textualmente. ¿Necesitas citar?",
+                options: [
+                    { text: "No, porque no es cita textual", svg: "no" },
+                    { text: "Sí, las ideas también requieren atribución", svg: "citation" },
+                    { text: "Solo si el autor es famoso", svg: "famous" },
+                    { text: "Solo en trabajos académicos formales", svg: "formal" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: El plagio incluye usar IDEAS de otros sin atribución, no solo texto copiado. Debes citar conceptos, teorías, análisis o argumentos aunque los parafrasees. Es ética y alfabetización informacional."
+            },
+            {
+                category: "📚 Alfabetización Informacional",
+                question: "Un blog personal sin referencias dice que X causa Y. ¿Cómo evalúas su credibilidad?",
+                options: [
+                    { text: "Si tiene muchos comentarios positivos, es confiable", svg: "social" },
+                    { text: "Los blogs nunca son confiables", svg: "no" },
+                    { text: "Buscar si el autor tiene expertise, si cita evidencia y contrastar con fuentes académicas", svg: "verify" },
+                    { text: "Si está bien escrito, es válido", svg: "essay" }
+                ],
+                correct: 2,
+                explanation: "✅ CORRECTO: Un blog puede tener valor si el autor tiene credenciales verificables en el tema, cita fuentes primarias, y sus afirmaciones coinciden con literatura revisada por pares. Popularidad ≠ credibilidad."
+            },
+
+            // ALFABETIZACIÓN DE DATOS
+            {
+                category: "📊 Alfabetización de Datos",
+                question: "Un reporte dice 'La deserción aumentó 50%'. ¿Qué debes verificar PRIMERO?",
+                options: [
+                    { text: "Quién hizo el reporte", svg: "person" },
+                    { text: "Si cambió la definición de 'deserción' o el periodo de medición", svg: "calendar" },
+                    { text: "El tamaño de la letra del reporte", svg: "color" },
+                    { text: "Solo el número total de estudiantes", svg: "number" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Antes de alarmarte por el porcentaje, verifica si cambiaron: la definición de deserción, el periodo medido, la población incluida o si hay registros duplicados. Los datos sin contexto pueden engañar."
+            },
+            {
+                category: "📊 Alfabetización de Datos",
+                question: "¿Cuál es la diferencia entre DATO e INDICADOR?",
+                options: [
+                    { text: "No hay diferencia, son lo mismo", svg: "equal" },
+                    { text: "Un dato es un valor bruto; un indicador es un dato procesado con significado contextual", svg: "context" },
+                    { text: "El indicador es más largo que el dato", svg: "long" },
+                    { text: "Los datos son números, los indicadores son textos", svg: "numbers" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Dato: '120 estudiantes desertaron'. Indicador: 'Tasa de deserción del 15% en el primer semestre'. El indicador contextualiza y permite comparar, decidir y evaluar tendencias."
+            },
+            {
+                category: "📊 Alfabetización de Datos",
+                question: "Ves un gráfico donde el eje Y empieza en 95 en lugar de 0. ¿Qué implica?",
+                options: [
+                    { text: "El diseñador ahorró espacio", svg: "space" },
+                    { text: "Puede exagerar visualmente diferencias pequeñas", svg: "magnify" },
+                    { text: "Es mejor para ver detalles", svg: "detail" },
+                    { text: "No importa dónde empiece el eje", svg: "random" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Empezar el eje Y en un valor alto (ej. 95 en lugar de 0) magnifica visualmente pequeñas diferencias y puede manipular la percepción. Siempre verifica escalas de los ejes para interpretar correctamente."
+            },
+            {
+                category: "📊 Alfabetización de Datos",
+                question: "Detectas valores duplicados en una base de datos de estudiantes. ¿Qué riesgo representan?",
+                options: [
+                    { text: "Ninguno, más datos es mejor", svg: "more" },
+                    { text: "Pueden inflar totales y generar conclusiones erróneas", svg: "inflate" },
+                    { text: "Solo afectan la estética de la tabla", svg: "beauty" },
+                    { text: "Mejoran la precisión estadística", svg: "precision" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Registros duplicados inflan conteos, distorsionan promedios y generan conclusiones falsas (ej. 'tenemos 500 estudiantes' cuando en realidad son 350). Limpiar duplicados es crucial en alfabetización de datos."
+            },
+            {
+                category: "📊 Alfabetización de Datos",
+                question: "Un promedio de notas es 8.5, pero hay dos estudiantes con 10 y treinta con 5. ¿Qué está pasando?",
+                options: [
+                    { text: "El promedio representa bien al grupo", svg: "equal" },
+                    { text: "El promedio está sesgado por valores atípicos; la mediana sería más representativa", svg: "context" },
+                    { text: "Los datos están equivocados", svg: "no" },
+                    { text: "Es imposible que pase esto", svg: "random" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Promedios pueden engañar cuando hay valores extremos. Con 2 notas de 10 y 30 de 5, la mediana (5) refleja mejor la tendencia central del grupo. Siempre contextualiza las medidas estadísticas."
+            },
+
+            // ALFABETIZACIÓN EN IA
+            {
+                category: "🤖 Alfabetización en IA",
+                question: "Le pides a una IA que resuma 10 artículos científicos. ¿Cuál es el RIESGO principal?",
+                options: [
+                    { text: "Que tarde mucho tiempo", svg: "clock" },
+                    { text: "Que invente información no presente en los artículos (alucinación)", svg: "brain" },
+                    { text: "Que use muchos recursos computacionales", svg: "server" },
+                    { text: "Que no entienda idiomas extranjeros", svg: "language" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Las IA pueden 'alucinar': generar información que suena convincente pero es inventada. SIEMPRE verifica las salidas de IA con las fuentes originales. La IA resume, tú verificas y concluyes."
+            },
+            {
+                category: "🤖 Alfabetización en IA",
+                question: "¿Cuál prompt demuestra MEJOR alfabetización en IA?",
+                options: [
+                    { text: "Dame información sobre educación", svg: "basic" },
+                    { text: "Analiza estos 5 estudios sobre aprendizaje activo, identifica metodologías y cita páginas específicas de cada uno", svg: "advanced" },
+                    { text: "Hazme un ensayo completo sobre pedagogía", svg: "essay" },
+                    { text: "Responde todas mis preguntas de tarea", svg: "homework" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Un buen prompt es específico, pide evidencia citable, y usa la IA como herramienta (no sustituto del pensamiento). Defines QUÉ analizar, CÓMO quieres el output y EXIGES trazabilidad."
+            },
+            {
+                category: "🤖 Alfabetización en IA",
+                question: "Una IA te da una conclusión sobre un tema complejo. ¿Qué hacer?",
+                options: [
+                    { text: "Copiarla directamente a tu trabajo", svg: "copy" },
+                    { text: "Verificar la conclusión con fuentes externas y construir tu propio análisis", svg: "verify" },
+                    { text: "Asumir que es correcta porque la IA es inteligente", svg: "brain" },
+                    { text: "Cambiar algunas palabras y usarla", svg: "essay" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Las conclusiones finales son TU responsabilidad intelectual. Usa IA para explorar, organizar o resumir, pero verifica con fuentes, aplica pensamiento crítico y construye TUS argumentos con evidencia."
+            },
+            {
+                category: "🤖 Alfabetización en IA",
+                question: "¿Cuál es un riesgo de PRIVACIDAD al usar IA?",
+                options: [
+                    { text: "La IA puede consumir mucha batería", svg: "server" },
+                    { text: "Compartir datos personales o confidenciales que pueden ser almacenados o usados para entrenar modelos", svg: "brain" },
+                    { text: "La IA podría recomendarte productos", svg: "social" },
+                    { text: "Ninguno, la IA es totalmente privada", svg: "no" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Muchas IA almacenan conversaciones para mejorar modelos. NUNCA compartas: datos personales sensibles, información confidencial de tu organización, o contenido que involucre a terceros sin permiso."
+            },
+            {
+                category: "🤖 Alfabetización en IA",
+                question: "Una IA genera un texto que suena muy profesional. ¿Cuándo hay riesgo de plagio o propiedad intelectual?",
+                options: [
+                    { text: "Nunca, porque la IA lo creó", svg: "no" },
+                    { text: "Si el texto está basado en obras protegidas o si usas el output sin atribución apropiada según políticas académicas/laborales", svg: "citation" },
+                    { text: "Solo si copias más de 10 palabras", svg: "numbers" },
+                    { text: "El plagio no aplica con IA", svg: "random" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Muchas instituciones requieren declarar uso de IA. Además, las IA entrenan con contenido existente, por lo que pueden reproducir fragmentos protegidos. Verifica políticas y siempre atribuye herramientas usadas."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let points = 0;
+        let lives = 5;
+        let timer;
+        let timeLeft = 10;
+        let answered = false;
+
+        const svgIcons = {
+            book: '<svg viewBox="0 0 100 100"><rect x="20" y="25" width="60" height="50" rx="3" fill="#fff"/><rect x="25" y="30" width="50" height="40" fill="#97BC62"/><line x1="50" y1="30" x2="50" y2="70" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            blog: '<svg viewBox="0 0 100 100"><rect x="25" y="20" width="50" height="60" rx="5" fill="#fff"/><circle cx="50" cy="45" r="12" fill="#97BC62"/><rect x="35" y="60" width="30" height="3" fill="#2C5F2D"/><rect x="35" y="67" width="30" height="3" fill="#2C5F2D"/></svg>',
+            social: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff"/><circle cx="35" cy="45" r="8" fill="#97BC62"/><circle cx="65" cy="45" r="8" fill="#97BC62"/><path d="M 35 60 Q 50 70 65 60" stroke="#2C5F2D" stroke-width="3" fill="none"/></svg>',
+            news: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="50" height="45" rx="3" fill="#fff"/><rect x="30" y="35" width="40" height="8" fill="#97BC62"/><rect x="30" y="48" width="25" height="3" fill="#2C5F2D"/><rect x="30" y="54" width="25" height="3" fill="#2C5F2D"/><rect x="30" y="60" width="25" height="3" fill="#2C5F2D"/></svg>',
+            fast: '<svg viewBox="0 0 100 100"><path d="M 30 50 L 70 50 L 60 40 M 70 50 L 60 60" stroke="#fff" stroke-width="5" fill="none"/><circle cx="30" cy="50" r="8" fill="#97BC62"/></svg>',
+            verify: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff"/><path d="M 35 50 L 45 60 L 65 40" stroke="#97BC62" stroke-width="5" fill="none" stroke-linecap="round"/></svg>',
+            title: '<svg viewBox="0 0 100 100"><rect x="25" y="35" width="50" height="8" rx="2" fill="#fff"/><rect x="25" y="50" width="35" height="4" fill="#97BC62"/><rect x="25" y="60" width="35" height="4" fill="#97BC62"/></svg>',
+            copy: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="35" height="40" rx="2" fill="#fff"/><rect x="35" y="35" width="35" height="40" rx="2" fill="none" stroke="#97BC62" stroke-width="2"/></svg>',
+            question: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff"/><text x="50" y="65" font-size="40" fill="#97BC62" text-anchor="middle" font-weight="bold">?</text></svg>',
+            target: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff"/><circle cx="50" cy="50" r="18" fill="none" stroke="#97BC62" stroke-width="3"/><circle cx="50" cy="50" r="8" fill="#2C5F2D"/></svg>',
+            school: '<svg viewBox="0 0 100 100"><path d="M 50 30 L 75 45 L 75 65 L 50 75 L 25 65 L 25 45 Z" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="45" y="45" width="10" height="20" fill="#2C5F2D"/></svg>',
+            teacher: '<svg viewBox="0 0 100 100"><circle cx="50" cy="40" r="12" fill="#fff"/><path d="M 35 55 Q 50 65 65 55" fill="#97BC62"/><rect x="40" y="55" width="20" height="25" fill="#97BC62"/></svg>',
+            no: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff"/><line x1="35" y1="35" x2="65" y2="65" stroke="#ff4444" stroke-width="5"/><line x1="65" y1="35" x2="35" y2="65" stroke="#ff4444" stroke-width="5"/></svg>',
+            citation: '<svg viewBox="0 0 100 100"><text x="30" y="70" font-size="60" fill="#fff" font-family="serif">"</text><text x="55" y="70" font-size="60" fill="#97BC62" font-family="serif">"</text></svg>',
+            famous: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff"/><path d="M 50 30 L 54 44 L 68 44 L 57 52 L 61 66 L 50 58 L 39 66 L 43 52 L 32 44 L 46 44 Z" fill="#FFD700"/></svg>',
+            formal: '<svg viewBox="0 0 100 100"><rect x="30" y="25" width="40" height="50" rx="3" fill="#fff"/><rect x="35" y="30" width="30" height="6" fill="#97BC62"/><rect x="35" y="40" width="30" height="3" fill="#2C5F2D"/><rect x="35" y="47" width="30" height="3" fill="#2C5F2D"/></svg>',
+            person: '<svg viewBox="0 0 100 100"><circle cx="50" cy="40" r="15" fill="#fff"/><path d="M 30 60 Q 50 75 70 60" fill="#97BC62"/></svg>',
+            calendar: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="50" height="45" rx="3" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="25" y="30" width="50" height="12" fill="#97BC62"/><line x1="40" y1="25" x2="40" y2="35" stroke="#2C5F2D" stroke-width="3"/><line x1="60" y1="25" x2="60" y2="35" stroke="#2C5F2D" stroke-width="3"/></svg>',
+            color: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff"/><path d="M 50 25 L 50 75 A 25 25 0 0 0 50 25" fill="#97BC62"/><path d="M 50 25 L 50 75 A 25 25 0 0 1 50 25" fill="#2C5F2D"/></svg>',
+            number: '<svg viewBox="0 0 100 100"><text x="50" y="70" font-size="50" fill="#fff" text-anchor="middle" font-weight="bold">123</text></svg>',
+            equal: '<svg viewBox="0 0 100 100"><line x1="30" y1="40" x2="70" y2="40" stroke="#fff" stroke-width="5"/><line x1="30" y1="60" x2="70" y2="60" stroke="#fff" stroke-width="5"/></svg>',
+            context: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff"/><circle cx="50" cy="50" r="25" fill="none" stroke="#97BC62" stroke-width="3" stroke-dasharray="5,5"/></svg>',
+            long: '<svg viewBox="0 0 100 100"><rect x="20" y="45" width="60" height="10" rx="5" fill="#fff"/><path d="M 65 50 L 75 45 L 75 55 Z" fill="#97BC62"/></svg>',
+            numbers: '<svg viewBox="0 0 100 100"><text x="50" y="60" font-size="40" fill="#fff" text-anchor="middle" font-weight="bold">1 2 3</text></svg>',
+            space: '<svg viewBox="0 0 100 100"><rect x="25" y="35" width="20" height="30" fill="#fff"/><rect x="55" y="35" width="20" height="30" fill="#97BC62"/></svg>',
+            magnify: '<svg viewBox="0 0 100 100"><circle cx="45" cy="45" r="20" fill="none" stroke="#fff" stroke-width="3"/><line x1="60" y1="60" x2="75" y2="75" stroke="#fff" stroke-width="5"/><text x="45" y="55" font-size="25" fill="#97BC62" text-anchor="middle" font-weight="bold">+</text></svg>',
+            detail: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="3" fill="#fff"/><circle cx="50" cy="50" r="10" fill="none" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="50" r="18" fill="none" stroke="#97BC62" stroke-width="2"/></svg>',
+            random: '<svg viewBox="0 0 100 100"><path d="M 30 40 Q 50 20 70 40 T 110 40" stroke="#fff" stroke-width="3" fill="none"/><circle cx="30" cy="40" r="4" fill="#97BC62"/><circle cx="70" cy="40" r="4" fill="#97BC62"/></svg>',
+            more: '<svg viewBox="0 0 100 100"><circle cx="35" cy="50" r="6" fill="#fff"/><circle cx="50" cy="50" r="6" fill="#97BC62"/><circle cx="65" cy="50" r="6" fill="#fff"/></svg>',
+            inflate: '<svg viewBox="0 0 100 100"><circle cx="50" cy="55" r="15" fill="#fff"/><circle cx="50" cy="55" r="22" fill="none" stroke="#97BC62" stroke-width="2" stroke-dasharray="3,3"/><path d="M 50 25 L 50 35" stroke="#2C5F2D" stroke-width="3"/><path d="M 45 30 L 50 25 L 55 30" stroke="#2C5F2D" stroke-width="3" fill="none"/></svg>',
+            beauty: '<svg viewBox="0 0 100 100"><path d="M 50 25 L 54 42 L 71 42 L 58 52 L 62 69 L 50 59 L 38 69 L 42 52 L 29 42 L 46 42 Z" fill="#fff"/><circle cx="50" cy="50" r="8" fill="#97BC62"/></svg>',
+            precision: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="none" stroke="#fff" stroke-width="2"/><circle cx="50" cy="50" r="15" fill="none" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="50" r="5" fill="#2C5F2D"/></svg>',
+            clock: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="50" y1="50" x2="50" y2="30" stroke="#2C5F2D" stroke-width="3"/><line x1="50" y1="50" x2="65" y2="50" stroke="#2C5F2D" stroke-width="3"/></svg>',
+            brain: '<svg viewBox="0 0 100 100"><path d="M 35 40 Q 30 30 40 25 Q 45 20 50 25 Q 55 20 60 25 Q 70 30 65 40 Q 70 50 65 60 Q 60 70 50 70 Q 40 70 35 60 Q 30 50 35 40" fill="#fff" stroke="#97BC62" stroke-width="2"/></svg>',
+            server: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="50" height="15" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="25" y="50" width="50" height="15" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="35" cy="37" r="3" fill="#2C5F2D"/><circle cx="35" cy="57" r="3" fill="#2C5F2D"/></svg>',
+            language: '<svg viewBox="0 0 100 100"><text x="30" y="55" font-size="30" fill="#fff" font-weight="bold">A</text><text x="55" y="55" font-size="30" fill="#97BC62" font-weight="bold">语</text></svg>',
+            basic: '<svg viewBox="0 0 100 100"><rect x="30" y="40" width="40" height="20" rx="3" fill="#fff"/><text x="50" y="57" font-size="16" fill="#97BC62" text-anchor="middle">ABC</text></svg>',
+            advanced: '<svg viewBox="0 0 100 100"><path d="M 30 60 L 40 30 L 50 60 L 60 30 L 70 60" stroke="#fff" stroke-width="3" fill="none"/><circle cx="40" cy="30" r="4" fill="#97BC62"/><circle cx="60" cy="30" r="4" fill="#97BC62"/></svg>',
+            essay: '<svg viewBox="0 0 100 100"><rect x="30" y="25" width="40" height="50" rx="2" fill="#fff"/><line x1="35" y1="35" x2="65" y2="35" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="45" x2="65" y2="45" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="52" x2="65" y2="52" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="59" x2="65" y2="59" stroke="#2C5F2D" stroke-width="1.5"/></svg>',
+            homework: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="50" height="45" rx="3" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="45" x2="45" y2="55" stroke="#2C5F2D" stroke-width="3"/><line x1="45" y1="55" x2="65" y2="40" stroke="#2C5F2D" stroke-width="3"/></svg>'
+        };
+
+        function loadQuestion() {
+            answered = false;
+            timeLeft = 10;
+            const q = questions[currentQuestion];
+            
+            document.getElementById('categoryTitle').textContent = q.category;
+            document.getElementById('questionNumber').textContent = `${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionText').textContent = q.question;
+            
+            const container = document.getElementById('lilyPadsContainer');
+            container.innerHTML = '';
+            
+            const labels = ['A', 'B', 'C', 'D'];
+            
+            q.options.forEach((option, index) => {
+                const lilyPad = document.createElement('button');
+                lilyPad.className = 'lily-pad';
+                lilyPad.onclick = () => checkAnswer(index);
+                
+                lilyPad.innerHTML = `
+                    <div class="lily-content">
+                        <div class="option-label">${labels[index]}</div>
+                        <div class="option-svg">${svgIcons[option.svg]}</div>
+                        <div class="option-text">${option.text}</div>
+                    </div>
+                `;
+                
+                container.appendChild(lilyPad);
+            });
+            
+            updateProgress();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('timer').textContent = 
+                    `00:00:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (!answered) {
+                        handleTimeout();
+                    }
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            answered = true;
+            lives--;
+            document.getElementById('lives').textContent = lives;
+            
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            lilyPads.forEach((pad, index) => {
+                pad.classList.add('answered');
+                if (index === questions[currentQuestion].correct) {
+                    pad.classList.add('correct');
+                }
+            });
+            
+            showExplanation(false);
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 2000);
+            }
+        }
+
+        function checkAnswer(selected) {
+            if (answered) return;
+            answered = true;
+            clearInterval(timer);
+            
+            const q = questions[currentQuestion];
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            
+            lilyPads.forEach((pad, index) => {
+                pad.classList.add('answered');
+                if (index === selected) {
+                    if (selected === q.correct) {
+                        pad.classList.add('correct');
+                        points += timeLeft * 100;
+                        animateFrog(pad);
+                    } else {
+                        pad.classList.add('incorrect');
+                        lives--;
+                    }
+                }
+                if (index === q.correct && selected !== q.correct) {
+                    pad.classList.add('correct');
+                }
+            });
+            
+            document.getElementById('points').textContent = points.toLocaleString('es-CO', {minimumFractionDigits: 3});
+            document.getElementById('lives').textContent = lives;
+            
+            showExplanation(selected === q.correct);
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 2000);
+            }
+        }
+
+        function animateFrog(targetPad) {
+            const frog = document.getElementById('frogContainer');
+            const rect = targetPad.getBoundingClientRect();
+            frog.style.left = rect.left + rect.width/2 - 60 + 'px';
+            frog.style.bottom = window.innerHeight - rect.top - rect.height/2 - 60 + 'px';
+            
+            setTimeout(() => {
+                frog.style.left = '50%';
+                frog.style.bottom = '20px';
+            }, 1000);
+        }
+
+        function showExplanation(correct) {
+            const modal = document.getElementById('explanationModal');
+            const header = document.getElementById('explanationHeader');
+            const text = document.getElementById('explanationText');
+            
+            header.textContent = correct ? '¡Correcto! 🎉' : 'Incorrecto 😔';
+            header.style.color = correct ? '#2C5F2D' : '#ff4444';
+            text.textContent = questions[currentQuestion].explanation;
+            
+            modal.classList.add('show');
+        }
+
+        function nextQuestion() {
+            document.getElementById('explanationModal').classList.remove('show');
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length && lives > 0) {
+                loadQuestion();
+            } else {
+                showFinalScreen();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = `${currentQuestion + 1}/${questions.length}`;
+        }
+
+        function showGameOver() {
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('frogContainer').style.display = 'none';
+            showFinalScreen();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('frogContainer').style.display = 'none';
+            const finalScreen = document.getElementById('finalScreen');
+            finalScreen.classList.add('show');
+            
+            document.getElementById('finalScore').textContent = points.toLocaleString('es-CO') + ' PUNTOS';
+            
+            let message = '';
+            if (lives <= 0) {
+                message = '¡Game Over! Se acabaron las vidas. ¡Inténtalo de nuevo para mejorar!';
+            } else if (points >= 8000) {
+                message = '🏆 ¡MAESTRO DE LA ALFABETIZACIÓN DIGITAL! Dominio excepcional en todas las áreas.';
+            } else if (points >= 6000) {
+                message = '⭐ ¡EXCELENTE! Demuestras un sólido conocimiento en alfabetización digital.';
+            } else if (points >= 4000) {
+                message = '👍 ¡MUY BIEN! Vas por buen camino en tu aprendizaje digital.';
+            } else {
+                message = '📚 Sigue practicando. Cada intento te acerca más al dominio digital.';
+            }
+            
+            document.getElementById('finalMessage').textContent = message;
+        }
+
+        document.getElementById('nextButton').onclick = nextQuestion;
+        
+        // Iniciar juego
+        loadQuestion();
+    </script>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p class="footer-text">Aprendiendo con <span class="footer-handle">@LaProfevivy</span></p>
+    </div>
+</body>
+</html>
