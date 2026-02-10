@@ -123,8 +123,9 @@
     }
     .arrow.next{ transform: rotate(-45deg); }
 
-    /* Marco (poco margen interno) */
+    /* Marco */
     .frame{
+      width:100%;
       border-radius: var(--radius);
       background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.66));
       border: var(--border);
@@ -136,8 +137,9 @@
 
       padding: 10px;
 
-      /* IMPORTANTE: le damos altura real, no “min-height” que a veces se queda corto */
-      height: clamp(520px, 72vh, 780px);
+      /* Altura robusta (evita “cortes” por contenedor chico) */
+      height: min(820px, calc(100dvh - 220px));
+      min-height: 520px;
     }
     .frame::before{
       content:"";
@@ -150,7 +152,7 @@
       pointer-events:none;
     }
 
-    /* Slide ocupa todo el interior del frame (sin padding extra) */
+    /* Slide */
     .slide{
       position:absolute;
       inset:10px;
@@ -163,7 +165,7 @@
       transform: translateX(0);
     }
 
-    /* Caja: blur de fondo + imagen principal SIN recorte */
+    /* Caja imagen */
     .imgBox{
       width:100%;
       height:100%;
@@ -175,7 +177,7 @@
       background: rgba(255,255,255,0.06);
     }
 
-    /* Fondo borroso (rellena) */
+    /* Fondo blur (rellena sin afectar la imagen real) */
     .imgBox::before{
       content:"";
       position:absolute;
@@ -198,16 +200,15 @@
       opacity:.55;
     }
 
-    /* IMAGEN PRINCIPAL: NO SE CORTA */
+    /* IMAGEN PRINCIPAL: NUNCA RECORTA */
     .imgBox img{
       position:absolute;
       inset:0;
       width:100%;
       height:100%;
       display:block;
-
-      object-fit: contain;       /* clave: NO recorta */
-      object-position: center;   /* centrada */
+      object-fit: contain !important; /* fuerza NO recorte */
+      object-position: center;
       z-index: 1;
     }
 
@@ -248,8 +249,12 @@
       .navBtn{ width:64px; height:64px; }
       .topbar{ align-items:flex-start; }
 
-      /* más altura en móvil para que nunca “se coma” abajo */
-      .frame{ grid-area: frame; padding: 8px; height: clamp(540px, 78vh, 840px); }
+      .frame{
+        grid-area: frame;
+        padding: 8px;
+        height: min(860px, calc(100dvh - 220px));
+        min-height: 560px;
+      }
       .slide{ inset:8px; }
     }
   </style>
@@ -317,7 +322,6 @@
         if (e.key === "ArrowRight") setActive(index + 1);
       });
 
-      // Swipe
       let startX = null;
       frame.addEventListener("touchstart", (e) => {
         startX = e.touches?.[0]?.clientX ?? null;
