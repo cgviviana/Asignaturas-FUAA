@@ -1,1 +1,1244 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pensamiento Algorítmico - Froggy Jump</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        /* Main Title */
+        .main-title {
+            background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .main-title h1 {
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Header profesional */
+        .header {
+            background: linear-gradient(135deg, #6a1b9a 0%, #ab47bc 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .lives-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .lives-label {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lives-count {
+            background: white;
+            color: #6a1b9a;
+            font-weight: bold;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+
+        .points-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .points-label {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .points-count {
+            background: white;
+            color: #6a1b9a;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* Área del juego */
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .progress-bar-container {
+            background: rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6a1b9a, #ab47bc);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .question-number {
+            color: #6a1b9a;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        /* Estilo Froggy Jump */
+        .lily-pads-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            position: relative;
+        }
+
+        .lily-pad {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .lily-pad:hover:not(.answered) {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .lily-pad.correct {
+            animation: correctJump 0.6s ease;
+        }
+
+        .lily-pad.incorrect {
+            animation: incorrectShake 0.6s ease;
+            opacity: 0.5;
+        }
+
+        @keyframes correctJump {
+            0%, 100% { transform: translateY(0) scale(1); }
+            30% { transform: translateY(-30px) scale(1.1); }
+            60% { transform: translateY(-15px) scale(1.05); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-15px) rotate(-5deg); }
+            75% { transform: translateX(15px) rotate(5deg); }
+        }
+
+        .lily-content {
+            background: #6a1b9a;
+            border-radius: 50%;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: relative;
+            border: 5px solid #ab47bc;
+        }
+
+        .lily-content::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: rgba(171, 71, 188, 0.3);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .option-label {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ab47bc;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .option-svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
+        }
+
+        .option-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.4;
+            padding: 0 10px;
+        }
+
+        /* Rana */
+        .frog-container {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            transition: all 0.5s ease;
+        }
+
+        .frog-svg {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+        }
+
+        /* Timer */
+        .timer-container {
+            position: relative;
+            background: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 3px solid #6a1b9a;
+            margin: 0 auto 30px auto;
+            width: fit-content;
+        }
+
+        .timer-icon {
+            width: 28px;
+            height: 28px;
+        }
+
+        .timer-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6a1b9a;
+            min-width: 80px;
+        }
+
+        .timer-text.warning {
+            color: #ff9800;
+            animation: pulse 1s infinite;
+        }
+
+        .timer-text.danger {
+            color: #ff4444;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Explicación */
+        .explanation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .explanation-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .explanation-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .explanation-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #6a1b9a;
+        }
+
+        .explanation-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Botones */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .retry-button {
+            flex: 1;
+            background: linear-gradient(135deg, #ff9800, #ff6b00);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .retry-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .next-button {
+            flex: 1;
+            background: linear-gradient(135deg, #6a1b9a, #ab47bc);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .next-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(106, 27, 154, 0.4);
+        }
+
+        /* Pantalla final */
+        .final-screen {
+            display: none;
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            max-width: 700px;
+            margin: 50px auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .final-screen.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .final-title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #6a1b9a;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 72px;
+            font-weight: bold;
+            color: #ab47bc;
+            margin: 30px 0;
+        }
+
+        .final-message {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #6a1b9a, #ab47bc);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .restart-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(106, 27, 154, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
+            padding: 20px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+        }
+
+        .footer-text {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .footer-handle {
+            color: #ab47bc;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .lily-pads-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .question-text {
+                font-size: 20px;
+            }
+            
+            .lily-content {
+                min-height: 250px;
+                padding: 30px 15px;
+            }
+
+            .footer-text {
+                font-size: 16px;
+            }
+
+            .footer-handle {
+                font-size: 18px;
+            }
+
+            .main-title h1 {
+                font-size: 24px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Title -->
+    <div class="main-title">
+        <h1>Pensamiento Algorítmico y Resolución de Problemas</h1>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="lives-container">
+            <span class="lives-label">VIDAS</span>
+            <div class="lives-count" id="lives">5</div>
+        </div>
+        <div class="category-title" id="categoryTitle">Pensamiento Algorítmico</div>
+        <div class="points-container">
+            <span class="points-label">PUNTOS</span>
+            <div class="points-count" id="points">0.000</div>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container" id="gameArea">
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer-container">
+            <svg class="timer-icon" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#6a1b9a" stroke-width="2"/>
+                <path d="M12 6v6l4 2" stroke="#6a1b9a" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="timer-text" id="timer">00:00:40</span>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card">
+            <div class="question-number" id="questionNumber">1 / 20</div>
+            <div class="question-text" id="questionText"></div>
+        </div>
+
+        <!-- Lily Pads -->
+        <div class="lily-pads-container" id="lilyPadsContainer"></div>
+    </div>
+
+    <!-- Final Screen -->
+    <div class="final-screen" id="finalScreen">
+        <div class="final-title">¡JUEGO COMPLETADO!</div>
+        <div class="final-score" id="finalScore"></div>
+        <div class="final-message" id="finalMessage"></div>
+        <button class="restart-button" onclick="location.reload()">🔄 JUGAR DE NUEVO</button>
+    </div>
+
+    <!-- Frog -->
+    <div class="frog-container" id="frogContainer">
+        <svg class="frog-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="100" cy="120" rx="60" ry="50" fill="#ab47bc"/>
+            <ellipse cx="100" cy="80" rx="50" ry="40" fill="#ab47bc"/>
+            <ellipse cx="85" cy="65" rx="15" ry="20" fill="white"/>
+            <ellipse cx="115" cy="65" rx="15" ry="20" fill="white"/>
+            <circle cx="85" cy="70" r="8" fill="#6a1b9a"/>
+            <circle cx="115" cy="70" r="8" fill="#6a1b9a"/>
+            <path d="M 80 90 Q 100 100 120 90" stroke="#6a1b9a" stroke-width="3" fill="none"/>
+            <ellipse cx="70" cy="140" rx="12" ry="25" fill="#6a1b9a"/>
+            <ellipse cx="130" cy="140" rx="12" ry="25" fill="#6a1b9a"/>
+            <ellipse cx="60" cy="150" rx="20" ry="15" fill="#6a1b9a"/>
+            <ellipse cx="140" cy="150" rx="20" ry="15" fill="#6a1b9a"/>
+        </svg>
+    </div>
+
+    <!-- Explanation Modal -->
+    <div class="explanation-modal" id="explanationModal">
+        <div class="explanation-content">
+            <div class="explanation-header" id="explanationHeader"></div>
+            <div class="explanation-text" id="explanationText"></div>
+            <div class="action-buttons">
+                <button class="retry-button" id="retryButton">🔄 REINTENTAR</button>
+                <button class="next-button" id="nextButton">SIGUIENTE ➜</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p class="footer-text">Aprendiendo con <span class="footer-handle">@LaProfevivy</span></p>
+    </div>
+
+    <script>
+        const questions = [
+            // PENSAMIENTO ALGORÍTMICO - DEFINICIÓN
+            {
+                category: "🧠 Pensamiento Algorítmico",
+                question: "¿Qué es el pensamiento algorítmico?",
+                options: [
+                    { text: "Memorizar muchos algoritmos matemáticos", svg: "memory" },
+                    { text: "Habilidad de descomponer problemas en pasos lógicos y ordenados", svg: "steps" },
+                    { text: "Programar en muchos lenguajes", svg: "code" },
+                    { text: "Solo usar computadoras para resolver problemas", svg: "computer" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: El pensamiento algorítmico es la capacidad de DIVIDIR un problema complejo en pasos LÓGICOS y ORDENADOS. Es como una receta: descompones el problema grande en tareas pequeñas y manejables para encontrar la solución."
+            },
+            {
+                category: "🧠 Pensamiento Algorítmico",
+                question: "¿Qué significa 'interpretación del pensamiento' en algoritmos?",
+                options: [
+                    { text: "Adivinar la solución sin analizar", svg: "guess" },
+                    { text: "Analizar el problema, dividirlo y proponer solución clara e innovadora", svg: "analyze" },
+                    { text: "Copiar soluciones de internet", svg: "copy" },
+                    { text: "Hacer todo mentalmente sin escribir", svg: "brain" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Interpretar el pensamiento significa ANALIZAR a fondo el problema, DIVIDIRLO en partes lógicas y PROPONER una solución que sea CLARA (fácil de entender), INNOVADORA (creativa) y SOSTENIBLE (que funcione a largo plazo)."
+            },
+
+            // ESTRUCTURA DE ALGORITMOS
+            {
+                category: "📐 Estructura de Algoritmos",
+                question: "¿Cuáles son las TRES partes básicas de todo algoritmo?",
+                options: [
+                    { text: "Inicio, Medio y Final", svg: "timeline" },
+                    { text: "Entrada, Proceso y Salida", svg: "flow" },
+                    { text: "Problema, Solución y Resultado", svg: "solution" },
+                    { text: "Datos, Variables y Funciones", svg: "vars" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Todo algoritmo tiene 3 partes:\n• ENTRADA: Datos iniciales (del usuario o bases de datos)\n• PROCESO: Operaciones y pasos para transformar los datos\n• SALIDA: Resultado final que resuelve el problema"
+            },
+            {
+                category: "📐 Estructura de Algoritmos",
+                question: "¿Qué es la ENTRADA en un algoritmo?",
+                options: [
+                    { text: "El resultado final del programa", svg: "result" },
+                    { text: "Datos iniciales proporcionados por usuario o bases de datos", svg: "input" },
+                    { text: "Los pasos para resolver el problema", svg: "process" },
+                    { text: "La puerta por donde entra la información", svg: "door" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: La ENTRADA son los datos con los que empiezas. Por ejemplo: si calculas un promedio, la entrada son las notas que el usuario escribe. Sin entrada, no hay nada que procesar."
+            },
+            {
+                category: "📐 Estructura de Algoritmos",
+                question: "¿Qué es el PROCESO en un algoritmo?",
+                options: [
+                    { text: "Los datos que recibe el algoritmo", svg: "receive" },
+                    { text: "Operaciones lógicas y pasos para transformar los datos", svg: "transform" },
+                    { text: "El tiempo que tarda en ejecutarse", svg: "time" },
+                    { text: "Solo las fórmulas matemáticas", svg: "formula" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: El PROCESO son las operaciones que haces con los datos. Incluye pasos SECUENCIALES (uno tras otro), CONDICIONALES (si pasa esto, haz aquello) y CICLOS (repetir varias veces). Transforma entrada en salida."
+            },
+            {
+                category: "📐 Estructura de Algoritmos",
+                question: "¿Qué es la SALIDA en un algoritmo?",
+                options: [
+                    { text: "Cuando apagas la computadora", svg: "shutdown" },
+                    { text: "El resultado final que da solución al problema", svg: "output" },
+                    { text: "Los errores del programa", svg: "error" },
+                    { text: "Los datos que ingresan al sistema", svg: "enter" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: La SALIDA es el RESULTADO FINAL que resuelve tu problema. Por ejemplo: si calculas un promedio, la salida es el número del promedio mostrado en pantalla. Es lo que buscabas obtener."
+            },
+
+            // TIPOS DE DATOS
+            {
+                category: "📊 Identificación de Datos",
+                question: "¿Qué son los DATOS EXPLÍCITOS?",
+                options: [
+                    { text: "Datos ocultos en el código", svg: "hidden" },
+                    { text: "Información clara y directa en el enunciado", svg: "clear" },
+                    { text: "Fórmulas matemáticas complejas", svg: "math" },
+                    { text: "Datos que debes inventar", svg: "invent" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Los datos EXPLÍCITOS están ESCRITOS claramente en el problema. Por ejemplo: 'Juan tiene 15 años' - el número 15 está explícito, lo puedes leer directamente. No hay que deducir nada."
+            },
+            {
+                category: "📊 Identificación de Datos",
+                question: "¿Qué son los DATOS IMPLÍCITOS?",
+                options: [
+                    { text: "Datos que están escritos claramente", svg: "visible" },
+                    { text: "Información necesaria no escrita que debes deducir (fórmulas, reglas, constantes)", svg: "deduce" },
+                    { text: "Datos que no importan para la solución", svg: "ignore" },
+                    { text: "Solo números muy grandes", svg: "bignumber" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Los datos IMPLÍCITOS NO están escritos, pero son NECESARIOS. Por ejemplo: si piden el área de un círculo, sabes que necesitas π=3.1416 (no está en el problema, pero lo deduces). Son reglas, fórmulas o constantes conocidas."
+            },
+            {
+                category: "📊 Identificación de Datos",
+                question: "¿Qué es la ABSTRACCIÓN de variables?",
+                options: [
+                    { text: "Hacer variables muy complicadas", svg: "complex" },
+                    { text: "Eliminar detalles innecesarios y centrarse solo en datos clave", svg: "focus" },
+                    { text: "Usar muchas variables al mismo tiempo", svg: "many" },
+                    { text: "No usar variables nunca", svg: "novars" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: ABSTRAER es SIMPLIFICAR eliminando lo innecesario. Por ejemplo: para calcular un promedio solo necesitas las notas y la cantidad. NO necesitas los nombres, edades o colores favoritos. Te enfocas en lo ESENCIAL."
+            },
+            {
+                category: "📊 Identificación de Datos",
+                question: "¿Cuál es un ejemplo de variable NUMÉRICA?",
+                options: [
+                    { text: "El nombre 'Juan'", svg: "name" },
+                    { text: "La edad 25 o el precio $50.99", svg: "number" },
+                    { text: "La respuesta 'verdadero' o 'falso'", svg: "boolean" },
+                    { text: "La fecha '15/03/2024'", svg: "date" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Variables NUMÉRICAS almacenan NÚMEROS como edad (25), precio (50.99), cantidad (100). Pueden ser enteros (sin decimales) o decimales (con punto). Se usan para calcular sumas, promedios, etc."
+            },
+            {
+                category: "📊 Identificación de Datos",
+                question: "¿Qué es una variable BOOLEANA (lógica)?",
+                options: [
+                    { text: "Una variable que guarda números grandes", svg: "largenum" },
+                    { text: "Una variable que solo puede ser VERDADERO o FALSO", svg: "truefalse" },
+                    { text: "Una variable para guardar nombres", svg: "names" },
+                    { text: "Una variable que guarda fechas", svg: "calendar" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Las variables BOOLEANAS solo tienen 2 valores posibles: VERDADERO (true) o FALSO (false). Se usan para decisiones: '¿Es mayor de edad?' → true/false. '¿Aprobó el examen?' → true/false."
+            },
+
+            // DIAGRAMAS DE FLUJO
+            {
+                category: "📈 Diagramas de Flujo",
+                question: "¿Qué es un diagrama de flujo?",
+                options: [
+                    { text: "Un dibujo artístico sin significado", svg: "art" },
+                    { text: "Representación gráfica de un algoritmo con símbolos normalizados", svg: "flowchart" },
+                    { text: "Solo un esquema decorativo", svg: "decoration" },
+                    { text: "Una tabla de datos", svg: "table" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Un diagrama de flujo es un MAPA VISUAL de tu algoritmo. Usa símbolos estándar (óvalos, rectángulos, rombos) para mostrar paso a paso cómo fluye la información desde el inicio hasta el fin."
+            },
+            {
+                category: "📈 Diagramas de Flujo",
+                question: "¿Qué representan los ÓVALOS en un diagrama de flujo?",
+                options: [
+                    { text: "Decisiones o condiciones", svg: "decision" },
+                    { text: "Inicio y Fin del algoritmo", svg: "oval" },
+                    { text: "Procesos matemáticos", svg: "calculate" },
+                    { text: "Entrada de datos", svg: "datain" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Los ÓVALOS marcan el INICIO y el FIN del diagrama. Todo algoritmo empieza con un óvalo que dice 'Inicio' y termina con un óvalo que dice 'Fin'. Son como la entrada y salida del mapa."
+            },
+            {
+                category: "📈 Diagramas de Flujo",
+                question: "¿Qué representan los RECTÁNGULOS en un diagrama de flujo?",
+                options: [
+                    { text: "Inicio y fin del programa", svg: "startend" },
+                    { text: "Procesos o actividades específicas", svg: "rectangle" },
+                    { text: "Entrada de datos del usuario", svg: "userinput" },
+                    { text: "Preguntas de sí o no", svg: "yesno" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Los RECTÁNGULOS son ACCIONES o PROCESOS. Por ejemplo: 'Calcular promedio', 'Sumar los números', 'Multiplicar por 2'. Dentro del rectángulo escribes QUÉ hace ese paso."
+            },
+            {
+                category: "📈 Diagramas de Flujo",
+                question: "¿Qué representan los ROMBOS en un diagrama de flujo?",
+                options: [
+                    { text: "Procesos matemáticos complejos", svg: "complexmath" },
+                    { text: "Decisiones o condiciones con caminos de SÍ o NO", svg: "diamond" },
+                    { text: "Almacenamiento de datos", svg: "storage" },
+                    { text: "Salida de resultados", svg: "printout" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Los ROMBOS son DECISIONES. Dentro escribes una pregunta que solo tiene 2 respuestas: SÍ o NO. Por ejemplo: '¿Edad > 18?' → Si SÍ, va por un camino. Si NO, va por otro camino."
+            },
+            {
+                category: "📈 Diagramas de Flujo",
+                question: "¿Qué representan los PARALELOGRAMOS en un diagrama de flujo?",
+                options: [
+                    { text: "Decisiones importantes", svg: "importantdecision" },
+                    { text: "Entrada o Salida de datos", svg: "parallelogram" },
+                    { text: "Operaciones matemáticas", svg: "operations" },
+                    { text: "Ciclos o repeticiones", svg: "loop" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Los PARALELOGRAMOS son para ENTRADA (cuando el usuario ingresa datos: 'Leer nombre') o SALIDA (cuando muestras resultados: 'Mostrar promedio'). Es la comunicación con el usuario."
+            },
+
+            // ÁRBOL DE PROBLEMAS
+            {
+                category: "🌳 Árbol de Problemas",
+                question: "¿Qué es un Árbol de Problemas?",
+                options: [
+                    { text: "Un dibujo de un árbol real", svg: "tree" },
+                    { text: "Herramienta para definir problema central, causas y efectos de un proyecto", svg: "problemtree" },
+                    { text: "Un tipo de diagrama de flujo", svg: "flowtype" },
+                    { text: "Solo para proyectos de biología", svg: "biology" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: El Árbol de Problemas es una HERRAMIENTA de planificación que te ayuda a VISUALIZAR: el problema central (raíz), las causas que lo originan (raíces) y los efectos que genera (ramas). Así defines bien el alcance del proyecto."
+            },
+            {
+                category: "🌳 Árbol de Problemas",
+                question: "¿Qué es el PROBLEMA CENTRAL en un árbol de problemas?",
+                options: [
+                    { text: "El problema más pequeño del proyecto", svg: "small" },
+                    { text: "El foco principal del estudio que se va a resolver", svg: "central" },
+                    { text: "La primera causa identificada", svg: "firstcause" },
+                    { text: "El último efecto encontrado", svg: "lasteffect" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: El PROBLEMA CENTRAL es el FOCO principal que quieres resolver. Por ejemplo: 'Bajo rendimiento académico'. Todo el árbol se construye alrededor de este problema para entenderlo mejor y buscar soluciones."
+            },
+            {
+                category: "🌳 Árbol de Problemas",
+                question: "¿Qué son las CAUSAS en un árbol de problemas?",
+                options: [
+                    { text: "Las soluciones propuestas", svg: "solutions" },
+                    { text: "Los factores que ORIGINAN el problema (primarias y secundarias)", svg: "causes" },
+                    { text: "Los resultados obtenidos", svg: "results" },
+                    { text: "Las herramientas usadas", svg: "tools" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Las CAUSAS son los FACTORES que provocan el problema. Se dividen en:\n• PRIMARIAS: Causas directas\n• SECUNDARIAS: Causas que originan las primarias\nPor ejemplo: 'Falta de internet' → causa primaria. 'Bajos recursos' → causa secundaria."
+            },
+            {
+                category: "🌳 Árbol de Problemas",
+                question: "¿Qué son los EFECTOS en un árbol de problemas?",
+                options: [
+                    { text: "Los pasos para resolver el problema", svg: "steps" },
+                    { text: "Las consecuencias que resultan del problema (directos e indirectos)", svg: "effects" },
+                    { text: "Las herramientas tecnológicas", svg: "tech" },
+                    { text: "Los datos que se recopilan", svg: "datacollect" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Los EFECTOS son las CONSECUENCIAS del problema. Se clasifican en:\n• DIRECTOS: Consecuencias inmediatas\n• INDIRECTOS: Consecuencias a largo plazo\nPor ejemplo: 'Reprobar' → efecto directo. 'Deserción escolar' → efecto indirecto."
+            },
+
+            // TAXONOMÍA DE BLOOM
+            {
+                category: "📚 Taxonomía de Bloom",
+                question: "¿Qué es la Taxonomía de Bloom?",
+                options: [
+                    { text: "Una clasificación de plantas", svg: "plants" },
+                    { text: "Clasificación del pensamiento humano en 6 niveles de complejidad", svg: "bloom" },
+                    { text: "Un tipo de algoritmo matemático", svg: "algorithm" },
+                    { text: "Una teoría sobre flores", svg: "flowers" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: La Taxonomía de Bloom CLASIFICA las habilidades del pensamiento humano en 6 NIVELES, desde el más básico (Recordar) hasta el más complejo (Crear). Ayuda a diseñar objetivos de aprendizaje progresivos."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let points = 0;
+        let lives = 5;
+        let timer;
+        let timeLeft = 40;
+        let answered = false;
+        let questionValue = 1000;
+        let currentQuestionPoints = 1000;
+        let attempts = 0;
+
+        const svgIcons = {
+            memory: '<svg viewBox="0 0 100 100"><path d="M 35 40 Q 30 30 40 25 Q 45 20 50 25 Q 55 20 60 25 Q 70 30 65 40 Q 70 50 65 60 Q 60 70 50 70 Q 40 70 35 60 Q 30 50 35 40" fill="#fff" stroke="#ab47bc" stroke-width="2"/><circle cx="42" cy="45" r="3" fill="#6a1b9a"/><circle cx="58" cy="45" r="3" fill="#6a1b9a"/></svg>',
+            steps: '<svg viewBox="0 0 100 100"><rect x="25" y="60" width="15" height="15" fill="#fff" stroke="#ab47bc" stroke-width="2"/><rect x="42" y="45" width="15" height="30" fill="#ab47bc"/><rect x="59" y="30" width="15" height="45" fill="#6a1b9a"/></svg>',
+            code: '<svg viewBox="0 0 100 100"><path d="M 35 40 L 45 50 L 35 60" stroke="#fff" stroke-width="3" fill="none"/><path d="M 65 40 L 55 50 L 65 60" stroke="#fff" stroke-width="3" fill="none"/><line x1="52" y1="35" x2="48" y2="65" stroke="#ab47bc" stroke-width="3"/></svg>',
+            computer: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="50" height="35" rx="2" fill="#fff" stroke="#ab47bc" stroke-width="2"/><rect x="20" y="68" width="60" height="3" fill="#6a1b9a"/><line x1="50" y1="65" x2="50" y2="68" stroke="#6a1b9a" stroke-width="2"/></svg>',
+            guess: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="65" font-size="35" fill="#6a1b9a" text-anchor="middle" font-weight="bold">?</text></svg>',
+            analyze: '<svg viewBox="0 0 100 100"><circle cx="45" cy="45" r="18" fill="none" stroke="#fff" stroke-width="3"/><line x1="58" y1="58" x2="70" y2="70" stroke="#fff" stroke-width="4"/><rect x="38" y="38" width="14" height="14" fill="none" stroke="#ab47bc" stroke-width="2"/></svg>',
+            copy: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="30" height="35" rx="2" fill="#fff" stroke="#ab47bc" stroke-width="2"/><rect x="40" y="35" width="30" height="35" rx="2" fill="none" stroke="#ab47bc" stroke-width="2"/></svg>',
+            brain: '<svg viewBox="0 0 100 100"><path d="M 35 40 Q 30 30 40 25 Q 45 20 50 25 Q 55 20 60 25 Q 70 30 65 40 Q 70 50 65 60 Q 60 70 50 70 Q 40 70 35 60 Q 30 50 35 40" fill="#fff" stroke="#ab47bc" stroke-width="2"/></svg>',
+            timeline: '<svg viewBox="0 0 100 100"><line x1="25" y1="50" x2="75" y2="50" stroke="#fff" stroke-width="3"/><circle cx="25" cy="50" r="5" fill="#ab47bc"/><circle cx="50" cy="50" r="5" fill="#ab47bc"/><circle cx="75" cy="50" r="5" fill="#6a1b9a"/></svg>',
+            flow: '<svg viewBox="0 0 100 100"><circle cx="30" cy="50" r="8" fill="#fff" stroke="#ab47bc" stroke-width="2"/><circle cx="50" cy="50" r="10" fill="#ab47bc"/><circle cx="70" cy="50" r="8" fill="#6a1b9a"/><path d="M 38 50 L 42 50" stroke="#ab47bc" stroke-width="2"/><path d="M 60 50 L 62 50" stroke="#6a1b9a" stroke-width="2"/></svg>',
+            solution: '<svg viewBox="0 0 100 100"><rect x="25" y="35" width="20" height="30" fill="#fff" stroke="#ab47bc" stroke-width="2"/><path d="M 45 50 L 55 50" stroke="#ab47bc" stroke-width="2"/><path d="M 52 47 L 55 50 L 52 53" stroke="#ab47bc" stroke-width="2" fill="none"/><circle cx="70" cy="50" r="12" fill="#6a1b9a"/><path d="M 64 50 L 69 55 L 78 44" stroke="#fff" stroke-width="2" fill="none"/></svg>',
+            vars: '<svg viewBox="0 0 100 100"><text x="30" y="50" font-size="25" fill="#fff" font-weight="bold">x</text><text x="50" y="50" font-size="25" fill="#ab47bc" font-weight="bold">y</text><text x="70" y="50" font-size="25" fill="#6a1b9a" font-weight="bold">z</text></svg>',
+            result: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><path d="M 40 48 L 47 55 L 62 40" stroke="#6a1b9a" stroke-width="3" fill="none"/></svg>',
+            input: '<svg viewBox="0 0 100 100"><path d="M 30 40 L 70 40 L 65 50 L 70 60 L 30 60 Z" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="55" font-size="16" fill="#6a1b9a" text-anchor="middle">IN</text></svg>',
+            process: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="18" fill="#ab47bc"/><path d="M 45 50 L 50 55 L 55 50" stroke="#fff" stroke-width="2" fill="none"/><circle cx="50" cy="45" r="2" fill="#fff"/></svg>',
+            door: '<svg viewBox="0 0 100 100"><rect x="35" y="25" width="30" height="50" rx="2" fill="#fff" stroke="#ab47bc" stroke-width="2"/><circle cx="60" cy="50" r="3" fill="#6a1b9a"/><path d="M 45 30 L 50 35 L 55 30" stroke="#ab47bc" stroke-width="2" fill="none"/></svg>',
+            receive: '<svg viewBox="0 0 100 100"><rect x="30" y="40" width="40" height="20" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><path d="M 50 30 L 50 40" stroke="#6a1b9a" stroke-width="2"/><path d="M 46 36 L 50 40 L 54 36" stroke="#6a1b9a" stroke-width="2" fill="none"/></svg>',
+            transform: '<svg viewBox="0 0 100 100"><rect x="25" y="40" width="20" height="20" fill="#fff" stroke="#ab47bc" stroke-width="2"/><circle cx="65" cy="50" r="12" fill="#6a1b9a"/><path d="M 45 50 L 53 50" stroke="#ab47bc" stroke-width="2"/><path d="M 50 47 L 53 50 L 50 53" stroke="#ab47bc" stroke-width="2" fill="none"/></svg>',
+            time: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ab47bc" stroke-width="2"/><line x1="50" y1="50" x2="50" y2="35" stroke="#6a1b9a" stroke-width="2"/><line x1="50" y1="50" x2="62" y2="50" stroke="#6a1b9a" stroke-width="2"/></svg>',
+            formula: '<svg viewBox="0 0 100 100"><text x="30" y="50" font-size="20" fill="#fff">x²</text><text x="50" y="50" font-size="20" fill="#ab47bc">+</text><text x="65" y="50" font-size="20" fill="#6a1b9a">y²</text></svg>',
+            shutdown: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ab47bc" stroke-width="2"/><line x1="50" y1="35" x2="50" y2="50" stroke="#6a1b9a" stroke-width="3"/><path d="M 50 55 Q 40 60 40 70 Q 40 80 50 80 Q 60 80 60 70 Q 60 60 50 55" stroke="#6a1b9a" stroke-width="2" fill="none"/></svg>',
+            output: '<svg viewBox="0 0 100 100"><path d="M 30 40 L 30 60 L 65 60 L 70 50 L 65 40 Z" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="48" y="55" font-size="14" fill="#6a1b9a" text-anchor="middle">OUT</text></svg>',
+            error: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ff4444" stroke-width="2"/><text x="50" y="62" font-size="30" fill="#ff4444" text-anchor="middle" font-weight="bold">!</text></svg>',
+            enter: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><path d="M 60 45 L 50 45 L 50 35" stroke="#6a1b9a" stroke-width="2" fill="none"/><path d="M 47 38 L 50 35 L 53 38" stroke="#6a1b9a" stroke-width="2" fill="none"/></svg>',
+            hidden: '<svg viewBox="0 0 100 100"><rect x="30" y="40" width="40" height="20" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="55" font-size="20" fill="#6a1b9a" text-anchor="middle">***</text></svg>',
+            clear: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="55" font-size="18" fill="#6a1b9a" text-anchor="middle" font-weight="bold">ABC</text></svg>',
+            math: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="62" font-size="28" fill="#6a1b9a" text-anchor="middle" font-weight="bold">π</text></svg>',
+            invent: '<svg viewBox="0 0 100 100"><circle cx="50" cy="45" r="15" fill="#fff" stroke="#ab47bc" stroke-width="2"/><rect x="45" y="60" width="10" height="8" fill="#ab47bc"/><rect x="42" y="68" width="16" height="3" fill="#6a1b9a"/><line x1="35" y1="30" x2="30" y2="25" stroke="#FFD700" stroke-width="2"/><line x1="65" y1="30" x2="70" y2="25" stroke="#FFD700" stroke-width="2"/></svg>',
+            visible: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="25" ry="15" fill="none" stroke="#fff" stroke-width="2"/><circle cx="50" cy="50" r="8" fill="#ab47bc"/><circle cx="50" cy="50" r="4" fill="#6a1b9a"/></svg>',
+            deduce: '<svg viewBox="0 0 100 100"><circle cx="50" cy="45" r="18" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="55" font-size="25" fill="#6a1b9a" text-anchor="middle" font-weight="bold">?</text><path d="M 35 60 L 40 70 M 50 60 L 50 70 M 65 60 L 60 70" stroke="#ab47bc" stroke-width="2"/></svg>',
+            ignore: '<svg viewBox="0 0 100 100"><rect x="30" y="40" width="40" height="20" fill="#fff" stroke="#ab47bc" stroke-width="2"/><line x1="25" y1="35" x2="75" y2="65" stroke="#ff4444" stroke-width="4"/></svg>',
+            bignumber: '<svg viewBox="0 0 100 100"><text x="50" y="65" font-size="40" fill="#fff" text-anchor="middle" font-weight="bold">999</text></svg>',
+            complex: '<svg viewBox="0 0 100 100"><path d="M 30 50 Q 40 30 50 50 T 70 50" stroke="#fff" stroke-width="3" fill="none"/><circle cx="30" cy="50" r="4" fill="#ab47bc"/><circle cx="50" cy="50" r="4" fill="#ab47bc"/><circle cx="70" cy="50" r="4" fill="#6a1b9a"/></svg>',
+            focus: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="18" fill="#ab47bc"/><circle cx="50" cy="50" r="25" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3,3"/><circle cx="50" cy="50" r="8" fill="#6a1b9a"/></svg>',
+            many: '<svg viewBox="0 0 100 100"><circle cx="35" cy="45" r="8" fill="#fff"/><circle cx="55" cy="45" r="8" fill="#ab47bc"/><circle cx="45" cy="60" r="8" fill="#6a1b9a"/></svg>',
+            novars: '<svg viewBox="0 0 100 100"><text x="50" y="60" font-size="35" fill="#fff" text-anchor="middle" font-weight="bold">x</text><line x1="30" y1="30" x2="70" y2="70" stroke="#ff4444" stroke-width="4"/></svg>',
+            name: '<svg viewBox="0 0 100 100"><text x="50" y="60" font-size="22" fill="#fff" text-anchor="middle" font-weight="bold">ABC</text></svg>',
+            number: '<svg viewBox="0 0 100 100"><text x="50" y="65" font-size="40" fill="#fff" text-anchor="middle" font-weight="bold">123</text></svg>',
+            boolean: '<svg viewBox="0 0 100 100"><circle cx="35" cy="50" r="12" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="35" y="56" font-size="16" fill="#6a1b9a" text-anchor="middle" font-weight="bold">T</text><circle cx="65" cy="50" r="12" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="65" y="56" font-size="16" fill="#6a1b9a" text-anchor="middle" font-weight="bold">F</text></svg>',
+            date: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="35" rx="2" fill="#fff" stroke="#ab47bc" stroke-width="2"/><rect x="30" y="35" width="40" height="10" fill="#ab47bc"/><line x1="42" y1="30" x2="42" y2="40" stroke="#6a1b9a" stroke-width="2"/><line x1="58" y1="30" x2="58" y2="40" stroke="#6a1b9a" stroke-width="2"/><text x="50" y="60" font-size="14" fill="#6a1b9a" text-anchor="middle">15</text></svg>',
+            largenum: '<svg viewBox="0 0 100 100"><text x="50" y="65" font-size="35" fill="#fff" text-anchor="middle" font-weight="bold">∞</text></svg>',
+            truefalse: '<svg viewBox="0 0 100 100"><rect x="25" y="40" width="20" height="20" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><path d="M 30 50 L 35 55 L 42 45" stroke="#6a1b9a" stroke-width="2" fill="none"/><rect x="55" y="40" width="20" height="20" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><line x1="60" y1="45" x2="70" y2="55" stroke="#ff4444" stroke-width="2"/><line x1="70" y1="45" x2="60" y2="55" stroke="#ff4444" stroke-width="2"/></svg>',
+            names: '<svg viewBox="0 0 100 100"><rect x="28" y="35" width="44" height="30" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><line x1="35" y1="45" x2="65" y2="45" stroke="#6a1b9a" stroke-width="2"/><line x1="35" y1="55" x2="60" y2="55" stroke="#6a1b9a" stroke-width="2"/></svg>',
+            calendar: '<svg viewBox="0 0 100 100"><rect x="28" y="33" width="44" height="38" rx="2" fill="#fff" stroke="#ab47bc" stroke-width="2"/><rect x="28" y="33" width="44" height="10" fill="#ab47bc"/><line x1="40" y1="28" x2="40" y2="38" stroke="#6a1b9a" stroke-width="2"/><line x1="60" y1="28" x2="60" y2="38" stroke="#6a1b9a" stroke-width="2"/></svg>',
+            art: '<svg viewBox="0 0 100 100"><circle cx="40" cy="45" r="8" fill="#fff"/><circle cx="60" cy="45" r="8" fill="#ab47bc"/><circle cx="50" cy="60" r="8" fill="#6a1b9a"/></svg>',
+            flowchart: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="30" rx="15" ry="8" fill="#fff" stroke="#ab47bc" stroke-width="2"/><rect x="40" y="45" width="20" height="12" fill="#ab47bc"/><path d="M 50 40 L 50 45 M 50 57 L 50 62" stroke="#6a1b9a" stroke-width="2"/><path d="M 40 68 L 50 75 L 60 68 L 50 61 Z" fill="#fff" stroke="#ab47bc" stroke-width="2"/></svg>',
+            decoration: '<svg viewBox="0 0 100 100"><path d="M 50 30 L 54 42 L 66 42 L 56 50 L 60 62 L 50 54 L 40 62 L 44 50 L 34 42 L 46 42 Z" fill="#FFD700"/></svg>',
+            table: '<svg viewBox="0 0 100 100"><rect x="28" y="35" width="44" height="30" fill="none" stroke="#fff" stroke-width="2"/><line x1="50" y1="35" x2="50" y2="65" stroke="#ab47bc" stroke-width="2"/><line x1="28" y1="50" x2="72" y2="50" stroke="#ab47bc" stroke-width="2"/></svg>',
+            decision: '<svg viewBox="0 0 100 100"><path d="M 30 50 L 50 30 L 70 50 L 50 70 Z" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="55" font-size="18" fill="#6a1b9a" text-anchor="middle">?</text></svg>',
+            oval: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="25" ry="15" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="55" font-size="14" fill="#6a1b9a" text-anchor="middle">Inicio</text></svg>',
+            calculate: '<svg viewBox="0 0 100 100"><rect x="35" y="40" width="30" height="20" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="54" font-size="16" fill="#6a1b9a" text-anchor="middle">x+y</text></svg>',
+            datain: '<svg viewBox="0 0 100 100"><path d="M 30 40 L 70 40 L 65 50 L 70 60 L 30 60 Z" fill="#fff" stroke="#ab47bc" stroke-width="2"/></svg>',
+            startend: '<svg viewBox="0 0 100 100"><ellipse cx="35" cy="50" rx="15" ry="10" fill="#fff" stroke="#ab47bc" stroke-width="2"/><ellipse cx="65" cy="50" rx="15" ry="10" fill="#6a1b9a"/></svg>',
+            rectangle: '<svg viewBox="0 0 100 100"><rect x="32" y="42" width="36" height="16" fill="#fff" stroke="#ab47bc" stroke-width="2"/></svg>',
+            userinput: '<svg viewBox="0 0 100 100"><path d="M 28 38 L 72 38 L 68 50 L 72 62 L 28 62 Z" fill="#fff" stroke="#ab47bc" stroke-width="2"/></svg>',
+            yesno: '<svg viewBox="0 0 100 100"><path d="M 28 50 L 50 28 L 72 50 L 50 72 Z" fill="#fff" stroke="#ab47bc" stroke-width="2"/><line x1="50" y1="40" x2="40" y2="50" stroke="#6a1b9a" stroke-width="2"/><line x1="50" y1="40" x2="60" y2="50" stroke="#6a1b9a" stroke-width="2"/></svg>',
+            complexmath: '<svg viewBox="0 0 100 100"><text x="50" y="55" font-size="18" fill="#fff" text-anchor="middle">∫x²dx</text></svg>',
+            diamond: '<svg viewBox="0 0 100 100"><path d="M 25 50 L 50 25 L 75 50 L 50 75 Z" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="45" y="55" font-size="16" fill="#6a1b9a" font-weight="bold">?</text></svg>',
+            storage: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><path d="M 40 45 L 40 55 M 50 45 L 50 55 M 60 45 L 60 55" stroke="#6a1b9a" stroke-width="2"/></svg>',
+            printout: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="25" fill="#fff" stroke="#ab47bc" stroke-width="2"/><rect x="35" y="60" width="30" height="5" fill="#6a1b9a"/></svg>',
+            importantdecision: '<svg viewBox="0 0 100 100"><path d="M 25 50 L 50 20 L 75 50 L 50 80 Z" fill="#fff" stroke="#ff4444" stroke-width="3"/><text x="50" y="58" font-size="24" fill="#ff4444" text-anchor="middle" font-weight="bold">!</text></svg>',
+            parallelogram: '<svg viewBox="0 0 100 100"><path d="M 25 40 L 60 40 L 75 60 L 40 60 Z" fill="#fff" stroke="#ab47bc" stroke-width="2"/></svg>',
+            operations: '<svg viewBox="0 0 100 100"><rect x="32" y="42" width="36" height="16" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="53" font-size="14" fill="#6a1b9a" text-anchor="middle">a×b</text></svg>',
+            loop: '<svg viewBox="0 0 100 100"><path d="M 30 50 Q 30 30 50 30 Q 70 30 70 50 Q 70 60 65 60" stroke="#fff" stroke-width="3" fill="none"/><path d="M 62 57 L 65 60 L 68 57" stroke="#fff" stroke-width="2" fill="none"/></svg>',
+            tree: '<svg viewBox="0 0 100 100"><rect x="45" y="55" width="10" height="20" fill="#ab47bc"/><circle cx="50" cy="40" r="18" fill="#6a1b9a"/><circle cx="35" cy="35" r="12" fill="#6a1b9a"/><circle cx="65" cy="35" r="12" fill="#6a1b9a"/></svg>',
+            problemtree: '<svg viewBox="0 0 100 100"><circle cx="50" cy="30" r="8" fill="#fff" stroke="#ab47bc" stroke-width="2"/><line x1="50" y1="38" x2="50" y2="48" stroke="#ab47bc" stroke-width="2"/><circle cx="50" cy="50" r="10" fill="#6a1b9a"/><line x1="50" y1="60" x2="35" y2="70" stroke="#ab47bc" stroke-width="2"/><line x1="50" y1="60" x2="65" y2="70" stroke="#ab47bc" stroke-width="2"/><circle cx="35" cy="72" r="5" fill="#fff"/><circle cx="65" cy="72" r="5" fill="#fff"/></svg>',
+            flowtype: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="15" height="10" fill="#fff"/><ellipse cx="55" cy="40" rx="8" ry="5" fill="#ab47bc"/><path d="M 62 40 L 70 40 L 67 45 L 70 50 L 62 50 Z" fill="#6a1b9a"/></svg>',
+            biology: '<svg viewBox="0 0 100 100"><circle cx="50" cy="35" r="8" fill="#fff"/><ellipse cx="50" cy="55" rx="12" ry="18" fill="#ab47bc"/><line x1="38" y1="50" x2="30" y2="65" stroke="#6a1b9a" stroke-width="2"/><line x1="62" y1="50" x2="70" y2="65" stroke="#6a1b9a" stroke-width="2"/></svg>',
+            small: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="8" fill="#fff" stroke="#ab47bc" stroke-width="2"/></svg>',
+            central: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="15" fill="#6a1b9a"/><circle cx="50" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><circle cx="50" cy="50" r="28" fill="none" stroke="#ab47bc" stroke-width="2" stroke-dasharray="3,3"/></svg>',
+            firstcause: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="15" fill="#fff" stroke="#ab47bc" stroke-width="2"/><text x="50" y="58" font-size="20" fill="#6a1b9a" text-anchor="middle" font-weight="bold">1</text></svg>',
+            lasteffect: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="15" fill="#6a1b9a"/><path d="M 50 40 L 55 50 L 50 60" stroke="#fff" stroke-width="2" fill="none"/></svg>',
+            solutions: '<svg viewBox="0 0 100 100"><circle cx="35" cy="50" r="8" fill="#fff"/><circle cx="50" cy="50" r="8" fill="#ab47bc"/><circle cx="65" cy="50" r="8" fill="#6a1b9a"/></svg>',
+            causes: '<svg viewBox="0 0 100 100"><circle cx="50" cy="30" r="10" fill="#6a1b9a"/><line x1="50" y1="40" x2="35" y2="55" stroke="#ab47bc" stroke-width="2"/><line x1="50" y1="40" x2="65" y2="55" stroke="#ab47bc" stroke-width="2"/><circle cx="35" cy="58" r="6" fill="#fff"/><circle cx="65" cy="58" r="6" fill="#fff"/></svg>',
+            results: '<svg viewBox="0 0 100 100"><rect x="32" y="40" width="36" height="20" rx="3" fill="#fff" stroke="#ab47bc" stroke-width="2"/><path d="M 42 48 L 48 54 L 60 42" stroke="#6a1b9a" stroke-width="2" fill="none"/></svg>',
+            tools: '<svg viewBox="0 0 100 100"><rect x="30" y="40" width="15" height="25" fill="#fff" stroke="#ab47bc" stroke-width="2"/><circle cx="60" cy="50" r="10" fill="#ab47bc"/><rect x="55" y="60" width="10" height="12" fill="#6a1b9a"/></svg>',
+            effects: '<svg viewBox="0 0 100 100"><circle cx="50" cy="35" r="8" fill="#6a1b9a"/><line x1="50" y1="43" x2="40" y2="55" stroke="#ab47bc" stroke-width="2"/><line x1="50" y1="43" x2="60" y2="55" stroke="#ab47bc" stroke-width="2"/><circle cx="40" cy="58" r="5" fill="#fff"/><circle cx="60" cy="58" r="5" fill="#fff"/><line x1="40" y1="63" x2="35" y2="72" stroke="#ab47bc" stroke-width="1.5"/><line x1="60" y1="63" x2="65" y2="72" stroke="#ab47bc" stroke-width="1.5"/></svg>',
+            tech: '<svg viewBox="0 0 100 100"><rect x="30" y="38" width="40" height="24" rx="2" fill="#fff" stroke="#ab47bc" stroke-width="2"/><rect x="25" y="65" width="50" height="3" fill="#6a1b9a"/></svg>',
+            datacollect: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="12" height="40" fill="#fff"/><rect x="44" y="40" width="12" height="30" fill="#ab47bc"/><rect x="63" y="35" width="12" height="35" fill="#6a1b9a"/></svg>',
+            plants: '<svg viewBox="0 0 100 100"><ellipse cx="40" cy="55" rx="8" ry="12" fill="#6a1b9a"/><ellipse cx="60" cy="55" rx="8" ry="12" fill="#6a1b9a"/><rect x="47" y="45" width="6" height="30" fill="#ab47bc"/></svg>',
+            bloom: '<svg viewBox="0 0 100 100"><rect x="25" y="60" width="10" height="15" fill="#fff"/><rect x="37" y="52" width="10" height="23" fill="#ab47bc"/><rect x="49" y="44" width="10" height="31" fill="#6a1b9a"/><rect x="61" y="36" width="10" height="39" fill="#ab47bc"/><rect x="73" y="28" width="10" height="47" fill="#fff"/></svg>',
+            algorithm: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="30" rx="12" ry="6" fill="#fff"/><rect x="42" y="42" width="16" height="10" fill="#ab47bc"/><path d="M 40 60 L 50 68 L 60 60 L 50 52 Z" fill="#6a1b9a"/></svg>',
+            flowers: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="8" fill="#FFD700"/><circle cx="42" cy="42" r="6" fill="#fff"/><circle cx="58" cy="42" r="6" fill="#fff"/><circle cx="58" cy="58" r="6" fill="#ab47bc"/><circle cx="42" cy="58" r="6" fill="#ab47bc"/></svg>'
+        };
+
+        function loadQuestion() {
+            answered = false;
+            timeLeft = 40;
+            attempts = 0;
+            currentQuestionPoints = questionValue;
+            
+            const q = questions[currentQuestion];
+            
+            document.getElementById('categoryTitle').textContent = q.category;
+            document.getElementById('questionNumber').textContent = `${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionText').textContent = q.question;
+            
+            const container = document.getElementById('lilyPadsContainer');
+            container.innerHTML = '';
+            
+            const labels = ['A', 'B', 'C', 'D'];
+            
+            q.options.forEach((option, index) => {
+                const lilyPad = document.createElement('button');
+                lilyPad.className = 'lily-pad';
+                lilyPad.onclick = () => checkAnswer(index);
+                
+                lilyPad.innerHTML = `
+                    <div class="lily-content">
+                        <div class="option-label">${labels[index]}</div>
+                        <div class="option-svg">${svgIcons[option.svg]}</div>
+                        <div class="option-text">${option.text}</div>
+                    </div>
+                `;
+                
+                container.appendChild(lilyPad);
+            });
+            
+            updateProgress();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            const timerElement = document.getElementById('timer');
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                const secs = timeLeft;
+                timerElement.textContent = `00:00:${secs.toString().padStart(2, '0')}`;
+                
+                timerElement.classList.remove('warning', 'danger');
+                if (timeLeft <= 10 && timeLeft > 5) {
+                    timerElement.classList.add('warning');
+                } else if (timeLeft <= 5) {
+                    timerElement.classList.add('danger');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (!answered) {
+                        handleTimeout();
+                    }
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            answered = true;
+            lives--;
+            currentQuestionPoints = 0;
+            document.getElementById('lives').textContent = lives;
+            
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            lilyPads.forEach((pad, index) => {
+                pad.classList.add('answered');
+                if (index === questions[currentQuestion].correct) {
+                    pad.classList.add('correct');
+                }
+            });
+            
+            const modal = document.getElementById('explanationModal');
+            const header = document.getElementById('explanationHeader');
+            const text = document.getElementById('explanationText');
+            const retryBtn = document.getElementById('retryButton');
+            
+            header.innerHTML = `⏱️ Se acabó el tiempo<br><span style="font-size: 18px; color: #ff4444;">Ganaste 0 de ${questionValue.toLocaleString()} puntos</span>`;
+            header.style.color = '#ff4444';
+            text.textContent = '';
+            text.style.display = 'none';
+            retryBtn.style.display = 'none';
+            
+            modal.classList.add('show');
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 2000);
+            }
+        }
+
+        function checkAnswer(selected) {
+            if (answered) return;
+            answered = true;
+            clearInterval(timer);
+            
+            attempts++;
+            
+            const q = questions[currentQuestion];
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            
+            if (selected !== q.correct) {
+                currentQuestionPoints = Math.max(0, currentQuestionPoints - 200);
+            }
+            
+            lilyPads.forEach((pad, index) => {
+                pad.classList.add('answered');
+                if (index === selected) {
+                    if (selected === q.correct) {
+                        pad.classList.add('correct');
+                        points += currentQuestionPoints;
+                        animateFrog(pad);
+                    } else {
+                        pad.classList.add('incorrect');
+                        lives--;
+                    }
+                }
+                if (index === q.correct && selected !== q.correct) {
+                    pad.classList.add('correct');
+                }
+            });
+            
+            document.getElementById('points').textContent = points.toLocaleString('es-CO', {minimumFractionDigits: 3});
+            document.getElementById('lives').textContent = lives;
+            
+            showExplanation(selected === q.correct);
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 2000);
+            }
+        }
+
+        function animateFrog(targetPad) {
+            const frog = document.getElementById('frogContainer');
+            const rect = targetPad.getBoundingClientRect();
+            frog.style.left = rect.left + rect.width/2 - 60 + 'px';
+            frog.style.bottom = window.innerHeight - rect.top - rect.height/2 - 60 + 'px';
+            
+            setTimeout(() => {
+                frog.style.left = '50%';
+                frog.style.bottom = '80px';
+            }, 1000);
+        }
+
+        function showExplanation(correct) {
+            const modal = document.getElementById('explanationModal');
+            const header = document.getElementById('explanationHeader');
+            const text = document.getElementById('explanationText');
+            const retryBtn = document.getElementById('retryButton');
+            
+            if (correct) {
+                header.innerHTML = `¡Correcto! 🎉<br><span style="font-size: 20px; color: #FFD700;">Ganaste ${currentQuestionPoints.toLocaleString()} de ${questionValue.toLocaleString()} puntos</span>`;
+                header.style.color = '#6a1b9a';
+                text.textContent = questions[currentQuestion].explanation;
+                text.style.display = 'block';
+            } else {
+                header.innerHTML = `Incorrecto 😔<br><span style="font-size: 18px; color: #ff9800;">Ahora la pregunta vale ${currentQuestionPoints.toLocaleString()} puntos</span>`;
+                header.style.color = '#ff4444';
+                text.textContent = '';
+                text.style.display = 'none';
+            }
+            
+            if (!correct && lives > 0 && currentQuestionPoints > 0) {
+                retryBtn.style.display = 'block';
+            } else {
+                retryBtn.style.display = 'none';
+            }
+            
+            modal.classList.add('show');
+        }
+
+        function retryQuestion() {
+            document.getElementById('explanationModal').classList.remove('show');
+            
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            lilyPads.forEach(pad => {
+                pad.classList.remove('answered', 'correct', 'incorrect');
+            });
+            
+            answered = false;
+            timeLeft = 40;
+            startTimer();
+        }
+
+        function nextQuestion() {
+            document.getElementById('explanationModal').classList.remove('show');
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length && lives > 0) {
+                loadQuestion();
+            } else {
+                showFinalScreen();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = `${currentQuestion + 1}/${questions.length}`;
+        }
+
+        function showGameOver() {
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('frogContainer').style.display = 'none';
+            showFinalScreen();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('frogContainer').style.display = 'none';
+            const finalScreen = document.getElementById('finalScreen');
+            finalScreen.classList.add('show');
+            
+            document.getElementById('finalScore').textContent = points.toLocaleString('es-CO') + ' PUNTOS';
+            
+            let message = '';
+            if (lives <= 0) {
+                message = '¡Sigue practicando! Cada intento fortalece tu pensamiento algorítmico.';
+            } else if (points >= 15000) {
+                message = '🏆 ¡MAESTRO DEL PENSAMIENTO ALGORÍTMICO! Dominas perfectamente todos los conceptos.';
+            } else if (points >= 10000) {
+                message = '⭐ ¡EXCELENTE! Comprendes muy bien los fundamentos del pensamiento algorítmico.';
+            } else if (points >= 6000) {
+                message = '👍 ¡MUY BIEN! Vas por buen camino en el desarrollo de habilidades algorítmicas.';
+            } else {
+                message = '📚 Buen esfuerzo. Sigue practicando para mejorar tu pensamiento lógico.';
+            }
+            
+            document.getElementById('finalMessage').textContent = message;
+        }
+
+        document.getElementById('nextButton').onclick = nextQuestion;
+        document.getElementById('retryButton').onclick = retryQuestion;
+        
+        loadQuestion();
+    </script>
+</body>
+</html>
