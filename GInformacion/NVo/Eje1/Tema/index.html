@@ -123,10 +123,10 @@
     }
     .arrow.next{ transform: rotate(-45deg); }
 
-    /* Marco con poco margen */
+    /* Marco (poco margen interno) */
     .frame{
       border-radius: var(--radius);
-      background: linear-gradient(180deg, var(--cardA), var(--cardB));
+      background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.66));
       border: var(--border);
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -134,10 +134,11 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
 
-      padding: 12px;
-      min-height: clamp(460px, 66vh, 720px);
-    }
+      padding: 10px;
 
+      /* IMPORTANTE: le damos altura real, no “min-height” que a veces se queda corto */
+      height: clamp(520px, 72vh, 780px);
+    }
     .frame::before{
       content:"";
       position:absolute;
@@ -149,70 +150,68 @@
       pointer-events:none;
     }
 
-    /* Slide ocupa el interior del frame (sin padding extra) */
+    /* Slide ocupa todo el interior del frame (sin padding extra) */
     .slide{
       position:absolute;
-      inset:12px;
+      inset:10px;
       opacity:0;
       transform: translateX(16px);
       transition: opacity .22s ease, transform .22s ease;
-      padding: 0;
     }
     .slide.active{
       opacity:1;
       transform: translateX(0);
     }
 
-    /* ===== Caja de imagen: SIN recorte + sin blancos ===== */
+    /* Caja: blur de fondo + imagen principal SIN recorte */
     .imgBox{
-      /* cada slide define --img: url('X.png') */
       width:100%;
       height:100%;
       border-radius: calc(var(--radius) - 8px);
       overflow:hidden;
       position:relative;
-
-      border: 1px solid rgba(255,255,255,0.30);
+      border: 1px solid rgba(255,255,255,0.28);
       box-shadow: 0 16px 38px rgba(22, 28, 45, 0.10);
       background: rgba(255,255,255,0.06);
     }
 
-    /* Fondo borroso: rellena sin importar proporción */
+    /* Fondo borroso (rellena) */
     .imgBox::before{
       content:"";
       position:absolute;
-      inset:-20px; /* evita bordes del blur */
+      inset:-30px;
       background-image: var(--img);
       background-size: cover;
       background-position: center;
       filter: blur(18px) saturate(1.05);
-      transform: scale(1.08);
+      transform: scale(1.10);
       opacity: .85;
     }
 
-    /* Capa de brillo suave */
+    /* Brillo suave */
     .imgBox::after{
       content:"";
       position:absolute;
       inset:0;
       background: radial-gradient(60% 60% at 50% 40%, rgba(255,255,255,0.22), transparent 70%);
       pointer-events:none;
-      opacity:.6;
+      opacity:.55;
     }
 
-    /* Imagen principal: NO recorta */
+    /* IMAGEN PRINCIPAL: NO SE CORTA */
     .imgBox img{
       position:absolute;
       inset:0;
       width:100%;
       height:100%;
-      object-fit: contain;     /* clave: no corta texto */
-      object-position: center;
       display:block;
-      z-index:1;
+
+      object-fit: contain;       /* clave: NO recorta */
+      object-position: center;   /* centrada */
+      z-index: 1;
     }
 
-    /* Footer */
+    /* Footer fijo */
     .globalFooter{
       position:fixed;
       left:0; right:0; bottom:0;
@@ -246,11 +245,12 @@
       #prevBtn{ grid-area: prev; justify-self:start; }
       #nextBtn{ grid-area: next; justify-self:end; }
 
-      .frame{ grid-area: frame; padding: 10px; min-height: clamp(480px, 72vh, 760px); }
-      .slide{ inset:10px; }
-
       .navBtn{ width:64px; height:64px; }
       .topbar{ align-items:flex-start; }
+
+      /* más altura en móvil para que nunca “se coma” abajo */
+      .frame{ grid-area: frame; padding: 8px; height: clamp(540px, 78vh, 840px); }
+      .slide{ inset:8px; }
     }
   </style>
 </head>
@@ -299,7 +299,6 @@
       const nextBtn = document.getElementById("nextBtn");
       const counter = document.getElementById("slideCounter");
       const frame = document.getElementById("frame");
-
       let index = 0;
 
       function setActive(i){
@@ -318,6 +317,7 @@
         if (e.key === "ArrowRight") setActive(index + 1);
       });
 
+      // Swipe
       let startX = null;
       frame.addEventListener("touchstart", (e) => {
         startX = e.touches?.[0]?.clientX ?? null;
