@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de la Información - Froggy Jump</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #4ECDC4 0%, #44A08D 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        /* Main Title */
+        .main-title {
+            background: linear-gradient(135deg, #1a4d1f 0%, #2C5F2D 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .main-title h1 {
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Header profesional */
+        .header {
+            background: linear-gradient(135deg, #2C5F2D 0%, #97BC62 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .lives-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .lives-label {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lives-count {
+            background: white;
+            color: #2C5F2D;
+            font-weight: bold;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+
+        .points-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .points-label {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .points-count {
+            background: white;
+            color: #2C5F2D;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* Área del juego */
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .progress-bar-container {
+            background: rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2C5F2D, #97BC62);
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .question-number {
+            color: #2C5F2D;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        /* Estilo Froggy Jump - Nenúfares flotantes */
+        .lily-pads-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            position: relative;
+        }
+
+        .lily-pad {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .lily-pad:hover:not(.answered) {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .lily-pad.correct {
+            animation: correctJump 0.6s ease;
+        }
+
+        .lily-pad.incorrect {
+            animation: incorrectShake 0.6s ease;
+            opacity: 0.5;
+        }
+
+        @keyframes correctJump {
+            0%, 100% { transform: translateY(0) scale(1); }
+            30% { transform: translateY(-30px) scale(1.1); }
+            60% { transform: translateY(-15px) scale(1.05); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-15px) rotate(-5deg); }
+            75% { transform: translateX(15px) rotate(5deg); }
+        }
+
+        .lily-content {
+            background: #2C5F2D;
+            border-radius: 50%;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: relative;
+            border: 5px solid #97BC62;
+        }
+
+        .lily-content::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: rgba(151, 188, 98, 0.3);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .option-label {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #97BC62;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .option-svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
+        }
+
+        .option-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.4;
+            padding: 0 10px;
+        }
+
+        /* Rana (frog) */
+        .frog-container {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            transition: all 0.5s ease;
+        }
+
+        .frog-svg {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+        }
+
+        /* Timer mejorado */
+        .timer-container {
+            position: relative;
+            background: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 3px solid #2C5F2D;
+            margin: 0 auto 30px auto;
+            width: fit-content;
+        }
+
+        .timer-icon {
+            width: 28px;
+            height: 28px;
+        }
+
+        .timer-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2C5F2D;
+            min-width: 80px;
+        }
+
+        .timer-text.warning {
+            color: #ff9800;
+            animation: pulse 1s infinite;
+        }
+
+        .timer-text.danger {
+            color: #ff4444;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Explicación */
+        .explanation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .explanation-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .explanation-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .explanation-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2C5F2D;
+        }
+
+        .explanation-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .retry-button {
+            flex: 1;
+            background: linear-gradient(135deg, #ff9800, #ff6b00);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .retry-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .next-button {
+            flex: 1;
+            background: linear-gradient(135deg, #2C5F2D, #97BC62);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .next-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(44, 95, 45, 0.4);
+        }
+
+        /* Pantalla final */
+        .final-screen {
+            display: none;
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            max-width: 700px;
+            margin: 50px auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .final-screen.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .final-title {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2C5F2D;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 72px;
+            font-weight: bold;
+            color: #97BC62;
+            margin: 30px 0;
+        }
+
+        .final-message {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #2C5F2D, #97BC62);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .restart-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(44, 95, 45, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1a4d1f 0%, #2C5F2D 100%);
+            padding: 20px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+        }
+
+        .footer-text {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .footer-handle {
+            color: #97BC62;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .lily-pads-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .question-text {
+                font-size: 20px;
+            }
+            
+            .lily-content {
+                min-height: 250px;
+                padding: 30px 15px;
+            }
+
+            .footer-text {
+                font-size: 16px;
+            }
+
+            .footer-handle {
+                font-size: 18px;
+            }
+
+            .main-title h1 {
+                font-size: 24px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Title -->
+    <div class="main-title">
+        <h1>Gestión de la Información</h1>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="lives-container">
+            <span class="lives-label">VIDAS</span>
+            <div class="lives-count" id="lives">5</div>
+        </div>
+        <div class="category-title" id="categoryTitle">Gestión de la Información</div>
+        <div class="points-container">
+            <span class="points-label">PUNTOS</span>
+            <div class="points-count" id="points">0.000</div>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container" id="gameArea">
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer-container">
+            <svg class="timer-icon" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#2C5F2D" stroke-width="2"/>
+                <path d="M12 6v6l4 2" stroke="#2C5F2D" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="timer-text" id="timer">00:00:40</span>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card">
+            <div class="question-number" id="questionNumber">1 / 20</div>
+            <div class="question-text" id="questionText"></div>
+        </div>
+
+        <!-- Lily Pads (Options) -->
+        <div class="lily-pads-container" id="lilyPadsContainer"></div>
+    </div>
+
+    <!-- Final Screen -->
+    <div class="final-screen" id="finalScreen">
+        <div class="final-title">¡JUEGO COMPLETADO!</div>
+        <div class="final-score" id="finalScore"></div>
+        <div class="final-message" id="finalMessage"></div>
+        <button class="restart-button" onclick="location.reload()">🔄 JUGAR DE NUEVO</button>
+    </div>
+
+    <!-- Frog -->
+    <div class="frog-container" id="frogContainer">
+        <svg class="frog-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="100" cy="120" rx="60" ry="50" fill="#97BC62"/>
+            <ellipse cx="100" cy="80" rx="50" ry="40" fill="#97BC62"/>
+            <ellipse cx="85" cy="65" rx="15" ry="20" fill="white"/>
+            <ellipse cx="115" cy="65" rx="15" ry="20" fill="white"/>
+            <circle cx="85" cy="70" r="8" fill="#2C5F2D"/>
+            <circle cx="115" cy="70" r="8" fill="#2C5F2D"/>
+            <path d="M 80 90 Q 100 100 120 90" stroke="#2C5F2D" stroke-width="3" fill="none"/>
+            <ellipse cx="70" cy="140" rx="12" ry="25" fill="#2C5F2D"/>
+            <ellipse cx="130" cy="140" rx="12" ry="25" fill="#2C5F2D"/>
+            <ellipse cx="60" cy="150" rx="20" ry="15" fill="#2C5F2D"/>
+            <ellipse cx="140" cy="150" rx="20" ry="15" fill="#2C5F2D"/>
+        </svg>
+    </div>
+
+    <!-- Explanation Modal -->
+    <div class="explanation-modal" id="explanationModal">
+        <div class="explanation-content">
+            <div class="explanation-header" id="explanationHeader"></div>
+            <div class="explanation-text" id="explanationText"></div>
+            <div class="action-buttons">
+                <button class="retry-button" id="retryButton">🔄 REINTENTAR</button>
+                <button class="next-button" id="nextButton">SIGUIENTE ➜</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p class="footer-text">Aprendiendo con <span class="footer-handle">@LaProfevivy</span></p>
+    </div>
+
+    <script>
+        const questions = [
+            // DEFINICIÓN DE GESTIÓN DE LA INFORMACIÓN
+            {
+                category: "📋 Definición",
+                question: "¿Qué es la Gestión de la Información?",
+                options: [
+                    { text: "Solo guardar archivos en la computadora", svg: "save" },
+                    { text: "Proceso de organizar, almacenar, proteger y usar información para tomar decisiones", svg: "process" },
+                    { text: "Borrar información que no se usa", svg: "delete" },
+                    { text: "Tener muchos datos sin organizar", svg: "messy" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: La Gestión de la Información es un PROCESO completo que incluye: recopilar, organizar, almacenar, proteger, compartir y usar información de manera efectiva. No es solo guardar archivos, sino convertir datos en conocimiento útil para tomar buenas decisiones."
+            },
+            {
+                category: "📋 Definición",
+                question: "¿Cuál es el OBJETIVO principal de gestionar bien la información?",
+                options: [
+                    { text: "Tener más archivos que los demás", svg: "compete" },
+                    { text: "Convertir datos en conocimiento útil para tomar mejores decisiones", svg: "lightbulb" },
+                    { text: "Complicar los procesos de trabajo", svg: "complex" },
+                    { text: "Gastar más dinero en tecnología", svg: "money" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: El objetivo es transformar datos simples en CONOCIMIENTO ÚTIL que ayude a tomar decisiones inteligentes, resolver problemas y generar valor. Ejemplo: no solo saber cuántos clientes tienes, sino entender qué necesitan para servirles mejor."
+            },
+
+            // FUENTES DE INFORMACIÓN
+            {
+                category: "📚 Fuentes de Información",
+                question: "¿Qué es una FUENTE de información?",
+                options: [
+                    { text: "Solo los libros de la biblioteca", svg: "book" },
+                    { text: "Cualquier lugar o recurso de donde obtenemos datos o información", svg: "source" },
+                    { text: "Únicamente internet", svg: "wifi" },
+                    { text: "Solo lo que dicen los profesores", svg: "teacher" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Una fuente de información es CUALQUIER recurso de donde obtenemos datos: libros, revistas, internet, personas expertas, documentos, bases de datos, videos, reportes, etc. Pueden ser físicas (papel) o digitales (computadora)."
+            },
+            {
+                category: "📚 Fuentes de Información",
+                question: "Las fuentes de información se clasifican en:",
+                options: [
+                    { text: "Caras y baratas", svg: "price" },
+                    { text: "Primarias, secundarias y terciarias", svg: "levels" },
+                    { text: "Buenas y malas solamente", svg: "goodbad" },
+                    { text: "Antiguas y modernas", svg: "time" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Las fuentes se clasifican según su NIVEL DE ELABORACIÓN:\n• Primarias: información original (diarios, entrevistas, investigaciones)\n• Secundarias: analizan fuentes primarias (libros, artículos)\n• Terciarias: recopilan información (enciclopedias, directorios)"
+            },
+
+            // TIPOS DE FUENTES - PRIMARIAS
+            {
+                category: "🔍 Fuentes Primarias",
+                question: "¿Qué es una FUENTE PRIMARIA?",
+                options: [
+                    { text: "La primera información que encuentras en Google", svg: "search" },
+                    { text: "Información original de primera mano, sin interpretaciones", svg: "original" },
+                    { text: "La fuente más importante siempre", svg: "star" },
+                    { text: "Solo documentos muy antiguos", svg: "old" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Las fuentes primarias son información ORIGINAL, de primera mano, sin pasar por interpretaciones de otros. Ejemplos: entrevistas directas, diarios personales, fotos originales, datos de experimentos, documentos legales oficiales, testimonios."
+            },
+            {
+                category: "🔍 Fuentes Primarias",
+                question: "¿Cuál es un ejemplo de FUENTE PRIMARIA?",
+                options: [
+                    { text: "Un artículo de Wikipedia sobre la luna", svg: "wiki" },
+                    { text: "La foto que tomó un astronauta en la luna", svg: "photo" },
+                    { text: "Un resumen de libro sobre el espacio", svg: "summary" },
+                    { text: "Un documental sobre la NASA", svg: "video" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: La foto tomada directamente por el astronauta es fuente primaria porque es evidencia ORIGINAL. Wikipedia y documentales son secundarias porque interpretan información. Un resumen es terciaria porque recopila datos."
+            },
+
+            // TIPOS DE FUENTES - SECUNDARIAS
+            {
+                category: "📖 Fuentes Secundarias",
+                question: "¿Qué es una FUENTE SECUNDARIA?",
+                options: [
+                    { text: "La segunda opción menos importante", svg: "second" },
+                    { text: "Información que analiza o interpreta fuentes primarias", svg: "analyze" },
+                    { text: "Fuentes que ya no sirven", svg: "expired" },
+                    { text: "Solo libros viejos de biblioteca", svg: "oldbook" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Las fuentes secundarias ANALIZAN, interpretan o comentan información de fuentes primarias. Ejemplos: artículos científicos que analizan experimentos, libros de historia que interpretan documentos antiguos, reportes de investigación."
+            },
+            {
+                category: "📖 Fuentes Secundarias",
+                question: "¿Cuál es un ejemplo de FUENTE SECUNDARIA?",
+                options: [
+                    { text: "El diario personal de Simón Bolívar", svg: "diary" },
+                    { text: "Un libro de historia que analiza la vida de Bolívar", svg: "historybook" },
+                    { text: "Una carta original escrita por Bolívar", svg: "letter" },
+                    { text: "La espada real que usó Bolívar", svg: "sword" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: El libro de historia es secundario porque ANALIZA e INTERPRETA la vida de Bolívar usando fuentes primarias (su diario, cartas, objetos). Las fuentes primarias serían los documentos y objetos originales de Bolívar."
+            },
+
+            // TIPOS DE FUENTES - TERCIARIAS
+            {
+                category: "📚 Fuentes Terciarias",
+                question: "¿Qué es una FUENTE TERCIARIA?",
+                options: [
+                    { text: "La tercera vez que lees algo", svg: "repeat" },
+                    { text: "Recursos que recopilan y organizan fuentes primarias y secundarias", svg: "organize" },
+                    { text: "Fuentes menos confiables siempre", svg: "unreliable" },
+                    { text: "Solo diccionarios antiguos", svg: "dictionary" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Las fuentes terciarias RECOPILAN y ORGANIZAN información de fuentes primarias y secundarias para facilitar la búsqueda. Ejemplos: enciclopedias, directorios, catálogos, índices, guías, bases de datos bibliográficas."
+            },
+            {
+                category: "📚 Fuentes Terciarias",
+                question: "¿Cuál es un ejemplo de FUENTE TERCIARIA?",
+                options: [
+                    { text: "Una enciclopedia con definiciones de conceptos", svg: "encyclopedia" },
+                    { text: "Un experimento científico original", svg: "experiment" },
+                    { text: "Un artículo que analiza teorías", svg: "article" },
+                    { text: "Una entrevista a un experto", svg: "interview" }
+                ],
+                correct: 0,
+                explanation: "✅ CORRECTO: La enciclopedia es terciaria porque RECOPILA y ORGANIZA información de muchas fuentes. Los experimentos y entrevistas son primarios (originales). Los artículos analíticos son secundarios (interpretan)."
+            },
+
+            // DEL DATO A LA INFORMACIÓN
+            {
+                category: "💾 Del Dato a la Información",
+                question: "¿Qué es un DATO?",
+                options: [
+                    { text: "Información completa y lista para usar", svg: "complete" },
+                    { text: "Un hecho o valor simple sin contexto ni significado", svg: "raw" },
+                    { text: "Solo números estadísticos", svg: "numbers" },
+                    { text: "Conocimiento profundo de un tema", svg: "knowledge" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Un DATO es un hecho o valor CRUDO, sin contexto. Ejemplos: '25', 'Juan', '15/03'. Por sí solos no significan nada. Son la materia prima para crear información. Necesitan procesamiento para tener sentido."
+            },
+            {
+                category: "💾 Del Dato a la Información",
+                question: "¿Qué es INFORMACIÓN?",
+                options: [
+                    { text: "Lo mismo que datos, sin diferencia", svg: "equal" },
+                    { text: "Datos procesados, organizados y con contexto que tienen significado", svg: "meaningful" },
+                    { text: "Solo texto escrito en documentos", svg: "text" },
+                    { text: "Números muy grandes", svg: "bignumber" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: INFORMACIÓN son datos procesados que tienen CONTEXTO y SIGNIFICADO. Ejemplo: 'Juan tiene 25 años' es información (combina datos: nombre + edad + contexto). Ya puedes entenderla y usarla para algo."
+            },
+            {
+                category: "💾 Del Dato a la Información",
+                question: "¿Cuál es la diferencia entre DATO e INFORMACIÓN?",
+                options: [
+                    { text: "No hay diferencia, son sinónimos", svg: "same" },
+                    { text: "El dato es crudo, la información es dato procesado con contexto", svg: "transform" },
+                    { text: "El dato es digital, la información es en papel", svg: "digital" },
+                    { text: "La información siempre es más larga", svg: "long" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: DATO es crudo (ej: 35°C). INFORMACIÓN es dato + contexto (ej: 'La temperatura corporal es 35°C, está baja, posible hipotermia'). La información te permite ENTENDER y ACTUAR."
+            },
+
+            // EJEMPLOS PRÁCTICOS - DEL DATO A LA INFORMACIÓN
+            {
+                category: "💡 Ejemplos Prácticos",
+                question: "Si tienes estos datos: '1500', 'estudiantes', 'desertaron'. ¿Cuál es INFORMACIÓN útil?",
+                options: [
+                    { text: "Simplemente '1500'", svg: "number" },
+                    { text: "'1500 estudiantes desertaron en 2024, un 20% más que 2023'", svg: "context" },
+                    { text: "Solo la palabra 'estudiantes'", svg: "word" },
+                    { text: "Juntar las tres palabras sin orden", svg: "random" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: La información útil COMBINA los datos + CONTEXTO (cuándo pasó, comparación). Así puedes entender la situación y tomar decisiones. Datos sueltos no significan nada."
+            },
+            {
+                category: "💡 Ejemplos Prácticos",
+                question: "En una tienda tienen dato: 'Vendimos 200 unidades'. ¿Qué necesitan para convertirlo en información?",
+                options: [
+                    { text: "Nada, ya es información perfecta", svg: "perfect" },
+                    { text: "Agregar: de qué producto, en qué período, comparado con qué", svg: "addcontext" },
+                    { text: "Cambiar el número a letras", svg: "letters" },
+                    { text: "Escribirlo con letra más grande", svg: "bigger" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: '200 unidades' es solo un dato. Se vuelve información útil con contexto: '200 camisetas vendidas en enero 2025, 50% más que enero 2024'. Ahora sabes QUÉ, CUÁNDO y COMPARACIÓN."
+            },
+
+            // GESTIÓN MODERNA
+            {
+                category: "🌐 Gestión Moderna",
+                question: "¿Por qué es importante la Gestión de Información HOY más que antes?",
+                options: [
+                    { text: "Porque hay menos información disponible", svg: "less" },
+                    { text: "Porque se genera información masiva cada segundo y necesitamos organizarla", svg: "massive" },
+                    { text: "Porque la información es más cara", svg: "expensive" },
+                    { text: "No es importante, es igual que antes", svg: "notimportant" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Vivimos una EXPLOSIÓN DE INFORMACIÓN. Cada día se crean millones de datos: fotos, videos, mensajes, documentos. Sin buena gestión, nos ahogamos en datos sin poder encontrar lo útil. Organizar es sobrevivir."
+            },
+            {
+                category: "🌐 Gestión Moderna",
+                question: "¿Qué herramientas usamos para gestionar información hoy?",
+                options: [
+                    { text: "Solo lápiz y papel", svg: "paper" },
+                    { text: "Bases de datos, la nube, sistemas digitales, IA", svg: "tools" },
+                    { text: "Únicamente nuestra memoria", svg: "brain" },
+                    { text: "No se usan herramientas", svg: "notools" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Usamos tecnología moderna: Bases de datos (organizan millones de registros), Nube (acceso desde cualquier lugar), Sistemas de gestión documental, IA (busca y analiza rápido). Papel ya no es suficiente."
+            },
+
+            // CALIDAD DE LA INFORMACIÓN
+            {
+                category: "✅ Calidad de Información",
+                question: "¿Qué significa que la información sea de CALIDAD?",
+                options: [
+                    { text: "Que esté en un documento bonito", svg: "pretty" },
+                    { text: "Que sea precisa, confiable, actual, relevante y completa", svg: "quality" },
+                    { text: "Que sea muy larga y detallada", svg: "long" },
+                    { text: "Que venga de internet", svg: "internet" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Información de calidad es: PRECISA (correcta), CONFIABLE (de fuente verificada), ACTUAL (reciente), RELEVANTE (útil para tu necesidad), COMPLETA (tiene todos los datos necesarios). No basta con tener información, debe ser BUENA."
+            },
+            {
+                category: "✅ Calidad de Información",
+                question: "¿Qué pasa si usamos información de MALA calidad?",
+                options: [
+                    { text: "No pasa nada grave", svg: "nothing" },
+                    { text: "Tomamos decisiones equivocadas que generan pérdidas", svg: "mistake" },
+                    { text: "Se mejora automáticamente sola", svg: "autofix" },
+                    { text: "Es mejor que no tener información", svg: "better" }
+                ],
+                correct: 1,
+                explanation: "✅ CORRECTO: Información mala = Decisiones malas = Pérdidas. Ejemplos: Dato equivocado de inventario → pedir productos que no necesitas. Dato desactualizado de cliente → ofrecerle algo que ya no quiere. BASURA entra → BASURA sale."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let points = 0;
+        let lives = 5;
+        let timer;
+        let timeLeft = 40;
+        let answered = false;
+        let questionValue = 1000; // Valor base de cada pregunta
+        let currentQuestionPoints = 1000; // Puntos actuales de la pregunta
+        let attempts = 0; // Intentos en la pregunta actual
+
+        const svgIcons = {
+            save: '<svg viewBox="0 0 100 100"><rect x="30" y="25" width="40" height="50" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="30" y="25" width="40" height="10" fill="#97BC62"/><rect x="45" y="30" width="10" height="5" fill="#2C5F2D"/><rect x="35" y="40" width="30" height="3" fill="#2C5F2D"/><rect x="35" y="48" width="30" height="3" fill="#2C5F2D"/></svg>',
+            process: '<svg viewBox="0 0 100 100"><circle cx="30" cy="50" r="8" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="50" r="10" fill="#97BC62"/><circle cx="70" cy="50" r="8" fill="#2C5F2D"/><path d="M 38 50 L 42 50" stroke="#97BC62" stroke-width="2"/><path d="M 60 50 L 62 50" stroke="#2C5F2D" stroke-width="2"/><path d="M 45 47 L 42 50 L 45 53" stroke="#97BC62" stroke-width="2" fill="none"/><path d="M 65 47 L 62 50 L 65 53" stroke="#2C5F2D" stroke-width="2" fill="none"/></svg>',
+            delete: '<svg viewBox="0 0 100 100"><rect x="35" y="35" width="30" height="35" rx="2" fill="#fff" stroke="#ff4444" stroke-width="2"/><rect x="32" y="32" width="36" height="5" fill="#ff4444"/><line x1="42" y1="42" x2="42" y2="62" stroke="#2C5F2D" stroke-width="2"/><line x1="50" y1="42" x2="50" y2="62" stroke="#2C5F2D" stroke-width="2"/><line x1="58" y1="42" x2="58" y2="62" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            messy: '<svg viewBox="0 0 100 100"><line x1="25" y1="30" x2="75" y2="40" stroke="#fff" stroke-width="2"/><line x1="30" y1="50" x2="70" y2="55" stroke="#97BC62" stroke-width="2"/><line x1="28" y1="65" x2="72" y2="60" stroke="#2C5F2D" stroke-width="2"/><circle cx="25" cy="30" r="3" fill="#ff4444"/><circle cx="75" cy="40" r="3" fill="#ff4444"/></svg>',
+            compete: '<svg viewBox="0 0 100 100"><circle cx="40" cy="45" r="12" fill="#fff"/><circle cx="60" cy="45" r="12" fill="#97BC62"/><path d="M 35 40 L 30 35 M 40 35 L 35 30" stroke="#ff4444" stroke-width="2"/><path d="M 65 40 L 70 35 M 60 35 L 65 30" stroke="#ff4444" stroke-width="2"/></svg>',
+            lightbulb: '<svg viewBox="0 0 100 100"><circle cx="50" cy="42" r="15" fill="#fff" stroke="#FFD700" stroke-width="2"/><rect x="45" y="58" width="10" height="10" fill="#97BC62"/><rect x="42" y="68" width="16" height="4" fill="#2C5F2D"/><line x1="35" y1="30" x2="30" y2="25" stroke="#FFD700" stroke-width="2"/><line x1="65" y1="30" x2="70" y2="25" stroke="#FFD700" stroke-width="2"/><line x1="50" y1="22" x2="50" y2="17" stroke="#FFD700" stroke-width="2"/></svg>',
+            complex: '<svg viewBox="0 0 100 100"><path d="M 30 50 Q 40 30 50 50 T 70 50" stroke="#fff" stroke-width="3" fill="none"/><circle cx="30" cy="50" r="4" fill="#97BC62"/><circle cx="50" cy="50" r="4" fill="#97BC62"/><circle cx="70" cy="50" r="4" fill="#97BC62"/></svg>',
+            money: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="#fff" stroke="#97BC62" stroke-width="3"/><text x="50" y="65" font-size="35" fill="#2C5F2D" text-anchor="middle" font-weight="bold">$</text></svg>',
+            book: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="50" height="40" rx="3" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="50" y1="30" x2="50" y2="70" stroke="#2C5F2D" stroke-width="2"/><line x1="30" y1="40" x2="45" y2="40" stroke="#97BC62" stroke-width="1.5"/><line x1="55" y1="40" x2="70" y2="40" stroke="#97BC62" stroke-width="1.5"/></svg>',
+            source: '<svg viewBox="0 0 100 100"><circle cx="50" cy="35" r="10" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 35 55 L 25 70 M 50 50 L 50 70 M 65 55 L 75 70" stroke="#97BC62" stroke-width="3"/><circle cx="25" cy="70" r="5" fill="#2C5F2D"/><circle cx="50" cy="70" r="5" fill="#2C5F2D"/><circle cx="75" cy="70" r="5" fill="#2C5F2D"/></svg>',
+            wifi: '<svg viewBox="0 0 100 100"><path d="M 30 40 Q 50 25 70 40" stroke="#fff" stroke-width="3" fill="none"/><path d="M 35 50 Q 50 38 65 50" stroke="#97BC62" stroke-width="3" fill="none"/><path d="M 42 58 Q 50 52 58 58" stroke="#2C5F2D" stroke-width="3" fill="none"/><circle cx="50" cy="65" r="4" fill="#2C5F2D"/></svg>',
+            teacher: '<svg viewBox="0 0 100 100"><circle cx="50" cy="35" r="10" fill="#fff"/><rect x="40" y="48" width="20" height="25" fill="#97BC62"/><rect x="30" y="45" width="40" height="5" fill="#2C5F2D"/></svg>',
+            price: '<svg viewBox="0 0 100 100"><rect x="28" y="35" width="18" height="30" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="54" y="35" width="18" height="30" fill="#FFD700" stroke="#97BC62" stroke-width="2"/><text x="37" y="55" font-size="20" fill="#2C5F2D" text-anchor="middle">$</text><text x="63" y="55" font-size="20" fill="#2C5F2D" text-anchor="middle">$$</text></svg>',
+            levels: '<svg viewBox="0 0 100 100"><rect x="25" y="55" width="15" height="20" fill="#fff"/><rect x="42" y="45" width="15" height="30" fill="#97BC62"/><rect x="59" y="35" width="15" height="40" fill="#2C5F2D"/><text x="32" y="72" font-size="12" fill="#fff" text-anchor="middle">1</text><text x="49" y="72" font-size="12" fill="#fff" text-anchor="middle">2</text><text x="66" y="72" font-size="12" fill="#fff" text-anchor="middle">3</text></svg>',
+            goodbad: '<svg viewBox="0 0 100 100"><circle cx="38" cy="50" r="15" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 32 45 Q 38 50 44 45" stroke="#2C5F2D" stroke-width="2" fill="none"/><circle cx="62" cy="50" r="15" fill="#fff" stroke="#ff4444" stroke-width="2"/><path d="M 56 55 Q 62 50 68 55" stroke="#ff4444" stroke-width="2" fill="none"/></svg>',
+            time: '<svg viewBox="0 0 100 100"><circle cx="35" cy="50" r="12" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="50" x2="35" y2="43" stroke="#2C5F2D" stroke-width="2"/><line x1="35" y1="50" x2="40" y2="50" stroke="#2C5F2D" stroke-width="2"/><circle cx="65" cy="50" r="12" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 60 45 L 65 50 L 70 50" stroke="#2C5F2D" stroke-width="2" fill="none"/></svg>',
+            search: '<svg viewBox="0 0 100 100"><circle cx="45" cy="45" r="18" fill="none" stroke="#fff" stroke-width="3"/><line x1="58" y1="58" x2="72" y2="72" stroke="#fff" stroke-width="4"/><text x="45" y="52" font-size="18" fill="#97BC62" text-anchor="middle" font-weight="bold">1</text></svg>',
+            original: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="40" rx="3" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 40 45 L 47 52 L 62 37" stroke="#2C5F2D" stroke-width="3" fill="none"/><path d="M 62 28 L 70 20 M 67 33 L 75 25" stroke="#FFD700" stroke-width="2"/></svg>',
+            star: '<svg viewBox="0 0 100 100"><path d="M 50 25 L 54 42 L 71 42 L 58 52 L 62 69 L 50 59 L 38 69 L 42 52 L 29 42 L 46 42 Z" fill="#FFD700"/><circle cx="50" cy="50" r="8" fill="#fff"/></svg>',
+            old: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="45" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="40" x2="65" y2="40" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="48" x2="65" y2="48" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="56" x2="55" y2="56" stroke="#2C5F2D" stroke-width="1.5"/><rect x="38" y="22" width="24" height="8" fill="#97BC62"/></svg>',
+            wiki: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="22" fill="#fff" stroke="#97BC62" stroke-width="2"/><text x="50" y="60" font-size="28" fill="#2C5F2D" text-anchor="middle" font-weight="bold">W</text></svg>',
+            photo: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="50" height="40" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="42" cy="48" r="8" fill="#FFD700"/><path d="M 30 62 L 40 52 L 50 60 L 65 45 L 70 50 L 70 65 L 30 65 Z" fill="#97BC62"/></svg>',
+            summary: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="45" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="40" x2="65" y2="40" stroke="#2C5F2D" stroke-width="2"/><line x1="35" y1="50" x2="60" y2="50" stroke="#97BC62" stroke-width="1.5"/><line x1="35" y1="58" x2="60" y2="58" stroke="#97BC62" stroke-width="1.5"/><line x1="35" y1="66" x2="50" y2="66" stroke="#97BC62" stroke-width="1.5"/></svg>',
+            video: '<svg viewBox="0 0 100 100"><rect x="25" y="35" width="50" height="30" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 45 45 L 45 55 L 55 50 Z" fill="#2C5F2D"/><circle cx="32" cy="42" r="2" fill="#ff4444"/></svg>',
+            second: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#97BC62" stroke="#fff" stroke-width="2"/><text x="50" y="60" font-size="28" fill="#fff" text-anchor="middle" font-weight="bold">2</text></svg>',
+            analyze: '<svg viewBox="0 0 100 100"><circle cx="45" cy="45" r="18" fill="none" stroke="#fff" stroke-width="3"/><line x1="58" y1="58" x2="70" y2="70" stroke="#fff" stroke-width="4"/><rect x="38" y="38" width="14" height="14" fill="none" stroke="#97BC62" stroke-width="2"/></svg>',
+            expired: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="40" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="35" x2="65" y2="65" stroke="#ff4444" stroke-width="4"/><line x1="65" y1="35" x2="35" y2="65" stroke="#ff4444" stroke-width="4"/></svg>',
+            oldbook: '<svg viewBox="0 0 100 100"><rect x="28" y="32" width="44" height="40" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="50" y1="32" x2="50" y2="72" stroke="#2C5F2D" stroke-width="2"/><path d="M 35 40 Q 38 38 41 40 M 59 40 Q 62 38 65 40" stroke="#97BC62" stroke-width="1.5" fill="none"/></svg>',
+            diary: '<svg viewBox="0 0 100 100"><rect x="30" y="28" width="40" height="48" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="30" y="28" width="40" height="8" fill="#97BC62"/><line x1="38" y1="45" x2="62" y2="45" stroke="#2C5F2D" stroke-width="1.5"/><line x1="38" y1="52" x2="62" y2="52" stroke="#2C5F2D" stroke-width="1.5"/><line x1="38" y1="59" x2="55" y2="59" stroke="#2C5F2D" stroke-width="1.5"/></svg>',
+            historybook: '<svg viewBox="0 0 100 100"><rect x="28" y="30" width="44" height="42" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="50" y1="30" x2="50" y2="72" stroke="#2C5F2D" stroke-width="2"/><circle cx="50" cy="50" r="8" fill="#FFD700"/><line x1="50" y1="42" x2="50" y2="50" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            letter: '<svg viewBox="0 0 100 100"><rect x="28" y="35" width="44" height="32" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 28 35 L 50 52 L 72 35" stroke="#2C5F2D" stroke-width="2" fill="none"/><line x1="35" y1="45" x2="45" y2="50" stroke="#97BC62" stroke-width="1.5"/></svg>',
+            sword: '<svg viewBox="0 0 100 100"><rect x="48" y="25" width="4" height="40" fill="#fff"/><rect x="45" y="65" width="10" height="5" fill="#97BC62"/><rect x="43" y="70" width="14" height="3" fill="#2C5F2D"/><circle cx="50" cy="23" r="4" fill="#FFD700"/></svg>',
+            repeat: '<svg viewBox="0 0 100 100"><path d="M 30 40 Q 50 25 70 40" stroke="#fff" stroke-width="3" fill="none"/><path d="M 70 60 Q 50 75 30 60" stroke="#97BC62" stroke-width="3" fill="none"/><path d="M 65 37 L 70 40 L 67 45" fill="#fff"/><path d="M 35 63 L 30 60 L 33 55" fill="#97BC62"/></svg>',
+            organize: '<svg viewBox="0 0 100 100"><rect x="25" y="30" width="15" height="15" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="42" y="30" width="15" height="15" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="59" y="30" width="15" height="15" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="25" y="48" width="15" height="15" fill="#97BC62"/><rect x="42" y="48" width="15" height="15" fill="#97BC62"/><rect x="59" y="48" width="15" height="15" fill="#97BC62"/></svg>',
+            unreliable: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ff4444" stroke-width="2"/><text x="50" y="62" font-size="32" fill="#ff4444" text-anchor="middle" font-weight="bold">?</text></svg>',
+            dictionary: '<svg viewBox="0 0 100 100"><rect x="28" y="28" width="44" height="48" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><text x="50" y="55" font-size="32" fill="#2C5F2D" text-anchor="middle" font-weight="bold">Aa</text></svg>',
+            encyclopedia: '<svg viewBox="0 0 100 100"><rect x="26" y="28" width="48" height="48" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="48" r="12" fill="#97BC62"/><text x="50" y="68" font-size="14" fill="#2C5F2D" text-anchor="middle" font-weight="bold">A-Z</text></svg>',
+            experiment: '<svg viewBox="0 0 100 100"><path d="M 40 30 L 40 50 L 30 70 L 70 70 L 60 50 L 60 30" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="55" r="6" fill="#4ECDC4"/><circle cx="45" cy="62" r="4" fill="#4ECDC4"/><circle cx="55" cy="60" r="4" fill="#4ECDC4"/></svg>',
+            article: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="45" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="38" x2="65" y2="38" stroke="#2C5F2D" stroke-width="2"/><line x1="35" y1="46" x2="65" y2="46" stroke="#97BC62" stroke-width="1.5"/><line x1="35" y1="52" x2="65" y2="52" stroke="#97BC62" stroke-width="1.5"/><line x1="35" y1="58" x2="60" y2="58" stroke="#97BC62" stroke-width="1.5"/><line x1="35" y1="64" x2="60" y2="64" stroke="#97BC62" stroke-width="1.5"/></svg>',
+            interview: '<svg viewBox="0 0 100 100"><circle cx="40" cy="40" r="10" fill="#fff"/><rect x="32" y="52" width="16" height="20" fill="#97BC62"/><circle cx="65" cy="55" r="8" fill="#2C5F2D"/><rect x="58" y="63" width="14" height="3" fill="#2C5F2D"/><rect x="58" y="68" width="14" height="3" fill="#2C5F2D"/></svg>',
+            complete: '<svg viewBox="0 0 100 100"><rect x="28" y="30" width="44" height="42" rx="3" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 38 48 L 45 55 L 62 38" stroke="#2C5F2D" stroke-width="3" fill="none"/><circle cx="70" cy="35" r="3" fill="#FFD700"/></svg>',
+            raw: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="18" fill="#fff" stroke="#97BC62" stroke-width="2"/><text x="50" y="60" font-size="28" fill="#2C5F2D" text-anchor="middle" font-weight="bold">?</text></svg>',
+            numbers: '<svg viewBox="0 0 100 100"><text x="50" y="60" font-size="40" fill="#fff" text-anchor="middle" font-weight="bold">1 2 3</text></svg>',
+            knowledge: '<svg viewBox="0 0 100 100"><circle cx="50" cy="45" r="18" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="35" y="60" width="30" height="3" fill="#2C5F2D"/><rect x="38" y="65" width="24" height="3" fill="#2C5F2D"/><rect x="40" y="70" width="20" height="3" fill="#2C5F2D"/></svg>',
+            equal: '<svg viewBox="0 0 100 100"><line x1="30" y1="40" x2="70" y2="40" stroke="#fff" stroke-width="5"/><line x1="30" y1="60" x2="70" y2="60" stroke="#fff" stroke-width="5"/></svg>',
+            meaningful: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="18" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 42 48 L 49 55 L 62 40" stroke="#2C5F2D" stroke-width="3" fill="none"/><path d="M 60 35 L 68 28 M 65 40 L 73 33" stroke="#FFD700" stroke-width="2"/></svg>',
+            text: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="45" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="35" y1="40" x2="65" y2="40" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="48" x2="65" y2="48" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="56" x2="65" y2="56" stroke="#2C5F2D" stroke-width="1.5"/><line x1="35" y1="64" x2="55" y2="64" stroke="#2C5F2D" stroke-width="1.5"/></svg>',
+            bignumber: '<svg viewBox="0 0 100 100"><text x="50" y="68" font-size="48" fill="#fff" text-anchor="middle" font-weight="bold">999</text></svg>',
+            same: '<svg viewBox="0 0 100 100"><circle cx="40" cy="50" r="15" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="60" cy="50" r="15" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="48" y1="50" x2="52" y2="50" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            transform: '<svg viewBox="0 0 100 100"><rect x="25" y="40" width="20" height="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="65" cy="50" r="12" fill="#97BC62"/><path d="M 45 50 L 53 50" stroke="#2C5F2D" stroke-width="2"/><path d="M 50 47 L 53 50 L 50 53" stroke="#2C5F2D" stroke-width="2" fill="none"/></svg>',
+            digital: '<svg viewBox="0 0 100 100"><rect x="30" y="35" width="40" height="30" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><rect x="25" y="68" width="50" height="3" fill="#2C5F2D"/><line x1="50" y1="65" x2="50" y2="68" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            long: '<svg viewBox="0 0 100 100"><rect x="20" y="45" width="60" height="10" rx="5" fill="#fff"/><path d="M 65 50 L 75 45 L 75 55 Z" fill="#97BC62"/></svg>',
+            number: '<svg viewBox="0 0 100 100"><text x="50" y="65" font-size="48" fill="#fff" text-anchor="middle" font-weight="bold">200</text></svg>',
+            context: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="12" fill="#fff"/><circle cx="50" cy="50" r="18" fill="none" stroke="#97BC62" stroke-width="2"/><circle cx="50" cy="50" r="24" fill="none" stroke="#97BC62" stroke-width="2" stroke-dasharray="3,3"/></svg>',
+            word: '<svg viewBox="0 0 100 100"><text x="50" y="60" font-size="32" fill="#fff" text-anchor="middle" font-weight="bold">ABC</text></svg>',
+            random: '<svg viewBox="0 0 100 100"><line x1="25" y1="30" x2="75" y2="40" stroke="#fff" stroke-width="2"/><line x1="30" y1="50" x2="70" y2="55" stroke="#97BC62" stroke-width="2"/><line x1="28" y1="65" x2="72" y2="60" stroke="#2C5F2D" stroke-width="2"/></svg>',
+            perfect: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 40 50 L 47 57 L 62 42" stroke="#2C5F2D" stroke-width="3" fill="none"/><path d="M 60 35 L 68 28 M 65 40 L 73 33" stroke="#FFD700" stroke-width="2"/></svg>',
+            addcontext: '<svg viewBox="0 0 100 100"><rect x="35" y="40" width="30" height="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="50" y1="32" x2="50" y2="38" stroke="#2C5F2D" stroke-width="2"/><line x1="47" y1="35" x2="50" y2="32" stroke="#2C5F2D" stroke-width="2"/><line x1="53" y1="35" x2="50" y2="32" stroke="#2C5F2D" stroke-width="2"/><text x="50" y="55" font-size="16" fill="#2C5F2D" text-anchor="middle">+</text></svg>',
+            letters: '<svg viewBox="0 0 100 100"><text x="50" y="65" font-size="28" fill="#fff" text-anchor="middle" font-weight="bold">ABC</text></svg>',
+            bigger: '<svg viewBox="0 0 100 100"><text x="50" y="48" font-size="20" fill="#97BC62" text-anchor="middle">A</text><text x="50" y="70" font-size="32" fill="#fff" text-anchor="middle" font-weight="bold">A</text></svg>',
+            less: '<svg viewBox="0 0 100 100"><rect x="25" y="40" width="50" height="8" fill="#fff"/><rect x="25" y="52" width="35" height="8" fill="#97BC62"/><rect x="25" y="64" width="20" height="8" fill="#2C5F2D"/></svg>',
+            massive: '<svg viewBox="0 0 100 100"><circle cx="30" cy="40" r="6" fill="#fff"/><circle cx="50" cy="35" r="8" fill="#97BC62"/><circle cx="70" cy="40" r="6" fill="#fff"/><circle cx="35" cy="55" r="7" fill="#97BC62"/><circle cx="55" cy="60" r="9" fill="#2C5F2D"/><circle cx="40" cy="70" r="5" fill="#fff"/><circle cx="65" cy="65" r="6" fill="#97BC62"/></svg>',
+            expensive: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="22" fill="#FFD700" stroke="#fff" stroke-width="2"/><text x="50" y="62" font-size="28" fill="#2C5F2D" text-anchor="middle" font-weight="bold">$$</text></svg>',
+            notimportant: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="5,5"/><line x1="40" y1="50" x2="60" y2="50" stroke="#97BC62" stroke-width="2"/></svg>',
+            paper: '<svg viewBox="0 0 100 100"><rect x="35" y="28" width="30" height="42" rx="2" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="40" y1="38" x2="60" y2="38" stroke="#2C5F2D" stroke-width="1.5"/><line x1="40" y1="46" x2="60" y2="46" stroke="#2C5F2D" stroke-width="1.5"/><line x1="40" y1="54" x2="60" y2="54" stroke="#2C5F2D" stroke-width="1.5"/><line x1="40" y1="62" x2="55" y2="62" stroke="#2C5F2D" stroke-width="1.5"/></svg>',
+            tools: '<svg viewBox="0 0 100 100"><rect x="25" y="35" width="15" height="30" fill="#fff" stroke="#97BC62" stroke-width="2"/><circle cx="55" cy="45" r="10" fill="#97BC62"/><rect x="50" y="55" width="10" height="15" fill="#2C5F2D"/><circle cx="32" cy="30" r="3" fill="#FFD700"/></svg>',
+            brain: '<svg viewBox="0 0 100 100"><path d="M 35 40 Q 30 30 40 25 Q 45 20 50 25 Q 55 20 60 25 Q 70 30 65 40 Q 70 50 65 60 Q 60 70 50 70 Q 40 70 35 60 Q 30 50 35 40" fill="#fff" stroke="#97BC62" stroke-width="2"/></svg>',
+            notools: '<svg viewBox="0 0 100 100"><rect x="30" y="40" width="40" height="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><line x1="25" y1="30" x2="75" y2="70" stroke="#ff4444" stroke-width="4"/></svg>',
+            pretty: '<svg viewBox="0 0 100 100"><path d="M 50 30 L 54 42 L 66 42 L 56 50 L 60 62 L 50 54 L 40 62 L 44 50 L 34 42 L 46 42 Z" fill="#FFD700"/><circle cx="50" cy="50" r="8" fill="#fff"/></svg>',
+            quality: '<svg viewBox="0 0 100 100"><path d="M 50 25 L 65 35 L 65 55 Q 65 75 50 85 Q 35 75 35 55 L 35 35 Z" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 40 50 L 47 57 L 60 42" stroke="#2C5F2D" stroke-width="3" fill="none"/><circle cx="62" cy="33" r="4" fill="#FFD700"/></svg>',
+            internet: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="22" fill="none" stroke="#fff" stroke-width="2"/><line x1="50" y1="28" x2="50" y2="72" stroke="#fff" stroke-width="2"/><path d="M 28 50 Q 50 35 72 50" stroke="#97BC62" stroke-width="2" fill="none"/><path d="M 28 50 Q 50 65 72 50" stroke="#97BC62" stroke-width="2" fill="none"/></svg>',
+            nothing: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="none" stroke="#fff" stroke-width="2"/><line x1="35" y1="50" x2="45" y2="50" stroke="#97BC62" stroke-width="2"/><line x1="55" y1="50" x2="65" y2="50" stroke="#97BC62" stroke-width="2"/></svg>',
+            mistake: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ff4444" stroke-width="2"/><text x="50" y="62" font-size="35" fill="#ff4444" text-anchor="middle" font-weight="bold">✗</text></svg>',
+            autofix: '<svg viewBox="0 0 100 100"><rect x="35" y="40" width="30" height="20" fill="#fff" stroke="#97BC62" stroke-width="2"/><path d="M 60 35 L 65 30 M 62 32 L 67 27 M 64 29 L 69 24" stroke="#FFD700" stroke-width="2"/><text x="50" y="55" font-size="18" fill="#2C5F2D" text-anchor="middle">OK</text></svg>',
+            better: '<svg viewBox="0 0 100 100"><path d="M 30 60 L 40 50 L 50 55 L 60 40 L 70 30" stroke="#fff" stroke-width="3" fill="none"/><circle cx="70" cy="30" r="4" fill="#97BC62"/><path d="M 62 28 L 70 30 L 68 38" fill="#97BC62"/></svg>'
+        };
+
+        function loadQuestion() {
+            answered = false;
+            timeLeft = 40;
+            attempts = 0;
+            currentQuestionPoints = questionValue; // Resetear puntos de la pregunta
+            
+            const q = questions[currentQuestion];
+            
+            document.getElementById('categoryTitle').textContent = q.category;
+            document.getElementById('questionNumber').textContent = `${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionText').textContent = q.question;
+            
+            const container = document.getElementById('lilyPadsContainer');
+            container.innerHTML = '';
+            
+            const labels = ['A', 'B', 'C', 'D'];
+            
+            q.options.forEach((option, index) => {
+                const lilyPad = document.createElement('button');
+                lilyPad.className = 'lily-pad';
+                lilyPad.onclick = () => checkAnswer(index);
+                
+                lilyPad.innerHTML = `
+                    <div class="lily-content">
+                        <div class="option-label">${labels[index]}</div>
+                        <div class="option-svg">${svgIcons[option.svg]}</div>
+                        <div class="option-text">${option.text}</div>
+                    </div>
+                `;
+                
+                container.appendChild(lilyPad);
+            });
+            
+            updateProgress();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            const timerElement = document.getElementById('timer');
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                timerElement.textContent = `00:00:${secs.toString().padStart(2, '0')}`;
+                
+                // Cambiar color según tiempo restante
+                timerElement.classList.remove('warning', 'danger');
+                if (timeLeft <= 10 && timeLeft > 5) {
+                    timerElement.classList.add('warning');
+                } else if (timeLeft <= 5) {
+                    timerElement.classList.add('danger');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (!answered) {
+                        handleTimeout();
+                    }
+                }
+            }, 1000);
+        }
+
+        function handleTimeout() {
+            answered = true;
+            lives--;
+            currentQuestionPoints = 0; // Se acabó el tiempo, pregunta vale 0
+            document.getElementById('lives').textContent = lives;
+            
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            lilyPads.forEach((pad, index) => {
+                pad.classList.add('answered');
+                if (index === questions[currentQuestion].correct) {
+                    pad.classList.add('correct');
+                }
+            });
+            
+            const modal = document.getElementById('explanationModal');
+            const header = document.getElementById('explanationHeader');
+            const text = document.getElementById('explanationText');
+            const retryBtn = document.getElementById('retryButton');
+            
+            header.innerHTML = `⏱️ Se acabó el tiempo<br><span style="font-size: 18px; color: #ff4444;">Ganaste 0 de ${questionValue.toLocaleString()} puntos</span>`;
+            header.style.color = '#ff4444';
+            text.textContent = questions[currentQuestion].explanation;
+            retryBtn.style.display = 'none';
+            
+            modal.classList.add('show');
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 2000);
+            }
+        }
+
+        function checkAnswer(selected) {
+            if (answered) return;
+            answered = true;
+            clearInterval(timer);
+            
+            attempts++;
+            
+            const q = questions[currentQuestion];
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            
+            // Si la respuesta es incorrecta, descontar 200 puntos
+            if (selected !== q.correct) {
+                currentQuestionPoints = Math.max(0, currentQuestionPoints - 200);
+            }
+            
+            lilyPads.forEach((pad, index) => {
+                pad.classList.add('answered');
+                if (index === selected) {
+                    if (selected === q.correct) {
+                        pad.classList.add('correct');
+                        points += currentQuestionPoints; // Sumar los puntos restantes
+                        animateFrog(pad);
+                    } else {
+                        pad.classList.add('incorrect');
+                        lives--;
+                    }
+                }
+                if (index === q.correct && selected !== q.correct) {
+                    pad.classList.add('correct');
+                }
+            });
+            
+            document.getElementById('points').textContent = points.toLocaleString('es-CO', {minimumFractionDigits: 3});
+            document.getElementById('lives').textContent = lives;
+            
+            showExplanation(selected === q.correct);
+            
+            if (lives <= 0) {
+                setTimeout(() => showGameOver(), 2000);
+            }
+        }
+
+        function animateFrog(targetPad) {
+            const frog = document.getElementById('frogContainer');
+            const rect = targetPad.getBoundingClientRect();
+            frog.style.left = rect.left + rect.width/2 - 60 + 'px';
+            frog.style.bottom = window.innerHeight - rect.top - rect.height/2 - 60 + 'px';
+            
+            setTimeout(() => {
+                frog.style.left = '50%';
+                frog.style.bottom = '80px';
+            }, 1000);
+        }
+
+        function showExplanation(correct) {
+            const modal = document.getElementById('explanationModal');
+            const header = document.getElementById('explanationHeader');
+            const text = document.getElementById('explanationText');
+            const retryBtn = document.getElementById('retryButton');
+            
+            if (correct) {
+                header.innerHTML = `¡Correcto! 🎉<br><span style="font-size: 20px; color: #FFD700;">Ganaste ${currentQuestionPoints.toLocaleString()} de ${questionValue.toLocaleString()} puntos</span>`;
+                header.style.color = '#2C5F2D';
+            } else {
+                header.innerHTML = `Incorrecto 😔<br><span style="font-size: 18px; color: #ff9800;">Ahora la pregunta vale ${currentQuestionPoints.toLocaleString()} puntos</span>`;
+                header.style.color = '#ff4444';
+            }
+            
+            text.textContent = questions[currentQuestion].explanation;
+            
+            // Mostrar botón de reintentar solo si falló, tiene vidas y la pregunta aún vale puntos
+            if (!correct && lives > 0 && currentQuestionPoints > 0) {
+                retryBtn.style.display = 'block';
+            } else {
+                retryBtn.style.display = 'none';
+            }
+            
+            modal.classList.add('show');
+        }
+
+        function retryQuestion() {
+            document.getElementById('explanationModal').classList.remove('show');
+            
+            // Reiniciar estado de la pregunta
+            const lilyPads = document.querySelectorAll('.lily-pad');
+            lilyPads.forEach(pad => {
+                pad.classList.remove('answered', 'correct', 'incorrect');
+            });
+            
+            answered = false;
+            timeLeft = 40;
+            startTimer();
+        }
+
+        function nextQuestion() {
+            document.getElementById('explanationModal').classList.remove('show');
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length && lives > 0) {
+                loadQuestion();
+            } else {
+                showFinalScreen();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = `${currentQuestion + 1}/${questions.length}`;
+        }
+
+        function showGameOver() {
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('frogContainer').style.display = 'none';
+            showFinalScreen();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('frogContainer').style.display = 'none';
+            const finalScreen = document.getElementById('finalScreen');
+            finalScreen.classList.add('show');
+            
+            document.getElementById('finalScore').textContent = points.toLocaleString('es-CO') + ' PUNTOS';
+            
+            let message = '';
+            if (lives <= 0) {
+                message = '¡Sigue practicando! Cada intento te ayuda a dominar mejor la Gestión de la Información.';
+            } else if (points >= 60000) {
+                message = '🏆 ¡EXPERTO EN GESTIÓN DE INFORMACIÓN! Dominas perfectamente todos los conceptos fundamentales.';
+            } else if (points >= 40000) {
+                message = '⭐ ¡EXCELENTE! Comprendes muy bien los principios de la gestión de información.';
+            } else if (points >= 25000) {
+                message = '👍 ¡MUY BIEN! Vas por buen camino. Entiendes los conceptos básicos importantes.';
+            } else {
+                message = '📚 Buen esfuerzo. Sigue aprendiendo sobre gestión de información.';
+            }
+            
+            document.getElementById('finalMessage').textContent = message;
+        }
+
+        document.getElementById('nextButton').onclick = nextQuestion;
+        document.getElementById('retryButton').onclick = retryQuestion;
+        
+        loadQuestion();
+    </script>
+</body>
+</html>
