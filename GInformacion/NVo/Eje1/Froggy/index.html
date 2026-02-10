@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1058,7 +1059,8 @@
             
             header.innerHTML = `⏱️ Se acabó el tiempo<br><span style="font-size: 18px; color: #ff4444;">Ganaste 0 de ${questionValue.toLocaleString()} puntos</span>`;
             header.style.color = '#ff4444';
-            text.textContent = questions[currentQuestion].explanation;
+            text.textContent = ''; // NO mostrar explicación
+            text.style.display = 'none'; // Ocultar texto
             retryBtn.style.display = 'none';
             
             modal.classList.add('show');
@@ -1131,12 +1133,14 @@
             if (correct) {
                 header.innerHTML = `¡Correcto! 🎉<br><span style="font-size: 20px; color: #FFD700;">Ganaste ${currentQuestionPoints.toLocaleString()} de ${questionValue.toLocaleString()} puntos</span>`;
                 header.style.color = '#2C5F2D';
+                text.textContent = questions[currentQuestion].explanation;
+                text.style.display = 'block';
             } else {
                 header.innerHTML = `Incorrecto 😔<br><span style="font-size: 18px; color: #ff9800;">Ahora la pregunta vale ${currentQuestionPoints.toLocaleString()} puntos</span>`;
                 header.style.color = '#ff4444';
+                text.textContent = ''; // NO mostrar explicación cuando falla
+                text.style.display = 'none'; // Ocultar el texto
             }
-            
-            text.textContent = questions[currentQuestion].explanation;
             
             // Mostrar botón de reintentar solo si falló, tiene vidas y la pregunta aún vale puntos
             if (!correct && lives > 0 && currentQuestionPoints > 0) {
