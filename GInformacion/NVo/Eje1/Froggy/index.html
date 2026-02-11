@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -520,11 +519,11 @@
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
+
             .question-text {
                 font-size: 20px;
             }
-            
+
             .lily-content {
                 min-height: 250px;
                 padding: 30px 15px;
@@ -974,28 +973,51 @@
             better: '<svg viewBox="0 0 100 100"><path d="M 30 60 L 40 50 L 50 55 L 60 40 L 70 30" stroke="#fff" stroke-width="3" fill="none"/><circle cx="70" cy="30" r="4" fill="#97BC62"/><path d="M 62 28 L 70 30 L 68 38" fill="#97BC62"/></svg>'
         };
 
+        // ✅ NUEVO: Barajar opciones y recalcular índice correcto (Fisher-Yates)
+        function shuffleWithCorrectIndex(options, correctIndex) {
+            const arr = options.map((opt, idx) => ({ opt, idx }));
+
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+
+            const shuffledOptions = arr.map(x => x.opt);
+            const newCorrectIndex = arr.findIndex(x => x.idx === correctIndex);
+
+            return { shuffledOptions, newCorrectIndex };
+        }
+
         function loadQuestion() {
             answered = false;
             timeLeft = 40;
             attempts = 0;
             currentQuestionPoints = questionValue; // Resetear puntos de la pregunta
-            
+
             const q = questions[currentQuestion];
-            
+
+            // ✅ NUEVO: barajar una sola vez por pregunta (por si vuelves a cargar la misma)
+            if (!q._shuffledOptions || typeof q._correctShuffled !== "number") {
+                const { shuffledOptions, newCorrectIndex } = shuffleWithCorrectIndex(q.options, q.correct);
+                q._shuffledOptions = shuffledOptions;
+                q._correctShuffled = newCorrectIndex;
+            }
+
             document.getElementById('categoryTitle').textContent = q.category;
             document.getElementById('questionNumber').textContent = `${currentQuestion + 1} / ${questions.length}`;
             document.getElementById('questionText').textContent = q.question;
-            
+
             const container = document.getElementById('lilyPadsContainer');
             container.innerHTML = '';
-            
+
             const labels = ['A', 'B', 'C', 'D'];
-            
-            q.options.forEach((option, index) => {
+
+            // ✅ USAR opciones barajadas
+            q._shuffledOptions.forEach((option, index) => {
                 const lilyPad = document.createElement('button');
                 lilyPad.className = 'lily-pad';
                 lilyPad.onclick = () => checkAnswer(index);
-                
+
                 lilyPad.innerHTML = `
                     <div class="lily-content">
                         <div class="option-label">${labels[index]}</div>
@@ -1003,10 +1025,10 @@
                         <div class="option-text">${option.text}</div>
                     </div>
                 `;
-                
+
                 container.appendChild(lilyPad);
             });
-            
+
             updateProgress();
             startTimer();
         }
@@ -1014,13 +1036,13 @@
         function startTimer() {
             clearInterval(timer);
             const timerElement = document.getElementById('timer');
-            
+
             timer = setInterval(() => {
                 timeLeft--;
                 const mins = Math.floor(timeLeft / 60);
                 const secs = timeLeft % 60;
                 timerElement.textContent = `00:00:${secs.toString().padStart(2, '0')}`;
-                
+
                 // Cambiar color según tiempo restante
                 timerElement.classList.remove('warning', 'danger');
                 if (timeLeft <= 10 && timeLeft > 5) {
@@ -1028,7 +1050,7 @@
                 } else if (timeLeft <= 5) {
                     timerElement.classList.add('danger');
                 }
-                
+
                 if (timeLeft <= 0) {
                     clearInterval(timer);
                     if (!answered) {
@@ -1043,28 +1065,31 @@
             lives--;
             currentQuestionPoints = 0; // Se acabó el tiempo, pregunta vale 0
             document.getElementById('lives').textContent = lives;
-            
+
+            const q = questions[currentQuestion];
+            const correctIndex = (typeof q._correctShuffled === "number") ? q._correctShuffled : q.correct;
+
             const lilyPads = document.querySelectorAll('.lily-pad');
             lilyPads.forEach((pad, index) => {
                 pad.classList.add('answered');
-                if (index === questions[currentQuestion].correct) {
+                if (index === correctIndex) {
                     pad.classList.add('correct');
                 }
             });
-            
+
             const modal = document.getElementById('explanationModal');
             const header = document.getElementById('explanationHeader');
             const text = document.getElementById('explanationText');
             const retryBtn = document.getElementById('retryButton');
-            
+
             header.innerHTML = `⏱️ Se acabó el tiempo<br><span style="font-size: 18px; color: #ff4444;">Ganaste 0 de ${questionValue.toLocaleString()} puntos</span>`;
             header.style.color = '#ff4444';
             text.textContent = ''; // NO mostrar explicación
             text.style.display = 'none'; // Ocultar texto
             retryBtn.style.display = 'none';
-            
+
             modal.classList.add('show');
-            
+
             if (lives <= 0) {
                 setTimeout(() => showGameOver(), 2000);
             }
@@ -1074,21 +1099,23 @@
             if (answered) return;
             answered = true;
             clearInterval(timer);
-            
+
             attempts++;
-            
+
             const q = questions[currentQuestion];
+            const correctIndex = (typeof q._correctShuffled === "number") ? q._correctShuffled : q.correct;
+
             const lilyPads = document.querySelectorAll('.lily-pad');
-            
+
             // Si la respuesta es incorrecta, descontar 200 puntos
-            if (selected !== q.correct) {
+            if (selected !== correctIndex) {
                 currentQuestionPoints = Math.max(0, currentQuestionPoints - 200);
             }
-            
+
             lilyPads.forEach((pad, index) => {
                 pad.classList.add('answered');
                 if (index === selected) {
-                    if (selected === q.correct) {
+                    if (selected === correctIndex) {
                         pad.classList.add('correct');
                         points += currentQuestionPoints; // Sumar los puntos restantes
                         animateFrog(pad);
@@ -1097,16 +1124,16 @@
                         lives--;
                     }
                 }
-                if (index === q.correct && selected !== q.correct) {
+                if (index === correctIndex && selected !== correctIndex) {
                     pad.classList.add('correct');
                 }
             });
-            
+
             document.getElementById('points').textContent = points.toLocaleString('es-CO', {minimumFractionDigits: 3});
             document.getElementById('lives').textContent = lives;
-            
-            showExplanation(selected === q.correct);
-            
+
+            showExplanation(selected === correctIndex);
+
             if (lives <= 0) {
                 setTimeout(() => showGameOver(), 2000);
             }
@@ -1117,7 +1144,7 @@
             const rect = targetPad.getBoundingClientRect();
             frog.style.left = rect.left + rect.width/2 - 60 + 'px';
             frog.style.bottom = window.innerHeight - rect.top - rect.height/2 - 60 + 'px';
-            
+
             setTimeout(() => {
                 frog.style.left = '50%';
                 frog.style.bottom = '80px';
@@ -1129,7 +1156,7 @@
             const header = document.getElementById('explanationHeader');
             const text = document.getElementById('explanationText');
             const retryBtn = document.getElementById('retryButton');
-            
+
             if (correct) {
                 header.innerHTML = `¡Correcto! 🎉<br><span style="font-size: 20px; color: #FFD700;">Ganaste ${currentQuestionPoints.toLocaleString()} de ${questionValue.toLocaleString()} puntos</span>`;
                 header.style.color = '#2C5F2D';
@@ -1141,26 +1168,26 @@
                 text.textContent = ''; // NO mostrar explicación cuando falla
                 text.style.display = 'none'; // Ocultar el texto
             }
-            
+
             // Mostrar botón de reintentar solo si falló, tiene vidas y la pregunta aún vale puntos
             if (!correct && lives > 0 && currentQuestionPoints > 0) {
                 retryBtn.style.display = 'block';
             } else {
                 retryBtn.style.display = 'none';
             }
-            
+
             modal.classList.add('show');
         }
 
         function retryQuestion() {
             document.getElementById('explanationModal').classList.remove('show');
-            
+
             // Reiniciar estado de la pregunta
             const lilyPads = document.querySelectorAll('.lily-pad');
             lilyPads.forEach(pad => {
                 pad.classList.remove('answered', 'correct', 'incorrect');
             });
-            
+
             answered = false;
             timeLeft = 40;
             startTimer();
@@ -1169,7 +1196,7 @@
         function nextQuestion() {
             document.getElementById('explanationModal').classList.remove('show');
             currentQuestion++;
-            
+
             if (currentQuestion < questions.length && lives > 0) {
                 loadQuestion();
             } else {
@@ -1195,9 +1222,9 @@
             document.getElementById('frogContainer').style.display = 'none';
             const finalScreen = document.getElementById('finalScreen');
             finalScreen.classList.add('show');
-            
+
             document.getElementById('finalScore').textContent = points.toLocaleString('es-CO') + ' PUNTOS';
-            
+
             let message = '';
             if (lives <= 0) {
                 message = '¡Sigue practicando! Cada intento te ayuda a dominar mejor la Gestión de la Información.';
@@ -1210,13 +1237,13 @@
             } else {
                 message = '📚 Buen esfuerzo. Sigue aprendiendo sobre gestión de información.';
             }
-            
+
             document.getElementById('finalMessage').textContent = message;
         }
 
         document.getElementById('nextButton').onclick = nextQuestion;
         document.getElementById('retryButton').onclick = retryQuestion;
-        
+
         loadQuestion();
     </script>
 </body>
