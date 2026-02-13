@@ -1,1 +1,458 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pensamiento Algorítmico</title>
+
+  <style>
+    :root{
+      --bg1:#fbfbff;
+      --bg2:#f4f8ff;
+      --ink:#1c2330;
+
+      --cardA: rgba(255,255,255,0.92);
+      --cardB: rgba(255,255,255,0.70);
+
+      --shadow: 0 18px 50px rgba(22, 28, 45, 0.10);
+      --shadow2: 0 10px 25px rgba(22, 28, 45, 0.10);
+
+      --radius: 26px;
+      --border: 1px solid rgba(255,255,255,0.60);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(900px 600px at 20% 10%, rgba(255,116,184,0.16), transparent 55%),
+        radial-gradient(900px 650px at 85% 20%, rgba(124,92,255,0.14), transparent 55%),
+        radial-gradient(900px 650px at 55% 85%, rgba(45,212,191,0.10), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+
+    .halo{
+      position:fixed;
+      inset:-220px;
+      pointer-events:none;
+      background:
+        radial-gradient(closest-side at 35% 28%, rgba(255,255,255,0.95), rgba(255,255,255,0.0) 65%),
+        radial-gradient(closest-side at 70% 60%, rgba(255,255,255,0.75), rgba(255,255,255,0.0) 60%);
+      filter: blur(2px);
+      opacity: 0.60;
+      mix-blend-mode: soft-light;
+    }
+
+    .app{
+      min-height:100%;
+      padding: 18px 16px 70px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    /* ENCABEZADO (FUERA DEL MARCO) */
+    .topbar{
+      width:min(1040px, 100%);
+      margin:0 auto;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 4px;
+    }
+    .headerTitle{
+      margin:0;
+      font-size: clamp(22px, 3.2vw, 36px);
+      line-height:1.05;
+      letter-spacing:-0.4px;
+    }
+    .counter{
+      padding:10px 14px;
+      border-radius:999px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.62));
+      border: var(--border);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-weight: 800;
+      letter-spacing: .2px;
+      white-space:nowrap;
+      height: fit-content;
+    }
+
+    /* Escenario: botones fuera del marco */
+    .stage{
+      width:min(1040px, 100%);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 92px 1fr 92px;
+      gap:14px;
+      align-items:center;
+    }
+
+    .navBtn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      width:72px; height:72px;
+      border-radius:22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.72));
+      border: var(--border);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display:grid;
+      place-items:center;
+      transition: transform .12s ease, opacity .12s ease, filter .12s ease;
+    }
+    .navBtn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+    .navBtn:active{ transform: scale(.98); }
+    .navBtn[disabled]{ opacity:.35; cursor:not-allowed; transform:none; }
+
+    .arrow{
+      width:22px; height:22px;
+      border-right: 4px solid rgba(124,92,255,0.9);
+      border-bottom: 4px solid rgba(255,116,184,0.9);
+      transform: rotate(135deg);
+      border-radius: 3px;
+    }
+    .arrow.next{ transform: rotate(-45deg); }
+
+    /* Marco */
+    .frame{
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--cardA), var(--cardB));
+      border: var(--border);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+
+      /* más adaptable: alto mínimo en función del dispositivo */
+      min-height: clamp(420px, 62vh, 620px);
+      padding: 28px;
+    }
+    .frame::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(760px 260px at 25% 0%, rgba(255,116,184,0.18), transparent 60%),
+        radial-gradient(760px 260px at 80% 0%, rgba(124,92,255,0.14), transparent 62%),
+        radial-gradient(900px 420px at 50% 110%, rgba(45,212,191,0.10), transparent 60%);
+      pointer-events:none;
+    }
+
+    .slide{
+      position:absolute;
+      inset:0;
+      padding: 28px;
+      opacity:0;
+      transform: translateX(16px);
+      transition: opacity .22s ease, transform .22s ease;
+
+      /* IMPORTANTE: interior simple y centrado */
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      justify-content:flex-start; /* evita “corte” arriba */
+    }
+    .slide.active{
+      opacity:1;
+      transform: translateX(0);
+      position:relative;
+    }
+
+    /* Título dentro (solo cuando hay) */
+    .title{
+      margin:0;
+      font-size: clamp(26px, 3.6vw, 40px);
+      line-height:1.05;
+      letter-spacing:-0.4px;
+      position:relative;
+      z-index:1;
+    }
+
+    /* Caja de imagen: MÁS GRANDE + CENTRADA */
+    .imgBox{
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.65);
+      background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.30));
+      box-shadow: 0 18px 44px rgba(22, 28, 45, 0.10);
+      overflow:hidden;
+      position:relative;
+      z-index:1;
+
+      /* la imagen ocupa el “resto” del alto de la slide */
+      flex: 1;
+      min-height: clamp(260px, 52vh, 520px);
+
+      /* centra la imagen dentro */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px;
+    }
+    .imgBox::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(240px 180px at 18% 10%, rgba(45,212,191,0.16), transparent 60%),
+        radial-gradient(240px 180px at 85% 85%, rgba(255,116,184,0.14), transparent 60%);
+      opacity:.65;
+      pointer-events:none;
+    }
+
+    /* Por defecto: NO recorta (evita “cortada”) */
+    .imgBox img{
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display:block;
+      position:relative;
+      z-index:1;
+      border-radius: 18px;
+      background: transparent;
+    }
+
+    /* Si quieres que alguna imagen “llene” recortando, agrega class="cover" al img */
+    .imgBox img.cover{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      border-radius: 0;
+    }
+
+    /* Slide 3 (última “más grande”) */
+    .slide.big .imgBox{
+      min-height: clamp(300px, 58vh, 600px);
+    }
+
+    /* Footer fijo */
+    .globalFooter{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      padding: 10px 14px;
+      display:flex;
+      justify-content:center;
+    }
+    .globalFooter .bar{
+      width:min(1040px, 100%);
+      text-align:center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.60));
+      border: var(--border);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    /* Responsive: botones arriba y marco debajo */
+    @media (max-width: 860px){
+      .stage{
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "prev next"
+          "frame frame";
+        align-items:stretch;
+      }
+      #prevBtn{ grid-area: prev; justify-self:start; }
+      #nextBtn{ grid-area: next; justify-self:end; }
+      .frame{ grid-area: frame; padding: 20px; }
+      .slide{ padding: 20px; }
+      .navBtn{ width:64px; height:64px; }
+      .topbar{ align-items:flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="halo" aria-hidden="true"></div>
+
+  <main class="app">
+    <!-- Encabezado FUERA de la diapositiva -->
+    <div class="topbar">
+      <h1 class="headerTitle">Pensamiento Algorítmico</h1>
+      <div class="counter" id="slideCounter">1 / 13</div>
+    </div>
+
+    <section class="stage" aria-label="Diapositivas">
+      <button class="navBtn" id="prevBtn" type="button" aria-label="Retroceso">
+        <span class="arrow"></span>
+      </button>
+
+      <div class="frame" id="frame">
+        <!-- Slide 1: título + imagen (centrada, sin corte) -->
+        <article class="slide active" data-title="Aventuras con Súper Ice">
+          <h1 class="title">Aventuras con Súper Ice</h1>
+          <div class="imgBox">
+            <img src="img1.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 2 -->
+        <article class="slide" data-title="¿Para qué sirve?">
+          <h1 class="title">¿Para qué sirve?</h1>
+          <div class="imgBox">
+            <img src="img2.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 3: un poco más grande -->
+        <article class="slide big" data-title="¿Cómo se hace?">
+          <h1 class="title">¿Cómo se hace?</h1>
+          <div class="imgBox">
+            <img src="img3.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 4 -->
+        <article class="slide" data-title="Pasos: Análisis del entorno.">
+          <h1 class="title">Pasos: Análisis del entorno.</h1>
+          <div class="imgBox">
+            <img src="img4.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 5 -->
+        <article class="slide" data-title="Diapositiva 5">
+          <h1 class="title">Diapositiva 5</h1>
+          <div class="imgBox">
+            <img src="img5.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 6 -->
+        <article class="slide" data-title="Diapositiva 6">
+          <h1 class="title">Diapositiva 6</h1>
+          <div class="imgBox">
+            <img src="img6.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 7 -->
+        <article class="slide" data-title="Diapositiva 7">
+          <h1 class="title">Diapositiva 7</h1>
+          <div class="imgBox">
+            <img src="img7.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 8 -->
+        <article class="slide" data-title="Diapositiva 8">
+          <h1 class="title">Diapositiva 8</h1>
+          <div class="imgBox">
+            <img src="img8.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 9 -->
+        <article class="slide" data-title="Diapositiva 9">
+          <h1 class="title">Diapositiva 9</h1>
+          <div class="imgBox">
+            <img src="img9.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 10 -->
+        <article class="slide" data-title="Diapositiva 10">
+          <h1 class="title">Diapositiva 10</h1>
+          <div class="imgBox">
+            <img src="img10.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 11 -->
+        <article class="slide" data-title="Diapositiva 11">
+          <h1 class="title">Diapositiva 11</h1>
+          <div class="imgBox">
+            <img src="img11.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 12 -->
+        <article class="slide" data-title="Diapositiva 12">
+          <h1 class="title">Diapositiva 12</h1>
+          <div class="imgBox">
+            <img src="img12.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+
+        <!-- Slide 13 -->
+        <article class="slide" data-title="Diapositiva 13">
+          <h1 class="title">Diapositiva 13</h1>
+          <div class="imgBox">
+            <img src="img13.jpg" alt="" onerror="this.style.display='none'">
+          </div>
+        </article>
+      </div>
+
+      <button class="navBtn" id="nextBtn" type="button" aria-label="Avance">
+        <span class="arrow next"></span>
+      </button>
+    </section>
+  </main>
+
+  <footer class="globalFooter">
+    <div class="bar">Aprendiendo con @LaProfeVivy</div>
+  </footer>
+
+  <script>
+    (() => {
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const counter = document.getElementById("slideCounter");
+      const frame = document.getElementById("frame");
+
+      let index = 0;
+
+      function setActive(i){
+        index = Math.max(0, Math.min(slides.length - 1, i));
+        slides.forEach((s,k) => s.classList.toggle("active", k === index));
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === slides.length - 1;
+        counter.textContent = `${index + 1} / ${slides.length}`;
+      }
+
+      prevBtn.addEventListener("click", () => setActive(index - 1));
+      nextBtn.addEventListener("click", () => setActive(index + 1));
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") setActive(index - 1);
+        if (e.key === "ArrowRight") setActive(index + 1);
+      });
+
+      // Swipe
+      let startX = null;
+      frame.addEventListener("touchstart", (e) => {
+        startX = e.touches?.[0]?.clientX ?? null;
+      }, {passive:true});
+      frame.addEventListener("touchend", (e) => {
+        if (startX == null) return;
+        const endX = e.changedTouches?.[0]?.clientX ?? startX;
+        const dx = endX - startX;
+        const t = 50;
+        if (dx > t) setActive(index - 1);
+        if (dx < -t) setActive(index + 1);
+        startX = null;
+      }, {passive:true});
+
+      setActive(0);
+    })();
+  </script>
+</body>
+</html>
 
