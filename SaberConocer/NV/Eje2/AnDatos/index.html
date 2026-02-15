@@ -1,1 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checklist - Análisis de Datos</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    :root{
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --ink:#111827;
+      --muted:#4b5563;
+      --muted2:#6b7280;
+
+      --brand:#0f3d6e;
+      --brand2:#1f6fb2;
+      --line:#e5e7eb;
+
+      --shadow: 0 10px 28px rgba(17,24,39,.08);
+      --shadow2: 0 8px 18px rgba(17,24,39,.06);
+      --radius: 14px;
+
+      --ok:#16a34a;
+      --warn:#f59e0b;
+      --info:#2563eb;
+    }
+
+    body{
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #f9fbff 0%, var(--bg) 100%);
+      min-height:100vh;
+      color:var(--ink);
+      padding-bottom: 74px;
+    }
+
+    /* Barra superior */
+    .topbar{
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 10px rgba(17,24,39,.04);
+      padding: 16px 18px;
+    }
+    .topbar-inner{
+      max-width: 1200px;
+      margin: 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .brandblock{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 220px;
+    }
+    .mark{
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      box-shadow: 0 10px 20px rgba(15,61,110,.20);
+    }
+    .titleblock{
+      display:flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .titleblock h1{
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--brand);
+      line-height: 1.1;
+    }
+    .titleblock p{
+      font-size: 12.5px;
+      color: var(--muted2);
+      line-height: 1.2;
+    }
+
+    .wrap{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .panes{
+      display:flex;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .pane{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      min-height: 600px;
+    }
+
+    /* IZQUIERDA */
+    .left{
+      flex: 0 0 38%;
+      display:flex;
+      flex-direction: column;
+    }
+
+    .list{
+      padding: 12px;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item{
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+      padding: 12px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+      background: #fff;
+    }
+    .item:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow2);
+      border-color: rgba(15,61,110,0.22);
+    }
+    .item.active{
+      border-color: rgba(31,111,178,0.45);
+      background: linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
+      box-shadow: 0 12px 30px rgba(31,111,178,.10);
+    }
+
+    .check{
+      width:18px;height:18px;
+      margin-top: 2px;
+      accent-color: var(--ok);
+      cursor:pointer;
+      flex: 0 0 auto;
+    }
+
+    .item-text{flex:1;}
+    .item-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .item-title{
+      font-weight: 900;
+      font-size: 14.5px;
+      line-height: 1.25;
+      color: #0b1220;
+    }
+
+    .rightSlot{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .badge{
+      font-size: 12px;
+      font-weight: 900;
+      color: #0b1220;
+      background: #f3f4f6;
+      border: 1px solid var(--line);
+      padding: 5px 9px;
+      border-radius: 999px;
+    }
+
+    .example-link{
+      font-size: 12px;
+      font-weight: 950;
+      color: var(--brand2);
+      text-decoration: none;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(31,111,178,.28);
+      background: #f0f8ff;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    }
+    .example-link:hover{
+      transform: translateY(-1px);
+      background: #eaf5ff;
+      border-color: rgba(31,111,178,.45);
+    }
+
+    /* DERECHA */
+    .right{
+      flex: 1 1 auto;
+      padding: 14px;
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .detail-header{
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background: #ffffff;
+      box-shadow: var(--shadow2);
+    }
+    .detail-title{
+      font-size: 18px;
+      font-weight: 950;
+      color:#0b1220;
+      line-height:1.2;
+    }
+    .detail-meta{
+      margin-top: 6px;
+      color: var(--muted2);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .info-card{
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+
+    .info-section{
+      padding: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .info-section:first-child{ border-top: none; }
+
+    .sec-head{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .sec-title{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      font-weight: 950;
+      font-size: 12px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color:#0b1220;
+    }
+    .bar{
+      width: 6px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--brand2);
+    }
+    .bar.example{ background: var(--info); }
+    .bar.case{ background: var(--warn); }
+
+    .sec-body{
+      color:#111827;
+      font-size: 14.5px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    /* PASOS (acordeón por paso) */
+    .steps-card{
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+    .steps-head{
+      padding: 12px 14px;
+      background: #fbfdff;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .steps-head .label{
+      font-weight: 950;
+      font-size: 12px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: var(--brand);
+    }
+
+    .step{
+      border-top: 1px solid var(--line);
+    }
+    .step:first-child{ border-top: none; }
+
+    .step-btn{
+      width:100%;
+      text-align:left;
+      border:none;
+      background:#fff;
+      padding: 12px 14px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: background .12s ease;
+    }
+    .step-btn:hover{
+      background: #f8fafc;
+    }
+    .step-left{
+      display:flex;
+      align-items:flex-start;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+    .step-n{
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: #eef6ff;
+      border: 1px solid #dbeafe;
+      color: var(--brand);
+      font-weight: 950;
+      display:flex;
+      align-items:center;
+      justify-content: center;
+      font-size: 13px;
+    }
+    .step-title{
+      font-weight: 950;
+      color:#0b1220;
+      font-size: 14px;
+      line-height: 1.25;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .chev{
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid #111827;
+      border-bottom: 2px solid #111827;
+      transform: rotate(45deg);
+      transition: transform .18s ease;
+      flex: 0 0 auto;
+      margin-left: 6px;
+    }
+
+    .step.open .chev{
+      transform: rotate(-135deg);
+    }
+
+    .step-panel{
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .22s ease;
+      background: #fff;
+    }
+    .step.open .step-panel{
+      max-height: 520px;
+    }
+    .step-content{
+      padding: 0 14px 14px 50px;
+      color:#111827;
+      font-size: 14.2px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .placeholder{
+      border: 1px dashed #c7d2fe;
+      background: #f5f8ff;
+      border-radius: 12px;
+      padding: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Footer fijo */
+    .footer{
+      background: #ffffff;
+      border-top: 1px solid var(--line);
+      padding: 16px 12px;
+      text-align:center;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      box-shadow: 0 -8px 24px rgba(17,24,39,.06);
+    }
+    .footer p{
+      margin:0;
+      color:#0b1220;
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+    .footer span{
+      color: var(--brand2);
+      font-weight: 950;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .left{ flex-basis: 42%; }
+      .detail-title{ font-size: 16.5px; }
+    }
+    @media (max-width: 640px){
+      .topbar-inner{ flex-direction: column; align-items:flex-start; }
+      .panes{ flex-direction: column; }
+      .pane{ min-height: auto; }
+      .step-title{ white-space: normal; }
+      .step-content{ padding-left: 14px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brandblock">
+        <div class="mark" aria-hidden="true"></div>
+        <div class="titleblock">
+          <h1>Análisis de datos por medio de aplicaciones</h1>
+          <p>Checklist</p>
+        </div>
+      </div>
+      <!-- (quitado: chips de nivel/enfoque) -->
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="panes">
+      <!-- IZQUIERDA -->
+      <div class="pane left">
+        <div class="list" id="list"></div>
+      </div>
+
+      <!-- DERECHA -->
+      <div class="pane right">
+        <div id="detailHeader" class="detail-header">
+          <div class="detail-title">Contenido</div>
+          <div class="detail-meta">Selecciona un ítem.</div>
+        </div>
+
+        <div id="infoCard" class="info-card">
+          <div class="placeholder">
+            Selecciona un ítem para ver el contenido.
+          </div>
+        </div>
+
+        <div id="stepsWrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Aprendiendo con <span>@LaProfeVivy</span></p>
+  </div>
+
+  <script>
+    const EJEMPLO_TENDENCIAS_URL =
+      "https://docs.google.com/document/d/1C8XRLWfq3V5qD0LGXeNji_bqQ5sSaf79PcEJ6TskSGM/edit?usp=sharing";
+
+    const items = [
+      {
+        id: 1,
+        titulo: "¿Qué es el análisis de datos?",
+        significado:
+          "Es el proceso de examinar datos (numéricos, textuales o registros) para transformarlos en información útil: describir lo que pasa, explicar por qué ocurre, detectar patrones y apoyar decisiones basadas en evidencia.",
+        ejemplo:
+          "Un coordinador académico revisa asistencia y notas. Al cruzarlas, encuentra que baja la asistencia cuando suben las entregas. Ajusta el calendario y refuerza acompañamiento.",
+        caso:
+          "Tienes registros de ventas diarias de 3 meses. Debes responder con evidencia si el comportamiento general está subiendo, bajando o estable."
+      },
+      {
+        id: 2,
+        titulo: "¿Para qué sirve (aplicabilidad)?",
+        significado:
+          "Sirve para tomar decisiones con menor incertidumbre. Permite: medir desempeño, comparar periodos, evaluar acciones, detectar problemas temprano y priorizar mejoras donde el impacto sea mayor.",
+        ejemplo:
+          "En una campaña digital, se analiza tráfico, conversiones y costo. Se detecta que un canal trae visitas pero no compra; se redistribuye presupuesto a canales con mejor conversión.",
+        caso:
+          "Te piden justificar si una intervención funcionó: ¿mejoró un indicador real o solo cambió el volumen sin calidad?"
+      },
+      {
+        id: 3,
+        titulo: "¿Con qué se hace (aplicaciones/herramientas)?",
+        significado:
+          "Con aplicaciones que permiten: organizar datos, limpiar errores, resumir, filtrar, cruzar variables y visualizar resultados. La elección depende del tamaño del dato y del objetivo.",
+        ejemplo:
+          "Se usa hoja de cálculo para tablas dinámicas y gráficos; luego un tablero (dashboard) para seguimiento semanal de indicadores.",
+        caso:
+          "Te entregan 5.000 filas con fechas mal escritas y duplicados. Debes estandarizar, filtrar y producir un resumen mensual confiable."
+      },
+      {
+        id: 4,
+        titulo: "Datos, información y decisión",
+        significado:
+          "Dato: valor aislado. Información: dato interpretado con contexto y comparación. Decisión: acción concreta derivada de esa información (qué se hará y por qué).",
+        ejemplo:
+          "Dato: 120 visitas. Información: 120 es 30% menos que la semana anterior. Decisión: revisar cambios del sitio y ajustar la campaña para recuperar demanda.",
+        caso:
+          "Tienes calificaciones por tema. Convierte a información (promedios por tema + comparación) y plantea una decisión (refuerzo del tema más débil)."
+      },
+      {
+        id: 5,
+        titulo: "Cómo se hace: proceso paso a paso",
+        significado:
+          "Es una secuencia ordenada para pasar de una pregunta a conclusiones confiables. Mantiene coherencia: datos comparables, criterios claros y resultados comunicables.",
+        ejemplo:
+          "Una institución analiza tiempos de atención: define indicador, depura registros, agrupa por hora/día, identifica picos y propone ajustes de turnos.",
+        caso:
+          "Debes analizar asistencia y participación por semanas para identificar cuándo cae el compromiso y proponer una mejora basada en evidencia.",
+        pasos: [
+          {
+            titulo: "Definir objetivo y pregunta",
+            detalle:
+              "Formula la pregunta con precisión para evitar análisis “a ciegas”.\n\nIncluye:\n- Qué quieres medir (variable)\n- En qué periodo\n- A qué grupo o contexto\n\nEjemplos:\n- “¿Cómo cambia la asistencia por semana durante el trimestre?”\n- “¿Qué temas tienen menor rendimiento por grupo?”"
+          },
+          {
+            titulo: "Recolección de datos (fuentes)",
+            detalle:
+              "Asegura que los datos sean suficientes y pertinentes.\n\nBuenas prácticas:\n- Definir fuente\n- Verificar permisos y privacidad\n- Registrar fecha de extracción y alcance"
+          },
+          {
+            titulo: "Limpieza y calidad",
+            detalle:
+              "La calidad define la credibilidad del resultado.\n\nRevisa:\n- Duplicados\n- Valores vacíos\n- Formatos (fechas/unidades)\n- Valores imposibles\n\nDocumenta reglas de corrección."
+          },
+          {
+            titulo: "Organizar y transformar",
+            detalle:
+              "Prepara datos para comparar y resumir.\n\nAcciones:\n- Normalizar categorías\n- Crear columnas: mes/semana/día/segmento\n- Unir tablas por una llave (ID/fecha)\n\nResultado: dataset listo para análisis."
+          },
+          {
+            titulo: "Explorar y resumir (métricas)",
+            detalle:
+              "Describe el comportamiento antes de concluir.\n\nUsa:\n- Conteos, promedios, mediana\n- Variación absoluta y %\n- Segmentación por grupos\n\nPrimero “qué pasa”, luego hipótesis del “por qué”."
+          },
+          {
+            titulo: "Visualizar para detectar patrones",
+            detalle:
+              "El gráfico correcto revela estructuras.\n\nEjemplos:\n- Línea: tendencia\n- Barras: comparación\n- Tabla dinámica: cruces\n\nIncluye ejes, unidades y títulos."
+          },
+          {
+            titulo: "Interpretar y concluir",
+            detalle:
+              "Interpreta con contexto.\n\nIncluye:\n- Hallazgo principal\n- Evidencia numérica\n- Limitaciones\n- Recomendación (acción)"
+          },
+          {
+            titulo: "Comunicar (reporte o tablero)",
+            detalle:
+              "Entrega un resumen accionable:\n- Objetivo\n- Método\n- Resultados clave\n- Recomendación\n- Próximos pasos"
+          }
+        ]
+      },
+      {
+        id: 6,
+        titulo: "Encontrar patrones y tendencias",
+        significado:
+          "Tendencia: dirección general en el tiempo (sube/baja/estable). Patrón: comportamiento repetitivo por tiempo o grupo (días, segmentos, productos). Ambos ayudan a predecir y planificar.",
+        ejemplo:
+          "Se detecta tendencia de caída mensual, y patrón de baja los lunes. Se ajusta promoción los lunes y se revisan causas de la caída mensual (precio, competencia, disponibilidad).",
+        caso:
+          "Tienes ventas diarias por 6 meses. Debes responder: (a) tendencia general, (b) días con mínimos repetidos, (c) qué segmento explica el cambio.",
+        ejemploLink: EJEMPLO_TENDENCIAS_URL,
+        pasos: [
+          {
+            titulo: "Preparar serie temporal (orden y consistencia)",
+            detalle:
+              "Checklist:\n- Ordenar por fecha\n- Asegurar periodicidad (diario/semanal)\n- Corregir fechas inválidas\n- Marcar faltantes\n\nSi faltan días, decide tratamiento y documenta."
+          },
+          {
+            titulo: "Medir la tendencia (comparar periodos)",
+            detalle:
+              "Métodos:\n- Semana vs semana / mes vs mes\n- Variación absoluta: actual - anterior\n- Variación %: (actual - anterior) / anterior\n\nCierra con: sube/baja/estable + evidencia."
+          },
+          {
+            titulo: "Reducir ruido (suavización)",
+            detalle:
+              "Opciones:\n- Promedio móvil (p.ej., 7 días)\n- Mediana móvil (si hay extremos)\n\nSirve para ver forma general, no para ocultar problemas."
+          },
+          {
+            titulo: "Detectar patrones por agrupación",
+            detalle:
+              "Agrupa por variables repetibles:\n- Día de la semana\n- Hora\n- Canal\n- Producto\n- Segmento\n\nBusca repetición en varios periodos (no un evento aislado)."
+          },
+          {
+            titulo: "Cruces para explicar el cambio",
+            detalle:
+              "Cruces útiles:\n- Producto × Mes\n- Canal × Semana\n- Segmento × Día\n\nMide contribución: quién aporta más al total y quién cae más."
+          },
+          {
+            titulo: "Validar antes de decidir",
+            detalle:
+              "Reglas prácticas:\n- Confirmar en más de un periodo\n- Revisar eventos especiales (feriados/campañas)\n- Revisar outliers\n\nCierra con una acción y cómo medir si funcionó."
+          }
+        ]
+      }
+    ];
+
+    const listEl = document.getElementById("list");
+    const detailHeaderEl = document.getElementById("detailHeader");
+    const infoCardEl = document.getElementById("infoCard");
+    const stepsWrapEl = document.getElementById("stepsWrap");
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function renderList(){
+      listEl.innerHTML = "";
+      items.forEach(it => {
+        const row = document.createElement("div");
+        row.className = "item";
+        row.dataset.id = it.id;
+
+        // Si es el item 6, agrega link "Ejemplo" a la derecha
+        const rightSlot = it.ejemploLink
+          ? `
+            <div class="rightSlot">
+              <a class="example-link"
+                 href="${it.ejemploLink}"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 onclick="event.stopPropagation();">
+                 Ejemplo
+              </a>
+              <div class="badge">${it.id}</div>
+            </div>
+          `
+          : `<div class="rightSlot"><div class="badge">${it.id}</div></div>`;
+
+        row.innerHTML = `
+          <input class="check" type="checkbox" aria-label="Marcar ${escapeHtml(it.titulo)}" />
+          <div class="item-text">
+            <div class="item-top">
+              <div class="item-title">${escapeHtml(it.titulo)}</div>
+              ${rightSlot}
+            </div>
+          </div>
+        `;
+
+        row.addEventListener("click", () => setActive(it.id));
+        listEl.appendChild(row);
+      });
+    }
+
+    function setActive(id){
+      document.querySelectorAll(".item").forEach(el => {
+        el.classList.toggle("active", Number(el.dataset.id) === id);
+      });
+      const it = items.find(x => x.id === id);
+      renderDetail(it);
+    }
+
+    function renderDetail(it){
+      detailHeaderEl.innerHTML = `
+        <div class="detail-title">${escapeHtml(it.titulo)}</div>
+        <div class="detail-meta">Ítem ${it.id}</div>
+      `;
+
+      infoCardEl.innerHTML = `
+        <div class="info-section">
+          <div class="sec-head">
+            <div class="sec-title"><span class="bar"></span>Significado</div>
+          </div>
+          <div class="sec-body">${escapeHtml(it.significado)}</div>
+        </div>
+
+        <div class="info-section">
+          <div class="sec-head">
+            <div class="sec-title"><span class="bar example"></span>Ejemplo</div>
+          </div>
+          <div class="sec-body">${escapeHtml(it.ejemplo)}</div>
+        </div>
+
+        <div class="info-section">
+          <div class="sec-head">
+            <div class="sec-title"><span class="bar case"></span>Caso</div>
+          </div>
+          <div class="sec-body">${escapeHtml(it.caso)}</div>
+        </div>
+      `;
+
+      stepsWrapEl.innerHTML = "";
+      const hasSteps = Array.isArray(it.pasos) && it.pasos.length > 0;
+
+      if(hasSteps){
+        const card = document.createElement("div");
+        card.className = "steps-card";
+
+        card.innerHTML = `
+          <div class="steps-head">
+            <div class="label">Pasos</div>
+          </div>
+          <div id="stepsList"></div>
+        `;
+
+        const stepsList = card.querySelector("#stepsList");
+
+        it.pasos.forEach((p, idx) => {
+          const step = document.createElement("div");
+          step.className = "step";
+          step.innerHTML = `
+            <button class="step-btn" type="button" aria-expanded="false">
+              <div class="step-left">
+                <div class="step-n">${idx+1}</div>
+                <div class="step-title" title="${escapeHtml(p.titulo)}">${escapeHtml(p.titulo)}</div>
+              </div>
+              <i class="chev" aria-hidden="true"></i>
+            </button>
+            <div class="step-panel">
+              <div class="step-content">${escapeHtml(p.detalle)}</div>
+            </div>
+          `;
+
+          const btn = step.querySelector(".step-btn");
+          btn.addEventListener("click", () => {
+            const all = stepsList.querySelectorAll(".step");
+            all.forEach(s => {
+              if(s !== step){
+                s.classList.remove("open");
+                s.querySelector(".step-btn").setAttribute("aria-expanded","false");
+              }
+            });
+            const open = step.classList.toggle("open");
+            btn.setAttribute("aria-expanded", open ? "true" : "false");
+          });
+
+          stepsList.appendChild(step);
+        });
+
+        stepsWrapEl.appendChild(card);
+      }
+    }
+
+    renderList();
+    setActive(items[0].id);
+  </script>
+</body>
+</html>
 
