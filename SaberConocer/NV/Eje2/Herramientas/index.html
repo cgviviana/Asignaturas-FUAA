@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Análisis de datos con aplicaciones — Juego de tarjetas</title>
+  <style>
+    :root{
+      --ink:#0b0b0b;
+      --paper:#fff7d6;
+      --bg1:#ffffff;
+      --bg2:#ffeef3;
+
+      --hot:#ff2d55;
+      --green:#20c997;
+
+      /* Color del contenedor de pregunta */
+      --questionBg:#e8f2ff;
+
+      /* Colores para “botones” (etiquetas) */
+      --tagSignificado:#2d7dff; /* azul */
+      --tagEjemplo:#ffd400;     /* amarillo */
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      min-height:100vh;
+      padding:16px;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255,212,0,.18) 0 18%, transparent 19%),
+        radial-gradient(circle at 72% 22%, rgba(45,125,255,.14) 0 16%, transparent 17%),
+        radial-gradient(circle at 85% 80%, rgba(255,45,85,.12) 0 14%, transparent 15%),
+        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    .app{max-width:980px;margin:0 auto;display:grid;gap:12px}
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+    }
+    .headerTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(16px, 2.2vw, 22px);
+    }
+    .progressText{
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      font-size: 14px;
+    }
+
+    .stage{
+      position:relative;
+      border:4px solid var(--ink);
+      border-radius:20px;
+      background:#fff;
+      overflow:hidden;
+    }
+    .stage::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      background: radial-gradient(circle, rgba(0,0,0,.10) 10%, transparent 11%) 0 0/14px 14px;
+      opacity:.20;
+      pointer-events:none;
+      mix-blend-mode:multiply;
+    }
+
+    .card{position:relative;padding:14px;display:grid;gap:12px}
+    .cardTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(18px, 2.4vw, 26px);
+      line-height:1.15;
+    }
+
+    /* Significado + ejemplo en UN solo contenedor */
+    .infoBox{
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .infoLine{
+      margin:0;
+      font-size:15px;
+      line-height:1.35;
+      font-weight:700;
+    }
+
+    /* Etiquetas tipo “botón” con color */
+    .tag{
+      display:inline-block;
+      margin-right:8px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      padding:4px 10px;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      color:#fff;
+    }
+    .tag-significado{ background: var(--tagSignificado); }
+    .tag-ejemplo{
+      background: var(--tagEjemplo);
+      color:#0b0b0b;
+    }
+
+    /* Pregunta con otro color */
+    .questionBox{
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--questionBg);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .question{
+      margin:0;
+      font-weight:1000;
+      font-size:16px;
+    }
+    .hintText{
+      margin:0;
+      font-weight:800;
+      font-size:13px;
+      opacity:.85;
+    }
+
+    .choices{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:860px){ .choices{grid-template-columns:1fr} }
+
+    /* Botones simples */
+    .bubble{
+      cursor:pointer;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      padding:12px 12px;
+      background:#fff;
+      font-weight:900;
+      text-align:center;
+      user-select:none;
+      outline:none;
+      transition: transform .06s ease, background .15s ease;
+    }
+    .bubble:active{transform: translate(2px,2px)}
+    .bubble[disabled]{opacity:.55; cursor:not-allowed}
+
+    /* Feedback overlay + texto */
+    .overlay{
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:10;
+      pointer-events:none;
+      background: rgba(255,255,255,.60);
+      backdrop-filter: blur(1px);
+    }
+    .overlay.show{display:flex}
+
+    .feedback{
+      font-weight:1000;
+      font-size: clamp(24px, 5vw, 56px);
+      letter-spacing:1px;
+      border:6px solid var(--ink);
+      padding: 12px 16px;
+      border-radius: 20px;
+      text-transform:uppercase;
+      color:#fff;
+      text-shadow: 3px 3px 0 rgba(0,0,0,.25);
+    }
+    .overlay.correct .feedback{background: var(--green); animation: pop .35s ease-out;}
+    .overlay.wrong .feedback{background: var(--hot); animation: shake .45s ease-out;}
+    @keyframes pop{
+      0%{transform: scale(.85)}
+      60%{transform: scale(1.05)}
+      100%{transform: scale(1)}
+    }
+    @keyframes shake{
+      0%{transform: translateX(0)}
+      20%{transform: translateX(-10px)}
+      40%{transform: translateX(10px)}
+      60%{transform: translateX(-6px)}
+      80%{transform: translateX(6px)}
+      100%{transform: translateX(0)}
+    }
+
+    footer{
+      text-align:center;
+      font-weight:800;
+      font-size:13px;
+      padding:8px 0 2px;
+      opacity:.9;
+    }
+
+    .sr-only{
+      position:absolute; left:-9999px;
+      width:1px; height:1px; overflow:hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <h1 class="headerTitle">Análisis de datos con aplicaciones</h1>
+      <div class="progressText" id="progress">Tarjeta 1 / 10</div>
+    </header>
+
+    <main class="stage">
+      <div class="overlay correct" id="overlayCorrect" aria-hidden="true">
+        <div class="feedback">¡EXCELENTE!</div>
+      </div>
+
+      <div class="overlay wrong" id="overlayWrong" aria-hidden="true">
+        <div class="feedback">¡INTÉNTALO DE NUEVO!</div>
+      </div>
+
+      <section class="card" aria-labelledby="cardTitle">
+        <h2 class="cardTitle" id="cardTitle">Tarjeta</h2>
+
+        <div class="infoBox">
+          <p class="infoLine">
+            <span class="tag tag-significado">Significado</span><span id="definition"></span>
+          </p>
+          <p class="infoLine">
+            <span class="tag tag-ejemplo">Ejemplo</span><span id="example"></span>
+          </p>
+        </div>
+
+        <div class="questionBox" role="group" aria-label="Pregunta y opciones">
+          <p class="question" id="question"></p>
+          <p class="hintText">Elige la opción correcta.</p>
+          <div class="choices" id="choices"></div>
+          <div class="sr-only" aria-live="polite" id="live"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>Aprendiendo con @LaProfeVivy</footer>
+  </div>
+
+  <script>
+    // Tarjetas: análisis de datos usando aplicaciones (Excel/Sheets/BI/SQL/Analytics)
+    // Regla: Pregunta empieza con “Caso: …” y NO pregunta “si es correcto”.
+
+    const cards = [
+      {
+        title: "Limpieza de datos",
+        definition: "Preparar datos para analizarlos: quitar duplicados, corregir formatos, manejar vacíos y estandarizar valores.",
+        example: "En una hoja de cálculo conviertes fechas, eliminas filas duplicadas y unificas nombres de ciudades.",
+        question: "Caso: Descargas ventas de 3 tiendas. Hay fechas mezcladas (DD/MM y MM/DD) y productos repetidos. ¿Qué haces primero en la aplicación?",
+        options: [
+          { text: "Hacer un gráfico de inmediato para ‘ver qué sale’", correct: false },
+          { text: "Limpiar formatos y duplicados antes de calcular métricas", correct: true },
+          { text: "Cambiar colores de la tabla para que sea más bonita", correct: false }
+        ]
+      },
+      {
+        title: "Tablas dinámicas",
+        definition: "Herramienta en Excel/Sheets para resumir datos por categorías (sumas, promedios, conteos) sin escribir muchas fórmulas.",
+        example: "Resumes ventas por producto y por mes en una tabla dinámica.",
+        question: "Caso: Tienes 50,000 registros de ventas y te piden ventas totales por vendedor y por trimestre. ¿Qué función usarías?",
+        options: [
+          { text: "Tabla dinámica (pivot)", correct: true },
+          { text: "Escribir la suma manualmente en una calculadora", correct: false },
+          { text: "Solo ordenar alfabéticamente y ya", correct: false }
+        ]
+      },
+      {
+        title: "Filtros y segmentación",
+        definition: "Filtrar es mostrar solo datos que cumplen condiciones; segmentar es comparar grupos (por región, canal, edad, etc.).",
+        example: "Filtras solo clientes de ‘Bogotá’ y comparas el gasto por canal (web vs tienda).",
+        question: "Caso: El gerente cree que ‘la publicidad no sirve’. Quieres comparar compras de clientes que vieron anuncios vs los que no. ¿Qué haces?",
+        options: [
+          { text: "Segmentar en dos grupos y comparar métricas", correct: true },
+          { text: "Mirar un solo cliente y concluir por todos", correct: false },
+          { text: "Eliminar todos los datos ‘para no confundirse’", correct: false }
+        ]
+      },
+      {
+        title: "KPIs y métricas",
+        definition: "Un KPI es un indicador clave para medir desempeño (ventas, conversión, retención, tiempo de respuesta). Debe ser claro y medible.",
+        example: "En un dashboard defines KPI: ‘% de entregas a tiempo’ y lo sigues cada semana.",
+        question: "Caso: Un call center quiere mejorar servicio. ¿Cuál KPI es más directo para medir rapidez de atención?",
+        options: [
+          { text: "Tiempo promedio de respuesta", correct: true },
+          { text: "Color del logo del call center", correct: false },
+          { text: "Cantidad de sillas en la oficina", correct: false }
+        ]
+      },
+      {
+        title: "Visualización de datos",
+        definition: "Convertir datos en gráficos adecuados para entender patrones: barras (comparar), líneas (tiempo), pastel (proporción con cuidado).",
+        example: "Usas línea para ventas por mes y barras para comparar ventas por producto.",
+        question: "Caso: Quieres mostrar cómo cambian las ventas día a día durante 60 días. ¿Qué gráfico conviene más?",
+        options: [
+          { text: "Línea (serie de tiempo)", correct: true },
+          { text: "Pastel con 60 porciones", correct: false },
+          { text: "Solo un texto largo sin números", correct: false }
+        ]
+      },
+      {
+        title: "Dashboards (BI)",
+        definition: "Un dashboard integra KPIs, filtros y visualizaciones para monitorear un proceso en una sola pantalla (Power BI, Tableau, Looker, etc.).",
+        example: "Dashboard de operaciones con ‘Pedidos’, ‘Entregas a tiempo’ y ‘Devoluciones’, con filtros por ciudad.",
+        question: "Caso: Dirección quiere ver indicadores en tiempo real, filtrar por región y compartir en la web interna. ¿Qué solución es más adecuada?",
+        options: [
+          { text: "Un dashboard de BI con filtros y publicación", correct: true },
+          { text: "Un documento de Word con capturas estáticas", correct: false },
+          { text: "Un chat con mensajes sueltos de números", correct: false }
+        ]
+      },
+      {
+        title: "Conectar y combinar fuentes (ETL básico)",
+        definition: "Traer datos desde archivos o sistemas (CSV, Excel, bases de datos) y combinarlos (unir, relacionar) para analizarlos juntos.",
+        example: "Importas ventas y clientes y los unes por ‘ID de cliente’ para ver compras por segmento.",
+        question: "Caso: Tienes una tabla de clientes y otra de ventas. Para saber cuánto compra cada cliente, ¿qué necesitas hacer?",
+        options: [
+          { text: "Unir/relacionar por un identificador común (ID)", correct: true },
+          { text: "Cambiar el tipo de letra de la tabla", correct: false },
+          { text: "Borrar una tabla para que quede ‘más simple’", correct: false }
+        ]
+      },
+      {
+        title: "Consultas en SQL",
+        definition: "SQL permite pedir datos a una base: filtrar, agrupar y calcular (SELECT, WHERE, GROUP BY). Es clave cuando hay muchos registros.",
+        example: "Consulta SQL para ventas por mes: agrupar por mes y sumar ‘total’.",
+        question: "Caso: La empresa tiene 10 millones de registros. Necesitas ‘ventas totales por ciudad’. ¿Qué enfoque es más eficiente?",
+        options: [
+          { text: "Usar SQL: agrupar por ciudad y sumar", correct: true },
+          { text: "Copiar todo a mano en una hoja celda por celda", correct: false },
+          { text: "Tomar 3 filas al azar y asumir que representan todo", correct: false }
+        ]
+      },
+      {
+        title: "Validación de datos y errores",
+        definition: "Detectar datos imposibles o incoherentes (edad negativa, precios en texto). Las aplicaciones permiten reglas de validación.",
+        example: "Pones regla: ‘Edad entre 0 y 120’ y ‘Precio numérico’ para evitar capturas malas.",
+        question: "Caso: En un formulario aparecen ‘-5 años’ y ‘gratis’ en un campo de precio. ¿Qué acción previene esto desde la aplicación?",
+        options: [
+          { text: "Configurar validación de datos (rangos y tipo)", correct: true },
+          { text: "Ignorar el problema y seguir calculando", correct: false },
+          { text: "Eliminar todas las edades y precios", correct: false }
+        ]
+      },
+      {
+        title: "Tendencias y pronóstico",
+        definition: "Analizar cambios en el tiempo y estimar el futuro usando históricos (promedios móviles, tendencia, pronóstico).",
+        example: "Con datos mensuales, calculas promedio móvil de 3 meses para ver tendencia sin tanto ruido.",
+        question: "Caso: Ventas suben y bajan mucho cada semana. Quieres ver la tendencia real para decidir inventario. ¿Qué técnica ayuda más?",
+        options: [
+          { text: "Promedio móvil para suavizar variaciones", correct: true },
+          { text: "Mirar solo el día con más ventas y decidir por eso", correct: false },
+          { text: "Cambiar el orden de las columnas para ‘ver mejor’", correct: false }
+        ]
+      }
+    ];
+
+    const elCardTitle = document.getElementById("cardTitle");
+    const elDefinition = document.getElementById("definition");
+    const elExample = document.getElementById("example");
+    const elQuestion = document.getElementById("question");
+    const elChoices = document.getElementById("choices");
+    const elProgress = document.getElementById("progress");
+    const elOverlayCorrect = document.getElementById("overlayCorrect");
+    const elOverlayWrong = document.getElementById("overlayWrong");
+    const elLive = document.getElementById("live");
+
+    let idx = 0;
+    let locked = false;
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+      }
+      return a;
+    }
+
+    function setChoicesDisabled(disabled){
+      [...elChoices.querySelectorAll("button.bubble")].forEach(b => b.disabled = disabled);
+    }
+
+    function showCorrect(){
+      elOverlayCorrect.classList.add("show");
+      elOverlayCorrect.setAttribute("aria-hidden","false");
+      setTimeout(()=>{
+        elOverlayCorrect.classList.remove("show");
+        elOverlayCorrect.setAttribute("aria-hidden","true");
+      }, 650);
+    }
+
+    function showWrong(){
+      elOverlayWrong.classList.add("show");
+      elOverlayWrong.setAttribute("aria-hidden","false");
+      setTimeout(()=>{
+        elOverlayWrong.classList.remove("show");
+        elOverlayWrong.setAttribute("aria-hidden","true");
+      }, 650);
+    }
+
+    function renderCard(){
+      locked = false;
+      const c = cards[idx];
+
+      elCardTitle.textContent = `Tarjeta ${idx+1}: ${c.title}`;
+      elDefinition.textContent = c.definition;
+      elExample.textContent = c.example;
+      elQuestion.textContent = c.question;
+      elProgress.textContent = `Tarjeta ${idx+1} / ${cards.length}`;
+
+      const shuffled = shuffle(c.options);
+      elChoices.innerHTML = "";
+      shuffled.forEach((opt) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "bubble";
+        b.textContent = opt.text;
+        b.addEventListener("click", ()=> handleChoice(opt.correct));
+        elChoices.appendChild(b);
+      });
+
+      elLive.textContent = `Nueva tarjeta: ${c.title}.`;
+    }
+
+    function nextCard(){
+      if(idx < cards.length - 1){
+        idx++;
+        renderCard();
+      } else {
+        locked = true;
+        setChoicesDisabled(true);
+        elQuestion.textContent = "¡Listo! Terminaste las 10 tarjetas.";
+        elChoices.innerHTML = "";
+      }
+    }
+
+    function handleChoice(isCorrect){
+      if(locked) return;
+      if(isCorrect){
+        locked = true;
+        setChoicesDisabled(true);
+        showCorrect();
+        setTimeout(()=> nextCard(), 750);
+      } else {
+        showWrong();
+      }
+    }
+
+    renderCard();
+  </script>
+</body>
+</html>
