@@ -73,7 +73,7 @@
       position:relative;
       overflow:hidden;
       box-shadow: 0 10px 22px var(--shadow);
-      min-height: 520px;
+      min-height: 560px;
     }
 
     .col::before{
@@ -87,12 +87,11 @@
     }
 
     /* tamaños mínimos para que permanezcan lado a lado (con scroll si pantalla pequeña) */
-    .left{ flex: 0 0 520px; }
-    .right{ flex: 0 0 520px; }
-
+    .left{ flex: 0 0 540px; }
+    .right{ flex: 0 0 540px; }
     @media (min-width: 1100px){
-      .left{ flex: 1 0 520px; }
-      .right{ flex: 1 0 520px; }
+      .left{ flex: 1 0 540px; }
+      .right{ flex: 1 0 540px; }
     }
 
     /* ============== CONTENIDO IZQUIERDA ============== */
@@ -102,6 +101,7 @@
       display:grid;
       gap:12px;
       z-index:1;
+      height:100%;
     }
 
     .panelTitle{
@@ -119,6 +119,7 @@
       padding:8px;
       display:grid;
       gap:6px;
+      flex: 1 1 auto;
     }
 
     .item{
@@ -131,7 +132,6 @@
       user-select:none;
       transition: background .12s ease, transform .06s ease;
     }
-
     .item:hover{ background: rgba(45,125,255,.10); }
     .item:active{ transform: translate(1px,1px); }
 
@@ -155,19 +155,31 @@
       font-size: 15px;
     }
 
-    .pill{
-      margin-left:auto;
-      flex:0 0 auto;
+    .bottomActions{
+      display:flex;
+      justify-content:flex-start;
+    }
+
+    .generalBtn{
       border:3px solid var(--ink);
       border-radius:999px;
-      padding:4px 10px;
+      padding:12px 14px;
+      background:#fff;
+      cursor:pointer;
       font-weight:1000;
       text-transform:uppercase;
       letter-spacing:.6px;
       font-size:12px;
-      background: #fff;
-      color: var(--ink);
-      white-space:nowrap;
+      box-shadow: 0 6px 14px rgba(0,0,0,.14);
+      transition: transform .06s ease, background .12s ease;
+      user-select:none;
+    }
+    .generalBtn:hover{ background: rgba(255,212,0,.20); }
+    .generalBtn:active{ transform: translate(1px,1px); }
+    .generalBtn.active{
+      background: rgba(45,125,255,.14);
+      outline: 3px solid var(--ink);
+      outline-offset: -3px;
     }
 
     /* ============== CONTENIDO DERECHA ============== */
@@ -220,6 +232,92 @@
       font-size: 15px;
     }
 
+    .text ul{
+      margin:8px 0 0 18px;
+      padding:0;
+    }
+    .text li{ margin:6px 0; }
+
+    /* ============== ACORDEÓN ============== */
+    .accordion{
+      display:grid;
+      gap:10px;
+    }
+
+    .accItem{
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#fff;
+      overflow:hidden;
+      box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    }
+
+    .accBtn{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:#fff;
+      border:none;
+      padding:12px 12px;
+      cursor:pointer;
+      text-align:left;
+      font-weight:1000;
+      letter-spacing:.2px;
+      font-size:14px;
+      color:var(--ink);
+    }
+
+    .accBtn:active{ transform: translate(1px,1px); }
+
+    .accBadge{
+      border:3px solid var(--ink);
+      border-radius:999px;
+      padding:4px 10px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      background: rgba(255,212,0,.25);
+      flex:0 0 auto;
+      white-space:nowrap;
+    }
+
+    .accPanel{
+      display:none;
+      border-top:3px solid var(--ink);
+      padding:12px;
+      background: var(--paper);
+    }
+    .accPanel.open{ display:block; }
+
+    .accSubtag{
+      display:inline-block;
+      margin:0 8px 8px 0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      padding:4px 10px;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      background: rgba(45,125,255,.14);
+    }
+
+    .accText{
+      margin:0;
+      font-weight:750;
+      line-height:1.35;
+      font-size: 15px;
+    }
+
+    .accText ul{
+      margin:10px 0 0 18px;
+      padding:0;
+    }
+    .accText li{ margin:6px 0; }
+
     footer{
       text-align:center;
       font-weight:800;
@@ -251,6 +349,12 @@
             <!-- Se renderiza por JS -->
           </div>
 
+          <div class="bottomActions">
+            <button class="generalBtn" id="generalBtn" type="button">
+              Generalidades de publicaciones
+            </button>
+          </div>
+
           <div class="sr-only" id="live" aria-live="polite"></div>
         </div>
       </section>
@@ -260,15 +364,23 @@
         <div class="block">
           <h2 class="detailTitle" id="detailTitle">—</h2>
 
-          <div class="detailCard">
+          <!-- Vista estándar (Explicación + Ejemplo) -->
+          <div class="detailCard" id="standardView">
             <div class="section">
               <span class="tag tag-exp">Explicación</span>
-              <p class="text" id="detailExplain"></p>
+              <div class="text" id="detailExplain"></div>
             </div>
 
             <div class="section">
               <span class="tag tag-ej">Ejemplo</span>
-              <p class="text" id="detailExample"></p>
+              <div class="text" id="detailExample"></div>
+            </div>
+          </div>
+
+          <!-- Vista generalidades (Acordeón) -->
+          <div class="detailCard" id="generalView" style="display:none;">
+            <div class="accordion" id="accordion">
+              <!-- Se renderiza por JS -->
             </div>
           </div>
         </div>
@@ -279,59 +391,144 @@
   </div>
 
   <script>
-    // Checklist: Artículo científico y publicaciones académicas (10 ítems)
-    // Regla: click en el ÍTEM cambia panel; click SOLO en checkbox NO cambia panel.
+    // Checklist (hasta referencias y citación). Sin contadores ni puntajes.
 
     const CRITERIA = [
       {
-        label: "Título y palabras clave (enfoque del trabajo)",
-        explain: "Debe comunicar el tema central con precisión y facilitar la búsqueda del documento por medio de palabras clave coherentes.",
-        example: "Título: “Efecto del aprendizaje activo en cálculo I”. Palabras clave: aprendizaje activo, cálculo diferencial, rendimiento académico."
+        label: "Título y palabras clave",
+        explain: "Debe comunicar el tema central con precisión y facilitar la búsqueda del documento usando términos coherentes con el contenido.",
+        example: "Título: “Efecto del aprendizaje activo en cálculo I”. Palabras clave: aprendizaje activo, cálculo, rendimiento."
       },
       {
-        label: "Resumen (qué se hizo y qué se encontró)",
-        explain: "Síntesis breve del problema, método, resultados principales y conclusión. Permite decidir rápidamente si el artículo es relevante.",
-        example: "En 150–250 palabras: objetivo + población/datos + método + hallazgo clave + conclusión aplicable."
+        label: "Resumen",
+        explain: "Síntesis breve del problema, objetivo, método, resultado principal y conclusión. Sirve para decidir si el artículo es relevante.",
+        example: "En pocas líneas: objetivo + cómo se estudió + hallazgo clave + conclusión aplicable."
       },
       {
-        label: "Introducción (problema y justificación)",
-        explain: "Presenta el contexto, el problema, antecedentes esenciales y la razón de hacer el estudio; deja claro el objetivo o pregunta de investigación.",
-        example: "Explica por qué el problema importa, qué falta en estudios previos y termina con un objetivo concreto."
+        label: "Introducción (problema y objetivo)",
+        explain: "Presenta el contexto, el problema y el objetivo/pregunta de investigación. Justifica por qué el estudio es necesario.",
+        example: "Describe el problema en un curso, cita evidencias previas y termina con un objetivo medible."
       },
       {
-        label: "Metodología / Métodos (cómo se hizo)",
-        explain: "Describe el diseño, datos, instrumentos, procedimiento y criterios de análisis para que el estudio sea comprensible y replicable.",
-        example: "Indica población, muestra, variables, recolección de datos, y cómo se procesaron (por ejemplo, análisis estadístico o cualitativo)."
+        label: "Marco teórico (antecedentes y bases conceptuales)",
+        explain: `
+          El marco teórico sustenta el estudio con información confiable y organizada. Se suele estructurar así:
+          <ul>
+            <li><b>Antecedentes:</b> qué se ha investigado antes sobre el tema (hallazgos previos relevantes).</li>
+            <li><b>Estado del arte:</b> panorama actualizado de tendencias, enfoques y debates recientes.</li>
+            <li><b>Bases conceptuales:</b> conceptos y definiciones clave que el trabajo usará (qué significa cada término).</li>
+            <li><b>Teorías o modelos:</b> marcos explicativos que orientan cómo interpretar el fenómeno.</li>
+          </ul>
+        `,
+        example: `
+          En un estudio sobre asistencia: se revisan investigaciones sobre puntualidad (antecedentes), se resumen enfoques recientes (estado del arte),
+          se definen “puntualidad” y “ausentismo” (bases conceptuales) y se adopta un modelo de motivación académica (teoría).
+        `
       },
       {
-        label: "Resultados (evidencia, no opiniones)",
-        explain: "Muestra hallazgos derivados de los datos (tablas, cifras, patrones), sin interpretaciones extensas; la evidencia va primero.",
-        example: "“La asistencia aumentó 18%” + tabla/gráfico que lo respalde, antes de explicar por qué ocurrió."
+        label: "Metodología / Métodos",
+        explain: "Describe cómo se hizo el estudio (diseño, datos, instrumentos, procedimiento y criterios de análisis) para que sea replicable.",
+        example: "Indica población/muestra, variables, cómo se recolectaron datos y cómo se analizaron."
       },
       {
-        label: "Discusión (interpretación y comparación)",
-        explain: "Interpreta qué significan los resultados, los relaciona con otras investigaciones y reconoce limitaciones o sesgos.",
-        example: "Compara con 2–3 estudios, explica coincidencias/diferencias y aclara límites: muestra pequeña, sesgo de selección, etc."
+        label: "Resultados",
+        explain: "Presenta evidencia derivada de los datos (tablas, cifras, patrones) sin extenderse en interpretaciones. La evidencia va primero.",
+        example: "Muestra porcentajes, comparaciones y gráficos que respalden los hallazgos."
       },
       {
-        label: "Conclusiones y recomendaciones (cierre útil)",
-        explain: "Responde a la pregunta/objetivo con base en resultados y propone implicaciones o acciones, sin introducir datos nuevos.",
-        example: "Conclusión: “El método X mejoró el desempeño”. Recomendación: “Aplicar X en cursos iniciales y medir por semestre”."
+        label: "Discusión",
+        explain: "Interpreta el significado de los resultados, los compara con otros estudios y reconoce limitaciones (sesgos, tamaño de muestra, etc.).",
+        example: "Explica por qué pudo ocurrir el resultado y cómo coincide o difiere de investigaciones previas."
       },
       {
-        label: "Referencias y citación (trazabilidad)",
-        explain: "Lista las fuentes usadas y permite verificar afirmaciones. Deben ser pertinentes, actuales (cuando aplica) y citadas correctamente.",
-        example: "Incluye artículos, libros o documentos oficiales citados en el texto con formato consistente (APA/IEEE/otro)."
+        label: "Conclusiones y recomendaciones",
+        explain: "Cierra respondiendo al objetivo con base en resultados. Propone implicaciones o acciones sin introducir datos nuevos.",
+        example: "Conclusión: “X mejora Y”. Recomendación: “Implementar X y medir por periodos”."
       },
       {
-        label: "Identificadores de publicación (DOI, ISSN, ISBN)",
-        explain: "Ayudan a identificar y recuperar la fuente: DOI para artículos, ISSN para revistas (publicaciones seriadas) e ISBN para libros.",
-        example: "Un artículo con DOI facilita ubicar la versión exacta; una revista reconocible por ISSN; un libro identificado por ISBN."
+        label: "Referencias y citación",
+        explain: "Lista las fuentes usadas y permite verificar afirmaciones. Deben ser pertinentes y citadas de forma consistente (APA/IEEE/otro).",
+        example: "Toda idea tomada de una fuente aparece citada en el texto y en la lista final de referencias."
+      }
+    ];
+
+    // Generalidades de publicaciones (Acordeón en panel derecho).
+    // Incluye lo pedido y, dentro de validación, agrega lo que suele faltar: indexación/métricas y acceso abierto.
+    const GENERALITIES = [
+      {
+        title: "Repositorios y buscadores académicos",
+        badge: "1",
+        content: `
+          <span class="accSubtag">Qué son</span>
+          <p class="accText">
+            Espacios y motores de búsqueda para localizar literatura académica (artículos, tesis, libros, actas, preprints).
+            Permiten filtrar por autor, año, tema y, en algunos casos, por acceso abierto.
+          </p>
+          <span class="accSubtag">Ejemplos</span>
+          <p class="accText">
+            Google Scholar, repositorios institucionales (universidades), bibliotecas digitales, y bases de datos de revistas según tu institución.
+          </p>
+          <span class="accSubtag">Uso práctico</span>
+          <p class="accText">
+            Identifica palabras clave, revisa citas/autoridad del autor, y verifica si la fuente es revista, conferencia, capítulo o preprint.
+          </p>
+        `
       },
       {
-        label: "Tipo de publicación y validación (revisión por pares)",
-        explain: "Distinguir entre artículo de revista, conferencia, capítulo, preprint o repositorio. La revisión por pares eleva la confiabilidad, pero igual se evalúa el contenido.",
-        example: "Un preprint sirve para conocer avances, pero para sustentar conclusiones fuertes se prioriza una versión revisada por pares."
+        title: "Identificadores de publicaciones",
+        badge: "2",
+        content: `
+          <span class="accSubtag">Para qué sirven</span>
+          <p class="accText">
+            Son “códigos” que ayudan a identificar y recuperar de forma precisa una obra o una publicación.
+          </p>
+          <span class="accSubtag">Principales</span>
+          <p class="accText">
+            <ul>
+              <li><b>DOI:</b> identifica artículos (y otros documentos) de manera persistente.</li>
+              <li><b>ISSN:</b> identifica revistas y publicaciones seriadas.</li>
+              <li><b>ISBN:</b> identifica libros.</li>
+              <li><b>ORCID:</b> identifica autores (útil para distinguir investigadores con nombres similares).</li>
+            </ul>
+          </p>
+          <span class="accSubtag">Ejemplo</span>
+          <p class="accText">
+            Si un artículo tiene DOI, puedes encontrar exactamente esa versión aunque el sitio cambie.
+          </p>
+        `
+      },
+      {
+        title: "Tipos de publicación y validación",
+        badge: "3",
+        content: `
+          <span class="accSubtag">Tipos comunes</span>
+          <p class="accText">
+            <ul>
+              <li><b>Artículo de revista:</b> suele tener estructura IMRyD y evaluación editorial.</li>
+              <li><b>Actas de congreso (conferencia):</b> resultados presentados en eventos académicos.</li>
+              <li><b>Capítulo de libro:</b> aporte dentro de una obra colectiva.</li>
+              <li><b>Tesis / trabajos institucionales:</b> documentos académicos (no siempre “revista”).</li>
+              <li><b>Preprint:</b> versión previa a publicación formal (útil, pero requiere verificación).</li>
+            </ul>
+          </p>
+
+          <span class="accSubtag">Validación (lo clave)</span>
+          <p class="accText">
+            <ul>
+              <li><b>Revisión por pares:</b> expertos evalúan calidad y coherencia antes de publicar.</li>
+              <li><b>Evaluación editorial:</b> revisión de normas, ética, originalidad y calidad mínima.</li>
+              <li><b>Contraste de fuentes:</b> verificar datos, métodos y referencias; no confiar solo en “autoridad”.</li>
+            </ul>
+          </p>
+
+          <span class="accSubtag">Suele faltar en clase: qué revisar además</span>
+          <p class="accText">
+            <ul>
+              <li><b>Indexación y métricas:</b> si la revista está indexada (según tu contexto) y su trayectoria.</li>
+              <li><b>Acceso abierto y licencias:</b> condiciones de uso y reutilización del contenido.</li>
+            </ul>
+          </p>
+        `
       }
     ];
 
@@ -341,14 +538,20 @@
     const detailExample = document.getElementById("detailExample");
     const live = document.getElementById("live");
 
+    const generalBtn = document.getElementById("generalBtn");
+    const standardView = document.getElementById("standardView");
+    const generalView = document.getElementById("generalView");
+    const accordion = document.getElementById("accordion");
+
     let selectedIndex = 0;
+    let inGeneralMode = false;
 
     function renderList(){
       listBox.innerHTML = "";
 
       CRITERIA.forEach((c, i) => {
         const row = document.createElement("div");
-        row.className = "item" + (i === selectedIndex ? " selected" : "");
+        row.className = "item" + (!inGeneralMode && i === selectedIndex ? " selected" : "");
         row.setAttribute("role", "button");
         row.setAttribute("tabindex", "0");
         row.setAttribute("aria-label", `Seleccionar criterio: ${c.label}`);
@@ -359,7 +562,6 @@
         cb.className = "check";
         cb.setAttribute("aria-label", `Marcar criterio: ${c.label}`);
 
-        // Evitar que el click del checkbox dispare selección
         cb.addEventListener("click", (e) => e.stopPropagation());
         cb.addEventListener("keydown", (e) => e.stopPropagation());
 
@@ -367,22 +569,15 @@
         label.className = "label";
         label.textContent = c.label;
 
-        const pill = document.createElement("div");
-        pill.className = "pill";
-        pill.textContent = `${i+1}/10`;
-
         row.appendChild(cb);
         row.appendChild(label);
-        row.appendChild(pill);
 
         // Click en el ítem sí cambia panel
-        row.addEventListener("click", () => selectItem(i));
-
-        // Accesibilidad: Enter/Espacio en la fila selecciona
+        row.addEventListener("click", () => selectCriterion(i));
         row.addEventListener("keydown", (e) => {
           if(e.key === "Enter" || e.key === " "){
             e.preventDefault();
-            selectItem(i);
+            selectCriterion(i);
           }
         });
 
@@ -390,26 +585,122 @@
       });
     }
 
-    function selectItem(i){
+    function setModeGeneral(){
+      inGeneralMode = true;
+      generalBtn.classList.add("active");
+
+      // vista derecha
+      standardView.style.display = "none";
+      generalView.style.display = "grid";
+      detailTitle.textContent = "Generalidades de publicaciones";
+
+      // quitar resaltado en lista
+      [...listBox.querySelectorAll(".item")].forEach(el => el.classList.remove("selected"));
+
+      renderAccordion();
+      // abrir el primero por defecto
+      openAccordion(0);
+
+      live.textContent = "Panel: Generalidades de publicaciones.";
+    }
+
+    function setModeStandard(){
+      inGeneralMode = false;
+      generalBtn.classList.remove("active");
+
+      // vista derecha
+      generalView.style.display = "none";
+      standardView.style.display = "grid";
+
+      // re-render para restaurar selección visual
+      renderList();
+      selectCriterion(selectedIndex, {silent:true});
+    }
+
+    function selectCriterion(i, opts={silent:false}){
+      inGeneralMode = false;
+      generalBtn.classList.remove("active");
+
       selectedIndex = i;
       const c = CRITERIA[i];
 
+      // vista derecha estándar
+      generalView.style.display = "none";
+      standardView.style.display = "grid";
       detailTitle.textContent = c.label;
-      detailExplain.textContent = c.explain;
-      detailExample.textContent = c.example;
 
-      live.textContent = `Criterio seleccionado: ${c.label}.`;
+      detailExplain.innerHTML = c.explain;
+      detailExample.innerHTML = c.example;
 
       // actualizar resaltado
       [...listBox.querySelectorAll(".item")].forEach((el, idx) => {
         el.classList.toggle("selected", idx === selectedIndex);
       });
+
+      if(!opts.silent){
+        live.textContent = `Criterio seleccionado: ${c.label}.`;
+      }
     }
 
-    // Seleccionar el primer ítem por defecto
+    function renderAccordion(){
+      accordion.innerHTML = "";
+
+      GENERALITIES.forEach((it, idx) => {
+        const wrap = document.createElement("div");
+        wrap.className = "accItem";
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "accBtn";
+        btn.setAttribute("aria-expanded","false");
+        btn.innerHTML = `
+          <span>${it.title}</span>
+          <span class="accBadge">${it.badge}</span>
+        `;
+
+        const panel = document.createElement("div");
+        panel.className = "accPanel";
+        panel.innerHTML = it.content;
+
+        btn.addEventListener("click", () => {
+          const isOpen = panel.classList.contains("open");
+          if(isOpen){
+            panel.classList.remove("open");
+            btn.setAttribute("aria-expanded","false");
+          }else{
+            openAccordion(idx);
+          }
+        });
+
+        wrap.appendChild(btn);
+        wrap.appendChild(panel);
+        accordion.appendChild(wrap);
+      });
+    }
+
+    function openAccordion(indexToOpen){
+      const items = [...accordion.querySelectorAll(".accItem")];
+      items.forEach((it, idx) => {
+        const btn = it.querySelector(".accBtn");
+        const panel = it.querySelector(".accPanel");
+        const open = idx === indexToOpen;
+        panel.classList.toggle("open", open);
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    }
+
+    // Botón generalidades
+    generalBtn.addEventListener("click", () => {
+      if(inGeneralMode){
+        setModeStandard();
+      }else{
+        setModeGeneral();
+      }
+    });
+
+    // Inicialización
     renderList();
-    selectItem(0);
+    selectCriterion(0, {silent:true});
   </script>
 </body>
 </html>
-
