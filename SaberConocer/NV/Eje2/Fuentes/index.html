@@ -1,1 +1,476 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fuentes de información — Juego de tarjetas</title>
+  <style>
+    :root{
+      --ink:#0b0b0b;
+      --paper:#fff7d6;
+      --bg1:#ffffff;
+      --bg2:#ffeef3;
+
+      --hot:#ff2d55;
+      --green:#20c997;
+
+      /* Color del contenedor de pregunta */
+      --questionBg:#e8f2ff;
+
+      /* Colores para “botones” (etiquetas) */
+      --tagSignificado:#2d7dff; /* azul */
+      --tagEjemplo:#ffd400;     /* amarillo */
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      min-height:100vh;
+      padding:16px;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255,212,0,.18) 0 18%, transparent 19%),
+        radial-gradient(circle at 72% 22%, rgba(45,125,255,.14) 0 16%, transparent 17%),
+        radial-gradient(circle at 85% 80%, rgba(255,45,85,.12) 0 14%, transparent 15%),
+        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    .app{max-width:980px;margin:0 auto;display:grid;gap:12px}
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+    }
+    .headerTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(16px, 2.2vw, 22px);
+    }
+    .progressText{
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      font-size: 14px;
+    }
+
+    .stage{
+      position:relative;
+      border:4px solid var(--ink);
+      border-radius:20px;
+      background:#fff;
+      overflow:hidden;
+    }
+    .stage::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      background: radial-gradient(circle, rgba(0,0,0,.10) 10%, transparent 11%) 0 0/14px 14px;
+      opacity:.20;
+      pointer-events:none;
+      mix-blend-mode:multiply;
+    }
+
+    .card{position:relative;padding:14px;display:grid;gap:12px}
+    .cardTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(18px, 2.4vw, 26px);
+      line-height:1.15;
+    }
+
+    /* Significado + ejemplo en UN solo contenedor */
+    .infoBox{
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .infoLine{
+      margin:0;
+      font-size:15px;
+      line-height:1.35;
+      font-weight:700;
+    }
+
+    /* Etiquetas tipo “botón” con color */
+    .tag{
+      display:inline-block;
+      margin-right:8px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      padding:4px 10px;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      color:#fff;
+    }
+    .tag-significado{ background: var(--tagSignificado); }
+    .tag-ejemplo{
+      background: var(--tagEjemplo);
+      color:#0b0b0b;
+    }
+
+    /* Pregunta con otro color */
+    .questionBox{
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--questionBg);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .question{
+      margin:0;
+      font-weight:1000;
+      font-size:16px;
+    }
+    .hintText{
+      margin:0;
+      font-weight:800;
+      font-size:13px;
+      opacity:.85;
+    }
+
+    .choices{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:860px){ .choices{grid-template-columns:1fr} }
+
+    /* Botones simples */
+    .bubble{
+      cursor:pointer;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      padding:12px 12px;
+      background:#fff;
+      font-weight:900;
+      text-align:center;
+      user-select:none;
+      outline:none;
+      transition: transform .06s ease, background .15s ease;
+    }
+    .bubble:active{transform: translate(2px,2px)}
+    .bubble[disabled]{opacity:.55; cursor:not-allowed}
+
+    /* Feedback overlay + texto */
+    .overlay{
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:10;
+      pointer-events:none;
+      background: rgba(255,255,255,.60);
+      backdrop-filter: blur(1px);
+    }
+    .overlay.show{display:flex}
+
+    .feedback{
+      font-weight:1000;
+      font-size: clamp(24px, 5vw, 56px);
+      letter-spacing:1px;
+      border:6px solid var(--ink);
+      padding: 12px 16px;
+      border-radius: 20px;
+      text-transform:uppercase;
+      color:#fff;
+      text-shadow: 3px 3px 0 rgba(0,0,0,.25);
+    }
+    .overlay.correct .feedback{background: var(--green); animation: pop .35s ease-out;}
+    .overlay.wrong .feedback{background: var(--hot); animation: shake .45s ease-out;}
+    @keyframes pop{
+      0%{transform: scale(.85)}
+      60%{transform: scale(1.05)}
+      100%{transform: scale(1)}
+    }
+    @keyframes shake{
+      0%{transform: translateX(0)}
+      20%{transform: translateX(-10px)}
+      40%{transform: translateX(10px)}
+      60%{transform: translateX(-6px)}
+      80%{transform: translateX(6px)}
+      100%{transform: translateX(0)}
+    }
+
+    footer{
+      text-align:center;
+      font-weight:800;
+      font-size:13px;
+      padding:8px 0 2px;
+      opacity:.9;
+    }
+
+    .sr-only{
+      position:absolute; left:-9999px;
+      width:1px; height:1px; overflow:hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <h1 class="headerTitle">Fuentes de información</h1>
+      <div class="progressText" id="progress">Tarjeta 1 / 10</div>
+    </header>
+
+    <main class="stage">
+      <div class="overlay correct" id="overlayCorrect" aria-hidden="true">
+        <div class="feedback">¡EXCELENTE!</div>
+      </div>
+
+      <div class="overlay wrong" id="overlayWrong" aria-hidden="true">
+        <div class="feedback">¡INTÉNTALO DE NUEVO!</div>
+      </div>
+
+      <section class="card" aria-labelledby="cardTitle">
+        <h2 class="cardTitle" id="cardTitle">Tarjeta</h2>
+
+        <div class="infoBox">
+          <p class="infoLine">
+            <span class="tag tag-significado">Significado</span><span id="definition"></span>
+          </p>
+          <p class="infoLine">
+            <span class="tag tag-ejemplo">Ejemplo</span><span id="example"></span>
+          </p>
+        </div>
+
+        <div class="questionBox" role="group" aria-label="Pregunta y opciones">
+          <p class="question" id="question"></p>
+          <p class="hintText">Elige la opción correcta.</p>
+          <div class="choices" id="choices"></div>
+          <div class="sr-only" aria-live="polite" id="live"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>Aprendiendo con @LaProfeVivy</footer>
+  </div>
+
+  <script>
+    const cards = [
+      {
+        title: "Recopilación de datos verídica",
+        definition: "Recolectar datos verídicos es buscar información confiable, comprobable y vigente, revisando autoría, fecha y respaldo.",
+        example: "Para un informe de mercado, usas estadísticas oficiales recientes y citaciones verificables.",
+        question: "Caso: Vas a decidir el precio de un producto. Tienes (1) un hilo anónimo en redes y (2) un informe oficial del último año. ¿Qué acción asegura datos verídicos?",
+        options: [
+          { text: "Usar el hilo anónimo porque es más rápido", correct: false },
+          { text: "Elegir el informe oficial y verificar fecha y fuente", correct: true },
+          { text: "Elegir lo que más se repite sin revisar referencias", correct: false }
+        ]
+      },
+      {
+        title: "Fuentes primarias",
+        definition: "Son datos originales, sin interpretar: entrevistas, encuestas propias, registros directos, mediciones, logs.",
+        example: "Grabas 10 entrevistas a clientes y guardas audios y transcripciones.",
+        question: "Caso: Un equipo exporta el registro crudo (raw) de tiempos de atención del sistema durante 3 meses. ¿Qué tipo de fuente es?",
+        options: [
+          { text: "Fuente terciaria", correct: false },
+          { text: "Fuente secundaria", correct: false },
+          { text: "Fuente primaria", correct: true }
+        ]
+      },
+      {
+        title: "Fuentes secundarias",
+        definition: "Analizan o resumen fuentes primarias (informes, revisiones, manuales, análisis comparativos).",
+        example: "Lees un reporte que interpreta resultados de encuestas hechas por otra empresa.",
+        question: "Caso: Te entregan un documento que resume 15 entrevistas y además da conclusiones y recomendaciones. ¿Qué tipo de fuente es ese documento?",
+        options: [
+          { text: "Fuente secundaria", correct: true },
+          { text: "Fuente primaria", correct: false },
+          { text: "Fuente terciaria", correct: false }
+        ]
+      },
+      {
+        title: "Fuentes terciarias",
+        definition: "Organizan y facilitan encontrar fuentes primarias o secundarias (catálogos, índices, bases de datos, buscadores).",
+        example: "Usas una base de datos para ubicar artículos por autor y tema.",
+        question: "Caso: Entras a un buscador académico para encontrar artículos revisados por pares sobre un tema. ¿Qué tipo de fuente estás usando?",
+        options: [
+          { text: "Fuente primaria", correct: false },
+          { text: "Fuente terciaria", correct: true },
+          { text: "Fuente secundaria", correct: false }
+        ]
+      },
+      {
+        title: "Clasificación por procedencia",
+        definition: "Además de primaria/secundaria/terciaria, también se clasifican por procedencia: académica, institucional, gubernamental, científica, digital.",
+        example: "Antes de citar, identificas si el documento viene de universidad, gobierno o una organización.",
+        question: "Caso: Tienes un “manual oficial de atención al cliente” emitido por una empresa. ¿Qué procedencia describe mejor esa fuente?",
+        options: [
+          { text: "Gubernamental", correct: false },
+          { text: "Académica", correct: false },
+          { text: "Institucional", correct: true }
+        ]
+      },
+      {
+        title: "Fuentes académicas",
+        definition: "Provienen de universidades o entornos educativos/investigación: tesis, artículos, ponencias, repositorios universitarios.",
+        example: "Consultas una tesis de maestría con metodología, datos y conclusiones.",
+        question: "Caso: Encuentras un artículo publicado en una revista de una universidad. ¿Qué procedencia es?",
+        options: [
+          { text: "Académica", correct: true },
+          { text: "Gubernamental", correct: false },
+          { text: "Institucional", correct: false }
+        ]
+      },
+      {
+        title: "Fuentes institucionales",
+        definition: "Las producen organizaciones (empresas, ONG, instituciones): políticas internas, manuales, informes corporativos.",
+        example: "Usas un protocolo interno de calidad publicado por una empresa.",
+        question: "Caso: Estás diseñando un proceso y te basas en el “reglamento interno” de una organización. ¿Qué procedencia es?",
+        options: [
+          { text: "Institucional", correct: true },
+          { text: "Científica", correct: false },
+          { text: "Gubernamental", correct: false }
+        ]
+      },
+      {
+        title: "Fuentes gubernamentales",
+        definition: "Las produce el Estado: leyes, decretos, portales oficiales de estadísticas, políticas públicas.",
+        example: "Citas una ley vigente y datos del portal oficial de estadísticas del país.",
+        question: "Caso: Necesitas tasa de desempleo por región y la descargas del portal nacional oficial. ¿Qué procedencia es?",
+        options: [
+          { text: "Científica", correct: false },
+          { text: "Gubernamental", correct: true },
+          { text: "Académica", correct: false }
+        ]
+      },
+      {
+        title: "Fuentes científicas",
+        definition: "Son investigaciones con método (artículos revisados por pares, experimentos, resultados y discusión).",
+        example: "Lees un paper revisado por pares que reporta un experimento y sus métricas.",
+        question: "Caso: Usas un artículo con metodología y resultados en una revista revisada por pares para sustentar una afirmación. ¿Qué procedencia es?",
+        options: [
+          { text: "Digital", correct: false },
+          { text: "Científica", correct: true },
+          { text: "Institucional", correct: false }
+        ]
+      },
+      {
+        title: "Fuentes digitales",
+        definition: "Se distribuyen por medios electrónicos (web, repositorios, plataformas). Lo digital no garantiza calidad: debe evaluarse.",
+        example: "Consultas documentación publicada en un repositorio en línea.",
+        question: "Caso: Accedes a la documentación de una herramienta en una plataforma web (guías y versiones). ¿Qué tipo de fuente por medio es?",
+        options: [
+          { text: "Digital", correct: true },
+          { text: "Gubernamental", correct: false },
+          { text: "Científica", correct: false }
+        ]
+      }
+    ];
+
+    const elCardTitle = document.getElementById("cardTitle");
+    const elDefinition = document.getElementById("definition");
+    const elExample = document.getElementById("example");
+    const elQuestion = document.getElementById("question");
+    const elChoices = document.getElementById("choices");
+    const elProgress = document.getElementById("progress");
+    const elOverlayCorrect = document.getElementById("overlayCorrect");
+    const elOverlayWrong = document.getElementById("overlayWrong");
+    const elLive = document.getElementById("live");
+
+    let idx = 0;
+    let locked = false;
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+      }
+      return a;
+    }
+
+    function setChoicesDisabled(disabled){
+      [...elChoices.querySelectorAll("button.bubble")].forEach(b => b.disabled = disabled);
+    }
+
+    function showCorrect(){
+      elOverlayCorrect.classList.add("show");
+      elOverlayCorrect.setAttribute("aria-hidden","false");
+      setTimeout(()=>{
+        elOverlayCorrect.classList.remove("show");
+        elOverlayCorrect.setAttribute("aria-hidden","true");
+      }, 650);
+    }
+
+    function showWrong(){
+      elOverlayWrong.classList.add("show");
+      elOverlayWrong.setAttribute("aria-hidden","false");
+      setTimeout(()=>{
+        elOverlayWrong.classList.remove("show");
+        elOverlayWrong.setAttribute("aria-hidden","true");
+      }, 650);
+    }
+
+    function renderCard(){
+      locked = false;
+      const c = cards[idx];
+
+      elCardTitle.textContent = `Tarjeta ${idx+1}: ${c.title}`;
+      elDefinition.textContent = c.definition;
+      elExample.textContent = c.example;
+      elQuestion.textContent = c.question;
+      elProgress.textContent = `Tarjeta ${idx+1} / ${cards.length}`;
+
+      const shuffled = shuffle(c.options);
+      elChoices.innerHTML = "";
+      shuffled.forEach((opt) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "bubble";
+        b.textContent = opt.text;
+        b.addEventListener("click", ()=> handleChoice(opt.correct));
+        elChoices.appendChild(b);
+      });
+
+      elLive.textContent = `Nueva tarjeta: ${c.title}.`;
+    }
+
+    function nextCard(){
+      if(idx < cards.length - 1){
+        idx++;
+        renderCard();
+      } else {
+        locked = true;
+        setChoicesDisabled(true);
+        elQuestion.textContent = "¡Listo! Terminaste las 10 tarjetas.";
+        elChoices.innerHTML = "";
+      }
+    }
+
+    function handleChoice(isCorrect){
+      if(locked) return;
+      if(isCorrect){
+        locked = true;
+        setChoicesDisabled(true);
+        showCorrect();
+        setTimeout(()=> nextCard(), 750);
+      } else {
+        showWrong();
+      }
+    }
+
+    renderCard();
+  </script>
+</body>
+</html>
 
