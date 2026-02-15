@@ -1,1 +1,482 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dominios de la información — Tarjetas</title>
+  <style>
+    :root{
+      --ink:#0b0b0b;
+      --paper:#fff7d6;
+      --bg1:#ffffff;
+      --bg2:#eaf3ff;
+
+      --hot:#ff2d55;
+      --green:#20c997;
+
+      /* Color del contenedor de pregunta */
+      --questionBg:#e8f2ff;
+
+      /* Etiquetas */
+      --tagSignificado:#2d7dff;
+      --tagEjemplo:#ffd400;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      min-height:100vh;
+      padding:16px;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255,212,0,.14) 0 18%, transparent 19%),
+        radial-gradient(circle at 72% 22%, rgba(45,125,255,.12) 0 16%, transparent 17%),
+        radial-gradient(circle at 85% 80%, rgba(255,45,85,.10) 0 14%, transparent 15%),
+        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    .app{max-width:980px;margin:0 auto;display:grid;gap:12px}
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .headerTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(16px, 2.2vw, 22px);
+      line-height:1.1;
+    }
+    .progressText{
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      font-size: 14px;
+      white-space:nowrap;
+    }
+
+    .stage{
+      position:relative;
+      border:4px solid var(--ink);
+      border-radius:20px;
+      background:#fff;
+      overflow:hidden;
+    }
+    .stage::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      background: radial-gradient(circle, rgba(0,0,0,.10) 10%, transparent 11%) 0 0/14px 14px;
+      opacity:.18;
+      pointer-events:none;
+      mix-blend-mode:multiply;
+    }
+
+    .card{position:relative;padding:14px;display:grid;gap:12px}
+    .cardTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(18px, 2.4vw, 26px);
+      line-height:1.15;
+    }
+
+    /* Significado + ejemplo en un solo contenedor */
+    .infoBox{
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .infoLine{
+      margin:0;
+      font-size:15px;
+      line-height:1.35;
+      font-weight:750;
+    }
+
+    /* Etiquetas tipo “botón” */
+    .tag{
+      display:inline-block;
+      margin-right:8px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      padding:4px 10px;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      color:#fff;
+      vertical-align:middle;
+    }
+    .tag-significado{ background: var(--tagSignificado); }
+    .tag-ejemplo{ background: var(--tagEjemplo); color:#0b0b0b; }
+
+    /* Pregunta */
+    .questionBox{
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--questionBg);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .question{
+      margin:0;
+      font-weight:1000;
+      font-size:16px;
+      line-height:1.35;
+    }
+    .hintText{
+      margin:0;
+      font-weight:800;
+      font-size:13px;
+      opacity:.85;
+    }
+
+    .choices{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:860px){ .choices{grid-template-columns:1fr} }
+
+    .bubble{
+      cursor:pointer;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      padding:12px 12px;
+      background:#fff;
+      font-weight:900;
+      text-align:center;
+      user-select:none;
+      outline:none;
+      transition: transform .06s ease, background .15s ease;
+      line-height:1.2;
+    }
+    .bubble:active{transform: translate(2px,2px)}
+    .bubble[disabled]{opacity:.55; cursor:not-allowed}
+
+    /* Feedback overlay */
+    .overlay{
+      position:absolute;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:10;
+      pointer-events:none;
+      background: rgba(255,255,255,.60);
+      backdrop-filter: blur(1px);
+    }
+    .overlay.show{display:flex}
+
+    .feedback{
+      font-weight:1000;
+      font-size: clamp(24px, 5vw, 56px);
+      letter-spacing:1px;
+      border:6px solid var(--ink);
+      padding: 12px 16px;
+      border-radius: 20px;
+      text-transform:uppercase;
+      color:#fff;
+      text-shadow: 3px 3px 0 rgba(0,0,0,.25);
+    }
+    .overlay.correct .feedback{background: var(--green); animation: pop .35s ease-out;}
+    .overlay.wrong .feedback{background: var(--hot); animation: shake .45s ease-out;}
+    @keyframes pop{
+      0%{transform: scale(.85)}
+      60%{transform: scale(1.05)}
+      100%{transform: scale(1)}
+    }
+    @keyframes shake{
+      0%{transform: translateX(0)}
+      20%{transform: translateX(-10px)}
+      40%{transform: translateX(10px)}
+      60%{transform: translateX(-6px)}
+      80%{transform: translateX(6px)}
+      100%{transform: translateX(0)}
+    }
+
+    footer{
+      text-align:center;
+      font-weight:800;
+      font-size:13px;
+      padding:8px 0 2px;
+      opacity:.9;
+    }
+
+    .sr-only{
+      position:absolute; left:-9999px;
+      width:1px; height:1px; overflow:hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <h1 class="headerTitle">Dominios de la información — Tarjetas</h1>
+      <div class="progressText" id="progress">Tarjeta 1 / 10</div>
+    </header>
+
+    <main class="stage">
+      <div class="overlay correct" id="overlayCorrect" aria-hidden="true">
+        <div class="feedback">¡CORRECTO!</div>
+      </div>
+
+      <div class="overlay wrong" id="overlayWrong" aria-hidden="true">
+        <div class="feedback">¡INTÉNTALO!</div>
+      </div>
+
+      <section class="card" aria-labelledby="cardTitle">
+        <h2 class="cardTitle" id="cardTitle">Tarjeta</h2>
+
+        <div class="infoBox">
+          <p class="infoLine">
+            <span class="tag tag-significado">Significado</span><span id="definition"></span>
+          </p>
+          <p class="infoLine">
+            <span class="tag tag-ejemplo">Ejemplo</span><span id="example"></span>
+          </p>
+        </div>
+
+        <div class="questionBox" role="group" aria-label="Pregunta y opciones">
+          <p class="question" id="question"></p>
+          <p class="hintText">Elige la opción correcta.</p>
+          <div class="choices" id="choices"></div>
+          <div class="sr-only" aria-live="polite" id="live"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>Aprendiendo con @LaProfeVivy</footer>
+  </div>
+
+  <script>
+    // Tarjetas: Dominios de la información (Personal, Académico, Profesional) + relación en espiral
+    // Regla: Pregunta empieza con “Caso: …” y evalúa comprensión/aplicación.
+
+    const cards = [
+      {
+        title: "Dominio personal",
+        definition: "Conjunto de información que gestionas para tu vida privada y tu crecimiento: intereses, hábitos, decisiones y contexto personal.",
+        example: "Guardas tus metas del semestre, agenda, notas de lectura y un registro de gastos para tomar mejores decisiones.",
+        question: "Caso: Quieres mejorar tu rendimiento. Tienes apuntes dispersos, recordatorios y tareas sin orden. ¿Qué dominio estás organizando primero?",
+        options: [
+          { text: "Dominio personal (información para tu vida y hábitos)", correct: true },
+          { text: "Dominio académico (solo artículos y clases)", correct: false },
+          { text: "Dominio profesional (solo trabajo y empresa)", correct: false }
+        ]
+      },
+      {
+        title: "Dominio académico",
+        definition: "Información orientada al aprendizaje formal: cursos, lecturas, evidencias, trabajos, normas de citación y construcción de conocimiento.",
+        example: "Creas una carpeta por asignatura con lecturas, resúmenes, referencias y entregables con fechas.",
+        question: "Caso: Debes escribir un ensayo con referencias y necesitas ordenar fuentes, citas y argumentos del curso. ¿Qué dominio estás gestionando?",
+        options: [
+          { text: "Dominio profesional", correct: false },
+          { text: "Dominio académico", correct: true },
+          { text: "Dominio personal", correct: false }
+        ]
+      },
+      {
+        title: "Dominio profesional",
+        definition: "Información usada para resolver problemas y tomar decisiones en contextos de trabajo: objetivos, indicadores, procesos, reportes y comunicación formal.",
+        example: "Construyes un informe con datos del área, conclusiones y acciones para una reunión con dirección.",
+        question: "Caso: En prácticas te piden un reporte semanal con avances, métricas y riesgos. ¿Qué dominio es el principal?",
+        options: [
+          { text: "Dominio académico", correct: false },
+          { text: "Dominio profesional", correct: true },
+          { text: "Dominio personal", correct: false }
+        ]
+      },
+      {
+        title: "Espiral evolutiva entre dominios",
+        definition: "Relación dinámica donde lo personal alimenta lo académico y lo profesional; cada ciclo mejora tu criterio y tu capacidad de decisión.",
+        example: "Un interés personal por IA te lleva a investigar en clase y luego a proponer una mejora en tu práctica o trabajo.",
+        question: "Caso: Aprendes una técnica en clase, la aplicas en un proyecto real y luego te surgen nuevas preguntas para estudiar. ¿Qué idea describe esto?",
+        options: [
+          { text: "Una espiral evolutiva entre dominios", correct: true },
+          { text: "Dominios aislados que no se conectan", correct: false },
+          { text: "Un proceso que vuelve siempre al mismo punto", correct: false }
+        ]
+      },
+      {
+        title: "Necesidad de información",
+        definition: "Definir con precisión qué necesitas saber y para qué, antes de buscar: reduce ruido y mejora relevancia.",
+        example: "En vez de 'buscar sobre gestión', defines: 'criterios para evaluar confiabilidad de fuentes académicas en 2026'.",
+        question: "Caso: Tienes demasiados resultados en internet y pierdes tiempo. ¿Qué acción mejora la búsqueda desde el inicio?",
+        options: [
+          { text: "Definir la necesidad: objetivo, tema y criterio de uso", correct: true },
+          { text: "Abrir muchos enlaces y leer al azar", correct: false },
+          { text: "Guardar todo en una sola carpeta sin nombres", correct: false }
+        ]
+      },
+      {
+        title: "Búsqueda estratégica",
+        definition: "Uso de palabras clave, filtros y fuentes adecuadas según el dominio (académico, profesional o personal) para encontrar información pertinente.",
+        example: "Usas un repositorio o base académica para artículos y sitios oficiales para normas, evitando fuentes sin autor claro.",
+        question: "Caso: Necesitas evidencia para un trabajo universitario. ¿Qué decisión de búsqueda es más adecuada?",
+        options: [
+          { text: "Priorizar fuentes académicas/autoridad y aplicar filtros", correct: true },
+          { text: "Tomar el primer resultado sin revisar la fuente", correct: false },
+          { text: "Usar solo opiniones en redes porque son rápidas", correct: false }
+        ]
+      },
+      {
+        title: "Evaluación y confiabilidad",
+        definition: "Proceso de verificar calidad: autoría, fecha, propósito, evidencia, consistencia y posibles sesgos antes de usar la información.",
+        example: "Comparas dos fuentes, revisas credenciales del autor y confirmas datos con una fuente institucional.",
+        question: "Caso: Encuentras un texto convincente pero sin autor y sin fecha. ¿Qué haces para decidir si sirve?",
+        options: [
+          { text: "Evaluar confiabilidad: autor, fecha, evidencia y contraste", correct: true },
+          { text: "Usarlo tal cual porque 'suena correcto'", correct: false },
+          { text: "Copiarlo sin citar para ahorrar tiempo", correct: false }
+        ]
+      },
+      {
+        title: "Organización y recuperación",
+        definition: "Estructurar información para encontrarla rápido: nombres consistentes, carpetas lógicas, etiquetas, resúmenes y versionado.",
+        example: "Nombras archivos: '2026-02_Tema_Subtema_Fuente' y etiquetas por curso/proyecto.",
+        question: "Caso: Tienes 80 PDFs y pierdes tiempo buscándolos. ¿Qué mejora directamente la recuperación?",
+        options: [
+          { text: "Usar un sistema de nombres + carpetas + etiquetas", correct: true },
+          { text: "Guardar todo en 'Descargas' sin ordenar", correct: false },
+          { text: "Abrir archivos hasta encontrar el correcto", correct: false }
+        ]
+      },
+      {
+        title: "Transformación en conocimiento",
+        definition: "Convertir información en comprensión: resumir, relacionar ideas, argumentar y aplicar a un problema real.",
+        example: "Haces un mapa de ideas y concluyes qué evidencia apoya tu hipótesis y qué falta por investigar.",
+        question: "Caso: Leíste varias fuentes y ahora debes proponer una solución. ¿Qué acción muestra transformación en conocimiento?",
+        options: [
+          { text: "Sintetizar y justificar una decisión con evidencia", correct: true },
+          { text: "Copiar fragmentos sin conectarlos", correct: false },
+          { text: "Guardar enlaces sin leerlos", correct: false }
+        ]
+      },
+      {
+        title: "Ética y trazabilidad (citación)",
+        definition: "Reconocer autores, citar correctamente y mantener registro de fuentes para transparencia y responsabilidad académica/profesional.",
+        example: "Incluyes referencias y guardas la ficha de cada fuente (autor, año, enlace, idea principal).",
+        question: "Caso: Vas a entregar un informe con ideas de varias fuentes. ¿Qué práctica protege integridad y credibilidad?",
+        options: [
+          { text: "Citar y mantener registro de fuentes usadas", correct: true },
+          { text: "Omitir fuentes para que el texto se vea 'más propio'", correct: false },
+          { text: "Usar citas sin revisar si el contenido es real", correct: false }
+        ]
+      }
+    ];
+
+    const elCardTitle = document.getElementById("cardTitle");
+    const elDefinition = document.getElementById("definition");
+    const elExample = document.getElementById("example");
+    const elQuestion = document.getElementById("question");
+    const elChoices = document.getElementById("choices");
+    const elProgress = document.getElementById("progress");
+    const elOverlayCorrect = document.getElementById("overlayCorrect");
+    const elOverlayWrong = document.getElementById("overlayWrong");
+    const elLive = document.getElementById("live");
+
+    let idx = 0;
+    let locked = false;
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+      }
+      return a;
+    }
+
+    function setChoicesDisabled(disabled){
+      [...elChoices.querySelectorAll("button.bubble")].forEach(b => b.disabled = disabled);
+    }
+
+    function showCorrect(){
+      elOverlayCorrect.classList.add("show");
+      elOverlayCorrect.setAttribute("aria-hidden","false");
+      setTimeout(()=>{
+        elOverlayCorrect.classList.remove("show");
+        elOverlayCorrect.setAttribute("aria-hidden","true");
+      }, 650);
+    }
+
+    function showWrong(){
+      elOverlayWrong.classList.add("show");
+      elOverlayWrong.setAttribute("aria-hidden","false");
+      setTimeout(()=>{
+        elOverlayWrong.classList.remove("show");
+        elOverlayWrong.setAttribute("aria-hidden","true");
+      }, 650);
+    }
+
+    function renderCard(){
+      locked = false;
+      const c = cards[idx];
+
+      elCardTitle.textContent = `Tarjeta ${idx+1}: ${c.title}`;
+      elDefinition.textContent = c.definition;
+      elExample.textContent = c.example;
+      elQuestion.textContent = c.question;
+      elProgress.textContent = `Tarjeta ${idx+1} / ${cards.length}`;
+
+      const shuffled = shuffle(c.options);
+      elChoices.innerHTML = "";
+      shuffled.forEach((opt) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "bubble";
+        b.textContent = opt.text;
+        b.addEventListener("click", ()=> handleChoice(opt.correct));
+        elChoices.appendChild(b);
+      });
+
+      elLive.textContent = `Nueva tarjeta: ${c.title}.`;
+    }
+
+    function nextCard(){
+      if(idx < cards.length - 1){
+        idx++;
+        renderCard();
+      } else {
+        locked = true;
+        setChoicesDisabled(true);
+        elQuestion.textContent = "¡Listo! Terminaste las 10 tarjetas.";
+        elChoices.innerHTML = "";
+      }
+    }
+
+    function handleChoice(isCorrect){
+      if(locked) return;
+      if(isCorrect){
+        locked = true;
+        setChoicesDisabled(true);
+        showCorrect();
+        setTimeout(()=> nextCard(), 750);
+      } else {
+        showWrong();
+      }
+    }
+
+    renderCard();
+  </script>
+</body>
+</html>
 
