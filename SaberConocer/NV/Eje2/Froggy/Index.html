@@ -1,1 +1,1140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fuentes de información - Froggy Jump</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 70px;
+    }
+
+    /* Main Title */
+    .main-title {
+      background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .main-title h1 {
+      color: #fff;
+      font-size: 32px;
+      font-weight: bold;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .student-line{
+      margin-top: 10px;
+      color: rgba(255,255,255,0.95);
+      font-weight: 600;
+      letter-spacing: 1px;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    /* Header profesional */
+    .header {
+      background: linear-gradient(135deg, #6a1b9a 0%, #ab47bc 100%);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .lives-container, .points-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 15px;
+      border-radius: 25px;
+    }
+    .lives-label, .points-label {
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .lives-count {
+      background: white;
+      color: #6a1b9a;
+      font-weight: bold;
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .category-title {
+      color: white;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+      flex: 1;
+    }
+    .points-count {
+      background: white;
+      color: #6a1b9a;
+      font-weight: bold;
+      font-size: 20px;
+      padding: 5px 15px;
+      border-radius: 20px;
+    }
+
+    /* Área del juego */
+    .game-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .progress-bar-container {
+      background: rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 8px;
+      margin-bottom: 20px;
+    }
+    .progress-bar {
+      height: 30px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6a1b9a, #ab47bc);
+      border-radius: 15px;
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .question-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    .question-number {
+      color: #6a1b9a;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    .question-text {
+      color: #333;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    /* Estilo Froggy Jump */
+    .lily-pads-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+      margin-top: 40px;
+      position: relative;
+    }
+    .lily-pad {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      padding: 0;
+    }
+    .lily-pad:hover:not(.answered) {
+      transform: translateY(-10px) scale(1.05);
+    }
+    .lily-pad.correct { animation: correctJump 0.6s ease; }
+    .lily-pad.incorrect { animation: incorrectShake 0.6s ease; opacity: 0.5; }
+
+    @keyframes correctJump {
+      0%, 100% { transform: translateY(0) scale(1); }
+      30% { transform: translateY(-30px) scale(1.1); }
+      60% { transform: translateY(-15px) scale(1.05); }
+    }
+    @keyframes incorrectShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-15px) rotate(-5deg); }
+      75% { transform: translateX(15px) rotate(5deg); }
+    }
+
+    .lily-content {
+      background: #6a1b9a;
+      border-radius: 50%;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 280px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      position: relative;
+      border: 5px solid #ab47bc;
+    }
+    .lily-content::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      background: rgba(171, 71, 188, 0.3);
+      border-radius: 50%;
+      z-index: -1;
+    }
+    .option-label {
+      position: absolute;
+      top: 15px;
+      right: 15px;           /* ESQUINA SUPERIOR DERECHA */
+      left: auto;
+      transform: none;
+      background: #ab47bc;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    }
+
+    .option-svg { width: 100px; height: 100px; margin-bottom: 15px; }
+    .option-text {
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.4;
+      padding: 0 10px;
+    }
+
+    /* Rana */
+    .frog-container {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      transition: all 0.5s ease;
+    }
+    .frog-svg {
+      width: 120px;
+      height: 120px;
+      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+    }
+
+    /* Timer */
+    .timer-container {
+      position: relative;
+      background: white;
+      padding: 12px 30px;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border: 3px solid #6a1b9a;
+      margin: 0 auto 30px auto;
+      width: fit-content;
+    }
+    .timer-icon { width: 28px; height: 28px; }
+    .timer-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: #6a1b9a;
+      min-width: 80px;
+    }
+    .timer-text.warning { color: #ff9800; animation: pulse 1s infinite; }
+    .timer-text.danger { color: #ff4444; animation: pulse 0.5s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* Explicación */
+    .explanation-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+    .explanation-modal.show { display: flex; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .explanation-content {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 700px;
+      width: 100%;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .explanation-header {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #6a1b9a;
+    }
+    .explanation-text {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 30px;
+      white-space: pre-line;
+    }
+
+    /* Botones */
+    .action-buttons { display: flex; gap: 15px; margin-top: 20px; }
+    .retry-button {
+      flex: 1;
+      background: linear-gradient(135deg, #ff9800, #ff6b00);
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .retry-button:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4); }
+
+    .next-button {
+      flex: 1;
+      background: linear-gradient(135deg, #6a1b9a, #ab47bc);
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .next-button:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(106, 27, 154, 0.4); }
+
+    /* Pantalla final */
+    .final-screen {
+      display: none;
+      text-align: center;
+      background: white;
+      border-radius: 20px;
+      padding: 60px 40px;
+      max-width: 700px;
+      margin: 50px auto;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    .final-screen.show { display: block; animation: fadeIn 0.5s ease; }
+    .final-title { font-size: 42px; font-weight: bold; color: #6a1b9a; margin-bottom: 20px; }
+    .final-score { font-size: 64px; font-weight: bold; color: #ab47bc; margin: 20px 0; }
+    .final-message { font-size: 20px; color: #333; margin-bottom: 20px; line-height: 1.5; }
+    .final-meta {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #444;
+      line-height: 1.6;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .restart-button {
+      background: linear-gradient(135deg, #6a1b9a, #ab47bc);
+      color: white;
+      border: none;
+      padding: 18px 50px;
+      border-radius: 30px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 25px;
+    }
+    .restart-button:hover { transform: scale(1.1); box-shadow: 0 8px 25px rgba(106, 27, 154, 0.4); }
+
+    /* Start Screen */
+    .start-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 20px;
+    }
+    .start-card{
+      background: white;
+      width: 100%;
+      max-width: 680px;
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+      animation: slideUp 0.25s ease;
+    }
+    .start-title{
+      font-size: 26px;
+      font-weight: 800;
+      color: #6a1b9a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .start-sub{
+      text-align: center;
+      color: #444;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .form-row{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .field{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .field label{
+      font-weight: 800;
+      color: #4a148c;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+    .field input{
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 2px solid rgba(106, 27, 154, 0.25);
+      outline: none;
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+    }
+    .field input:focus{
+      border-color: #6a1b9a;
+      box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.12);
+    }
+    .start-btn{
+      width: 100%;
+      margin-top: 10px;
+      background: linear-gradient(135deg, #6a1b9a, #ab47bc);
+      color: white;
+      border: none;
+      padding: 16px 18px;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .start-btn:hover{
+      transform: scale(1.03);
+      box-shadow: 0 10px 25px rgba(106, 27, 154, 0.25);
+    }
+    .start-error{
+      margin-top: 12px;
+      text-align: center;
+      color: #ff4444;
+      font-weight: 800;
+      display: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 13px;
+    }
+
+    /* Footer */
+    .footer {
+      background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
+      padding: 20px;
+      text-align: center;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+    }
+    .footer-text {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+    .footer-handle { color: #ab47bc; font-weight: bold; font-size: 20px; }
+
+    @media (max-width: 768px) {
+      .lily-pads-container { grid-template-columns: 1fr; gap: 20px; }
+      .question-text { font-size: 20px; }
+      .lily-content { min-height: 250px; padding: 30px 15px; }
+      .footer-text { font-size: 16px; }
+      .footer-handle { font-size: 18px; }
+      .main-title h1 { font-size: 24px; }
+      .action-buttons { flex-direction: column; }
+      .form-row{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Start Screen -->
+  <div class="start-screen" id="startScreen">
+    <div class="start-card">
+      <div class="start-title">Ingreso</div>
+      <div class="start-sub">Escribe tu NOMBRE COMPLETO y el NRC</div>
+
+      <div class="form-row">
+        <div class="field">
+          <label for="studentName">Nombre completo</label>
+          <input id="studentName" type="text" placeholder="Ej: Viviana Pérez López" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="studentNrc">NRC</label>
+          <input id="studentNrc" type="text" placeholder="Ej: 12345" autocomplete="off" />
+        </div>
+      </div>
+
+      <button class="start-btn" id="startBtn">Iniciar juego</button>
+      <div class="start-error" id="startError">Completa nombre y NRC</div>
+    </div>
+  </div>
+
+  <!-- Main Title -->
+  <div class="main-title">
+    <h1>Fuentes de información y veracidad</h1>
+    <div class="student-line" id="studentLine">ESTUDIANTE: -- | NRC: --</div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="lives-container">
+      <span class="lives-label">VIDAS</span>
+      <div class="lives-count" id="lives">5</div>
+    </div>
+
+    <div class="category-title" id="categoryTitle">FUENTES DE INFORMACIÓN</div>
+
+    <div class="points-container">
+      <span class="points-label">PUNTOS</span>
+      <div class="points-count" id="points">0</div>
+    </div>
+  </div>
+
+  <!-- Game Container -->
+  <div class="game-container" id="gameArea">
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-container">
+      <svg class="timer-icon" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="#6a1b9a" stroke-width="2"/>
+        <path d="M12 6v6l4 2" stroke="#6a1b9a" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="timer-text" id="timer">00:00:40</span>
+    </div>
+
+    <!-- Question Card -->
+    <div class="question-card">
+      <div class="question-number" id="questionNumber">1 / 10</div>
+      <div class="question-text" id="questionText"></div>
+    </div>
+
+    <!-- Lily Pads -->
+    <div class="lily-pads-container" id="lilyPadsContainer"></div>
+  </div>
+
+  <!-- Final Screen -->
+  <div class="final-screen" id="finalScreen">
+    <div class="final-title">JUEGO COMPLETADO</div>
+    <div class="final-score" id="finalScore"></div>
+    <div class="final-message" id="finalMessage"></div>
+    <div class="final-meta" id="finalMeta"></div>
+    <button class="restart-button" onclick="location.reload()">JUGAR DE NUEVO</button>
+  </div>
+
+  <!-- Frog -->
+  <div class="frog-container" id="frogContainer">
+    <svg class="frog-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="100" cy="120" rx="60" ry="50" fill="#ab47bc"/>
+      <ellipse cx="100" cy="80" rx="50" ry="40" fill="#ab47bc"/>
+      <ellipse cx="85" cy="65" rx="15" ry="20" fill="white"/>
+      <ellipse cx="115" cy="65" rx="15" ry="20" fill="white"/>
+      <circle cx="85" cy="70" r="8" fill="#6a1b9a"/>
+      <circle cx="115" cy="70" r="8" fill="#6a1b9a"/>
+      <path d="M 80 90 Q 100 100 120 90" stroke="#6a1b9a" stroke-width="3" fill="none"/>
+      <ellipse cx="70" cy="140" rx="12" ry="25" fill="#6a1b9a"/>
+      <ellipse cx="130" cy="140" rx="12" ry="25" fill="#6a1b9a"/>
+      <ellipse cx="60" cy="150" rx="20" ry="15" fill="#6a1b9a"/>
+      <ellipse cx="140" cy="150" rx="20" ry="15" fill="#6a1b9a"/>
+    </svg>
+  </div>
+
+  <!-- Explanation Modal -->
+  <div class="explanation-modal" id="explanationModal">
+    <div class="explanation-content">
+      <div class="explanation-header" id="explanationHeader"></div>
+      <div class="explanation-text" id="explanationText"></div>
+      <div class="action-buttons">
+        <button class="retry-button" id="retryButton">REINTENTAR</button>
+        <button class="next-button" id="nextButton">SIGUIENTE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p class="footer-text">Aprendiendo con <span class="footer-handle">@LaProfevivy</span></p>
+  </div>
+
+  <script>
+    // ======================
+    // DATOS DEL ESTUDIANTE
+    // ======================
+    let studentNameUpper = "";
+    let studentNrc = "";
+    let startDateTimeBogota = "";
+
+    function nowBogotaString() {
+      // Fecha/hora visible en Colombia (Bogotá)
+      return new Date().toLocaleString('es-CO', {
+        timeZone: 'America/Bogota',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+    }
+
+    // ======================
+    // PREGUNTAS (REFERENTE)
+    // Tema: Fuentes de información + criterios de veracidad
+    // ======================
+    const questions = [
+      {
+        category: "FUENTES DE INFORMACIÓN",
+        question: "¿Qué describe mejor una fuente de información?",
+        options: [
+          { text: "Un programa para hacer gráficos", svg: "simple" },
+          { text: "El origen o medio que proporciona datos, hechos u opiniones sobre un tema", svg: "source" },
+          { text: "Un archivo que siempre es verdadero", svg: "false" },
+          { text: "Un mensaje sin autor", svg: "unknown" }
+        ],
+        correct: 1,
+        explanation:
+          "SIGNIFICADO: Una fuente es el ORIGEN o MEDIO que aporta información.\n" +
+          "EJEMPLO: Un libro, un artículo, un sitio institucional.\n" +
+          "CASO: Si necesitas datos, primero defines QUÉ fuente los entrega."
+      },
+      {
+        category: "TIPOS DE FUENTES",
+        question: "¿Cuál es una fuente PRIMARIA?",
+        options: [
+          { text: "Un documental que resume varias investigaciones", svg: "doc" },
+          { text: "Una entrevista directa a un testigo o experto", svg: "interview" },
+          { text: "Una enciclopedia", svg: "encyclopedia" },
+          { text: "Un índice bibliográfico", svg: "index" }
+        ],
+        correct: 1,
+        explanation:
+          "SIGNIFICADO: La fuente primaria nace de EXPERIENCIA directa, observación o experimento.\n" +
+          "EJEMPLO: Entrevistas, encuestas, experimentos.\n" +
+          "CASO: Si quieres evidencia directa, prioriza fuentes primarias."
+      },
+      {
+        category: "TIPOS DE FUENTES",
+        question: "¿Qué caracteriza a una fuente SECUNDARIA?",
+        options: [
+          { text: "Presenta datos originales de un experimento propio", svg: "lab" },
+          { text: "Analiza o interpreta información obtenida de fuentes primarias", svg: "analyze" },
+          { text: "Es un listado de libros sin explicación", svg: "list" },
+          { text: "Solo contiene definiciones cortas", svg: "short" }
+        ],
+        correct: 1,
+        explanation:
+          "SIGNIFICADO: La secundaria INTERPRETA o ANALIZA fuentes primarias.\n" +
+          "EJEMPLO: Artículos de revisión, libros de análisis.\n" +
+          "CASO: Si buscas comprensión y contexto, usa fuentes secundarias."
+      },
+      {
+        category: "TIPOS DE FUENTES",
+        question: "¿Cuál es una fuente TERCIARIA?",
+        options: [
+          { text: "Una encuesta aplicada por ti", svg: "survey" },
+          { text: "Un informe con resultados originales", svg: "report" },
+          { text: "Una enciclopedia o compendio que resume y organiza información", svg: "encyclopedia" },
+          { text: "Una entrevista grabada", svg: "interview" }
+        ],
+        correct: 2,
+        explanation:
+          "SIGNIFICADO: La terciaria COMPILA y ORGANIZA información ya publicada.\n" +
+          "EJEMPLO: Enciclopedias, índices, resúmenes.\n" +
+          "CASO: Útil para ubicar el tema, pero no siempre es evidencia directa."
+      },
+      {
+        category: "CLASIFICACIÓN PRÁCTICA",
+        question: "Si una persona hace un experimento y publica los resultados originales, eso es:",
+        options: [
+          { text: "Fuente primaria", svg: "lab" },
+          { text: "Fuente secundaria", svg: "analyze" },
+          { text: "Fuente terciaria", svg: "encyclopedia" },
+          { text: "No es una fuente", svg: "none" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: Resultado ORIGINAL = fuente primaria.\n" +
+          "EJEMPLO: Artículo con metodología y datos propios.\n" +
+          "CASO: Para validar, revisa métodos, datos y autor."
+      },
+      {
+        category: "VERACIDAD",
+        question: "¿Qué revisas en 'Autoridad y credibilidad'?",
+        options: [
+          { text: "Si el texto tiene colores bonitos", svg: "design" },
+          { text: "Quién es el autor, su formación y la institución que respalda", svg: "authority" },
+          { text: "Si tiene muchos emoticones", svg: "emoji" },
+          { text: "Si es corto", svg: "short" }
+        ],
+        correct: 1,
+        explanation:
+          "SIGNIFICADO: Autoridad = autor competente + institución confiable.\n" +
+          "EJEMPLO: Universidad, revista académica, entidad oficial.\n" +
+          "CASO: Si no hay autor claro, baja la credibilidad."
+      },
+      {
+        category: "VERACIDAD",
+        question: "¿Qué revisas en el criterio 'Evidencia'?",
+        options: [
+          { text: "Que sea una opinión sin datos", svg: "opinion" },
+          { text: "Que incluya datos, referencias y metodología verificable", svg: "evidence" },
+          { text: "Que tenga títulos grandes", svg: "title" },
+          { text: "Que sea viral", svg: "viral" }
+        ],
+        correct: 1,
+        explanation:
+          "SIGNIFICADO: Evidencia = soporte verificable (datos, fuentes, método).\n" +
+          "EJEMPLO: Citas, bibliografía, resultados medibles.\n" +
+          "CASO: Si no muestra cómo llegó a la conclusión, desconfía."
+      },
+      {
+        category: "VERACIDAD",
+        question: "¿Qué evalúa el criterio 'Actualidad'?",
+        options: [
+          { text: "La fecha de publicación y si sigue siendo relevante al tema", svg: "time" },
+          { text: "El tipo de letra", svg: "font" },
+          { text: "Que use memes", svg: "meme" },
+          { text: "Que tenga muchas páginas", svg: "pages" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: Actualidad = vigencia de la información según el tema.\n" +
+          "EJEMPLO: Normas o tecnología requieren fechas recientes.\n" +
+          "CASO: Si el tema cambia rápido, lo antiguo puede estar desactualizado."
+      },
+      {
+        category: "VERACIDAD",
+        question: "¿Qué revisas en 'Objetividad y propósito'?",
+        options: [
+          { text: "Si intenta informar o persuadir (sesgo, intención, publicidad)", svg: "objective" },
+          { text: "Si tiene música", svg: "music" },
+          { text: "Si usa mayúsculas", svg: "caps" },
+          { text: "Si se ve bonito", svg: "design" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: Objetividad = detectar sesgos e intención del autor.\n" +
+          "EJEMPLO: Publicidad disfrazada de noticia.\n" +
+          "CASO: Si busca manipular, no es confiable para decisiones."
+      },
+      {
+        category: "VERACIDAD",
+        question: "¿Qué significa 'Reputación de la fuente'?",
+        options: [
+          { text: "Que sea la primera que aparece en redes", svg: "viral" },
+          { text: "Que sea reconocida, confiable y con historial verificable", svg: "reputation" },
+          { text: "Que tenga comentarios", svg: "comments" },
+          { text: "Que sea anónima", svg: "unknown" }
+        ],
+        correct: 1,
+        explanation:
+          "SIGNIFICADO: Reputación = historial y reconocimiento por calidad.\n" +
+          "EJEMPLO: Revistas serias, portales institucionales.\n" +
+          "CASO: Si siempre publica errores, no sirve como base."
+      }
+    ];
+
+    // ======================
+    // ICONOS SVG (SENCILLOS)
+    // ======================
+    const svgIcons = {
+      source: '<svg viewBox="0 0 100 100"><circle cx="50" cy="40" r="16" fill="#fff"/><rect x="30" y="58" width="40" height="18" rx="4" fill="#ab47bc"/><path d="M35 62h30" stroke="#fff" stroke-width="3"/></svg>',
+      simple: '<svg viewBox="0 0 100 100"><rect x="28" y="30" width="44" height="44" rx="8" fill="#fff" stroke="#ab47bc" stroke-width="3"/><circle cx="50" cy="52" r="10" fill="#6a1b9a"/></svg>',
+      false: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="#fff" stroke="#ff4444" stroke-width="3"/><path d="M42 42l16 16M58 42L42 58" stroke="#ff4444" stroke-width="4"/></svg>',
+      unknown: '<svg viewBox="0 0 100 100"><circle cx="50" cy="45" r="18" fill="#fff" stroke="#ab47bc" stroke-width="3"/><text x="50" y="55" font-size="24" fill="#6a1b9a" text-anchor="middle" font-weight="900">?</text><circle cx="50" cy="72" r="4" fill="#6a1b9a"/></svg>',
+
+      doc: '<svg viewBox="0 0 100 100"><rect x="32" y="22" width="36" height="56" rx="6" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M38 40h24M38 50h24M38 60h18" stroke="#6a1b9a" stroke-width="3"/></svg>',
+      interview: '<svg viewBox="0 0 100 100"><circle cx="36" cy="42" r="10" fill="#fff"/><circle cx="64" cy="42" r="10" fill="#fff"/><path d="M26 68c2-10 18-10 20 0M54 68c2-10 18-10 20 0" stroke="#ab47bc" stroke-width="3" fill="none"/><path d="M20 30h18" stroke="#6a1b9a" stroke-width="4"/></svg>',
+      encyclopedia: '<svg viewBox="0 0 100 100"><rect x="28" y="28" width="18" height="44" rx="4" fill="#fff"/><rect x="46" y="28" width="18" height="44" rx="4" fill="#ab47bc"/><rect x="64" y="28" width="8" height="44" rx="3" fill="#6a1b9a"/></svg>',
+      index: '<svg viewBox="0 0 100 100"><rect x="28" y="30" width="44" height="40" rx="6" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M36 42h28M36 52h22M36 62h18" stroke="#6a1b9a" stroke-width="3"/></svg>',
+      lab: '<svg viewBox="0 0 100 100"><path d="M42 25v18l-12 22a15 15 0 0 0 13 22h14a15 15 0 0 0 13-22L58 43V25" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M38 60h24" stroke="#6a1b9a" stroke-width="4"/></svg>',
+      analyze: '<svg viewBox="0 0 100 100"><circle cx="44" cy="44" r="16" fill="none" stroke="#fff" stroke-width="4"/><path d="M56 56l16 16" stroke="#fff" stroke-width="6" stroke-linecap="round"/><rect x="40" y="40" width="8" height="8" fill="#ab47bc"/></svg>',
+      list: '<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="40" rx="8" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M38 42h24M38 52h24M38 62h24" stroke="#6a1b9a" stroke-width="3"/></svg>',
+      short: '<svg viewBox="0 0 100 100"><rect x="30" y="38" width="40" height="24" rx="8" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M38 50h24" stroke="#6a1b9a" stroke-width="4"/></svg>',
+      survey: '<svg viewBox="0 0 100 100"><rect x="30" y="26" width="40" height="48" rx="6" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M38 40h24M38 52h18" stroke="#6a1b9a" stroke-width="3"/><path d="M38 62l6 6 10-14" stroke="#ab47bc" stroke-width="4" fill="none"/></svg>',
+      report: '<svg viewBox="0 0 100 100"><rect x="28" y="26" width="44" height="52" rx="8" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M36 62v-12M46 62V40M56 62V48M66 62V44" stroke="#6a1b9a" stroke-width="4"/></svg>',
+      none: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="22" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M36 36l28 28" stroke="#ff4444" stroke-width="5"/></svg>',
+
+      authority: '<svg viewBox="0 0 100 100"><circle cx="50" cy="40" r="14" fill="#fff"/><path d="M30 78c2-18 38-18 40 0" stroke="#ab47bc" stroke-width="4" fill="none"/><path d="M25 26h50" stroke="#6a1b9a" stroke-width="4"/></svg>',
+      emoji: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="22" fill="#fff" stroke="#ab47bc" stroke-width="3"/><circle cx="42" cy="46" r="3" fill="#6a1b9a"/><circle cx="58" cy="46" r="3" fill="#6a1b9a"/><path d="M42 58q8 8 16 0" stroke="#6a1b9a" stroke-width="3" fill="none"/></svg>',
+      evidence: '<svg viewBox="0 0 100 100"><rect x="30" y="28" width="40" height="44" rx="8" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M38 52l8 8 18-22" stroke="#6a1b9a" stroke-width="4" fill="none"/></svg>',
+      opinion: '<svg viewBox="0 0 100 100"><path d="M28 36h44v26H44l-10 10V62H28z" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M36 44h28M36 52h20" stroke="#6a1b9a" stroke-width="3"/></svg>',
+      title: '<svg viewBox="0 0 100 100"><rect x="26" y="34" width="48" height="32" rx="8" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M34 44h32" stroke="#6a1b9a" stroke-width="5"/></svg>',
+      viral: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="18" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M50 18v14M50 68v14M18 50h14M68 50h14" stroke="#6a1b9a" stroke-width="4"/></svg>',
+      time: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="22" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M50 50V34M50 50h14" stroke="#6a1b9a" stroke-width="4" stroke-linecap="round"/></svg>',
+      font: '<svg viewBox="0 0 100 100"><text x="50" y="62" font-size="44" fill="#fff" text-anchor="middle" font-weight="900">A</text></svg>',
+      meme: '<svg viewBox="0 0 100 100"><rect x="28" y="30" width="44" height="40" rx="8" fill="#fff" stroke="#ab47bc" stroke-width="3"/><path d="M38 42h24M38 52h16" stroke="#6a1b9a" stroke-width="3"/></svg>',
+      pages: '<svg viewBox="0 0 100 100"><rect x="30" y="28" width="28" height="44" rx="6" fill="#fff" stroke="#ab47bc" stroke-width="3"/><rect x="44" y="32" width="28" height="44" rx="6" fill="none" stroke="#ab47bc" stroke-width="3"/></svg>',
+      objective: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="18" fill="#ab47bc"/><circle cx="50" cy="50" r="26" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="4,4"/><circle cx="50" cy="50" r="7" fill="#6a1b9a"/></svg>',
+      music: '<svg viewBox="0 0 100 100"><path d="M56 30v34a8 8 0 1 1-6-8V34l22-4v28a8 8 0 1 1-6-8V26z" fill="#fff"/></svg>',
+      caps: '<svg viewBox="0 0 100 100"><text x="50" y="62" font-size="34" fill="#fff" text-anchor="middle" font-weight="900">ABC</text></svg>',
+      design: '<svg viewBox="0 0 100 100"><path d="M50 22l10 20 22 3-16 15 4 22-20-10-20 10 4-22-16-15 22-3z" fill="#fff"/></svg>',
+      reputation: '<svg viewBox="0 0 100 100"><circle cx="50" cy="42" r="14" fill="#fff"/><path d="M30 78c2-18 38-18 40 0" stroke="#ab47bc" stroke-width="4" fill="none"/><path d="M50 18l6 10 12 2-9 8 2 12-11-6-11 6 2-12-9-8 12-2z" fill="#6a1b9a"/></svg>',
+      comments: '<svg viewBox="0 0 100 100"><path d="M26 34h48v28H44l-10 10V62H26z" fill="#fff" stroke="#ab47bc" stroke-width="3"/><circle cx="40" cy="48" r="3" fill="#6a1b9a"/><circle cx="50" cy="48" r="3" fill="#6a1b9a"/><circle cx="60" cy="48" r="3" fill="#6a1b9a"/></svg>'
+    };
+
+    // ======================
+    // MECÁNICA (MISMAS REGLAS)
+    // ======================
+    let currentQuestion = 0;
+    let points = 0;
+    let lives = 5;
+    let timer;
+    let timeLeft = 40;
+    let answered = false;
+
+    const questionValue = 1000;
+    let currentQuestionPoints = 1000;
+
+    // Guardamos la pregunta actual ya barajada
+    let currentQ = null;
+
+    const totalPossible = questionValue * questions.length;
+
+    function shuffleOptionsKeepCorrect(originalQ) {
+      const correctOption = originalQ.options[originalQ.correct];
+      const shuffled = [...originalQ.options];
+
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      const newCorrectIndex = shuffled.findIndex(opt => opt === correctOption);
+
+      return {
+        ...originalQ,
+        options: shuffled,
+        correct: newCorrectIndex
+      };
+    }
+
+    function loadQuestion() {
+      answered = false;
+      timeLeft = 40;
+      currentQuestionPoints = questionValue;
+
+      const q = shuffleOptionsKeepCorrect(questions[currentQuestion]);
+      currentQ = q;
+
+      document.getElementById('categoryTitle').textContent = q.category;
+      document.getElementById('questionNumber').textContent = `${currentQuestion + 1} / ${questions.length}`;
+      document.getElementById('questionText').textContent = q.question;
+
+      const container = document.getElementById('lilyPadsContainer');
+      container.innerHTML = '';
+
+      const labels = ['A', 'B', 'C', 'D'];
+
+      q.options.forEach((option, index) => {
+        const lilyPad = document.createElement('button');
+        lilyPad.className = 'lily-pad';
+        lilyPad.onclick = () => checkAnswer(index);
+
+        lilyPad.innerHTML = `
+          <div class="lily-content">
+            <div class="option-label">${labels[index]}</div>
+            <div class="option-svg">${svgIcons[option.svg] || svgIcons.simple}</div>
+            <div class="option-text">${option.text}</div>
+          </div>
+        `;
+        container.appendChild(lilyPad);
+      });
+
+      updateProgress();
+      startTimer();
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      const timerElement = document.getElementById('timer');
+
+      timer = setInterval(() => {
+        timeLeft--;
+        const secs = timeLeft;
+        timerElement.textContent = `00:00:${secs.toString().padStart(2, '0')}`;
+
+        timerElement.classList.remove('warning', 'danger');
+        if (timeLeft <= 10 && timeLeft > 5) timerElement.classList.add('warning');
+        else if (timeLeft <= 5) timerElement.classList.add('danger');
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          if (!answered) handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function handleTimeout() {
+      answered = true;
+      lives--;
+      currentQuestionPoints = 0;
+      document.getElementById('lives').textContent = lives;
+
+      const lilyPads = document.querySelectorAll('.lily-pad');
+      lilyPads.forEach((pad, index) => {
+        pad.classList.add('answered');
+        if (currentQ && index === currentQ.correct) pad.classList.add('correct');
+      });
+
+      const modal = document.getElementById('explanationModal');
+      const header = document.getElementById('explanationHeader');
+      const text = document.getElementById('explanationText');
+      const retryBtn = document.getElementById('retryButton');
+
+      header.innerHTML = `SE ACABÓ EL TIEMPO<br><span style="font-size: 18px; color: #ff4444;">0 DE ${questionValue.toLocaleString()} PUNTOS</span>`;
+      header.style.color = '#ff4444';
+
+      text.textContent = '';
+      text.style.display = 'none';
+      retryBtn.style.display = 'none';
+
+      modal.classList.add('show');
+
+      if (lives <= 0) setTimeout(() => showGameOver(), 1200);
+    }
+
+    function checkAnswer(selected) {
+      if (answered) return;
+      answered = true;
+      clearInterval(timer);
+
+      const q = currentQ;
+      const lilyPads = document.querySelectorAll('.lily-pad');
+
+      if (selected !== q.correct) {
+        currentQuestionPoints = Math.max(0, currentQuestionPoints - 200); // -200 por fallar
+      }
+
+      lilyPads.forEach((pad, index) => {
+        pad.classList.add('answered');
+        if (index === selected) {
+          if (selected === q.correct) {
+            pad.classList.add('correct');
+            points += currentQuestionPoints;
+            animateFrog(pad);
+          } else {
+            pad.classList.add('incorrect');
+            lives--;
+          }
+        }
+        if (index === q.correct && selected !== q.correct) {
+          pad.classList.add('correct');
+        }
+      });
+
+      document.getElementById('points').textContent = points.toLocaleString('es-CO');
+      document.getElementById('lives').textContent = lives;
+
+      showExplanation(selected === q.correct);
+
+      if (lives <= 0) setTimeout(() => showGameOver(), 1200);
+    }
+
+    function animateFrog(targetPad) {
+      const frog = document.getElementById('frogContainer');
+      const rect = targetPad.getBoundingClientRect();
+      frog.style.left = (rect.left + rect.width / 2 - 60) + 'px';
+      frog.style.bottom = (window.innerHeight - rect.top - rect.height / 2 - 60) + 'px';
+
+      setTimeout(() => {
+        frog.style.left = '50%';
+        frog.style.bottom = '80px';
+      }, 900);
+    }
+
+    function showExplanation(isCorrect) {
+      const modal = document.getElementById('explanationModal');
+      const header = document.getElementById('explanationHeader');
+      const text = document.getElementById('explanationText');
+      const retryBtn = document.getElementById('retryButton');
+
+      if (isCorrect) {
+        header.innerHTML = `CORRECTO<br><span style="font-size: 18px; color: #6a1b9a;">${currentQuestionPoints.toLocaleString()} DE ${questionValue.toLocaleString()} PUNTOS</span>`;
+        header.style.color = '#6a1b9a';
+        text.textContent = currentQ.explanation;
+        text.style.display = 'block';
+      } else {
+        header.innerHTML = `INCORRECTO<br><span style="font-size: 18px; color: #ff9800;">AHORA VALE ${currentQuestionPoints.toLocaleString()} PUNTOS</span>`;
+        header.style.color = '#ff4444';
+        text.textContent = '';
+        text.style.display = 'none';
+      }
+
+      // Reintento si: falló + aún tiene vidas + la pregunta aún vale puntos (>0)
+      if (!isCorrect && lives > 0 && currentQuestionPoints > 0) retryBtn.style.display = 'block';
+      else retryBtn.style.display = 'none';
+
+      modal.classList.add('show');
+    }
+
+    function retryQuestion() {
+      document.getElementById('explanationModal').classList.remove('show');
+
+      const lilyPads = document.querySelectorAll('.lily-pad');
+      lilyPads.forEach(pad => pad.classList.remove('answered', 'correct', 'incorrect'));
+
+      answered = false;
+      timeLeft = 40;
+      startTimer();
+    }
+
+    function nextQuestion() {
+      document.getElementById('explanationModal').classList.remove('show');
+      currentQuestion++;
+
+      if (currentQuestion < questions.length && lives > 0) loadQuestion();
+      else showFinalScreen();
+    }
+
+    function updateProgress() {
+      const progress = ((currentQuestion + 1) / questions.length) * 100;
+      const progressBar = document.getElementById('progressBar');
+      progressBar.style.width = progress + '%';
+      progressBar.textContent = `${currentQuestion + 1}/${questions.length}`;
+    }
+
+    function showGameOver() {
+      document.getElementById('gameArea').style.display = 'none';
+      document.getElementById('frogContainer').style.display = 'none';
+      showFinalScreen();
+    }
+
+    function showFinalScreen() {
+      document.getElementById('gameArea').style.display = 'none';
+      document.getElementById('frogContainer').style.display = 'none';
+
+      const finalScreen = document.getElementById('finalScreen');
+      finalScreen.classList.add('show');
+
+      document.getElementById('finalScore').textContent =
+        `${points.toLocaleString('es-CO')} / ${totalPossible.toLocaleString('es-CO')}`;
+
+      let message = '';
+      if (lives <= 0) message = 'Sigue practicando: revisar fuentes mejora tu criterio.';
+      else if (points >= totalPossible * 0.85) message = 'Excelente: evalúas fuentes con buen criterio.';
+      else if (points >= totalPossible * 0.60) message = 'Bien: refuerza veracidad (autoridad, evidencia y actualidad).';
+      else message = 'Vas en proceso: enfócate en criterios de veracidad y tipos de fuentes.';
+
+      document.getElementById('finalMessage').textContent = message;
+
+      const endDateTimeBogota = nowBogotaString();
+      document.getElementById('finalMeta').innerHTML =
+        `NOMBRE: ${studentNameUpper || '--'}<br>` +
+        `NRC: ${studentNrc || '--'}<br>` +
+        `FECHA Y HORA: ${endDateTimeBogota}<br>` +
+        `PUNTAJE OBTENIDO: ${points.toLocaleString('es-CO')}<br>` +
+        `PUNTAJE TOTAL: ${totalPossible.toLocaleString('es-CO')}`;
+    }
+
+    // ======================
+    // INICIO: NOMBRE + NRC
+    // ======================
+    function startGame() {
+      const name = (document.getElementById('studentName').value || '').trim();
+      const nrc = (document.getElementById('studentNrc').value || '').trim();
+
+      const err = document.getElementById('startError');
+      if (!name || !nrc) {
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+
+      studentNameUpper = name.toUpperCase();
+      studentNrc = nrc.toUpperCase();
+      startDateTimeBogota = nowBogotaString();
+
+      document.getElementById('studentLine').textContent =
+        `ESTUDIANTE: ${studentNameUpper} | NRC: ${studentNrc}`;
+
+      document.getElementById('startScreen').style.display = 'none';
+
+      // iniciar
+      document.getElementById('points').textContent = '0';
+      document.getElementById('lives').textContent = lives;
+      loadQuestion();
+    }
+
+    document.getElementById('nextButton').onclick = nextQuestion;
+    document.getElementById('retryButton').onclick = retryQuestion;
+    document.getElementById('startBtn').onclick = startGame;
+
+    // Enter para iniciar desde inputs
+    document.getElementById('studentName').addEventListener('keydown', (e)=>{ if(e.key==='Enter') startGame(); });
+    document.getElementById('studentNrc').addEventListener('keydown', (e)=>{ if(e.key==='Enter') startGame(); });
+  </script>
+</body>
+</html>
