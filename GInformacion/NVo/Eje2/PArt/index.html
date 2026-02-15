@@ -1,1 +1,415 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Artículo científico y publicaciones académicas — Checklist</title>
+  <style>
+    :root{
+      --ink:#0b0b0b;
+      --paper:#fff7d6;
+      --panel:#ffffff;
+      --bg1:#ffffff;
+      --bg2:#eaf3ff;
+
+      --accent:#2d7dff;   /* azul */
+      --accent2:#ffd400;  /* amarillo */
+      --muted:#6b7280;
+
+      --select:#e8f2ff;   /* resaltado */
+      --shadow: rgba(0,0,0,.18);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      min-height:100vh;
+      padding:16px;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255,212,0,.14) 0 18%, transparent 19%),
+        radial-gradient(circle at 72% 22%, rgba(45,125,255,.12) 0 16%, transparent 17%),
+        radial-gradient(circle at 85% 80%, rgba(255,45,85,.10) 0 14%, transparent 15%),
+        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    .app{max-width:1100px;margin:0 auto;display:grid;gap:12px}
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .headerTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(16px, 2.2vw, 22px);
+      line-height:1.1;
+    }
+
+    /* ============== LAYOUT HORIZONTAL SIEMPRE ============== */
+    .workspace{
+      display:flex;
+      gap:12px;
+      align-items:stretch;
+      flex-wrap:nowrap;            /* NO apilar */
+      overflow-x:auto;             /* scroll horizontal si falta */
+      padding-bottom:4px;
+    }
+
+    .col{
+      border:4px solid var(--ink);
+      border-radius:20px;
+      background:var(--panel);
+      position:relative;
+      overflow:hidden;
+      box-shadow: 0 10px 22px var(--shadow);
+      min-height: 520px;
+    }
+
+    .col::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      background: radial-gradient(circle, rgba(0,0,0,.10) 10%, transparent 11%) 0 0/14px 14px;
+      opacity:.16;
+      pointer-events:none;
+      mix-blend-mode:multiply;
+    }
+
+    /* tamaños mínimos para que permanezcan lado a lado (con scroll si pantalla pequeña) */
+    .left{ flex: 0 0 520px; }
+    .right{ flex: 0 0 520px; }
+
+    @media (min-width: 1100px){
+      .left{ flex: 1 0 520px; }
+      .right{ flex: 1 0 520px; }
+    }
+
+    /* ============== CONTENIDO IZQUIERDA ============== */
+    .block{
+      position:relative;
+      padding:14px;
+      display:grid;
+      gap:12px;
+      z-index:1;
+    }
+
+    .panelTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(16px, 2vw, 20px);
+    }
+
+    .listBox{
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+      padding:8px;
+      display:grid;
+      gap:6px;
+    }
+
+    .item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:14px;
+      cursor:pointer;
+      user-select:none;
+      transition: background .12s ease, transform .06s ease;
+    }
+
+    .item:hover{ background: rgba(45,125,255,.10); }
+    .item:active{ transform: translate(1px,1px); }
+
+    .item.selected{
+      background: var(--select);
+      outline: 3px solid var(--ink);
+      outline-offset: -3px;
+    }
+
+    .check{
+      width:18px;
+      height:18px;
+      accent-color: var(--accent);
+      cursor:pointer;
+      flex: 0 0 auto;
+    }
+
+    .label{
+      font-weight:950;
+      line-height:1.15;
+      font-size: 15px;
+    }
+
+    .pill{
+      margin-left:auto;
+      flex:0 0 auto;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      padding:4px 10px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      background: #fff;
+      color: var(--ink);
+      white-space:nowrap;
+    }
+
+    /* ============== CONTENIDO DERECHA ============== */
+    .detailTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(18px, 2.4vw, 24px);
+      line-height:1.15;
+    }
+
+    .detailCard{
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background: var(--paper);
+      padding:12px;
+      display:grid;
+      gap:12px;
+    }
+
+    .section{
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#fff;
+      padding:10px;
+      box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    }
+
+    .tag{
+      display:inline-block;
+      margin-bottom:8px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      padding:4px 10px;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      color:#fff;
+    }
+    .tag-exp{ background: var(--accent); }
+    .tag-ej{ background: var(--accent2); color: var(--ink); }
+
+    .text{
+      margin:0;
+      color:var(--ink);
+      font-weight:750;
+      line-height:1.35;
+      font-size: 15px;
+    }
+
+    footer{
+      text-align:center;
+      font-weight:800;
+      font-size:13px;
+      padding:8px 0 2px;
+      opacity:.9;
+    }
+
+    .sr-only{
+      position:absolute; left:-9999px;
+      width:1px; height:1px; overflow:hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <h1 class="headerTitle">Artículo científico y publicaciones académicas</h1>
+    </header>
+
+    <main class="workspace" aria-label="Checklist y panel de detalle">
+      <!-- IZQUIERDA -->
+      <section class="col left" aria-label="Lista de criterios">
+        <div class="block">
+          <h2 class="panelTitle">Criterios</h2>
+
+          <div class="listBox" id="listBox">
+            <!-- Se renderiza por JS -->
+          </div>
+
+          <div class="sr-only" id="live" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- DERECHA -->
+      <section class="col right" aria-label="Detalle del criterio">
+        <div class="block">
+          <h2 class="detailTitle" id="detailTitle">—</h2>
+
+          <div class="detailCard">
+            <div class="section">
+              <span class="tag tag-exp">Explicación</span>
+              <p class="text" id="detailExplain"></p>
+            </div>
+
+            <div class="section">
+              <span class="tag tag-ej">Ejemplo</span>
+              <p class="text" id="detailExample"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>Aprendiendo con @LaProfeVivy</footer>
+  </div>
+
+  <script>
+    // Checklist: Artículo científico y publicaciones académicas (10 ítems)
+    // Regla: click en el ÍTEM cambia panel; click SOLO en checkbox NO cambia panel.
+
+    const CRITERIA = [
+      {
+        label: "Título y palabras clave (enfoque del trabajo)",
+        explain: "Debe comunicar el tema central con precisión y facilitar la búsqueda del documento por medio de palabras clave coherentes.",
+        example: "Título: “Efecto del aprendizaje activo en cálculo I”. Palabras clave: aprendizaje activo, cálculo diferencial, rendimiento académico."
+      },
+      {
+        label: "Resumen (qué se hizo y qué se encontró)",
+        explain: "Síntesis breve del problema, método, resultados principales y conclusión. Permite decidir rápidamente si el artículo es relevante.",
+        example: "En 150–250 palabras: objetivo + población/datos + método + hallazgo clave + conclusión aplicable."
+      },
+      {
+        label: "Introducción (problema y justificación)",
+        explain: "Presenta el contexto, el problema, antecedentes esenciales y la razón de hacer el estudio; deja claro el objetivo o pregunta de investigación.",
+        example: "Explica por qué el problema importa, qué falta en estudios previos y termina con un objetivo concreto."
+      },
+      {
+        label: "Metodología / Métodos (cómo se hizo)",
+        explain: "Describe el diseño, datos, instrumentos, procedimiento y criterios de análisis para que el estudio sea comprensible y replicable.",
+        example: "Indica población, muestra, variables, recolección de datos, y cómo se procesaron (por ejemplo, análisis estadístico o cualitativo)."
+      },
+      {
+        label: "Resultados (evidencia, no opiniones)",
+        explain: "Muestra hallazgos derivados de los datos (tablas, cifras, patrones), sin interpretaciones extensas; la evidencia va primero.",
+        example: "“La asistencia aumentó 18%” + tabla/gráfico que lo respalde, antes de explicar por qué ocurrió."
+      },
+      {
+        label: "Discusión (interpretación y comparación)",
+        explain: "Interpreta qué significan los resultados, los relaciona con otras investigaciones y reconoce limitaciones o sesgos.",
+        example: "Compara con 2–3 estudios, explica coincidencias/diferencias y aclara límites: muestra pequeña, sesgo de selección, etc."
+      },
+      {
+        label: "Conclusiones y recomendaciones (cierre útil)",
+        explain: "Responde a la pregunta/objetivo con base en resultados y propone implicaciones o acciones, sin introducir datos nuevos.",
+        example: "Conclusión: “El método X mejoró el desempeño”. Recomendación: “Aplicar X en cursos iniciales y medir por semestre”."
+      },
+      {
+        label: "Referencias y citación (trazabilidad)",
+        explain: "Lista las fuentes usadas y permite verificar afirmaciones. Deben ser pertinentes, actuales (cuando aplica) y citadas correctamente.",
+        example: "Incluye artículos, libros o documentos oficiales citados en el texto con formato consistente (APA/IEEE/otro)."
+      },
+      {
+        label: "Identificadores de publicación (DOI, ISSN, ISBN)",
+        explain: "Ayudan a identificar y recuperar la fuente: DOI para artículos, ISSN para revistas (publicaciones seriadas) e ISBN para libros.",
+        example: "Un artículo con DOI facilita ubicar la versión exacta; una revista reconocible por ISSN; un libro identificado por ISBN."
+      },
+      {
+        label: "Tipo de publicación y validación (revisión por pares)",
+        explain: "Distinguir entre artículo de revista, conferencia, capítulo, preprint o repositorio. La revisión por pares eleva la confiabilidad, pero igual se evalúa el contenido.",
+        example: "Un preprint sirve para conocer avances, pero para sustentar conclusiones fuertes se prioriza una versión revisada por pares."
+      }
+    ];
+
+    const listBox = document.getElementById("listBox");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailExplain = document.getElementById("detailExplain");
+    const detailExample = document.getElementById("detailExample");
+    const live = document.getElementById("live");
+
+    let selectedIndex = 0;
+
+    function renderList(){
+      listBox.innerHTML = "";
+
+      CRITERIA.forEach((c, i) => {
+        const row = document.createElement("div");
+        row.className = "item" + (i === selectedIndex ? " selected" : "");
+        row.setAttribute("role", "button");
+        row.setAttribute("tabindex", "0");
+        row.setAttribute("aria-label", `Seleccionar criterio: ${c.label}`);
+
+        // Checkbox (NO debe cambiar panel al hacer click)
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.className = "check";
+        cb.setAttribute("aria-label", `Marcar criterio: ${c.label}`);
+
+        // Evitar que el click del checkbox dispare selección
+        cb.addEventListener("click", (e) => e.stopPropagation());
+        cb.addEventListener("keydown", (e) => e.stopPropagation());
+
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = c.label;
+
+        const pill = document.createElement("div");
+        pill.className = "pill";
+        pill.textContent = `${i+1}/10`;
+
+        row.appendChild(cb);
+        row.appendChild(label);
+        row.appendChild(pill);
+
+        // Click en el ítem sí cambia panel
+        row.addEventListener("click", () => selectItem(i));
+
+        // Accesibilidad: Enter/Espacio en la fila selecciona
+        row.addEventListener("keydown", (e) => {
+          if(e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            selectItem(i);
+          }
+        });
+
+        listBox.appendChild(row);
+      });
+    }
+
+    function selectItem(i){
+      selectedIndex = i;
+      const c = CRITERIA[i];
+
+      detailTitle.textContent = c.label;
+      detailExplain.textContent = c.explain;
+      detailExample.textContent = c.example;
+
+      live.textContent = `Criterio seleccionado: ${c.label}.`;
+
+      // actualizar resaltado
+      [...listBox.querySelectorAll(".item")].forEach((el, idx) => {
+        el.classList.toggle("selected", idx === selectedIndex);
+      });
+    }
+
+    // Seleccionar el primer ítem por defecto
+    renderList();
+    selectItem(0);
+  </script>
+</body>
+</html>
 
