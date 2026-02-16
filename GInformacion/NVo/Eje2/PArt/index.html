@@ -3,21 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Artículo científico y publicaciones académicas — Checklist</title>
+  <title>Checklist — Artículo científico y publicaciones académicas</title>
   <style>
     :root{
       --ink:#0b0b0b;
       --paper:#fff7d6;
-      --panel:#ffffff;
       --bg1:#ffffff;
-      --bg2:#eaf3ff;
+      --bg2:#ffeef3;
 
-      --accent:#2d7dff;   /* azul */
-      --accent2:#ffd400;  /* amarillo */
-      --muted:#6b7280;
+      --panelBg:#e8f2ff;
+      --cardBg:#ffffff;
 
-      --select:#e8f2ff;   /* resaltado */
-      --shadow: rgba(0,0,0,.18);
+      --tagExplain:#2d7dff;
+      --tagExample:#ffd400;
+
+      --muted:#4b4b4b;
+      --shadow: 0 10px 30px rgba(0,0,0,.10);
+      --border:4px solid var(--ink);
+      --radius:18px;
+
+      --line: rgba(0,0,0,.16);
+      --soft: rgba(45,125,255,.10);
+      --soft2: rgba(255,212,0,.16);
     }
 
     *{box-sizing:border-box}
@@ -28,24 +35,23 @@
       min-height:100vh;
       padding:16px;
       background:
-        radial-gradient(circle at 12% 12%, rgba(255,212,0,.14) 0 18%, transparent 19%),
-        radial-gradient(circle at 72% 22%, rgba(45,125,255,.12) 0 16%, transparent 17%),
-        radial-gradient(circle at 85% 80%, rgba(255,45,85,.10) 0 14%, transparent 15%),
+        radial-gradient(circle at 12% 12%, rgba(255,212,0,.18) 0 18%, transparent 19%),
+        radial-gradient(circle at 72% 22%, rgba(45,125,255,.14) 0 16%, transparent 17%),
+        radial-gradient(circle at 85% 80%, rgba(255,45,85,.12) 0 14%, transparent 15%),
         linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
     }
 
-    .app{max-width:1100px;margin:0 auto;display:grid;gap:12px}
+    .app{max-width:1120px;margin:0 auto;display:grid;gap:12px}
 
     header{
       display:flex;
       align-items:center;
       justify-content:space-between;
       padding:12px 14px;
-      border:4px solid var(--ink);
+      border:var(--border);
       border-radius:18px;
       background:var(--paper);
-      gap:10px;
-      flex-wrap:wrap;
+      box-shadow: var(--shadow);
     }
     .headerTitle{
       margin:0;
@@ -53,30 +59,18 @@
       text-transform:uppercase;
       letter-spacing:.6px;
       font-size: clamp(16px, 2.2vw, 22px);
-      line-height:1.1;
     }
 
-    /* ============== LAYOUT HORIZONTAL SIEMPRE ============== */
-    .workspace{
-      display:flex;
-      gap:12px;
-      align-items:stretch;
-      flex-wrap:nowrap;            /* NO apilar */
-      overflow-x:auto;             /* scroll horizontal si falta */
-      padding-bottom:4px;
-    }
-
-    .col{
-      border:4px solid var(--ink);
+    /* 2 contenedores SIEMPRE horizontales (móvil: scroll horizontal) */
+    .splitWrap{
+      border:var(--border);
       border-radius:20px;
-      background:var(--panel);
-      position:relative;
+      background:#fff;
       overflow:hidden;
-      box-shadow: 0 10px 22px var(--shadow);
-      min-height: 560px;
+      position:relative;
+      box-shadow: var(--shadow);
     }
-
-    .col::before{
+    .splitWrap::before{
       content:"";
       position:absolute;
       inset:-18px;
@@ -86,132 +80,126 @@
       mix-blend-mode:multiply;
     }
 
-    /* tamaños mínimos para que permanezcan lado a lado (con scroll si pantalla pequeña) */
-    .left{ flex: 0 0 540px; }
-    .right{ flex: 0 0 540px; }
-    @media (min-width: 1100px){
-      .left{ flex: 1 0 540px; }
-      .right{ flex: 1 0 540px; }
-    }
-
-    /* ============== CONTENIDO IZQUIERDA ============== */
-    .block{
+    .split{
       position:relative;
+      display:flex;
+      gap:14px;
       padding:14px;
-      display:grid;
+      overflow-x:auto;
+      overflow-y:hidden;
+      scroll-behavior:smooth;
+    }
+    .col{
+      flex:0 0 540px;
+      min-width:540px;
+      display:flex;
+      flex-direction:column;
       gap:12px;
-      z-index:1;
-      height:100%;
+    }
+    @media (max-width:620px){
+      .col{min-width:540px;}
     }
 
-    .panelTitle{
+    .block{
+      border:var(--border);
+      border-radius:var(--radius);
+      background:var(--paper);
+      padding:14px;
+      position:relative;
+      z-index:1;
+    }
+    .block.white{ background: var(--cardBg); }
+    .block.panel{ background: var(--panelBg); }
+
+    /* ===== Checklist: UN SOLO BLOQUE (sin tarjetas por ítem) ===== */
+    .checklistHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .miniTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      opacity:.9;
+    }
+
+    .checklist{
+      list-style:none;
+      padding:0;
+      margin:0;
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#fff;
+      overflow:hidden;
+    }
+
+    /* Ítem SIN borde propio: solo separador */
+    .itemRow{
+      display:grid;
+      grid-template-columns: 26px 1fr;
+      gap:10px;
+      align-items:flex-start;
+      padding:10px 12px;
+      cursor:pointer;
+      user-select:none;
+      transition: background .15s ease;
+    }
+    .itemRow + .itemRow{ border-top:1px solid var(--line); }
+    .itemRow:hover{ background: rgba(0,0,0,.03); }
+    .itemRow.selected{ background: var(--soft); }
+
+    .cb{
+      margin-top:2px;
+      width:18px;height:18px;
+      accent-color:#20c997;
+      cursor:pointer;
+    }
+    .itemLabel{
+      font-weight:900;
+      line-height:1.25;
+      font-size:14px;
+    }
+
+    /* Botón generalidades (pequeño) */
+    .generalWrap{ display:flex; justify-content:flex-start; margin-top:10px; }
+    .generalBtn{
+      border:3px solid var(--ink);
+      border-radius:999px;
+      padding:8px 12px;
+      background:#fff;
+      cursor:pointer;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      user-select:none;
+      font-size:12px;
+      transition: transform .06s ease, background .15s ease;
+      width:auto;
+    }
+    .generalBtn:active{ transform: translate(2px,2px) }
+    .generalBtn.active{
+      background: var(--soft2);
+      outline: 3px solid rgba(255,212,0,.12);
+    }
+
+    /* ===== Panel derecho ===== */
+    .rightTitle{
       margin:0;
       font-weight:1000;
       text-transform:uppercase;
       letter-spacing:.6px;
       font-size: clamp(16px, 2vw, 20px);
-    }
-
-    .listBox{
-      border:4px solid var(--ink);
-      border-radius:18px;
-      background:var(--paper);
-      padding:8px;
-      display:grid;
-      gap:6px;
-      flex: 1 1 auto;
-    }
-
-    .item{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 10px;
-      border-radius:14px;
-      cursor:pointer;
-      user-select:none;
-      transition: background .12s ease, transform .06s ease;
-    }
-    .item:hover{ background: rgba(45,125,255,.10); }
-    .item:active{ transform: translate(1px,1px); }
-
-    .item.selected{
-      background: var(--select);
-      outline: 3px solid var(--ink);
-      outline-offset: -3px;
-    }
-
-    .check{
-      width:18px;
-      height:18px;
-      accent-color: var(--accent);
-      cursor:pointer;
-      flex: 0 0 auto;
-    }
-
-    .label{
-      font-weight:950;
       line-height:1.15;
-      font-size: 15px;
-    }
-
-    .bottomActions{
-      display:flex;
-      justify-content:flex-start;
-    }
-
-    .generalBtn{
-      border:3px solid var(--ink);
-      border-radius:999px;
-      padding:12px 14px;
-      background:#fff;
-      cursor:pointer;
-      font-weight:1000;
-      text-transform:uppercase;
-      letter-spacing:.6px;
-      font-size:12px;
-      box-shadow: 0 6px 14px rgba(0,0,0,.14);
-      transition: transform .06s ease, background .12s ease;
-      user-select:none;
-    }
-    .generalBtn:hover{ background: rgba(255,212,0,.20); }
-    .generalBtn:active{ transform: translate(1px,1px); }
-    .generalBtn.active{
-      background: rgba(45,125,255,.14);
-      outline: 3px solid var(--ink);
-      outline-offset: -3px;
-    }
-
-    /* ============== CONTENIDO DERECHA ============== */
-    .detailTitle{
-      margin:0;
-      font-weight:1000;
-      text-transform:uppercase;
-      letter-spacing:.6px;
-      font-size: clamp(18px, 2.4vw, 24px);
-      line-height:1.15;
-    }
-
-    .detailCard{
-      border:4px solid var(--ink);
-      border-radius:18px;
-      background: var(--paper);
-      padding:12px;
-      display:grid;
-      gap:12px;
-    }
-
-    .section{
-      border:3px solid var(--ink);
-      border-radius:16px;
-      background:#fff;
-      padding:10px;
-      box-shadow: 0 6px 14px rgba(0,0,0,.10);
     }
 
     .tag{
       display:inline-block;
-      margin-bottom:8px;
+      margin-right:8px;
       font-weight:1000;
       text-transform:uppercase;
       letter-spacing:.6px;
@@ -221,102 +209,127 @@
       border-radius:999px;
       color:#fff;
     }
-    .tag-exp{ background: var(--accent); }
-    .tag-ej{ background: var(--accent2); color: var(--ink); }
+    .tag-explain{ background: var(--tagExplain); }
+    .tag-example{ background: var(--tagExample); color:#0b0b0b; }
 
-    .text{
+    .textLine{
       margin:0;
-      color:var(--ink);
-      font-weight:750;
+      font-size:14px;
+      line-height:1.55;
+      font-weight:800;
+      color:#111;
+    }
+    .muted{
+      margin:0;
+      font-size:12px;
+      font-weight:800;
+      color:var(--muted);
       line-height:1.35;
-      font-size: 15px;
     }
 
-    .text ul{
-      margin:8px 0 0 18px;
-      padding:0;
+    /* Secciones plegables (para NO saturar) */
+    .fold{
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:var(--paper);
+      overflow:hidden;
     }
-    .text li{ margin:6px 0; }
-
-    /* ============== ACORDEÓN ============== */
-    .accordion{
-      display:grid;
+    .foldBtn{
+      width:100%;
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
       gap:10px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
     }
+    .foldIcon{
+      border:3px solid var(--ink);
+      width:26px;height:26px;
+      border-radius:999px;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:1000;
+      background: rgba(45,125,255,.10);
+      flex:0 0 auto;
+    }
+    .foldBody{
+      display:none;
+      padding:12px;
+      border-top:3px solid var(--ink);
+      background:#fff;
+    }
+    .foldBody.show{ display:block; }
 
+    /* Acordeón (Generalidades) */
+    .accordion{ display:grid; gap:10px; }
     .accItem{
       border:3px solid var(--ink);
       border-radius:16px;
       background:#fff;
       overflow:hidden;
-      box-shadow: 0 6px 14px rgba(0,0,0,.10);
     }
-
     .accBtn{
       width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      background:#fff;
       border:none;
-      padding:12px 12px;
+      background:#fff;
+      padding:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
       cursor:pointer;
-      text-align:left;
-      font-weight:1000;
-      letter-spacing:.2px;
-      font-size:14px;
-      color:var(--ink);
-    }
-
-    .accBtn:active{ transform: translate(1px,1px); }
-
-    .accBadge{
-      border:3px solid var(--ink);
-      border-radius:999px;
-      padding:4px 10px;
       font-weight:1000;
       text-transform:uppercase;
       letter-spacing:.6px;
       font-size:12px;
-      background: rgba(255,212,0,.25);
-      flex:0 0 auto;
-      white-space:nowrap;
     }
-
+    .accIcon{
+      border:3px solid var(--ink);
+      width:26px;height:26px;
+      border-radius:999px;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:1000;
+      background: rgba(255,212,0,.16);
+      flex:0 0 auto;
+    }
     .accPanel{
       display:none;
-      border-top:3px solid var(--ink);
       padding:12px;
-      background: var(--paper);
+      border-top:3px solid var(--ink);
+      background: rgba(45,125,255,.06);
     }
-    .accPanel.open{ display:block; }
+    .accPanel.show{ display:block; }
+    .accPanel ul{ margin:0; padding-left:18px; }
+    .accPanel li{ margin:6px 0; font-weight:800; color:#111; line-height:1.35; }
 
-    .accSubtag{
-      display:inline-block;
-      margin:0 8px 8px 0;
+    /* Marco teórico: sub-bloques claros */
+    .theoryGrid{ display:grid; gap:10px; margin-top:8px; }
+    .miniBox{
+      border:3px solid var(--ink);
+      border-radius:14px;
+      background:#fff;
+      padding:10px;
+    }
+    .miniBox h4{
+      margin:0 0 6px 0;
       font-weight:1000;
       text-transform:uppercase;
       letter-spacing:.6px;
       font-size:12px;
-      padding:4px 10px;
-      border:3px solid var(--ink);
-      border-radius:999px;
-      background: rgba(45,125,255,.14);
     }
-
-    .accText{
+    .miniBox p{
       margin:0;
-      font-weight:750;
-      line-height:1.35;
-      font-size: 15px;
+      font-weight:800;
+      font-size:13px;
+      line-height:1.45;
+      color:#111;
     }
-
-    .accText ul{
-      margin:10px 0 0 18px;
-      padding:0;
-    }
-    .accText li{ margin:6px 0; }
+    .miniBox p + p{ margin-top:6px; }
 
     footer{
       text-align:center;
@@ -324,11 +337,6 @@
       font-size:13px;
       padding:8px 0 2px;
       opacity:.9;
-    }
-
-    .sr-only{
-      position:absolute; left:-9999px;
-      width:1px; height:1px; overflow:hidden;
     }
   </style>
 </head>
@@ -339,368 +347,386 @@
       <h1 class="headerTitle">Artículo científico y publicaciones académicas</h1>
     </header>
 
-    <main class="workspace" aria-label="Checklist y panel de detalle">
-      <!-- IZQUIERDA -->
-      <section class="col left" aria-label="Lista de criterios">
-        <div class="block">
-          <h2 class="panelTitle">Criterios</h2>
-
-          <div class="listBox" id="listBox">
-            <!-- Se renderiza por JS -->
-          </div>
-
-          <div class="bottomActions">
-            <button class="generalBtn" id="generalBtn" type="button">
-              Generalidades de publicaciones
-            </button>
-          </div>
-
-          <div class="sr-only" id="live" aria-live="polite"></div>
-        </div>
-      </section>
-
-      <!-- DERECHA -->
-      <section class="col right" aria-label="Detalle del criterio">
-        <div class="block">
-          <h2 class="detailTitle" id="detailTitle">—</h2>
-
-          <!-- Vista estándar (Explicación + Ejemplo) -->
-          <div class="detailCard" id="standardView">
-            <div class="section">
-              <span class="tag tag-exp">Explicación</span>
-              <div class="text" id="detailExplain"></div>
+    <main class="splitWrap">
+      <div class="split">
+        <!-- IZQUIERDA -->
+        <section class="col" aria-label="Checklist">
+          <div class="block">
+            <div class="checklistHeader">
+              <p class="miniTitle">Criterios (10)</p>
             </div>
 
-            <div class="section">
-              <span class="tag tag-ej">Ejemplo</span>
-              <div class="text" id="detailExample"></div>
+            <ul class="checklist" id="checklist"></ul>
+
+            <div class="generalWrap">
+              <button class="generalBtn" id="generalBtn" type="button" aria-pressed="false">
+                Generalidades de publicaciones
+              </button>
             </div>
+          </div>
+        </section>
+
+        <!-- DERECHA -->
+        <section class="col" aria-label="Detalle">
+          <div class="block panel">
+            <h2 class="rightTitle" id="detailTitle">—</h2>
+            <p class="muted" id="detailHint"></p>
           </div>
 
-          <!-- Vista generalidades (Acordeón) -->
-          <div class="detailCard" id="generalView" style="display:none;">
-            <div class="accordion" id="accordion">
-              <!-- Se renderiza por JS -->
-            </div>
-          </div>
-        </div>
-      </section>
+          <div class="block white" id="detailBody"></div>
+        </section>
+      </div>
     </main>
 
     <footer>Aprendiendo con @LaProfeVivy</footer>
   </div>
 
   <script>
-    // Checklist (hasta referencias y citación). Sin contadores ni puntajes.
-
+    // ===== Checklist (10 ítems) — partes del artículo =====
     const CRITERIA = [
       {
-        label: "Título y palabras clave",
-        explain: "Debe comunicar el tema central con precisión y facilitar la búsqueda del documento usando términos coherentes con el contenido.",
-        example: "Título: “Efecto del aprendizaje activo en cálculo I”. Palabras clave: aprendizaje activo, cálculo, rendimiento."
+        id:"c1",
+        label:"Título y palabras clave",
+        explain:"El título resume el tema con precisión. Las palabras clave (3–6) ayudan a que el trabajo se encuentre en buscadores y bases académicas.",
+        example:"Título: “Registro de llegadas tarde y análisis por curso”. Palabras clave: “asistencia”, “puntualidad”, “registro”, “análisis de datos”, “seguimiento”."
       },
       {
-        label: "Resumen",
-        explain: "Síntesis breve del problema, objetivo, método, resultado principal y conclusión. Sirve para decidir si el artículo es relevante.",
-        example: "En pocas líneas: objetivo + cómo se estudió + hallazgo clave + conclusión aplicable."
+        id:"c2",
+        label:"Resumen (ORI)",
+        explain:"Resumen breve con ORI: Objetivo (qué busca), Resultados (qué halló) e Impacto/Implicación (para qué sirve).",
+        example:"Objetivo: analizar tardanzas por curso. Resultados: se detectó reincidencia y picos por día. Impacto: permite acciones tempranas y seguimiento con evidencia."
       },
       {
-        label: "Introducción (problema y objetivo)",
-        explain: "Presenta el contexto, el problema y el objetivo/pregunta de investigación. Justifica por qué el estudio es necesario.",
-        example: "Describe el problema en un curso, cita evidencias previas y termina con un objetivo medible."
+        id:"c3",
+        label:"Introducción",
+        explain:"Contexto del tema y relevancia. Conduce al problema sin incluir resultados todavía.",
+        example:"“Las llegadas tarde afectan el aprendizaje. Cuando el registro es incompleto, el seguimiento se vuelve tardío o inexistente”."
       },
       {
-        label: "Marco teórico (antecedentes y bases conceptuales)",
-        explain: `
-          El marco teórico sustenta el estudio con información confiable y organizada. Se suele estructurar así:
-          <ul>
-            <li><b>Antecedentes:</b> qué se ha investigado antes sobre el tema (hallazgos previos relevantes).</li>
-            <li><b>Estado del arte:</b> panorama actualizado de tendencias, enfoques y debates recientes.</li>
-            <li><b>Bases conceptuales:</b> conceptos y definiciones clave que el trabajo usará (qué significa cada término).</li>
-            <li><b>Teorías o modelos:</b> marcos explicativos que orientan cómo interpretar el fenómeno.</li>
-          </ul>
-        `,
-        example: `
-          En un estudio sobre asistencia: se revisan investigaciones sobre puntualidad (antecedentes), se resumen enfoques recientes (estado del arte),
-          se definen “puntualidad” y “ausentismo” (bases conceptuales) y se adopta un modelo de motivación académica (teoría).
-        `
+        id:"c4",
+        label:"Planteamiento del problema",
+        explain:"Describe la situación concreta: qué falla, a quién afecta y qué evidencia muestra el problema.",
+        example:"“No existe registro consistente de ingreso por estudiante y curso; por eso no se detecta reincidencia a tiempo y los procesos se vuelven ineficaces”."
       },
       {
-        label: "Metodología / Métodos",
-        explain: "Describe cómo se hizo el estudio (diseño, datos, instrumentos, procedimiento y criterios de análisis) para que sea replicable.",
-        example: "Indica población/muestra, variables, cómo se recolectaron datos y cómo se analizaron."
+        id:"c5",
+        label:"Justificación",
+        explain:"Explica por qué el estudio es necesario: consecuencias del problema y beneficios de resolverlo con información confiable.",
+        example:"“Con datos consolidados se actúa oportunamente, se reducen pérdidas de clase y se mejora la toma de decisiones”."
       },
       {
-        label: "Resultados",
-        explain: "Presenta evidencia derivada de los datos (tablas, cifras, patrones) sin extenderse en interpretaciones. La evidencia va primero.",
-        example: "Muestra porcentajes, comparaciones y gráficos que respalden los hallazgos."
+        id:"c6",
+        label:"Objetivos (general y específicos)",
+        explain:"El general define el propósito global. Los específicos son acciones medibles para cumplir el general.",
+        example:"General: “Analizar tardanzas para mejorar decisiones”. Específicos: “consolidar registros”, “calcular frecuencia por curso”, “detectar reincidencia”, “generar reportes”."
       },
       {
-        label: "Discusión",
-        explain: "Interpreta el significado de los resultados, los compara con otros estudios y reconoce limitaciones (sesgos, tamaño de muestra, etc.).",
-        example: "Explica por qué pudo ocurrir el resultado y cómo coincide o difiere de investigaciones previas."
+        id:"c7",
+        label:"Marco teórico",
+        explain:"Sustento con literatura: trabajos previos y conceptos clave que explican el fenómeno y soportan el enfoque del estudio.",
+        example:"",
+        special:"theory"
       },
       {
-        label: "Conclusiones y recomendaciones",
-        explain: "Cierra respondiendo al objetivo con base en resultados. Propone implicaciones o acciones sin introducir datos nuevos.",
-        example: "Conclusión: “X mejora Y”. Recomendación: “Implementar X y medir por periodos”."
+        id:"c8",
+        label:"Metodología",
+        explain:"Cómo se trabajó: datos usados, cómo se recolectaron, criterios (tarde/temprano), procedimiento y análisis.",
+        example:"“Se registró fecha, hora, estudiante y curso. Se definió ‘tarde’ según hora límite. Se contaron tardanzas por semana y se compararon cursos para detectar reincidencia”."
       },
       {
-        label: "Referencias y citación",
-        explain: "Lista las fuentes usadas y permite verificar afirmaciones. Deben ser pertinentes y citadas de forma consistente (APA/IEEE/otro).",
-        example: "Toda idea tomada de una fuente aparece citada en el texto y en la lista final de referencias."
+        id:"c9",
+        label:"Resultados, discusión y conclusiones",
+        explain:"Resultados: qué se encontró. Discusión: qué significa. Conclusiones: qué se recomienda y qué se aprendió.",
+        example:"“Un curso concentra más tardanzas; pocos estudiantes son reincidentes. Se recomienda monitoreo semanal y estandarizar captura para reducir registros faltantes”."
+      },
+      {
+        id:"c10",
+        label:"Referencias y citación",
+        explain:"Citación: cómo nombras fuentes dentro del texto. Referencias: lista final completa. Deben coincidir (lo citado aparece en la lista).",
+        example:"En texto: “Pérez (2022)…” o “(Pérez, 2022)”. En referencias (APA): Pérez, J. (2022). Título. Revista X, 10(2), 1–10."
       }
     ];
 
-    // Generalidades de publicaciones (Acordeón en panel derecho).
-    // Incluye lo pedido y, dentro de validación, agrega lo que suele faltar: indexación/métricas y acceso abierto.
-    const GENERALITIES = [
-      {
-        title: "Repositorios y buscadores académicos",
-        badge: "1",
-        content: `
-          <span class="accSubtag">Qué son</span>
-          <p class="accText">
-            Espacios y motores de búsqueda para localizar literatura académica (artículos, tesis, libros, actas, preprints).
-            Permiten filtrar por autor, año, tema y, en algunos casos, por acceso abierto.
-          </p>
-          <span class="accSubtag">Ejemplos</span>
-          <p class="accText">
-            Google Scholar, repositorios institucionales (universidades), bibliotecas digitales, y bases de datos de revistas según tu institución.
-          </p>
-          <span class="accSubtag">Uso práctico</span>
-          <p class="accText">
-            Identifica palabras clave, revisa citas/autoridad del autor, y verifica si la fuente es revista, conferencia, capítulo o preprint.
-          </p>
-        `
-      },
-      {
-        title: "Identificadores de publicaciones",
-        badge: "2",
-        content: `
-          <span class="accSubtag">Para qué sirven</span>
-          <p class="accText">
-            Son “códigos” que ayudan a identificar y recuperar de forma precisa una obra o una publicación.
-          </p>
-          <span class="accSubtag">Principales</span>
-          <p class="accText">
-            <ul>
-              <li><b>DOI:</b> identifica artículos (y otros documentos) de manera persistente.</li>
-              <li><b>ISSN:</b> identifica revistas y publicaciones seriadas.</li>
-              <li><b>ISBN:</b> identifica libros.</li>
-              <li><b>ORCID:</b> identifica autores (útil para distinguir investigadores con nombres similares).</li>
-            </ul>
-          </p>
-          <span class="accSubtag">Ejemplo</span>
-          <p class="accText">
-            Si un artículo tiene DOI, puedes encontrar exactamente esa versión aunque el sitio cambie.
-          </p>
-        `
-      },
-      {
-        title: "Tipos de publicación y validación",
-        badge: "3",
-        content: `
-          <span class="accSubtag">Tipos comunes</span>
-          <p class="accText">
-            <ul>
-              <li><b>Artículo de revista:</b> suele tener estructura IMRyD y evaluación editorial.</li>
-              <li><b>Actas de congreso (conferencia):</b> resultados presentados en eventos académicos.</li>
-              <li><b>Capítulo de libro:</b> aporte dentro de una obra colectiva.</li>
-              <li><b>Tesis / trabajos institucionales:</b> documentos académicos (no siempre “revista”).</li>
-              <li><b>Preprint:</b> versión previa a publicación formal (útil, pero requiere verificación).</li>
-            </ul>
-          </p>
+    // ===== Marco teórico: subpartes claras y ejemplos tipo autor-año =====
+    const THEORY_DETAIL = {
+      blocks:[
+        {
+          name:"Antecedentes",
+          explain:"Estudios previos directamente relacionados con el problema (qué hallaron otros autores).",
+          example:"Pérez y Gómez (2022) encontraron que la falta de registro sistemático impide identificar reincidencia. Martínez (2021) reportó que estandarizar el registro mejora el seguimiento y reduce inconsistencias."
+        },
+        {
+          name:"Estado del arte",
+          explain:"Cómo se aborda hoy el tema (tendencias/soluciones actuales) y qué vacíos siguen abiertos.",
+          example:"Rodríguez (2023) describe registros digitales de asistencia; sin análisis por frecuencia/curso, las acciones correctivas siguen siendo tardías."
+        },
+        {
+          name:"Bases conceptuales",
+          explain:"Definiciones clave para medir o clasificar (qué significa cada concepto en el trabajo).",
+          example:"“Llegada tarde” = ingreso después de la hora límite institucional. “Reincidencia” = 3 o más tardanzas en una semana (criterio del estudio)."
+        },
+        {
+          name:"Modelo o enfoque",
+          explain:"Marco que guía la propuesta (por qué ese enfoque y cómo ayuda a explicar/mejorar la situación).",
+          example:"López (2020) plantea que el refuerzo positivo apoya hábitos: premiar puntualidad puede complementar el control disciplinario sin reemplazarlo."
+        }
+      ]
+    };
 
-          <span class="accSubtag">Validación (lo clave)</span>
-          <p class="accText">
-            <ul>
-              <li><b>Revisión por pares:</b> expertos evalúan calidad y coherencia antes de publicar.</li>
-              <li><b>Evaluación editorial:</b> revisión de normas, ética, originalidad y calidad mínima.</li>
-              <li><b>Contraste de fuentes:</b> verificar datos, métodos y referencias; no confiar solo en “autoridad”.</li>
-            </ul>
-          </p>
+    // ===== Generalidades: TODO lo de publicaciones va aquí =====
+    const GENERALITIES = {
+      title: "Generalidades de publicaciones",
+      items: [
+        {
+          title: "1) Repositorios y buscadores académicos",
+          explain:"Sitios para encontrar artículos, autores y revistas. Permiten filtrar por año/tema y revisar citas.",
+          example:"Buscar en Google Scholar, filtrar por año y usar “Citado por” para ampliar antecedentes."
+        },
+        {
+          title: "2) Identificadores (ISBN, ISSN, DOI, ORCID)",
+          explain:"Códigos únicos para identificar documentos, revistas y autores.",
+          example:"DOI identifica un artículo; ISSN identifica una revista; ISBN un libro; ORCID un investigador."
+        },
+        {
+          title: "3) Tipos de publicación y validación",
+          explain:"No todas las fuentes pasan por el mismo control. La validación depende del proceso editorial (pares, comité, jurados).",
+          example:"Un artículo en revista suele tener revisión por pares; un preprint exige verificación crítica adicional."
+        },
+        {
+          title: "4) Indexación y métricas",
+          explain:"Indexación: la revista está incluida en un índice/base reconocida (cumple estándares y es más fácil de encontrar). Métricas: números de visibilidad/impacto (p. ej., citas). No reemplazan evaluar calidad del contenido.",
+          example:"Una revista indexada es rastreable en sistemas reconocidos; una métrica alta orienta visibilidad, pero igual se revisan método, coherencia y ética."
+        },
+        {
+          title: "5) Quiénes publican (autoría y filiación)",
+          explain:"Publican autores con trabajo sustentado (investigadores, docentes, estudiantes con dirección). Se declara filiación institucional y se cumplen normas editoriales.",
+          example:"Un artículo presenta autores, universidad (filiación), correo institucional y, según la revista, declaraciones de ética/financiación."
+        },
+        {
+          title: "6) Ética y normas editoriales",
+          explain:"Publicar implica originalidad, citación correcta, no plagio y cumplimiento de la guía de autores (formato, estructura, referencias).",
+          example:"Antes de enviar: revisar guía, formato de referencias y declaración de originalidad."
+        }
+      ]
+    };
 
-          <span class="accSubtag">Suele faltar en clase: qué revisar además</span>
-          <p class="accText">
-            <ul>
-              <li><b>Indexación y métricas:</b> si la revista está indexada (según tu contexto) y su trayectoria.</li>
-              <li><b>Acceso abierto y licencias:</b> condiciones de uso y reutilización del contenido.</li>
-            </ul>
-          </p>
-        `
-      }
-    ];
-
-    const listBox = document.getElementById("listBox");
-    const detailTitle = document.getElementById("detailTitle");
-    const detailExplain = document.getElementById("detailExplain");
-    const detailExample = document.getElementById("detailExample");
-    const live = document.getElementById("live");
-
-    const generalBtn = document.getElementById("generalBtn");
-    const standardView = document.getElementById("standardView");
-    const generalView = document.getElementById("generalView");
-    const accordion = document.getElementById("accordion");
+    // ===== DOM =====
+    const elChecklist = document.getElementById("checklist");
+    const elDetailTitle = document.getElementById("detailTitle");
+    const elDetailBody  = document.getElementById("detailBody");
+    const elGeneralBtn  = document.getElementById("generalBtn");
+    const elDetailHint  = document.getElementById("detailHint");
 
     let selectedIndex = 0;
-    let inGeneralMode = false;
+    let generalMode = false;
 
-    function renderList(){
-      listBox.innerHTML = "";
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"quot;")
+        .replaceAll("'","&#039;");
+    }
 
+    function renderChecklist(){
+      elChecklist.innerHTML = "";
       CRITERIA.forEach((c, i) => {
-        const row = document.createElement("div");
-        row.className = "item" + (!inGeneralMode && i === selectedIndex ? " selected" : "");
-        row.setAttribute("role", "button");
-        row.setAttribute("tabindex", "0");
-        row.setAttribute("aria-label", `Seleccionar criterio: ${c.label}`);
+        const li = document.createElement("li");
 
-        // Checkbox (NO debe cambiar panel al hacer click)
+        const row = document.createElement("div");
+        row.className = "itemRow";
+        row.dataset.index = i;
+
         const cb = document.createElement("input");
         cb.type = "checkbox";
-        cb.className = "check";
-        cb.setAttribute("aria-label", `Marcar criterio: ${c.label}`);
-
-        cb.addEventListener("click", (e) => e.stopPropagation());
-        cb.addEventListener("keydown", (e) => e.stopPropagation());
+        cb.className = "cb";
+        cb.addEventListener("click", (e)=> e.stopPropagation()); // checkbox NO cambia panel
 
         const label = document.createElement("div");
-        label.className = "label";
-        label.textContent = c.label;
+        label.className = "itemLabel";
+        label.textContent = `${i+1}. ${c.label}`;
 
         row.appendChild(cb);
         row.appendChild(label);
 
-        // Click en el ítem sí cambia panel
-        row.addEventListener("click", () => selectCriterion(i));
-        row.addEventListener("keydown", (e) => {
-          if(e.key === "Enter" || e.key === " "){
-            e.preventDefault();
-            selectCriterion(i);
-          }
+        row.addEventListener("click", ()=>{
+          generalMode = false;
+          elGeneralBtn.classList.remove("active");
+          elGeneralBtn.setAttribute("aria-pressed","false");
+          selectItem(i);
         });
 
-        listBox.appendChild(row);
+        li.appendChild(row);
+        elChecklist.appendChild(li);
+      });
+      paintSelected();
+    }
+
+    function paintSelected(){
+      const rows = [...document.querySelectorAll(".itemRow")];
+      rows.forEach(r => r.classList.remove("selected"));
+      const current = rows.find(r => Number(r.dataset.index) === selectedIndex);
+      if(current) current.classList.add("selected");
+    }
+
+    // Secciones plegables: Explicación / Ejemplo
+    function renderFoldSections(explainHtml, exampleHtml, openExplain=true, openExample=false){
+      elDetailBody.innerHTML = `
+        <div class="fold">
+          <button class="foldBtn" type="button" data-fold="explain" aria-expanded="${openExplain}">
+            <span><span class="tag tag-explain">Explicación</span></span>
+            <span class="foldIcon">${openExplain ? "–" : "+"}</span>
+          </button>
+          <div class="foldBody ${openExplain ? "show" : ""}" id="foldExplain">
+            ${explainHtml}
+          </div>
+        </div>
+
+        <div class="fold" style="margin-top:10px;">
+          <button class="foldBtn" type="button" data-fold="example" aria-expanded="${openExample}">
+            <span><span class="tag tag-example">Ejemplo</span></span>
+            <span class="foldIcon">${openExample ? "–" : "+"}</span>
+          </button>
+          <div class="foldBody ${openExample ? "show" : ""}" id="foldExample">
+            ${exampleHtml}
+          </div>
+        </div>
+      `;
+
+      const btns = [...elDetailBody.querySelectorAll(".foldBtn")];
+      btns.forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const kind = btn.dataset.fold;
+          const body = document.getElementById(kind === "explain" ? "foldExplain" : "foldExample");
+          const icon = btn.querySelector(".foldIcon");
+          const isOpen = body.classList.contains("show");
+          body.classList.toggle("show");
+          icon.textContent = isOpen ? "+" : "–";
+          btn.setAttribute("aria-expanded", String(!isOpen));
+        });
       });
     }
 
-    function setModeGeneral(){
-      inGeneralMode = true;
-      generalBtn.classList.add("active");
+    function setDetailNormal(idx){
+      const c = CRITERIA[idx];
+      elDetailTitle.textContent = c.label;
+      elDetailHint.textContent = "";
 
-      // vista derecha
-      standardView.style.display = "none";
-      generalView.style.display = "grid";
-      detailTitle.textContent = "Generalidades de publicaciones";
+      if(c.special === "theory"){
+        renderTheory();
+        return;
+      }
 
-      // quitar resaltado en lista
-      [...listBox.querySelectorAll(".item")].forEach(el => el.classList.remove("selected"));
+      const explain = escapeHtml(c.explain).replaceAll("\n","<br>");
+      const example = escapeHtml(c.example).replaceAll("\n","<br>");
 
-      renderAccordion();
-      // abrir el primero por defecto
-      openAccordion(0);
-
-      live.textContent = "Panel: Generalidades de publicaciones.";
+      renderFoldSections(
+        `<p class="textLine">${explain}</p>`,
+        `<p class="textLine">${example}</p>`,
+        true,
+        false
+      );
     }
 
-    function setModeStandard(){
-      inGeneralMode = false;
-      generalBtn.classList.remove("active");
+    function renderTheory(){
+      elDetailHint.textContent = "Incluye subpartes claras (antecedentes, estado del arte, bases conceptuales, enfoque).";
 
-      // vista derecha
-      generalView.style.display = "none";
-      standardView.style.display = "grid";
+      const explainHtml = `
+        <p class="textLine">
+          El marco teórico sustenta el trabajo con literatura y definiciones. Debe mostrar qué dicen otros autores y
+          cómo defines los conceptos que vas a medir o analizar.
+        </p>
+        <p class="muted" style="margin-top:8px;">
+          Tip: en antecedentes usa citas tipo “Autor (Año) encontró…” para evidenciar fuentes reales.
+        </p>
+      `;
 
-      // re-render para restaurar selección visual
-      renderList();
-      selectCriterion(selectedIndex, {silent:true});
+      const blocks = THEORY_DETAIL.blocks.map(b=>`
+        <div class="miniBox">
+          <h4>${b.name}</h4>
+          <p><b>Qué es:</b> ${escapeHtml(b.explain)}</p>
+          <p><b>Ejemplo:</b> ${escapeHtml(b.example)}</p>
+        </div>
+      `).join("");
+
+      const exampleHtml = `
+        <div class="theoryGrid">${blocks}</div>
+      `;
+
+      renderFoldSections(explainHtml, exampleHtml, true, true);
     }
 
-    function selectCriterion(i, opts={silent:false}){
-      inGeneralMode = false;
-      generalBtn.classList.remove("active");
-
+    function selectItem(i){
       selectedIndex = i;
-      const c = CRITERIA[i];
-
-      // vista derecha estándar
-      generalView.style.display = "none";
-      standardView.style.display = "grid";
-      detailTitle.textContent = c.label;
-
-      detailExplain.innerHTML = c.explain;
-      detailExample.innerHTML = c.example;
-
-      // actualizar resaltado
-      [...listBox.querySelectorAll(".item")].forEach((el, idx) => {
-        el.classList.toggle("selected", idx === selectedIndex);
-      });
-
-      if(!opts.silent){
-        live.textContent = `Criterio seleccionado: ${c.label}.`;
-      }
+      paintSelected();
+      setDetailNormal(i);
     }
 
-    function renderAccordion(){
-      accordion.innerHTML = "";
+    // ===== Generalidades: acordeón en panel derecho =====
+    function renderGeneralities(){
+      elDetailTitle.textContent = GENERALITIES.title;
+      elDetailHint.textContent = "Pulsa cada punto para ver su explicación.";
 
-      GENERALITIES.forEach((it, idx) => {
-        const wrap = document.createElement("div");
-        wrap.className = "accItem";
+      const accItems = GENERALITIES.items.map((it, idx) => `
+        <div class="accItem">
+          <button class="accBtn" type="button" data-acc="${idx}" aria-expanded="false">
+            <span>${it.title}</span>
+            <span class="accIcon">+</span>
+          </button>
+          <div class="accPanel" id="accPanel${idx}">
+            <ul>
+              <li><b>Explicación:</b> ${escapeHtml(it.explain)}</li>
+              <li><b>Ejemplo:</b> ${escapeHtml(it.example)}</li>
+            </ul>
+          </div>
+        </div>
+      `).join("");
 
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "accBtn";
-        btn.setAttribute("aria-expanded","false");
-        btn.innerHTML = `
-          <span>${it.title}</span>
-          <span class="accBadge">${it.badge}</span>
-        `;
+      elDetailBody.innerHTML = `<div class="accordion">${accItems}</div>`;
 
-        const panel = document.createElement("div");
-        panel.className = "accPanel";
-        panel.innerHTML = it.content;
+      const btns = [...elDetailBody.querySelectorAll(".accBtn")];
+      btns.forEach(btn => {
+        btn.addEventListener("click", ()=>{
+          const k = Number(btn.dataset.acc);
+          const panel = document.getElementById("accPanel"+k);
+          const icon = btn.querySelector(".accIcon");
+          const isOpen = panel.classList.contains("show");
 
-        btn.addEventListener("click", () => {
-          const isOpen = panel.classList.contains("open");
-          if(isOpen){
-            panel.classList.remove("open");
-            btn.setAttribute("aria-expanded","false");
+          // Acordeón: cierra otros
+          btns.forEach(b=>{
+            const kk = Number(b.dataset.acc);
+            const p = document.getElementById("accPanel"+kk);
+            const ic = b.querySelector(".accIcon");
+            p.classList.remove("show");
+            b.setAttribute("aria-expanded","false");
+            ic.textContent = "+";
+          });
+
+          if(!isOpen){
+            panel.classList.add("show");
+            btn.setAttribute("aria-expanded","true");
+            icon.textContent = "–";
           }else{
-            openAccordion(idx);
+            panel.classList.remove("show");
+            btn.setAttribute("aria-expanded","false");
+            icon.textContent = "+";
           }
         });
-
-        wrap.appendChild(btn);
-        wrap.appendChild(panel);
-        accordion.appendChild(wrap);
       });
     }
 
-    function openAccordion(indexToOpen){
-      const items = [...accordion.querySelectorAll(".accItem")];
-      items.forEach((it, idx) => {
-        const btn = it.querySelector(".accBtn");
-        const panel = it.querySelector(".accPanel");
-        const open = idx === indexToOpen;
-        panel.classList.toggle("open", open);
-        btn.setAttribute("aria-expanded", open ? "true" : "false");
-      });
-    }
-
-    // Botón generalidades
-    generalBtn.addEventListener("click", () => {
-      if(inGeneralMode){
-        setModeStandard();
-      }else{
-        setModeGeneral();
-      }
+    elGeneralBtn.addEventListener("click", ()=>{
+      generalMode = true;
+      elGeneralBtn.classList.add("active");
+      elGeneralBtn.setAttribute("aria-pressed","true");
+      [...document.querySelectorAll(".itemRow")].forEach(r => r.classList.remove("selected"));
+      renderGeneralities();
     });
 
-    // Inicialización
-    renderList();
-    selectCriterion(0, {silent:true});
+    // Init: seleccionar primer ítem por defecto
+    renderChecklist();
+    selectItem(0);
   </script>
 </body>
 </html>
