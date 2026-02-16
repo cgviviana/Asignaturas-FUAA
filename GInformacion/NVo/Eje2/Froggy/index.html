@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dominios de la Información - Froggy Jump</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 70px;
+    }
+
+    /* Main Title */
+    .main-title {
+      background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
+      padding: 18px 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .main-title h1 {
+      color: #fff;
+      font-size: 30px;
+      font-weight: bold;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      line-height: 1.2;
+    }
+
+    .student-strip {
+      margin-top: 10px;
+      color: rgba(255,255,255,0.95);
+      font-weight: 600;
+      letter-spacing: 1px;
+      font-size: 14px;
+      display: none;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #6a1b9a 0%, #ab47bc 100%);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      gap: 12px;
+    }
+
+    .lives-container, .points-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 15px;
+      border-radius: 25px;
+      min-width: 150px;
+      justify-content: center;
+    }
+
+    .lives-label, .points-label {
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .lives-count {
+      background: white;
+      color: #6a1b9a;
+      font-weight: bold;
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .category-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      flex: 1;
+      line-height: 1.2;
+    }
+
+    .points-count {
+      background: white;
+      color: #6a1b9a;
+      font-weight: bold;
+      font-size: 18px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    /* Game Area */
+    .game-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 20px;
+    }
+
+    .progress-bar-container {
+      background: rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 8px;
+      margin-bottom: 18px;
+    }
+
+    .progress-bar {
+      height: 30px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6a1b9a, #ab47bc);
+      border-radius: 15px;
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .question-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 26px;
+      margin-bottom: 26px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .question-number {
+      color: #6a1b9a;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .question-text {
+      color: #333;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    /* Froggy Jump Options */
+    .lily-pads-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 26px;
+      margin-top: 26px;
+      position: relative;
+    }
+
+    .lily-pad {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      padding: 0;
+    }
+
+    .lily-pad:hover:not(.answered) {
+      transform: translateY(-10px) scale(1.05);
+    }
+
+    .lily-pad.correct { animation: correctJump 0.6s ease; }
+    .lily-pad.incorrect { animation: incorrectShake 0.6s ease; opacity: 0.55; }
+
+    @keyframes correctJump {
+      0%, 100% { transform: translateY(0) scale(1); }
+      30% { transform: translateY(-30px) scale(1.1); }
+      60% { transform: translateY(-15px) scale(1.05); }
+    }
+    @keyframes incorrectShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-15px) rotate(-5deg); }
+      75% { transform: translateX(15px) rotate(5deg); }
+    }
+
+    .lily-content {
+      background: #6a1b9a;
+      border-radius: 50%;
+      padding: 34px 18px 28px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      position: relative;
+      border: 5px solid #ab47bc;
+    }
+
+    .lily-content::before {
+      content: '';
+      position: absolute;
+      top: -10px; left: -10px; right: -10px; bottom: -10px;
+      background: rgba(171, 71, 188, 0.3);
+      border-radius: 50%;
+      z-index: -1;
+    }
+
+    .option-label {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #ab47bc;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    }
+
+    .option-svg {
+      width: 92px;
+      height: 92px;
+      margin-bottom: 12px;
+    }
+
+    .option-text {
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.35;
+      padding: 0 10px;
+    }
+
+    /* Frog */
+    .frog-container {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      transition: all 0.5s ease;
+      pointer-events: none;
+    }
+
+    .frog-svg {
+      width: 120px;
+      height: 120px;
+      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+    }
+
+    /* Frog state helpers */
+    .frog-face-mouth { transition: d 0.2s ease; }
+    .frog-face-eyes  { transition: transform 0.2s ease; transform-origin: center; }
+
+    /* sink animation */
+    .frog-container.sinking { animation: sink 0.9s ease forwards; }
+    @keyframes sink {
+      0%   { transform: translateX(-50%) translateY(0) scale(1); opacity:1; }
+      60%  { transform: translateX(-50%) translateY(120px) scale(0.95); opacity:0.6; }
+      100% { transform: translateX(-50%) translateY(200px) scale(0.9); opacity:0; }
+    }
+    .frog-container.popin { animation: popin 0.55s ease forwards; }
+    @keyframes popin {
+      0%   { transform: translateX(-50%) translateY(200px) scale(0.9); opacity:0; }
+      100% { transform: translateX(-50%) translateY(0) scale(1); opacity:1; }
+    }
+
+    /* Timer */
+    .timer-container {
+      position: relative;
+      background: white;
+      padding: 12px 30px;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border: 3px solid #6a1b9a;
+      margin: 0 auto 24px auto;
+      width: fit-content;
+    }
+
+    .timer-icon { width: 28px; height: 28px; }
+
+    .timer-text {
+      font-size: 22px;
+      font-weight: bold;
+      color: #6a1b9a;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .timer-text.warning { color: #ff9800; animation: pulse 1s infinite; }
+    .timer-text.danger  { color: #ff4444; animation: pulse 0.5s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* Explanation Modal */
+    .explanation-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+    .explanation-modal.show { display: flex; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+    .explanation-content {
+      background: white;
+      border-radius: 20px;
+      padding: 34px;
+      max-width: 760px;
+      width: 100%;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+
+    .explanation-header {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      color: #6a1b9a;
+      line-height: 1.25;
+    }
+
+    .explanation-text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 20px;
+      white-space: pre-line;
+    }
+
+    /* Buttons */
+    .action-buttons { display: flex; gap: 15px; margin-top: 10px; }
+
+    .retry-button, .next-button {
+      flex: 1;
+      color: white;
+      border: none;
+      padding: 14px 18px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .retry-button { background: linear-gradient(135deg, #ff9800, #ff6b00); }
+    .next-button  { background: linear-gradient(135deg, #6a1b9a, #ab47bc); }
+
+    .retry-button:hover, .next-button:hover {
+      transform: scale(1.04);
+      box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+    }
+
+    /* Final Screen */
+    .final-screen {
+      display: none;
+      text-align: center;
+      background: white;
+      border-radius: 20px;
+      padding: 50px 28px;
+      max-width: 760px;
+      margin: 46px auto;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    .final-screen.show { display: block; animation: fadeIn 0.5s ease; }
+
+    .final-title {
+      font-size: 34px;
+      font-weight: 900;
+      color: #6a1b9a;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .final-score {
+      font-size: 48px;
+      font-weight: 900;
+      color: #ab47bc;
+      margin: 22px 0;
+    }
+
+    .final-message {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .restart-button {
+      background: linear-gradient(135deg, #6a1b9a, #ab47bc);
+      color: white;
+      border: none;
+      padding: 16px 46px;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .restart-button:hover { transform: scale(1.07); box-shadow: 0 8px 25px rgba(106, 27, 154, 0.4); }
+
+    /* Start Screen */
+    .start-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 18px;
+    }
+
+    .start-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px;
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    }
+
+    .start-title {
+      color: #6a1b9a;
+      font-weight: 900;
+      font-size: 22px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .start-subtitle {
+      color: #333;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    label {
+      font-weight: 800;
+      font-size: 13px;
+      color: #4a148c;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    input {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 2px solid rgba(106, 27, 154, 0.25);
+      outline: none;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    input:focus {
+      border-color: rgba(106, 27, 154, 0.65);
+      box-shadow: 0 0 0 4px rgba(106, 27, 154, 0.12);
+    }
+
+    .start-btn {
+      margin-top: 10px;
+      width: 100%;
+      background: linear-gradient(135deg, #6a1b9a, #ab47bc);
+      color: white;
+      border: none;
+      padding: 14px 16px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .start-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 25px rgba(106, 27, 154, 0.35);
+    }
+
+    .error-msg {
+      color: #ff4444;
+      font-weight: 800;
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+      text-align: center;
+    }
+
+    /* Footer */
+    .footer {
+      background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%);
+      padding: 18px;
+      text-align: center;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+    }
+
+    .footer-text {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .footer-handle {
+      color: #ab47bc;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .lily-pads-container { grid-template-columns: 1fr; gap: 18px; }
+      .question-text { font-size: 19px; }
+      .lily-content { min-height: 235px; padding: 30px 15px; }
+      .main-title h1 { font-size: 22px; }
+      .header { padding: 12px 14px; }
+      .lives-container, .points-container { min-width: 130px; }
+      .action-buttons { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- START OVERLAY -->
+  <div class="start-overlay" id="startOverlay">
+    <div class="start-card">
+      <div class="start-title">Ingreso al Quiz</div>
+      <div class="start-subtitle">
+        Escribe tu <b>nombre completo</b> y el <b>NRC</b>. Tu nombre se mostrará en MAYÚSCULA.
+      </div>
+
+      <div class="form-row">
+        <label for="fullName">Nombre completo</label>
+        <input id="fullName" type="text" placeholder="Ej: Viviana Pérez Gómez" autocomplete="name" />
+      </div>
+
+      <div class="form-row">
+        <label for="nrc">NRC</label>
+        <input id="nrc" type="text" placeholder="Ej: 12345" autocomplete="off" />
+      </div>
+
+      <button class="start-btn" id="startBtn">Iniciar juego</button>
+      <div class="error-msg" id="startError">Completa NOMBRE y NRC para iniciar.</div>
+    </div>
+  </div>
+
+  <!-- Main Title -->
+  <div class="main-title">
+    <h1>Dominios de la Información - Froggy Jump</h1>
+    <div class="student-strip" id="studentStrip"></div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="lives-container">
+      <span class="lives-label">VIDAS</span>
+      <div class="lives-count" id="lives">5</div>
+    </div>
+
+    <div class="category-title" id="categoryTitle">DOMINIOS</div>
+
+    <div class="points-container">
+      <span class="points-label">PUNTOS</span>
+      <div class="points-count" id="points">0</div>
+    </div>
+  </div>
+
+  <!-- Game Container -->
+  <div class="game-container" id="gameArea">
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-container">
+      <svg class="timer-icon" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="#6a1b9a" stroke-width="2"></circle>
+        <path d="M12 6v6l4 2" stroke="#6a1b9a" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+      <span class="timer-text" id="timer">00:00:40</span>
+    </div>
+
+    <!-- Question Card -->
+    <div class="question-card">
+      <div class="question-number" id="questionNumber">1 / 10</div>
+      <div class="question-text" id="questionText"></div>
+    </div>
+
+    <!-- Lily Pads -->
+    <div class="lily-pads-container" id="lilyPadsContainer"></div>
+  </div>
+
+  <!-- Final Screen -->
+  <div class="final-screen" id="finalScreen">
+    <div class="final-title">¡Juego completado!</div>
+    <div class="final-score" id="finalScore"></div>
+    <div class="final-message" id="finalMessage"></div>
+    <button class="restart-button" onclick="location.reload()">JUGAR DE NUEVO</button>
+  </div>
+
+  <!-- Frog -->
+  <div class="frog-container" id="frogContainer">
+    <svg class="frog-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- body -->
+      <ellipse cx="100" cy="120" rx="60" ry="50" fill="#ab47bc"/>
+      <ellipse cx="100" cy="80" rx="50" ry="40" fill="#ab47bc"/>
+      <!-- eyes -->
+      <ellipse class="frog-face-eyes" cx="85" cy="65" rx="15" ry="20" fill="white"/>
+      <ellipse class="frog-face-eyes" cx="115" cy="65" rx="15" ry="20" fill="white"/>
+      <circle class="frog-face-eyes" cx="85" cy="70" r="8" fill="#6a1b9a"/>
+      <circle class="frog-face-eyes" cx="115" cy="70" r="8" fill="#6a1b9a"/>
+      <!-- mouth (dynamic via JS) -->
+      <path id="frogMouth" class="frog-face-mouth" d="M 80 90 Q 100 100 120 90" stroke="#6a1b9a" stroke-width="3" fill="none"/>
+      <!-- legs -->
+      <ellipse cx="70" cy="140" rx="12" ry="25" fill="#6a1b9a"/>
+      <ellipse cx="130" cy="140" rx="12" ry="25" fill="#6a1b9a"/>
+      <ellipse cx="60" cy="150" rx="20" ry="15" fill="#6a1b9a"/>
+      <ellipse cx="140" cy="150" rx="20" ry="15" fill="#6a1b9a"/>
+    </svg>
+  </div>
+
+  <!-- Explanation Modal -->
+  <div class="explanation-modal" id="explanationModal">
+    <div class="explanation-content">
+      <div class="explanation-header" id="explanationHeader"></div>
+      <div class="explanation-text" id="explanationText"></div>
+      <div class="action-buttons">
+        <button class="retry-button" id="retryButton">REINTENTAR</button>
+        <button class="next-button" id="nextButton">SIGUIENTE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p class="footer-text">Aprendiendo con <span class="footer-handle">@LaProfevivy</span></p>
+  </div>
+
+  <script>
+    // ========= CONFIG =========
+    const QUESTION_VALUE = 1000;
+    const PENALTY_PER_WRONG = 200;
+    const START_LIVES = 5;
+    const TIME_PER_Q = 40;
+
+    // ========= CONTENIDO (10 PREGUNTAS) — DOMINIOS DE LA INFORMACIÓN =========
+    // Regla del valor: cada pregunta inicia en 1000; por cada intento incorrecto baja 200 (min 0).
+    const questions = [
+      {
+        category: "DOMINIOS",
+        question: "¿Cuál enunciado define mejor el dominio PERSONAL en gestión de información?",
+        options: [
+          { text: "Organizar información privada que apoya tu vida y decisiones, y puede conectarse con lo académico y profesional", svg: "source" },
+          { text: "Publicar únicamente artículos en revistas indexadas", svg: "academic" },
+          { text: "Aplicar normas editoriales para enviar manuscritos", svg: "doc" },
+          { text: "Validar revistas por métricas sin leer su contenido", svg: "analyze" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: El dominio personal es tu sistema privado de información (apuntes, evidencias, recursos) para aprender y decidir.\n" +
+          "EJEMPLO: Carpeta personal con resúmenes, lecturas y notas.\n" +
+          "CASO: Si necesitas recordar un procedimiento, lo buscas en tu sistema personal."
+      },
+      {
+        category: "DOMINIOS",
+        question: "¿Qué describe mejor el dominio ACADÉMICO?",
+        options: [
+          { text: "Conjunto de información y prácticas para estudiar, argumentar y producir trabajos con sustento", svg: "academic" },
+          { text: "Lista de redes sociales para seguir noticias virales", svg: "viral" },
+          { text: "Carpeta de fotos personales sin relación con estudio", svg: "design" },
+          { text: "Opiniones sin fuentes para “responder rápido”", svg: "opinion" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: El dominio académico se centra en aprender con fuentes y producir evidencias (tareas, informes, artículos).\n" +
+          "EJEMPLO: Usar artículos, citar, construir marco teórico y metodología.\n" +
+          "CASO: Para un ensayo, recurres a bibliografía y citación."
+      },
+      {
+        category: "DOMINIOS",
+        question: "¿Qué caracteriza el dominio PROFESIONAL?",
+        options: [
+          { text: "Uso de información para resolver problemas del trabajo con decisiones trazables y resultados", svg: "report" },
+          { text: "Guardar archivos sin versiones ni control de cambios", svg: "doc" },
+          { text: "Consumir contenido sin validar porque “suena lógico”", svg: "opinion" },
+          { text: "Solo recopilar definiciones sin aplicarlas", svg: "encyclopedia" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: El dominio profesional aplica información para operar, mejorar procesos y tomar decisiones.\n" +
+          "EJEMPLO: Reporte de indicadores para reducir incidentes o atrasos.\n" +
+          "CASO: Una coordinación analiza datos para actuar con evidencia."
+      },
+      {
+        category: "RELACIÓN ENTRE DOMINIOS",
+        question: "Los dominios no son “cajas separadas”. ¿Cómo se conectan normalmente?",
+        options: [
+          { text: "Se alimentan en una espiral: lo personal fortalece lo académico y esto mejora lo profesional (y viceversa)", svg: "scientific" },
+          { text: "Solo se conectan si hay internet rápido", svg: "digital" },
+          { text: "Son independientes y nunca se mezclan", svg: "false" },
+          { text: "Se conectan solo al graduarse", svg: "doc" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: La relación es evolutiva: cada dominio nutre a los otros (espiral ascendente).\n" +
+          "EJEMPLO: Un interés personal se vuelve tema académico y luego proyecto profesional.\n" +
+          "CASO: Un hábito de registrar datos (personal) mejora tu investigación (académico) y tu reporte (profesional)."
+      },
+      {
+        category: "TRAZABILIDAD",
+        question: "¿Qué acción fortalece la trazabilidad entre lo académico y lo profesional?",
+        options: [
+          { text: "Documentar fuentes, decisiones y versiones (qué, por qué y con qué evidencia)", svg: "report" },
+          { text: "Borrar el historial para “no complicarse”", svg: "false" },
+          { text: "Guardar todo con nombres como “final_final2” sin fecha", svg: "doc" },
+          { text: "Confiar en memoria sin registrar nada", svg: "opinion" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: Trazabilidad = poder reconstruir origen de datos y decisiones.\n" +
+          "EJEMPLO: Bitácora de cambios + carpeta de fuentes.\n" +
+          "CASO: Si un directivo pregunta “¿de dónde sale este indicador?”, puedes demostrarlo."
+      },
+      {
+        category: "CLASIFICACIÓN",
+        question: "Caso: guardas tus notas de clase, resúmenes y lecturas en una carpeta personal para estudiar. ¿Qué dominio predomina?",
+        options: [
+          { text: "Personal (porque organizas tu sistema privado para aprender)", svg: "source" },
+          { text: "Profesional (porque ya es un reporte empresarial)", svg: "report" },
+          { text: "Solo académico (no tiene relación con tu vida personal)", svg: "academic" },
+          { text: "Ninguno (porque no existe organización)", svg: "false" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: Aunque el contenido sea académico, el sistema privado de organización es dominio personal.\n" +
+          "EJEMPLO: Carpetas por tema + resúmenes.\n" +
+          "CASO: Tu estructura te permite estudiar y recuperar información rápido."
+      },
+      {
+        category: "CLASIFICACIÓN",
+        question: "Caso: haces un informe para coordinación con datos de asistencia y propones acciones. ¿Qué dominio predomina?",
+        options: [
+          { text: "Profesional (decisión y mejora de proceso con evidencia)", svg: "report" },
+          { text: "Personal (solo porque lo guardas en tu computador)", svg: "digital" },
+          { text: "Terciario (porque es una enciclopedia)", svg: "encyclopedia" },
+          { text: "Opinión (porque los datos no importan)", svg: "opinion" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: Profesional = aplicar información para acción y mejora.\n" +
+          "EJEMPLO: Informe con indicadores y recomendaciones.\n" +
+          "CASO: Se usa para decidir y hacer seguimiento."
+      },
+      {
+        category: "RIESGOS Y VALIDACIÓN",
+        question: "¿Qué riesgo aumenta cuando mezclas información personal con académica sin validar fuentes?",
+        options: [
+          { text: "Confundir evidencia con opinión y sostener argumentos sin respaldo", svg: "opinion" },
+          { text: "Mejorar automáticamente la calidad del trabajo", svg: "false" },
+          { text: "Aumentar la indexación de una revista", svg: "academic" },
+          { text: "Hacer más rápido el cronómetro del juego", svg: "digital" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: Sin validación, se mezclan ideas personales con “hechos” no comprobados.\n" +
+          "EJEMPLO: Citar un blog sin autor como si fuera evidencia.\n" +
+          "CASO: En clase, eso debilita el marco teórico y la discusión."
+      },
+      {
+        category: "HÁBITOS",
+        question: "¿Cuál hábito es más útil para que lo personal alimente lo académico de forma consistente?",
+        options: [
+          { text: "Registrar, etiquetar y resumir fuentes con fecha y referencia", svg: "doc" },
+          { text: "Guardar todo sin nombres ni carpetas", svg: "false" },
+          { text: "Solo ver videos y no tomar notas", svg: "viral" },
+          { text: "Copiar y pegar textos sin citar", svg: "opinion" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: Un sistema personal de notas y referencias mejora tu producción académica.\n" +
+          "EJEMPLO: Ficha: Autor (año) + idea central + cómo lo usaré.\n" +
+          "CASO: Al escribir, no “improvisas”: ya tienes evidencia organizada."
+      },
+      {
+        category: "APLICACIÓN",
+        question: "Caso: quieres que un mismo tema avance de clase a proyecto. ¿Qué secuencia refleja la espiral evolutiva?",
+        options: [
+          { text: "Interés personal → trabajo académico con fuentes → propuesta/proyecto aplicable (profesional)", svg: "scientific" },
+          { text: "Profesional → personal → eliminar lo académico", svg: "false" },
+          { text: "Académico → dejar de registrar → depender de memoria", svg: "opinion" },
+          { text: "Ver redes → copiar → publicar sin revisión", svg: "viral" }
+        ],
+        correct: 0,
+        explanation:
+          "SIGNIFICADO: La espiral es progresiva: cada vuelta mejora tu criterio y aplicación.\n" +
+          "EJEMPLO: Tema de clase se convierte en proyecto con impacto.\n" +
+          "CASO: Así conectas aprendizaje, evidencia y solución."
+      }
+    ];
+
+    // ========= SVG ICONS (tus mismos) =========
+    const svgIcons = {
+      source: `
+        <svg viewBox="0 0 100 100">
+          <rect x="26" y="22" width="48" height="56" rx="6" fill="#fff" opacity="0.95"/>
+          <line x1="35" y1="38" x2="65" y2="38" stroke="#6a1b9a" stroke-width="4" stroke-linecap="round"/>
+          <line x1="35" y1="50" x2="65" y2="50" stroke="#ab47bc" stroke-width="4" stroke-linecap="round"/>
+          <line x1="35" y1="62" x2="55" y2="62" stroke="#6a1b9a" stroke-width="4" stroke-linecap="round"/>
+        </svg>`,
+      report: `
+        <svg viewBox="0 0 100 100">
+          <rect x="24" y="22" width="52" height="56" rx="6" fill="#fff"/>
+          <rect x="32" y="30" width="36" height="8" rx="4" fill="#ab47bc"/>
+          <rect x="32" y="44" width="28" height="6" rx="3" fill="#6a1b9a"/>
+          <rect x="32" y="56" width="34" height="6" rx="3" fill="#6a1b9a" opacity="0.9"/>
+          <rect x="32" y="68" width="22" height="6" rx="3" fill="#6a1b9a" opacity="0.75"/>
+        </svg>`,
+      analyze: `
+        <svg viewBox="0 0 100 100">
+          <circle cx="45" cy="45" r="18" fill="none" stroke="#fff" stroke-width="5"/>
+          <line x1="58" y1="58" x2="74" y2="74" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+          <rect x="34" y="66" width="34" height="8" rx="4" fill="#ab47bc" opacity="0.9"/>
+        </svg>`,
+      opinion: `
+        <svg viewBox="0 0 100 100">
+          <path d="M25 30h50a8 8 0 0 1 8 8v18a8 8 0 0 1-8 8H52l-14 12v-12H25a8 8 0 0 1-8-8V38a8 8 0 0 1 8-8z"
+                fill="#fff" opacity="0.95"/>
+          <circle cx="38" cy="48" r="4" fill="#6a1b9a"/>
+          <circle cx="50" cy="48" r="4" fill="#ab47bc"/>
+          <circle cx="62" cy="48" r="4" fill="#6a1b9a"/>
+        </svg>`,
+      doc: `
+        <svg viewBox="0 0 100 100">
+          <path d="M30 20h26l14 14v46a8 8 0 0 1-8 8H30a8 8 0 0 1-8-8V28a8 8 0 0 1 8-8z" fill="#fff"/>
+          <path d="M56 20v14h14" fill="none" stroke="#ab47bc" stroke-width="4"/>
+          <line x1="34" y1="48" x2="66" y2="48" stroke="#6a1b9a" stroke-width="4" stroke-linecap="round"/>
+          <line x1="34" y1="60" x2="60" y2="60" stroke="#6a1b9a" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+        </svg>`,
+      encyclopedia: `
+        <svg viewBox="0 0 100 100">
+          <rect x="26" y="24" width="16" height="56" rx="5" fill="#fff"/>
+          <rect x="44" y="24" width="16" height="56" rx="5" fill="#fff" opacity="0.9"/>
+          <rect x="62" y="24" width="12" height="56" rx="5" fill="#fff" opacity="0.8"/>
+          <line x1="30" y1="34" x2="38" y2="34" stroke="#ab47bc" stroke-width="4"/>
+          <line x1="48" y1="34" x2="56" y2="34" stroke="#6a1b9a" stroke-width="4"/>
+        </svg>`,
+      lab: `
+        <svg viewBox="0 0 100 100">
+          <path d="M40 20h20v10l-6 10v10l16 24a10 10 0 0 1-9 14H39a10 10 0 0 1-9-14l16-24V50l-6-10V20z"
+                fill="#fff" opacity="0.95"/>
+          <path d="M38 70h24" stroke="#ab47bc" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="50" cy="64" r="5" fill="#6a1b9a"/>
+        </svg>`,
+      false: `
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="28" fill="#fff"/>
+          <line x1="38" y1="38" x2="62" y2="62" stroke="#ff4444" stroke-width="6" stroke-linecap="round"/>
+          <line x1="62" y1="38" x2="38" y2="62" stroke="#ff4444" stroke-width="6" stroke-linecap="round"/>
+        </svg>`,
+      academic: `
+        <svg viewBox="0 0 100 100">
+          <path d="M20 42l30-16 30 16-30 16-30-16z" fill="#fff"/>
+          <path d="M32 52v14c0 6 36 6 36 0V52" fill="none" stroke="#ab47bc" stroke-width="5"/>
+          <circle cx="80" cy="42" r="4" fill="#6a1b9a"/>
+        </svg>`,
+      institution: `
+        <svg viewBox="0 0 100 100">
+          <path d="M20 38l30-14 30 14v8H20v-8z" fill="#fff"/>
+          <rect x="26" y="46" width="10" height="34" fill="#fff" opacity="0.9"/>
+          <rect x="45" y="46" width="10" height="34" fill="#fff" opacity="0.9"/>
+          <rect x="64" y="46" width="10" height="34" fill="#fff" opacity="0.9"/>
+          <rect x="20" y="80" width="60" height="6" fill="#ab47bc"/>
+        </svg>`,
+      government: `
+        <svg viewBox="0 0 100 100">
+          <path d="M18 40l32-16 32 16v8H18v-8z" fill="#fff"/>
+          <rect x="22" y="48" width="56" height="30" rx="6" fill="#fff" opacity="0.9"/>
+          <circle cx="50" cy="63" r="8" fill="#ab47bc"/>
+          <rect x="18" y="80" width="64" height="6" fill="#6a1b9a"/>
+        </svg>`,
+      scientific: `
+        <svg viewBox="0 0 100 100">
+          <circle cx="35" cy="35" r="10" fill="#fff"/>
+          <circle cx="65" cy="35" r="10" fill="#fff" opacity="0.95"/>
+          <circle cx="50" cy="65" r="12" fill="#fff" opacity="0.9"/>
+          <line x1="43" y1="41" x2="48" y2="56" stroke="#ab47bc" stroke-width="5" stroke-linecap="round"/>
+          <line x1="57" y1="41" x2="52" y2="56" stroke="#6a1b9a" stroke-width="5" stroke-linecap="round"/>
+          <line x1="45" y1="35" x2="55" y2="35" stroke="#6a1b9a" stroke-width="5" stroke-linecap="round"/>
+        </svg>`,
+      digital: `
+        <svg viewBox="0 0 100 100">
+          <rect x="20" y="26" width="60" height="44" rx="6" fill="#fff"/>
+          <rect x="34" y="74" width="32" height="6" rx="3" fill="#ab47bc"/>
+          <rect x="42" y="70" width="16" height="4" fill="#6a1b9a" opacity="0.9"/>
+          <circle cx="50" cy="48" r="10" fill="#ab47bc" opacity="0.85"/>
+        </svg>`,
+      design: `
+        <svg viewBox="0 0 100 100">
+          <rect x="22" y="28" width="56" height="44" rx="8" fill="#fff"/>
+          <circle cx="40" cy="50" r="10" fill="#ab47bc"/>
+          <rect x="54" y="42" width="16" height="6" rx="3" fill="#6a1b9a"/>
+          <rect x="54" y="54" width="16" height="6" rx="3" fill="#6a1b9a" opacity="0.8"/>
+        </svg>`,
+      viral: `
+        <svg viewBox="0 0 100 100">
+          <circle cx="32" cy="50" r="8" fill="#fff"/>
+          <circle cx="68" cy="35" r="8" fill="#fff" opacity="0.95"/>
+          <circle cx="68" cy="65" r="8" fill="#fff" opacity="0.9"/>
+          <line x1="40" y1="48" x2="60" y2="38" stroke="#ab47bc" stroke-width="5" stroke-linecap="round"/>
+          <line x1="40" y1="52" x2="60" y2="62" stroke="#6a1b9a" stroke-width="5" stroke-linecap="round"/>
+        </svg>`
+    };
+
+    // ========= ESTADO =========
+    let currentQuestion = 0;
+    let points = 0;
+    let lives = START_LIVES;
+    let timer;
+    let timeLeft = TIME_PER_Q;
+    let answered = false;
+
+    let currentQuestionPoints = QUESTION_VALUE;
+
+    // Datos del jugador
+    let playerName = "";
+    let playerNRC = "";
+
+    // pregunta ya barajada
+    let currentQ = null;
+
+    const TOTAL_POSSIBLE = questions.length * QUESTION_VALUE;
+
+    function formatPoints(n) {
+      return n.toLocaleString('es-CO');
+    }
+
+    // Barajar opciones manteniendo correcta
+    function shuffleOptionsKeepCorrect(originalQ) {
+      const correctOption = originalQ.options[originalQ.correct];
+      const shuffled = [...originalQ.options];
+
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      const newCorrectIndex = shuffled.findIndex(opt => opt === correctOption);
+
+      return {
+        ...originalQ,
+        options: shuffled,
+        correct: newCorrectIndex
+      };
+    }
+
+    function setFrogHappy(){
+      const mouth = document.getElementById("frogMouth");
+      // sonrisa
+      mouth.setAttribute("d", "M 78 92 Q 100 110 122 92");
+    }
+    function setFrogSad(){
+      const mouth = document.getElementById("frogMouth");
+      // tristeza
+      mouth.setAttribute("d", "M 78 104 Q 100 86 122 104");
+    }
+    function setFrogNeutral(){
+      const mouth = document.getElementById("frogMouth");
+      mouth.setAttribute("d", "M 80 90 Q 100 100 120 90");
+    }
+
+    function resetFrogPosition(){
+      const frog = document.getElementById('frogContainer');
+      frog.classList.remove("sinking","popin");
+      frog.style.left = '50%';
+      frog.style.bottom = '80px';
+      frog.style.opacity = '1';
+      setFrogNeutral();
+    }
+
+    function sinkAndReappear(){
+      const frog = document.getElementById('frogContainer');
+      frog.classList.remove("popin");
+      frog.classList.add("sinking");
+      setTimeout(()=>{
+        frog.classList.remove("sinking");
+        frog.classList.add("popin");
+        setTimeout(()=> frog.classList.remove("popin"), 600);
+      }, 900);
+    }
+
+    function loadQuestion() {
+      answered = false;
+      timeLeft = TIME_PER_Q;
+      currentQuestionPoints = QUESTION_VALUE;
+
+      const q = shuffleOptionsKeepCorrect(questions[currentQuestion]);
+      currentQ = q;
+
+      document.getElementById('categoryTitle').textContent = q.category;
+      document.getElementById('questionNumber').textContent = `${currentQuestion + 1} / ${questions.length}`;
+      document.getElementById('questionText').textContent = q.question;
+
+      const container = document.getElementById('lilyPadsContainer');
+      container.innerHTML = '';
+
+      const labels = ['A', 'B', 'C', 'D'];
+
+      q.options.forEach((option, index) => {
+        const lilyPad = document.createElement('button');
+        lilyPad.className = 'lily-pad';
+        lilyPad.type = 'button';
+        lilyPad.onclick = () => checkAnswer(index);
+
+        const svgMarkup = svgIcons[option.svg] ? svgIcons[option.svg] : svgIcons["doc"];
+
+        lilyPad.innerHTML = `
+          <div class="lily-content">
+            <div class="option-label">${labels[index]}</div>
+            <div class="option-svg">${svgMarkup}</div>
+            <div class="option-text">${option.text}</div>
+          </div>
+        `;
+
+        container.appendChild(lilyPad);
+      });
+
+      updateProgress();
+      startTimer();
+      resetFrogPosition();
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      const timerElement = document.getElementById('timer');
+      timerElement.textContent = `00:00:${String(timeLeft).padStart(2, '0')}`;
+
+      timer = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = `00:00:${String(timeLeft).padStart(2, '0')}`;
+
+        timerElement.classList.remove('warning', 'danger');
+        if (timeLeft <= 10 && timeLeft > 5) timerElement.classList.add('warning');
+        if (timeLeft <= 5) timerElement.classList.add('danger');
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          if (!answered) handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function handleTimeout() {
+      answered = true;
+      lives--;
+      currentQuestionPoints = 0;
+      document.getElementById('lives').textContent = lives;
+
+      setFrogSad();
+      sinkAndReappear();
+
+      const lilyPads = document.querySelectorAll('.lily-pad');
+      lilyPads.forEach((pad, index) => {
+        pad.classList.add('answered');
+        if (currentQ && index === currentQ.correct) pad.classList.add('correct');
+      });
+
+      const modal = document.getElementById('explanationModal');
+      const header = document.getElementById('explanationHeader');
+      const text = document.getElementById('explanationText');
+      const retryBtn = document.getElementById('retryButton');
+
+      header.innerHTML = `⏱️ Se acabó el tiempo<br><span style="font-size: 16px; color: #ff4444;">Ganaste 0 de ${formatPoints(QUESTION_VALUE)} puntos</span>`;
+      header.style.color = '#ff4444';
+      text.textContent = currentQ ? currentQ.explanation : '';
+      retryBtn.style.display = 'none';
+
+      modal.classList.add('show');
+
+      if (lives <= 0) setTimeout(() => showGameOver(), 900);
+    }
+
+    function moveFrogToPad(targetPad){
+      const frog = document.getElementById('frogContainer');
+      const rect = targetPad.getBoundingClientRect();
+      frog.style.left = (rect.left + rect.width / 2 - 60) + 'px';
+      frog.style.bottom = (window.innerHeight - rect.top - rect.height / 2 - 60) + 'px';
+    }
+
+    function checkAnswer(selected) {
+      if (answered) return;
+      answered = true;
+      clearInterval(timer);
+
+      const q = currentQ;
+      const lilyPads = document.querySelectorAll('.lily-pad');
+      const selectedPad = lilyPads[selected];
+
+      const isCorrect = (selected === q.correct);
+
+      if (!isCorrect) {
+        currentQuestionPoints = Math.max(0, currentQuestionPoints - PENALTY_PER_WRONG);
+      }
+
+      lilyPads.forEach((pad) => pad.classList.add('answered'));
+
+      if (isCorrect) {
+        selectedPad.classList.add('correct');
+        points += currentQuestionPoints;
+        document.getElementById('points').textContent = formatPoints(points);
+        setFrogHappy();
+        moveFrogToPad(selectedPad);
+
+        setTimeout(() => { resetFrogPosition(); }, 900);
+        showExplanation(true);
+      } else {
+        selectedPad.classList.add('incorrect');
+        lives--;
+        document.getElementById('lives').textContent = lives;
+
+        // resaltar correcta
+        lilyPads[q.correct].classList.add('correct');
+
+        // rana salta a la correcta y luego se hunde
+        setFrogSad();
+        moveFrogToPad(lilyPads[q.correct]);
+
+        setTimeout(() => {
+          sinkAndReappear();
+        }, 450);
+
+        showExplanation(false);
+        if (lives <= 0) setTimeout(() => showGameOver(), 900);
+      }
+    }
+
+    function showExplanation(isCorrect) {
+      const modal = document.getElementById('explanationModal');
+      const header = document.getElementById('explanationHeader');
+      const text = document.getElementById('explanationText');
+      const retryBtn = document.getElementById('retryButton');
+
+      if (isCorrect) {
+        header.innerHTML =
+          `✅ Correcto<br>` +
+          `<span style="font-size: 16px; color: #2e7d32;">Ganaste ${formatPoints(currentQuestionPoints)} de ${formatPoints(QUESTION_VALUE)} puntos</span>`;
+        header.style.color = '#6a1b9a';
+        text.textContent = currentQ.explanation;
+      } else {
+        header.innerHTML =
+          `❌ Incorrecto<br>` +
+          `<span style="font-size: 15px; color: #ff9800;">Esta pregunta ahora vale ${formatPoints(currentQuestionPoints)} puntos</span>`;
+        header.style.color = '#ff4444';
+        text.textContent = currentQ.explanation;
+      }
+
+      // Reintentar mientras haya vidas y la pregunta aún valga > 0
+      if (!isCorrect && lives > 0 && currentQuestionPoints > 0) {
+        retryBtn.style.display = 'block';
+      } else {
+        retryBtn.style.display = 'none';
+      }
+
+      modal.classList.add('show');
+    }
+
+    function retryQuestion() {
+      document.getElementById('explanationModal').classList.remove('show');
+
+      const lilyPads = document.querySelectorAll('.lily-pad');
+      lilyPads.forEach(pad => pad.classList.remove('answered', 'correct', 'incorrect'));
+
+      answered = false;
+      timeLeft = TIME_PER_Q;
+      startTimer();
+      resetFrogPosition();
+    }
+
+    function nextQuestion() {
+      document.getElementById('explanationModal').classList.remove('show');
+      currentQuestion++;
+
+      if (currentQuestion < questions.length && lives > 0) {
+        loadQuestion();
+      } else {
+        showFinalScreen();
+      }
+    }
+
+    function updateProgress() {
+      const progress = ((currentQuestion + 1) / questions.length) * 100;
+      const progressBar = document.getElementById('progressBar');
+      progressBar.style.width = progress + '%';
+      progressBar.textContent = `${currentQuestion + 1}/${questions.length}`;
+    }
+
+    function showGameOver() {
+      document.getElementById('gameArea').style.display = 'none';
+      document.getElementById('frogContainer').style.display = 'none';
+      showFinalScreen();
+    }
+
+    function showFinalScreen() {
+      clearInterval(timer);
+      document.getElementById('gameArea').style.display = 'none';
+      document.getElementById('frogContainer').style.display = 'none';
+
+      const finalScreen = document.getElementById('finalScreen');
+      finalScreen.classList.add('show');
+
+      const doneAt = new Date().toLocaleString('es-CO');
+
+      document.getElementById('finalScore').textContent =
+        `${formatPoints(points)} / ${formatPoints(TOTAL_POSSIBLE)} PUNTOS`;
+
+      let msg = "";
+      msg += (lives <= 0) ? "Estado: sin vidas.\n" : "Estado: completado.\n";
+
+      msg +=
+        `NOMBRE: ${playerName}\n` +
+        `NRC: ${playerNRC}\n` +
+        `FECHA Y HORA: ${doneAt}\n` +
+        `PUNTAJE: ${formatPoints(points)} de ${formatPoints(TOTAL_POSSIBLE)}\n`;
+
+      document.getElementById('finalMessage').textContent = msg;
+    }
+
+    // ========= START FLOW =========
+    function startGame() {
+      const nameInput = document.getElementById('fullName').value.trim();
+      const nrcInput = document.getElementById('nrc').value.trim();
+
+      const err = document.getElementById('startError');
+
+      if (!nameInput || !nrcInput) {
+        err.style.display = "block";
+        return;
+      }
+
+      err.style.display = "none";
+      playerName = nameInput.toUpperCase();
+      playerNRC = nrcInput;
+
+      const strip = document.getElementById('studentStrip');
+      strip.textContent = `ESTUDIANTE: ${playerName}  |  NRC: ${playerNRC}`;
+      strip.style.display = "block";
+
+      document.getElementById('startOverlay').style.display = "none";
+
+      // Inicializar UI
+      document.getElementById('points').textContent = formatPoints(points);
+      document.getElementById('lives').textContent = lives;
+
+      loadQuestion();
+    }
+
+    document.getElementById('startBtn').onclick = startGame;
+    document.getElementById('nextButton').onclick = nextQuestion;
+    document.getElementById('retryButton').onclick = retryQuestion;
+
+    // Ajuste: si cambia el tamaño, reubica al centro cuando no está respondiendo
+    window.addEventListener("resize", () => {
+      if (!answered) resetFrogPosition();
+    });
+  </script>
+</body>
+</html>
