@@ -1,1 +1,334 @@
 
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Flashcards Kawaii (30)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;800;900&family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ink:#243b53; --muted:#52606d;
+      --pink:#ff7eb6; --lav:#b69bff; --sky:#7aa7ff; --mint:#7ee8c7; --sun:#ffd66b;
+      --shadow: 0 22px 60px rgba(10,30,60,.16);
+      --radius: 28px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh;
+      font-family:"Nunito", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(900px 600px at 15% 10%, rgba(255,126,182,.35) 0%, transparent 60%),
+        radial-gradient(900px 600px at 90% 20%, rgba(122,167,255,.28) 0%, transparent 60%),
+        radial-gradient(900px 700px at 40% 95%, rgba(126,232,199,.28) 0%, transparent 60%),
+        linear-gradient(120deg, #fff1f8, #f1f8ff);
+      display:grid;
+      place-items:center;
+      padding:24px 14px;
+    }
+    .app{
+      width:min(820px, 100%);
+      background: rgba(255,255,255,.75);
+      border:1px solid rgba(255,255,255,.95);
+      border-radius: calc(var(--radius) + 10px);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      overflow:hidden;
+    }
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:16px 18px;
+      border-bottom:1px solid rgba(36,59,83,.08);
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+    }
+    .logo{
+      width:44px; height:44px; border-radius:16px;
+      background: conic-gradient(from 210deg, var(--pink), var(--lav), var(--sky), var(--mint), var(--sun), var(--pink));
+      box-shadow: 0 16px 42px rgba(10,30,60,.14);
+      position:relative;
+    }
+    .logo:after{
+      content:"✦"; position:absolute; inset:0; display:grid; place-items:center;
+      color:#fff; font-size:22px; text-shadow:0 6px 18px rgba(0,0,0,.18);
+    }
+    h1{
+      margin:0;
+      font-family:"Pacifico", cursive;
+      font-weight:400;
+      font-size:28px;
+      line-height:1.1;
+    }
+    .sub{margin:2px 0 0; color:var(--muted); font-size:13px}
+    .counter{
+      font-weight:900;
+      background: rgba(255,255,255,.85);
+      border:1px solid rgba(36,59,83,.10);
+      padding:10px 12px;
+      border-radius:999px;
+      box-shadow: 0 12px 28px rgba(10,30,60,.08);
+      white-space:nowrap;
+    }
+
+    .stage{padding:18px}
+    .card3d{height: 380px; perspective: 1400px;}
+    @media (max-width:520px){ .card3d{height: 430px} }
+    .card{
+      height:100%; width:100%;
+      border-radius: calc(var(--radius) + 10px);
+      position:relative;
+      transform-style: preserve-3d;
+      transition: transform .65s cubic-bezier(.2,.75,.2,1);
+      cursor:pointer;
+      user-select:none;
+    }
+    .card.is-flipped{transform: rotateY(180deg)}
+    .face{
+      position:absolute; inset:0;
+      backface-visibility:hidden;
+      border-radius: calc(var(--radius) + 10px);
+      background: rgba(255,255,255,.88);
+      border:1px solid rgba(255,255,255,.95);
+      box-shadow: 0 22px 60px rgba(10,30,60,.14);
+      overflow:hidden;
+      display:flex; flex-direction:column;
+    }
+    .face:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(600px 200px at 30% 15%, rgba(255,126,182,.32), transparent 60%),
+        radial-gradient(600px 200px at 80% 10%, rgba(122,167,255,.24), transparent 65%),
+        radial-gradient(700px 260px at 50% 100%, rgba(126,232,199,.24), transparent 60%);
+      pointer-events:none;
+    }
+    .tag{
+      position:absolute; top:14px; right:14px;
+      padding:8px 10px;
+      border-radius: 999px;
+      font-weight:900;
+      font-size:12px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(36,59,83,.08);
+      box-shadow: 0 10px 25px rgba(10,30,60,.08);
+    }
+    .front .tag{color: var(--pink)}
+    .back .tag{color: var(--sky)}
+    .content{
+      position:relative;
+      padding: 54px 18px 18px;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .bubble{
+      margin:0 auto;
+      max-width: 95%;
+      border-radius: 22px;
+      background: rgba(255,255,255,.82);
+      border:1px solid rgba(36,59,83,.08);
+      padding: 18px 16px;
+      box-shadow: 0 10px 28px rgba(10,30,60,.08);
+      position:relative;
+    }
+    .bubble:after{
+      content:"";
+      position:absolute;
+      width:16px; height:16px;
+      left: 28px; bottom: -7px;
+      background: rgba(255,255,255,.82);
+      border-left:1px solid rgba(36,59,83,.08);
+      border-bottom:1px solid rgba(36,59,83,.08);
+      transform: rotate(45deg);
+    }
+    .big{
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1.15;
+      margin:0;
+      text-align:center;
+    }
+    .small{
+      font-size: 16px;
+      line-height: 1.45;
+      margin:0;
+      text-align:center;
+      color: var(--ink);
+      white-space: pre-wrap;
+    }
+    .hint{
+      margin-top:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color: var(--muted);
+      font-size:13px;
+    }
+    .spark{
+      display:inline-grid; place-items:center;
+      width:34px; height:34px; border-radius:14px;
+      background: rgba(255,255,255,.85);
+      border:1px solid rgba(36,59,83,.08);
+      box-shadow: 0 10px 25px rgba(10,30,60,.06);
+    }
+    .back{transform: rotateY(180deg)}
+
+    .controls{
+      display:flex; gap:10px; flex-wrap:wrap;
+      padding: 0 18px 18px;
+      justify-content:center;
+    }
+    .btn{
+      border:none;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-weight:900;
+      cursor:pointer;
+      background: rgba(255,255,255,.88);
+      border:1px solid rgba(36,59,83,.10);
+      box-shadow: 0 14px 32px rgba(10,30,60,.10);
+      transition: transform .08s ease;
+      min-width: 150px;
+    }
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background: linear-gradient(90deg, rgba(255,126,182,.30), rgba(122,167,255,.24), rgba(126,232,199,.26));}
+    .footer{
+      padding: 0 18px 18px;
+      text-align:center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:12px;
+      padding:2px 7px;
+      border-radius:8px;
+      background:#ffffff;
+      border:1px solid rgba(36,59,83,.12);
+      box-shadow: 0 2px 0 rgba(36,59,83,.08);
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application" aria-label="Flashcards">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Flashcards</h1>
+          <div class="sub">Máximo 30 tarjetas · click en la tarjeta para voltear</div>
+        </div>
+      </div>
+      <div class="counter" id="counter">0 / 0</div>
+    </header>
+
+    <div class="stage">
+      <div class="card3d">
+        <div class="card" id="card" tabindex="0" aria-label="Tarjeta (click para voltear)">
+          <div class="face front">
+            <div class="tag">TÉRMINO</div>
+            <div class="content">
+              <div class="bubble">
+                <p class="big" id="frontText">—</p>
+              </div>
+              <div class="hint">
+                <div style="display:flex; gap:10px; align-items:center">
+                  <span class="spark" aria-hidden="true">🐰</span>
+                  <span>Voltear: <span class="kbd">click</span> o <span class="kbd">Space</span></span>
+                </div>
+                <span class="spark" aria-hidden="true">✨</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="face back">
+            <div class="tag">DEFINICIÓN</div>
+            <div class="content">
+              <div class="bubble">
+                <p class="small" id="backText">—</p>
+              </div>
+              <div class="hint">
+                <div style="display:flex; gap:10px; align-items:center">
+                  <span class="spark" aria-hidden="true">🍡</span>
+                  <span>Siguiente/Anterior: <span class="kbd">→</span> <span class="kbd">←</span></span>
+                </div>
+                <span class="spark" aria-hidden="true">🌸</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="prevBtn">⬅️ Anterior</button>
+      <button class="btn primary" id="flipBtn">🔄 Voltear</button>
+      <button class="btn" id="nextBtn">Siguiente ➡️</button>
+    </div>
+
+    <div class="footer">
+      (Solo lo que pediste: tarjetas + voltear + anterior/siguiente)
+    </div>
+  </div>
+
+  <script>
+    const CARDS = [{"term": "Buscadores generales", "definition": "Herramientas en línea con índice propio que rastrean, almacenan y organizan páginas web."}, {"term": "Metabuscadores", "definition": "Sistemas que consultan simultáneamente varios buscadores y muestran los resultados combinados en una sola lista."}, {"term": "Buscadores especializados", "definition": "Motores diseñados para trabajar en un campo temático o académico concreto garantizando información técnica confiable."}, {"term": "Técnicas de búsqueda", "definition": "Estrategias para formular consultas y elegir fuentes que permitan hallar información pertinente y verificable."}, {"term": "DOI", "definition": "Identificador digital de objeto que funciona como la \"cédula de identidad\" única de un documento académico."}, {"term": "Operadores booleanos", "definition": "Elementos lógicos que permiten conectar palabras clave para ampliar, limitar o definir una consulta de información."}, {"term": "Tesauros", "definition": "Vocabularios controlados y estructurados utilizados para elevar la precisión semántica en las búsquedas académicas."}, {"term": "Ecuación de búsqueda", "definition": "Formulación estructurada de una consulta que combina términos, operadores y filtros específicos."}, {"term": "Asistentes de investigación con IA", "definition": "Herramientas que combinan modelos de lenguaje con bases académicas para encontrar y resumir evidencia con citas."}, {"term": "Datos abiertos", "definition": "Información pública dispuesta en formatos digitales para ser utilizada, reutilizada y redistribuida por cualquier persona."}, {"term": "Menciona tres ejemplos de buscadores generales gratuitos.", "definition": "Google, Bing y DuckDuckGo."}, {"term": "Proporciona tres ejemplos de metabuscadores gratuitos.", "definition": "Startpage, Qwant y Swisscows."}, {"term": "¿Cuál es la principal característica distintiva de un buscador especializado?", "definition": "Se enfoca en un área concreta como medicina, educación o derecho en lugar de indexar todo internet."}, {"term": "Menciona tres buscadores académicos gratuitos.", "definition": "Google Scholar, Scielo y Redalyc."}, {"term": "¿Qué tipo de información se encuentra en buscadores como VLex o Westlaw?", "definition": "Información de carácter jurídico, incluyendo normativa y jurisprudencia."}, {"term": "¿Qué recursos indexan específicamente Google Patents y Espacenet?", "definition": "Patentes e innovaciones registradas a nivel global."}, {"term": "Nombra dos repositorios especializados en datos científicos.", "definition": "ArXiv y ResearchGate."}, {"term": "¿Qué tipo de recursos ofrecen Pexels y Unsplash?", "definition": "Bancos de imágenes gratuitos de alta calidad."}, {"term": "¿Dónde se pueden obtener iconos gratuitos según el OVA?", "definition": "The Noun Project e Iconfinder."}, {"term": "Menciona dos fuentes para obtener audio o música de uso libre.", "definition": "Bensound y YouTube Audio Library."}, {"term": "¿Qué plataformas se recomiendan para buscar tipografías?", "definition": "Google Fonts y Dafont."}, {"term": "Nombra dos portales de datos abiertos mencionados en el material.", "definition": "datos.gov.co y Kaggle Datasets."}, {"term": "¿Cuál es el objetivo principal de aplicar técnicas de búsqueda?", "definition": "Obtener resultados útiles y reducir el ruido o resultados irrelevantes."}, {"term": "¿Cuál es el primer paso clave en el proceso de búsqueda de información?", "definition": "Definir la pregunta y el nivel de evidencia requerido."}, {"term": "En las técnicas de búsqueda, ¿qué se debe identificar después de definir la pregunta?", "definition": "Palabras clave, sinónimos y descriptores."}, {"term": "¿Qué buscador es el estándar para temas de biomedicina y salud?", "definition": "PubMed."}, {"term": "¿Para qué se utiliza la base de datos ERIC?", "definition": "Búsqueda de información en el área de pedagogía, currículos y educación."}, {"term": "¿Qué recurso se especializa en ingeniería, telecomunicaciones e IoT?", "definition": "IEEE Xplore."}, {"term": "¿Qué tipo de contenido aloja ACM DL?", "definition": "Información técnica sobre informática e interacción humano-computadora (HCI)."}, {"term": "¿Qué buscadores son ideales para encontrar índices con métricas y de carácter multidisciplinar?", "definition": "Scopus y Web of Science."}];
+
+    const cardEl = document.getElementById("card");
+    const frontText = document.getElementById("frontText");
+    const backText = document.getElementById("backText");
+    const counter = document.getElementById("counter");
+
+    let idx = 0;
+
+    function show() {
+      const c = CARDS[idx];
+      frontText.textContent = c?.term ?? "—";
+      backText.textContent  = c?.definition ?? "—";
+      counter.textContent = `${idx+1} / ${CARDS.length}`;
+    }
+
+    function flip(force=null) {
+      const next = (force === null) ? !cardEl.classList.contains("is-flipped") : force;
+      cardEl.classList.toggle("is-flipped", next);
+    }
+
+    function next() {
+      idx = (idx + 1) % CARDS.length;
+      flip(false);
+      show();
+    }
+
+    function prev() {
+      idx = (idx - 1 + CARDS.length) % CARDS.length;
+      flip(false);
+      show();
+    }
+
+    document.getElementById("flipBtn").addEventListener("click", () => flip());
+    document.getElementById("nextBtn").addEventListener("click", next);
+    document.getElementById("prevBtn").addEventListener("click", prev);
+
+    cardEl.addEventListener("click", (e) => {
+      // Evita doble acción cuando se hace click en el botón (por accesibilidad)
+      flip();
+    });
+
+    // Teclado (opcional, no estorba)
+    document.addEventListener("keydown", (e) => {
+      if (e.key === " ") { e.preventDefault(); flip(); }
+      else if (e.key === "ArrowRight") next();
+      else if (e.key === "ArrowLeft") prev();
+    });
+
+    show();
+  </script>
+</body>
+</html>
