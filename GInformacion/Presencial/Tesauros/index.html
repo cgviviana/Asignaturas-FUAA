@@ -1,12 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tesauros en Investigación Deportiva | Presentación</title>
+  <title>Tesauros en Investigación | Presentación Interactiva</title>
 
-  <!-- Tema visual (del 1er código): Libre Baskerville + Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -19,12 +19,131 @@
       height:100vh;
     }
 
-    .presentation-wrapper{
+    /* ===== FORMULARIO DE REGISTRO ===== */
+    .registro-screen{
       height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
       padding:40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .registro-card{
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 30px 80px rgba(0,0,0,0.3);
+      padding:60px 50px;
+      max-width:600px;
+      width:100%;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn{
+      from{ opacity:0; transform:translateY(-30px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    .registro-card h1{
+      color:#667eea;
+      font-family:'Libre Baskerville', serif;
+      font-size:2.2em;
+      margin-bottom:15px;
+      text-align:center;
+    }
+
+    .registro-card .subtitle{
+      color:#666;
+      text-align:center;
+      margin-bottom:40px;
+      font-size:1.05em;
+      line-height:1.6;
+    }
+
+    .form-group{
+      margin-bottom:25px;
+    }
+
+    .form-group label{
+      display:block;
+      font-weight:700;
+      color:#2c3e50;
+      margin-bottom:8px;
+      font-size:0.95em;
+    }
+
+    .form-group input{
+      width:100%;
+      padding:15px;
+      border:2px solid #dfe6e9;
+      border-radius:10px;
+      font-size:1em;
+      font-family:'Inter', sans-serif;
+      transition:all 0.3s;
+      background:#fff;
+    }
+
+    .form-group input:focus{
+      outline:none;
+      border-color:#667eea;
+      box-shadow:0 0 0 4px rgba(102,126,234,0.1);
+    }
+
+    .form-group input::placeholder{
+      color:#bdc3c7;
+    }
+
+    .btn-comenzar{
+      width:100%;
+      background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color:#fff;
+      border:none;
+      padding:18px;
+      font-size:1.1em;
+      font-weight:700;
+      border-radius:10px;
+      cursor:pointer;
+      transition:all 0.3s;
+      margin-top:15px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+    }
+
+    .btn-comenzar:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 30px rgba(102,126,234,0.4);
+    }
+
+    .btn-comenzar:disabled{
+      background:#95a5a6;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .error-message{
+      color:#e74c3c;
+      font-size:0.9em;
+      margin-top:8px;
+      display:none;
+      font-weight:600;
+    }
+
+    .error-message.show{
+      display:block;
+    }
+
+    /* ===== PRESENTACIÓN ===== */
+    .presentation-wrapper{
+      height:100vh;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:40px;
+    }
+
+    .presentation-wrapper.active{
+      display:flex;
     }
 
     .slide{
@@ -47,6 +166,7 @@
       padding:34px 56px;
       color:#fff;
       border-bottom:4px solid #e74c3c;
+      flex-shrink:0;
     }
     .slide-number{
       font-size:13px;
@@ -67,6 +187,7 @@
       flex:1;
       padding:40px 56px;
       overflow-y:auto;
+      min-height:0;
     }
     .slide-content::-webkit-scrollbar{ width:8px; }
     .slide-content::-webkit-scrollbar-track{ background:#f1f1f1; }
@@ -80,6 +201,7 @@
       align-items:center;
       background:#fafafa;
       gap:16px;
+      flex-shrink:0;
     }
     .progress-indicator{
       font-size:13px;
@@ -142,6 +264,12 @@
       color:#34495e;
       margin:22px 0 12px;
     }
+    h4{
+      font-family:'Libre Baskerville', serif;
+      font-size:17px;
+      color:#2c3e50;
+      margin-bottom:10px;
+    }
     p{
       font-size:16.5px;
       line-height:1.7;
@@ -187,7 +315,6 @@
       border-left:5px solid #27ae60;
       padding:18px 20px;
       margin:18px 0;
-      display:none;
     }
     .success-card-title{
       font-weight:800;
@@ -227,12 +354,6 @@
       border:1px solid #ecf0f1;
       border-radius:4px;
       padding:16px 18px;
-    }
-    .panel h4{
-      font-family:'Libre Baskerville', serif;
-      font-size:17px;
-      color:#2c3e50;
-      margin-bottom:10px;
     }
 
     /* Preguntas */
@@ -352,6 +473,7 @@
       width:100%;
       border-collapse:collapse;
       border:1px solid #dfe6e9;
+      margin:16px 0;
     }
     .data-table th{
       background:#34495e;
@@ -396,78 +518,30 @@
     }
     .helper .icon{ font-size:15px; }
 
-    /* ===== Layout SLIDE Normaliza: sin espacio “desperdiciado” ===== */
-    .slide-content.norm-layout{
-      display:grid;
-      grid-template-rows:auto 1fr auto; /* top / centro (crece) / bottom */
-      gap:14px;
-      padding:34px 56px;
-      overflow:hidden; /* el scroll pasa al bloque de tabla si hace falta */
-    }
-    .norm-top{
-      display:grid;
-      grid-template-columns:1.25fr .75fr;
-      gap:14px;
-      align-items:start;
-    }
-    .norm-side{
-      background:#f8f9fa;
-      border:1px solid #ecf0f1;
-      border-radius:4px;
-      padding:16px 18px;
-    }
-    .norm-side h4{
-      font-family:'Libre Baskerville', serif;
-      font-size:17px;
-      margin-bottom:10px;
-      color:#2c3e50;
-    }
-    .norm-side .mini{
-      font-size:14.5px;
-      line-height:1.55;
-      color:#2c3e50;
-      margin-bottom:10px;
-    }
-
-    .norm-center{
-      background:#fff;
-      border:1px solid #ecf0f1;
-      border-radius:4px;
-      padding:14px 14px;
+    /* Botones en línea */
+    .btn-row{
       display:flex;
-      flex-direction:column;
       gap:10px;
-      min-height:0; /* clave para que crezca bien */
-    }
-    .controls-row{
-      display:flex;
-      gap:12px;
-      align-items:flex-end;
       flex-wrap:wrap;
-    }
-    .control{ flex:1 1 420px; min-width:260px; }
-    .control label{
-      display:block;
-      font-weight:800;
-      font-size:14px;
-      color:#2c3e50;
-      margin-bottom:6px;
+      margin:16px 0;
     }
 
-    .table-grow{
-      flex:1;
-      min-height:0;
-      overflow:auto;
-      border-radius:4px;
-    }
-
-    .norm-bottom{
+    /* Caja código ecuación */
+    .code-box{
       background:#f8f9fa;
-      border:1px solid #ecf0f1;
+      border:1px solid #dfe6e9;
+      border-left:5px solid #3498db;
       border-radius:4px;
       padding:14px 16px;
-      overflow:hidden;
+      font-family:'Courier New', monospace;
+      font-size:14px;
+      line-height:1.7;
+      white-space:pre-wrap;
+      word-break:break-word;
+      margin:14px 0;
     }
+
+    /* Links */
     .resource-row{
       display:flex;
       gap:10px;
@@ -491,17 +565,103 @@
       transform:translateY(-1px);
     }
 
-    /* Caja código ecuación */
-    .code-box{
+    /* Instrucciones de tesauros */
+    .thesaurus-guide{
+      background:#fff;
+      border:2px solid #3498db;
+      border-radius:8px;
+      padding:20px;
+      margin:16px 0;
+    }
+    .thesaurus-guide h4{
+      color:#3498db;
+      margin-bottom:12px;
+      font-size:18px;
+    }
+    .step-box{
       background:#f8f9fa;
-      border:1px solid #dfe6e9;
-      border-left:5px solid #3498db;
+      border-left:4px solid #27ae60;
+      padding:12px 16px;
+      margin:10px 0;
       border-radius:4px;
-      padding:14px 16px;
-      font-family:'Courier New', monospace;
+    }
+    .step-number{
+      background:#27ae60;
+      color:#fff;
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      margin-right:10px;
       font-size:14px;
-      line-height:1.7;
-      white-space:pre-wrap;
+    }
+    .step-content{
+      display:inline-block;
+      vertical-align:middle;
+      font-size:15px;
+      line-height:1.6;
+    }
+
+    /* Pantalla de finalización */
+    .completion-card{
+      background:#fff;
+      border-radius:12px;
+      padding:40px;
+      max-width:700px;
+      margin:0 auto;
+      box-shadow:0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .completion-icon{
+      width:80px;
+      height:80px;
+      background:#27ae60;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 25px;
+      font-size:40px;
+    }
+
+    .student-data{
+      background:#f8f9fa;
+      border:2px solid #ecf0f1;
+      border-radius:8px;
+      padding:25px;
+      margin:25px 0;
+    }
+
+    .student-data h3{
+      color:#2c3e50;
+      margin-bottom:18px;
+      font-size:18px;
+    }
+
+    .data-item{
+      display:flex;
+      padding:12px 0;
+      border-bottom:1px solid #ecf0f1;
+    }
+
+    .data-item:last-child{
+      border-bottom:none;
+    }
+
+    .data-label{
+      font-weight:700;
+      color:#7f8c8d;
+      min-width:150px;
+      font-size:14px;
+    }
+
+    .data-value{
+      color:#2c3e50;
+      font-weight:600;
+      font-size:15px;
     }
 
     /* Responsive */
@@ -509,55 +669,102 @@
       .slide-title{ font-size:34px; }
       .two-columns{ grid-template-columns:1fr; }
       .checkbox-grid{ grid-template-columns:1fr; }
-      .norm-top{ grid-template-columns:1fr; }
     }
     @media (max-width: 768px){
       .presentation-wrapper{ padding:0; }
-      .slide{ height:100vh; }
-      .slide-header,.slide-footer{ padding:26px; }
-      .slide-content{ padding:26px; }
-      .slide-content.norm-layout{ padding:26px; }
+      .slide{ height:100vh; border-radius:0; }
+      .slide-header,.slide-footer{ padding:20px; }
+      .slide-content{ padding:20px; }
       .slide-title{ font-size:26px; }
+      .registro-card{ padding:40px 30px; }
     }
   </style>
 </head>
 
 <body>
-  <div class="presentation-wrapper">
+  <!-- ===== PANTALLA DE REGISTRO ===== -->
+  <div class="registro-screen" id="registroScreen">
+    <div class="registro-card">
+      <h1>Tesauros en Investigación</h1>
+      <p class="subtitle">Por favor, ingresa tus datos para comenzar la actividad educativa</p>
+      
+      <form id="registroForm" onsubmit="return false;">
+        <div class="form-group">
+          <label for="nombreCompleto">Nombre completo *</label>
+          <input 
+            type="text" 
+            id="nombreCompleto" 
+            placeholder="Ingresa tu nombre completo"
+            required
+          >
+          <div class="error-message" id="errorNombre">Por favor ingresa tu nombre completo</div>
+        </div>
 
-    <!-- SLIDE 1 / 7 -->
+        <div class="form-group">
+          <label for="nrc">NRC *</label>
+          <input 
+            type="text" 
+            id="nrc" 
+            placeholder="Ingresa el NRC del curso"
+            required
+          >
+          <div class="error-message" id="errorNrc">Por favor ingresa el NRC</div>
+        </div>
+
+        <div class="form-group">
+          <label for="grupo">Número de grupo *</label>
+          <input 
+            type="text" 
+            id="grupo" 
+            placeholder="Ingresa tu número de grupo"
+            required
+          >
+          <div class="error-message" id="errorGrupo">Por favor ingresa tu número de grupo</div>
+        </div>
+
+        <button type="button" class="btn-comenzar" onclick="validarRegistro()">
+          Comenzar Presentación
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== PRESENTACIÓN ===== -->
+  <div class="presentation-wrapper" id="presentationWrapper">
+
+    <!-- SLIDE 1 / 8 -->
     <section class="slide active">
       <header class="slide-header">
         <div class="slide-number">INTRODUCCIÓN</div>
-        <h1 class="slide-title">Tesauros en Investigación Deportiva</h1>
+        <h1 class="slide-title">Uso de Tesauros en Investigación</h1>
       </header>
 
       <div class="slide-content">
         <div class="info-card">
           <div class="info-card-title">Objetivo</div>
-          <p>Aprender a <strong>normalizar términos</strong> con tesauros para construir una <strong>ecuación booleana</strong> y buscar evidencia con más precisión.</p>
+          <p>Aprender a <strong>normalizar términos</strong> con tesauros para construir una <strong>ecuación booleana</strong> y buscar evidencia con más precisión en cualquier área de conocimiento.</p>
         </div>
 
         <h2>Idea central</h2>
         <ul class="content-list">
-          <li>Un tesauro asigna a cada concepto un <strong>nombre oficial</strong>.</li>
-          <li>Ese nombre oficial se llama <strong>Descriptor</strong> (en MeSH: <code>MeSH Heading</code>).</li>
+          <li>Un tesauro asigna a cada concepto un <strong>nombre oficial</strong> llamado <strong>Descriptor</strong>.</li>
           <li>Buscar con descriptores reduce pérdidas por sinónimos y variaciones.</li>
+          <li>Esta técnica aplica a todas las disciplinas: ciencias de la salud, educación, diseño, comunicación, negocios, etc.</li>
         </ul>
 
         <div class="warning-card">
-          <div class="warning-card-title">Caso práctico</div>
+          <div class="warning-card-title">Caso práctico (ejemplo del área de salud)</div>
           <p><strong>Tema:</strong> lesiones del tendón de Aquiles en atletas de carrera de larga distancia.</p>
         </div>
       </div>
 
       <footer class="slide-footer">
-        <div class="progress-indicator">1 de 7</div>
+        <div class="progress-indicator">1 de 8</div>
         <button class="btn btn-primary" onclick="nextSlide()">COMENZAR →</button>
       </footer>
     </section>
 
-    <!-- SLIDE 2 / 7 -->
+    <!-- SLIDE 2 / 8 -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 1</div>
@@ -571,13 +778,13 @@
           <div class="panel">
             <h4>Regla</h4>
             <ul class="content-list">
-              <li>Empieza por el concepto anatómico/patológico <strong>específico</strong>.</li>
-              <li>Evita términos genéricos (dan ruido).</li>
+              <li>Empieza por el concepto <strong>más específico</strong> de tu tema.</li>
+              <li>Evita términos muy generales (generan demasiados resultados irrelevantes).</li>
             </ul>
           </div>
           <div class="panel">
-            <h4>Tu tema trae</h4>
-            <p style="margin:0;">“lesiones”, “tendón de Aquiles”, “atletas”, “carrera de larga distancia”.</p>
+            <h4>Del tema de ejemplo</h4>
+            <p style="margin:0;">Tenemos: "lesiones", "tendón de Aquiles", "atletas", "carrera de larga distancia".</p>
           </div>
         </div>
 
@@ -604,12 +811,12 @@
 
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
-        <div class="progress-indicator">2 de 7</div>
+        <div class="progress-indicator">2 de 8</div>
         <button class="btn btn-primary" onclick="checkStep2()">VERIFICAR →</button>
       </footer>
     </section>
 
-    <!-- SLIDE 3 / 7 -->
+    <!-- SLIDE 3 / 8 -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">CONCEPTO CLAVE</div>
@@ -626,136 +833,256 @@
 
         <div class="warning-card">
           <div class="warning-card-title">Descriptor preferido</div>
-          <p>Si buscas “Tendón de Aquiles” en DeCS, el tesauro puede mostrar un <strong>descriptor preferido distinto</strong>, por ejemplo: <strong>“Tendón Calcáneo”</strong>. Ese es el término correcto para buscar.</p>
+          <p>Si buscas un término, el tesauro puede mostrarte un <strong>descriptor preferido distinto</strong>. Ese es el término correcto que debes copiar y usar.</p>
         </div>
 
         <h3>Qué harás después</h3>
         <ul class="content-list">
-          <li>Elegir el tesauro (MeSH/DeCS/etc.).</li>
-          <li>Traducir al inglés <strong>solo si usas MeSH</strong>.</li>
-          <li>Copiar el descriptor oficial (MeSH Heading / Descriptor).</li>
+          <li>Elegir el tesauro adecuado para tu área (MeSH, DeCS, ERIC, UNESCO, etc.).</li>
+          <li>Traducir al inglés <strong>solo si el tesauro lo requiere</strong> (como MeSH).</li>
+          <li>Copiar el descriptor oficial y sus sinónimos.</li>
         </ul>
       </div>
 
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
-        <div class="progress-indicator">3 de 7</div>
-        <button class="btn btn-primary" onclick="nextSlide()">NORMALIZAR →</button>
+        <div class="progress-indicator">3 de 8</div>
+        <button class="btn btn-primary" onclick="nextSlide()">CONTINUAR →</button>
       </footer>
     </section>
 
-    <!-- SLIDE 4 / 7 (NORMALIZA SIN ESPACIO DESPERDICIADO) -->
+    <!-- SLIDE 4 / 8 - GUÍA DE USO DE TESAUROS (SIN EJEMPLOS ESPECÍFICOS) -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">GUÍA PRÁCTICA</div>
+        <h1 class="slide-title">Cómo usar cada tesauro</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>Tesauros por área de conocimiento</h2>
+
+        <div class="thesaurus-guide">
+          <h4>🔵 MeSH (Medical Subject Headings)</h4>
+          <p style="margin-bottom:8px;"><strong>Área:</strong> Ciencias de la Salud, Medicina, Biomedicina</p>
+          <p style="margin-bottom:12px;"><strong>Idioma:</strong> Inglés | <strong>URL:</strong> <a href="https://meshb.nlm.nih.gov/" target="_blank" style="color:#3498db;">meshb.nlm.nih.gov</a></p>
+          
+          <div class="step-box">
+            <span class="step-number">1</span>
+            <span class="step-content"><strong>Busca tu término</strong> en inglés en la barra de búsqueda superior</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">2</span>
+            <span class="step-content"><strong>Haz clic</strong> en el resultado que aparece en la lista</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">3</span>
+            <span class="step-content">Se abrirá una página con <strong>varias pestañas</strong> en la parte superior</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">4</span>
+            <span class="step-content"><strong>Permanece en la primera pestaña "Details"</strong> (ignora las demás)</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">5</span>
+            <span class="step-content"><strong>Copia el "MeSH Heading"</strong> (aparece destacado al inicio) → Este es tu <strong>DESCRIPTOR OFICIAL</strong></span>
+          </div>
+
+          <div class="step-box">
+            <span class="step-number">6</span>
+            <span class="step-content"><strong>Busca "Entry Term(s)"</strong> en la misma página → Estos son tus <strong>SINÓNIMOS</strong> (copia al menos 1 o 2)</span>
+          </div>
+
+          <div class="warning-card" style="margin:12px 0 0;">
+            <div class="warning-card-title">⚠️ ¿No encuentras tu término exacto?</div>
+            <p style="margin:0;">Si tu palabra clave no aparece en MeSH, intenta: <strong>1)</strong> Traducir sinónimos de la misma palabra y buscar esos. <strong>2)</strong> Usar un término más general o relacionado. <strong>3)</strong> Revisar los "Entry Terms" de conceptos similares.</p>
+          </div>
+        </div>
+
+        <div class="thesaurus-guide">
+          <h4>🟢 DeCS (Descriptores en Ciencias de la Salud)</h4>
+          <p style="margin-bottom:8px;"><strong>Área:</strong> Ciencias de la Salud (América Latina)</p>
+          <p style="margin-bottom:12px;"><strong>Idioma:</strong> Español, Portugués | <strong>URL:</strong> <a href="https://decs.bvsalud.org/" target="_blank" style="color:#27ae60;">decs.bvsalud.org</a></p>
+          
+          <div class="step-box">
+            <span class="step-number">1</span>
+            <span class="step-content"><strong>Busca tu término</strong> en español en la barra de búsqueda</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">2</span>
+            <span class="step-content"><strong>Haz clic</strong> en el resultado relevante</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">3</span>
+            <span class="step-content"><strong>Busca la sección "Descriptor"</strong> en la información mostrada</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">4</span>
+            <span class="step-content"><strong>Copia el término preferido</strong> (generalmente en negrita) → Este es tu <strong>DESCRIPTOR OFICIAL</strong></span>
+          </div>
+
+          <div class="step-box">
+            <span class="step-number">5</span>
+            <span class="step-content"><strong>Busca "Sinónimos" o términos relacionados</strong> listados en la misma página → Estos son tus <strong>SINÓNIMOS</strong></span>
+          </div>
+
+          <div class="warning-card" style="margin:12px 0 0;">
+            <div class="warning-card-title">⚠️ ¿No encuentras tu término?</div>
+            <p style="margin:0;">Prueba buscar sinónimos de tu palabra clave o términos más generales. DeCS suele tener variantes en español.</p>
+          </div>
+        </div>
+
+        <div class="thesaurus-guide">
+          <h4>🟠 ERIC (Education Resources Information Center)</h4>
+          <p style="margin-bottom:8px;"><strong>Área:</strong> Educación, Pedagogía</p>
+          <p style="margin-bottom:12px;"><strong>Idioma:</strong> Inglés | <strong>URL:</strong> <a href="https://eric.ed.gov/" target="_blank" style="color:#e67e22;">eric.ed.gov</a></p>
+          
+          <div class="step-box">
+            <span class="step-number">1</span>
+            <span class="step-content"><strong>Busca tu término</strong> en la barra de búsqueda</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">2</span>
+            <span class="step-content"><strong>Busca "ERIC Descriptors"</strong> en los resultados o usa el tesauro oficial</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">3</span>
+            <span class="step-content"><strong>Copia el descriptor oficial</strong> y anota términos relacionados que aparezcan como sinónimos</span>
+          </div>
+
+          <div class="warning-card" style="margin:12px 0 0;">
+            <div class="warning-card-title">⚠️ Estrategia de búsqueda</div>
+            <p style="margin:0;">Si tu término no aparece, busca sinónimos en inglés o conceptos relacionados. ERIC tiene un tesauro estructurado con términos preferidos.</p>
+          </div>
+        </div>
+
+        <div class="thesaurus-guide">
+          <h4>🟣 UNESCO Thesaurus</h4>
+          <p style="margin-bottom:8px;"><strong>Área:</strong> Ciencias Sociales, Comunicación, Cultura, Política</p>
+          <p style="margin-bottom:12px;"><strong>Idioma:</strong> Multilingüe | <strong>URL:</strong> <a href="https://vocabularies.unesco.org/" target="_blank" style="color:#9b59b6;">vocabularies.unesco.org</a></p>
+          
+          <div class="step-box">
+            <span class="step-number">1</span>
+            <span class="step-content"><strong>Selecciona tu idioma</strong> en la parte superior</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">2</span>
+            <span class="step-content"><strong>Busca tu término</strong> en la barra de búsqueda</span>
+          </div>
+          
+          <div class="step-box">
+            <span class="step-number">3</span>
+            <span class="step-content"><strong>Copia el término preferido</strong> (descriptor oficial) y revisa "términos relacionados" para sinónimos</span>
+          </div>
+
+          <div class="warning-card" style="margin:12px 0 0;">
+            <div class="warning-card-title">💡 Consejo</div>
+            <p style="margin:0;">Si no encuentras tu término exacto, busca conceptos más generales o sinónimos. UNESCO tiene términos en múltiples idiomas.</p>
+          </div>
+        </div>
+
+        <div class="success-card">
+          <div class="success-card-title">✅ Patrón común en todos los tesauros</div>
+          <ul class="content-list" style="margin:0;">
+            <li><strong>Busca</strong> tu término en el tesauro de tu área</li>
+            <li><strong>Identifica el DESCRIPTOR OFICIAL:</strong> MeSH Heading (MeSH), Descriptor preferido (DeCS/UNESCO), o término principal (ERIC)</li>
+            <li><strong>Anota SINÓNIMOS:</strong> Entry Term(s) (MeSH), Sinónimos (DeCS), Related Terms (otros tesauros)</li>
+            <li><strong>Si no encuentras tu término:</strong> Busca sinónimos de la misma palabra, prueba términos relacionados o conceptos más generales</li>
+            <li><strong>Copia exactamente</strong> como aparece (respeta mayúsculas y acentos)</li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="progress-indicator">4 de 8</div>
+        <button class="btn btn-primary" onclick="nextSlide()">ENTENDIDO →</button>
+      </footer>
+    </section>
+
+    <!-- SLIDE 5 / 8 - NORMALIZACIÓN CON COLUMNA DE SINÓNIMOS -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 2</div>
         <h1 class="slide-title">Normaliza en tesauros</h1>
       </header>
 
-      <div class="slide-content norm-layout">
-        <!-- TOP -->
-        <div class="norm-top">
-          <div class="info-card" style="margin:0;">
-            <div class="info-card-title">Cómo hacerlo (flujo real)</div>
-            <ul class="content-list">
-              <li><strong>Elige tesauro</strong> (MeSH recomendado en biomedicina / DeCS en español).</li>
-              <li><strong>Si es MeSH:</strong> traduce tu palabra clave al inglés.</li>
-              <li>Busca el término en el tesauro.</li>
-              <li>Copia el <strong>Descriptor oficial</strong> (en MeSH: <code>MeSH Heading</code>).</li>
-              <li>(Opcional) Revisa <em>Entry Terms</em> para sinónimos.</li>
-            </ul>
-          </div>
+      <div class="slide-content">
+        <h2>Proceso de normalización</h2>
 
-          <aside class="norm-side">
-            <h4>Qué significa en la práctica</h4>
-            <div class="mini">
-              <strong>Descriptor</strong> = etiqueta oficial del concepto.
-              Si el tesauro “cambia” el término, te está dando el nombre correcto.
-            </div>
-            <div class="mini">
-              Ejemplo: buscar <strong>“Tendón de Aquiles”</strong> en DeCS puede devolver <strong>“Tendón Calcáneo”</strong> como descriptor preferido.
-            </div>
-            <div class="warning-card" style="margin:0; padding:12px 14px;">
-              <div class="warning-card-title" style="margin-bottom:6px;">Regla</div>
-              <p style="margin:0; font-size:14.5px; line-height:1.55;">
-                Copia el descriptor tal cual aparece (ortografía, mayúsculas/espacios).
-              </p>
-            </div>
-          </aside>
-        </div>
-
-        <!-- CENTER -->
-        <div class="norm-center">
-          <div class="controls-row">
-            <div class="control">
-              <label for="thesaurus">Elige tesauro</label>
-              <select id="thesaurus" onchange="onThesaurusChange()">
-                <option value="">Selecciona...</option>
-                <option value="mesh">MeSH — Salud/Biomedicina (recomendado)</option>
-                <option value="decs">DeCS — Salud (LatAm)</option>
-                <option value="eric">ERIC — Educación</option>
-                <option value="unesco">UNESCO — Cs. Sociales</option>
-              </select>
-            </div>
-
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              <button class="btn btn-secondary" onclick="openTranslator()">ABRIR TRADUCTOR</button>
-              <button class="btn btn-primary" id="open-thesaurus-btn" onclick="openThesaurus()" disabled>ABRIR TESAURO →</button>
-            </div>
-          </div>
-
-          <div class="table-grow">
-            <table class="data-table" aria-label="Tabla de normalización">
-              <thead>
-                <tr>
-                  <th style="width:26%;">Palabra clave (ES)</th>
-                  <th style="width:32%;">Traducción (si usas MeSH)</th>
-                  <th style="width:42%;" id="descriptorHeader">Descriptor oficial</th>
-                </tr>
-              </thead>
-              <tbody id="norm-body"></tbody>
-            </table>
-
-            <div class="helper">
-              <span class="icon">🔎</span>
-              <div>
-                <div><strong>MeSH:</strong> copia el <code>MeSH Heading</code> en <em>Details</em>.</div>
-                <div style="margin-top:4px;"><strong>DeCS:</strong> copia <strong>Descriptor</strong> (término preferido).</div>
-              </div>
-            </div>
-
-            <div id="norm-feedback" class="feedback error">
-              <div class="feedback-title">Falta completar</div>
-              <div class="feedback-text">Completa al menos <strong>2 descriptores oficiales</strong> para continuar.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- BOTTOM -->
-        <div class="norm-bottom">
-          <h3 style="margin:0 0 8px;">¿Para qué usar la ecuación booleana resultante?</h3>
-          <ul class="content-list" style="margin:0;">
-            <li><strong>Mejor cobertura</strong>: no pierdes artículos por sinónimos o variantes.</li>
-            <li><strong>Más precisión</strong>: <code>AND</code> reduce ruido, <code>OR</code> amplía recuperación.</li>
-            <li><strong>Reproducible</strong>: puedes reportar la ecuación en tu trabajo y repetir la búsqueda.</li>
+        <div class="info-card">
+          <div class="info-card-title">Pasos a seguir:</div>
+          <ul class="content-list">
+            <li><strong>1. Elige tesauro</strong> según tu área de estudio</li>
+            <li><strong>2. Traduce si es necesario</strong> (algunos tesauros como MeSH requieren inglés)</li>
+            <li><strong>3. Busca</strong> cada término en el tesauro</li>
+            <li><strong>4. Copia</strong> el Descriptor oficial y al menos 1 sinónimo</li>
           </ul>
-          <div class="resource-row">
-            <a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener noreferrer">PubMed</a>
-            <a href="https://www.scopus.com/" target="_blank" rel="noopener noreferrer">Scopus</a>
-            <a href="https://www.webofscience.com/" target="_blank" rel="noopener noreferrer">Web of Science</a>
-            <a href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-            <a href="https://lilacs.bvsalud.org/" target="_blank" rel="noopener noreferrer">LILACS</a>
+        </div>
+
+        <div style="background:#f8f9fa; border:1px solid #ecf0f1; border-radius:4px; padding:16px; margin:16px 0;">
+          <h4>Selecciona tesauro según tu área</h4>
+          <select id="thesaurus" onchange="onThesaurusChange()" style="margin-top:10px;">
+            <option value="">Selecciona...</option>
+            <option value="mesh">MeSH — Salud/Biomedicina</option>
+            <option value="decs">DeCS — Salud (LatAm)</option>
+            <option value="eric">ERIC — Educación</option>
+            <option value="unesco">UNESCO — Cs. Sociales/Comunicación</option>
+          </select>
+
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="openTranslator()">ABRIR TRADUCTOR</button>
+            <button class="btn btn-primary" id="open-thesaurus-btn" onclick="openThesaurus()" disabled>ABRIR TESAURO →</button>
           </div>
+        </div>
+
+        <h3>Completa la tabla:</h3>
+        
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:25%;">Palabra clave</th>
+              <th style="width:25%;">Traducción (si aplica)</th>
+              <th style="width:25%;">Descriptor oficial</th>
+              <th style="width:25%;">Sinónimos (sep. por comas)</th>
+            </tr>
+          </thead>
+          <tbody id="norm-body"></tbody>
+        </table>
+
+        <div class="helper">
+          <span class="icon">💡</span>
+          <div>
+            <strong>Recuerda:</strong>
+            <div style="margin-top:4px;">• <strong>MeSH:</strong> "MeSH Heading" = Descriptor | "Entry Term(s)" = Sinónimos</div>
+            <div style="margin-top:2px;">• <strong>DeCS:</strong> Busca "Descriptor" y "Sinónimos" en la página de resultados</div>
+            <div style="margin-top:2px;">• <strong>Si no encuentras tu término:</strong> Prueba con sinónimos del mismo concepto o términos relacionados</div>
+          </div>
+        </div>
+
+        <div id="norm-feedback" class="feedback error">
+          <div class="feedback-title">Atención</div>
+          <div class="feedback-text">Completa al menos <strong>2 descriptores oficiales</strong> para continuar.</div>
         </div>
       </div>
 
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
-        <div class="progress-indicator">4 de 7</div>
+        <div class="progress-indicator">5 de 8</div>
         <button class="btn btn-primary" onclick="validateNormalization()">SIGUIENTE →</button>
       </footer>
     </section>
 
-    <!-- SLIDE 5 / 7 -->
+    <!-- SLIDE 6 / 8 - CON OPCIONES DISTRACTORAS -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 3</div>
@@ -764,10 +1091,10 @@
 
       <div class="slide-content">
         <h2>Amplía sin perder foco</h2>
-        <p>Además del descriptor del tendón, conviene agregar términos de lesión y de población/contexto para filtrar la evidencia.</p>
+        <p>Además del concepto principal, necesitas términos que especifiquen el tipo de problema y el contexto. <strong>No todos los términos son relevantes para este tema.</strong></p>
 
         <div class="question-area">
-          <div class="question-title">Selecciona términos útiles para lesiones en corredores:</div>
+          <div class="question-title">Para el tema "lesiones del tendón de Aquiles en atletas de carrera", selecciona SOLO los términos que SÍ son relevantes:</div>
           <div class="checkbox-grid">
             <div class="checkbox-card" onclick="toggleCheckbox(this, 'ruptura')">
               <div class="option-checkbox"></div><div class="option-text">Ruptura</div>
@@ -781,6 +1108,18 @@
             <div class="checkbox-card" onclick="toggleCheckbox(this, 'atletas')">
               <div class="option-checkbox"></div><div class="option-text">Atletas</div>
             </div>
+            <div class="checkbox-card" onclick="toggleCheckbox(this, 'diabetes')">
+              <div class="option-checkbox"></div><div class="option-text">Diabetes</div>
+            </div>
+            <div class="checkbox-card" onclick="toggleCheckbox(this, 'natacion')">
+              <div class="option-checkbox"></div><div class="option-text">Natación</div>
+            </div>
+            <div class="checkbox-card" onclick="toggleCheckbox(this, 'nutricion')">
+              <div class="option-checkbox"></div><div class="option-text">Nutrición deportiva</div>
+            </div>
+            <div class="checkbox-card" onclick="toggleCheckbox(this, 'fisioterapia')">
+              <div class="option-checkbox"></div><div class="option-text">Fisioterapia</div>
+            </div>
           </div>
 
           <div id="feedback5" class="feedback"></div>
@@ -789,12 +1128,12 @@
 
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
-        <div class="progress-indicator">5 de 7</div>
+        <div class="progress-indicator">6 de 8</div>
         <button class="btn btn-primary" onclick="checkRelated()">VERIFICAR →</button>
       </footer>
     </section>
 
-    <!-- SLIDE 6 / 7 -->
+    <!-- SLIDE 7 / 8 -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 4</div>
@@ -808,84 +1147,164 @@
           <div class="panel">
             <h4>Cómo se usa</h4>
             <ul class="content-list">
-              <li><code>OR</code> para sinónimos/variantes (mismo concepto).</li>
-              <li><code>AND</code> para conceptos diferentes (filtro).</li>
-              <li>Paréntesis para agrupar.</li>
+              <li><code>OR</code> une sinónimos del mismo concepto (amplía resultados).</li>
+              <li><code>AND</code> une conceptos diferentes (reduce y enfoca).</li>
+              <li>Paréntesis agrupan sinónimos.</li>
             </ul>
           </div>
           <div class="panel">
-            <h4>Plantilla</h4>
+            <h4>Ejemplo de estructura</h4>
             <p style="margin:0;">
-              <code>("Descriptor 1" OR "Sinónimo") AND ("Descriptor 2") AND ("Contexto")</code>
+              <code>("Descriptor 1" OR "Sinónimo 1") AND ("Descriptor 2" OR "Sinónimo 2")</code>
             </p>
           </div>
         </div>
 
-        <div class="question-area">
-          <div class="question-title">Generaremos una ecuación base con tus descriptores:</div>
-          <div class="code-box" id="equationPreview">(Completa la normalización en el paso anterior)</div>
+        <h3>Tu ecuación booleana generada:</h3>
+        <div class="code-box" id="equationPreview">(Completa la normalización primero)</div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-            <button class="btn btn-secondary" onclick="copyEquation()">COPIAR ECUACIÓN</button>
-            <button class="btn btn-primary" onclick="nextSlide()">CONTINUAR →</button>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="copyEquation()">📋 COPIAR ECUACIÓN</button>
+          <button class="btn btn-primary" onclick="nextSlide()">CONTINUAR →</button>
+        </div>
+
+        <div id="feedback6" class="feedback"></div>
+
+        <div class="info-card">
+          <div class="info-card-title">¿Dónde usar tu ecuación?</div>
+          <div class="resource-row">
+            <a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener noreferrer">PubMed</a>
+            <a href="https://www.scopus.com/" target="_blank" rel="noopener noreferrer">Scopus</a>
+            <a href="https://www.webofscience.com/" target="_blank" rel="noopener noreferrer">Web of Science</a>
+            <a href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+            <a href="https://eric.ed.gov/" target="_blank" rel="noopener noreferrer">ERIC</a>
           </div>
-
-          <div id="feedback6" class="feedback"></div>
         </div>
       </div>
 
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
-        <div class="progress-indicator">6 de 7</div>
-        <button class="btn btn-primary" onclick="nextSlide()">FINAL →</button>
+        <div class="progress-indicator">7 de 8</div>
+        <button class="btn btn-primary" onclick="nextSlide()">FINALIZAR →</button>
       </footer>
     </section>
 
-    <!-- SLIDE 7 / 7 -->
+    <!-- SLIDE 8 / 8 - PANTALLA FINAL SIN BOTÓN DE COPIAR -->
     <section class="slide">
       <header class="slide-header">
-        <div class="slide-number">CIERRE</div>
-        <h1 class="slide-title">Cómo usar tu ecuación</h1>
+        <div class="slide-number">FINALIZACIÓN</div>
+        <h1 class="slide-title">¡Ejercicio completado!</h1>
       </header>
 
       <div class="slide-content">
-        <h2>Tu ecuación final</h2>
-        <div class="code-box" id="equationFinal">(Aún no generada)</div>
+        <div class="completion-card">
+          <div class="completion-icon">✓</div>
+          
+          <h2 style="text-align:center; color:#27ae60; margin-bottom:10px;">¡Excelente trabajo!</h2>
+          <p style="text-align:center; color:#7f8c8d; margin-bottom:30px;">
+            Has completado exitosamente el ejercicio sobre uso de tesauros en investigación
+          </p>
 
-        <div class="info-card">
-          <div class="info-card-title">¿Para qué sirve exactamente?</div>
-          <ul class="content-list">
-            <li><strong>Buscar mejor evidencia</strong> (menos ruido, más cobertura).</li>
-            <li><strong>Documentar metodología</strong> (lo puedes escribir en tu informe/tesis).</li>
-            <li><strong>Repetir búsquedas</strong> en distintas bases de datos con la misma lógica.</li>
-          </ul>
-        </div>
+          <div class="student-data">
+            <h3>📋 Datos del estudiante</h3>
+            <div class="data-item">
+              <div class="data-label">Nombre:</div>
+              <div class="data-value" id="finalNombre">-</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">NRC:</div>
+              <div class="data-value" id="finalNrc">-</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Grupo:</div>
+              <div class="data-value" id="finalGrupo">-</div>
+            </div>
+          </div>
 
-        <h3>Dónde pegarla</h3>
-        <div class="resource-row">
-          <a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener noreferrer">PubMed</a>
-          <a href="https://www.scopus.com/" target="_blank" rel="noopener noreferrer">Scopus</a>
-          <a href="https://www.webofscience.com/" target="_blank" rel="noopener noreferrer">Web of Science</a>
-          <a href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-          <a href="https://lilacs.bvsalud.org/" target="_blank" rel="noopener noreferrer">LILACS</a>
-        </div>
+          <div class="success-card">
+            <div class="success-card-title">🔍 Ecuación booleana resultante</div>
+            <div class="code-box" id="equationFinal" style="margin:10px 0; background:#fff; border-color:#27ae60;">(No se generó ecuación)</div>
+          </div>
 
-        <div class="success-card" id="final-card">
-          <div class="success-card-title">Listo</div>
-          <p style="margin:0;">Ya tienes una ecuación reproducible basada en descriptores oficiales.</p>
+          <div class="info-card">
+            <div class="info-card-title">✅ Competencias desarrolladas</div>
+            <ul class="content-list">
+              <li><strong>Identificar</strong> el tesauro apropiado para tu área de conocimiento</li>
+              <li><strong>Navegar</strong> tesauros especializados y encontrar descriptores oficiales</li>
+              <li><strong>Normalizar</strong> terminología usando lenguaje controlado</li>
+              <li><strong>Construir</strong> ecuaciones booleanas con operadores AND y OR</li>
+              <li><strong>Aplicar</strong> estrategias de búsqueda reproducibles en bases de datos</li>
+            </ul>
+          </div>
+
+          <h3>🎯 Aplicación en tu área</h3>
+          <p>Ahora puedes aplicar esta técnica en las bases de datos de tu disciplina:</p>
+          <div class="resource-row">
+            <a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener noreferrer">PubMed (Salud)</a>
+            <a href="https://eric.ed.gov/" target="_blank" rel="noopener noreferrer">ERIC (Educación)</a>
+            <a href="https://www.scopus.com/" target="_blank" rel="noopener noreferrer">Scopus (Multidisc.)</a>
+            <a href="https://www.webofscience.com/" target="_blank" rel="noopener noreferrer">Web of Science</a>
+            <a href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+          </div>
         </div>
       </div>
 
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
-        <div class="progress-indicator">7 de 7</div>
-        <button class="btn btn-primary" onclick="resetAll()">REINICIAR ↺</button>
+        <div class="progress-indicator">8 de 8</div>
+        <button class="btn btn-primary" onclick="resetAll()">🔄 REINICIAR</button>
       </footer>
     </section>
 
   </div>
 
   <script>
+    // ===== Variables globales =====
+    let studentData = {
+      nombre: '',
+      nrc: '',
+      grupo: ''
+    };
+
+    // ===== Registro inicial =====
+    function validarRegistro(){
+      const nombre = document.getElementById('nombreCompleto').value.trim();
+      const nrc = document.getElementById('nrc').value.trim();
+      const grupo = document.getElementById('grupo').value.trim();
+
+      let isValid = true;
+
+      if (!nombre || nombre.length < 3){
+        document.getElementById('errorNombre').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('errorNombre').classList.remove('show');
+      }
+
+      if (!nrc){
+        document.getElementById('errorNrc').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('errorNrc').classList.remove('show');
+      }
+
+      if (!grupo){
+        document.getElementById('errorGrupo').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('errorGrupo').classList.remove('show');
+      }
+
+      if (isValid){
+        studentData.nombre = nombre.toUpperCase();
+        studentData.nrc = nrc.toUpperCase();
+        studentData.grupo = grupo.toUpperCase();
+
+        document.getElementById('registroScreen').style.display = 'none';
+        document.getElementById('presentationWrapper').classList.add('active');
+      }
+    }
+
     // ===== Navegación slides =====
     let currentSlide = 0;
     function showSlide(index){
@@ -893,18 +1312,26 @@
       slides.forEach((s,i)=>s.classList.toggle('active', i===index));
       currentSlide = index;
 
-      // actualiza previews si entra a slides 6/7
-      if (index === 5 || index === 6) refreshEquationViews();
+      if (index === 7){
+        document.getElementById('finalNombre').textContent = studentData.nombre;
+        document.getElementById('finalNrc').textContent = studentData.nrc;
+        document.getElementById('finalGrupo').textContent = studentData.grupo;
+        refreshEquationViews();
+      }
+
+      if (index === 6 || index === 7) refreshEquationViews();
     }
+    
     function nextSlide(){
       const slides = document.querySelectorAll('.slide');
       if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
     }
+    
     function prevSlide(){
       if (currentSlide > 0) showSlide(currentSlide - 1);
     }
 
-    // ===== Slide 2 (concepto principal) =====
+    // ===== Slide 2 =====
     let selectedOption = null;
     function selectOption(el, value){
       document.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
@@ -912,42 +1339,46 @@
       selectedOption = value;
       clearFeedback('feedback2');
     }
+    
     function showFeedback(id, type, title, message){
       const fb = document.getElementById(id);
       fb.className = `feedback ${type} show`;
       fb.innerHTML = `<div class="feedback-title">${title}</div><div class="feedback-text">${message}</div>`;
     }
+    
     function clearFeedback(id){
       const fb = document.getElementById(id);
       if (!fb) return;
       fb.className = 'feedback';
       fb.innerHTML = '';
     }
+    
     function checkStep2(){
       if (!selectedOption){
         showFeedback('feedback2','error','Selecciona una opción','Elige el concepto más apropiado para iniciar en el tesauro.');
         return;
       }
       if (selectedOption==='tendon'){
-        showFeedback('feedback2','success','Correcto','“Tendón de Aquiles” es específico y funciona muy bien para iniciar.');
+        showFeedback('feedback2','success','¡Correcto!','El tendón de Aquiles es el concepto más específico para iniciar la búsqueda.');
         setTimeout(()=>nextSlide(), 800);
       } else if (selectedOption==='lesiones'){
-        showFeedback('feedback2','error','Demasiado general','“Lesiones” es muy amplio. Primero fija la estructura anatómica específica.');
+        showFeedback('feedback2','error','Demasiado general','"Lesiones" es muy amplio. Primero necesitas el concepto anatómico específico.');
       } else if (selectedOption==='atletas'){
-        showFeedback('feedback2','error','Es contexto/población','“Atletas” no es el concepto anatómico/patológico central para iniciar en tesauro.');
+        showFeedback('feedback2','error','Es contexto/población','"Atletas" es el contexto, no el concepto central. Necesitas primero la estructura anatómica.');
       } else if (selectedOption==='carrera'){
-        showFeedback('feedback2','error','Es contexto','“Carrera…” es contexto. Primero define el concepto anatómico/patológico.');
+        showFeedback('feedback2','error','Es contexto','"Carrera…" es contexto/actividad. El concepto anatómico/patológico debe ir primero.');
       }
     }
 
-    // ===== Slide 4 (normalización) =====
+    // ===== Slide 5 (con sinónimos) =====
     const defaultKeywords = [
-      { es: 'tendón de Aquiles', en: '' },
-      { es: 'tendinopatía', en: '' },
-      { es: 'ruptura', en: '' }
+      { es: 'tendón de Aquiles', en: '', desc: '', syn: '' },
+      { es: 'tendinopatía', en: '', desc: '', syn: '' },
+      { es: 'ruptura', en: '', desc: '', syn: '' }
     ];
     let normKeywords = [...defaultKeywords];
-    let savedDescriptors = []; // se llena al validar normalización
+    let savedDescriptors = [];
+    let savedSynonyms = [];
 
     function renderNormTable(){
       const tbody = document.getElementById('norm-body');
@@ -958,12 +1389,12 @@
 
         const tdEs = document.createElement('td');
         tdEs.textContent = row.es;
-        tdEs.style.fontWeight = '900';
+        tdEs.style.fontWeight = '700';
 
         const tdEn = document.createElement('td');
         const inEn = document.createElement('input');
         inEn.type = 'text';
-        inEn.placeholder = 'Traducción (solo si usas MeSH)';
+        inEn.placeholder = 'Si aplica';
         inEn.value = row.en || '';
         inEn.addEventListener('input', (e)=>{ normKeywords[idx].en = e.target.value; });
         tdEn.appendChild(inEn);
@@ -971,13 +1402,25 @@
         const tdDesc = document.createElement('td');
         const inDesc = document.createElement('input');
         inDesc.type = 'text';
-        inDesc.placeholder = 'Copia aquí el descriptor oficial';
+        inDesc.placeholder = 'Descriptor oficial';
         inDesc.className = 'desc-input';
+        inDesc.value = row.desc || '';
+        inDesc.addEventListener('input', (e)=>{ normKeywords[idx].desc = e.target.value; });
         tdDesc.appendChild(inDesc);
+
+        const tdSyn = document.createElement('td');
+        const inSyn = document.createElement('input');
+        inSyn.type = 'text';
+        inSyn.placeholder = 'Sinónimo1, Sinónimo2';
+        inSyn.className = 'syn-input';
+        inSyn.value = row.syn || '';
+        inSyn.addEventListener('input', (e)=>{ normKeywords[idx].syn = e.target.value; });
+        tdSyn.appendChild(inSyn);
 
         tr.appendChild(tdEs);
         tr.appendChild(tdEn);
         tr.appendChild(tdDesc);
+        tr.appendChild(tdSyn);
         tbody.appendChild(tr);
       });
     }
@@ -986,12 +1429,6 @@
       const v = document.getElementById('thesaurus').value;
       const btn = document.getElementById('open-thesaurus-btn');
       btn.disabled = !v;
-
-      const header = document.getElementById('descriptorHeader');
-      header.textContent = (v === 'mesh')
-        ? 'Descriptor oficial (MeSH Heading)'
-        : 'Descriptor oficial (del tesauro)';
-
       clearFeedback('norm-feedback');
     }
 
@@ -1018,18 +1455,34 @@
       if (filled.length < 2){
         const fb = document.getElementById('norm-feedback');
         fb.className = 'feedback error show';
-        fb.innerHTML = `<div class="feedback-title">Falta completar</div>
+        fb.innerHTML = `<div class="feedback-title">Atención</div>
                         <div class="feedback-text">Completa al menos <strong>2 descriptores oficiales</strong> para continuar.</div>`;
         return;
       }
 
-      savedDescriptors = filled.slice(0); // guarda todos
+      // Guardar descriptores y sinónimos
+      savedDescriptors = [];
+      savedSynonyms = [];
+      
+      normKeywords.forEach(row => {
+        if (row.desc && row.desc.trim()) {
+          savedDescriptors.push(row.desc.trim());
+          if (row.syn && row.syn.trim()) {
+            savedSynonyms.push(row.syn.trim());
+          } else {
+            savedSynonyms.push('');
+          }
+        }
+      });
+
       clearFeedback('norm-feedback');
       nextSlide();
     }
 
-    // ===== Slide 5 (términos relacionados) =====
+    // ===== Slide 6 (con distractores) =====
     let selectedTerms = new Set();
+    const correctTerms = new Set(['ruptura', 'tendinopatia', 'carrera', 'atletas']);
+    
     function toggleCheckbox(el, value){
       el.classList.toggle('selected');
       if (el.classList.contains('selected')) selectedTerms.add(value);
@@ -1039,32 +1492,44 @@
 
     function checkRelated(){
       if (selectedTerms.size === 0){
-        showFeedback('feedback5','error','Selecciona al menos uno','Marca términos relevantes para ampliar tu búsqueda.');
+        showFeedback('feedback5','error','Selecciona al menos uno','Marca los términos que SÍ son relevantes para este tema específico.');
         return;
       }
 
-      const hasLesion = selectedTerms.has('ruptura') || selectedTerms.has('tendinopatia');
-      const hasContext = selectedTerms.has('carrera') || selectedTerms.has('atletas');
+      // Verificar cuántos correctos e incorrectos
+      const correctSelected = [...selectedTerms].filter(t => correctTerms.has(t));
+      const incorrectSelected = [...selectedTerms].filter(t => !correctTerms.has(t));
 
-      if (selectedTerms.size === 4){
-        showFeedback('feedback5','success','Selección completa','Incluiste lesión + contexto. Perfecto.');
-        setTimeout(()=>nextSlide(), 850);
-      } else if (hasLesion && hasContext){
-        showFeedback('feedback5','partial','Selección válida','Está bien. Para máxima cobertura, incluye los 4.');
-        setTimeout(()=>nextSlide(), 1100);
-      } else if (hasLesion && !hasContext){
-        showFeedback('feedback5','error','Falta contexto','Añade “Carrera” o “Atletas” para enfocar la población.');
+      if (incorrectSelected.length > 0) {
+        showFeedback('feedback5','error','Revisa tu selección',`Has seleccionado términos que NO son relevantes para lesiones de tendón en corredores. Piensa: ¿${incorrectSelected[0]} está relacionado directamente con el tema?`);
+        return;
+      }
+
+      if (correctSelected.length === 4){
+        showFeedback('feedback5','success','¡Perfecto!','Has identificado correctamente todos los términos relevantes: tipo de lesión (ruptura, tendinopatía) + contexto (atletas, carrera).');
+        setTimeout(()=>nextSlide(), 900);
+      } else if (correctSelected.length >= 2){
+        showFeedback('feedback5','partial','Bien, pero incompleto',`Faltan ${4-correctSelected.length} términos relevantes. Necesitas tanto términos de lesión como de contexto poblacional.`);
       } else {
-        showFeedback('feedback5','error','Faltan términos de lesión','Añade “Ruptura” y/o “Tendinopatía” para precisar el daño.');
+        showFeedback('feedback5','error','Muy pocos términos','Necesitas seleccionar más términos relevantes (al menos 2 de lesión + 2 de contexto).');
       }
     }
 
-    // ===== Ecuación booleana (base) =====
+    // ===== Ecuación booleana (con OR para sinónimos) =====
     function buildEquation(){
       if (!savedDescriptors || savedDescriptors.length === 0) return '';
-      // Base: cada descriptor entre comillas y unido con AND
-      const quoted = savedDescriptors.map(d => `"${d}"`);
-      return quoted.join(' AND ');
+      
+      const parts = savedDescriptors.map((desc, idx) => {
+        const syn = savedSynonyms[idx];
+        if (syn && syn.trim()) {
+          const synList = syn.split(',').map(s => `"${s.trim()}"`).join(' OR ');
+          return `("${desc}" OR ${synList})`;
+        } else {
+          return `"${desc}"`;
+        }
+      });
+      
+      return parts.join(' AND ');
     }
 
     function refreshEquationViews(){
@@ -1072,41 +1537,39 @@
       const preview = document.getElementById('equationPreview');
       const final = document.getElementById('equationFinal');
 
-      if (preview) preview.textContent = eq ? eq : '(Completa la normalización en el paso 2)';
-      if (final) final.textContent = eq ? eq : '(Aún no generada)';
-
-      const card = document.getElementById('final-card');
-      if (card) card.style.display = eq ? 'block' : 'none';
+      if (preview) preview.textContent = eq ? eq : '(Completa la normalización primero)';
+      if (final) final.textContent = eq ? eq : '(No se generó ecuación)';
     }
 
     function copyEquation(){
       const eq = buildEquation();
       if (!eq){
-        showFeedback('feedback6','error','No hay ecuación','Primero completa al menos 2 descriptores en “Normaliza en tesauros”.');
+        showFeedback('feedback6','error','No hay ecuación','Primero completa al menos 2 descriptores en la normalización.');
         return;
       }
 
-      // Copia al portapapeles
       navigator.clipboard?.writeText(eq).then(()=>{
-        showFeedback('feedback6','success','Copiado','Ecuación copiada al portapapeles.');
+        showFeedback('feedback6','success','✓ Copiado','Ecuación copiada al portapapeles.');
       }).catch(()=>{
-        // fallback
         const tmp = document.createElement('textarea');
         tmp.value = eq;
         document.body.appendChild(tmp);
         tmp.select();
         document.execCommand('copy');
         document.body.removeChild(tmp);
-        showFeedback('feedback6','success','Copiado','Ecuación copiada al portapapeles.');
+        showFeedback('feedback6','success','✓ Copiado','Ecuación copiada al portapapeles.');
       });
     }
 
     // ===== Reset =====
     function resetAll(){
+      if (!confirm('¿Estás seguro de que quieres reiniciar? Se perderán todos los datos ingresados.')) return;
+      
       selectedOption = null;
       selectedTerms.clear();
       savedDescriptors = [];
-      normKeywords = [...defaultKeywords];
+      savedSynonyms = [];
+      normKeywords = defaultKeywords.map(k => ({...k}));
 
       document.querySelectorAll('.option-card, .checkbox-card').forEach(c=>c.classList.remove('selected'));
       document.querySelectorAll('.feedback').forEach(f=>{ f.className='feedback'; f.innerHTML=''; });
@@ -1118,13 +1581,21 @@
 
       renderNormTable();
       refreshEquationViews();
+      
+      document.getElementById('presentationWrapper').classList.remove('active');
+      document.getElementById('registroScreen').style.display = 'flex';
+      
+      document.getElementById('nombreCompleto').value = '';
+      document.getElementById('nrc').value = '';
+      document.getElementById('grupo').value = '';
+      
+      studentData = { nombre: '', nrc: '', grupo: '' };
+      
       showSlide(0);
     }
 
     // init
     renderNormTable();
-    showSlide(0);
   </script>
 </body>
 </html>
-
