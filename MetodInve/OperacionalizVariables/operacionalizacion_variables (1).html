@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Operacionalización de Variables | Presentación Interactiva</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body{
+      font-family:'Inter', sans-serif;
+      background:#0a0e27;
+      color:#2c3e50;
+      overflow:hidden;
+      height:100vh;
+    }
+
+    /* ===== FORMULARIO DE REGISTRO ===== */
+    .registro-screen{
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .registro-card{
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 30px 80px rgba(0,0,0,0.3);
+      padding:60px 50px;
+      max-width:600px;
+      width:100%;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn{
+      from{ opacity:0; transform:translateY(-30px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    .registro-card h1{
+      color:#667eea;
+      font-family:'Libre Baskerville', serif;
+      font-size:2.2em;
+      margin-bottom:15px;
+      text-align:center;
+    }
+
+    .registro-card .subtitle{
+      color:#666;
+      text-align:center;
+      margin-bottom:40px;
+      font-size:1.05em;
+      line-height:1.6;
+    }
+
+    .form-group{
+      margin-bottom:25px;
+    }
+
+    .form-group label{
+      display:block;
+      font-weight:700;
+      color:#2c3e50;
+      margin-bottom:8px;
+      font-size:0.95em;
+    }
+
+    .form-group input{
+      width:100%;
+      padding:15px;
+      border:2px solid #dfe6e9;
+      border-radius:10px;
+      font-size:1em;
+      font-family:'Inter', sans-serif;
+      transition:all 0.3s;
+      background:#fff;
+    }
+
+    .form-group input:focus{
+      outline:none;
+      border-color:#667eea;
+      box-shadow:0 0 0 4px rgba(102,126,234,0.1);
+    }
+
+    .form-group input::placeholder{
+      color:#bdc3c7;
+    }
+
+    .btn-comenzar{
+      width:100%;
+      background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color:#fff;
+      border:none;
+      padding:18px;
+      font-size:1.1em;
+      font-weight:700;
+      border-radius:10px;
+      cursor:pointer;
+      transition:all 0.3s;
+      margin-top:15px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+    }
+
+    .btn-comenzar:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 30px rgba(102,126,234,0.4);
+    }
+
+    .btn-comenzar:disabled{
+      background:#95a5a6;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .error-message{
+      color:#e74c3c;
+      font-size:0.9em;
+      margin-top:8px;
+      display:none;
+      font-weight:600;
+    }
+
+    .error-message.show{
+      display:block;
+    }
+
+    /* ===== PRESENTACIÓN ===== */
+    .presentation-wrapper{
+      height:100vh;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:40px;
+    }
+
+    .presentation-wrapper.active{
+      display:flex;
+    }
+
+    .slide{
+      background:#fff;
+      width:100%;
+      max-width:1400px;
+      height:85vh;
+      border-radius:0;
+      box-shadow:0 20px 60px rgba(0,0,0,0.5);
+      display:none;
+      flex-direction:column;
+      position:relative;
+    }
+
+    .slide.active{ display:flex; animation:fadeIn .45s ease; }
+    @keyframes fadeIn{ from{opacity:0; transform:scale(.985);} to{opacity:1; transform:scale(1);} }
+
+    .slide-header{
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      padding:34px 56px;
+      color:#fff;
+      border-bottom:4px solid #e74c3c;
+      flex-shrink:0;
+    }
+    .slide-number{
+      font-size:13px;
+      font-weight:300;
+      letter-spacing:2px;
+      opacity:.85;
+      margin-bottom:8px;
+      text-transform:uppercase;
+    }
+    .slide-title{
+      font-family:'Libre Baskerville', serif;
+      font-size:40px;
+      font-weight:700;
+      line-height:1.2;
+    }
+
+    .slide-content{
+      flex:1;
+      padding:40px 56px;
+      overflow-y:auto;
+      min-height:0;
+    }
+    .slide-content::-webkit-scrollbar{ width:8px; }
+    .slide-content::-webkit-scrollbar-track{ background:#f1f1f1; }
+    .slide-content::-webkit-scrollbar-thumb{ background:#bdc3c7; border-radius:4px; }
+
+    .slide-footer{
+      padding:18px 56px;
+      border-top:1px solid #ecf0f1;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:#fafafa;
+      gap:16px;
+      flex-shrink:0;
+      position:relative;
+    }
+    .progress-indicator{
+      font-size:13px;
+      color:#95a5a6;
+      font-weight:600;
+      white-space:nowrap;
+    }
+    .footer-brand{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:12px;
+      color:#95a5a6;
+      font-weight:600;
+      letter-spacing:0.5px;
+    }
+    .footer-brand strong{
+      color:#667eea;
+      font-weight:800;
+    }
+
+    /* Botones */
+    .btn{
+      padding:12px 26px;
+      border:none;
+      border-radius:4px;
+      font-family:'Inter', sans-serif;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:all .18s ease;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+    .btn-nav{
+      background:transparent;
+      color:#7f8c8d;
+      border:2px solid #bdc3c7;
+    }
+    .btn-nav:hover{ background:#ecf0f1; border-color:#95a5a6; }
+    .btn-primary{
+      background:#e74c3c;
+      color:#fff;
+      border:2px solid #e74c3c;
+    }
+    .btn-primary:hover{
+      background:#c0392b;
+      border-color:#c0392b;
+      transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(231,76,60,.28);
+    }
+    .btn-secondary{
+      background:transparent;
+      color:#3498db;
+      border:2px solid #3498db;
+    }
+    .btn-secondary:hover{ background:#3498db; color:#fff; }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+
+    /* Tipografía */
+    h2{
+      font-family:'Libre Baskerville', serif;
+      font-size:30px;
+      color:#2c3e50;
+      margin-bottom:18px;
+      padding-bottom:10px;
+      border-bottom:3px solid #e74c3c;
+      display:inline-block;
+    }
+    h3{
+      font-family:'Libre Baskerville', serif;
+      font-size:20px;
+      color:#34495e;
+      margin:22px 0 12px;
+    }
+    h4{
+      font-family:'Libre Baskerville', serif;
+      font-size:17px;
+      color:#2c3e50;
+      margin-bottom:10px;
+    }
+    p{
+      font-size:16.5px;
+      line-height:1.7;
+      color:#2c3e50;
+      margin-bottom:14px;
+    }
+    code{
+      background:#f1f3f4;
+      padding:3px 8px;
+      border-radius:3px;
+      font-family:'Courier New', monospace;
+      color:#e74c3c;
+      font-size:13px;
+    }
+
+    /* Cards */
+    .info-card{
+      background:#ecf9ff;
+      border-left:5px solid #3498db;
+      padding:18px 20px;
+      margin:18px 0;
+    }
+    .info-card-title{
+      font-weight:800;
+      font-size:16.5px;
+      color:#2980b9;
+      margin-bottom:10px;
+    }
+    .warning-card{
+      background:#fff4e6;
+      border-left:5px solid #f39c12;
+      padding:18px 20px;
+      margin:18px 0;
+    }
+    .warning-card-title{
+      font-weight:800;
+      font-size:16.5px;
+      color:#e67e22;
+      margin-bottom:10px;
+    }
+    .success-card{
+      background:#e8f8f5;
+      border-left:5px solid #27ae60;
+      padding:18px 20px;
+      margin:18px 0;
+    }
+    .success-card-title{
+      font-weight:800;
+      font-size:16.5px;
+      color:#27ae60;
+      margin-bottom:10px;
+    }
+
+    /* Listas */
+    .content-list{ list-style:none; padding:0; }
+    .content-list li{
+      padding:8px 0 8px 26px;
+      position:relative;
+      font-size:16.5px;
+      line-height:1.6;
+      color:#2c3e50;
+    }
+    .content-list li::before{
+      content:"▸";
+      position:absolute;
+      left:0;
+      color:#e74c3c;
+      font-size:18px;
+      font-weight:800;
+    }
+
+    /* Paneles / columnas */
+    .two-columns{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+      margin:16px 0;
+      align-items:start;
+    }
+    .panel{
+      background:#f8f9fa;
+      border:1px solid #ecf0f1;
+      border-radius:4px;
+      padding:16px 18px;
+    }
+
+    /* Ejemplo visual */
+    .example-box{
+      background:#fff;
+      border:2px solid #3498db;
+      border-radius:8px;
+      padding:20px;
+      margin:16px 0;
+    }
+    .example-box h4{
+      color:#3498db;
+      margin-bottom:15px;
+    }
+
+    /* Tabla comparativa */
+    .comparison-table{
+      width:100%;
+      border-collapse:collapse;
+      margin:16px 0;
+      border:2px solid #ecf0f1;
+    }
+    .comparison-table th{
+      background:#34495e;
+      color:#fff;
+      padding:14px;
+      text-align:left;
+      font-weight:800;
+      font-size:14px;
+    }
+    .comparison-table td{
+      padding:12px 14px;
+      border-bottom:1px solid #ecf0f1;
+      font-size:15px;
+      line-height:1.6;
+    }
+    .comparison-table tbody tr:nth-child(even){ background:#f8f9fa; }
+
+    /* Preguntas */
+    .question-area{
+      background:#f8fbff;
+      border:2px solid rgba(52,152,219,.22);
+      border-radius:4px;
+      padding:16px 18px;
+      margin-top:14px;
+    }
+    .question-title{
+      font-weight:800;
+      font-size:17px;
+      color:#2c3e50;
+      margin-bottom:12px;
+    }
+
+    /* Opción radio */
+    .options-grid{ display:grid; gap:10px; }
+    .option-card{
+      background:#fff;
+      border:2px solid #dfe6e9;
+      border-radius:4px;
+      padding:14px 14px;
+      cursor:pointer;
+      transition:all .15s ease;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .option-card:hover{ border-color:#3498db; background:#f8f9fa; }
+    .option-card.selected{ border-color:#3498db; background:#ecf9ff; }
+    .option-radio{
+      width:18px; height:18px;
+      border:2px solid #bdc3c7;
+      border-radius:50%;
+      position:relative;
+      flex-shrink:0;
+    }
+    .option-card.selected .option-radio{ border-color:#3498db; }
+    .option-card.selected .option-radio::after{
+      content:'';
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:9px; height:9px;
+      background:#3498db;
+      border-radius:50%;
+    }
+    .option-text{ font-size:16.5px; color:#2c3e50; }
+
+    /* Inputs */
+    input[type="text"], textarea, select{
+      width:100%;
+      padding:12px;
+      border:2px solid #dfe6e9;
+      border-radius:4px;
+      font-family:'Inter', sans-serif;
+      font-size:14px;
+      transition:border-color .2s;
+      background:#fff;
+      color:#2c3e50;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus{
+      outline:none; border-color:#3498db;
+    }
+    textarea{
+      min-height:80px;
+      resize:vertical;
+    }
+
+    /* Tabla de operacionalización */
+    .oper-table{
+      width:100%;
+      border-collapse:collapse;
+      border:2px solid #ecf0f1;
+      margin:16px 0;
+    }
+    .oper-table th{
+      background:#34495e;
+      color:#fff;
+      padding:12px;
+      text-align:left;
+      font-weight:800;
+      font-size:13px;
+    }
+    .oper-table td{
+      padding:10px 12px;
+      border:1px solid #ecf0f1;
+      vertical-align:top;
+      font-size:14px;
+    }
+    .oper-table tbody tr:nth-child(even){ background:#f8f9fa; }
+    .oper-table input, .oper-table textarea{
+      font-size:13px;
+      padding:8px;
+    }
+
+    /* Feedback */
+    .feedback{
+      padding:14px 16px;
+      border-radius:4px;
+      margin-top:12px;
+      display:none;
+      font-weight:700;
+    }
+    .feedback.show{ display:block; }
+    .feedback.success{ background:#e8f8f5; border-left:5px solid #27ae60; color:#27ae60; }
+    .feedback.error{ background:#fadbd8; border-left:5px solid #e74c3c; color:#c0392b; }
+    .feedback.partial{ background:#fff4e6; border-left:5px solid #f39c12; color:#e67e22; }
+    .feedback-title{ font-weight:900; margin-bottom:6px; }
+    .feedback-text{ font-weight:700; opacity:.95; line-height:1.55; }
+
+    /* Helper */
+    .helper{
+      font-size:13.5px;
+      color:#7f8c8d;
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+    }
+    .helper .icon{ font-size:15px; }
+
+    /* Diagrama de flujo */
+    .flow-diagram{
+      display:flex;
+      align-items:center;
+      justify-content:space-around;
+      margin:20px 0;
+      gap:10px;
+    }
+    .flow-box{
+      background:#3498db;
+      color:#fff;
+      padding:15px 20px;
+      border-radius:8px;
+      font-weight:700;
+      font-size:14px;
+      text-align:center;
+      flex:1;
+      min-width:150px;
+    }
+    .flow-arrow{
+      font-size:24px;
+      color:#3498db;
+      font-weight:800;
+    }
+
+    /* Pantalla final */
+    .completion-card{
+      background:#fff;
+      border-radius:12px;
+      padding:40px;
+      max-width:700px;
+      margin:0 auto;
+      box-shadow:0 10px 40px rgba(0,0,0,0.1);
+    }
+    .completion-icon{
+      width:80px;
+      height:80px;
+      background:#27ae60;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 25px;
+      font-size:40px;
+    }
+    .student-data{
+      background:#f8f9fa;
+      border:2px solid #ecf0f1;
+      border-radius:8px;
+      padding:25px;
+      margin:25px 0;
+    }
+    .student-data h3{
+      color:#2c3e50;
+      margin-bottom:18px;
+      font-size:18px;
+    }
+    .data-item{
+      display:flex;
+      padding:12px 0;
+      border-bottom:1px solid #ecf0f1;
+    }
+    .data-item:last-child{
+      border-bottom:none;
+    }
+    .data-label{
+      font-weight:700;
+      color:#7f8c8d;
+      min-width:150px;
+      font-size:14px;
+    }
+    .data-value{
+      color:#2c3e50;
+      font-weight:600;
+      font-size:15px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px){
+      .slide-title{ font-size:34px; }
+      .two-columns{ grid-template-columns:1fr; }
+      .flow-diagram{ flex-direction:column; }
+      .flow-arrow{ transform:rotate(90deg); }
+    }
+    @media (max-width: 768px){
+      .presentation-wrapper{ padding:0; }
+      .slide{ height:100vh; border-radius:0; }
+      .slide-header,.slide-footer{ padding:20px; }
+      .slide-content{ padding:20px; }
+      .slide-title{ font-size:26px; }
+      .registro-card{ padding:40px 30px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ===== PANTALLA DE REGISTRO ===== -->
+  <div class="registro-screen" id="registroScreen">
+    <div class="registro-card">
+      <h1>Operacionalización de Variables</h1>
+      <p class="subtitle">Por favor, ingresa tus datos para comenzar la actividad educativa</p>
+      
+      <form id="registroForm" onsubmit="return false;">
+        <div class="form-group">
+          <label for="nombreCompleto">Nombre completo *</label>
+          <input 
+            type="text" 
+            id="nombreCompleto" 
+            placeholder="Ingresa tu nombre completo"
+            required
+          >
+          <div class="error-message" id="errorNombre">Por favor ingresa tu nombre completo</div>
+        </div>
+
+        <div class="form-group">
+          <label for="nrc">NRC *</label>
+          <input 
+            type="text" 
+            id="nrc" 
+            placeholder="Ingresa el NRC del curso"
+            required
+          >
+          <div class="error-message" id="errorNrc">Por favor ingresa el NRC</div>
+        </div>
+
+        <div class="form-group">
+          <label for="grupo">Número de grupo *</label>
+          <input 
+            type="text" 
+            id="grupo" 
+            placeholder="Ingresa tu número de grupo"
+            required
+          >
+          <div class="error-message" id="errorGrupo">Por favor ingresa tu número de grupo</div>
+        </div>
+
+        <button type="button" class="btn-comenzar" onclick="validarRegistro()">
+          Comenzar Presentación
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== PRESENTACIÓN ===== -->
+  <div class="presentation-wrapper" id="presentationWrapper">
+
+    <!-- SLIDE 1 / 7 -->
+    <section class="slide active">
+      <header class="slide-header">
+        <div class="slide-number">INTRODUCCIÓN</div>
+        <h1 class="slide-title">Operacionalización de Variables</h1>
+      </header>
+
+      <div class="slide-content">
+        <div class="info-card">
+          <div class="info-card-title">Objetivo</div>
+          <p>Aprender a <strong>convertir conceptos abstractos en variables medibles</strong> para poder realizar investigaciones científicas válidas y replicables.</p>
+        </div>
+
+        <h2>¿Qué es operacionalizar?</h2>
+        <p>Es el proceso de <strong>definir exactamente CÓMO vas a medir</strong> algo que en principio es abstracto o teórico.</p>
+
+        <div class="example-box">
+          <h4>Ejemplo cotidiano:</h4>
+          <div class="flow-diagram">
+            <div class="flow-box">Concepto abstracto:<br>"Felicidad"</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box">¿Cómo la mido?<br>Escala 1-10, sonrisas/día, nivel de satisfacción</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box">Variable medible</div>
+          </div>
+        </div>
+
+        <div class="warning-card">
+          <div class="warning-card-title">¿Por qué es importante?</div>
+          <ul class="content-list">
+            <li>Sin operacionalización, tu investigación <strong>no es replicable</strong></li>
+            <li>Necesitas indicadores <strong>objetivos y medibles</strong></li>
+            <li>Permite que otros investigadores entiendan y repitan tu estudio</li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div class="progress-indicator">1 de 7</div>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <button class="btn btn-primary" onclick="nextSlide()">COMENZAR →</button>
+      </footer>
+    </section>
+
+    <!-- SLIDE 2 / 7 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">CONCEPTOS CLAVE</div>
+        <h1 class="slide-title">Elementos de la operacionalización</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>Componentes principales</h2>
+
+        <div class="two-columns">
+          <div class="panel">
+            <h4>1. Variable</h4>
+            <p>Característica que puede cambiar o variar. Puede ser dependiente o independiente.</p>
+            <p style="margin:8px 0 0; font-size:14px; color:#7f8c8d;"><strong>Ejemplo:</strong> Rendimiento académico, satisfacción laboral, nivel de estrés</p>
+          </div>
+
+          <div class="panel">
+            <h4>2. Definición conceptual</h4>
+            <p>Explicación teórica del concepto según autores o teorías.</p>
+            <p style="margin:8px 0 0; font-size:14px; color:#7f8c8d;"><strong>Ejemplo:</strong> "Logro de objetivos educativos según Bloom (1956)"</p>
+          </div>
+
+          <div class="panel">
+            <h4>3. Dimensiones</h4>
+            <p>Aspectos o componentes en los que se divide la variable.</p>
+            <p style="margin:8px 0 0; font-size:14px; color:#7f8c8d;"><strong>Ejemplo:</strong> Cognitivo, procedimental, actitudinal</p>
+          </div>
+
+          <div class="panel">
+            <h4>4. Indicadores</h4>
+            <p>Elementos observables y medibles de cada dimensión.</p>
+            <p style="margin:8px 0 0; font-size:14px; color:#7f8c8d;"><strong>Ejemplo:</strong> Calificaciones, asistencia, participación</p>
+          </div>
+
+          <div class="panel">
+            <h4>5. Instrumento</h4>
+            <p>Herramienta que usarás para recolectar los datos.</p>
+            <p style="margin:8px 0 0; font-size:14px; color:#7f8c8d;"><strong>Ejemplo:</strong> Cuestionario, entrevista, observación, registros</p>
+          </div>
+
+          <div class="panel">
+            <h4>6. Escala de medición</h4>
+            <p>Tipo de medida: nominal, ordinal, intervalo o razón.</p>
+            <p style="margin:8px 0 0; font-size:14px; color:#7f8c8d;"><strong>Ejemplo:</strong> Likert 1-5, porcentaje, frecuencia</p>
+          </div>
+        </div>
+
+        <div class="success-card">
+          <div class="success-card-title">Recuerda</div>
+          <p style="margin:0;">La operacionalización te permite pasar de lo <strong>abstracto</strong> (teoría) a lo <strong>concreto</strong> (medible).</p>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">2 de 7</div>
+          <button class="btn btn-primary" onclick="nextSlide()">CONTINUAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 3 / 7 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">EJEMPLO PRÁCTICO</div>
+        <h1 class="slide-title">Caso completo: Rendimiento académico</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>Ejemplo detallado</h2>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th style="width:18%;">Variable</th>
+              <th style="width:25%;">Definición conceptual</th>
+              <th style="width:15%;">Dimensión</th>
+              <th style="width:22%;">Indicadores</th>
+              <th style="width:20%;">Instrumento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="3" style="font-weight:800; background:#ecf9ff; vertical-align:middle;">Rendimiento<br>académico</td>
+              <td rowspan="3" style="vertical-align:middle;">"Nivel de logro de los objetivos educativos establecidos en el currículo" (Edel, 2003)</td>
+              <td style="font-weight:700;">Cognitivo</td>
+              <td>• Promedio de notas<br>• Resultados de exámenes<br>• Comprensión de conceptos</td>
+              <td>• Registros académicos<br>• Pruebas estandarizadas</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Procedimental</td>
+              <td>• Calidad de trabajos<br>• Aplicación práctica<br>• Resolución de problemas</td>
+              <td>• Rúbricas de evaluación<br>• Portafolios</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Actitudinal</td>
+              <td>• Participación en clase<br>• Puntualidad<br>• Interés por aprender</td>
+              <td>• Lista de cotejo<br>• Observación directa</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-card">
+          <div class="info-card-title">💡 Observa que:</div>
+          <ul class="content-list">
+            <li>Cada <strong>dimensión</strong> tiene indicadores específicos y medibles</li>
+            <li>Los <strong>indicadores</strong> son observables (no son abstractos)</li>
+            <li>Cada indicador tiene un <strong>instrumento</strong> para medirlo</li>
+            <li>Todo el conjunto permite <strong>medir algo que originalmente era abstracto</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">3 de 7</div>
+          <button class="btn btn-primary" onclick="nextSlide()">CONTINUAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 4 / 7 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">EJERCICIO PRÁCTICO</div>
+        <h1 class="slide-title">Identificación de conceptos</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>Practica identificar variables</h2>
+
+        <p>A continuación verás afirmaciones de investigación. <strong>Identifica cuál es la variable principal</strong> que necesitaría operacionalizarse.</p>
+
+        <div class="question-area">
+          <div class="question-title">1. "Investigaré el impacto del uso de redes sociales en la salud mental de adolescentes"</div>
+          <p style="margin:10px 0; font-size:15px; color:#7f8c8d;">¿Cuál es la variable que necesitas operacionalizar (hacer medible)?</p>
+          <div class="options-grid">
+            <div class="option-card" onclick="selectOption(this, 'q1', 'redes')">
+              <div class="option-radio"></div><div class="option-text">Uso de redes sociales</div>
+            </div>
+            <div class="option-card" onclick="selectOption(this, 'q1', 'salud')">
+              <div class="option-radio"></div><div class="option-text">Salud mental</div>
+            </div>
+            <div class="option-card" onclick="selectOption(this, 'q1', 'adolescentes')">
+              <div class="option-radio"></div><div class="option-text">Adolescentes</div>
+            </div>
+            <div class="option-card" onclick="selectOption(this, 'q1', 'impacto')">
+              <div class="option-radio"></div><div class="option-text">Impacto</div>
+            </div>
+          </div>
+          <div id="feedback-q1" class="feedback"></div>
+        </div>
+
+        <div class="question-area" style="margin-top:25px;">
+          <div class="question-title">2. "Estudiaré la relación entre clima organizacional y productividad laboral"</div>
+          <p style="margin:10px 0; font-size:15px; color:#7f8c8d;">Identifica UNA variable que necesitas operacionalizar:</p>
+          <div class="options-grid">
+            <div class="option-card" onclick="selectOption(this, 'q2', 'clima')">
+              <div class="option-radio"></div><div class="option-text">Clima organizacional</div>
+            </div>
+            <div class="option-card" onclick="selectOption(this, 'q2', 'productividad')">
+              <div class="option-radio"></div><div class="option-text">Productividad laboral</div>
+            </div>
+            <div class="option-card" onclick="selectOption(this, 'q2', 'relacion')">
+              <div class="option-radio"></div><div class="option-text">Relación</div>
+            </div>
+            <div class="option-card" onclick="selectOption(this, 'q2', 'ambas')">
+              <div class="option-radio"></div><div class="option-text">Ambas (clima y productividad)</div>
+            </div>
+          </div>
+          <div id="feedback-q2" class="feedback"></div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">4 de 7</div>
+          <button class="btn btn-primary" onclick="checkIdentification()">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 5 / 7 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PRÁCTICA</div>
+        <h1 class="slide-title">Crea tu tabla de operacionalización</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>Ejercicio aplicado</h2>
+
+        <div class="info-card">
+          <div class="info-card-title">Tema de investigación (ejemplo):</div>
+          <p style="margin:0;">"Estrés laboral en profesionales de la salud durante emergencias sanitarias"</p>
+        </div>
+
+        <h3>Completa la tabla de operacionalización:</h3>
+
+        <table class="oper-table">
+          <thead>
+            <tr>
+              <th style="width:15%;">Variable</th>
+              <th style="width:25%;">Def. conceptual</th>
+              <th style="width:15%;">Dimensión</th>
+              <th style="width:25%;">Indicadores</th>
+              <th style="width:20%;">Instrumento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="2" style="font-weight:700; background:#f8f9fa;">Estrés laboral</td>
+              <td rowspan="2">
+                <textarea id="def-conceptual" placeholder="Define qué es el estrés laboral según algún autor o teoría..."></textarea>
+              </td>
+              <td><input type="text" id="dim1" placeholder="Ej: Físico, Psicológico..."></td>
+              <td><textarea id="ind1" placeholder="Lista indicadores observables..."></textarea></td>
+              <td><input type="text" id="inst1" placeholder="¿Qué instrumento usarás?"></td>
+            </tr>
+            <tr>
+              <td><input type="text" id="dim2" placeholder="Segunda dimensión..."></td>
+              <td><textarea id="ind2" placeholder="Indicadores de esta dimensión..."></textarea></td>
+              <td><input type="text" id="inst2" placeholder="Instrumento para medirlos"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="helper">
+          <span class="icon">💡</span>
+          <div>
+            <strong>Consejos:</strong> Los indicadores deben ser específicos y medibles. Evita términos vagos como "alto", "bueno", "mucho". Usa cifras, escalas, frecuencias, porcentajes.
+          </div>
+        </div>
+
+        <div id="feedback-table" class="feedback error">
+          <div class="feedback-title">Completa la tabla</div>
+          <div class="feedback-text">Llena al menos la definición conceptual y una dimensión completa para continuar.</div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">5 de 7</div>
+          <button class="btn btn-primary" onclick="validateTable()">VALIDAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 6 / 7 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">APLICACIÓN</div>
+        <h1 class="slide-title">Ejemplos por área de conocimiento</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>Operacionalización en diferentes disciplinas</h2>
+
+        <div class="example-box">
+          <h4>🏥 Ciencias de la Salud - "Adherencia al tratamiento"</h4>
+          <table class="comparison-table">
+            <tr>
+              <td style="width:25%; font-weight:700;">Dimensiones</td>
+              <td>• Cumplimiento de dosis • Asistencia a consultas • Modificación de hábitos</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Indicadores</td>
+              <td>• % de dosis tomadas • Número de citas cumplidas • Cambios en dieta/ejercicio</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Instrumento</td>
+              <td>• Test de Morisky-Green • Registros médicos • Cuestionario de hábitos</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="example-box">
+          <h4>🎨 Diseño/Comunicación - "Engagement en redes sociales"</h4>
+          <table class="comparison-table">
+            <tr>
+              <td style="width:25%; font-weight:700;">Dimensiones</td>
+              <td>• Interacción • Alcance • Conversión</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Indicadores</td>
+              <td>• Likes, comentarios, shares • Impresiones, vistas • Clics en enlaces, conversiones</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Instrumento</td>
+              <td>• Analytics de redes sociales • Google Analytics • Métricas de plataforma</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="example-box">
+          <h4>💼 Negocios - "Satisfacción del cliente"</h4>
+          <table class="comparison-table">
+            <tr>
+              <td style="width:25%; font-weight:700;">Dimensiones</td>
+              <td>• Calidad del producto • Atención al cliente • Experiencia de compra</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Indicadores</td>
+              <td>• Calificación 1-5 • Tiempo de respuesta • Net Promoter Score (NPS)</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Instrumento</td>
+              <td>• Encuesta post-venta • Análisis de quejas • Escala de satisfacción</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="example-box">
+          <h4>📚 Educación - "Competencias digitales docentes"</h4>
+          <table class="comparison-table">
+            <tr>
+              <td style="width:25%; font-weight:700;">Dimensiones</td>
+              <td>• Conocimiento técnico • Uso pedagógico • Actitud hacia TIC</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Indicadores</td>
+              <td>• Dominio de herramientas • Integración en clases • Disposición al cambio</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">Instrumento</td>
+              <td>• Test de competencias • Observación de clases • Escala Likert</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">6 de 7</div>
+          <button class="btn btn-primary" onclick="nextSlide()">FINALIZAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 7 / 7 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">FINALIZACIÓN</div>
+        <h1 class="slide-title">¡Ejercicio completado!</h1>
+      </header>
+
+      <div class="slide-content">
+        <div class="completion-card">
+          <div class="completion-icon">✓</div>
+          
+          <h2 style="text-align:center; color:#27ae60; margin-bottom:10px;">¡Excelente trabajo!</h2>
+          <p style="text-align:center; color:#7f8c8d; margin-bottom:30px;">
+            Has completado exitosamente el ejercicio sobre operacionalización de variables
+          </p>
+
+          <div class="student-data">
+            <h3>📋 Datos del estudiante</h3>
+            <div class="data-item">
+              <div class="data-label">Nombre:</div>
+              <div class="data-value" id="finalNombre">-</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">NRC:</div>
+              <div class="data-value" id="finalNrc">-</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Grupo:</div>
+              <div class="data-value" id="finalGrupo">-</div>
+            </div>
+          </div>
+
+          <div class="success-card">
+            <div class="success-card-title">✅ Competencias desarrolladas</div>
+            <ul class="content-list">
+              <li><strong>Identificar</strong> variables en problemas de investigación</li>
+              <li><strong>Diferenciar</strong> entre conceptos abstractos y variables medibles</li>
+              <li><strong>Descomponer</strong> variables en dimensiones e indicadores</li>
+              <li><strong>Seleccionar</strong> instrumentos apropiados de medición</li>
+              <li><strong>Construir</strong> tablas de operacionalización para tu área</li>
+            </ul>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title">🎯 Siguiente paso en tu investigación</div>
+            <p style="margin:0;">Ahora que sabes operacionalizar variables, puedes:</p>
+            <ul class="content-list" style="margin-top:10px;">
+              <li>Diseñar tus instrumentos de recolección de datos</li>
+              <li>Validar tus indicadores con expertos</li>
+              <li>Realizar pruebas piloto de tus instrumentos</li>
+              <li>Documentar tu metodología de forma precisa y replicable</li>
+            </ul>
+          </div>
+
+          <div class="warning-card">
+            <div class="warning-card-title">📚 Diferencia con tesauros</div>
+            <p style="margin:0;"><strong>Tesauros:</strong> Para buscar literatura existente (antes de diseñar)<br>
+            <strong>Operacionalización:</strong> Para diseñar TU investigación (después de revisar literatura)</p>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">7 de 7</div>
+          <button class="btn btn-primary" onclick="resetAll()">🔄 REINICIAR</button>
+        </div>
+      </footer>
+    </section>
+
+  </div>
+
+  <script>
+    // ===== Variables globales =====
+    let studentData = { nombre: '', nrc: '', grupo: '' };
+    let answers = { q1: null, q2: null };
+
+    // ===== Registro =====
+    function validarRegistro(){
+      const nombre = document.getElementById('nombreCompleto').value.trim();
+      const nrc = document.getElementById('nrc').value.trim();
+      const grupo = document.getElementById('grupo').value.trim();
+
+      let isValid = true;
+
+      if (!nombre || nombre.length < 3){
+        document.getElementById('errorNombre').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('errorNombre').classList.remove('show');
+      }
+
+      if (!nrc){
+        document.getElementById('errorNrc').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('errorNrc').classList.remove('show');
+      }
+
+      if (!grupo){
+        document.getElementById('errorGrupo').classList.add('show');
+        isValid = false;
+      } else {
+        document.getElementById('errorGrupo').classList.remove('show');
+      }
+
+      if (isValid){
+        studentData.nombre = nombre.toUpperCase();
+        studentData.nrc = nrc.toUpperCase();
+        studentData.grupo = grupo.toUpperCase();
+
+        document.getElementById('registroScreen').style.display = 'none';
+        document.getElementById('presentationWrapper').classList.add('active');
+      }
+    }
+
+    // ===== Navegación =====
+    let currentSlide = 0;
+    function showSlide(index){
+      const slides = document.querySelectorAll('.slide');
+      slides.forEach((s,i)=>s.classList.toggle('active', i===index));
+      currentSlide = index;
+
+      if (index === 6){
+        document.getElementById('finalNombre').textContent = studentData.nombre;
+        document.getElementById('finalNrc').textContent = studentData.nrc;
+        document.getElementById('finalGrupo').textContent = studentData.grupo;
+      }
+    }
+    
+    function nextSlide(){
+      const slides = document.querySelectorAll('.slide');
+      if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+    }
+    
+    function prevSlide(){
+      if (currentSlide > 0) showSlide(currentSlide - 1);
+    }
+
+    // ===== Funciones auxiliares =====
+    function showFeedback(id, type, title, message){
+      const fb = document.getElementById(id);
+      fb.className = `feedback ${type} show`;
+      fb.innerHTML = `<div class="feedback-title">${title}</div><div class="feedback-text">${message}</div>`;
+    }
+    
+    function clearFeedback(id){
+      const fb = document.getElementById(id);
+      if (!fb) return;
+      fb.className = 'feedback';
+      fb.innerHTML = '';
+    }
+
+    // ===== Slide 4: Identificación =====
+    function selectOption(el, question, value){
+      const container = el.closest('.question-area');
+      container.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+      answers[question] = value;
+      clearFeedback(`feedback-${question}`);
+    }
+
+    function checkIdentification(){
+      let allCorrect = true;
+
+      // Pregunta 1
+      if (!answers.q1){
+        showFeedback('feedback-q1','error','Selecciona una opción','Elige qué variable necesita operacionalizarse.');
+        allCorrect = false;
+      } else if (answers.q1 === 'salud'){
+        showFeedback('feedback-q1','success','¡Correcto!','"Salud mental" es abstracto y necesita operacionalizarse (definir indicadores medibles como ansiedad, depresión, bienestar emocional).');
+      } else {
+        showFeedback('feedback-q1','error','Incorrecto','La variable a operacionalizar es "Salud mental" porque es un concepto abstracto que necesita definirse en términos medibles.');
+        allCorrect = false;
+      }
+
+      // Pregunta 2
+      if (!answers.q2){
+        showFeedback('feedback-q2','error','Selecciona una opción','Elige qué necesitas operacionalizar.');
+        allCorrect = false;
+      } else if (answers.q2 === 'ambas'){
+        showFeedback('feedback-q2','success','¡Excelente!','Ambas variables son abstractas y necesitan operacionalizarse: clima organizacional (ambiente, comunicación, liderazgo) y productividad (eficiencia, calidad, tiempo).');
+      } else if (answers.q2 === 'clima' || answers.q2 === 'productividad'){
+        showFeedback('feedback-q2','partial','Parcialmente correcto','Elegiste una variable correcta, pero en realidad AMBAS necesitan operacionalizarse porque ambas son conceptos abstractos.');
+      } else {
+        showFeedback('feedback-q2','error','Incorrecto','"Relación" no es una variable, es lo que investigas. Las variables son "clima organizacional" y "productividad laboral", y AMBAS necesitan operacionalizarse.');
+        allCorrect = false;
+      }
+
+      if (allCorrect) {
+        setTimeout(()=>nextSlide(), 1500);
+      }
+    }
+
+    // ===== Slide 5: Tabla =====
+    function validateTable(){
+      const defConceptual = document.getElementById('def-conceptual').value.trim();
+      const dim1 = document.getElementById('dim1').value.trim();
+      const ind1 = document.getElementById('ind1').value.trim();
+      const inst1 = document.getElementById('inst1').value.trim();
+
+      if (!defConceptual || !dim1 || !ind1 || !inst1){
+        const fb = document.getElementById('feedback-table');
+        fb.className = 'feedback error show';
+        fb.innerHTML = `<div class="feedback-title">Completa la tabla</div>
+                        <div class="feedback-text">Llena al menos la definición conceptual y la primera dimensión completa (dimensión, indicadores e instrumento).</div>`;
+        return;
+      }
+
+      clearFeedback('feedback-table');
+      showFeedback('feedback-table','success','¡Bien hecho!','Has completado la tabla correctamente. Avanza para ver más ejemplos.');
+      setTimeout(()=>nextSlide(), 1200);
+    }
+
+    // ===== Reset =====
+    function resetAll(){
+      if (!confirm('¿Estás seguro de que quieres reiniciar? Se perderán todos los datos ingresados.')) return;
+      
+      answers = { q1: null, q2: null };
+      document.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+      document.querySelectorAll('.feedback').forEach(f=>{ f.className='feedback'; f.innerHTML=''; });
+      document.querySelectorAll('input[type="text"], textarea').forEach(i=>i.value='');
+
+      document.getElementById('presentationWrapper').classList.remove('active');
+      document.getElementById('registroScreen').style.display = 'flex';
+      
+      document.getElementById('nombreCompleto').value = '';
+      document.getElementById('nrc').value = '';
+      document.getElementById('grupo').value = '';
+      
+      studentData = { nombre: '', nrc: '', grupo: '' };
+      
+      showSlide(0);
+    }
+  </script>
+</body>
+</html>
