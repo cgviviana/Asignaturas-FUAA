@@ -1,1 +1,1786 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExcelVerse — Academia Estelar Orbyt v2</title>
+<style>
+/* ── DESIGN TOKENS ── */
+:root{
+  --space:#03050f; --space2:#070d22; --space3:#0c1535;
+  /* ILLUMINATED CABIN (brighter interior) */
+  --cab:#1a2f5e; --cab2:#1e3570; --cab3:#233d80;
+  /* WORK PANELS (much lighter) */
+  --pan:#2a4490; --pan2:#3050a8; --pan3:#3a5cbe;
+  /* Grid/Sheet (bright readable white) */
+  --grid:#f0f5ff; --grid2:#e0eaff; --grid-line:#b0c4f0;
+  --grid-hdr:#2a4080; --grid-hdr-t:#fff;
+  --grid-cell:#f8faff; --grid-cell-t:#0d1540;
+  /* Accents */
+  --cyan:#00e5ff; --cyan2:#33eeff; --violet:#8b5cf6;
+  --gold:#fbbf24; --green:#10b981; --red:#ef4444;
+  --orange:#f97316; --blue:#3b82f6;
+  /* Text */
+  --txt:#e2e8f0; --muted:#7a90b8; --dim:#4a6080;
+  /* Bright panel text */
+  --bright:#f0f5ff;
+  /* Glows */
+  --gc:rgba(0,229,255,.3); --gv:rgba(139,92,246,.3);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow-x:hidden;}
+body{background:var(--space);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;}
+
+/* ── STARFIELD ── */
+#sf{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.s{position:absolute;border-radius:50%;animation:tw linear infinite;}
+@keyframes tw{0%{opacity:.1}50%{opacity:1}100%{opacity:.1}}
+
+/* ── SCREENS ── */
+.scr{display:none;position:relative;z-index:1;min-height:100vh;}
+.scr.on{display:flex;flex-direction:column;align-items:center;}
+
+/* ── HUD ── */
+#hud{position:fixed;top:0;left:0;right:0;z-index:300;height:50px;
+  display:none;align-items:center;padding:0 18px;gap:14px;
+  background:linear-gradient(180deg,rgba(20,40,90,.98),rgba(12,21,53,.95));
+  border-bottom:2px solid rgba(0,229,255,.3);
+  box-shadow:0 2px 20px rgba(0,0,0,.5);}
+.h-seg{display:flex;align-items:center;gap:6px;font-size:.75rem;}
+.h-lbl{color:var(--muted);text-transform:uppercase;font-size:.58rem;letter-spacing:1px;}
+.h-val{color:var(--cyan);font-weight:800;font-size:.9rem;}
+.h-div{width:1px;height:24px;background:rgba(0,229,255,.2);}
+.h-bar{width:80px;height:5px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;}
+.h-fill{height:100%;background:linear-gradient(90deg,var(--violet),var(--cyan));transition:width .5s;}
+.h-tries{display:flex;gap:3px;align-items:center;}
+.try-pip{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 5px var(--cyan);transition:all .3s;}
+.try-pip.used{background:rgba(100,120,160,.3);box-shadow:none;}
+
+/* ── BUTTONS ── */
+.btn{padding:10px 22px;border:none;border-radius:5px;font-size:.83rem;font-weight:700;cursor:pointer;transition:all .22s;letter-spacing:.5px;}
+.btn-launch{background:linear-gradient(135deg,#0c3a55,#0e6a8a);color:var(--cyan);border:1px solid rgba(0,229,255,.5);box-shadow:0 0 22px rgba(0,229,255,.2);padding:14px 44px;font-size:.92rem;letter-spacing:2px;border-radius:4px;}
+.btn-launch:hover{box-shadow:0 0 40px rgba(0,229,255,.5);transform:translateY(-2px);}
+.btn-prim{background:linear-gradient(135deg,#1e3280,#2a42a0);color:#a5b4fc;border:1px solid #4060cc;box-shadow:0 0 14px rgba(60,100,250,.2);}
+.btn-prim:hover{box-shadow:0 0 28px rgba(60,100,250,.4);transform:translateY(-1px);}
+.btn-ghost{background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.3);color:var(--cyan);border-radius:4px;}
+.btn-ghost:hover{background:rgba(0,229,255,.15);}
+.btn-hint{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.4);color:var(--gold);border-radius:4px;}
+.btn-hint:hover{background:rgba(251,191,36,.18);}
+.btn-sm{padding:6px 14px;font-size:.72rem;}
+.btn-success{background:linear-gradient(135deg,#064e3b,#065f46);color:var(--green);border:1px solid var(--green);}
+.btn-danger{background:linear-gradient(135deg,#7f1d1d,#991b1b);color:#fca5a5;border:1px solid var(--red);}
+
+/* ── COCKPIT SHELL ── */
+.ck-frame{
+  display:flex;flex-direction:column;flex:1;width:100%;
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 100%, rgba(42,68,144,.5) 0%,transparent 70%),
+    radial-gradient(ellipse 60% 30% at 20% 60%, rgba(0,130,220,.1) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 30% at 80% 60%, rgba(120,80,220,.08) 0%,transparent 60%),
+    linear-gradient(180deg,#0a1530 0%,#101e45 40%,#0e1c40 100%);
+  min-height:calc(100vh - 50px);}
+
+.ck-arch{width:100%;padding:0 18px;
+  background:linear-gradient(180deg,rgba(28,50,105,.97),rgba(18,35,80,.9));
+  border-bottom:2px solid rgba(0,229,255,.25);
+  box-shadow:0 2px 20px rgba(0,0,0,.5);}
+.ck-arch-in{max-width:1060px;margin:0 auto;padding:11px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.ck-title{font-size:.9rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--cyan);}
+.ck-sub{font-size:.65rem;color:var(--muted);letter-spacing:.5px;margin-top:2px;}
+
+/* Mission pips */
+.ej-nav{display:flex;gap:5px;}
+.epip{width:30px;height:30px;border-radius:3px;border:1px solid rgba(0,229,255,.25);
+  background:rgba(0,229,255,.06);color:var(--muted);font-size:.72rem;font-weight:700;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.epip.on{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.15);box-shadow:0 0 12px var(--gc);}
+.epip.done{border-color:var(--green);color:var(--green);background:rgba(16,185,129,.1);}
+.epip.lk{opacity:.25;cursor:not-allowed;}
+
+/* ── COCKPIT LAYOUT ── */
+.ck-main{flex:1;display:grid;grid-template-columns:185px 1fr 150px;gap:0;max-width:1060px;width:100%;margin:0 auto;padding:14px;}
+@media(max-width:820px){.ck-main{grid-template-columns:1fr;}.ck-side{display:none!important;}}
+.ck-side{display:flex;flex-direction:column;gap:10px;padding:0 10px;}
+.ck-ctr{display:flex;flex-direction:column;gap:10px;}
+
+/* ILLUMINATED Side panels */
+.sp{background:linear-gradient(160deg,rgba(36,60,120,.95),rgba(28,48,100,.98));
+  border:1px solid rgba(0,229,255,.25);border-radius:5px;padding:11px;
+  box-shadow:inset 0 1px 0 rgba(0,229,255,.15),0 0 16px rgba(0,0,0,.4);}
+.sp-lbl{font-size:.56rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:7px;}
+.radar-sweep{animation:rsweep 3.5s linear infinite;transform-origin:58px 58px;}
+@keyframes rsweep{to{transform:rotate(360deg)}}
+.e-seg{height:7px;border-radius:2px;margin-bottom:3px;animation:ep 1.4s infinite alternate;}
+@keyframes ep{0%{opacity:.6}100%{opacity:1}}
+.sys-row{display:flex;justify-content:space-between;margin:4px 0;font-size:.6rem;}
+.sys-ok{color:var(--green);}
+.prog-t{background:rgba(255,255,255,.1);border-radius:10px;height:6px;overflow:hidden;}
+.prog-f{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--violet),var(--cyan));transition:width .5s;}
+
+/* ══════════════════════════
+   EXERCISE CONTAINER — BRIGHT ILLUMINATED
+   ══════════════════════════ */
+.ex-wrap{
+  /* FIX #1 & #7: Much brighter work area */
+  background:linear-gradient(160deg,rgba(35,60,130,.96),rgba(28,50,115,.98));
+  border:2px solid rgba(0,229,255,.3);border-radius:6px;padding:18px;position:relative;
+  box-shadow:inset 0 0 40px rgba(0,40,120,.3),0 4px 28px rgba(0,0,0,.5);}
+.ex-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(0,229,255,.6),transparent);}
+
+/* Attempt counter */
+.attempt-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.18);
+  border-radius:4px;padding:7px 12px;flex-wrap:wrap;}
+.att-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
+.att-pips{display:flex;gap:4px;}
+.att-pip{width:10px;height:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan);transition:all .3s;}
+.att-pip.gone{background:rgba(100,120,160,.25);box-shadow:none;}
+
+/* Hint box */
+.hint-box{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.4);
+  border-radius:4px;padding:12px 16px;margin:8px 0;display:none;}
+.hint-box.show{display:block;}
+.hint-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:4px;display:flex;align-items:center;gap:5px;}
+.hint-txt{font-size:.84rem;color:#fde68a;line-height:1.6;}
+
+/* Mission objective box */
+.ex-obj{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);
+  border-radius:4px;padding:12px 15px;margin-bottom:12px;}
+.ex-obj-lbl{font-size:.58rem;text-transform:uppercase;letter-spacing:2px;color:#a78bfa;margin-bottom:4px;}
+.ex-obj-txt{font-size:.88rem;color:#ddd6fe;line-height:1.6;}
+
+/* GUIDE BOX (new: pedagogical) */
+.guide-box{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.25);
+  border-radius:5px;padding:14px 16px;margin-bottom:12px;}
+.guide-lbl{font-size:.58rem;text-transform:uppercase;letter-spacing:2px;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.guide-txt{font-size:.82rem;color:#a7f3d0;line-height:1.7;}
+.guide-ex{background:rgba(0,0,0,.25);border:1px solid rgba(16,185,129,.18);
+  border-radius:3px;padding:9px 12px;margin-top:8px;font-size:.78rem;color:#6ee7b7;font-family:monospace;}
+.guide-step{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start;}
+.guide-num{background:rgba(16,185,129,.2);color:var(--green);border-radius:50%;width:18px;height:18px;
+  display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0;margin-top:1px;}
+
+/* Instruction bar */
+.ex-ins{border-left:3px solid rgba(0,229,255,.4);padding:10px 14px;margin-bottom:13px;
+  font-size:.82rem;line-height:1.8;color:#c8d8f0;background:rgba(0,229,255,.04);border-radius:0 4px 4px 0;}
+
+/* Source data box (FIX #6) */
+.source-box{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.3);
+  border-radius:5px;padding:14px;margin-bottom:14px;}
+.source-lbl{font-size:.58rem;text-transform:uppercase;letter-spacing:2px;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.source-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px;}
+.src-card{background:rgba(0,0,0,.25);border:1px solid rgba(251,191,36,.2);border-radius:4px;padding:8px 10px;font-size:.72rem;}
+.src-card-lbl{color:var(--gold);font-size:.58rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+.src-card-val{color:#fde68a;font-weight:600;}
+
+/* Feedback */
+.fb{border-radius:4px;padding:11px 15px;margin:10px 0;font-size:.82rem;font-weight:600;display:none;border-left:3px solid;}
+.fb.ok{background:rgba(16,185,129,.1);border-color:var(--green);color:#6ee7b7;display:block;}
+.fb.err{background:rgba(239,68,68,.08);border-color:var(--red);color:#fca5a5;display:block;}
+
+.ex-act{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px;}
+
+/* ══════════════════════════════════
+   TACTICAL MAP GRID — BRIGHT & CLEAR
+   FIX #8 & #3: Only rendered cells validated, click-only mechanic
+   ══════════════════════════════════ */
+.tac-map-wrap{position:relative;margin:10px 0;overflow-x:auto;}
+.tac-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:.66rem;color:var(--muted);}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+
+.tac-grid{display:inline-grid;border:2px solid #2a4080;border-radius:4px;overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,.6);}
+.tac-cell{width:54px;height:44px;display:flex;align-items:center;justify-content:center;
+  font-size:.76rem;font-weight:600;cursor:default;position:relative;transition:all .18s;
+  border:1px solid var(--grid-line);}
+/* Header cells */
+.tac-cell.ch{background:#2a4080;color:#fff;font-size:.68rem;font-weight:800;letter-spacing:.5px;}
+/* Data cells — LIGHT READABLE BACKGROUND */
+.tac-cell.cd{background:var(--grid-cell);color:var(--grid-cell-t);cursor:pointer;}
+.tac-cell.cd:hover{background:#ccd8ff;border-color:#4060d0;transform:scale(1.05);z-index:2;}
+/* Cell states */
+.tac-cell.t-enemy{background:#ffe4e4;color:#b91c1c;border-color:#f87171;}
+.tac-cell.t-shelter{background:#d1fae5;color:#065f46;border-color:#34d399;}
+.tac-cell.t-resource{background:#fef3c7;color:#92400e;border-color:#fbbf24;}
+.tac-cell.t-rocky{background:#e5e7eb;color:#374151;border-color:#9ca3af;}
+.tac-cell.t-target{background:#dbeafe;color:#1e40af;border-color:#3b82f6;
+  box-shadow:inset 0 0 0 2px #3b82f6;animation:tgt-pulse 1.2s ease-in-out infinite alternate;}
+@keyframes tgt-pulse{0%{box-shadow:inset 0 0 0 2px #3b82f6}100%{box-shadow:inset 0 0 0 2px #60a5fa,0 0 12px rgba(59,130,246,.5)}}
+.tac-cell.t-correct{background:#d1fae5!important;border-color:#10b981!important;color:#064e3b!important;animation:correct-pop .4s ease;}
+.tac-cell.t-wrong{background:#fee2e2!important;border-color:#ef4444!important;animation:shake .35s ease;}
+@keyframes correct-pop{0%{transform:scale(.88)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.cell-icon{font-size:1.1rem;line-height:1;}
+.cell-coord{font-size:.55rem;position:absolute;bottom:2px;right:3px;color:rgba(0,0,0,.35);opacity:.7;}
+
+/* ── SHOOTER GAME ── */
+.sw-wrap{position:relative;width:100%;height:310px;
+  background:radial-gradient(ellipse 100% 70% at 50% 120%,rgba(0,40,100,.35) 0%,rgba(3,5,15,.97) 68%);
+  border:2px solid rgba(0,229,255,.2);border-radius:5px;overflow:hidden;cursor:crosshair;}
+.sw-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,229,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,255,.04) 1px,transparent 1px);background-size:44px 44px;}
+.sw-q{position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  background:rgba(8,14,40,.96);border:1px solid rgba(0,229,255,.4);border-radius:4px;
+  padding:9px 20px;font-size:.82rem;font-weight:700;color:var(--cyan);
+  white-space:nowrap;z-index:10;text-align:center;box-shadow:0 0 18px var(--gc);max-width:90%;}
+.sw-def{font-size:.66rem;color:var(--muted);margin-top:2px;font-weight:400;}
+.tgt{position:absolute;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;transition:transform .12s;animation:ftgt 3s ease-in-out infinite;}
+.tgt:hover{transform:scale(1.12);}
+@keyframes ftgt{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.tgt-lbl{background:rgba(10,21,55,.94);border:1px solid rgba(0,229,255,.4);border-radius:4px;
+  padding:5px 11px;font-size:.78rem;font-weight:700;color:var(--cyan);white-space:nowrap;pointer-events:none;}
+.hit-fx{position:absolute;pointer-events:none;z-index:50;animation:hitfx .6s forwards;}
+@keyframes hitfx{0%{opacity:1;transform:scale(.4)}60%{opacity:1;transform:scale(1.25)}100%{opacity:0;transform:scale(1.5)}}
+.miss-fx{position:absolute;pointer-events:none;z-index:50;animation:missfx .5s forwards;}
+@keyframes missfx{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(1.15)}}
+.sw-status{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);
+  font-size:.66rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.ammo{position:absolute;bottom:9px;right:12px;display:flex;gap:4px;}
+.ammo-p{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 5px var(--cyan);}
+.ammo-p.used{background:rgba(100,120,160,.28);box-shadow:none;}
+.sw-sc{position:absolute;top:12px;right:12px;font-size:.66rem;color:var(--gold);font-weight:700;letter-spacing:1px;}
+
+/* ── QUIZ & CLASSIFY ── */
+.q-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0;}
+@media(max-width:480px){.q-grid{grid-template-columns:1fr;}}
+.qopt{background:rgba(30,55,120,.85);border:1px solid rgba(0,229,255,.2);border-radius:4px;
+  padding:10px 14px;color:#b0c4e8;cursor:pointer;text-align:left;transition:all .18s;font-size:.8rem;line-height:1.4;font-weight:500;}
+.qopt:hover{border-color:rgba(0,229,255,.5);color:var(--txt);background:rgba(0,229,255,.1);}
+.qopt.q-ok{border-color:var(--green)!important;color:var(--green)!important;background:rgba(16,185,129,.12)!important;}
+.qopt.q-no{border-color:var(--red)!important;color:var(--red)!important;background:rgba(239,68,68,.08)!important;}
+.qopt.q-sel{border-color:rgba(139,92,246,.5);color:#c4b5fd;background:rgba(139,92,246,.1);}
+
+.cls-row{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap;}
+.cls-val{background:rgba(25,45,100,.9);border:1px solid rgba(0,229,255,.22);border-radius:4px;
+  padding:6px 14px;font-weight:700;font-size:.82rem;min-width:140px;text-align:center;color:var(--bright);}
+.cls-btn{padding:6px 12px;border:1px solid rgba(0,229,255,.2);border-radius:4px;
+  background:rgba(25,45,100,.8);color:var(--muted);font-size:.74rem;cursor:pointer;transition:all .18s;font-weight:600;}
+.cls-btn:hover{border-color:rgba(0,229,255,.45);color:var(--cyan);background:rgba(0,229,255,.08);}
+.cls-btn.sel{border-color:rgba(139,92,246,.5);color:#c4b5fd;background:rgba(139,92,246,.1);}
+.cls-btn.c-ok{border-color:var(--green)!important;color:var(--green)!important;background:rgba(16,185,129,.12)!important;}
+.cls-btn.c-no{border-color:var(--red)!important;color:var(--red)!important;}
+
+/* FORMULA INPUT */
+.fx-row{display:flex;align-items:center;gap:8px;margin:7px 0;
+  background:rgba(255,255,255,.06);border:1px solid rgba(0,229,255,.15);border-radius:4px;padding:8px 12px;flex-wrap:wrap;}
+.fx-lbl{color:var(--cyan);font-family:monospace;font-size:.76rem;white-space:nowrap;}
+.fx-desc{flex:1;font-size:.76rem;color:#c0d0ea;min-width:110px;}
+.fx-inp{background:rgba(240,250,255,.1);border:1px solid rgba(0,229,255,.3);border-radius:3px;
+  color:var(--bright);font-family:monospace;font-size:.82rem;padding:5px 10px;outline:none;min-width:165px;flex:1;}
+.fx-inp:focus{border-color:rgba(0,229,255,.6);background:rgba(240,250,255,.15);}
+.fcode{background:rgba(0,0,0,.4);border:1px solid rgba(139,92,246,.3);border-radius:3px;
+  padding:2px 8px;font-family:monospace;font-size:.76rem;color:#c4b5fd;}
+.mini-t{border-collapse:collapse;margin:10px 0;font-size:.76rem;width:100%;}
+.mini-t th{background:#2a4080;color:#fff;padding:6px 10px;border:1px solid rgba(0,229,255,.2);}
+.mini-t td{border:1px solid rgba(0,229,255,.12);padding:6px 10px;color:var(--bright);background:rgba(20,40,90,.6);}
+
+/* ══════════════════════════════════
+   CONSOLE INTERFACE (FIX #2 / Mission 4)
+   Redesigned as a real tactical command console
+   ══════════════════════════════════ */
+.console-frame{background:rgba(5,10,25,.95);border:2px solid rgba(0,229,255,.35);
+  border-radius:6px;overflow:hidden;box-shadow:0 0 30px rgba(0,229,255,.15),inset 0 0 40px rgba(0,0,60,.5);}
+.console-header{background:linear-gradient(90deg,rgba(0,229,255,.08),rgba(139,92,246,.08));
+  border-bottom:1px solid rgba(0,229,255,.2);padding:10px 16px;
+  display:flex;align-items:center;gap:8px;}
+.console-led{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pled 1.5s infinite;}
+@keyframes pled{0%,100%{opacity:1}50%{opacity:.3}}
+.console-title{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--cyan);}
+.console-body{padding:14px;}
+.con-panel{background:rgba(255,255,255,.03);border:1px solid rgba(0,229,255,.1);border-radius:4px;padding:12px;margin-bottom:10px;}
+.con-panel-title{font-size:.6rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;border-bottom:1px solid rgba(0,229,255,.08);padding-bottom:5px;}
+.shortcut-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.78rem;}
+.shortcut-key{background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.35);border-radius:3px;
+  padding:3px 9px;font-family:monospace;font-size:.7rem;color:var(--cyan);font-weight:700;}
+.shortcut-desc{color:#b0c4e0;flex:1;}
+.ribbon-panel{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+.ribbon-tab{background:rgba(30,55,130,.7);border:1px solid rgba(0,229,255,.15);border-radius:4px;
+  padding:8px 6px;text-align:center;font-size:.68rem;color:#94a3b8;cursor:pointer;transition:all .2s;}
+.ribbon-tab:hover{border-color:rgba(0,229,255,.4);color:var(--cyan);background:rgba(0,229,255,.08);}
+.ribbon-tab.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.12);box-shadow:0 0 10px rgba(0,229,255,.2);}
+.formula-bar-demo{background:rgba(0,0,0,.3);border:1px solid rgba(0,229,255,.2);border-radius:3px;
+  padding:7px 12px;font-family:monospace;font-size:.76rem;color:var(--green);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;}
+.fb-label{color:var(--cyan);font-size:.64rem;font-weight:700;}
+.con-question{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.12);
+  border-radius:4px;padding:11px 14px;margin-bottom:9px;}
+.con-q-lbl{font-size:.58rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px;}
+.con-q-txt{font-size:.82rem;color:#d0e0f8;font-weight:600;margin-bottom:8px;}
+.cmd-opts{display:flex;flex-wrap:wrap;gap:6px;}
+.cmd-opt{background:rgba(20,40,100,.8);border:1px solid rgba(0,229,255,.2);border-radius:3px;
+  padding:6px 13px;font-family:monospace;font-size:.73rem;color:#94b4e0;cursor:pointer;transition:all .18s;}
+.cmd-opt:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.1);}
+.cmd-opt.q-ok{border-color:var(--green)!important;color:var(--green)!important;background:rgba(16,185,129,.1)!important;}
+.cmd-opt.q-no{border-color:var(--red)!important;color:var(--red)!important;}
+.cmd-opt.q-sel{border-color:rgba(139,92,246,.5);color:#c4b5fd;background:rgba(139,92,246,.1);}
+
+/* ── SCENARIO TABS ── */
+.stabs{display:flex;gap:5px;flex-wrap:wrap;}
+.stab{background:rgba(25,45,110,.75);border:1px solid rgba(0,229,255,.15);border-radius:3px;
+  padding:6px 12px;font-size:.7rem;font-weight:700;cursor:pointer;transition:all .18s;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.stab:hover{border-color:rgba(0,229,255,.35);color:var(--cyan);}
+.stab.on{background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.45);color:var(--cyan);}
+.stab.done{border-color:rgba(16,185,129,.35);color:var(--green);}
+
+/* ── MAP SCREEN ── */
+#scr-map{padding-top:64px;padding-bottom:36px;}
+.map-container{width:100%;max-width:860px;padding:20px 16px;}
+.map-h{font-size:.95rem;font-weight:800;text-transform:uppercase;letter-spacing:3px;color:var(--cyan);text-align:center;margin-bottom:3px;}
+.map-sub{font-size:.65rem;color:var(--muted);text-align:center;letter-spacing:2px;margin-bottom:26px;text-transform:uppercase;}
+.m-route{width:2px;height:52px;background:linear-gradient(180deg,rgba(0,229,255,.4),rgba(139,92,246,.4));margin:0 auto;}
+.pcard{width:100%;max-width:530px;
+  background:linear-gradient(135deg,rgba(28,48,100,.97),rgba(15,25,60,.99));
+  border:1px solid rgba(0,229,255,.18);border-radius:6px;overflow:hidden;transition:all .28s;}
+.pcard.unl{border-color:rgba(0,229,255,.4);cursor:pointer;}
+.pcard.unl:hover{border-color:rgba(0,229,255,.75);box-shadow:0 0 38px rgba(0,229,255,.18);transform:translateY(-2px);}
+.pcard.lk{opacity:.5;border-color:rgba(100,116,139,.18);}
+.pcard.done{border-color:rgba(16,185,129,.4);}
+.pcard-bar{height:4px;width:100%;}
+.pcard-in{display:flex;align-items:center;gap:16px;padding:18px 22px;}
+.pcard-name{font-size:1rem;font-weight:800;letter-spacing:.5px;}
+.pcard-lv{font-size:.62rem;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-top:2px;}
+.pbadge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:2px;
+  font-size:.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:9px;}
+.pb-u{background:rgba(0,229,255,.08);color:var(--cyan);border:1px solid rgba(0,229,255,.25);}
+.pb-l{background:rgba(100,116,139,.07);color:var(--muted);border:1px solid rgba(100,116,139,.18);}
+.pb-d{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.28);}
+.pcard-enter{font-size:.65rem;color:var(--cyan);margin-top:6px;opacity:.7;letter-spacing:.5px;}
+
+/* Badges */
+.bdg-sec{width:100%;max-width:530px;margin-top:24px;}
+.bdg-t{font-size:.6rem;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:9px;text-align:center;}
+.bdg-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+.bdg-c{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:10px 5px;text-align:center;}
+.bdg-c.ea{border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.06);}
+.bdg-n{font-size:.57rem;color:var(--muted);margin-top:4px;line-height:1.3;}
+.bdg-c.ea .bdg-n{color:var(--gold);}
+
+/* Editable table cells */
+.edit-inp{background:rgba(240,250,255,.12);border:1px solid rgba(0,229,255,.3);border-radius:2px;
+  color:var(--bright);font-family:'Segoe UI',sans-serif;font-size:.76rem;padding:4px 6px;
+  outline:none;width:100%;text-align:center;}
+.edit-inp:focus{border-color:rgba(0,229,255,.6);background:rgba(240,250,255,.18);}
+.t-cell-edit{background:rgba(0,229,255,.05)!important;cursor:text;}
+
+/* ── INTRO SCREEN ── */
+#scr-intro{justify-content:center;align-items:center;min-height:100vh;padding:18px;}
+.intro-vp{width:100%;max-width:740px;
+  background:linear-gradient(180deg,#0c1838 0%,#101e50 55%,#091430 100%);
+  border:1px solid rgba(0,229,255,.35);border-radius:5px;padding:44px 36px;text-align:center;
+  position:relative;overflow:hidden;box-shadow:0 0 70px rgba(0,229,255,.12),inset 0 0 60px rgba(0,0,90,.35);}
+.intro-vp::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 75% 50% at 50% 100%,rgba(59,130,246,.08),transparent 70%);pointer-events:none;}
+.rim{position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,rgba(0,229,255,.7),rgba(139,92,246,.8),rgba(0,229,255,.7),transparent);}
+.corner{position:absolute;width:14px;height:14px;border-color:rgba(0,229,255,.55);}
+.c-tl{top:8px;left:8px;border-top:2px solid;border-left:2px solid;}
+.c-tr{top:8px;right:8px;border-top:2px solid;border-right:2px solid;}
+.c-bl{bottom:8px;left:8px;border-bottom:2px solid;border-left:2px solid;}
+.c-br{bottom:8px;right:8px;border-bottom:2px solid;border-right:2px solid;}
+.scanline{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.02) 2px,rgba(0,0,0,.02) 4px);pointer-events:none;}
+.wm{font-size:3.5rem;font-weight:900;letter-spacing:-1px;line-height:1;
+  background:linear-gradient(135deg,#67e8f9,#818cf8,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.wm-sub{font-size:.66rem;text-transform:uppercase;letter-spacing:4px;color:var(--muted);margin-top:4px;}
+.wcard{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.12);border-radius:5px;
+  padding:15px 20px;margin:24px 0;text-align:left;font-size:.84rem;line-height:1.85;color:#94a3b8;}
+.wcard strong{color:var(--cyan);}
+.st-row{display:flex;justify-content:center;gap:22px;margin-top:12px;font-size:.66rem;color:var(--muted);}
+.st-it{display:flex;align-items:center;gap:5px;}
+.led{width:6px;height:6px;border-radius:50%;animation:pled 2s infinite;}
+.led-g{background:var(--green);box-shadow:0 0 6px var(--green);}
+.led-c{background:var(--cyan);box-shadow:0 0 6px var(--cyan);}
+
+/* ── REWARD POPUP ── */
+#rw{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);
+  background:linear-gradient(160deg,rgba(28,48,105,.99),rgba(12,20,50,.99));
+  border:1px solid rgba(251,191,36,.4);border-radius:6px;padding:32px 36px;text-align:center;
+  z-index:600;display:none;box-shadow:0 0 65px rgba(251,191,36,.15);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);max-width:340px;width:90%;}
+#rw::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(251,191,36,.55),transparent);}
+#rw.show{transform:translate(-50%,-50%) scale(1);}
+.rw-t{font-size:1.35rem;font-weight:900;color:var(--gold);margin:10px 0 5px;}
+.rw-m{color:#94a3b8;font-size:.82rem;margin-bottom:18px;line-height:1.6;}
+#ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;backdrop-filter:blur(4px);}
+
+/* ── FINAL SCREEN ── */
+#scr-fin{justify-content:center;padding:75px 18px 36px;min-height:100vh;}
+.fin-f{width:100%;max-width:560px;text-align:center;}
+.fin-t{font-size:2.6rem;font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(135deg,var(--gold),#fde68a,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;}
+.fin-sub{font-size:.68rem;text-transform:uppercase;letter-spacing:3px;color:var(--muted);margin:6px 0 22px;}
+.fin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+.fsc{background:rgba(28,50,115,.75);border:1px solid rgba(0,229,255,.18);border-radius:5px;padding:15px 8px;}
+.fsc-v{font-size:1.8rem;font-weight:900;color:var(--cyan);}
+.fsc-l{font-size:.58rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:3px;}
+.fin-bdg{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;}
+.fbc{display:flex;align-items:center;gap:5px;background:rgba(251,191,36,.08);
+  border:1px solid rgba(251,191,36,.24);border-radius:3px;padding:5px 11px;font-size:.7rem;color:var(--gold);}
+svg.ic{display:inline-block;vertical-align:middle;}
+@media(max-width:560px){.wm{font-size:2.3rem;}.fin-stats{grid-template-columns:1fr 1fr;}.bdg-grid{grid-template-columns:repeat(3,1fr);}}
+</style>
+</head>
+<body>
+
+<div id="sf"></div>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="h-seg">
+    <svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none"><polygon points="12,2 15,8 22,9 17,14 18,21 12,18 6,21 7,14 2,9 9,8" fill="#fbbf24"/></svg>
+    <div><div class="h-lbl">Créditos</div><div class="h-val" id="hud-pts">0</div></div>
+  </div>
+  <div class="h-div"></div>
+  <div class="h-seg">
+    <svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#00e5ff" stroke-width="1.5"/><path d="M12 7v5l3 2" stroke="#00e5ff" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <div><div class="h-lbl">Tiempo de Vuelo</div><div class="h-val" id="hud-t">00:00</div></div>
+  </div>
+  <div class="h-div"></div>
+  <div class="h-seg">
+    <div><div class="h-lbl">Misión</div>
+    <div class="h-bar" style="margin-top:4px;"><div class="h-fill" id="hud-prog" style="width:0%"></div></div></div>
+  </div>
+  <div class="h-seg" style="margin-left:auto;">
+    <div class="h-lbl" style="margin-right:4px;">Intentos</div>
+    <div class="h-tries" id="hud-tries"></div>
+  </div>
+  <button class="btn btn-ghost btn-sm" onclick="goMap()">
+    <svg class="ic" width="11" height="11" viewBox="0 0 24 24" fill="none" style="margin-right:4px;"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z" stroke="#00e5ff" stroke-width="1.5" stroke-linejoin="round"/></svg>Mapa
+  </button>
+</div>
+
+<div id="ov" onclick="closeRw()"></div>
+<div id="rw">
+  <div id="rw-icon"></div>
+  <div class="rw-t" id="rw-t">Objetivo Confirmado</div>
+  <div class="rw-m" id="rw-m">+80 créditos estelares</div>
+  <button class="btn btn-success" onclick="closeRw()">Continuar Misión</button>
+</div>
+
+<!-- ═══════════ INTRO ═══════════ -->
+<div class="scr on" id="scr-intro">
+  <div class="intro-vp">
+    <div class="rim"></div>
+    <div class="corner c-tl"></div><div class="corner c-tr"></div>
+    <div class="corner c-bl"></div><div class="corner c-br"></div>
+    <div class="scanline"></div>
+    <svg width="96" height="96" viewBox="0 0 96 96" style="margin-bottom:16px;">
+      <defs>
+        <radialGradient id="pg" cx="35%" cy="30%"><stop offset="0%" stop-color="#67e8f9"/><stop offset="50%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1e1b4b"/></radialGradient>
+        <radialGradient id="pg2" cx="50%" cy="50%"><stop offset="0%" stop-color="#8b5cf6" stop-opacity=".35"/><stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient>
+      </defs>
+      <circle cx="48" cy="48" r="46" fill="url(#pg2)"/>
+      <circle cx="48" cy="48" r="32" fill="url(#pg)"/>
+      <ellipse cx="48" cy="48" rx="46" ry="11" fill="none" stroke="#00e5ff" stroke-width="1.8" opacity=".5"/>
+      <ellipse cx="38" cy="40" rx="9" ry="5" fill="rgba(255,255,255,.06)"/>
+      <text x="48" y="55" text-anchor="middle" font-size="17" font-weight="900" fill="rgba(255,255,255,.9)" font-family="Arial">X</text>
+    </svg>
+    <div class="wm">ExcelVerse</div>
+    <div class="wm-sub">Academia Estelar Orbyt — Comando Táctico de Datos</div>
+    <div class="wcard">
+      <strong>Transmisión entrante, Cadete.</strong><br>
+      Bienvenido a la <strong>Academia Estelar Orbyt</strong>. Tu nave ha sido asignada al <strong>Sector Kelvon</strong>. Misión: dominar el <strong>Sistema de Análisis Táctico de Datos (SATD)</strong> — basado en Microsoft Excel — para convertirte en <strong>Comandante de la Constelación</strong>.<br><br>
+      Cada planeta es un teatro de operaciones. Los datos son tu armamento. <strong>No se requiere experiencia previa</strong>: cada misión incluye guía paso a paso.
+    </div>
+    <button class="btn btn-launch" onclick="startGame()">
+      <svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" style="margin-right:7px;"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      INICIAR DESPEGUE
+    </button>
+    <div class="st-row">
+      <div class="st-it"><div class="led led-g"></div>SISTEMAS ACTIVOS</div>
+      <div class="st-it"><div class="led led-c"></div>BITÁCORA CARGADA</div>
+      <div class="st-it"><div class="led led-g"></div>NAVE LISTA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MAP ═══════════ -->
+<div class="scr" id="scr-map">
+  <div class="map-container">
+    <div class="map-h">Mapa de Operaciones Galácticas</div>
+    <div class="map-sub">Selecciona tu teatro de operaciones</div>
+    <div style="display:flex;flex-direction:column;align-items:center;" id="mmap"></div>
+    <div class="bdg-sec">
+      <div class="bdg-t">Condecoraciones de Misión</div>
+      <div class="bdg-grid" id="bdg-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SECTOR KELVON ═══════════ -->
+<div class="scr" id="scr-k">
+  <div class="ck-frame">
+    <div class="ck-arch">
+      <div class="ck-arch-in">
+        <div>
+          <div class="ck-title" id="k-title">Sector Kelvon — Protocolo Alfa</div>
+          <div class="ck-sub" id="k-sub">5 Misiones de Entrenamiento Táctico</div>
+        </div>
+        <div class="ej-nav" id="ej-nav"></div>
+      </div>
+    </div>
+    <div class="ck-main">
+      <div class="ck-side">
+        <div class="sp">
+          <div class="sp-lbl">Radar Táctico</div>
+          <svg width="116" height="116" viewBox="0 0 116 116">
+            <circle cx="58" cy="58" r="54" fill="none" stroke="rgba(0,229,255,.08)" stroke-width="1"/>
+            <circle cx="58" cy="58" r="38" fill="none" stroke="rgba(0,229,255,.1)" stroke-width="1"/>
+            <circle cx="58" cy="58" r="22" fill="none" stroke="rgba(0,229,255,.13)" stroke-width="1"/>
+            <circle cx="58" cy="58" r="8" fill="none" stroke="rgba(0,229,255,.17)" stroke-width="1"/>
+            <line x1="58" y1="4" x2="58" y2="112" stroke="rgba(0,229,255,.06)" stroke-width="1"/>
+            <line x1="4" y1="58" x2="112" y2="58" stroke="rgba(0,229,255,.06)" stroke-width="1"/>
+            <g class="radar-sweep">
+              <path d="M58 58 L58 4 A54 54 0 0 1 112 58 Z" fill="rgba(0,229,255,.08)"/>
+              <line x1="58" y1="58" x2="58" y2="4" stroke="rgba(0,229,255,.6)" stroke-width="1.5"/>
+            </g>
+            <circle cx="76" cy="36" r="3" fill="var(--cyan)" opacity=".85"/>
+            <circle cx="38" cy="70" r="2" fill="var(--violet)" opacity=".7"/>
+            <circle cx="68" cy="78" r="2" fill="var(--cyan)" opacity=".5"/>
+            <circle cx="58" cy="58" r="4" fill="var(--cyan)"/>
+          </svg>
+        </div>
+        <div class="sp">
+          <div class="sp-lbl">Energía del Reactor</div>
+          <div>
+            <div class="e-seg" style="width:100%;background:#10b981;box-shadow:0 0 5px rgba(16,185,129,.4);margin-bottom:3px;height:7px;border-radius:2px;"></div>
+            <div class="e-seg" style="width:86%;background:#34d399;animation-delay:.2s;margin-bottom:3px;height:7px;border-radius:2px;"></div>
+            <div class="e-seg" style="width:72%;background:#10b981;animation-delay:.4s;margin-bottom:3px;height:7px;border-radius:2px;"></div>
+            <div class="e-seg" style="width:58%;background:var(--gold);box-shadow:0 0 5px rgba(251,191,36,.4);animation-delay:.6s;margin-bottom:3px;height:7px;border-radius:2px;"></div>
+            <div class="e-seg" style="width:44%;background:var(--orange);animation-delay:.8s;height:7px;border-radius:2px;"></div>
+          </div>
+        </div>
+        <div class="sp">
+          <div class="sp-lbl">Estado de Sistemas</div>
+          <div class="sys-row"><span>Propulsión</span><span class="sys-ok">100%</span></div>
+          <div class="sys-row"><span>Escudo</span><span class="sys-ok">87%</span></div>
+          <div class="sys-row"><span>Módulos</span><span class="sys-ok" id="sys-mod">0/5</span></div>
+        </div>
+      </div>
+      <div class="ck-ctr">
+        <div class="ex-wrap" id="ex-box"></div>
+      </div>
+      <div class="ck-side">
+        <div class="sp">
+          <div class="sp-lbl">Créditos Estelares</div>
+          <div style="font-size:1.5rem;font-weight:900;color:var(--cyan);text-shadow:0 0 10px rgba(0,229,255,.4);" id="sp-pts">0</div>
+          <div style="font-size:.56rem;color:var(--muted);margin-top:2px;">BANCO ORBITAL</div>
+        </div>
+        <div class="sp">
+          <div class="sp-lbl">Progreso de Sector</div>
+          <div style="font-size:1.6rem;font-weight:900;color:var(--violet);" id="sp-prog">0%</div>
+          <div class="prog-t" style="margin-top:7px;"><div class="prog-f" id="sp-prog-bar" style="width:0%"></div></div>
+        </div>
+        <div class="sp" style="text-align:center;">
+          <div class="sp-lbl">Nave de Mando</div>
+          <svg width="100" height="92" viewBox="0 0 100 92">
+            <defs><linearGradient id="ship1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#67e8f9" stop-opacity=".92"/><stop offset="100%" stop-color="#3b82f6" stop-opacity=".7"/></linearGradient></defs>
+            <path d="M50 8 L64 36 L62 60 L50 67 L38 60 L36 36 Z" fill="url(#ship1)" opacity=".88"/>
+            <path d="M36 38 L16 58 L35 54 Z" fill="#8b5cf6" opacity=".7"/>
+            <path d="M64 38 L84 58 L65 54 Z" fill="#8b5cf6" opacity=".7"/>
+            <ellipse cx="50" cy="29" rx="7" ry="9" fill="#06091e" opacity=".8"/>
+            <ellipse cx="50" cy="28" rx="4.5" ry="6.5" fill="#00e5ff" opacity=".28"/>
+            <ellipse cx="50" cy="65" rx="6" ry="3.5" fill="#f97316" opacity=".6"/>
+            <ellipse cx="50" cy="67" rx="3.5" ry="2" fill="#fde68a" opacity=".8"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SECTOR EXORIS ═══════════ -->
+<div class="scr" id="scr-e">
+  <div class="ck-frame" style="background:radial-gradient(ellipse 90% 50% at 50% 100%,rgba(80,30,150,.25) 0%,transparent 70%),linear-gradient(180deg,#0a1030 0%,#120a38 40%,#100a30 100%);">
+    <div class="ck-arch">
+      <div class="ck-arch-in">
+        <div>
+          <div class="ck-title">Sector Exoris — Protocolo Beta</div>
+          <div class="ck-sub">4 Subsectores de Operación Avanzada</div>
+        </div>
+        <div class="stabs" id="stabs"></div>
+      </div>
+    </div>
+    <div class="ck-main">
+      <div class="ck-side">
+        <div class="sp">
+          <div class="sp-lbl">Radar de Amenazas</div>
+          <svg width="116" height="116" viewBox="0 0 116 116">
+            <circle cx="58" cy="58" r="54" fill="none" stroke="rgba(139,92,246,.08)" stroke-width="1"/>
+            <circle cx="58" cy="58" r="36" fill="none" stroke="rgba(139,92,246,.11)" stroke-width="1"/>
+            <circle cx="58" cy="58" r="20" fill="none" stroke="rgba(139,92,246,.14)" stroke-width="1"/>
+            <g class="radar-sweep" style="animation-duration:5s;">
+              <path d="M58 58 L58 4 A54 54 0 0 1 112 58 Z" fill="rgba(139,92,246,.07)"/>
+              <line x1="58" y1="58" x2="58" y2="4" stroke="rgba(139,92,246,.6)" stroke-width="1.5"/>
+            </g>
+            <circle cx="58" cy="58" r="4" fill="var(--violet)"/>
+            <circle cx="37" cy="40" r="2" fill="var(--cyan)" opacity=".85"/>
+            <circle cx="74" cy="74" r="3" fill="var(--violet)" opacity=".65"/>
+          </svg>
+        </div>
+        <div class="sp">
+          <div class="sp-lbl">Subsectores</div>
+          <div class="sys-row"><span>Orbyt-1</span><span class="sys-ok" id="e-m1">--</span></div>
+          <div class="sys-row"><span>Orbyt-2</span><span class="sys-ok" id="e-m2">--</span></div>
+          <div class="sys-row"><span>Orbyt-3</span><span class="sys-ok" id="e-m3">--</span></div>
+          <div class="sys-row"><span>Orbyt-4</span><span class="sys-ok" id="e-m4">--</span></div>
+        </div>
+        <div class="sp" style="text-align:center;">
+          <div class="sp-lbl">Créditos</div>
+          <div style="font-size:1.4rem;font-weight:900;color:var(--violet);text-shadow:0 0 9px var(--gv);" id="e-pts">0</div>
+        </div>
+      </div>
+      <div class="ck-ctr">
+        <div class="ex-wrap" id="scen-box"></div>
+      </div>
+      <div class="ck-side">
+        <div class="sp">
+          <div class="sp-lbl">Progreso Exoris</div>
+          <div style="font-size:1.6rem;font-weight:900;color:var(--violet);" id="e-prog">0%</div>
+          <div class="prog-t" style="margin-top:7px;"><div class="prog-f" id="e-prog-bar" style="width:0%;background:linear-gradient(90deg,var(--violet),#c4b5fd);"></div></div>
+        </div>
+        <div class="sp" style="text-align:center;">
+          <svg width="100" height="92" viewBox="0 0 100 92">
+            <defs><radialGradient id="p2g" cx="35%" cy="35%"><stop offset="0%" stop-color="#c4b5fd"/><stop offset="100%" stop-color="#4c1d95"/></radialGradient></defs>
+            <circle cx="50" cy="46" r="34" fill="url(#p2g)" opacity=".88"/>
+            <ellipse cx="50" cy="46" rx="48" ry="10.5" fill="none" stroke="#8b5cf6" stroke-width="1.8" opacity=".5"/>
+            <ellipse cx="40" cy="38" rx="8" ry="5" fill="rgba(255,255,255,.06)"/>
+            <text x="50" y="53" text-anchor="middle" font-size="16" font-weight="900" fill="rgba(255,255,255,.9)" font-family="Arial">II</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FINAL ═══════════ -->
+<div class="scr" id="scr-fin">
+  <div class="fin-f">
+    <svg width="82" height="82" viewBox="0 0 82 82" style="margin-bottom:14px;">
+      <defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient></defs>
+      <rect x="28" y="62" width="26" height="10" fill="url(#tg)" rx="2"/>
+      <rect x="20" y="72" width="42" height="7" fill="url(#tg)" rx="2"/>
+      <path d="M14 15 H68 V48 Q68 70 41 70 Q14 70 14 48 Z" fill="url(#tg)" opacity=".9"/>
+      <rect x="7" y="15" width="9" height="26" rx="4.5" fill="none" stroke="url(#tg)" stroke-width="2.2"/>
+      <rect x="66" y="15" width="9" height="26" rx="4.5" fill="none" stroke="url(#tg)" stroke-width="2.2"/>
+      <polygon points="41,26 44.5,34 54,35 47.5,41 49.5,50 41,46 32.5,50 34.5,41 28,35 37.5,34" fill="#fde68a"/>
+    </svg>
+    <div class="fin-t">Graduación Estelar</div>
+    <div class="fin-sub">Comandante de la Constelación — Clase Orbyt Suprema</div>
+    <div class="fin-stats">
+      <div class="fsc"><div class="fsc-v" id="fin-pts">0</div><div class="fsc-l">Créditos</div></div>
+      <div class="fsc"><div class="fsc-v" style="color:var(--violet);" id="fin-t">--</div><div class="fsc-l">Tiempo de Vuelo</div></div>
+      <div class="fsc"><div class="fsc-v" style="color:var(--gold);" id="fin-b">0</div><div class="fsc-l">Condecoraciones</div></div>
+    </div>
+    <div class="fin-bdg" id="fin-bdg"></div>
+    <p style="color:var(--muted);font-size:.78rem;max-width:380px;margin:0 auto 20px;line-height:1.7;">Has superado todos los sectores de entrenamiento de la <strong style="color:var(--cyan);">Academia Estelar Orbyt</strong>. El Sistema de Análisis Táctico de Datos es ahora tu arma más poderosa.</p>
+    <button class="btn btn-prim" onclick="resetGame()">
+      <svg class="ic" width="11" height="11" viewBox="0 0 24 24" fill="none" style="margin-right:5px;"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Nueva Misión
+    </button>
+  </div>
+</div>
+
+<div style="position:relative;z-index:1;text-align:center;padding:13px;color:var(--muted);font-size:.7rem;border-top:1px solid rgba(0,229,255,.08);background:rgba(3,5,15,.95);">
+  Aprendiendo con <strong style="color:var(--cyan);">@LaProfeVivy</strong>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let G = {
+  pts:0, time:0, timer:null,
+  k_done:[], e_done:[],
+  k_unlocked:true, e_unlocked:false,
+  k_complete:false, e_complete:false,
+  badges:[], curEj:0, curScen:0,
+  maxAttempts:3,
+};
+const save = () => { try{ localStorage.setItem('ev5', JSON.stringify(G)); }catch(e){} };
+const load = () => { try{ const d=JSON.parse(localStorage.getItem('ev5')); if(d) Object.assign(G,d); }catch(e){} };
+
+const BADGES = [
+  {id:'first',   icon:'rocket', name:'Primera Transmisión'},
+  {id:'halfway', icon:'bolt',   name:'Motor Hiperpropulsor'},
+  {id:'kelvon',  icon:'planet', name:'Explorador Kelvon'},
+  {id:'functions',icon:'cpu',   name:'Operador de Consola'},
+  {id:'master',  icon:'trophy', name:'Comandante Supremo'},
+];
+const SVG = {
+  rocket:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" stroke="currentColor" stroke-width="1.5"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" stroke="currentColor" stroke-width="1.5"/></svg>`,
+  bolt:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+  planet:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7" stroke="currentColor" stroke-width="1.5"/><ellipse cx="12" cy="12" rx="11" ry="4" stroke="currentColor" stroke-width="1.5" transform="rotate(-20 12 12)"/></svg>`,
+  cpu:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.5"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  trophy:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9H3V4h3M18 9h3V4h-3M12 17v4M8 21h8M5 4h14v7a7 7 0 0 1-14 0V4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  check:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  lock:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  play:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polygon points="5,3 19,12 5,21" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+  target:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>`,
+  info:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+  book:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="1.5"/></svg>`,
+};
+
+// ══════════════════════════════════════════════════
+// STARFIELD
+// ══════════════════════════════════════════════════
+function makeStars(){
+  const c=document.getElementById('sf');
+  for(let i=0;i<180;i++){
+    const s=document.createElement('div'); s.className='s';
+    const sz=Math.random()*2+.5, dur=Math.random()*4+2;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:rgba(255,255,255,${Math.random()*.8+.2});animation-duration:${dur}s;animation-delay:-${Math.random()*dur}s;`;
+    c.appendChild(s);
+  }
+}
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+function show(id){ document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); window.scrollTo(0,0); }
+function goMap(){ show('scr-map'); renderMap(); }
+
+function updateHUD(){
+  document.getElementById('hud-pts').textContent=G.pts;
+  ['sp-pts','e-pts'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=G.pts;});
+  const pct=Math.round((G.k_done.length/5)*50+(G.e_done.length/4)*50);
+  document.getElementById('hud-prog').style.width=pct+'%';
+  const p1=Math.round(G.k_done.length/5*100);
+  ['sp-prog','sp-prog-bar'].forEach((id,i)=>{const el=document.getElementById(id);if(el){if(i===0)el.textContent=p1+'%';else el.style.width=p1+'%';}});
+  if(document.getElementById('sys-mod')) document.getElementById('sys-mod').textContent=G.k_done.length+'/5';
+  const p2=Math.round(G.e_done.length/4*100);
+  ['e-prog','e-prog-bar'].forEach((id,i)=>{const el=document.getElementById(id);if(el){if(i===0)el.textContent=p2+'%';else el.style.width=p2+'%';}});
+  ['e-m1','e-m2','e-m3','e-m4'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=G.e_done.includes(i)?'✓ LISTO':'--';});
+  renderHudTries();
+}
+
+// ══════════════════════════════════════════════════
+// ATTEMPT SYSTEM (per-mission local state)
+// ══════════════════════════════════════════════════
+let EJ = { attempts:3, quizAns:{}, clsAns:{}, ssAns:{}, tacRound:0, tacScore:0 };
+
+function resetAttempts(){ EJ.attempts=G.maxAttempts; renderHudTries(); }
+function renderHudTries(){
+  const el=document.getElementById('hud-tries'); if(!el) return;
+  el.innerHTML='';
+  for(let i=0;i<G.maxAttempts;i++){
+    const p=document.createElement('div');
+    p.className='try-pip'+(i>=EJ.attempts?' used':'');
+    el.appendChild(p);
+  }
+}
+function updateAttemptUI(){
+  const rem=EJ.attempts;
+  for(let i=0;i<G.maxAttempts;i++){
+    const p=document.getElementById('ap-'+i); if(!p) continue;
+    p.className='att-pip'+(i>=rem?' gone':'');
+  }
+  const t=document.getElementById('att-txt'); if(t) t.textContent=rem+(rem===1?' restante':' restantes');
+  renderHudTries();
+}
+function renderAttemptBar(){
+  return `<div class="attempt-bar">
+    <div class="att-lbl">Intentos</div>
+    <div class="att-pips" id="att-pips">
+      ${Array.from({length:G.maxAttempts},(_,i)=>`<div class="att-pip" id="ap-${i}"></div>`).join('')}
+    </div>
+    <div style="font-size:.62rem;color:var(--muted);margin-left:6px;" id="att-txt">3 restantes</div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════════════
+function startTimer(){
+  if(G.timer) clearInterval(G.timer);
+  G.timer=setInterval(()=>{
+    G.time++;
+    const m=Math.floor(G.time/60).toString().padStart(2,'0'),s=(G.time%60).toString().padStart(2,'0');
+    document.getElementById('hud-t').textContent=`${m}:${s}`;
+  },1000);
+}
+function fmtTime(t){ return Math.floor(t/60).toString().padStart(2,'0')+':'+(t%60).toString().padStart(2,'0'); }
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+function startGame(){
+  load();
+  document.getElementById('hud').style.display='flex';
+  startTimer(); updateHUD(); goMap();
+}
+
+// ══════════════════════════════════════════════════
+// MAP RENDER
+// ══════════════════════════════════════════════════
+function renderMap(){
+  updateHUD();
+  const map=document.getElementById('mmap');
+  const planets=[
+    {name:'Planeta Kelvon',lv:'Sector Alfa — Protocolo de Iniciación',
+     done:G.k_complete,unl:G.k_unlocked,prog:G.k_done.length,total:5,fn:goKelvon,
+     bar:'linear-gradient(90deg,var(--cyan),var(--violet))',
+     svg:`<svg width="66" height="66" viewBox="0 0 66 66"><defs><radialGradient id="mpk" cx="35%" cy="30%"><stop offset="0%" stop-color="#67e8f9"/><stop offset="100%" stop-color="#1e40af"/></radialGradient></defs><circle cx="33" cy="33" r="27" fill="url(#mpk)" opacity=".9"/><ellipse cx="33" cy="33" rx="37" ry="8.5" fill="none" stroke="#00e5ff" stroke-width="1.5" opacity=".5"/><ellipse cx="25" cy="25" rx="7" ry="4" fill="rgba(255,255,255,.07)"/><text x="33" y="40" text-anchor="middle" font-size="13" font-weight="900" fill="rgba(255,255,255,.9)" font-family="Arial">α</text></svg>`},
+    {name:'Planeta Exoris',lv:'Sector Beta — Protocolo Avanzado',
+     done:G.e_complete,unl:G.e_unlocked,prog:G.e_done.length,total:4,fn:goExoris,
+     bar:'linear-gradient(90deg,var(--violet),#c4b5fd)',
+     svg:`<svg width="66" height="66" viewBox="0 0 66 66"><defs><radialGradient id="mpe" cx="35%" cy="30%"><stop offset="0%" stop-color="#c4b5fd"/><stop offset="100%" stop-color="#4c1d95"/></radialGradient></defs><circle cx="33" cy="33" r="27" fill="url(#mpe)" opacity=".9"/><ellipse cx="33" cy="33" rx="38" ry="8" fill="none" stroke="#8b5cf6" stroke-width="1.5" opacity=".5"/><ellipse cx="25" cy="26" rx="6" ry="3.5" fill="rgba(255,255,255,.07)"/><text x="33" y="40" text-anchor="middle" font-size="13" font-weight="900" fill="rgba(255,255,255,.9)" font-family="Arial">β</text></svg>`},
+  ];
+  map.innerHTML='';
+  planets.forEach((p,idx)=>{
+    const cls=p.done?'done':p.unl?'unl':'lk';
+    const pct=Math.round(p.prog/p.total*100);
+    const barBg=p.done?'linear-gradient(90deg,var(--green),#34d399)':p.unl?p.bar:'var(--muted)';
+    const bCls=p.done?'pb-d':p.unl?'pb-u':'pb-l';
+    const bTxt=p.done?`<span style="color:var(--green);display:inline-flex;">${SVG.check}</span> Completado`:
+               p.unl?`<span style="color:var(--cyan);display:inline-flex;">${SVG.play}</span> Disponible`:
+               `<span style="color:var(--muted);display:inline-flex;">${SVG.lock}</span> Restringido`;
+    const card=document.createElement('div'); card.className=`pcard ${cls}`;
+    card.innerHTML=`<div class="pcard-bar" style="background:${barBg}"></div>
+      <div class="pcard-in">${p.svg}<div style="flex:1;">
+        <div class="pcard-name" style="color:${p.done?'var(--green)':p.unl?'var(--cyan)':'var(--muted)'}">${p.name}</div>
+        <div class="pcard-lv">${p.lv}</div>
+        <div class="pbadge ${bCls}">${bTxt}</div>
+        <div style="margin-top:10px;">
+          <div style="font-size:.6rem;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;">${p.prog}/${p.total} protocolos — ${pct}%</div>
+          <div class="prog-t" style="height:4px;"><div class="prog-f" style="width:${pct}%;${p.done?'background:linear-gradient(90deg,var(--green),#34d399)':''}"></div></div>
+        </div>
+        ${p.unl&&!p.done?`<div class="pcard-enter">→ Acceder al sector</div>`:''}
+      </div></div>`;
+    if(p.unl) card.onclick=p.fn;
+    map.appendChild(card);
+    if(idx<planets.length-1){const r=document.createElement('div');r.className='m-route';map.appendChild(r);}
+  });
+  document.getElementById('bdg-grid').innerHTML=BADGES.map(b=>{
+    const earned=G.badges.includes(b.id);
+    return `<div class="bdg-c ${earned?'ea':''}"><div style="color:${earned?'var(--gold)':'var(--muted)'};display:flex;justify-content:center;">${SVG[b.icon]||''}</div><div class="bdg-n">${earned?b.name:'???'}</div></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════
+// SECTOR KELVON — MISSION DATA
+// M0: SHOOTER — Entorno de Excel (FIX #4/#5: teaches parts of Excel with shooter mechanic)
+// M1: TACGRID — Click-only, only rendered cells (FIX #8: real coord bug fix)
+// M2: CLASSIFY — Data types
+// M3: CONSOLE — Redesigned as actual console (FIX #2/#7)
+// M4: SHEET — Source data provided before table (FIX #6)
+// ══════════════════════════════════════════════════
+const MISSIONS = [
+  // ─────────────────────────────────────────────
+  // M0: SHOOTER — ENTORNO DE EXCEL
+  // FIX #4/#5: Teaches parts of Excel with shooter. Each round has a definition + correct term.
+  // ─────────────────────────────────────────────
+  { id:0, pts:80, type:'shooter',
+    title:'Misión Alfa-1 — Cartografía del Sistema SATD (Entorno Excel)',
+    obj:'El enemigo cifró las partes del sistema. Neutraliza el objetivo correcto para aprender el entorno de Excel.',
+    ins:'<strong>Guía Rápida:</strong> Excel tiene partes clave: <strong>Libro</strong> = el archivo completo (.xlsx) | <strong>Hoja</strong> = pestaña dentro del libro | <strong>Celda</strong> = casilla individual (ej: A1) | <strong>Rango</strong> = grupo de celdas (ej: A1:C5) | <strong>Columna</strong> = letra vertical (A, B, C...) | <strong>Fila</strong> = número horizontal (1, 2, 3...) | <strong>Barra de fórmulas</strong> = zona donde se ve/edita el contenido de la celda | <strong>Cinta de opciones</strong> = barra de menús superior con pestañas (Inicio, Insertar...)<br><br>Lee la definición en pantalla y dispara al término correcto.',
+    rounds:[
+      {q:'📂 Archivo principal de trabajo con extensión .xlsx',a:'Libro',wrong:['Hoja','Celda','Rango']},
+      {q:'📋 Pestaña de trabajo dentro del Libro (una hoja por pestaña)',a:'Hoja',wrong:['Libro','Columna','Fila']},
+      {q:'📦 Casilla donde se ingresa un dato — identificada por letra+número (ej: B3)',a:'Celda',wrong:['Rango','Hoja','Libro']},
+      {q:'📐 Grupo de celdas contiguas, por ejemplo: A1:C5',a:'Rango',wrong:['Celda','Hoja','Tabla']},
+      {q:'🔡 Identificador vertical con letras: A, B, C... en la parte superior',a:'Columna',wrong:['Fila','Rango','Celda']},
+      {q:'🔢 Identificador horizontal con números: 1, 2, 3... a la izquierda',a:'Fila',wrong:['Columna','Libro','Rango']},
+      {q:'📝 Barra que muestra y permite editar el contenido de la celda activa',a:'Barra de fórmulas',wrong:['Cinta de opciones','Celda','Hoja']},
+      {q:'🎛️ Barra superior con pestañas: Inicio, Insertar, Datos, Vista...',a:'Cinta de opciones',wrong:['Barra de fórmulas','Libro','Panel']},
+    ]
+  },
+
+  // ─────────────────────────────────────────────
+  // M1: TACGRID — Click-only cell selection
+  // FIX #8/#3: No text input, no coord parsing, no false errors.
+  // Grid: cols A-E, rows 1-5. All target coords are within this range.
+  // ─────────────────────────────────────────────
+  { id:1, pts:80, type:'tacgrid',
+    title:'Misión Alfa-2 — Coordenadas de Extracción',
+    obj:'El radar detectó puntos de interés táctico. Confirma cada coordenada haciendo clic en la celda correcta del mapa.',
+    ins:'<strong>Guía Rápida:</strong> Una coordenada de celda se lee como <strong>LETRA + NÚMERO</strong> — la letra es la <strong>columna</strong> (vertical, en el tope) y el número es la <strong>fila</strong> (horizontal, al lado izquierdo).<br><br><strong>Ejemplo:</strong> C3 = columna C, fila 3. <strong>Haz clic en la celda que coincida con la misión.</strong> Las celdas objetivo aparecen resaltadas en azul.',
+    gridCols:['A','B','C','D','E'],
+    gridRows:[1,2,3,4,5],
+    terrain:[
+      {coord:'A2',type:'t-enemy',icon:'⚠',label:'Hostil'},
+      {coord:'C3',type:'t-shelter',icon:'⬡',label:'Refugio'},
+      {coord:'E1',type:'t-resource',icon:'◈',label:'Recurso'},
+      {coord:'B5',type:'t-rocky',icon:'▲',label:'Rocoso'},
+      {coord:'D4',type:'t-enemy',icon:'⚠',label:'Hostil'},
+      {coord:'A4',type:'t-shelter',icon:'⬡',label:'Refugio'},
+      {coord:'E3',type:'t-resource',icon:'◈',label:'Recurso'},
+    ],
+    // FIX: All targets confirmed within A-E, 1-5 grid only
+    tacMissions:[
+      {q:'Refugio aliado detectado — haz clic en la celda → C3',target:'C3',hint:'Columna C = tercera letra. Fila 3 = tercer número. Busca el resaltado azul.'},
+      {q:'Zona de recursos localizada — haz clic en la celda → E1',target:'E1',hint:'Columna E = quinta letra (última). Fila 1 = primera fila (arriba).'},
+      {q:'Terreno rocoso detectado — marca la posición → B5',target:'B5',hint:'Columna B = segunda letra. Fila 5 = última fila (abajo).'},
+      {q:'Base enemiga en sector — confirma posición para evitar → A2',target:'A2',hint:'Columna A = primera letra (izquierda). Fila 2 = segunda fila.'},
+      {q:'Segundo refugio detectado — confirma extracción → A4',target:'A4',hint:'Columna A = primera letra. Fila 4 = cuarta fila contando desde arriba.'},
+    ]
+  },
+
+  // ─────────────────────────────────────────────
+  // M2: CLASSIFY — Data types (FIX #7: brighter, clearer)
+  // ─────────────────────────────────────────────
+  { id:2, pts:80, type:'classify',
+    title:'Misión Alfa-3 — Clasificación de Señales de Datos',
+    obj:'El sistema interceptó transmisiones sin clasificar. Asigna el tipo correcto a cada señal.',
+    ins:'<strong>Guía Rápida — Tipos de datos en Excel:</strong><br>• <strong>Texto</strong>: palabras, nombres, etiquetas — se alinean a la IZQUIERDA (ej: "Luna", "Misión Apollo")<br>• <strong>Número</strong>: valores numéricos puros — se alinean a la DERECHA (ej: 28000, 384400)<br>• <strong>Fecha</strong>: marcas temporales con formato dd/mm/aaaa — Excel las trata especialmente (ej: 15/03/2024)<br><br><strong>Truco:</strong> Si tiene solo dígitos → Número. Si tiene "/" como fecha → Fecha. Si tiene letras → Texto.',
+    items:[
+      {val:'Misión Apolo',answer:'Texto'},
+      {val:'28000',answer:'Número'},
+      {val:'15/03/2024',answer:'Fecha'},
+      {val:'Distancia km',answer:'Texto'},
+      {val:'384400',answer:'Número'},
+      {val:'20/07/1969',answer:'Fecha'},
+      {val:'Júpiter',answer:'Texto'},
+      {val:'365',answer:'Número'},
+    ]
+  },
+
+  // ─────────────────────────────────────────────
+  // M3: CONSOLE (FIX #2/#7: redesigned as tactical command console, not a plain quiz)
+  // ─────────────────────────────────────────────
+  { id:3, pts:80, type:'console',
+    title:'Misión Alfa-4 — Consola de Mando y Atajos Tácticos',
+    obj:'Activa los protocolos de la Consola de Mando. Cada panel del sistema tiene funciones específicas. Debes identificar el panel correcto y los atajos de comando.',
+    ins:'',
+    questions:[
+      {q:'¿Qué panel de la Cinta activa formatos de texto (Negrita, Cursiva, Color)?',opts:['Inicio','Insertar','Datos','Vista'],answer:0},
+      {q:'¿Qué atajo activa Negrita en Excel?',opts:['Ctrl+N (o Ctrl+B)','Ctrl+I','Alt+N','F4'],answer:0},
+      {q:'¿Dónde aparece el contenido de la celda activa para editar?',opts:['En el título del archivo','Barra de Fórmulas','Panel Inicio','Barra de estado'],answer:1},
+      {q:'Para copiar el contenido de una celda al portapapeles:',opts:['Ctrl+X (cortar)','Ctrl+C (copiar)','Ctrl+V (pegar)','Ctrl+Z (deshacer)'],answer:1},
+      {q:'¿Qué panel de la Cinta permite insertar gráficos y tablas?',opts:['Inicio','Vista','Insertar','Fórmulas'],answer:2},
+    ]
+  },
+
+  // ─────────────────────────────────────────────
+  // M4: SHEET — Inventory with source data
+  // FIX #6: Source data cards provided before table. Student fills from known data.
+  // ─────────────────────────────────────────────
+  { id:4, pts:120, type:'sheet',
+    title:'Misión Alfa-5 — Inventario de la Tripulación Orbital',
+    obj:'El sistema de inventario orbital tiene registros incompletos. Organiza los datos recibidos por radio en la tabla correcta antes del despegue.',
+    ins:'<strong>Guía Rápida:</strong> En Excel, los datos de <strong>texto</strong> se alinean a la izquierda y los <strong>números</strong> a la derecha. Usa los datos del panel "Transmisión de Radio" para completar las celdas vacías de la tabla de inventario.<br><br><strong>Truco:</strong> Lee cada tarjeta de datos y ubica la fila correspondiente en la tabla.',
+    // Source data to display before the table (FIX #6)
+    sourceData:[
+      {label:'Registro incompleto 2',items:['Misión: Artemis I','Año: 2022','Destino: Luna','Tripulantes: 0']},
+      {label:'Registro incompleto 3',items:['Misión: Artemis III','Año: 2026','Destino: Luna','Tripulantes: 4']},
+      {label:'Registro incompleto 4',items:['Misión: ExcelVerse','Año: 2035','Destino: Júpiter','Tripulantes: 6']},
+    ],
+    headers:['Misión','Año','Destino','Tripulantes'],
+    rows:[
+      ['Apollo 11','1969','Luna','3'],
+      ['','','',''],
+      ['','','',''],
+      ['','','',''],
+    ],
+    answers:[
+      ['Apollo 11','1969','Luna','3'],
+      ['Artemis I','2022','Luna','0'],
+      ['Artemis III','2026','Luna','4'],
+      ['ExcelVerse','2035','Júpiter','6'],
+    ],
+    // editable[row][col] = 1 means editable. Row 0 all fixed.
+    editable:[[0,0,0,0],[1,1,1,1],[1,1,1,1],[1,1,1,1]]
+  },
+];
+
+// ══════════════════════════════════════════════════
+// KELVON NAVIGATION
+// ══════════════════════════════════════════════════
+function goKelvon(){
+  show('scr-k');
+  renderEjNav();
+  const startIdx = G.k_done.length < 5 ? Math.min(G.curEj, 4) : 0;
+  loadMission(startIdx);
+}
+
+function renderEjNav(){
+  const nav=document.getElementById('ej-nav'); nav.innerHTML='';
+  MISSIONS.forEach((_,i)=>{
+    const done=G.k_done.includes(i), cur=i===G.curEj, lk=i>0&&!G.k_done.includes(i-1)&&!done&&i!==0;
+    const pip=document.createElement('button');
+    pip.className=`epip ${done?'done':cur?'on':lk?'lk':''}`;
+    pip.innerHTML=done?SVG.check:(i+1);
+    pip.title=MISSIONS[i].title;
+    if(!lk) pip.onclick=()=>loadMission(i);
+    nav.appendChild(pip);
+  });
+  updateHUD();
+}
+
+function loadMission(idx){
+  G.curEj=idx;
+  EJ={attempts:G.maxAttempts, quizAns:{}, clsAns:{}, ssAns:{}, tacRound:0, tacScore:0};
+  const m=MISSIONS[idx], box=document.getElementById('ex-box');
+  box.innerHTML=`
+    <div style="font-size:.56rem;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:7px;">Misión ${idx+1} de 5</div>
+    <div style="margin:-18px -18px 13px;background:linear-gradient(90deg,rgba(0,229,255,.07),transparent);border-bottom:1px solid rgba(0,229,255,.15);padding:9px 18px;display:flex;align-items:center;gap:7px;">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 5px var(--cyan);"></div>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--violet);box-shadow:0 0 5px var(--violet);"></div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--cyan);">${m.title}</div>
+    </div>
+    <div class="ex-obj"><div class="ex-obj-lbl">🎯 Objetivo Táctico</div><div class="ex-obj-txt">${m.obj}</div></div>
+    ${m.ins?`<div class="guide-box"><div class="guide-lbl">${SVG.book} Guía Rápida del Cadete</div><div class="guide-txt">${m.ins}</div></div>`:''}
+    ${renderAttemptBar()}
+    <div class="hint-box" id="hint-box"><div class="hint-lbl">💡 Asistencia Táctica</div><div class="hint-txt" id="hint-txt"></div></div>
+    ${renderMissionBody(m)}
+    <div class="fb" id="fb-main" style="display:none;"></div>
+    ${needsValidateBtn(m.type)?`<div class="ex-act">
+      <button class="btn btn-prim" id="btn-confirm" onclick="validateMission(${idx})">✓ Confirmar Objetivo</button>
+      <button class="btn btn-ghost btn-sm" onclick="loadMission(${idx})">↺ Recalibrar</button>
+    </div>`:''}
+  `;
+  renderEjNav();
+  if(m.type==='shooter') initShooter(m);
+  if(m.type==='tacgrid') initTacGrid(m);
+}
+
+function needsValidateBtn(type){ return type==='classify'||type==='quiz'||type==='console'||type==='sheet'; }
+
+function renderMissionBody(m){
+  if(m.type==='shooter') return `<div id="sw-area"></div>`;
+  if(m.type==='tacgrid') return `<div id="tg-area"></div>`;
+  if(m.type==='classify') return renderClassify(m);
+  if(m.type==='quiz')     return renderQuiz(m);
+  if(m.type==='console')  return renderConsole(m);
+  if(m.type==='sheet')    return renderSheet(m);
+  return '';
+}
+
+// ══════════════════════════════════════════════════
+// SHOOTER (preserved + improved)
+// ══════════════════════════════════════════════════
+function initShooter(m){ EJ.tacRound=0; EJ.tacScore=0; renderShooterRound(m); }
+function renderShooterRound(m){
+  const area=document.getElementById('sw-area'); if(!area) return;
+  const r=m.rounds[EJ.tacRound]; if(!r){ shooterDone(m); return; }
+  const targets=[r.a,...r.wrong].sort(()=>Math.random()-.5);
+  const pos=genPos(targets.length);
+  area.innerHTML=`
+    <div class="sw-wrap" id="sw">
+      <div class="sw-grid"></div>
+      <div class="sw-sc">ACIERTOS: ${EJ.tacScore}/${m.rounds.length}</div>
+      <div class="sw-q">${r.q}<div class="sw-def">Selecciona el término correcto</div></div>
+      ${targets.map((t,i)=>`
+        <div class="tgt" style="left:${pos[i].x}%;top:${pos[i].y}%;animation-delay:${i*.28}s;" onclick="hitTarget(this,'${t.replace(/'/g,"\\'")}','${r.a.replace(/'/g,"\\'")}',event)">
+          <svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="rgba(10,20,55,.9)" stroke="${t===r.a?'rgba(0,229,255,.6)':'rgba(120,140,180,.3)'}" stroke-width="1.5"/><circle cx="18" cy="18" r="10" fill="rgba(10,20,55,.5)" stroke="${t===r.a?'rgba(0,229,255,.2)':'rgba(120,140,180,.12)'}" stroke-width="1"/></svg>
+          <div class="tgt-lbl">${t}</div>
+        </div>`).join('')}
+      <div class="sw-status">RONDA ${EJ.tacRound+1} DE ${m.rounds.length}</div>
+      <div class="ammo">${m.rounds.map((_,i)=>`<div class="ammo-p ${i<EJ.tacRound?'used':''}" style="${i===EJ.tacRound?'background:var(--gold);box-shadow:0 0 6px var(--gold);':''}"></div>`).join('')}</div>
+    </div>`;
+}
+function genPos(n){
+  const pos=[];let a=0;
+  while(pos.length<n&&a<300){
+    const x=8+Math.random()*72,y=20+Math.random()*52;
+    if(pos.every(p=>Math.hypot(p.x-x,p.y-y)>22)) pos.push({x,y});
+    a++;
+  }
+  return pos;
+}
+function hitTarget(el,term,correct,ev){
+  const sw=document.getElementById('sw'); if(!sw) return;
+  const rect=sw.getBoundingClientRect(),cx=ev.clientX-rect.left,cy=ev.clientY-rect.top,ok=term===correct;
+  const fx=document.createElement('div'); fx.className=ok?'hit-fx':'miss-fx'; fx.style.cssText=`left:${cx}px;top:${cy}px;position:absolute;`;
+  fx.innerHTML=ok?`<svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="none" stroke="#10b981" stroke-width="2.5" opacity=".9"/><polyline points="18,30 26,39 42,23" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>`:
+    `<svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="26" fill="none" stroke="#ef4444" stroke-width="2.5" opacity=".9"/><line x1="18" y1="18" x2="38" y2="38" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/><line x1="38" y1="18" x2="18" y2="38" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+  sw.appendChild(fx); setTimeout(()=>fx.remove(),650);
+  if(ok){
+    EJ.tacScore++; el.style.pointerEvents='none';
+    el.querySelector('.tgt-lbl').style.cssText='border-color:var(--green);color:var(--green);';
+    setTimeout(()=>{EJ.tacRound++; renderShooterRound(MISSIONS[G.curEj]);},700);
+  } else {
+    el.querySelector('.tgt-lbl').style.cssText='border-color:var(--red);color:var(--red);';
+    setTimeout(()=>{el.querySelector('.tgt-lbl').style.cssText='';},600);
+  }
+}
+function shooterDone(m){
+  document.getElementById('sw-area').innerHTML=`
+    <div style="text-align:center;padding:24px;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.22);border-radius:5px;">
+      <svg width="46" height="46" viewBox="0 0 46 46" style="margin-bottom:10px;"><circle cx="23" cy="23" r="21" fill="none" stroke="var(--green)" stroke-width="1.8"/><polyline points="13,24 20,31 34,17" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+      <div style="font-size:.95rem;font-weight:800;color:var(--green);">Todos los objetivos neutralizados</div>
+      <div style="color:var(--muted);font-size:.75rem;margin-top:4px;">Aciertos: ${EJ.tacScore}/${m.rounds.length}</div>
+    </div>
+    <div class="ex-act" style="justify-content:center;margin-top:12px;">
+      <button class="btn btn-prim" onclick="missionComplete(0,${m.pts})">→ Confirmar y Continuar</button>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// TACTICAL GRID — CLICK-ONLY MECHANIC
+// FIX #8/#3: Coord validated ONLY by comparing data-coord attr to target string.
+// No text parsing. No hardcoded coord messages. No out-of-grid references.
+// All target coords verified to be within gridCols×gridRows before mission starts.
+// ══════════════════════════════════════════════════
+function initTacGrid(m){ EJ.tacRound=0; EJ.tacScore=0; renderTacRound(m); }
+
+function renderTacRound(m){
+  const area=document.getElementById('tg-area'); if(!area) return;
+  const mission=m.tacMissions[EJ.tacRound];
+  if(!mission){ tacGridDone(m); return; }
+
+  // Build terrain lookup (only for visual purposes)
+  const terrainMap={};
+  (m.terrain||[]).forEach(t=>{terrainMap[t.coord]={type:t.type,icon:t.icon};});
+
+  const cols=m.gridCols, rows=m.gridRows;
+  const totalCols=cols.length+1;
+
+  let html=`
+    <div style="background:rgba(30,60,140,.6);border:1px solid rgba(59,130,246,.3);border-radius:5px;padding:11px 14px;margin-bottom:10px;">
+      <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);margin-bottom:3px;">📡 Orden Táctica ${EJ.tacRound+1}/${m.tacMissions.length}</div>
+      <div style="font-size:.9rem;color:#bfdbfe;font-weight:700;">${mission.q}</div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">Haz clic en la celda que corresponde. El objetivo está resaltado en azul.</div>
+    </div>
+    <div class="tac-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#fee2e2;border:1px solid #f87171;"></div>Zona Hostil</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#d1fae5;border:1px solid #34d399;"></div>Refugio Aliado</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#fef3c7;border:1px solid #fbbf24;"></div>Recursos</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e5e7eb;border:1px solid #9ca3af;"></div>Rocoso</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#dbeafe;border:1px solid #60a5fa;"></div>🎯 Objetivo</div>
+    </div>
+    <div class="tac-map-wrap">
+      <div class="tac-grid" id="tac-grid" style="grid-template-columns:repeat(${totalCols},54px);">
+        <div class="tac-cell ch" style="background:rgba(40,70,160,.9);">⬛</div>`;
+
+  cols.forEach(c=>{html+=`<div class="tac-cell ch">${c}</div>`;});
+
+  rows.forEach(r=>{
+    html+=`<div class="tac-cell ch">${r}</div>`;
+    cols.forEach(c=>{
+      // FIX: coord constructed from rendered cols/rows only — never out of grid
+      const coord=c+r;
+      const tr=terrainMap[coord];
+      const isTarget=coord===mission.target;
+      let cls='tac-cell cd';
+      let inner=`<span class="cell-coord">${coord}</span>`;
+      if(isTarget){
+        cls+=' t-target';
+        inner=`<span class="cell-icon">◎</span><span class="cell-coord">${coord}</span>`;
+      } else if(tr){
+        cls+=` ${tr.type}`;
+        inner=`<span class="cell-icon">${tr.icon}</span><span class="cell-coord">${coord}</span>`;
+      }
+      // FIX: pass coord and target directly — no string parsing in handler
+      html+=`<div class="${cls}" data-coord="${coord}" onclick="clickCell(this,'${coord}','${mission.target}','${mission.hint.replace(/'/g,"\\'")}');">${inner}</div>`;
+    });
+  });
+
+  html+=`</div></div>
+    <div style="font-size:.68rem;color:var(--muted);margin-top:5px;">💡 Recuerda: Columna = letra arriba. Fila = número al lado.</div>
+    <div class="fb" id="tac-fb" style="display:none;"></div>`;
+
+  area.innerHTML=html;
+}
+
+// FIX #8: clickCell receives pre-built coord string from data-coord attribute.
+// Comparison is direct string equality — zero parsing, zero false errors.
+function clickCell(el, coord, target, hint){
+  const ok=coord===target;
+  const fb=document.getElementById('tac-fb');
+
+  if(ok){
+    el.classList.remove('t-target','t-enemy','t-shelter','t-resource','t-rocky');
+    el.classList.add('t-correct');
+    if(fb){fb.className='fb ok';fb.innerHTML=`✓ Coordenada <strong>${target}</strong> confirmada — registrada en el sistema táctico.`;fb.style.display='block';}
+    EJ.tacScore++;
+    setTimeout(()=>{EJ.tacRound++; renderTacRound(MISSIONS[G.curEj]);},1000);
+  } else {
+    el.classList.add('t-wrong');
+    setTimeout(()=>el.classList.remove('t-wrong'),500);
+    EJ.attempts=Math.max(0,EJ.attempts-1);
+    updateAttemptUI();
+    const remaining=EJ.attempts;
+    if(fb){
+      fb.className='fb err';
+      if(remaining===0){
+        fb.innerHTML=`✗ Coordenada ${coord} incorrecta. Pista: ${hint}`;
+        showHintBox(hint);
+      } else {
+        fb.innerHTML=`✗ Coordenada ${coord} no es el objetivo. Quedan ${remaining} intento(s). Busca la celda resaltada en azul.`;
+      }
+      fb.style.display='block';
+    }
+    if(remaining<=1) showHintBox(hint);
+  }
+}
+function showHintBox(hintText){
+  const box=document.getElementById('hint-box'),txt=document.getElementById('hint-txt');
+  if(box&&txt){txt.textContent=hintText;box.classList.add('show');}
+}
+
+function tacGridDone(m){
+  document.getElementById('tg-area').innerHTML=`
+    <div style="text-align:center;padding:22px;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.22);border-radius:5px;">
+      <svg width="44" height="44" viewBox="0 0 44 44" style="margin-bottom:9px;"><circle cx="22" cy="22" r="20" fill="none" stroke="var(--green)" stroke-width="1.8"/><polyline points="12,22 19,30 33,16" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
+      <div style="font-size:.92rem;font-weight:800;color:var(--green);">¡Todas las coordenadas confirmadas!</div>
+      <div style="color:var(--muted);font-size:.72rem;margin-top:4px;">Puntos de extracción registrados: ${EJ.tacScore}/${m.tacMissions.length}</div>
+    </div>
+    <div class="ex-act" style="justify-content:center;margin-top:11px;">
+      <button class="btn btn-prim" onclick="missionComplete(1,${m.pts})">→ Confirmar y Continuar</button>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// CLASSIFY
+// ══════════════════════════════════════════════════
+function renderClassify(m){
+  return m.items.map((item,i)=>`
+    <div class="cls-row">
+      <div class="cls-val">${item.val}</div>
+      <div style="display:flex;gap:5px;">
+        ${['Texto','Número','Fecha'].map(t=>`<button class="cls-btn" id="cls-${i}-${t}" onclick="selCls(${i},'${t}','${item.answer}')">${t}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function selCls(i,val,ans){
+  ['Texto','Número','Fecha'].forEach(t=>{const b=document.getElementById(`cls-${i}-${t}`);if(b)b.classList.remove('sel','c-ok','c-no');});
+  EJ.clsAns[i]=val;
+  const b=document.getElementById(`cls-${i}-${val}`);if(b)b.classList.add('sel');
+}
+
+// ══════════════════════════════════════════════════
+// QUIZ (generic)
+// ══════════════════════════════════════════════════
+function renderQuiz(m){
+  return m.questions.map((q,qi)=>`
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.8rem;font-weight:700;margin-bottom:7px;color:#d0e0f8;">${qi+1}. ${q.q}</div>
+      <div class="q-grid">${q.opts.map((o,oi)=>`<button class="qopt" id="q-${qi}-${oi}" onclick="selQ(${qi},${oi})">${o}</button>`).join('')}</div>
+    </div>`).join('');
+}
+function selQ(qi,oi){
+  for(let i=0;i<5;i++){const b=document.getElementById(`q-${qi}-${i}`);if(b)b.classList.remove('q-sel','q-ok','q-no');}
+  EJ.quizAns[qi]=oi;
+  const b=document.getElementById(`q-${qi}-${oi}`);if(b)b.classList.add('q-sel');
+}
+
+// ══════════════════════════════════════════════════
+// CONSOLE (FIX #2: redesigned tactical command interface)
+// ══════════════════════════════════════════════════
+function renderConsole(m){
+  // Teach first, then question
+  return `
+    <div class="console-frame">
+      <div class="console-header">
+        <div class="console-led"></div>
+        <div class="console-title">SATD — Consola de Mando v4.2</div>
+        <div style="margin-left:auto;font-size:.6rem;color:var(--muted);">SISTEMA EN LÍNEA</div>
+      </div>
+      <div class="console-body">
+        <!-- Ribbon map -->
+        <div class="con-panel">
+          <div class="con-panel-title">📌 Mapa de la Cinta de Opciones (barra de menús superior)</div>
+          <div class="ribbon-panel">
+            <div class="ribbon-tab active" id="rt-inicio">INICIO<br><span style="font-size:.6rem;color:#67e8f9;">Formato · Fuente</span></div>
+            <div class="ribbon-tab" id="rt-insertar">INSERTAR<br><span style="font-size:.6rem;color:#a78bfa;">Gráficos · Tablas</span></div>
+            <div class="ribbon-tab" id="rt-datos">DATOS<br><span style="font-size:.6rem;color:#34d399;">Filtrar · Ordenar</span></div>
+            <div class="ribbon-tab" id="rt-vista">VISTA<br><span style="font-size:.6rem;color:#fbbf24;">Zoom · Paneles</span></div>
+          </div>
+        </div>
+        <!-- Formula bar -->
+        <div class="con-panel">
+          <div class="con-panel-title">📝 Barra de Fórmulas — muestra el contenido de la celda activa</div>
+          <div class="formula-bar-demo">
+            <div class="fb-label">fx</div>
+            <div>=SUMA(B2:B10)</div>
+          </div>
+          <div style="font-size:.72rem;color:var(--muted);">La barra de fórmulas está justo debajo de la Cinta de Opciones. Aquí puedes ver y editar el contenido de la celda seleccionada.</div>
+        </div>
+        <!-- Shortcuts -->
+        <div class="con-panel">
+          <div class="con-panel-title">⌨️ Atajos de Comando Esenciales</div>
+          <div class="shortcut-row"><div class="shortcut-key">Ctrl+C</div><div class="shortcut-desc">Copiar celda/rango al portapapeles</div></div>
+          <div class="shortcut-row"><div class="shortcut-key">Ctrl+V</div><div class="shortcut-desc">Pegar desde el portapapeles</div></div>
+          <div class="shortcut-row"><div class="shortcut-key">Ctrl+X</div><div class="shortcut-desc">Cortar (copiar y eliminar original)</div></div>
+          <div class="shortcut-row"><div class="shortcut-key">Ctrl+N / Ctrl+B</div><div class="shortcut-desc">Activar/desactivar Negrita</div></div>
+          <div class="shortcut-row"><div class="shortcut-key">Ctrl+Z</div><div class="shortcut-desc">Deshacer última acción</div></div>
+        </div>
+        <!-- Questions styled as console commands -->
+        <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;padding:0 0 5px;border-bottom:1px solid rgba(0,229,255,.1);">⚡ Protocolo de Verificación — Selecciona la respuesta correcta</div>
+        ${m.questions.map((q,i)=>`
+          <div class="con-question">
+            <div class="con-q-lbl">COMANDO ${i+1}/${m.questions.length}</div>
+            <div class="con-q-txt">${q.q}</div>
+            <div class="cmd-opts">
+              ${q.opts.map((o,oi)=>`<button class="cmd-opt" id="q-${i}-${oi}" onclick="selQ(${i},${oi})">${o}</button>`).join('')}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════
+// SHEET (FIX #6: source data cards shown before table)
+// ══════════════════════════════════════════════════
+function renderSheet(m){
+  // Source data panel
+  let srcHtml=`<div class="source-box">
+    <div class="source-lbl">📡 Transmisión de Radio — Datos Recibidos (usa esta información)</div>
+    <div style="margin-bottom:8px;font-size:.72rem;color:#fde68a;">El registro 1 (Apollo 11) ya está completo. Usa los datos de las tarjetas para completar los registros 2, 3 y 4.</div>
+    <div class="source-cards">`;
+  m.sourceData.forEach(sd=>{
+    srcHtml+=`<div class="src-card"><div class="src-card-lbl">${sd.label}</div>${sd.items.map(it=>`<div class="src-card-val">• ${it}</div>`).join('')}</div>`;
+  });
+  srcHtml+=`</div></div>`;
+
+  const th='<th style="background:#2a4080;color:#fff;padding:7px 10px;border:1px solid rgba(0,229,255,.2);">#</th>'+m.headers.map(h=>`<th style="background:#2a4080;color:#fff;padding:7px 10px;border:1px solid rgba(0,229,255,.2);">${h}</th>`).join('');
+  const rowsHtml=m.rows.map((row,ri)=>{
+    const cells=row.map((cell,ci)=>{
+      if(m.editable[ri][ci])
+        return `<td style="background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.15);padding:3px;"><input type="text" class="edit-inp" placeholder="?" id="ss-${ri}-${ci}" oninput="EJ.ssAns['${ri}-${ci}']=this.value"/></td>`;
+      return `<td style="background:rgba(20,40,90,.6);color:var(--bright);border:1px solid rgba(0,229,255,.1);padding:6px 10px;text-align:center;font-size:.75rem;">${cell||'—'}</td>`;
+    }).join('');
+    return `<tr><td style="background:#2a4080;color:#fff;padding:6px 10px;border:1px solid rgba(0,229,255,.2);font-size:.7rem;font-weight:700;">${ri+1}</td>${cells}</tr>`;
+  }).join('');
+
+  return `${srcHtml}
+    <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;">📊 Tabla de Inventario — completa las celdas vacías</div>
+    <div style="overflow-x:auto;">
+    <table style="border-collapse:collapse;width:100%;font-size:.76rem;margin:6px 0;">
+      <thead><tr>${th}</tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table></div>
+    <p style="color:var(--muted);font-size:.68rem;margin-top:5px;">💡 Cada fila corresponde a un registro. Usa exactamente los datos de las tarjetas de radio.</p>`;
+}
+
+// ══════════════════════════════════════════════════
+// VALIDATE MISSIONS (FIX #7: non-blocking, always allows retry)
+// ══════════════════════════════════════════════════
+function validateMission(idx){
+  const m=MISSIONS[idx]; let ok=false, msg='', sc=0;
+
+  if(m.type==='classify'){
+    let tot=m.items.length; sc=0;
+    m.items.forEach((item,i)=>{
+      const got=EJ.clsAns[i];
+      const cb=document.getElementById(`cls-${i}-${item.answer}`);
+      const gb=document.getElementById(`cls-${i}-${got}`);
+      if(got===item.answer){sc++;if(cb)cb.classList.add('c-ok');}
+      else{if(gb)gb.classList.add('c-no');if(cb)cb.classList.add('c-ok');}
+    });
+    ok=sc===tot;
+    msg=ok?`${sc}/${tot} señales clasificadas correctamente. Base de datos sincronizada.`:`${sc}/${tot} correctas. Las respuestas válidas están en verde. Corrige las en rojo e intenta de nuevo.`;
+  }
+  else if(m.type==='quiz'||m.type==='console'){
+    const qCount=m.questions.length; sc=0;
+    m.questions.forEach((q,qi)=>{
+      const got=EJ.quizAns[qi];
+      for(let i=0;i<5;i++){const b=document.getElementById(`q-${qi}-${i}`);if(b)b.classList.remove('q-ok','q-no','q-sel','cmd-opt');}
+      const cb=document.getElementById(`q-${qi}-${q.answer}`);if(cb)cb.classList.add('q-ok');
+      if(got===q.answer)sc++;
+      else{const gb=document.getElementById(`q-${qi}-${got}`);if(gb)gb.classList.add('q-no');}
+    });
+    ok=sc===qCount;
+    msg=ok?`${sc}/${qCount} protocolos verificados. Consola de Mando calibrada.`:`${sc}/${qCount} correctos. Las respuestas válidas están en verde. Revisa los protocolos fallidos.`;
+  }
+  else if(m.type==='sheet'){
+    let tot=0; sc=0;
+    m.editable.forEach((row,ri)=>row.forEach((ed,ci)=>{
+      if(ed){
+        tot++;
+        const got=(EJ.ssAns[`${ri}-${ci}`]||'').trim().toLowerCase();
+        const exp=(m.answers[ri][ci]||'').trim().toLowerCase();
+        if(got===exp) sc++;
+      }
+    }));
+    ok=sc===tot;
+    msg=ok?`¡Inventario completo! ${sc}/${tot} datos correctos. Registros verificados para despegue.`:`${sc}/${tot} correctos. Verifica los datos de las tarjetas de radio. Acepta también: Artemis I = 2022, Luna, 0 tripulantes.`;
+  }
+
+  // FIX #7: decrement attempts but NEVER block. Always show retry button.
+  if(!ok){
+    EJ.attempts=Math.max(0,EJ.attempts-1);
+    updateAttemptUI();
+    if(EJ.attempts<=1){
+      const box=document.getElementById('hint-box'),txt=document.getElementById('hint-txt');
+      if(box&&txt){
+        txt.textContent=getQuickHint(m.type,sc,m);
+        box.classList.add('show');
+      }
+    }
+  }
+
+  const fb=document.getElementById('fb-main'); if(!fb) return;
+  fb.className=`fb ${ok?'ok':'err'}`;
+  fb.innerHTML=(ok?'✓ Objetivo confirmado — ':'✗ Señal inválida — ')+msg;
+  fb.style.display='block';
+
+  // FIX #7: if complete, show success button; otherwise keep retry available
+  if(ok){
+    const actDiv=fb.nextElementSibling;
+    if(actDiv&&actDiv.classList.contains('ex-act')){
+      actDiv.innerHTML=`<button class="btn btn-success" onclick="missionComplete(${idx},${m.pts})">🎖️ ¡Misión Completada! Continuar</button>`;
+    } else {
+      fb.insertAdjacentHTML('afterend',`<div class="ex-act"><button class="btn btn-success" onclick="missionComplete(${idx},${m.pts})">🎖️ ¡Misión Completada! Continuar</button></div>`);
+    }
+  }
+}
+
+function getQuickHint(type,sc,m){
+  if(type==='classify') return 'Pista: Si tiene solo dígitos → Número. Si tiene "/" → Fecha. Si tiene letras → Texto.';
+  if(type==='console') return 'Pista: Formato de texto (negrita, cursiva) está en el panel "Inicio". Para copiar usa Ctrl+C.';
+  if(type==='sheet') return 'Pista: Usa exactamente los datos de las tarjetas de radio. Misión Artemis I = año 2022 = Luna = 0 tripulantes.';
+  return 'Pista: Revisa las respuestas resaltadas en verde.';
+}
+
+// ══════════════════════════════════════════════════
+// MISSION COMPLETE (FIX #7: non-blocking flow)
+// ══════════════════════════════════════════════════
+function missionComplete(idx,pts){
+  if(!G.k_done.includes(idx)){
+    G.pts+=pts; G.k_done.push(idx);
+    if(G.k_done.length===1&&!G.badges.includes('first')) G.badges.push('first');
+    if(G.k_done.length>=3&&!G.badges.includes('halfway')) G.badges.push('halfway');
+    if(G.k_done.length===5){G.k_complete=true;G.e_unlocked=true;if(!G.badges.includes('kelvon')) G.badges.push('kelvon');}
+    save(); updateHUD(); renderEjNav();
+  }
+  const next=idx+1;
+  if(G.k_done.length===5){
+    setTimeout(()=>showRw('¡Sector Kelvon Liberado!','Planeta Exoris desbloqueado. Sector Beta disponible para operación.'),320);
+  } else {
+    showRw(`Misión Alfa-${idx+1} Confirmada`,`+${pts} créditos estelares acreditados.`);
+    if(next<=4){
+      G.curEj=next;
+      setTimeout(()=>loadMission(next),600);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════
+// SECTOR EXORIS
+// ══════════════════════════════════════════════════
+const SCENS=[
+  {id:0,title:'Orbyt-1 — Motor de Cálculos',pts:100},
+  {id:1,title:'Orbyt-2 — Lógica de Misión',pts:120},
+  {id:2,title:'Orbyt-3 — Depuración de Señales',pts:100},
+  {id:3,title:'Orbyt-4 — Centro de Análisis',pts:150},
+];
+
+function goExoris(){ show('scr-e'); renderStabs(); loadScen(G.curScen); }
+function renderStabs(){
+  const el=document.getElementById('stabs'); el.innerHTML='';
+  SCENS.forEach((s,i)=>{
+    const done=G.e_done.includes(i), active=i===G.curScen;
+    const locked=i>0&&!G.e_done.includes(i-1)&&!done;
+    const btn=document.createElement('button');
+    btn.className=`stab ${active?'on':''} ${done?'done':''}`;
+    btn.textContent=(done?'✓ ':'')+s.title;
+    if(locked) btn.style.opacity='.3';
+    if(!locked) btn.onclick=()=>{G.curScen=i;loadScen(i);renderStabs();};
+    el.appendChild(btn);
+  });
+  updateHUD();
+}
+
+function loadScen(idx){
+  EJ={attempts:G.maxAttempts,quizAns:{},clsAns:{},ssAns:{},tacRound:0,tacScore:0};
+  G.curScen=idx;
+  const box=document.getElementById('scen-box');
+  if(idx===0) box.innerHTML=renderOrbyt1();
+  else if(idx===1) box.innerHTML=renderOrbyt2();
+  else if(idx===2) box.innerHTML=renderOrbyt3();
+  else if(idx===3) box.innerHTML=renderOrbyt4();
+}
+
+function sHdr(title,color='var(--cyan)',glow='rgba(0,229,255,.4)'){
+  return `<div style="margin:-18px -18px 13px;background:linear-gradient(90deg,rgba(0,229,255,.05),transparent);border-bottom:1px solid rgba(0,229,255,.12);padding:9px 18px;display:flex;align-items:center;gap:6px;"><div style="width:6px;height:6px;border-radius:50%;background:${color};box-shadow:0 0 5px ${glow};"></div><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${color};">${title}</div></div>`;
+}
+
+// Orbyt-1 (FIX #1/#3: brighter, clearer instructions)
+function renderOrbyt1(){
+  const qs=[
+    {desc:'Suma total del panel B (B2:B6)',ans:'=SUMA(B2:B6)',ph:'=SUMA(...)'},
+    {desc:'Promedio de lecturas del sistema',ans:'=PROMEDIO(B2:B6)',ph:'=PROMEDIO(...)'},
+    {desc:'Valor máximo registrado',ans:'=MAX(B2:B6)',ph:'=MAX(...)'},
+    {desc:'Valor mínimo registrado',ans:'=MIN(B2:B6)',ph:'=MIN(...)'},
+    {desc:'Cantidad de celdas con números',ans:'=CONTAR(B2:B6)',ph:'=CONTAR(...)'},
+  ];
+  return `
+  ${sHdr('Orbyt-1 — Motor de Cálculos del Reactor')}
+  <div class="ex-obj"><div class="ex-obj-lbl">🎯 Objetivo Táctico</div><div class="ex-obj-txt">Calibra el motor con las 5 funciones básicas del sistema SATD</div></div>
+  <div class="guide-box">
+    <div class="guide-lbl">${SVG.book} Guía Rápida — Funciones Básicas de Excel</div>
+    <div class="guide-txt">
+      Toda fórmula en Excel empieza con el signo <strong style="color:var(--cyan);">=</strong><br>
+      <div class="guide-step"><div class="guide-num">1</div><div><span class="fcode">=SUMA(A1:A5)</span> → Suma todos los números del rango A1 a A5</div></div>
+      <div class="guide-step"><div class="guide-num">2</div><div><span class="fcode">=PROMEDIO(A1:A5)</span> → Calcula el promedio (media aritmética)</div></div>
+      <div class="guide-step"><div class="guide-num">3</div><div><span class="fcode">=MAX(A1:A5)</span> → Encuentra el número mayor</div></div>
+      <div class="guide-step"><div class="guide-num">4</div><div><span class="fcode">=MIN(A1:A5)</span> → Encuentra el número menor</div></div>
+      <div class="guide-step"><div class="guide-num">5</div><div><span class="fcode">=CONTAR(A1:A5)</span> → Cuenta cuántas celdas tienen números</div></div>
+      <div class="guide-ex">Ejemplo: Si B2:B6 tiene los valores 450, 28000, 3, 180, 12<br>=SUMA(B2:B6) → 28645 | =MAX(B2:B6) → 28000 | =MIN(B2:B6) → 3</div>
+    </div>
+  </div>
+  <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;">Lecturas del Reactor — Panel B (B2:B6)</div>
+  <table class="mini-t"><thead><tr><th>A — Parámetro</th><th>B — Valor</th></tr></thead><tbody>
+    <tr><td>Combustible (L)</td><td style="text-align:right;font-weight:700;">450</td></tr>
+    <tr><td>Velocidad (km/h)</td><td style="text-align:right;font-weight:700;">28000</td></tr>
+    <tr><td>Tripulantes</td><td style="text-align:right;font-weight:700;">3</td></tr>
+    <tr><td>Duración (días)</td><td style="text-align:right;font-weight:700;">180</td></tr>
+    <tr><td>Experimentos</td><td style="text-align:right;font-weight:700;">12</td></tr>
+  </tbody></table>
+  <div style="font-size:.7rem;color:var(--cyan);margin:8px 0 10px;font-weight:600;">Ahora escribe cada fórmula usando el rango B2:B6:</div>
+  <div style="margin-top:5px;">
+    ${qs.map((q,i)=>`<div class="fx-row"><div class="fx-desc" style="min-width:180px;">${q.desc}</div><span class="fx-lbl">fx</span><input class="fx-inp" type="text" id="o1-${i}" placeholder="${q.ph}" data-ans="${q.ans}"/></div>`).join('')}
+  </div>
+  <div class="fb" id="fb-o1" style="display:none;"></div>
+  <div class="ex-act">
+    <button class="btn btn-prim" onclick="valOrbyt1()">✓ Confirmar Objetivo</button>
+    <button class="btn btn-ghost btn-sm" onclick="loadScen(0)">↺ Recalibrar</button>
+  </div>`;
+}
+function valOrbyt1(){
+  let sc=0,tot=5;
+  for(let i=0;i<tot;i++){
+    const el=document.getElementById(`o1-${i}`); if(!el) continue;
+    const got=el.value.trim().toUpperCase().replace(/\s/g,'');
+    const exp=el.dataset.ans.toUpperCase().replace(/\s/g,'');
+    if(got===exp){sc++;el.style.borderColor='var(--green)';el.style.background='rgba(16,185,129,.08)';}
+    else{el.style.borderColor='var(--red)';}
+  }
+  const ok=sc===tot;
+  const fb=document.getElementById('fb-o1');
+  fb.className=`fb ${ok?'ok':'err'}`;
+  fb.innerHTML=`${ok?'✓ Objetivo confirmado':'✗ Señal inválida'} — ${sc}/${tot} fórmulas correctas. ${ok?'Motor de cálculos calibrado.':'Asegúrate de escribir =SUMA(B2:B6), =PROMEDIO(B2:B6), etc. exactamente así.'}`;
+  fb.style.display='block';
+  if(ok) sceneComplete(0,100);
+}
+
+// Orbyt-2
+function renderOrbyt2(){
+  const qs=[
+    {q:'Para sumar solo valores superiores a 5000 en el rango A1:A10:',opts:['=SUMA(A1:A10)','=SUMAR.SI(A1:A10,">5000")','=SI(A1>5000,SUMA,0)','=CONTAR.SI(A1:A10)'],ans:1},
+    {q:'Mostrar "Aprobado" si el nivel en A1 es ≥ 60, sino "Reprobado":',opts:['=Y(A1>=60,"Aprobado")','=BUSCARV(60,A1,1,0)','=SI(A1>=60,"Aprobado","Reprobado")','=SI.ERROR(A1,"Reprobado")'],ans:2},
+    {q:'Localizar el rango asignado al tripulante "R-04" en la columna A, mostrando col B:',opts:['=CONTAR.SI(A:A,"R-04")','=SI(A1="R-04",B1,0)','=SUMAR.SI(A:A,"R-04",B:B)','=BUSCARV("R-04",A:B,2,0)'],ans:3},
+    {q:'Evitar que aparezca el error #N/A cuando BUSCARV no encuentra un valor:',opts:['=SI.ERROR(BUSCARV(...),"No detectado")','=CONTAR.SI(A1,"error")','=SI(A1="#N/A","Ok","Error")','=SUMA.SI(...)'],ans:0},
+    {q:'Contar cuántas celdas de A1:A10 contienen el texto "Marte":',opts:['=SUMA(A1:A10,"Marte")','=BUSCARV("Marte",A:A,1,0)','=CONTAR.SI(A1:A10,"Marte")','=SI(A1="Marte",1,0)'],ans:2},
+  ];
+  const guide=`<div class="guide-box"><div class="guide-lbl">${SVG.book} Guía — Funciones Lógicas y de Búsqueda</div><div class="guide-txt">
+    <div class="guide-step"><div class="guide-num">1</div><div><span class="fcode">=SI(condición, si_verdad, si_falso)</span> → Ejemplo: =SI(A1>10,"Alto","Bajo")</div></div>
+    <div class="guide-step"><div class="guide-num">2</div><div><span class="fcode">=SUMAR.SI(rango, criterio, rango_suma)</span> → Suma solo si cumple condición</div></div>
+    <div class="guide-step"><div class="guide-num">3</div><div><span class="fcode">=CONTAR.SI(rango, criterio)</span> → Cuenta celdas que cumplen condición</div></div>
+    <div class="guide-step"><div class="guide-num">4</div><div><span class="fcode">=BUSCARV(valor, tabla, col, 0)</span> → Busca un valor y retorna dato de otra columna</div></div>
+    <div class="guide-step"><div class="guide-num">5</div><div><span class="fcode">=SI.ERROR(fórmula, "mensaje")</span> → Muestra mensaje si hay error</div></div>
+  </div></div>`;
+  return `
+  ${sHdr('Orbyt-2 — Lógica de Misión Avanzada','var(--violet)','rgba(139,92,246,.4)')}
+  <div class="ex-obj"><div class="ex-obj-lbl">🎯 Objetivo Táctico</div><div class="ex-obj-txt">Domina los protocolos SI, SUMAR.SI, CONTAR.SI, BUSCARV y SI.ERROR</div></div>
+  ${guide}
+  ${qs.map((q,i)=>`
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.8rem;font-weight:700;margin-bottom:7px;color:#d0e0f8;">${i+1}. ${q.q}</div>
+      <div class="q-grid">${q.opts.map((o,oi)=>`<button class="qopt" id="o2-${i}-${oi}" style="font-family:monospace;font-size:.72rem;" onclick="selO2(${i},${oi})">${o}</button>`).join('')}</div>
+    </div>`).join('')}
+  <div class="fb" id="fb-o2" style="display:none;"></div>
+  <div class="ex-act">
+    <button class="btn btn-prim" onclick="valOrbyt2()">✓ Confirmar Objetivo</button>
+    <button class="btn btn-ghost btn-sm" onclick="loadScen(1)">↺ Recalibrar</button>
+  </div>`;
+}
+const O2A=[1,2,3,0,2]; let o2ans={};
+function selO2(qi,oi){for(let i=0;i<4;i++){const b=document.getElementById(`o2-${qi}-${i}`);if(b)b.classList.remove('q-sel','q-ok','q-no');}o2ans[qi]=oi;const b=document.getElementById(`o2-${qi}-${oi}`);if(b)b.classList.add('q-sel');}
+function valOrbyt2(){
+  let sc=0;
+  O2A.forEach((ans,qi)=>{
+    const got=o2ans[qi];
+    for(let i=0;i<4;i++){const b=document.getElementById(`o2-${qi}-${i}`);if(b)b.classList.remove('q-ok','q-no','q-sel');}
+    const cb=document.getElementById(`o2-${qi}-${ans}`);if(cb)cb.classList.add('q-ok');
+    if(got===ans)sc++;else{const gb=document.getElementById(`o2-${qi}-${got}`);if(gb)gb.classList.add('q-no');}
+  });
+  const ok=sc===5;
+  const fb=document.getElementById('fb-o2');
+  fb.className=`fb ${ok?'ok':'err'}`;
+  fb.innerHTML=`${ok?'✓ Objetivo confirmado':'✗ Señal inválida'} — ${sc}/5 protocolos. ${ok?'Lógica de misión calibrada.':'Revisa las respuestas en verde.'}`;
+  fb.style.display='block';
+  if(ok) sceneComplete(1,120);
+}
+
+// Orbyt-3 (FIX #1: brighter and clearer)
+function renderOrbyt3(){
+  const qs=[
+    {term:'=ESPACIOS(A1)',opts:['Convierte a mayúsculas','Elimina espacios al inicio y final del texto','Une dos cadenas de texto','Cuenta caracteres'],ans:1},
+    {term:'=A1&" "&B1',opts:['Resta dos celdas','Filtra datos','Concatena (fusiona) dos celdas de texto','Ordena registros'],ans:2},
+    {term:'=NOMPROPIO(A1)',opts:['Primera letra de cada palabra en mayúscula','Convierte todo a minúsculas','Cuenta palabras','Localiza texto en celda'],ans:0},
+    {term:'Datos → Quitar Duplicados',opts:['Ordena de A a Z','Filtra valores únicos temporalmente','Elimina filas con datos repetidos del registro','Congela la primera fila'],ans:2},
+    {term:'Ctrl+Shift+L',opts:['Guardar archivo','Activar/desactivar filtros en la tabla','Insertar nueva fila','Copiar formato'],ans:1},
+  ];
+  const guide=`<div class="guide-box"><div class="guide-lbl">${SVG.book} Guía — Limpieza y Organización de Datos</div><div class="guide-txt">
+    <div class="guide-step"><div class="guide-num">1</div><div><span class="fcode">=ESPACIOS(A1)</span> → Elimina espacios extra al inicio, al final y entre palabras</div></div>
+    <div class="guide-step"><div class="guide-num">2</div><div><span class="fcode">=NOMPROPIO(A1)</span> → Pone en mayúscula la primera letra de cada palabra</div></div>
+    <div class="guide-step"><div class="guide-num">3</div><div><span class="fcode">=A1&" "&B1</span> → Une (concatena) el texto de A1, un espacio, y el texto de B1</div></div>
+    <div class="guide-step"><div class="guide-num">4</div><div><strong>Datos → Quitar Duplicados</strong> → Menú Datos, botón "Quitar duplicados" — elimina filas idénticas</div></div>
+    <div class="guide-step"><div class="guide-num">5</div><div><strong>Ctrl+Shift+L</strong> → Activa o desactiva los filtros de columna (flechitas en los encabezados)</div></div>
+  </div></div>`;
+  return `
+  ${sHdr('Orbyt-3 — Depuración de Señales','var(--green)','rgba(16,185,129,.4)')}
+  <div class="ex-obj"><div class="ex-obj-lbl">🎯 Objetivo Táctico</div><div class="ex-obj-txt">Depura, organiza y sincroniza los registros de datos del sector</div></div>
+  ${guide}
+  <div style="font-size:.7rem;color:var(--cyan);margin-bottom:10px;font-weight:600;">Identifica qué hace cada herramienta/función:</div>
+  ${qs.map((q,i)=>`
+    <div style="margin-bottom:11px;background:rgba(20,45,100,.5);border:1px solid rgba(0,229,255,.1);border-radius:4px;padding:10px;">
+      <div style="margin-bottom:7px;"><span class="fcode" style="font-size:.82rem;">${q.term}</span></div>
+      <div class="q-grid">${q.opts.map((o,oi)=>`<button class="qopt" id="o3-${i}-${oi}" style="font-size:.76rem;" onclick="selO3(${i},${oi})">${o}</button>`).join('')}</div>
+    </div>`).join('')}
+  <div class="fb" id="fb-o3" style="display:none;"></div>
+  <div class="ex-act">
+    <button class="btn btn-prim" onclick="valOrbyt3()">✓ Confirmar Objetivo</button>
+    <button class="btn btn-ghost btn-sm" onclick="loadScen(2)">↺ Recalibrar</button>
+  </div>`;
+}
+const O3A=[1,2,0,2,1]; let o3ans={};
+function selO3(qi,oi){for(let i=0;i<4;i++){const b=document.getElementById(`o3-${qi}-${i}`);if(b)b.classList.remove('q-sel','q-ok','q-no');}o3ans[qi]=oi;const b=document.getElementById(`o3-${qi}-${oi}`);if(b)b.classList.add('q-sel');}
+function valOrbyt3(){
+  let sc=0;
+  O3A.forEach((ans,qi)=>{
+    const got=o3ans[qi];
+    for(let i=0;i<4;i++){const b=document.getElementById(`o3-${qi}-${i}`);if(b)b.classList.remove('q-ok','q-no','q-sel');}
+    const cb=document.getElementById(`o3-${qi}-${ans}`);if(cb)cb.classList.add('q-ok');
+    if(got===ans)sc++;else{const gb=document.getElementById(`o3-${qi}-${got}`);if(gb)gb.classList.add('q-no');}
+  });
+  const ok=sc===5;
+  const fb=document.getElementById('fb-o3');
+  fb.className=`fb ${ok?'ok':'err'}`;
+  fb.innerHTML=`${ok?'✓ Objetivo confirmado':'✗ Señal inválida'} — ${sc}/5 señales depuradas. ${ok?'Base de datos sincronizada.':'Revisa las herramientas válidas en verde.'}`;
+  fb.style.display='block';
+  if(ok) sceneComplete(2,100);
+}
+
+// Orbyt-4
+function renderOrbyt4(){
+  const qs=[
+    {q:'¿Qué destino registra MAYOR actividad según el gráfico?',opts:['Luna','Marte','Órbita Baja','Júpiter'],ans:2},
+    {q:'Para crear una tabla dinámica de análisis en Excel:',opts:['Inicio → Tabla','Insertar → Tabla Dinámica','Datos → Tabla','Fórmulas → Tabla'],ans:1},
+    {q:'Un indicador KPI en el Panel de Comando sirve para:',opts:['Hacer gráficos decorativos','Medir el rendimiento hacia un objetivo','Limpiar duplicados','Localizar valores con BUSCARV'],ans:1},
+    {q:'¿Qué tipo de gráfico es más efectivo para COMPARAR cantidades entre categorías?',opts:['Gráfico de líneas','Gráfico circular (torta)','Gráfico de barras/columnas','Gráfico de dispersión'],ans:2},
+  ];
+  return `
+  ${sHdr('Orbyt-4 — Centro de Análisis de Misión','var(--gold)','rgba(251,191,36,.4)')}
+  <div class="ex-obj"><div class="ex-obj-lbl">🎯 Objetivo Táctico</div><div class="ex-obj-txt">Construye y analiza el Panel de Comando con indicadores clave (KPIs)</div></div>
+  <div class="guide-box"><div class="guide-lbl">${SVG.book} Guía — Dashboards y Visualización</div><div class="guide-txt">
+    <div class="guide-step"><div class="guide-num">1</div><div><strong>Panel de Comando</strong> = conjunto de gráficos + indicadores + tablas que resumen el estado de una misión</div></div>
+    <div class="guide-step"><div class="guide-num">2</div><div><strong>Tabla Dinámica</strong>: Insertar → Tabla Dinámica → resume grandes volúmenes de datos automáticamente</div></div>
+    <div class="guide-step"><div class="guide-num">3</div><div><strong>KPI</strong> (Key Performance Indicator) = métrica clave. Ej: "Tasa de éxito: 87%" o "Presupuesto ejecutado: $4.2B"</div></div>
+    <div class="guide-step"><div class="guide-num">4</div><div><strong>Gráfico de barras</strong> → comparar entre categorías. <strong>Líneas</strong> → tendencias. <strong>Circular</strong> → proporciones del 100%</div></div>
+  </div></div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:13px;">
+    ${[{l:'Operaciones',v:'24',c:'var(--cyan)'},{l:'Tasa de Éxito',v:'87%',c:'var(--green)'},{l:'Presupuesto',v:'$4.2B',c:'var(--gold)'},{l:'Tripulación',v:'96',c:'var(--violet)'}]
+    .map(k=>`<div style="background:rgba(28,55,120,.75);border:1px solid ${k.c}33;border-radius:5px;padding:12px;text-align:center;">
+      <div style="font-size:1.3rem;font-weight:900;color:${k.c};">${k.v}</div>
+      <div style="font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">${k.l}</div>
+    </div>`).join('')}
+  </div>
+  <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px;">Gráfico de Operaciones por Sector (lee el gráfico para responder)</div>
+  <svg viewBox="0 0 360 160" width="100%" style="max-width:440px;display:block;margin:0 auto 14px;background:rgba(15,30,80,.6);border-radius:5px;border:1px solid rgba(0,229,255,.1);">
+    <defs>
+      <linearGradient id="b1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00e5ff" stop-opacity=".9"/><stop offset="100%" stop-color="#3b82f6" stop-opacity=".6"/></linearGradient>
+      <linearGradient id="b2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fbbf24" stop-opacity=".95"/><stop offset="100%" stop-color="#f97316" stop-opacity=".7"/></linearGradient>
+    </defs>
+    <rect x="26" y="56" width="38" height="78" fill="url(#b1)" rx="3"/>
+    <rect x="82" y="76" width="38" height="58" fill="url(#b1)" rx="3"/>
+    <rect x="138" y="18" width="38" height="116" fill="url(#b2)" rx="3"/>
+    <rect x="194" y="92" width="38" height="42" fill="url(#b1)" rx="3"/>
+    <rect x="250" y="60" width="38" height="74" fill="url(#b1)" rx="3"/>
+    <text x="45" y="148" text-anchor="middle" fill="#64748b" font-size="9">Luna</text>
+    <text x="101" y="148" text-anchor="middle" fill="#64748b" font-size="9">Marte</text>
+    <text x="157" y="148" text-anchor="middle" fill="#fbbf24" font-size="9" font-weight="bold">Órbita</text>
+    <text x="213" y="148" text-anchor="middle" fill="#64748b" font-size="9">Júpiter</text>
+    <text x="269" y="148" text-anchor="middle" fill="#64748b" font-size="9">Saturno</text>
+    <text x="45" y="50" text-anchor="middle" fill="#00e5ff" font-size="10" font-weight="700">8</text>
+    <text x="101" y="70" text-anchor="middle" fill="#00e5ff" font-size="10" font-weight="700">6</text>
+    <text x="157" y="12" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="700">10 ⬆ MAX</text>
+    <text x="213" y="86" text-anchor="middle" fill="#00e5ff" font-size="10" font-weight="700">4</text>
+    <text x="269" y="54" text-anchor="middle" fill="#00e5ff" font-size="10" font-weight="700">7</text>
+    <line x1="16" y1="136" x2="302" y2="136" stroke="rgba(0,229,255,.1)" stroke-width="1"/>
+  </svg>
+  ${qs.map((q,i)=>`
+    <div style="margin-bottom:11px;">
+      <div style="font-size:.8rem;font-weight:700;margin-bottom:7px;color:#d0e0f8;">${i+1}. ${q.q}</div>
+      <div class="q-grid">${q.opts.map((o,oi)=>`<button class="qopt" id="o4-${i}-${oi}" style="font-size:.77rem;" onclick="selO4(${i},${oi})">${o}</button>`).join('')}</div>
+    </div>`).join('')}
+  <div class="fb" id="fb-o4" style="display:none;"></div>
+  <div class="ex-act">
+    <button class="btn btn-prim" onclick="valOrbyt4()">✓ Activar Panel de Comando</button>
+    <button class="btn btn-ghost btn-sm" onclick="loadScen(3)">↺ Recalibrar</button>
+  </div>`;
+}
+const O4A=[2,1,1,2]; let o4ans={};
+function selO4(qi,oi){for(let i=0;i<4;i++){const b=document.getElementById(`o4-${qi}-${i}`);if(b)b.classList.remove('q-sel','q-ok','q-no');}o4ans[qi]=oi;const b=document.getElementById(`o4-${qi}-${oi}`);if(b)b.classList.add('q-sel');}
+function valOrbyt4(){
+  let sc=0;
+  O4A.forEach((ans,qi)=>{
+    const got=o4ans[qi];
+    for(let i=0;i<4;i++){const b=document.getElementById(`o4-${qi}-${i}`);if(b)b.classList.remove('q-ok','q-no','q-sel');}
+    const cb=document.getElementById(`o4-${qi}-${ans}`);if(cb)cb.classList.add('q-ok');
+    if(got===ans)sc++;else{const gb=document.getElementById(`o4-${qi}-${got}`);if(gb)gb.classList.add('q-no');}
+  });
+  const ok=sc===4;
+  const fb=document.getElementById('fb-o4');
+  fb.className=`fb ${ok?'ok':'err'}`;
+  fb.innerHTML=`${ok?'✓ Objetivo confirmado':'✗ Señal inválida'} — ${sc}/4 indicadores confirmados. ${ok?'Panel de Comando operativo.':'Revisa las lecturas válidas en verde.'}`;
+  fb.style.display='block';
+  if(ok) sceneComplete(3,150);
+}
+
+function sceneComplete(idx,pts){
+  if(!G.e_done.includes(idx)){
+    G.pts+=pts; G.e_done.push(idx);
+    if(idx===0&&!G.badges.includes('functions')) G.badges.push('functions');
+    if(G.e_done.length===4){G.e_complete=true;if(!G.badges.includes('master')) G.badges.push('master');}
+    save(); updateHUD(); renderStabs();
+  }
+  if(G.e_done.length===4){
+    setTimeout(()=>{showRw('¡Sector Exoris Liberado!','Graduación Estelar confirmada. Dirigiendo a pantalla de logros...');setTimeout(()=>{closeRw();showFinal();},2500);},400);
+  } else {
+    showRw(`${SCENS[idx].title} — Confirmado`,`+${pts} créditos estelares.`);
+    const next=idx+1;
+    if(next<=3) setTimeout(()=>{G.curScen=next;loadScen(next);renderStabs();},700);
+  }
+}
+
+// ══════════════════════════════════════════════════
+// REWARD
+// ══════════════════════════════════════════════════
+function showRw(title,msg){
+  document.getElementById('rw-icon').innerHTML=`<svg width="54" height="54" viewBox="0 0 54 54"><defs><radialGradient id="rg" cx="50%" cy="30%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#f59e0b"/></radialGradient></defs><polygon points="27,4 33,18 48,20 37,31 40,46 27,39 14,46 17,31 6,20 21,18" fill="url(#rg)" opacity=".9"/></svg>`;
+  document.getElementById('rw-t').textContent=title;
+  document.getElementById('rw-m').textContent=msg;
+  const p=document.getElementById('rw'); p.style.display='block'; document.getElementById('ov').style.display='block';
+  setTimeout(()=>p.classList.add('show'),10);
+}
+function closeRw(){const p=document.getElementById('rw');p.classList.remove('show');setTimeout(()=>{p.style.display='none';document.getElementById('ov').style.display='none';},300);}
+
+// ══════════════════════════════════════════════════
+// FINAL SCREEN
+// ══════════════════════════════════════════════════
+function showFinal(){
+  if(G.timer) clearInterval(G.timer);
+  document.getElementById('fin-pts').textContent=G.pts;
+  document.getElementById('fin-t').textContent=fmtTime(G.time);
+  document.getElementById('fin-b').textContent=G.badges.length;
+  document.getElementById('fin-bdg').innerHTML=G.badges.map(bid=>{
+    const b=BADGES.find(x=>x.id===bid);
+    return b?`<div class="fbc"><span style="color:var(--gold);display:inline-flex;">${SVG[b.icon]||''}</span>${b.name}</div>`:'';
+  }).join('');
+  show('scr-fin');
+}
+function resetGame(){
+  if(G.timer) clearInterval(G.timer);
+  G={pts:0,time:0,timer:null,k_done:[],e_done:[],k_unlocked:true,e_unlocked:false,k_complete:false,e_complete:false,badges:[],curEj:0,curScen:0,maxAttempts:3};
+  save(); o2ans={}; o3ans={}; o4ans={};
+  document.getElementById('hud').style.display='none';
+  show('scr-intro'); updateHUD();
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+makeStars();
+</script>
+</body>
+</html>
