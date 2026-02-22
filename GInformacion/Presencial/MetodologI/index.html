@@ -3,183 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ruta Metodológica | Presentación Interactiva</title>
+  <title>Ruta metodológica | Presentación Interactiva (corregida)</title>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body{
-      font-family:'Inter', sans-serif;
-      background:#0a0e27;
-      color:#2c3e50;
-      overflow:hidden;
-      height:100vh;
-    }
+    body{ font-family:'Inter', sans-serif; background:#0a0e27; color:#2c3e50; overflow:hidden; height:100vh; }
 
-    .registro-screen{
-      height:100vh; display:flex; align-items:center; justify-content:center;
-      padding:40px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-    }
-    .registro-card{
-      background:#fff; border-radius:20px; box-shadow:0 30px 80px rgba(0,0,0,.3);
-      padding:60px 50px; max-width:600px; width:100%; animation:slideIn .5s ease;
-    }
+    .registro-screen{ height:100vh; display:flex; align-items:center; justify-content:center; padding:40px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); }
+    .registro-card{ background:#fff; border-radius:20px; box-shadow:0 30px 80px rgba(0,0,0,.3); padding:60px 50px; max-width:700px; width:100%; animation:slideIn .5s ease; }
     @keyframes slideIn{ from{opacity:0; transform:translateY(-30px);} to{opacity:1; transform:translateY(0);} }
-
-    .registro-card h1{
-      color:#667eea; font-family:'Libre Baskerville', serif; font-size:2.05em;
-      margin-bottom:15px; text-align:center; line-height:1.2;
-    }
-    .registro-card .subtitle{
-      color:#666; text-align:center; margin-bottom:40px; font-size:1.02em; line-height:1.6;
-    }
+    .registro-card h1{ color:#667eea; font-family:'Libre Baskerville', serif; font-size:2.05em; margin-bottom:15px; text-align:center; line-height:1.2; }
+    .registro-card .subtitle{ color:#666; text-align:center; margin-bottom:40px; font-size:1.02em; line-height:1.6; }
 
     .form-group{ margin-bottom:25px; }
-    .form-group label{
-      display:block; font-weight:700; color:#2c3e50; margin-bottom:8px; font-size:.95em;
-    }
-    .form-group input{
-      width:100%; padding:15px; border:2px solid #dfe6e9; border-radius:10px;
-      font-size:1em; font-family:'Inter', sans-serif; transition:all .3s; background:#fff;
-    }
-    .form-group input:focus{
-      outline:none; border-color:#667eea; box-shadow:0 0 0 4px rgba(102,126,234,.1);
-    }
+    .form-group label{ display:block; font-weight:700; color:#2c3e50; margin-bottom:8px; font-size:.95em; }
+    .form-group input{ width:100%; padding:15px; border:2px solid #dfe6e9; border-radius:10px; font-size:1em; font-family:'Inter', sans-serif; transition:all .3s; background:#fff; }
+    .form-group input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 0 4px rgba(102,126,234,.1); }
     .form-group input::placeholder{ color:#bdc3c7; }
-
-    .btn-comenzar{
-      width:100%; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-      color:#fff; border:none; padding:18px; font-size:1.1em; font-weight:700;
-      border-radius:10px; cursor:pointer; transition:all .3s; margin-top:15px;
-      text-transform:uppercase; letter-spacing:1px;
-    }
+    .btn-comenzar{ width:100%; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; border:none; padding:18px; font-size:1.1em; font-weight:700; border-radius:10px; cursor:pointer; transition:all .3s; margin-top:15px; text-transform:uppercase; letter-spacing:1px; }
     .btn-comenzar:hover{ transform:translateY(-2px); box-shadow:0 10px 30px rgba(102,126,234,.4); }
-
     .error-message{ color:#e74c3c; font-size:.9em; margin-top:8px; display:none; font-weight:600; }
     .error-message.show{ display:block; }
 
-    .presentation-wrapper{
-      height:100vh; display:none; align-items:center; justify-content:center; padding:40px;
-    }
+    .presentation-wrapper{ height:100vh; display:none; align-items:center; justify-content:center; padding:40px; }
     .presentation-wrapper.active{ display:flex; }
 
-    .slide{
-      background:#fff; width:100%; max-width:1400px; height:85vh; border-radius:0;
-      box-shadow:0 20px 60px rgba(0,0,0,.5); display:none; flex-direction:column; position:relative;
-    }
+    .slide{ background:#fff; width:100%; max-width:1400px; height:85vh; box-shadow:0 20px 60px rgba(0,0,0,.5); display:none; flex-direction:column; position:relative; }
     .slide.active{ display:flex; animation:fadeIn .45s ease; }
     @keyframes fadeIn{ from{opacity:0; transform:scale(.985);} to{opacity:1; transform:scale(1);} }
 
-    .slide-header{
-      background:linear-gradient(135deg,#2c3e50 0%,#34495e 100%);
-      padding:34px 56px; color:#fff; border-bottom:4px solid #e74c3c; flex-shrink:0;
-    }
-    .slide-number{
-      font-size:13px; font-weight:300; letter-spacing:2px; opacity:.85; margin-bottom:8px; text-transform:uppercase;
-    }
-    .slide-title{
-      font-family:'Libre Baskerville', serif; font-size:38px; font-weight:700; line-height:1.2;
-    }
+    .slide-header{ background:linear-gradient(135deg,#2c3e50 0%,#34495e 100%); padding:34px 56px; color:#fff; border-bottom:4px solid #e74c3c; flex-shrink:0; }
+    .slide-number{ font-size:13px; font-weight:300; letter-spacing:2px; opacity:.85; margin-bottom:8px; text-transform:uppercase; }
+    .slide-title{ font-family:'Libre Baskerville', serif; font-size:38px; font-weight:700; line-height:1.2; }
 
-    .slide-content{
-      flex:1; padding:36px 56px; overflow-y:auto; min-height:0;
-    }
+    .slide-content{ flex:1; padding:36px 56px; overflow-y:auto; min-height:0; }
     .slide-content::-webkit-scrollbar{ width:8px; }
     .slide-content::-webkit-scrollbar-track{ background:#f1f1f1; }
     .slide-content::-webkit-scrollbar-thumb{ background:#bdc3c7; border-radius:4px; }
 
-    .slide-footer{
-      padding:18px 56px; border-top:1px solid #ecf0f1; display:flex; justify-content:space-between;
-      align-items:center; background:#fafafa; gap:16px; flex-shrink:0; position:relative;
-    }
-    .progress-indicator{
-      font-size:13px; color:#95a5a6; font-weight:600; white-space:nowrap;
-    }
-    .footer-brand{
-      position:absolute; left:50%; transform:translateX(-50%); font-size:12px; color:#95a5a6;
-      font-weight:600; letter-spacing:.5px;
-    }
+    .slide-footer{ padding:18px 56px; border-top:1px solid #ecf0f1; display:flex; justify-content:space-between; align-items:center; background:#fafafa; gap:16px; flex-shrink:0; position:relative; }
+    .progress-indicator{ font-size:13px; color:#95a5a6; font-weight:600; white-space:nowrap; }
+    .footer-brand{ position:absolute; left:50%; transform:translateX(-50%); font-size:12px; color:#95a5a6; font-weight:600; letter-spacing:.5px; }
     .footer-brand strong{ color:#667eea; font-weight:800; }
 
-    .btn{
-      padding:12px 26px; border:none; border-radius:4px; font-family:'Inter', sans-serif;
-      font-size:14px; font-weight:700; cursor:pointer; transition:all .18s ease;
-      text-transform:uppercase; letter-spacing:.5px;
-    }
+    .btn{ padding:12px 26px; border:none; border-radius:4px; font-family:'Inter', sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:all .18s ease; text-transform:uppercase; letter-spacing:.5px; }
     .btn-nav{ background:transparent; color:#7f8c8d; border:2px solid #bdc3c7; }
     .btn-nav:hover{ background:#ecf0f1; border-color:#95a5a6; }
     .btn-primary{ background:#e74c3c; color:#fff; border:2px solid #e74c3c; }
-    .btn-primary:hover{
-      background:#c0392b; border-color:#c0392b; transform:translateY(-2px);
-      box-shadow:0 4px 12px rgba(231,76,60,.28);
-    }
+    .btn-primary:hover{ background:#c0392b; border-color:#c0392b; transform:translateY(-2px); box-shadow:0 4px 12px rgba(231,76,60,.28); }
     .btn-secondary{ background:transparent; color:#3498db; border:2px solid #3498db; }
     .btn-secondary:hover{ background:#3498db; color:#fff; }
     .btn-success{ background:#27ae60; color:#fff; border:2px solid #27ae60; }
     .btn-success:hover{ background:#1e8449; border-color:#1e8449; }
-    .btn:disabled{
-      opacity:.45; cursor:not-allowed; transform:none !important; box-shadow:none !important;
-    }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
 
-    h2{
-      font-family:'Libre Baskerville', serif; font-size:30px; color:#2c3e50; margin-bottom:18px;
-      padding-bottom:10px; border-bottom:3px solid #e74c3c; display:inline-block;
-    }
-    h3{
-      font-family:'Libre Baskerville', serif; font-size:20px; color:#34495e; margin:22px 0 12px;
-    }
-    h4{
-      font-family:'Libre Baskerville', serif; font-size:17px; color:#2c3e50; margin-bottom:10px;
-    }
-    p{
-      font-size:16.5px; line-height:1.7; color:#2c3e50; margin-bottom:14px;
-    }
-    code{
-      background:#f1f3f4; padding:3px 8px; border-radius:3px; font-family:'Courier New', monospace;
-      color:#e74c3c; font-size:13px;
-    }
+    h2{ font-family:'Libre Baskerville', serif; font-size:30px; color:#2c3e50; margin-bottom:18px; padding-bottom:10px; border-bottom:3px solid #e74c3c; display:inline-block; }
+    h3{ font-family:'Libre Baskerville', serif; font-size:20px; color:#34495e; margin:22px 0 12px; }
+    h4{ font-family:'Libre Baskerville', serif; font-size:17px; color:#2c3e50; margin-bottom:10px; }
+    p{ font-size:16.5px; line-height:1.7; color:#2c3e50; margin-bottom:14px; }
 
-    .info-card{
-      background:#ecf9ff; border-left:5px solid #3498db; padding:18px 20px; margin:18px 0;
-    }
-    .info-card-title{
-      font-weight:800; font-size:16.5px; color:#2980b9; margin-bottom:10px;
-    }
-    .warning-card{
-      background:#fff4e6; border-left:5px solid #f39c12; padding:18px 20px; margin:18px 0;
-    }
-    .warning-card-title{
-      font-weight:800; font-size:16.5px; color:#e67e22; margin-bottom:10px;
-    }
-    .success-card{
-      background:#e8f8f5; border-left:5px solid #27ae60; padding:18px 20px; margin:18px 0;
-    }
-    .success-card-title{
-      font-weight:800; font-size:16.5px; color:#27ae60; margin-bottom:10px;
-    }
+    .info-card{ background:#ecf9ff; border-left:5px solid #3498db; padding:18px 20px; margin:18px 0; }
+    .info-card-title{ font-weight:800; font-size:16.5px; color:#2980b9; margin-bottom:10px; }
+    .warning-card{ background:#fff4e6; border-left:5px solid #f39c12; padding:18px 20px; margin:18px 0; }
+    .warning-card-title{ font-weight:800; font-size:16.5px; color:#e67e22; margin-bottom:10px; }
+    .success-card{ background:#e8f8f5; border-left:5px solid #27ae60; padding:18px 20px; margin:18px 0; }
+    .success-card-title{ font-weight:800; font-size:16.5px; color:#27ae60; margin-bottom:10px; }
 
     .content-list{ list-style:none; padding:0; }
-    .content-list li{
-      padding:8px 0 8px 26px; position:relative; font-size:16.5px; line-height:1.6; color:#2c3e50;
-    }
-    .content-list li::before{
-      content:"▸"; position:absolute; left:0; color:#e74c3c; font-size:18px; font-weight:800;
-    }
+    .content-list li{ padding:8px 0 8px 26px; position:relative; font-size:16px; line-height:1.6; color:#2c3e50; }
+    .content-list li::before{ content:"▸"; position:absolute; left:0; color:#e74c3c; font-size:18px; font-weight:800; }
 
-    .two-columns{
-      display:grid; grid-template-columns:1.05fr .95fr; gap:18px; margin:16px 0; align-items:start;
-    }
-    .panel{
-      background:#f8f9fa; border:1px solid #ecf0f1; border-radius:4px; padding:16px 18px;
-    }
+    .two-columns{ display:grid; grid-template-columns:1.05fr .95fr; gap:18px; margin:16px 0; align-items:start; }
+    .panel{ background:#f8f9fa; border:1px solid #ecf0f1; border-radius:4px; padding:16px 18px; }
 
-    .question-area{
-      background:#f8fbff; border:2px solid rgba(52,152,219,.22); border-radius:4px;
-      padding:16px 18px; margin-top:14px;
-    }
-    .question-title{
-      font-weight:800; font-size:17px; color:#2c3e50; margin-bottom:12px;
-    }
+    .question-area{ background:#f8fbff; border:2px solid rgba(52,152,219,.22); border-radius:4px; padding:16px 18px; margin-top:14px; }
+    .question-title{ font-weight:800; font-size:17px; color:#2c3e50; margin-bottom:12px; }
 
     .options-grid{ display:grid; gap:10px; }
     .option-card{
@@ -188,18 +86,10 @@
     }
     .option-card:hover{ border-color:#3498db; background:#f8f9fa; }
     .option-card.selected{ border-color:#3498db; background:#ecf9ff; }
-    .option-radio{
-      width:18px; height:18px; border:2px solid #bdc3c7; border-radius:50%; position:relative;
-      flex-shrink:0; margin-top:2px;
-    }
+    .option-radio{ width:18px; height:18px; border:2px solid #bdc3c7; border-radius:50%; position:relative; flex-shrink:0; margin-top:2px; }
     .option-card.selected .option-radio{ border-color:#3498db; }
-    .option-card.selected .option-radio::after{
-      content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-      width:9px; height:9px; background:#3498db; border-radius:50%;
-    }
-    .option-text{
-      font-size:16.5px; color:#2c3e50; line-height:1.55;
-    }
+    .option-card.selected .option-radio::after{ content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:9px; height:9px; background:#3498db; border-radius:50%; }
+    .option-text{ font-size:16px; color:#2c3e50; line-height:1.55; }
 
     .checkbox-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
     .checkbox-card{
@@ -208,41 +98,27 @@
     }
     .checkbox-card:hover{ border-color:#3498db; background:#f8f9fa; }
     .checkbox-card.selected{ border-color:#3498db; background:#ecf9ff; }
-    .option-checkbox{
-      width:18px; height:18px; border:2px solid #bdc3c7; border-radius:4px;
-      position:relative; flex-shrink:0; background:#fff; margin-top:2px;
-    }
-    .checkbox-card.selected .option-checkbox{
-      border-color:#3498db; background:#3498db;
-    }
+    .option-checkbox{ width:18px; height:18px; border:2px solid #bdc3c7; border-radius:4px; position:relative; flex-shrink:0; background:#fff; margin-top:2px; }
+    .checkbox-card.selected .option-checkbox{ border-color:#3498db; background:#3498db; }
     .checkbox-card.selected .option-checkbox::after{
       content:''; position:absolute; top:1px; left:5px; width:5px; height:10px;
       border:solid #fff; border-width:0 2px 2px 0; transform:rotate(45deg);
     }
 
     input[type="text"], textarea, select{
-      width:100%; padding:10px 10px; border:2px solid #dfe6e9; border-radius:4px;
-      font-family:'Inter', sans-serif; font-size:14px; transition:border-color .2s; background:#fff;
-      color:#2c3e50; line-height:1.35;
+      width:100%; padding:10px 10px; border:2px solid #dfe6e9; border-radius:4px; font-family:'Inter', sans-serif;
+      font-size:14px; transition:border-color .2s; background:#fff; color:#2c3e50; line-height:1.35;
     }
     input[type="text"]:focus, textarea:focus, select:focus{ outline:none; border-color:#3498db; }
-    textarea{ min-height:115px; resize:vertical; font-family:'Inter', sans-serif; }
+    textarea{ min-height:110px; resize:vertical; }
 
     .table-wrap{ overflow:auto; border:1px solid #dfe6e9; margin:16px 0; }
-    .data-table{
-      width:100%; border-collapse:collapse; border:1px solid #dfe6e9; margin:0;
-    }
-    .data-table th{
-      background:#34495e; color:#fff; padding:12px 12px; text-align:left; font-weight:800; font-size:13.5px; vertical-align:top;
-    }
-    .data-table td{
-      padding:10px 12px; border-bottom:1px solid #ecf0f1; vertical-align:top; font-size:14.5px; color:#2c3e50;
-    }
+    .data-table{ width:100%; border-collapse:collapse; }
+    .data-table th{ background:#34495e; color:#fff; padding:12px; text-align:left; font-weight:800; font-size:13px; }
+    .data-table td{ padding:10px 12px; border-bottom:1px solid #ecf0f1; vertical-align:top; font-size:14px; }
     .data-table tbody tr:nth-child(even){ background:#f8f9fa; }
 
-    .feedback{
-      padding:14px 16px; border-radius:4px; margin-top:12px; display:none; font-weight:700;
-    }
+    .feedback{ padding:14px 16px; border-radius:4px; margin-top:12px; display:none; font-weight:700; }
     .feedback.show{ display:block; }
     .feedback.success{ background:#e8f8f5; border-left:5px solid #27ae60; color:#27ae60; }
     .feedback.error{ background:#fadbd8; border-left:5px solid #e74c3c; color:#c0392b; }
@@ -254,125 +130,121 @@
 
     .code-box{
       background:#f8f9fa; border:1px solid #dfe6e9; border-left:5px solid #3498db; border-radius:4px;
-      padding:14px 16px; font-family:'Courier New', monospace; font-size:14px; line-height:1.7;
+      padding:14px 16px; font-family:'Courier New', monospace; font-size:14px; line-height:1.6;
       white-space:pre-wrap; word-break:break-word; margin:14px 0;
     }
 
-    .resource-row{
-      display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
-    }
-    .resource-row a{
-      text-decoration:none; color:#2c3e50; background:#fff; border:2px solid #dfe6e9; padding:10px 12px;
-      border-radius:4px; font-weight:800; font-size:13px; transition:all .15s ease;
-    }
-    .resource-row a:hover{
-      border-color:#3498db; background:#ecf9ff; transform:translateY(-1px);
-    }
-
     .status-list{ display:grid; gap:10px; margin-top:10px; }
-    .status-item{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-      padding:12px 14px; border:2px solid #dfe6e9; border-radius:4px; background:#fff;
-    }
+    .status-item{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:12px 14px; border:2px solid #dfe6e9; border-radius:4px; background:#fff; }
     .status-item .label{ font-size:15px; line-height:1.5; font-weight:600; color:#2c3e50; }
-    .chip{
-      padding:4px 10px; border-radius:999px; font-size:12px; font-weight:800; border:2px solid #dfe6e9;
-      color:#7f8c8d; white-space:nowrap;
-    }
+    .chip{ padding:4px 10px; border-radius:999px; font-size:12px; font-weight:800; border:2px solid #dfe6e9; color:#7f8c8d; white-space:nowrap; }
     .chip.ok{ color:#27ae60; border-color:#a9dfbf; background:#f0fff6; }
     .chip.bad{ color:#e74c3c; border-color:#f5b7b1; background:#fff5f4; }
 
-    .completion-card{
-      background:#fff; border-radius:12px; padding:38px; max-width:860px; margin:0 auto;
-      box-shadow:0 10px 40px rgba(0,0,0,.08); border:1px solid #ecf0f1;
-    }
-    .completion-icon{
-      width:80px; height:80px; background:#27ae60; border-radius:50%;
-      display:flex; align-items:center; justify-content:center; margin:0 auto 25px;
-      font-size:40px; color:#fff; font-weight:900;
-    }
-    .student-data{
-      background:#f8f9fa; border:2px solid #ecf0f1; border-radius:8px; padding:22px; margin:24px 0;
-    }
-    .student-data h3{ color:#2c3e50; margin-bottom:16px; font-size:18px; }
-    .data-item{
-      display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #ecf0f1; align-items:flex-start;
-    }
+    .small-note{ font-size:13px; line-height:1.5; color:#7f8c8d; }
+
+    .completion-card{ background:#fff; border-radius:12px; padding:38px; max-width:980px; margin:0 auto; box-shadow:0 10px 40px rgba(0,0,0,.08); border:1px solid #ecf0f1; }
+    .completion-icon{ width:80px; height:80px; background:#27ae60; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 25px; font-size:40px; color:#fff; font-weight:900; }
+    .student-data{ background:#f8f9fa; border:2px solid #ecf0f1; border-radius:8px; padding:22px; margin:24px 0; }
+    .data-item{ display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #ecf0f1; align-items:flex-start; }
     .data-item:last-child{ border-bottom:none; }
-    .data-label{
-      font-weight:700; color:#7f8c8d; min-width:190px; font-size:14px;
-    }
-    .data-value{
-      color:#2c3e50; font-weight:600; font-size:15px; line-height:1.5; word-break:break-word;
-    }
+    .data-label{ font-weight:700; color:#7f8c8d; min-width:190px; font-size:14px; }
+    .data-value{ color:#2c3e50; font-weight:600; font-size:15px; line-height:1.5; word-break:break-word; }
 
-    .small-note{
-      font-size:13.5px; line-height:1.5; color:#7f8c8d;
+    .thesaurus-toolbar{
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:10px 0 14px;
+      background:#f8f9fa; border:1px solid #ecf0f1; padding:12px; border-radius:4px;
     }
+    .th-btn{
+      border:2px solid #dfe6e9; background:#fff; color:#2c3e50; border-radius:4px;
+      padding:10px 12px; font-weight:800; font-size:13px; cursor:pointer; transition:.15s;
+      text-transform:uppercase; letter-spacing:.3px;
+    }
+    .th-btn:hover{ border-color:#3498db; background:#ecf9ff; }
+    .th-btn.active{ border-color:#3498db; background:#ecf9ff; color:#2980b9; }
+    .th-btn.info{ border-color:#9b59b6; color:#9b59b6; }
+    .thesaurus-info-box{
+      display:none; background:#fff; border:2px solid #3498db; border-radius:4px; padding:14px; margin:10px 0;
+    }
+    .thesaurus-info-box.show{ display:block; }
 
-    @media (max-width:1200px){
-      .slide-title{ font-size:32px; }
-      .two-columns{ grid-template-columns:1fr; }
-      .checkbox-grid{ grid-template-columns:1fr; }
-    }
+    .fab-resumen{ position:fixed; right:22px; bottom:22px; z-index:9999; display:none; }
+    .fab-resumen.show{ display:block; }
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(10,14,39,.62); z-index:9998; display:none; align-items:center; justify-content:center; padding:24px; }
+    .modal-backdrop.active{ display:flex; }
+    .modal-card{ width:100%; max-width:1050px; max-height:85vh; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.35); display:flex; flex-direction:column; border:1px solid #ecf0f1; }
+    .modal-header{ background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color:#fff; padding:18px 22px; border-bottom:4px solid #e74c3c; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .modal-title{ font-family:'Libre Baskerville', serif; font-size:20px; font-weight:700; margin:0; }
+    .modal-body{ padding:18px 22px; overflow:auto; }
+    .kv{ display:grid; grid-template-columns:200px 1fr; gap:10px 14px; padding:12px 14px; border:1px solid #ecf0f1; background:#fafafa; border-radius:8px; margin:12px 0; }
+    .kv .k{ font-weight:800; color:#7f8c8d; font-size:13px; }
+    .kv .v{ font-weight:600; color:#2c3e50; font-size:14px; line-height:1.5; word-break:break-word; }
+    .step-badge{ display:inline-flex; align-items:center; gap:8px; font-weight:900; font-size:12px; padding:6px 10px; border-radius:999px; border:2px solid #dfe6e9; color:#2c3e50; background:#fff; }
+    .step-badge.ok{ border-color:#a9dfbf; background:#f0fff6; color:#27ae60; }
+    .step-badge.pending{ border-color:#f5b7b1; background:#fff5f4; color:#e74c3c; }
+    .mini-table{ width:100%; border-collapse:collapse; border:1px solid #dfe6e9; margin:12px 0; }
+    .mini-table th{ background:#34495e; color:#fff; padding:10px; text-align:left; font-weight:800; font-size:12px; }
+    .mini-table td{ padding:9px 10px; border-bottom:1px solid #ecf0f1; vertical-align:top; font-size:13px; }
+    .mini-table tbody tr:nth-child(even){ background:#f8f9fa; }
+
+    .inline-badges{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+    .badge-mini{ font-size:12px; font-weight:700; padding:6px 10px; border-radius:999px; border:1px solid #dfe6e9; background:#fff; }
+    .badge-mini.ok{ background:#f0fff6; color:#1e8449; border-color:#a9dfbf; }
+    .badge-mini.warn{ background:#fff5ea; color:#d68910; border-color:#f8c471; }
+    .badge-mini.bad{ background:#fff5f4; color:#c0392b; border-color:#f5b7b1; }
+
+    @media (max-width:1200px){ .slide-title{ font-size:32px; } .two-columns{ grid-template-columns:1fr; } .checkbox-grid{ grid-template-columns:1fr; } }
     @media (max-width:768px){
-      .presentation-wrapper{ padding:0; }
-      .slide{ height:100vh; }
-      .slide-header,.slide-footer{ padding:20px; }
-      .slide-content{ padding:20px; }
-      .slide-title{ font-size:24px; }
-      .registro-card{ padding:40px 26px; }
-      .footer-brand{ display:none; }
+      .presentation-wrapper{ padding:0; } .slide{ height:100vh; } .slide-header,.slide-footer{ padding:20px; } .slide-content{ padding:20px; }
+      .slide-title{ font-size:24px; } .registro-card{ padding:40px 26px; } .footer-brand{ display:none; } .kv{ grid-template-columns:1fr; }
+      .thesaurus-toolbar{ gap:6px; }
+      .th-btn{ font-size:12px; padding:8px 10px; }
     }
   </style>
 </head>
-
 <body>
+
   <!-- REGISTRO -->
   <div class="registro-screen" id="registroScreen">
     <div class="registro-card">
       <h1>Ruta metodológica para trabajo escrito</h1>
-      <p class="subtitle">Actividad interactiva: caso → problemática → delimitación → pregunta problema → conceptos → términos → búsqueda → recolección de fuentes → curación de contenido</p>
+      <p class="subtitle">Actividad interactiva: caso → problemática → delimitación → pregunta problema → conceptos → términos → búsqueda → recolección de fuentes → cribado</p>
 
-      <form id="registroForm" onsubmit="return false;">
+      <form onsubmit="return false;">
         <div class="form-group">
           <label for="nombreCompleto">Nombre completo *</label>
           <input type="text" id="nombreCompleto" placeholder="Ingresa tu nombre completo">
           <div class="error-message" id="errorNombre">Por favor ingresa tu nombre completo</div>
         </div>
-
         <div class="form-group">
           <label for="nrc">NRC *</label>
           <input type="text" id="nrc" placeholder="Ingresa el NRC del curso">
           <div class="error-message" id="errorNrc">Por favor ingresa el NRC</div>
         </div>
-
         <div class="form-group">
           <label for="grupo">Número de grupo *</label>
           <input type="text" id="grupo" placeholder="Ingresa tu número de grupo">
           <div class="error-message" id="errorGrupo">Por favor ingresa tu número de grupo</div>
         </div>
-
-        <button type="button" class="btn-comenzar" onclick="validarRegistro()">Comenzar Presentación</button>
+        <button type="button" class="btn-comenzar" onclick="validarRegistro()">Comenzar presentación</button>
       </form>
     </div>
   </div>
 
   <!-- PRESENTACIÓN -->
   <div class="presentation-wrapper" id="presentationWrapper">
-    <!-- SLIDE 1 -->
+
+    <!-- 1 -->
     <section class="slide active">
       <header class="slide-header">
         <div class="slide-number">INTRODUCCIÓN</div>
         <h1 class="slide-title">Ruta metodológica inicial</h1>
       </header>
-
       <div class="slide-content">
         <div class="info-card">
           <div class="info-card-title">Objetivo</div>
           <p><strong>Reforzar los procesos metodológicos para el desarrollo de un trabajo escrito.</strong></p>
         </div>
-
         <h2>Recorrido</h2>
         <ul class="content-list">
           <li>Análisis de caso</li>
@@ -381,24 +253,23 @@
           <li>Pregunta problema</li>
           <li>Conceptos clave</li>
           <li>Palabras clave, sinónimos y descriptores</li>
-          <li>Búsqueda, recolección de fuentes y curación de contenido (cribado)</li>
+          <li>Búsqueda, recolección de fuentes y cribado</li>
+          <li>Bitácora de búsqueda</li>
         </ul>
       </div>
-
       <footer class="slide-footer">
-        <div class="progress-indicator">1 de 8</div>
+        <div class="progress-indicator">1 de 9</div>
         <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
         <button class="btn btn-primary" onclick="nextSlide()">COMENZAR →</button>
       </footer>
     </section>
 
-    <!-- SLIDE 2 -->
+    <!-- 2 -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 1</div>
         <h1 class="slide-title">Análisis del caso</h1>
       </header>
-
       <div class="slide-content">
         <h2>Lee y analiza antes de formular</h2>
 
@@ -407,68 +278,52 @@
             <h4 style="margin:0;">Caso</h4>
             <button class="btn btn-secondary" id="btnToggleCaso" onclick="toggleCaso()">LEER CASO ▼</button>
           </div>
-
           <div id="casoExpandible" style="display:none; margin-top:14px;">
             <div class="warning-card" style="margin:0;">
               <div class="warning-card-title">Relato del caso</div>
-              <p>
-                En un centro de servicios universitarios, durante ciertos momentos del día, se forman filas extensas para realizar trámites académicos y administrativos.
-                Los usuarios manifiestan molestias porque el tiempo de espera supera lo que esperaban, y en ocasiones deben retirarse sin completar el proceso.
-              </p>
-              <p style="margin-bottom:0;">
-                El personal indica que la situación se presenta con mayor frecuencia cuando coinciden varios tipos de solicitudes y aumenta la afluencia de personas.
-                Aunque se han intentado ajustes operativos, no se ha documentado con claridad qué factores están influyendo más en las demoras ni cómo se comporta el problema según horarios.
-              </p>
+              <p>En un centro de servicios universitarios, durante ciertos momentos del día, se forman filas extensas para realizar trámites académicos y administrativos. Los usuarios manifiestan molestias porque el tiempo de espera supera lo esperado, y en ocasiones deben retirarse sin completar el proceso.</p>
+              <p style="margin-bottom:0;">El personal indica que la situación se presenta con mayor frecuencia cuando coinciden varios tipos de solicitudes y aumenta la afluencia de personas. Aunque se han intentado ajustes operativos, no se ha documentado con claridad qué factores influyen más en las demoras ni cómo se comporta el problema según horarios.</p>
             </div>
           </div>
         </div>
 
         <div class="question-area">
           <div class="question-title">Selecciona la formulación que mejor representa una problemática investigable a partir del caso</div>
-          <div class="options-grid">
-            <div class="option-card" onclick="selectOption(this, 's2', 'a')">
-              <div class="option-radio"></div>
-              <div class="option-text">Dificultades en la experiencia de atención de usuarios dentro de procesos de servicio universitario y gestión de trámites institucionales en distintos momentos de alta afluencia.</div>
+          <div class="options-grid" data-randomize="s2">
+            <div class="option-card" data-group="s2" data-value="a" onclick="selectOptionCard(this)">
+              <div class="option-radio"></div><div class="option-text">Dificultades en la experiencia de atención de usuarios dentro de procesos de servicio universitario y gestión de trámites institucionales en distintos momentos de alta afluencia.</div>
             </div>
-            <div class="option-card" onclick="selectOption(this, 's2', 'b')">
-              <div class="option-radio"></div>
-              <div class="option-text">Demoras recurrentes en la atención de trámites en un centro de servicios universitarios durante franjas de alta demanda, sin claridad sobre los factores que influyen en su ocurrencia.</div>
+            <div class="option-card" data-group="s2" data-value="b" onclick="selectOptionCard(this)">
+              <div class="option-radio"></div><div class="option-text">Demoras recurrentes en la atención de trámites en un centro de servicios universitarios durante franjas de alta demanda, sin claridad sobre los factores que influyen en su ocurrencia.</div>
             </div>
-            <div class="option-card" onclick="selectOption(this, 's2', 'c')">
-              <div class="option-radio"></div>
-              <div class="option-text">Inconformidad de usuarios frente al servicio recibido en trámites universitarios cuando la afluencia aumenta y se perciben tiempos de espera mayores a los esperados.</div>
+            <div class="option-card" data-group="s2" data-value="c" onclick="selectOptionCard(this)">
+              <div class="option-radio"></div><div class="option-text">Inconformidad de usuarios frente al servicio recibido en trámites universitarios cuando la afluencia aumenta y se perciben tiempos de espera mayores a los esperados.</div>
             </div>
           </div>
           <div id="feedback2" class="feedback"></div>
         </div>
       </div>
-
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
         <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
         <div style="display:flex; gap:16px; align-items:center;">
-          <div class="progress-indicator">2 de 8</div>
+          <div class="progress-indicator">2 de 9</div>
           <button class="btn btn-primary" onclick="checkStep2()">VERIFICAR →</button>
         </div>
       </footer>
     </section>
 
-    <!-- SLIDE 3 (CORREGIDA: sin regalar respuesta, con desplegables + retroalimentación) -->
+    <!-- 3 DELIMITACIÓN (corregida con orden aleatorio) -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 2</div>
         <h1 class="slide-title">Delimitación de la problemática</h1>
       </header>
-
       <div class="slide-content">
         <h2>Construye una delimitación útil</h2>
-
         <div class="info-card">
           <div class="info-card-title">Foco de análisis</div>
-          <p>
-            Es <strong>qué aspecto del problema</strong> se quiere estudiar. No es la solución.
-            Ejemplos de focos válidos: <strong>factores asociados</strong>, <strong>efectos</strong>, <strong>variación por horarios</strong>, <strong>percepción de usuarios</strong>.
-          </p>
+          <p>Es <strong>qué aspecto del problema</strong> se quiere estudiar. No es la solución.</p>
         </div>
 
         <div class="two-columns">
@@ -476,7 +331,7 @@
             <h4>Selecciona componentes de la delimitación</h4>
 
             <label><strong>¿Qué ocurre? (fenómeno)</strong></label>
-            <select id="delFenomeno">
+            <select id="delFenomeno" data-shuffle-select="true">
               <option value="">Selecciona...</option>
               <option value="a">Demoras recurrentes en la atención de trámites</option>
               <option value="b">Mala atención en el centro de servicios</option>
@@ -484,7 +339,7 @@
             </select>
 
             <label style="display:block; margin-top:10px;"><strong>¿Dónde ocurre? (contexto)</strong></label>
-            <select id="delContexto">
+            <select id="delContexto" data-shuffle-select="true">
               <option value="">Selecciona...</option>
               <option value="a">En un centro de servicios universitarios</option>
               <option value="b">En instituciones</option>
@@ -492,15 +347,15 @@
             </select>
 
             <label style="display:block; margin-top:10px;"><strong>¿A quién afecta? (población/actores)</strong></label>
-            <select id="delPoblacion">
+            <select id="delPoblacion" data-shuffle-select="true">
               <option value="">Selecciona...</option>
               <option value="a">Usuarios que realizan trámites académicos y administrativos</option>
               <option value="b">Personas en general</option>
-              <option value="c">Toda la comunidad universitaria sin distinción de relación con el trámite</option>
+              <option value="c">Toda la comunidad universitaria</option>
             </select>
 
             <label style="display:block; margin-top:10px;"><strong>¿Cuándo/condición?</strong></label>
-            <select id="delCondicion">
+            <select id="delCondicion" data-shuffle-select="true">
               <option value="">Selecciona...</option>
               <option value="a">Durante franjas de alta demanda</option>
               <option value="b">Frecuentemente</option>
@@ -508,84 +363,80 @@
             </select>
 
             <label style="display:block; margin-top:10px;"><strong>Foco de análisis</strong></label>
-            <select id="delFoco">
+            <select id="delFoco" data-shuffle-select="true">
               <option value="">Selecciona...</option>
               <option value="a">Factores asociados a las demoras</option>
               <option value="b">Cómo mejorar completamente el servicio</option>
-              <option value="c">Todo lo relacionado con la atención al usuario</option>
+              <option value="c">Todo lo relacionado con la atención</option>
             </select>
 
             <div class="btn-row">
+              <button class="btn btn-secondary" onclick="reshuffleDelimitacionSelects()">🔀 REORDENAR OPCIONES</button>
               <button class="btn btn-secondary" onclick="generarDelimitacion()">GENERAR</button>
             </div>
-
-            <p class="small-note">
-              La delimitación se genera con tus elecciones. Luego se revisa si quedó demasiado amplia, vaga o orientada a solución.
-            </p>
           </div>
 
           <div class="panel">
             <h4>Vista previa</h4>
             <div class="code-box" id="delimitacionPreview">(Selecciona componentes y pulsa GENERAR)</div>
-
             <div class="warning-card">
               <div class="warning-card-title">Revisión rápida</div>
               <ul class="content-list" style="margin:0;">
-                <li>No debe quedar solo como tema general.</li>
-                <li>No debe redactarse como solución (“mejorar”, “optimizar”, etc.).</li>
+                <li>No debe quedar como tema general.</li>
+                <li>No debe redactarse como solución.</li>
                 <li>Debe mostrar fenómeno + contexto + población + condición + foco.</li>
               </ul>
             </div>
           </div>
         </div>
-
         <div id="feedback3" class="feedback"></div>
       </div>
-
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
         <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
         <div style="display:flex; gap:16px; align-items:center;">
-          <div class="progress-indicator">3 de 8</div>
+          <div class="progress-indicator">3 de 9</div>
           <button class="btn btn-primary" onclick="validarDelimitacion()">CONTINUAR →</button>
         </div>
       </footer>
     </section>
 
-    <!-- SLIDE 4 -->
+    <!-- 4 PREGUNTA (sin repetir elección de foco; se valida con ecuación/check) -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 3</div>
         <h1 class="slide-title">Pregunta problema</h1>
       </header>
-
       <div class="slide-content">
         <h2>Redacción y revisión</h2>
 
         <div class="info-card">
           <div class="info-card-title">¿Para qué sirve?</div>
-          <p>Define qué se quiere averiguar sobre la problemática delimitada y orienta la búsqueda de evidencia para el trabajo escrito.</p>
+          <p>Define con precisión <strong>qué se quiere averiguar</strong> sobre la problemática delimitada y orienta la búsqueda de evidencia.</p>
         </div>
 
         <div class="two-columns">
           <div class="panel">
-            <h4>Construir pregunta (sin respuesta visible)</h4>
+            <h4>Construir pregunta (sin respuesta fija)</h4>
 
-            <label><strong>Estructura inicial</strong></label>
+            <label><strong>Inicio de la pregunta</strong></label>
             <select id="tipoPregunta">
               <option value="">Selecciona...</option>
               <option value="cuales">¿Cuáles son...?</option>
               <option value="como">¿Cómo...?</option>
               <option value="en_que_medida">¿En qué medida...?</option>
+              <option value="que_relacion">¿Qué relación existe entre...?</option>
             </select>
 
-            <label style="display:block; margin-top:10px;"><strong>Verbo/foco de indagación</strong></label>
+            <label style="display:block; margin-top:10px;"><strong>Foco de investigación</strong></label>
             <select id="focoPregunta">
               <option value="">Selecciona...</option>
-              <option value="factores">factores asociados</option>
-              <option value="efectos">efectos</option>
-              <option value="variacion">variaciones según horarios</option>
-              <option value="percepcion">percepción de usuarios</option>
+              <option value="factores">Factores asociados</option>
+              <option value="efectos">Efectos en usuarios/proceso</option>
+              <option value="variacion">Variación según horarios/condiciones</option>
+              <option value="percepcion">Percepción de usuarios</option>
+              <option value="solucion">Implementación de una mejora (no recomendado aquí)</option>
+              <option value="tema_amplio">Atención al usuario en general (demasiado amplio)</option>
             </select>
 
             <div class="btn-row">
@@ -601,120 +452,175 @@
           </div>
 
           <div class="panel">
-            <h4>Chequeo de calidad (sí / no)</h4>
+            <h4>Chequeo de calidad</h4>
             <div class="status-list">
-              <div class="status-item"><div class="label">¿Qué se quiere averiguar está claro?</div><div class="chip" id="chk_fenomeno">Pendiente</div></div>
+              <div class="status-item"><div class="label">¿Se entiende qué se quiere averiguar?</div><div class="chip" id="chk_fenomeno">Pendiente</div></div>
               <div class="status-item"><div class="label">¿Incluye población/actores?</div><div class="chip" id="chk_poblacion">Pendiente</div></div>
               <div class="status-item"><div class="label">¿Incluye contexto/lugar?</div><div class="chip" id="chk_contexto">Pendiente</div></div>
-              <div class="status-item"><div class="label">¿Incluye tiempo/condición (si aplica)?</div><div class="chip" id="chk_tiempo">Pendiente</div></div>
-              <div class="status-item"><div class="label">¿Evita vaguedad / solución anticipada?</div><div class="chip" id="chk_vaguedad">Pendiente</div></div>
+              <div class="status-item"><div class="label">¿Incluye condición/tiempo (si aplica)?</div><div class="chip" id="chk_tiempo">Pendiente</div></div>
+              <div class="status-item"><div class="label">¿Evita solución anticipada y palabras vagas?</div><div class="chip" id="chk_vaguedad">Pendiente</div></div>
               <div class="status-item"><div class="label">¿Puede responderse con evidencia?</div><div class="chip" id="chk_evidencia">Pendiente</div></div>
             </div>
-
             <div class="code-box" id="preguntaFinalPreview">(Aquí se mostrará la pregunta revisada)</div>
           </div>
         </div>
 
         <div id="feedback4" class="feedback"></div>
       </div>
-
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
         <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
         <div style="display:flex; gap:16px; align-items:center;">
-          <div class="progress-indicator">4 de 8</div>
+          <div class="progress-indicator">4 de 9</div>
           <button class="btn btn-primary" onclick="continuarDesdePregunta()">CONTINUAR →</button>
         </div>
       </footer>
     </section>
 
-    <!-- SLIDE 5 -->
+    <!-- 5 CONCEPTOS (consolidación por jerarquía con opciones, sin autollenar respuestas) -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 4</div>
         <h1 class="slide-title">Conceptos clave</h1>
       </header>
-
       <div class="slide-content">
-        <h2>Primero conceptos, luego palabras clave</h2>
+        <h2>Extraer conceptos desde la pregunta problema</h2>
 
         <div class="info-card">
-          <div class="info-card-title">Secuencia</div>
-          <p>De la pregunta problema se extraen <strong>conceptos</strong>. Con esos conceptos se construyen <strong>palabras clave, sinónimos y descriptores</strong>.</p>
+          <div class="info-card-title">Pregunta problema seleccionada / redactada</div>
+          <div class="code-box" id="preguntaRecordatorio">(Primero revisa la pregunta problema en la diapositiva anterior)</div>
+        </div>
+
+        <div class="warning-card">
+          <div class="warning-card-title">Qué debes hacer aquí</div>
+          <p>Primero identifica opciones pertinentes. Luego <strong>asigna por jerarquía</strong> (fenómeno → proceso/servicio → contexto/población/condición). No se dejará en blanco.</p>
         </div>
 
         <div class="question-area">
-          <div class="question-title">Selecciona tres conceptos útiles para buscar evidencia del caso</div>
-          <div class="checkbox-grid">
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'conceptos', 'demoras')"><div class="option-checkbox"></div><div class="option-text">Demoras / tiempo de espera</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'conceptos', 'atencion')"><div class="option-checkbox"></div><div class="option-text">Atención al usuario / servicio</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'conceptos', 'centro')"><div class="option-checkbox"></div><div class="option-text">Centro de servicios universitarios</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'conceptos', 'uniformes')"><div class="option-checkbox"></div><div class="option-text">Uniformes del personal</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'conceptos', 'campus')"><div class="option-checkbox"></div><div class="option-text">Infraestructura general del campus</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'conceptos', 'viralidad')"><div class="option-checkbox"></div><div class="option-text">Publicaciones virales en redes</div></div>
+          <div class="question-title">Selecciona los conceptos más útiles para iniciar la búsqueda (puede haber más de 1 válido)</div>
+          <div class="checkbox-grid" id="conceptosChoiceGrid" data-randomize="conceptosChoice">
+            <div class="checkbox-card" data-group="conceptosChoice" data-value="tiempo_espera" onclick="toggleCheckboxCard(this)">
+              <div class="option-checkbox"></div><div class="option-text">Tiempo de espera / demoras de atención</div>
+            </div>
+            <div class="checkbox-card" data-group="conceptosChoice" data-value="atencion_tramites" onclick="toggleCheckboxCard(this)">
+              <div class="option-checkbox"></div><div class="option-text">Atención de trámites / servicio de atención</div>
+            </div>
+            <div class="checkbox-card" data-group="conceptosChoice" data-value="usuarios" onclick="toggleCheckboxCard(this)">
+              <div class="option-checkbox"></div><div class="option-text">Usuarios de trámites universitarios</div>
+            </div>
+            <div class="checkbox-card" data-group="conceptosChoice" data-value="alta_demanda" onclick="toggleCheckboxCard(this)">
+              <div class="option-checkbox"></div><div class="option-text">Franjas de alta demanda / horarios pico</div>
+            </div>
+            <div class="checkbox-card" data-group="conceptosChoice" data-value="mejorar_servicio" onclick="toggleCheckboxCard(this)">
+              <div class="option-checkbox"></div><div class="option-text">Mejorar completamente el servicio</div>
+            </div>
+            <div class="checkbox-card" data-group="conceptosChoice" data-value="estrategia_reduccion" onclick="toggleCheckboxCard(this)">
+              <div class="option-checkbox"></div><div class="option-text">Estrategia para reducir filas</div>
+            </div>
+            <div class="checkbox-card" data-group="conceptosChoice" data-value="tema_general" onclick="toggleCheckboxCard(this)">
+              <div class="option-checkbox"></div><div class="option-text">Institución educativa (tema general)</div>
+            </div>
+            <div class="checkbox-card" data-group="conceptosChoice" data-value="experiencia_subjetiva" onclick="toggleCheckboxCard(this)">
+              <div class="option-checkbox"></div><div class="option-text">Experiencia feliz del estudiante</div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="reordenarConceptos()">🔀 REORDENAR OPCIONES</button>
+            <button class="btn btn-success" onclick="revisarConceptosSeleccionados()">REVISAR SELECCIÓN</button>
           </div>
           <div id="feedback5" class="feedback"></div>
         </div>
 
         <div class="two-columns">
           <div class="panel">
-            <label><strong>Concepto 1 (fenómeno)</strong></label>
-            <input type="text" id="concepto1" placeholder="Ej. tiempo de espera">
+            <h4>Conceptos consolidados (los elige el estudiante)</h4>
 
-            <label style="display:block; margin-top:10px;"><strong>Concepto 2 (proceso)</strong></label>
-            <input type="text" id="concepto2" placeholder="Ej. atención al usuario">
+            <label><strong>Concepto 1 (fenómeno principal)</strong></label>
+            <select id="concepto1Sel">
+              <option value="">Selecciona una opción...</option>
+            </select>
 
-            <label style="display:block; margin-top:10px;"><strong>Concepto 3 (contexto/población)</strong></label>
-            <input type="text" id="concepto3" placeholder="Ej. servicios universitarios">
+            <label style="display:block; margin-top:10px;"><strong>Concepto 2 (proceso/servicio)</strong></label>
+            <select id="concepto2Sel">
+              <option value="">Selecciona una opción...</option>
+            </select>
+
+            <label style="display:block; margin-top:10px;"><strong>Concepto 3 (contexto/población/condición)</strong></label>
+            <select id="concepto3Sel">
+              <option value="">Selecciona una opción...</option>
+            </select>
+
+            <div class="small-note" style="margin-top:10px;">
+              Las listas se cargan con las opciones que tú seleccionaste arriba. Debes asignarlas correctamente por jerarquía.
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-success" onclick="validarJerarquiaConceptos()">VALIDAR JERARQUÍA</button>
+            </div>
           </div>
+
           <div class="panel">
-            <h4>Regla</h4>
-            <ul class="content-list">
-              <li>Concepto = unidad para buscar evidencia.</li>
-              <li>No escribas oraciones completas.</li>
-              <li>No escribas soluciones (“mejorar sistema”).</li>
-            </ul>
+            <h4>Chequeo final</h4>
+            <div class="status-list">
+              <div class="status-item"><div class="label">¿Son conceptos y no soluciones?</div><div class="chip" id="chk_conc_solucion">Pendiente</div></div>
+              <div class="status-item"><div class="label">¿Representan la pregunta problema?</div><div class="chip" id="chk_conc_relevante">Pendiente</div></div>
+              <div class="status-item"><div class="label">¿Hay mínimo 3 conceptos útiles?</div><div class="chip" id="chk_conc_cantidad">Pendiente</div></div>
+            </div>
+            <div class="code-box" id="conceptosPreview">(Aquí se mostrará la síntesis de tus conceptos)</div>
           </div>
         </div>
       </div>
-
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
         <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
         <div style="display:flex; gap:16px; align-items:center;">
-          <div class="progress-indicator">5 de 8</div>
+          <div class="progress-indicator">5 de 9</div>
           <button class="btn btn-primary" onclick="validarConceptos()">CONTINUAR →</button>
         </div>
       </footer>
     </section>
 
-    <!-- SLIDE 6 -->
+    <!-- 6 TESAUROS (info oculta hasta seleccionar; botón traductor) -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 5</div>
         <h1 class="slide-title">Palabras clave, sinónimos y descriptores</h1>
       </header>
-
       <div class="slide-content">
         <h2>Normalización de términos</h2>
 
-        <div class="resource-row">
-          <a href="https://meshb.nlm.nih.gov/" target="_blank" rel="noopener noreferrer">MeSH</a>
-          <a href="https://decs.bvsalud.org/" target="_blank" rel="noopener noreferrer">DeCS</a>
-          <a href="https://eric.ed.gov/" target="_blank" rel="noopener noreferrer">ERIC</a>
-          <a href="https://vocabularies.unesco.org/" target="_blank" rel="noopener noreferrer">UNESCO</a>
-          <a href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">Traductor</a>
+        <div class="thesaurus-toolbar">
+          <button class="th-btn" onclick="selectThesaurus('mesh', this)">MeSH</button>
+          <button class="th-btn" onclick="selectThesaurus('decs', this)">DeCS</button>
+          <button class="th-btn" onclick="selectThesaurus('eric', this)">ERIC</button>
+          <button class="th-btn" onclick="selectThesaurus('unesco', this)">UNESCO</button>
+          <button class="th-btn" onclick="selectThesaurus('sportdiscus', this)">SPORTDiscus</button>
+          <button class="th-btn" onclick="selectThesaurus('psycinfo', this)">APA Thesaurus</button>
+          <button class="th-btn" onclick="openCurrentThesaurus()" id="btnAbrirTesauro" disabled>Abrir tesauro</button>
+          <button class="th-btn" onclick="openTranslator()">Abrir traductor</button>
+          <button class="th-btn info" onclick="toggleThInfo()" id="btnToggleInfo" disabled>ℹ Información</button>
+        </div>
+
+        <!-- oculto por defecto -->
+        <div class="thesaurus-info-box" id="thInfoBox">
+          <h4 id="thInfoTitle" style="color:#3498db; margin:0 0 8px;">Tesauro</h4>
+          <p id="thInfoText" style="margin:0;">Selecciona un tesauro para ver información.</p>
+        </div>
+
+        <div class="warning-card">
+          <div class="warning-card-title">Qué va en la tabla</div>
+          <p style="margin-bottom:0;">Para cada concepto: <strong>sinónimos en español</strong>, <strong>términos en inglés (si aplica)</strong> y <strong>descriptor / término preferido del tesauro</strong>.</p>
         </div>
 
         <div class="table-wrap">
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width:18%;">Concepto</th>
-                <th style="width:24%;">Palabras clave / sinónimos (ES)</th>
-                <th style="width:20%;">Términos en inglés (si aplica)</th>
-                <th style="width:22%;">Término preferido / descriptor</th>
-                <th style="width:16%;">Fuente del término</th>
+                <th style="width:22%;">Concepto</th>
+                <th style="width:28%;">Palabras clave / sinónimos (ES)</th>
+                <th style="width:24%;">Términos en inglés (si aplica)</th>
+                <th style="width:26%;">Descriptor / término preferido (tesauro)</th>
               </tr>
             </thead>
             <tbody id="norm-body"></tbody>
@@ -723,265 +629,473 @@
 
         <div id="norm-feedback" class="feedback"></div>
       </div>
-
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
         <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
         <div style="display:flex; gap:16px; align-items:center;">
-          <div class="progress-indicator">6 de 8</div>
+          <div class="progress-indicator">6 de 9</div>
           <button class="btn btn-primary" onclick="validateNormalization()">SIGUIENTE →</button>
         </div>
       </footer>
     </section>
 
-    <!-- SLIDE 7 -->
+    <!-- 7 BÚSQUEDA + CRIBADO (sin hablar de curación de contenidos) -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">PASO 6</div>
-        <h1 class="slide-title">Búsqueda, recolección de fuentes y curación de contenido</h1>
+        <h1 class="slide-title">Búsqueda, recolección de fuentes y cribado</h1>
       </header>
-
       <div class="slide-content">
         <h2>Organización de la búsqueda</h2>
 
         <div class="two-columns">
           <div class="panel">
-            <h4>Ecuación booleana</h4>
-            <div class="code-box" id="equationPreview">(Completa la tabla de términos para generar la ecuación)</div>
+            <h4>Ecuación booleana base (ajustable)</h4>
+            <div class="code-box" id="equationPreview">(Completa la tabla de términos para generar la ecuación base)</div>
+            <div class="small-note">La ecuación se genera como <strong>base de trabajo</strong>. Luego puede ajustarse según la base de datos (campos, filtros, sintaxis).</div>
             <div class="btn-row">
-              <button class="btn btn-secondary" onclick="generarEcuacion()">GENERAR ECUACIÓN</button>
+              <button class="btn btn-secondary" onclick="generarEcuacion()">GENERAR ECUACIÓN BASE</button>
               <button class="btn btn-secondary" onclick="copyEquation()">📋 COPIAR</button>
             </div>
-            <div class="resource-row">
-              <a href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-              <a href="https://www.scopus.com/" target="_blank" rel="noopener noreferrer">Scopus</a>
-              <a href="https://www.webofscience.com/" target="_blank" rel="noopener noreferrer">Web of Science</a>
-              <a href="https://www.scielo.org/" target="_blank" rel="noopener noreferrer">SciELO</a>
-            </div>
           </div>
-
           <div class="panel">
-            <h4>Recolección de fuentes (bitácora)</h4>
+            <h4>Qué registrar en la bitácora</h4>
             <ul class="content-list">
               <li>Fecha</li>
               <li>Base de datos</li>
-              <li>Términos / ecuación usada</li>
+              <li>Ecuación usada (o ajuste de la base)</li>
               <li>Filtros aplicados</li>
               <li>Número de resultados</li>
-              <li>Observación de ajuste</li>
+              <li>Observación / decisión</li>
             </ul>
           </div>
         </div>
 
-        <h3>Tabla simuladora de recolección de fuentes</h3>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Base de datos</th>
-                <th>Términos / ecuación</th>
-                <th>Filtros</th>
-                <th>Resultados</th>
-                <th>Observación</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>2026-02-21</td>
-                <td>Google Scholar</td>
-                <td>waiting time AND user service AND university</td>
-                <td>2020-2026</td>
-                <td>340</td>
-                <td>Muy amplio; ajustar contexto</td>
-              </tr>
-              <tr>
-                <td>2026-02-21</td>
-                <td>Scopus</td>
-                <td>(waiting time OR service delay) AND (student services)</td>
-                <td>Artículo, ES/EN</td>
-                <td>96</td>
-                <td>Más pertinente</td>
-              </tr>
-            </tbody>
-          </table>
+        <h3>Cribado práctico (simulación de documento encontrado)</h3>
+        <div class="question-area">
+          <div class="question-title">Lee el registro y decide qué hacer con la fuente</div>
+
+          <div class="panel" style="background:#fff;">
+            <p><strong>Título:</strong> Factores asociados a tiempos de espera en servicios administrativos universitarios</p>
+            <p><strong>Resumen:</strong> Estudio observacional en franjas horarias con comparación de demanda y duración de atención.</p>
+            <p style="margin-bottom:0;"><strong>Año / Revista:</strong> 2023 / Revista de Gestión de Servicios</p>
+          </div>
+
+          <div class="options-grid" id="cribadoSimGrid" data-randomize="cribadoSim">
+            <div class="option-card" data-group="cribadoSim" data-value="dudosa" onclick="selectOptionCard(this)">
+              <div class="option-radio"></div><div class="option-text">Dudosa (guardar para revisar después)</div>
+            </div>
+            <div class="option-card" data-group="cribadoSim" data-value="excluir" onclick="selectOptionCard(this)">
+              <div class="option-radio"></div><div class="option-text">Excluir (no aporta a la pregunta problema)</div>
+            </div>
+            <div class="option-card" data-group="cribadoSim" data-value="conservar" onclick="selectOptionCard(this)">
+              <div class="option-radio"></div><div class="option-text">Conservar (pertinente y con información metodológica suficiente)</div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="reordenarCribadoSim()">🔀 REORDENAR OPCIONES</button>
+            <button class="btn btn-primary" onclick="verificarCribadoSimulacion()">VERIFICAR SIMULACIÓN</button>
+          </div>
+          <div id="feedback7sim" class="feedback"></div>
         </div>
 
-        <h3>Curación de contenido (cribado)</h3>
+        <h3>Criterios de cribado (selección múltiple)</h3>
         <div class="question-area">
           <div class="question-title">Selecciona criterios válidos para conservar una fuente académica</div>
-          <div class="checkbox-grid">
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'cribado', 'pertinencia')"><div class="option-checkbox"></div><div class="option-text">Pertinencia con la pregunta problema</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'cribado', 'autor')"><div class="option-checkbox"></div><div class="option-text">Autoría / revista identificable</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'cribado', 'metodo')"><div class="option-checkbox"></div><div class="option-text">Metodología o diseño explícito</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'cribado', 'anio')"><div class="option-checkbox"></div><div class="option-text">Año de publicación según necesidad del tema</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'cribado', 'tituloBonito')"><div class="option-checkbox"></div><div class="option-text">Título llamativo</div></div>
-            <div class="checkbox-card" onclick="toggleCheckbox(this, 'cribado', 'viral')"><div class="option-checkbox"></div><div class="option-text">Popularidad en internet</div></div>
+          <div class="checkbox-grid" id="cribadoGrid" data-randomize="cribado">
+            <div class="checkbox-card" data-group="cribado" data-value="pertinencia" onclick="toggleCheckboxCard(this)"><div class="option-checkbox"></div><div class="option-text">Pertinencia con la pregunta problema</div></div>
+            <div class="checkbox-card" data-group="cribado" data-value="autor" onclick="toggleCheckboxCard(this)"><div class="option-checkbox"></div><div class="option-text">Autoría / revista identificable</div></div>
+            <div class="checkbox-card" data-group="cribado" data-value="metodo" onclick="toggleCheckboxCard(this)"><div class="option-checkbox"></div><div class="option-text">Metodología o diseño explícito</div></div>
+            <div class="checkbox-card" data-group="cribado" data-value="anio" onclick="toggleCheckboxCard(this)"><div class="option-checkbox"></div><div class="option-text">Año de publicación según necesidad del tema</div></div>
+            <div class="checkbox-card" data-group="cribado" data-value="tituloBonito" onclick="toggleCheckboxCard(this)"><div class="option-checkbox"></div><div class="option-text">Título llamativo</div></div>
+            <div class="checkbox-card" data-group="cribado" data-value="viral" onclick="toggleCheckboxCard(this)"><div class="option-checkbox"></div><div class="option-text">Popularidad en internet</div></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="reordenarCriteriosCribado()">🔀 REORDENAR OPCIONES</button>
           </div>
           <div id="feedback7" class="feedback"></div>
         </div>
       </div>
-
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
         <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
         <div style="display:flex; gap:16px; align-items:center;">
-          <div class="progress-indicator">7 de 8</div>
+          <div class="progress-indicator">7 de 9</div>
           <button class="btn btn-primary" onclick="checkCribado()">VERIFICAR →</button>
         </div>
       </footer>
     </section>
 
-    <!-- SLIDE 8 -->
+    <!-- 8 BITÁCORA -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PASO 7</div>
+        <h1 class="slide-title">Bitácora de búsqueda (desarrollo)</h1>
+      </header>
+      <div class="slide-content">
+        <h2>Registro del proceso de búsqueda</h2>
+
+        <div class="info-card">
+          <div class="info-card-title">Uso de la bitácora</div>
+          <p>Registra cada intento de búsqueda, ajustes de ecuación y decisiones de cribado. Esto documenta tu proceso metodológico.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table" id="bitacoraTable">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Base de datos</th>
+                <th>Ecuación / ajuste usado</th>
+                <th>Filtros</th>
+                <th>Resultados</th>
+                <th>Decisión / observación</th>
+              </tr>
+            </thead>
+            <tbody id="bitacoraBody">
+              <tr>
+                <td><input type="text" placeholder="2026-02-21"></td>
+                <td><input type="text" placeholder="Scopus / Scielo / WoS"></td>
+                <td><input type="text" placeholder='Pega ecuación base o ajuste'></td>
+                <td><input type="text" placeholder="Año, idioma, tipo doc"></td>
+                <td><input type="text" placeholder="N°"></td>
+                <td><input type="text" placeholder="Pertinente / ajustar / etc."></td>
+              </tr>
+              <tr>
+                <td><input type="text" placeholder="2026-02-21"></td>
+                <td><input type="text" placeholder="Otra base"></td>
+                <td><input type="text" placeholder='Ajuste de términos'></td>
+                <td><input type="text" placeholder="Filtros"></td>
+                <td><input type="text" placeholder="N°"></td>
+                <td><input type="text" placeholder="Observación"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="agregarFilaBitacora()">+ AGREGAR FILA</button>
+          <button class="btn btn-success" onclick="validarBitacora()">VALIDAR BITÁCORA</button>
+        </div>
+
+        <div id="feedback8" class="feedback"></div>
+      </div>
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">8 de 9</div>
+          <button class="btn btn-primary" onclick="continuarDesdeBitacora()">CONTINUAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- 9 CIERRE (incluye tabla de bitácora) -->
     <section class="slide">
       <header class="slide-header">
         <div class="slide-number">CIERRE</div>
         <h1 class="slide-title">Resumen de la ruta metodológica</h1>
       </header>
-
       <div class="slide-content">
         <div class="completion-card">
           <div class="completion-icon">✓</div>
-
           <h2 style="text-align:center; color:#27ae60; margin-bottom:10px;">Actividad completada</h2>
-          <p style="text-align:center; color:#7f8c8d; margin-bottom:25px;">Ya tienes una base para organizar metodológicamente el trabajo escrito.</p>
+          <p style="text-align:center; color:#7f8c8d; margin-bottom:25px;">Resumen del trabajo realizado y bitácora de búsqueda.</p>
 
           <div class="student-data">
-            <h3>📋 Datos del estudiante</h3>
             <div class="data-item"><div class="data-label">Nombre:</div><div class="data-value" id="finalNombre">-</div></div>
             <div class="data-item"><div class="data-label">NRC:</div><div class="data-value" id="finalNrc">-</div></div>
             <div class="data-item"><div class="data-label">Grupo:</div><div class="data-value" id="finalGrupo">-</div></div>
             <div class="data-item"><div class="data-label">Delimitación:</div><div class="data-value" id="finalDelimitacion">-</div></div>
             <div class="data-item"><div class="data-label">Pregunta problema:</div><div class="data-value" id="finalPregunta">-</div></div>
+            <div class="data-item"><div class="data-label">Conceptos clave:</div><div class="data-value" id="finalConceptos">-</div></div>
           </div>
 
           <div class="success-card">
-            <div class="success-card-title">🔍 Ecuación de búsqueda resultante</div>
+            <div class="success-card-title">🔍 Ecuación de búsqueda base</div>
             <div class="code-box" id="equationFinal" style="margin:10px 0; background:#fff; border-color:#27ae60;">(No se generó ecuación)</div>
+            <p class="small-note" style="margin:0;">Nota: esta ecuación es base y puede ajustarse por sintaxis/campos de cada base de datos.</p>
           </div>
 
-          <div class="info-card">
-            <div class="info-card-title">Siguiente paso del trabajo escrito</div>
-            <ul class="content-list">
-              <li>Justificación</li>
-              <li>Objetivos</li>
-              <li>Antecedentes / marco teórico</li>
-              <li>Metodología</li>
-            </ul>
+          <h3>Tabla de bitácora (resumen final)</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th><th>Base</th><th>Ecuación / ajuste</th><th>Filtros</th><th>Resultados</th><th>Observación</th>
+                </tr>
+              </thead>
+              <tbody id="finalBitacoraBody">
+                <tr><td colspan="6" style="color:#7f8c8d;">(Sin registros aún)</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-
       <footer class="slide-footer">
         <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
         <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
         <div style="display:flex; gap:16px; align-items:center;">
-          <div class="progress-indicator">8 de 8</div>
+          <div class="progress-indicator">9 de 9</div>
           <button class="btn btn-primary" onclick="resetAll()">🔄 REINICIAR</button>
         </div>
       </footer>
     </section>
   </div>
 
+  <!-- Botón resumen -->
+  <div class="fab-resumen" id="fabResumen">
+    <button class="btn btn-primary" onclick="toggleResumen(true)">RESUMEN 📌</button>
+  </div>
+
+  <!-- Modal resumen -->
+  <div class="modal-backdrop" id="resumenModal" onclick="onBackdropClick(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Lo que llevas hasta ahora</h3>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary" onclick="copyResumen()">📋 COPIAR</button>
+          <button class="btn btn-primary" onclick="toggleResumen(false)">CERRAR ✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <span class="step-badge" id="badgeDelim">Delimitación</span>
+          <span class="step-badge" id="badgePregunta">Pregunta problema</span>
+          <span class="step-badge" id="badgeConceptos">Conceptos</span>
+          <span class="step-badge" id="badgeTerminos">Normalización</span>
+          <span class="step-badge" id="badgeEcuacion">Ecuación</span>
+          <span class="step-badge" id="badgeBitacora">Bitácora</span>
+        </div>
+        <div class="kv">
+          <div class="k">Nombre</div><div class="v" id="sumNombre">-</div>
+          <div class="k">NRC</div><div class="v" id="sumNrc">-</div>
+          <div class="k">Grupo</div><div class="v" id="sumGrupo">-</div>
+        </div>
+        <h3>Delimitación</h3><div class="code-box" id="sumDelimitacion">(Aún no generada)</div>
+        <h3>Pregunta problema</h3><div class="code-box" id="sumPregunta">(Aún no revisada)</div>
+        <h3>Conceptos</h3><div class="code-box" id="sumConceptos">(Aún no definidos)</div>
+        <h3>Normalización</h3>
+        <table class="mini-table">
+          <thead><tr><th>Concepto</th><th>ES</th><th>EN</th><th>Descriptor</th></tr></thead>
+          <tbody id="sumTerminosBody"></tbody>
+        </table>
+        <h3>Ecuación</h3><div class="code-box" id="sumEcuacion">(Aún no generada)</div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let studentData = { nombre:'', nrc:'', grupo:'' };
     let currentSlide = 0;
     let selections = {};
-    let checks = { conceptos:new Set(), cribado:new Set() };
+    let checks = { cribado:new Set(), conceptosChoice:new Set() };
 
     let delimitacionTexto = '';
     let preguntaProblemaFinal = '';
     let generatedEquation = '';
     let revisarPreguntaHecho = false;
+    let currentThesaurus = '';
+    let thesaurusSelected = false;
+    let conceptosJerarquiaValidados = false;
+    let bitacoraValidada = false;
 
-    const defaultKeywords = [
-      { concept:'', syn:'', en:'', desc:'', source:'' },
-      { concept:'', syn:'', en:'', desc:'', source:'' },
-      { concept:'', syn:'', en:'', desc:'', source:'' }
+    let normKeywords = [
+      { concept:'', syn:'', en:'', desc:'' },
+      { concept:'', syn:'', en:'', desc:'' },
+      { concept:'', syn:'', en:'', desc:'' }
     ];
-    let normKeywords = defaultKeywords.map(r => ({...r}));
-    let savedTermGroups = [];
 
-    // Registro
+    const thesaurusInfo = {
+      mesh:{ title:'MeSH', text:'Ciencias médicas, salud y biomedicina. Útil para medicina, fisioterapia, rehabilitación y deporte en salud. Idioma principal: inglés.', url:'https://meshb.nlm.nih.gov/' },
+      decs:{ title:'DeCS', text:'Descriptores en ciencias de la salud para Latinoamérica. Muy útil en español/portugués/inglés para salud pública, enfermería, medicina y áreas afines.', url:'https://decs.bvsalud.org/' },
+      eric:{ title:'ERIC', text:'Educación, pedagogía, currículo, didáctica, evaluación educativa. Recomendado cuando el tema es educativo.', url:'https://eric.ed.gov/' },
+      unesco:{ title:'UNESCO', text:'Ciencias sociales, comunicación, cultura, política pública y educación en enfoque amplio. Vocabulario multilingüe.', url:'https://vocabularies.unesco.org/' },
+      sportdiscus:{ title:'SPORTDiscus', text:'Deporte, actividad física, rendimiento, entrenamiento, medicina del deporte (según acceso institucional).', url:'https://www.ebsco.com/products/research-databases/sportdiscus' },
+      psycinfo:{ title:'APA Thesaurus', text:'Psicología, conducta, salud mental, procesos cognitivos y educación con enfoque psicoeducativo.', url:'https://www.apa.org/pubs/databases/training/thesaurus' }
+    };
+
+    const delimitacionMaps = {
+      fenomeno: { a:['demoras recurrentes en la atención de trámites','ok'], b:['mala atención en el centro de servicios','vago'], c:['insatisfacción general con la universidad','fuera'] },
+      contexto: { a:['en un centro de servicios universitarios','ok'], b:['en instituciones','vago'], c:['en cualquier lugar donde haya filas','fuera'] },
+      poblacion:{ a:['que afecta a usuarios que realizan trámites académicos y administrativos','ok'], b:['que afecta a personas en general','vago'], c:['que afecta a toda la comunidad universitaria','amplio'] },
+      condicion:{ a:['durante franjas de alta demanda','ok'], b:['frecuentemente','vago'], c:['en momentos importantes','vago'] },
+      foco:    { a:['para analizar factores asociados a las demoras','ok'], b:['para mejorar completamente el servicio','solucion'], c:['para estudiar todo lo relacionado con la atención','amplio'] }
+    };
+
+    const conceptosCatalogo = {
+      tiempo_espera: { text:'Tiempo de espera / demoras de atención', tipo:'fenomeno', valido:true },
+      atencion_tramites: { text:'Atención de trámites / servicio de atención', tipo:'proceso', valido:true },
+      usuarios: { text:'Usuarios de trámites universitarios', tipo:'contexto', valido:true },
+      alta_demanda: { text:'Franjas de alta demanda / horarios pico', tipo:'contexto', valido:true },
+      mejorar_servicio: { text:'Mejorar completamente el servicio', tipo:'solucion', valido:false },
+      estrategia_reduccion: { text:'Estrategia para reducir filas', tipo:'solucion', valido:false },
+      tema_general: { text:'Institución educativa (tema general)', tipo:'general', valido:false },
+      experiencia_subjetiva: { text:'Experiencia feliz del estudiante', tipo:'subjetivo', valido:false }
+    };
+
+    // ==== Registro ====
     function validarRegistro(){
       const nombre = document.getElementById('nombreCompleto').value.trim();
       const nrc = document.getElementById('nrc').value.trim();
       const grupo = document.getElementById('grupo').value.trim();
       let ok = true;
 
-      if (!nombre || nombre.length < 3){ document.getElementById('errorNombre').classList.add('show'); ok = false; }
-      else document.getElementById('errorNombre').classList.remove('show');
-
-      if (!nrc){ document.getElementById('errorNrc').classList.add('show'); ok = false; }
-      else document.getElementById('errorNrc').classList.remove('show');
-
-      if (!grupo){ document.getElementById('errorGrupo').classList.add('show'); ok = false; }
-      else document.getElementById('errorGrupo').classList.remove('show');
-
+      if (!nombre || nombre.length < 3){ document.getElementById('errorNombre').classList.add('show'); ok = false; } else document.getElementById('errorNombre').classList.remove('show');
+      if (!nrc){ document.getElementById('errorNrc').classList.add('show'); ok = false; } else document.getElementById('errorNrc').classList.remove('show');
+      if (!grupo){ document.getElementById('errorGrupo').classList.add('show'); ok = false; } else document.getElementById('errorGrupo').classList.remove('show');
       if (!ok) return;
 
       studentData = { nombre:nombre.toUpperCase(), nrc:nrc.toUpperCase(), grupo:grupo.toUpperCase() };
       document.getElementById('registroScreen').style.display = 'none';
       document.getElementById('presentationWrapper').classList.add('active');
+      refreshFab();
     }
 
-    // Navegación
+    // ==== Navegación ====
     function showSlide(index){
       const slides = document.querySelectorAll('.slide');
       slides.forEach((s,i)=> s.classList.toggle('active', i===index));
       currentSlide = index;
+      refreshFab();
 
-      if (index === 7){
+      if (index === 4) {
+        document.getElementById('preguntaRecordatorio').textContent = preguntaProblemaFinal || '(Primero revisa la pregunta problema en la diapositiva anterior)';
+      }
+      if (index === 8){
         document.getElementById('finalNombre').textContent = studentData.nombre || '-';
         document.getElementById('finalNrc').textContent = studentData.nrc || '-';
         document.getElementById('finalGrupo').textContent = studentData.grupo || '-';
         document.getElementById('finalDelimitacion').textContent = delimitacionTexto || '-';
         document.getElementById('finalPregunta').textContent = preguntaProblemaFinal || '-';
+
+        const c1 = getSelectedText('concepto1Sel');
+        const c2 = getSelectedText('concepto2Sel');
+        const c3 = getSelectedText('concepto3Sel');
+        document.getElementById('finalConceptos').textContent = [c1,c2,c3].filter(Boolean).join(' | ') || '-';
         document.getElementById('equationFinal').textContent = generatedEquation || '(No se generó ecuación)';
+        renderFinalBitacora();
       }
     }
-    function nextSlide(){ const slides = document.querySelectorAll('.slide'); if (currentSlide < slides.length-1) showSlide(currentSlide+1); }
-    function prevSlide(){ if (currentSlide > 0) showSlide(currentSlide-1); }
+    function nextSlide(){ const slides = document.querySelectorAll('.slide'); if (currentSlide < slides.length - 1) showSlide(currentSlide + 1); }
+    function prevSlide(){ if (currentSlide > 0) showSlide(currentSlide - 1); }
 
-    // Helpers
+    // ==== UI helpers ====
     function showFeedback(id, type, title, message){
-      const fb = document.getElementById(id);
-      if (!fb) return;
+      const fb = document.getElementById(id); if (!fb) return;
       fb.className = `feedback ${type} show`;
       fb.innerHTML = `<div class="feedback-title">${title}</div><div class="feedback-text">${message}</div>`;
     }
     function clearFeedback(id){
-      const fb = document.getElementById(id);
-      if (!fb) return;
-      fb.className = 'feedback';
-      fb.innerHTML = '';
-    }
-    function selectOption(el, group, value){
-      el.parentElement.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
-      el.classList.add('selected');
-      selections[group] = value;
-      if (group === 's2') clearFeedback('feedback2');
-    }
-    function toggleCheckbox(el, group, value){
-      el.classList.toggle('selected');
-      if (!checks[group]) checks[group] = new Set();
-      if (el.classList.contains('selected')) checks[group].add(value);
-      else checks[group].delete(value);
-
-      if (group === 'conceptos') clearFeedback('feedback5');
-      if (group === 'cribado') clearFeedback('feedback7');
+      const fb = document.getElementById(id); if (!fb) return;
+      fb.className = 'feedback'; fb.innerHTML = '';
     }
     function setChip(id, ok){
       const el = document.getElementById(id);
+      if (!el) return;
       el.className = 'chip ' + (ok ? 'ok' : 'bad');
       el.textContent = ok ? 'Sí' : 'No';
     }
+    function resetChip(id){
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = 'chip';
+      el.textContent = 'Pendiente';
+    }
     function escapeHtml(text){
       return String(text || '')
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+    function shuffleInPlace(arr){
+      for (let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
     }
 
-    // Caso expandible
+    // ==== Aleatorizar tarjetas (cada intento) ====
+    function randomizeOptionContainers(){
+      document.querySelectorAll('[data-randomize]').forEach(container=>{
+        const items = Array.from(container.children);
+        if (!items.length) return;
+        const currentSelectedValues = new Set(
+          items.filter(n=>n.classList && n.classList.contains('selected')).map(n=>n.dataset.value)
+        );
+        const clones = items.map(node => node.cloneNode(true));
+        shuffleInPlace(clones);
+        container.innerHTML = '';
+        clones.forEach(node => {
+          if (currentSelectedValues.has(node.dataset.value)) node.classList.add('selected');
+          container.appendChild(node);
+        });
+      });
+    }
+
+    // ==== Aleatorizar <select> de delimitación (corrige "siempre la primera") ====
+    function shuffleSelectOptions(selectEl){
+      const opts = Array.from(selectEl.options);
+      if (opts.length <= 2) return;
+      const placeholder = opts[0];
+      const others = opts.slice(1).map(o => ({ value:o.value, text:o.textContent }));
+      shuffleInPlace(others);
+
+      const prev = selectEl.value;
+      selectEl.innerHTML = '';
+      const ph = document.createElement('option');
+      ph.value = placeholder.value;
+      ph.textContent = placeholder.textContent;
+      selectEl.appendChild(ph);
+
+      others.forEach(o=>{
+        const opt = document.createElement('option');
+        opt.value = o.value;
+        opt.textContent = o.text;
+        selectEl.appendChild(opt);
+      });
+
+      // restaurar si existe
+      if ([...selectEl.options].some(o=>o.value===prev)) selectEl.value = prev;
+    }
+    function reshuffleDelimitacionSelects(){
+      ['delFenomeno','delContexto','delPoblacion','delCondicion','delFoco'].forEach(id=>{
+        const el = document.getElementById(id);
+        if (el) shuffleSelectOptions(el);
+      });
+      clearFeedback('feedback3');
+    }
+
+    // ==== Selectores genéricos ====
+    function selectOptionCard(el){
+      const group = el.dataset.group;
+      const parent = el.parentElement;
+      parent.querySelectorAll(`.option-card[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      selections[group] = el.dataset.value;
+
+      if (group === 's2') clearFeedback('feedback2');
+      if (group === 'cribadoSim') clearFeedback('feedback7sim');
+    }
+    function toggleCheckboxCard(el){
+      const group = el.dataset.group;
+      el.classList.toggle('selected');
+      if (!checks[group]) checks[group] = new Set();
+      if (el.classList.contains('selected')) checks[group].add(el.dataset.value);
+      else checks[group].delete(el.dataset.value);
+
+      if (group === 'conceptosChoice'){
+        clearFeedback('feedback5');
+        conceptosJerarquiaValidados = false;
+        ['chk_conc_solucion','chk_conc_relevante','chk_conc_cantidad'].forEach(resetChip);
+        document.getElementById('conceptosPreview').textContent = '(Aquí se mostrará la síntesis de tus conceptos)';
+        limpiarSelectsConceptos();
+      }
+      if (group === 'cribado') clearFeedback('feedback7');
+    }
+
+    // ==== Caso ====
     function toggleCaso(){
       const box = document.getElementById('casoExpandible');
       const btn = document.getElementById('btnToggleCaso');
@@ -990,52 +1104,28 @@
       btn.textContent = open ? 'LEER CASO ▼' : 'OCULTAR CASO ▲';
     }
 
-    // Slide 2
+    // ==== Slide 2 ====
     function checkStep2(){
       const v = selections.s2;
       if (!v){
         showFeedback('feedback2','error','Selecciona una opción','Elige la formulación que mejor representa una problemática investigable.');
+        randomizeOptionContainers();
         return;
       }
+
       if (v === 'b'){
-        showFeedback('feedback2','success','Correcto','La formulación incluye fenómeno, contexto y condición del problema, y señala un foco de indagación.');
+        showFeedback('feedback2','success','Correcto','Incluye fenómeno, contexto y condición; además deja claro el foco de análisis (“factores que influyen”).');
         setTimeout(()=>nextSlide(), 700);
       } else if (v === 'a'){
-        showFeedback('feedback2','partial','Revisa','Queda amplia y temática; aún no precisa claramente el problema ni el foco analítico.');
+        showFeedback('feedback2','partial','Revisa','Suena académica, pero queda demasiado temática/amplia y no explicita con suficiente claridad qué se investigará del problema.');
+        randomizeOptionContainers();
       } else {
-        showFeedback('feedback2','partial','Revisa','Describe una manifestación importante, pero no delimita el problema con el mismo nivel de precisión metodológica.');
+        showFeedback('feedback2','partial','Revisa','Describe una consecuencia/percepción, pero no formula el problema con foco analítico suficiente.');
+        randomizeOptionContainers();
       }
     }
 
-    // Slide 3 (Delimitación con desplegables + retro)
-    const delimitacionMaps = {
-      fenomeno: {
-        a: { text:'demoras recurrentes en la atención de trámites', quality:'ok' },
-        b: { text:'mala atención en el centro de servicios', quality:'vago' },
-        c: { text:'insatisfacción general con la universidad', quality:'fuera' }
-      },
-      contexto: {
-        a: { text:'en un centro de servicios universitarios', quality:'ok' },
-        b: { text:'en instituciones', quality:'vago' },
-        c: { text:'en cualquier lugar donde haya filas', quality:'fuera' }
-      },
-      poblacion: {
-        a: { text:'que afecta a usuarios que realizan trámites académicos y administrativos', quality:'ok' },
-        b: { text:'que afecta a personas en general', quality:'vago' },
-        c: { text:'que afecta a toda la comunidad universitaria', quality:'amplio' }
-      },
-      condicion: {
-        a: { text:'durante franjas de alta demanda', quality:'ok' },
-        b: { text:'frecuentemente', quality:'vago' },
-        c: { text:'en momentos importantes', quality:'vago' }
-      },
-      foco: {
-        a: { text:'para analizar factores asociados a las demoras', quality:'ok' },
-        b: { text:'para mejorar completamente el servicio', quality:'solucion' },
-        c: { text:'para estudiar todo lo relacionado con la atención al usuario', quality:'amplio' }
-      }
-    };
-
+    // ==== Slide 3 delimitación ====
     function generarDelimitacion(){
       const f = document.getElementById('delFenomeno').value;
       const c = document.getElementById('delContexto').value;
@@ -1046,16 +1136,15 @@
       if (!f || !c || !p || !d || !o){
         delimitacionTexto = '';
         document.getElementById('delimitacionPreview').textContent = '(Faltan componentes por seleccionar)';
-        clearFeedback('feedback3');
         return;
       }
 
       delimitacionTexto = [
-        delimitacionMaps.fenomeno[f].text,
-        delimitacionMaps.contexto[c].text,
-        delimitacionMaps.poblacion[p].text,
-        delimitacionMaps.condicion[d].text,
-        delimitacionMaps.foco[o].text
+        delimitacionMaps.fenomeno[f][0],
+        delimitacionMaps.contexto[c][0],
+        delimitacionMaps.poblacion[p][0],
+        delimitacionMaps.condicion[d][0],
+        delimitacionMaps.foco[o][0]
       ].join(' ');
 
       document.getElementById('delimitacionPreview').textContent = delimitacionTexto;
@@ -1064,84 +1153,74 @@
 
     function validarDelimitacion(){
       generarDelimitacion();
-
-      const f = document.getElementById('delFenomeno').value;
-      const c = document.getElementById('delContexto').value;
-      const p = document.getElementById('delPoblacion').value;
-      const d = document.getElementById('delCondicion').value;
-      const o = document.getElementById('delFoco').value;
-
-      if (!f || !c || !p || !d || !o){
-        showFeedback('feedback3','error','Falta completar','Selecciona los cinco componentes de la delimitación antes de continuar.');
+      const values = ['delFenomeno','delContexto','delPoblacion','delCondicion','delFoco'].map(id => document.getElementById(id).value);
+      if (values.some(v => !v)){
+        showFeedback('feedback3','error','Falta completar','Selecciona los cinco componentes de la delimitación.');
         return;
       }
 
-      const qualities = [
-        delimitacionMaps.fenomeno[f].quality,
-        delimitacionMaps.contexto[c].quality,
-        delimitacionMaps.poblacion[p].quality,
-        delimitacionMaps.condicion[d].quality,
-        delimitacionMaps.foco[o].quality
+      const qs = [
+        delimitacionMaps.fenomeno[values[0]][1],
+        delimitacionMaps.contexto[values[1]][1],
+        delimitacionMaps.poblacion[values[2]][1],
+        delimitacionMaps.condicion[values[3]][1],
+        delimitacionMaps.foco[values[4]][1]
       ];
 
-      const hasVague = qualities.includes('vago');
-      const hasWide = qualities.includes('amplio');
-      const hasOut = qualities.includes('fuera');
-      const hasSolution = qualities.includes('solucion');
-      const allOk = qualities.every(q => q === 'ok');
-
-      if (allOk){
-        showFeedback('feedback3','success','Delimitación adecuada','La delimitación quedó metodológicamente útil: fenómeno, contexto, población, condición y foco de análisis.');
+      if (qs.every(x => x === 'ok')){
+        showFeedback('feedback3','success','Delimitación adecuada','La delimitación quedó útil para investigación.');
+        // reordena para próximo intento del estudiante (si reinicia o vuelve)
         setTimeout(()=>nextSlide(), 700);
         return;
       }
 
-      // Retro específica sin regalar "respuesta exacta", pero sí criterio
-      let motivos = [];
-      if (hasVague) motivos.push('hay componentes redactados de forma vaga');
-      if (hasWide) motivos.push('hay componentes demasiado amplios');
-      if (hasOut) motivos.push('hay componentes que se salen del caso');
-      if (hasSolution) motivos.push('el foco quedó orientado a solución y no a análisis');
+      let razones = [];
+      if (qs.includes('vago')) razones.push('hay componentes vagos');
+      if (qs.includes('amplio')) razones.push('hay componentes demasiado amplios');
+      if (qs.includes('fuera')) razones.push('hay componentes fuera del caso');
+      if (qs.includes('solucion')) razones.push('el foco está redactado como solución');
 
-      showFeedback(
-        'feedback3',
-        'partial',
-        'Revisa la delimitación',
-        'La delimitación se generó, pero todavía no queda lista para investigación porque ' + motivos.join(', ') + '. Ajusta las selecciones y vuelve a generar.'
-      );
+      showFeedback('feedback3','partial','Revisa la delimitación','La delimitación se generó, pero todavía no está lista: ' + razones.join(', ') + '.');
+      reshuffleDelimitacionSelects(); // <- clave: no deja las correctas “siempre de primeras”
     }
 
-    // Slide 4 pregunta problema
+    // ==== Slide 4 pregunta (sin quiz repetido de foco) ====
     function generarBorradorPregunta(){
       const tipo = document.getElementById('tipoPregunta').value;
       const foco = document.getElementById('focoPregunta').value;
 
-      if (!delimitacionTexto){
-        showFeedback('feedback4','error','Primero delimita','Antes de generar la pregunta, deja lista la delimitación en la diapositiva anterior.');
+      if (!delimitacionTexto){ showFeedback('feedback4','error','Primero delimita','Primero deja lista la delimitación en la diapositiva anterior.'); return; }
+      if (!tipo || !foco){ showFeedback('feedback4','error','Falta selección','Selecciona inicio y foco para generar un borrador.'); return; }
+
+      if (foco === 'solucion'){
+        showFeedback('feedback4','partial','Foco no recomendado','Ese foco está orientado a solución. Cambia a factores, efectos, variación o percepción.');
         return;
       }
-      if (!tipo || !foco){
-        showFeedback('feedback4','error','Falta selección','Selecciona estructura inicial y verbo/foco de indagación.');
+      if (foco === 'tema_amplio'){
+        showFeedback('feedback4','partial','Foco demasiado amplio','Ese foco no delimita el análisis. Cambia a un foco específico.');
         return;
       }
 
-      const base = delimitacionTexto;
       let q = '';
+      if (tipo === 'cuales' && foco === 'factores') q = `¿Cuáles son los factores asociados a ${delimitacionTexto}?`;
+      if (tipo === 'cuales' && foco === 'efectos') q = `¿Cuáles son los efectos de ${delimitacionTexto}?`;
+      if (tipo === 'cuales' && foco === 'variacion') q = `¿Cuáles son las variaciones de ${delimitacionTexto} según horarios de atención?`;
+      if (tipo === 'cuales' && foco === 'percepcion') q = `¿Cuáles son las percepciones de los usuarios sobre ${delimitacionTexto}?`;
 
-      if (tipo === 'cuales' && foco === 'factores') q = `¿Cuáles son los factores asociados a ${base}?`;
-      if (tipo === 'cuales' && foco === 'efectos') q = `¿Cuáles son los efectos de ${base}?`;
-      if (tipo === 'cuales' && foco === 'variacion') q = `¿Cuáles son las variaciones de ${base} según horarios de atención?`;
-      if (tipo === 'cuales' && foco === 'percepcion') q = `¿Cuáles son las percepciones de los usuarios sobre ${base}?`;
+      if (tipo === 'como' && foco === 'factores') q = `¿Cómo se relacionan distintos factores con ${delimitacionTexto}?`;
+      if (tipo === 'como' && foco === 'efectos') q = `¿Cómo afecta ${delimitacionTexto} a los usuarios?`;
+      if (tipo === 'como' && foco === 'variacion') q = `¿Cómo varía ${delimitacionTexto} según horarios de atención?`;
+      if (tipo === 'como' && foco === 'percepcion') q = `¿Cómo perciben los usuarios ${delimitacionTexto}?`;
 
-      if (tipo === 'como' && foco === 'factores') q = `¿Cómo se relacionan los factores asociados con ${base}?`;
-      if (tipo === 'como' && foco === 'efectos') q = `¿Cómo afecta ${base} a los usuarios?`;
-      if (tipo === 'como' && foco === 'variacion') q = `¿Cómo varía ${base} entre horarios de atención?`;
-      if (tipo === 'como' && foco === 'percepcion') q = `¿Cómo perciben los usuarios ${base}?`;
+      if (tipo === 'en_que_medida' && foco === 'factores') q = `¿En qué medida los factores asociados explican ${delimitacionTexto}?`;
+      if (tipo === 'en_que_medida' && foco === 'efectos') q = `¿En qué medida ${delimitacionTexto} afecta la experiencia de los usuarios?`;
+      if (tipo === 'en_que_medida' && foco === 'variacion') q = `¿En qué medida varía ${delimitacionTexto} según franjas horarias?`;
+      if (tipo === 'en_que_medida' && foco === 'percepcion') q = `¿En qué medida la percepción de los usuarios se relaciona con ${delimitacionTexto}?`;
 
-      if (tipo === 'en_que_medida' && foco === 'factores') q = `¿En qué medida los factores asociados explican ${base}?`;
-      if (tipo === 'en_que_medida' && foco === 'efectos') q = `¿En qué medida ${base} afecta la experiencia de los usuarios?`;
-      if (tipo === 'en_que_medida' && foco === 'variacion') q = `¿En qué medida existen variaciones en ${base} según horarios?`;
-      if (tipo === 'en_que_medida' && foco === 'percepcion') q = `¿En qué medida la percepción de los usuarios se relaciona con ${base}?`;
+      if (tipo === 'que_relacion' && foco === 'factores') q = `¿Qué relación existe entre factores operativos y ${delimitacionTexto}?`;
+      if (tipo === 'que_relacion' && foco === 'efectos') q = `¿Qué relación existe entre ${delimitacionTexto} y la experiencia de los usuarios?`;
+      if (tipo === 'que_relacion' && foco === 'variacion') q = `¿Qué relación existe entre las franjas horarias y ${delimitacionTexto}?`;
+      if (tipo === 'que_relacion' && foco === 'percepcion') q = `¿Qué relación existe entre ${delimitacionTexto} y la percepción de los usuarios?`;
 
       document.getElementById('preguntaProblemaText').value = q;
       clearFeedback('feedback4');
@@ -1149,17 +1228,16 @@
 
     function revisarPregunta(){
       const txt = document.getElementById('preguntaProblemaText').value.trim();
-      if (!txt || txt.length < 15){
-        showFeedback('feedback4','error','Pregunta incompleta','Redacta una pregunta antes de revisarla.');
-        return;
-      }
+      if (!txt || txt.length < 15){ showFeedback('feedback4','error','Pregunta incompleta','Redacta una pregunta antes de revisarla.'); return; }
 
       const lower = txt.toLowerCase();
-      const fenomeno = /(demoras|tiempo de espera|factores|efectos|variaciones|percepción)/.test(lower);
-      const poblacion = /(usuarios|estudiantes|personal)/.test(lower);
-      const contexto = /(universitario|universitarios|centro de servicios|servicio)/.test(lower);
-      const tiempo = /(franja|franjas|horario|horarios|alta demanda)/.test(lower);
-      const vaguedad = !/(mejorar|optimizar|malo|mucho|grave|todo lo relacionado)/.test(lower);
+      const fenomeno = /(demoras|tiempo de espera|factor|efecto|variaci|percepci|atención de trámites)/.test(lower);
+      const poblacion = /(usuario|usuarios|personas usuarias|estudiantes)/.test(lower);
+      const contexto = /(centro de servicios|universitari|trámites)/.test(lower);
+      const tiempo = /(franja|franjas|horario|horarios|alta demanda|pico)/.test(lower);
+      const tieneSolucion = /(mejorar|optimizar|implementar|reducir definitivamente|solucionar)/.test(lower);
+      const tieneVaguedad = /(cosas|tema|todo lo relacionado|malo|mucho)/.test(lower);
+      const vaguedad = !(tieneSolucion || tieneVaguedad);
       const evidencia = txt.endsWith('?') && txt.length > 20;
 
       setChip('chk_fenomeno', fenomeno);
@@ -1170,100 +1248,270 @@
       setChip('chk_evidencia', evidencia);
 
       preguntaProblemaFinal = txt;
-      document.getElementById('preguntaFinalPreview').textContent = txt;
       revisarPreguntaHecho = true;
+      document.getElementById('preguntaFinalPreview').textContent = txt;
 
-      const score = [fenomeno,poblacion,contexto,vaguedad,evidencia].filter(Boolean).length;
-      if (score >= 4){
-        showFeedback('feedback4','success','Revisión realizada','La pregunta puede usarse. Si algún criterio quedó en “No”, corrige y vuelve a revisar.');
-      } else {
-        showFeedback('feedback4','partial','Revisión realizada','La pregunta aún requiere ajustes para quedar metodológicamente clara.');
-      }
+      const fallas = [];
+      if (!fenomeno) fallas.push('no se identifica con claridad qué se quiere averiguar');
+      if (!poblacion) fallas.push('no incluye población/actores');
+      if (!contexto) fallas.push('no incluye contexto/lugar');
+      if (!tiempo) fallas.push('no incluye condición temporal/contextual del caso');
+      if (!vaguedad) fallas.push(tieneSolucion ? 'está redactada como solución' : 'usa expresiones vagas');
+      if (!evidencia) fallas.push('la forma de pregunta no quedó investigable con evidencia');
+
+      if (fallas.length === 0) showFeedback('feedback4','success','Revisión realizada','La pregunta está bien formulada metodológicamente.');
+      else showFeedback('feedback4','partial','Revisión realizada','Ajusta la pregunta porque: ' + fallas.join('; ') + '.');
     }
 
     function continuarDesdePregunta(){
-      if (!revisarPreguntaHecho){
-        showFeedback('feedback4','error','Primero revisa','Usa “Revisar pregunta” antes de continuar.');
-        return;
-      }
-      const ids = ['chk_fenomeno','chk_poblacion','chk_contexto','chk_vaguedad','chk_evidencia'];
-      const okCount = ids.filter(id => document.getElementById(id).classList.contains('ok')).length;
-      if (okCount < 4){
-        showFeedback('feedback4','partial','Ajusta la pregunta','Corrige la redacción y vuelve a revisar hasta cumplir la mayoría de criterios.');
-        return;
-      }
+      if (!revisarPreguntaHecho){ showFeedback('feedback4','error','Primero revisa','Usa “Revisar pregunta” antes de continuar.'); return; }
+      const must = ['chk_fenomeno','chk_poblacion','chk_contexto','chk_vaguedad','chk_evidencia'];
+      const okCount = must.filter(id => document.getElementById(id).classList.contains('ok')).length;
+      if (okCount < 4){ showFeedback('feedback4','partial','Ajusta la pregunta','Corrige la pregunta y vuelve a revisar hasta cumplir los criterios.'); return; }
       nextSlide();
     }
 
-    // Slide 5 conceptos
-    function checkConceptosEjemplo(){
-      const s = checks.conceptos || new Set();
-      const correct = new Set(['demoras','atencion','centro']);
-      const wrong = [...s].filter(x => !correct.has(x));
-      const ok = [...s].filter(x => correct.has(x));
-
-      if (wrong.length){
-        showFeedback('feedback5','error','Revisa la selección','Hay opciones que no corresponden a conceptos centrales del caso.');
-        return false;
-      }
-      if (ok.length !== 3){
-        showFeedback('feedback5','partial','Casi','Selecciona exactamente tres conceptos centrales.');
-        return false;
-      }
-      showFeedback('feedback5','success','Correcto','Esos conceptos sirven para iniciar la búsqueda.');
-      return true;
+    // ==== Slide 5 conceptos ====
+    function reordenarConceptos(){
+      const container = document.getElementById('conceptosChoiceGrid');
+      if (!container) return;
+      const items = Array.from(container.children);
+      const selectedValues = new Set(items.filter(i=>i.classList.contains('selected')).map(i=>i.dataset.value));
+      const clones = items.map(i=>i.cloneNode(true));
+      shuffleInPlace(clones);
+      container.innerHTML = '';
+      clones.forEach(node=>{
+        if (selectedValues.has(node.dataset.value)) node.classList.add('selected');
+        container.appendChild(node);
+      });
+      clearFeedback('feedback5');
     }
 
-    function validarConceptos(){
-      if (!checkConceptosEjemplo()) return;
+    function limpiarSelectsConceptos(){
+      ['concepto1Sel','concepto2Sel','concepto3Sel'].forEach(id=>{
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Selecciona una opción...</option>';
+      });
+    }
 
-      const c1 = document.getElementById('concepto1').value.trim();
-      const c2 = document.getElementById('concepto2').value.trim();
-      const c3 = document.getElementById('concepto3').value.trim();
+    function cargarOpcionesJerarquiaDesdeSeleccion(){
+      limpiarSelectsConceptos();
+      const seleccionados = [...(checks.conceptosChoice || new Set())];
 
-      if (!c1 || !c2 || !c3){
-        showFeedback('feedback5','partial','Falta completar','Ahora escribe tus tres conceptos en los campos para continuar.');
+      if (!seleccionados.length) return;
+
+      const opcionesValidas = seleccionados.filter(k => conceptosCatalogo[k]?.valido);
+      const opcionesInvalidas = seleccionados.filter(k => conceptosCatalogo[k] && !conceptosCatalogo[k].valido);
+
+      const s1 = document.getElementById('concepto1Sel');
+      const s2 = document.getElementById('concepto2Sel');
+      const s3 = document.getElementById('concepto3Sel');
+
+      // Cargar SOLO seleccionados por el estudiante, mezclados (para que piense jerarquía)
+      const mezcladas = shuffleInPlace([...opcionesValidas]);
+
+      mezcladas.forEach(key=>{
+        const txt = conceptosCatalogo[key].text;
+
+        // Fenómeno (solo fenómeno válido, + distractores válidos si los hay)
+        const o1 = document.createElement('option');
+        o1.value = key; o1.textContent = txt;
+        s1.appendChild(o1);
+
+        // Proceso/servicio
+        const o2 = document.createElement('option');
+        o2.value = key; o2.textContent = txt;
+        s2.appendChild(o2);
+
+        // Contexto/población/condición
+        const o3 = document.createElement('option');
+        o3.value = key; o3.textContent = txt;
+        s3.appendChild(o3);
+      });
+
+      // Si el estudiante escogió opciones incorrectas arriba, también aparecen para que luego valide y aprenda
+      if (opcionesInvalidas.length){
+        shuffleInPlace(opcionesInvalidas).forEach(key=>{
+          [s1,s2,s3].forEach(sel=>{
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = conceptosCatalogo[key].text;
+            sel.appendChild(opt);
+          });
+        });
+      }
+    }
+
+    function revisarConceptosSeleccionados(){
+      if (!preguntaProblemaFinal){
+        showFeedback('feedback5','error','Falta referencia','Primero revisa y guarda la pregunta problema en la diapositiva anterior.');
         return;
       }
 
-      normKeywords[0].concept = c1;
-      normKeywords[1].concept = c2;
-      normKeywords[2].concept = c3;
-      renderNormTable();
+      const s = checks.conceptosChoice || new Set();
+      if (!s.size){
+        showFeedback('feedback5','error','Selecciona opciones','Marca conceptos potenciales y luego revisa.');
+        return;
+      }
 
-      setTimeout(()=>nextSlide(), 700);
+      const validos = [...s].filter(k => conceptosCatalogo[k]?.valido);
+      const invalidos = [...s].filter(k => conceptosCatalogo[k] && !conceptosCatalogo[k].valido);
+
+      if (invalidos.length){
+        const motivos = new Set();
+        invalidos.forEach(k=>{
+          const t = conceptosCatalogo[k].tipo;
+          if (t === 'solucion') motivos.add('incluiste soluciones/intervenciones');
+          if (t === 'general') motivos.add('incluiste un término demasiado general');
+          if (t === 'subjetivo') motivos.add('incluiste una formulación subjetiva/no operativa');
+        });
+        showFeedback('feedback5','partial','Revisión realizada','Tu selección tiene elementos útiles, pero hay opciones no adecuadas porque ' + [...motivos].join(', ') + '. Corrige y vuelve a revisar.');
+        cargarOpcionesJerarquiaDesdeSeleccion(); // igual carga para que vea qué eligió
+        return;
+      }
+
+      if (validos.length < 3){
+        showFeedback('feedback5','partial','Revisión realizada','Seleccionaste conceptos válidos, pero faltan más conceptos centrales para cubrir mejor la pregunta problema.');
+        cargarOpcionesJerarquiaDesdeSeleccion();
+        return;
+      }
+
+      cargarOpcionesJerarquiaDesdeSeleccion();
+      showFeedback('feedback5','success','Revisión realizada','Ahora asigna las opciones por jerarquía en los 3 selectores y valida.');
+      conceptosJerarquiaValidados = false;
+      ['chk_conc_solucion','chk_conc_relevante','chk_conc_cantidad'].forEach(resetChip);
+      document.getElementById('conceptosPreview').textContent = '(Aquí se mostrará la síntesis de tus conceptos)';
     }
 
-    // Slide 6 tabla términos
+    function getSelectedText(selectId){
+      const sel = document.getElementById(selectId);
+      if (!sel || !sel.value) return '';
+      const opt = sel.options[sel.selectedIndex];
+      return opt ? opt.textContent : '';
+    }
+
+    function validarJerarquiaConceptos(){
+      const c1 = document.getElementById('concepto1Sel').value;
+      const c2 = document.getElementById('concepto2Sel').value;
+      const c3 = document.getElementById('concepto3Sel').value;
+
+      if (!c1 || !c2 || !c3){
+        ['chk_conc_solucion','chk_conc_relevante','chk_conc_cantidad'].forEach(resetChip);
+        document.getElementById('conceptosPreview').textContent = '(Debes completar los 3 conceptos por jerarquía)';
+        showFeedback('feedback5','error','Faltan conceptos','Debes asignar los 3 conceptos en los selectores (fenómeno, proceso/servicio, contexto/población/condición).');
+        conceptosJerarquiaValidados = false;
+        return;
+      }
+
+      const repetidos = new Set([c1,c2,c3]).size < 3;
+      const tipos = [conceptosCatalogo[c1]?.tipo, conceptosCatalogo[c2]?.tipo, conceptosCatalogo[c3]?.tipo];
+      const sonConceptos = [c1,c2,c3].every(k => conceptosCatalogo[k]?.valido);
+
+      // Jerarquía esperada:
+      const jer1 = tipos[0] === 'fenomeno';
+      const jer2 = tipos[1] === 'proceso';
+      const jer3 = tipos[2] === 'contexto';
+
+      const representa = jer1 && jer2 && jer3 && !repetidos;
+
+      setChip('chk_conc_solucion', sonConceptos);
+      setChip('chk_conc_relevante', representa);
+      setChip('chk_conc_cantidad', true);
+
+      const txts = [getSelectedText('concepto1Sel'), getSelectedText('concepto2Sel'), getSelectedText('concepto3Sel')];
+      document.getElementById('conceptosPreview').textContent =
+        `Concepto 1 (fenómeno): ${txts[0]}\nConcepto 2 (proceso/servicio): ${txts[1]}\nConcepto 3 (contexto/población/condición): ${txts[2]}`;
+
+      if (!sonConceptos){
+        conceptosJerarquiaValidados = false;
+        showFeedback('feedback5','partial','Revisión de jerarquía','Hay al menos una opción que no es concepto útil (puede ser solución, término general o formulación subjetiva).');
+        return;
+      }
+
+      if (repetidos){
+        conceptosJerarquiaValidados = false;
+        showFeedback('feedback5','partial','Revisión de jerarquía','No repitas el mismo concepto en más de una posición.');
+        return;
+      }
+
+      if (!representa){
+        conceptosJerarquiaValidados = false;
+        showFeedback('feedback5','partial','Revisión de jerarquía','La asignación por jerarquía no está correcta. Revisa qué opción corresponde a fenómeno, proceso/servicio y contexto/población/condición.');
+        return;
+      }
+
+      conceptosJerarquiaValidados = true;
+      showFeedback('feedback5','success','Jerarquía correcta','Los conceptos quedaron bien asignados y listos para la normalización.');
+    }
+
+    function validarConceptos(){
+      if (!conceptosJerarquiaValidados){
+        showFeedback('feedback5','error','Primero valida la jerarquía','Debes revisar selección y luego validar la jerarquía de los 3 conceptos.');
+        return;
+      }
+
+      const c1Text = getSelectedText('concepto1Sel');
+      const c2Text = getSelectedText('concepto2Sel');
+      const c3Text = getSelectedText('concepto3Sel');
+
+      normKeywords[0].concept = c1Text;
+      normKeywords[1].concept = c2Text;
+      normKeywords[2].concept = c3Text;
+
+      renderNormTable();
+      nextSlide();
+    }
+
+    // ==== Slide 6 tesauros + normalización ====
+    function selectThesaurus(key, btn){
+      currentThesaurus = key;
+      thesaurusSelected = true;
+
+      document.querySelectorAll('.thesaurus-toolbar .th-btn').forEach(b => b.classList.remove('active'));
+      if (btn && !btn.classList.contains('info')) btn.classList.add('active');
+
+      document.getElementById('btnAbrirTesauro').disabled = false;
+      document.getElementById('btnToggleInfo').disabled = false;
+
+      document.getElementById('thInfoTitle').textContent = thesaurusInfo[key].title;
+      document.getElementById('thInfoText').textContent = thesaurusInfo[key].text;
+
+      // Mostrar info solo cuando el usuario selecciona
+      document.getElementById('thInfoBox').classList.add('show');
+    }
+
+    function toggleThInfo(){
+      if (!thesaurusSelected) return;
+      document.getElementById('thInfoBox').classList.toggle('show');
+    }
+
+    function openCurrentThesaurus(){
+      if (!thesaurusSelected || !currentThesaurus) return;
+      const url = thesaurusInfo[currentThesaurus]?.url;
+      if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function openTranslator(){
+      window.open('https://translate.google.com/', '_blank', 'noopener,noreferrer');
+    }
+
     function renderNormTable(){
       const tbody = document.getElementById('norm-body');
       if (!tbody) return;
-      tbody.innerHTML = '';
 
+      tbody.innerHTML = '';
       normKeywords.forEach((row, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><input type="text" data-idx="${idx}" data-key="concept" value="${escapeHtml(row.concept)}" placeholder="Concepto"></td>
           <td><input type="text" data-idx="${idx}" data-key="syn" value="${escapeHtml(row.syn)}" placeholder="sinónimo1, sinónimo2"></td>
           <td><input type="text" data-idx="${idx}" data-key="en" value="${escapeHtml(row.en)}" placeholder="term1, term2"></td>
-          <td><input type="text" data-idx="${idx}" data-key="desc" value="${escapeHtml(row.desc)}" placeholder="descriptor / término preferido"></td>
-          <td>
-            <select data-idx="${idx}" data-key="source">
-              <option value="" ${row.source===''?'selected':''}>Selecciona...</option>
-              <option value="Tesauro" ${row.source==='Tesauro'?'selected':''}>Tesauro</option>
-              <option value="Artículo previo" ${row.source==='Artículo previo'?'selected':''}>Artículo previo</option>
-              <option value="Búsqueda exploratoria" ${row.source==='Búsqueda exploratoria'?'selected':''}>Búsqueda exploratoria</option>
-              <option value="Traducción" ${row.source==='Traducción'?'selected':''}>Traducción</option>
-            </select>
-          </td>
+          <td><input type="text" data-idx="${idx}" data-key="desc" value="${escapeHtml(row.desc)}" placeholder="descriptor del tesauro"></td>
         `;
         tbody.appendChild(tr);
       });
-
-      tbody.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('input', onNormChange);
-        el.addEventListener('change', onNormChange);
-      });
+      tbody.querySelectorAll('input').forEach(el => el.addEventListener('input', onNormChange));
     }
 
     function onNormChange(e){
@@ -1274,88 +1522,99 @@
     }
 
     function validateNormalization(){
-      savedTermGroups = [];
-      let usableRows = 0;
-
-      normKeywords.forEach(row => {
-        const concept = (row.concept || '').trim();
-        const syn = (row.syn || '').trim();
-        const en = (row.en || '').trim();
-        const desc = (row.desc || '').trim();
-
-        if (!concept) return;
-
-        const group = [];
-        if (desc) group.push(desc);
-        if (syn) syn.split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>group.push(x));
-        if (en) en.split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>group.push(x));
-        if (!group.length) group.push(concept);
-
-        savedTermGroups.push([...new Set(group)]);
-        usableRows++;
+      let usable = 0;
+      let descCount = 0;
+      normKeywords.forEach(row=>{
+        if ((row.concept||'').trim()) usable++;
+        if ((row.desc||'').trim()) descCount++;
       });
 
-      if (usableRows < 2){
-        showFeedback('norm-feedback','error','Faltan términos','Completa al menos 2 filas con concepto y términos de búsqueda.');
+      if (usable < 3){
+        showFeedback('norm-feedback','error','Faltan filas útiles','Completa los 3 conceptos con términos de búsqueda.');
+        return;
+      }
+      if (descCount < 2){
+        showFeedback('norm-feedback','partial','Casi','Completa al menos 2 descriptores / términos preferidos de tesauro.');
         return;
       }
 
-      showFeedback('norm-feedback','success','Listo','Puedes pasar a ecuación y cribado.');
+      showFeedback('norm-feedback','success','Listo','Puedes continuar a búsqueda y cribado.');
       setTimeout(()=>nextSlide(), 700);
     }
 
-    // Slide 7 ecuación y cribado
+    // ==== Slide 7 ecuación + cribado ====
     function generarEcuacion(){
-      savedTermGroups = [];
-
-      normKeywords.forEach(row => {
-        const concept = (row.concept || '').trim();
-        const syn = (row.syn || '').trim();
-        const en = (row.en || '').trim();
-        const desc = (row.desc || '').trim();
+      const groups = [];
+      normKeywords.forEach(row=>{
+        const concept = (row.concept||'').trim();
         if (!concept) return;
+        const arr = [];
 
-        const group = [];
-        if (desc) group.push(desc);
-        if (syn) syn.split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>group.push(x));
-        if (en) en.split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>group.push(x));
-        if (!group.length) group.push(concept);
+        if ((row.desc||'').trim()) arr.push(row.desc.trim());
+        if ((row.syn||'').trim()) row.syn.split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>arr.push(x));
+        if ((row.en||'').trim()) row.en.split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>arr.push(x));
 
-        savedTermGroups.push([...new Set(group)]);
+        if (!arr.length) arr.push(concept);
+        groups.push([...new Set(arr)]);
       });
 
-      if (savedTermGroups.length < 2){
-        showFeedback('feedback7','error','No se puede generar','Completa primero la tabla de términos.');
+      if (groups.length < 2){
+        showFeedback('feedback7','error','No se puede generar','Completa antes la tabla de términos.');
         return;
       }
 
-      const parts = savedTermGroups.map(group => {
-        const quoted = group.map(t => `"${t}"`);
-        return quoted.length > 1 ? `(${quoted.join(' OR ')})` : quoted[0];
-      });
+      generatedEquation = groups
+        .map(g => g.length > 1 ? `(${g.map(t => `"${t}"`).join(' OR ')})` : `"${g[0]}"`)
+        .join('\nAND ');
 
-      generatedEquation = parts.join('\nAND ');
       document.getElementById('equationPreview').textContent = generatedEquation;
       clearFeedback('feedback7');
     }
 
     function copyEquation(){
-      if (!generatedEquation){
-        generarEcuacion();
-        if (!generatedEquation) return;
+      if (!generatedEquation) generarEcuacion();
+      if (!generatedEquation) return;
+      navigator.clipboard?.writeText(generatedEquation).then(()=>{
+        showFeedback('feedback7','success','✓ Copiado','Ecuación base copiada al portapapeles.');
+      }).catch(()=>{});
+    }
+
+    function reordenarCribadoSim(){ randomizeSingleContainer('cribadoSimGrid'); }
+    function reordenarCriteriosCribado(){ randomizeSingleContainer('cribadoGrid'); }
+
+    function randomizeSingleContainer(id){
+      const container = document.getElementById(id);
+      if (!container) return;
+      const items = Array.from(container.children);
+      const selectedRadioValue = items.find(n => n.classList.contains('selected'))?.dataset.value || null;
+      const selectedChecks = new Set(items.filter(n => n.classList.contains('selected')).map(n => n.dataset.value));
+      const clones = items.map(n => n.cloneNode(true));
+      shuffleInPlace(clones);
+      container.innerHTML = '';
+      clones.forEach(n=>{
+        if (selectedRadioValue && n.dataset.value === selectedRadioValue) n.classList.add('selected');
+        if (selectedChecks.has(n.dataset.value)) n.classList.add('selected');
+        container.appendChild(n);
+      });
+    }
+
+    function verificarCribadoSimulacion(){
+      const v = selections.cribadoSim;
+      if (!v){
+        showFeedback('feedback7sim','error','Selecciona una opción','Elige una decisión para el documento encontrado.');
+        reordenarCribadoSim();
+        return;
       }
 
-      navigator.clipboard?.writeText(generatedEquation).then(()=>{
-        showFeedback('feedback7','success','✓ Copiado','Ecuación copiada al portapapeles.');
-      }).catch(()=>{
-        const tmp = document.createElement('textarea');
-        tmp.value = generatedEquation;
-        document.body.appendChild(tmp);
-        tmp.select();
-        document.execCommand('copy');
-        document.body.removeChild(tmp);
-        showFeedback('feedback7','success','✓ Copiado','Ecuación copiada al portapapeles.');
-      });
+      if (v === 'conservar'){
+        showFeedback('feedback7sim','success','Correcto','El título, resumen y datos de publicación sí son pertinentes para la pregunta problema y presentan información metodológica útil para cribado inicial.');
+      } else if (v === 'excluir'){
+        showFeedback('feedback7sim','error','Revisa','No corresponde excluirla: el título, resumen y método sí son pertinentes para la pregunta problema.');
+        reordenarCribadoSim();
+      } else {
+        showFeedback('feedback7sim','partial','Revisa','Podría conservarse directamente en cribado inicial porque sí muestra pertinencia y base metodológica suficiente.');
+        reordenarCribadoSim();
+      }
     }
 
     function checkCribado(){
@@ -1363,7 +1622,8 @@
       const validos = new Set(['pertinencia','autor','metodo','anio']);
 
       if (!s.size){
-        showFeedback('feedback7','error','Selecciona criterios','Marca criterios de curación de contenido.');
+        showFeedback('feedback7','error','Selecciona criterios','Marca criterios de cribado.');
+        reordenarCriteriosCribado();
         return;
       }
 
@@ -1371,12 +1631,13 @@
       const buenos = [...s].filter(x => validos.has(x));
 
       if (invalidos.length){
-        showFeedback('feedback7','error','Revisa','Hay criterios que no son de calidad metodológica (ej. popularidad o título llamativo).');
+        showFeedback('feedback7','error','Revisa','Incluiste criterios no metodológicos (como popularidad o título llamativo).');
+        reordenarCriteriosCribado();
         return;
       }
-
       if (buenos.length < 3){
         showFeedback('feedback7','partial','Casi','Incluye más criterios metodológicos para el cribado.');
+        reordenarCriteriosCribado();
         return;
       }
 
@@ -1385,65 +1646,275 @@
       setTimeout(()=>nextSlide(), 800);
     }
 
-    // Reset
+    // ==== Slide 8 bitácora ====
+    function agregarFilaBitacora(){
+      const tb = document.getElementById('bitacoraBody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" placeholder="Fecha"></td>
+        <td><input type="text" placeholder="Base de datos"></td>
+        <td><input type="text" placeholder="Ecuación / ajuste"></td>
+        <td><input type="text" placeholder="Filtros"></td>
+        <td><input type="text" placeholder="N° resultados"></td>
+        <td><input type="text" placeholder="Observación / decisión"></td>
+      `;
+      tb.appendChild(tr);
+      bitacoraValidada = false;
+      clearFeedback('feedback8');
+    }
+
+    function getBitacoraRowsData(){
+      const rows = Array.from(document.querySelectorAll('#bitacoraBody tr'));
+      return rows.map(tr=>{
+        const inputs = Array.from(tr.querySelectorAll('input')).map(i=>i.value.trim());
+        return {
+          fecha: inputs[0] || '',
+          base: inputs[1] || '',
+          ecuacion: inputs[2] || '',
+          filtros: inputs[3] || '',
+          resultados: inputs[4] || '',
+          obs: inputs[5] || ''
+        };
+      });
+    }
+
+    function validarBitacora(){
+      const rows = getBitacoraRowsData();
+      const completas = rows.filter(r => Object.values(r).some(v=>v)); // filas usadas
+      if (!completas.length){
+        bitacoraValidada = false;
+        showFeedback('feedback8','error','Bitácora vacía','Registra al menos un intento de búsqueda.');
+        return;
+      }
+
+      const invalidas = completas.filter(r => !r.fecha || !r.base || !r.ecuacion || !r.resultados);
+      if (invalidas.length){
+        bitacoraValidada = false;
+        showFeedback('feedback8','partial','Faltan datos','Completa mínimo: fecha, base de datos, ecuación/ajuste y número de resultados en cada fila usada.');
+        return;
+      }
+
+      bitacoraValidada = true;
+      showFeedback('feedback8','success','Bitácora válida','La bitácora tiene registros suficientes para documentar el proceso.');
+    }
+
+    function continuarDesdeBitacora(){
+      if (!bitacoraValidada){
+        showFeedback('feedback8','error','Primero valida la bitácora','Pulsa “Validar bitácora” antes de continuar.');
+        return;
+      }
+      nextSlide();
+    }
+
+    function renderFinalBitacora(){
+      const tbody = document.getElementById('finalBitacoraBody');
+      const rows = getBitacoraRowsData().filter(r => Object.values(r).some(v=>v));
+      tbody.innerHTML = '';
+
+      if (!rows.length){
+        tbody.innerHTML = '<tr><td colspan="6" style="color:#7f8c8d;">(Sin registros aún)</td></tr>';
+        return;
+      }
+
+      rows.forEach(r=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(r.fecha || '-')}</td>
+          <td>${escapeHtml(r.base || '-')}</td>
+          <td>${escapeHtml(r.ecuacion || '-')}</td>
+          <td>${escapeHtml(r.filtros || '-')}</td>
+          <td>${escapeHtml(r.resultados || '-')}</td>
+          <td>${escapeHtml(r.obs || '-')}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ==== Resumen modal ====
+    function shouldShowFab(){
+      const wrapper = document.getElementById('presentationWrapper');
+      if (!wrapper || !wrapper.classList.contains('active')) return false;
+      return currentSlide >= 3;
+    }
+    function refreshFab(){
+      const fab = document.getElementById('fabResumen');
+      if (fab) fab.classList.toggle('show', shouldShowFab());
+    }
+    function toggleResumen(open){
+      const modal = document.getElementById('resumenModal');
+      if (!modal) return;
+      if (open){ updateResumen(); modal.classList.add('active'); }
+      else modal.classList.remove('active');
+    }
+    function onBackdropClick(e){
+      if (e.target && e.target.id === 'resumenModal') toggleResumen(false);
+    }
+    function markBadge(id, ok){
+      const b = document.getElementById(id); if (!b) return;
+      b.classList.remove('ok','pending'); b.classList.add(ok ? 'ok' : 'pending');
+      b.textContent = (ok ? '✓ ' : '⏳ ') + b.textContent.replace(/^✓\s|^⏳\s/, '');
+    }
+
+    function updateResumen(){
+      document.getElementById('sumNombre').textContent = studentData.nombre || '-';
+      document.getElementById('sumNrc').textContent = studentData.nrc || '-';
+      document.getElementById('sumGrupo').textContent = studentData.grupo || '-';
+      document.getElementById('sumDelimitacion').textContent = delimitacionTexto || '(Aún no generada)';
+      document.getElementById('sumPregunta').textContent = preguntaProblemaFinal || '(Aún no revisada)';
+
+      const c = [getSelectedText('concepto1Sel'), getSelectedText('concepto2Sel'), getSelectedText('concepto3Sel')].filter(Boolean);
+      document.getElementById('sumConceptos').textContent = c.length ? c.map((x,i)=>`Concepto ${i+1}: ${x}`).join('\n') : '(Aún no definidos)';
+
+      const tbody = document.getElementById('sumTerminosBody');
+      tbody.innerHTML = '';
+      let filas = 0;
+      normKeywords.forEach(r=>{
+        if (!(r.concept||r.syn||r.en||r.desc)) return;
+        filas++;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${escapeHtml(r.concept||'-')}</td><td>${escapeHtml(r.syn||'-')}</td><td>${escapeHtml(r.en||'-')}</td><td>${escapeHtml(r.desc||'-')}</td>`;
+        tbody.appendChild(tr);
+      });
+      if (!filas){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="4" style="color:#7f8c8d;">(Sin registros)</td>`;
+        tbody.appendChild(tr);
+      }
+
+      document.getElementById('sumEcuacion').textContent = generatedEquation || '(Aún no generada)';
+      markBadge('badgeDelim', !!delimitacionTexto);
+      markBadge('badgePregunta', !!preguntaProblemaFinal);
+      markBadge('badgeConceptos', conceptosJerarquiaValidados);
+      markBadge('badgeTerminos', filas >= 2);
+      markBadge('badgeEcuacion', !!generatedEquation);
+      markBadge('badgeBitacora', bitacoraValidada);
+    }
+
+    function copyResumen(){
+      updateResumen();
+      const txt = [
+        `NOMBRE: ${studentData.nombre || '-'}`,
+        `NRC: ${studentData.nrc || '-'}`,
+        `GRUPO: ${studentData.grupo || '-'}`,
+        '',
+        `DELIMITACIÓN: ${delimitacionTexto || '-'}`,
+        '',
+        `PREGUNTA PROBLEMA: ${preguntaProblemaFinal || '-'}`,
+        '',
+        `CONCEPTOS: ${[getSelectedText('concepto1Sel'), getSelectedText('concepto2Sel'), getSelectedText('concepto3Sel')].filter(Boolean).join(' | ') || '-'}`,
+        '',
+        `ECUACIÓN BASE:\n${generatedEquation || '-'}`,
+      ].join('\n');
+      navigator.clipboard?.writeText(txt).catch(()=>{});
+    }
+
+    // ==== Reset ====
     function resetAll(){
       if (!confirm('¿Estás seguro de que quieres reiniciar? Se perderán los datos ingresados.')) return;
 
       studentData = { nombre:'', nrc:'', grupo:'' };
       currentSlide = 0;
       selections = {};
-      checks = { conceptos:new Set(), cribado:new Set() };
+      checks = { cribado:new Set(), conceptosChoice:new Set() };
+
       delimitacionTexto = '';
       preguntaProblemaFinal = '';
       generatedEquation = '';
       revisarPreguntaHecho = false;
+      currentThesaurus = '';
+      thesaurusSelected = false;
+      conceptosJerarquiaValidados = false;
+      bitacoraValidada = false;
 
-      normKeywords = defaultKeywords.map(r => ({...r}));
-      savedTermGroups = [];
-      renderNormTable();
+      normKeywords = [{concept:'',syn:'',en:'',desc:''},{concept:'',syn:'',en:'',desc:''},{concept:'',syn:'',en:'',desc:''}];
 
       document.querySelectorAll('.option-card, .checkbox-card').forEach(c=>c.classList.remove('selected'));
       document.querySelectorAll('.feedback').forEach(f=>{ f.className='feedback'; f.innerHTML=''; });
 
-      ['nombreCompleto','nrc','grupo','preguntaProblemaText','concepto1','concepto2','concepto3']
-        .forEach(id => { const el = document.getElementById(id); if (el) el.value=''; });
-
-      ['delFenomeno','delContexto','delPoblacion','delCondicion','delFoco','tipoPregunta','focoPregunta'].forEach(id => {
-        const el = document.getElementById(id); if (el) el.value='';
+      ['nombreCompleto','nrc','grupo','preguntaProblemaText'].forEach(id=>{
+        const el = document.getElementById(id); if (el) el.value = '';
       });
+
+      ['delFenomeno','delContexto','delPoblacion','delCondicion','delFoco','tipoPregunta','focoPregunta'].forEach(id=>{
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+
+      limpiarSelectsConceptos();
+
+      ['chk_fenomeno','chk_poblacion','chk_contexto','chk_tiempo','chk_vaguedad','chk_evidencia','chk_conc_solucion','chk_conc_relevante','chk_conc_cantidad']
+      .forEach(resetChip);
 
       document.getElementById('delimitacionPreview').textContent = '(Selecciona componentes y pulsa GENERAR)';
       document.getElementById('preguntaFinalPreview').textContent = '(Aquí se mostrará la pregunta revisada)';
-      document.getElementById('equationPreview').textContent = '(Completa la tabla de términos para generar la ecuación)';
+      document.getElementById('preguntaRecordatorio').textContent = '(Primero revisa la pregunta problema en la diapositiva anterior)';
+      document.getElementById('conceptosPreview').textContent = '(Aquí se mostrará la síntesis de tus conceptos)';
+      document.getElementById('equationPreview').textContent = '(Completa la tabla de términos para generar la ecuación base)';
       document.getElementById('equationFinal').textContent = '(No se generó ecuación)';
 
-      ['chk_fenomeno','chk_poblacion','chk_contexto','chk_tiempo','chk_vaguedad','chk_evidencia'].forEach(id=>{
-        const el = document.getElementById(id);
-        if (el){ el.className='chip'; el.textContent='Pendiente'; }
-      });
+      document.getElementById('casoExpandible').style.display = 'none';
+      document.getElementById('btnToggleCaso').textContent = 'LEER CASO ▼';
 
-      const caso = document.getElementById('casoExpandible');
-      const btnCaso = document.getElementById('btnToggleCaso');
-      if (caso) caso.style.display='none';
-      if (btnCaso) btnCaso.textContent='LEER CASO ▼';
+      document.getElementById('thInfoBox').classList.remove('show');
+      document.getElementById('thInfoTitle').textContent = 'Tesauro';
+      document.getElementById('thInfoText').textContent = 'Selecciona un tesauro para ver información.';
+      document.getElementById('btnAbrirTesauro').disabled = true;
+      document.getElementById('btnToggleInfo').disabled = true;
+      document.querySelectorAll('.thesaurus-toolbar .th-btn').forEach(b=>b.classList.remove('active'));
 
-      ['errorNombre','errorNrc','errorGrupo'].forEach(id=>{
-        const el = document.getElementById(id); if (el) el.classList.remove('show');
-      });
+      renderNormTable();
+
+      // Reset bitácora
+      document.getElementById('bitacoraBody').innerHTML = `
+        <tr>
+          <td><input type="text" placeholder="2026-02-21"></td>
+          <td><input type="text" placeholder="Scopus / Scielo / WoS"></td>
+          <td><input type="text" placeholder='Pega ecuación base o ajuste'></td>
+          <td><input type="text" placeholder="Año, idioma, tipo doc"></td>
+          <td><input type="text" placeholder="N°"></td>
+          <td><input type="text" placeholder="Pertinente / ajustar / etc."></td>
+        </tr>
+        <tr>
+          <td><input type="text" placeholder="2026-02-21"></td>
+          <td><input type="text" placeholder="Otra base"></td>
+          <td><input type="text" placeholder='Ajuste de términos'></td>
+          <td><input type="text" placeholder="Filtros"></td>
+          <td><input type="text" placeholder="N°"></td>
+          <td><input type="text" placeholder="Observación"></td>
+        </tr>
+      `;
+
+      toggleResumen(false);
+      ['errorNombre','errorNrc','errorGrupo'].forEach(id => document.getElementById(id).classList.remove('show'));
 
       document.getElementById('presentationWrapper').classList.remove('active');
       document.getElementById('registroScreen').style.display='flex';
+
       showSlide(0);
+      randomizeOptionContainers();
+      reshuffleDelimitacionSelects();
     }
 
+    // ==== teclado ====
     window.addEventListener('keydown', (e)=>{
       if (!document.getElementById('presentationWrapper').classList.contains('active')) return;
       if (e.key === 'ArrowRight') nextSlide();
       if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'Escape') toggleResumen(false);
     });
 
-    // init
-    renderNormTable();
+    // ==== init ====
+    window.addEventListener('load', ()=>{
+      randomizeOptionContainers();     // tarjetas con orden aleatorio
+      reshuffleDelimitacionSelects();  // select de delimitación en orden aleatorio (corrige la diapositiva 3)
+      renderNormTable();
+      refreshFab();
+      limpiarSelectsConceptos();
+
+      // ocultar info de tesauros al inicio (como pediste)
+      document.getElementById('thInfoBox').classList.remove('show');
+      document.getElementById('btnAbrirTesauro').disabled = true;
+      document.getElementById('btnToggleInfo').disabled = true;
+    });
   </script>
 </body>
 </html>
