@@ -1,1 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OVA Juego - Pregunta problema y Objetivos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --panel:#fff;
+      --ink:#111827;
+      --muted:#6b7280;
+      --blue:#2563eb;
+      --purple:#7c3aed;
+      --shadow:0 16px 40px rgba(0,0,0,.28);
+      --border:#111827;
+    }
+    body{
+      font-family:'Inter',sans-serif;
+      background:
+        radial-gradient(circle at 14px 14px, rgba(255,255,255,.05) 2px, transparent 3px) 0 0/28px 28px,
+        linear-gradient(135deg,#0b1228 0%,#111a3b 55%,#151f48 100%);
+      height:100vh;
+      overflow:hidden;
+      color:var(--ink);
+    }
+    .screen{display:none;height:100vh;width:100%;align-items:center;justify-content:center;padding:18px}
+    .screen.active{display:flex}
 
+    .card{
+      background:var(--panel);
+      border:3px solid var(--border);
+      border-radius:22px;
+      box-shadow:8px 8px 0 var(--border), var(--shadow);
+    }
+
+    .btn{
+      border:3px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+      color:#111827;
+      font-family:'Fredoka',sans-serif;
+      font-weight:700;
+      font-size:15px;
+      padding:11px 16px;
+      cursor:pointer;
+      box-shadow:4px 4px 0 var(--border);
+      transition:.12s ease;
+    }
+    .btn:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 var(--border)}
+    .btn:active{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--border)}
+    .btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 var(--border)}
+    .btn-primary{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
+    .btn-next{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff}
+    .btn-hint{background:#fff7ed;color:#9a3412;border-color:var(--border)}
+
+    .icon-btn{
+      width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+      border:3px solid var(--border);border-radius:12px;background:#fff;
+      box-shadow:4px 4px 0 var(--border);cursor:pointer;transition:.12s ease;flex-shrink:0;
+    }
+    .icon-btn:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 var(--border)}
+
+    /* Inicio */
+    .start-wrap{width:min(780px,100%);padding:22px 22px 20px}
+    .start-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .start-title{
+      font-family:'Fredoka',sans-serif;
+      color:#1e3a8a;
+      font-size:1.85rem;
+      line-height:1.08;
+    }
+    .start-help{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.45;
+    }
+    .form-grid{display:grid;gap:14px;margin-top:16px}
+    .field label{
+      display:block;margin-bottom:6px;font-weight:800;font-size:.93rem;color:#1f2937;
+    }
+    .field input{
+      width:100%;padding:12px 13px;border:2px solid #cbd5e1;border-radius:12px;
+      font-size:1rem;outline:none;transition:.15s ease;
+    }
+    .field input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    .error{display:none;color:#b91c1c;font-weight:700;font-size:.85rem;margin-top:4px}
+    .error.show{display:block}
+    .start-actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+
+    /* Quiz */
+    .quiz-wrap{
+      width:min(980px,100%);
+      height:min(92vh,780px);
+      display:flex;flex-direction:column;overflow:hidden;
+    }
+    .quiz-head{
+      border-bottom:3px solid var(--border);
+      padding:16px 18px 14px;
+      background:linear-gradient(135deg,#dbeafe 0%,#e9d5ff 65%,#fce7f3 100%);
+    }
+    .quiz-title-row{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+    }
+    .quiz-title{
+      font-family:'Fredoka',sans-serif;
+      color:#1e3a8a;
+      font-size:1.45rem;
+      line-height:1.12;
+    }
+    .player-mini{
+      background:#fff;border:2px solid var(--border);border-radius:12px;
+      padding:8px 10px;font-weight:700;font-size:.84rem;line-height:1.35;
+      box-shadow:3px 3px 0 var(--border);text-align:right;white-space:nowrap;
+    }
+    .progress-row{margin-top:12px;display:flex;align-items:center;gap:10px}
+    .progress-bar{
+      flex:1;height:14px;background:#e5e7eb;border:2px solid var(--border);
+      border-radius:999px;overflow:hidden;
+    }
+    .progress-fill{
+      height:100%;width:0%;
+      background:linear-gradient(90deg,#22c55e,#3b82f6,#a855f7);
+      transition:width .25s ease;
+    }
+    .progress-text{
+      font-family:'Fredoka',sans-serif;font-size:.95rem;color:#111827;white-space:nowrap;
+    }
+
+    .quiz-body{
+      flex:1;min-height:0;overflow:auto;padding:16px;background:#fff;
+    }
+    .quiz-body::-webkit-scrollbar{width:8px}
+    .quiz-body::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+
+    .question-card{
+      border:3px solid var(--border);border-radius:18px;background:#fff;
+      padding:15px;box-shadow:5px 5px 0 var(--border);
+    }
+    .question-num{
+      display:inline-block;
+      font-family:'Fredoka',sans-serif;
+      font-size:.95rem;
+      color:#111827;
+      background:#fff;
+      border:2px solid var(--border);
+      border-radius:999px;
+      padding:6px 10px;
+      margin-bottom:10px;
+    }
+    .question-title{
+      font-family:'Fredoka',sans-serif;
+      font-size:1.2rem;
+      line-height:1.25;
+      margin-bottom:8px;
+      color:#111827;
+    }
+    .question-instruction{
+      color:#4b5563;font-size:.93rem;line-height:1.45;margin-bottom:10px;
+    }
+
+    .hint-area{margin:8px 0 12px}
+    .hint-panel{
+      display:none;margin-top:8px;
+      background:#fff7ed;border:2px dashed #f59e0b;border-radius:12px;
+      padding:10px 12px;color:#9a3412;font-size:.9rem;font-weight:700;line-height:1.45;
+    }
+    .hint-panel.show{display:block}
+
+    .options{display:grid;gap:10px}
+    .opt{
+      width:100%;
+      text-align:left;
+      border:3px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+      box-shadow:4px 4px 0 var(--border);
+      cursor:pointer;
+      padding:11px 12px;
+      display:flex;gap:10px;align-items:flex-start;
+      transition:.12s ease;
+    }
+    .opt:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 var(--border);background:#f8fafc}
+    .opt.disabled{pointer-events:none;opacity:.95}
+    .dot{
+      width:19px;height:19px;border:2px solid #6b7280;border-radius:50%;
+      background:#fff;position:relative;flex-shrink:0;margin-top:1px;
+    }
+    .txt{font-size:.95rem;line-height:1.45;color:#111827;font-weight:600}
+    .opt.selected .dot::after,.opt.correct .dot::after,.opt.wrong .dot::after{
+      content:'';position:absolute;inset:4px;border-radius:50%;
+      background:#111827;
+    }
+    .opt.correct{background:#dcfce7;border-color:#065f46}
+    .opt.correct .dot{border-color:#065f46}
+    .opt.correct .dot::after{background:#16a34a}
+    .opt.wrong{background:#fee2e2;border-color:#991b1b}
+    .opt.wrong .dot{border-color:#991b1b}
+    .opt.wrong .dot::after{background:#dc2626}
+    .opt.selected:not(.correct):not(.wrong){background:#eff6ff}
+
+    .feedback{
+      display:none;margin-top:12px;
+      border:3px solid var(--border);border-radius:14px;padding:11px 12px;
+      box-shadow:4px 4px 0 var(--border);line-height:1.45;
+    }
+    .feedback.show{display:block}
+    .feedback.ok{background:#dcfce7;color:#065f46}
+    .feedback.no{background:#fef3c7;color:#92400e}
+    .fb-title{font-family:'Fredoka',sans-serif;font-size:.98rem;margin-bottom:3px}
+    .fb-text{font-size:.9rem;font-weight:700}
+
+    .quiz-foot{
+      border-top:3px solid var(--border);
+      padding:12px 14px;background:#f8fafc;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+    }
+    .score-mini{font-weight:800;color:#374151;font-size:.9rem}
+
+    /* Final */
+    .final-wrap{width:min(820px,100%);padding:22px}
+    .final-title{
+      font-family:'Fredoka',sans-serif;color:#1e3a8a;font-size:1.6rem;line-height:1.1;
+    }
+    .result-chip{
+      display:inline-block;margin-top:12px;margin-bottom:10px;
+      border:2px solid var(--border);border-radius:999px;padding:8px 12px;
+      font-weight:800;box-shadow:3px 3px 0 var(--border);
+      background:#fff;
+    }
+    .result-chip.good{background:#d1fae5;color:#065f46}
+    .result-chip.mid{background:#fef3c7;color:#92400e}
+    .result-chip.low{background:#fee2e2;color:#991b1b}
+    .score-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 12px;
+    }
+    .box{
+      border:3px solid var(--border);border-radius:14px;background:#fff;
+      box-shadow:4px 4px 0 var(--border);padding:10px 12px;
+    }
+    .box .k{font-size:.78rem;color:#6b7280;font-weight:800;text-transform:uppercase}
+    .box .v{font-family:'Fredoka',sans-serif;font-size:1.15rem;color:#111827;margin-top:2px}
+    .data-panel{
+      border:3px solid var(--border);border-radius:14px;background:#fff;
+      box-shadow:4px 4px 0 var(--border);padding:12px;
+    }
+    .row{display:flex;gap:10px;padding:7px 0;border-bottom:1px dashed #d1d5db;font-size:.92rem}
+    .row:last-child{border-bottom:none}
+    .row .a{min-width:210px;color:#6b7280;font-weight:800}
+    .row .b{font-weight:700;color:#111827}
+    .final-msg{
+      margin-top:12px;border:3px solid var(--border);border-radius:14px;padding:11px 12px;
+      background:#eef2ff;color:#312e81;font-weight:700;line-height:1.45;
+      box-shadow:4px 4px 0 var(--border);
+    }
+    .final-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+
+    @media (max-width:900px){
+      body{overflow:auto}
+      .screen{padding:0}
+      .quiz-wrap{width:100%;height:100vh;border-radius:0;border-left:none;border-right:none}
+      .start-wrap,.final-wrap{width:100%;min-height:100vh;border-radius:0;border-left:none;border-right:none}
+      .score-grid{grid-template-columns:1fr}
+      .row{flex-direction:column;gap:4px}
+      .row .a{min-width:unset}
+      .player-mini{text-align:left;white-space:normal}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- INICIO -->
+  <section class="screen active" id="screenStart">
+    <div class="card start-wrap">
+      <div class="start-head">
+        <div>
+          <h1 class="start-title">Juego: Pregunta problema y objetivos</h1>
+          <div class="start-help">Ingresa tus datos para comenzar.</div>
+        </div>
+
+        <!-- Único icono: SVG libro para saltar registro -->
+        <button class="icon-btn" id="btnSkip" title="Entrar sin registro">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4.5 5.5C4.5 4.67 5.17 4 6 4h11a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.75.43C17.2 17.33 15.89 17 14.5 17H6a1.5 1.5 0 0 0-1.5 1.5V5.5Z" fill="#93C5FD" stroke="#111827" stroke-width="1.5"/>
+            <path d="M4.5 18.5C4.5 17.67 5.17 17 6 17h8.5c1.39 0 2.7.33 3.75.93.33.19.75-.05.75-.43V6a2 2 0 0 0-2-2" stroke="#111827" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M7.5 7.5h8M7.5 10h6M7.5 12.5h4.5" stroke="#111827" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="nombre">Nombre completo *</label>
+          <input id="nombre" type="text" placeholder="Escribe tu nombre">
+          <div class="error" id="errNombre">Falta el nombre.</div>
+        </div>
+        <div class="field">
+          <label for="nrc">NRC del curso *</label>
+          <input id="nrc" type="text" placeholder="Ej: 12345">
+          <div class="error" id="errNrc">Falta el NRC.</div>
+        </div>
+      </div>
+
+      <div class="start-actions">
+        <button class="btn btn-primary" onclick="startGame()">Comenzar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="screenQuiz">
+    <div class="card quiz-wrap">
+      <header class="quiz-head">
+        <div class="quiz-title-row">
+          <div class="quiz-title">Reconoce: pregunta problema y objetivos</div>
+          <div class="player-mini">
+            <div id="metaNombre">-</div>
+            <div>NRC: <span id="metaNrc">-</span></div>
+          </div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-text" id="progressText">1/8</div>
+        </div>
+      </header>
+
+      <main class="quiz-body">
+        <div class="question-card">
+          <div class="question-num" id="qNum">Pregunta 1 de 8</div>
+          <div class="question-title" id="qTitle">Pregunta</div>
+          <div class="question-instruction" id="qInstruction">Selecciona una respuesta.</div>
+
+          <div class="hint-area">
+            <button class="btn btn-hint" type="button" id="btnHint" onclick="toggleHint()">Ver pista</button>
+            <div class="hint-panel" id="hintPanel"></div>
+          </div>
+
+          <div class="options" id="optionsBox"></div>
+
+          <div class="feedback" id="feedbackBox"></div>
+        </div>
+      </main>
+
+      <footer class="quiz-foot">
+        <div class="score-mini" id="scoreMini">Puntos: 0 | Errores: 0</div>
+        <button class="btn btn-next" id="btnNext" disabled onclick="nextQuestion()">Siguiente</button>
+      </footer>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section class="screen" id="screenFinal">
+    <div class="card final-wrap">
+      <h2 class="final-title">Resultado del juego</h2>
+
+      <div id="finalBadge" class="result-chip mid">Resultado</div>
+
+      <div class="score-grid">
+        <div class="box">
+          <div class="k">Puntaje total</div>
+          <div class="v" id="fScore">0 pts</div>
+        </div>
+        <div class="box">
+          <div class="k">Porcentaje</div>
+          <div class="v" id="fPercent">0%</div>
+        </div>
+        <div class="box">
+          <div class="k">Duración</div>
+          <div class="v" id="fTime">0m 0s</div>
+        </div>
+      </div>
+
+      <div class="data-panel">
+        <div class="row"><div class="a">Nombre</div><div class="b" id="fNombre">-</div></div>
+        <div class="row"><div class="a">NRC del curso</div><div class="b" id="fNrc">-</div></div>
+        <div class="row"><div class="a">Fecha y hora de presentado</div><div class="b" id="fFechaHora">-</div></div>
+      </div>
+
+      <div class="final-msg" id="finalMsg">Juego terminado.</div>
+
+      <div class="final-actions">
+        <button class="btn btn-primary" onclick="playAgain()">Jugar de nuevo</button>
+        <button class="btn" onclick="goHome()">Volver al inicio</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // =========================
+    // 8 PREGUNTAS
+    // =========================
+    const BASE_QUESTIONS = [
+      {
+        id:"Q1",
+        prompt:"¿Qué es la pregunta problema?",
+        instruction:"Elige la opción correcta.",
+        hint:"Es una pregunta que guía toda la investigación.",
+        options:[
+          "La pregunta principal que la investigación busca responder",
+          "Una lista de definiciones de conceptos",
+          "Un resumen de resultados finales"
+        ],
+        correct:"La pregunta principal que la investigación busca responder",
+        explanation:"La pregunta problema orienta el trabajo: es lo que se intenta responder con la investigación."
+      },
+      {
+        id:"Q2",
+        prompt:"¿Cuál opción es un buen ejemplo de pregunta problema?",
+        instruction:"Elige la opción correcta.",
+        hint:"Debe ser una pregunta clara e investigable (no una orden).",
+        options:[
+          "¿Qué factores se relacionan con los retrasos en la entrega de medicamentos en una EPS?",
+          "Mejorar la entrega de medicamentos en la EPS",
+          "La entrega de medicamentos en la EPS"
+        ],
+        correct:"¿Qué factores se relacionan con los retrasos en la entrega de medicamentos en una EPS?",
+        explanation:"Una pregunta problema se formula como pregunta y puede investigarse con datos o fuentes."
+      },
+      {
+        id:"Q3",
+        prompt:"¿Qué es el objetivo general?",
+        instruction:"Elige la opción correcta.",
+        hint:"Es lo que se quiere lograr en el trabajo, en una sola frase.",
+        options:[
+          "El propósito principal del estudio expresado con un verbo en infinitivo",
+          "Una opinión personal sobre el tema",
+          "Un listado de muchas tareas sin relación"
+        ],
+        correct:"El propósito principal del estudio expresado con un verbo en infinitivo",
+        explanation:"El objetivo general describe la meta principal del estudio (por ejemplo: analizar, describir, identificar)."
+      },
+      {
+        id:"Q4",
+        prompt:"¿Cuál es un buen objetivo general para un estudio sobre demoras en entrega de medicamentos?",
+        instruction:"Elige la opción correcta.",
+        hint:"Debe iniciar con un verbo en infinitivo (analizar, identificar, describir...).",
+        options:[
+          "Analizar los factores asociados a las demoras en la entrega de medicamentos en una EPS",
+          "La EPS demora mucho y eso es malo",
+          "¿Por qué la EPS demora?"
+        ],
+        correct:"Analizar los factores asociados a las demoras en la entrega de medicamentos en una EPS",
+        explanation:"Un objetivo general se redacta como enunciado (no pregunta) y con verbo en infinitivo."
+      },
+      {
+        id:"Q5",
+        prompt:"¿Cuál opción describe mejor los objetivos específicos?",
+        instruction:"Elige la opción correcta.",
+        hint:"Son pasos pequeños que ayudan a cumplir el objetivo general.",
+        options:[
+          "Acciones concretas y medibles que llevan al objetivo general",
+          "Frases largas sin relación con el tema",
+          "Definiciones de conceptos del marco teórico"
+        ],
+        correct:"Acciones concretas y medibles que llevan al objetivo general",
+        explanation:"Los objetivos específicos descomponen el objetivo general en pasos claros y realizables."
+      },
+      {
+        id:"Q6",
+        prompt:"¿Cuál NO es una característica de una buena pregunta problema?",
+        instruction:"Elige la opción incorrecta.",
+        hint:"Debe ser clara y investigable.",
+        options:[
+          "Es clara y específica",
+          "Se puede investigar con datos o fuentes",
+          "Es una frase de opinión sin posibilidad de comprobar"
+        ],
+        correct:"Es una frase de opinión sin posibilidad de comprobar",
+        explanation:"Una pregunta problema no debe ser solo opinión; debe poder investigarse."
+      },
+      {
+        id:"Q7",
+        prompt:"¿Qué NO debería aparecer como objetivo general?",
+        instruction:"Elige la opción incorrecta.",
+        hint:"El objetivo general no es una pregunta.",
+        options:[
+          "Analizar el impacto de las demoras en la entrega de medicamentos",
+          "Identificar posibles mejoras en el proceso",
+          "¿Por qué se demoran en entregar los medicamentos?"
+        ],
+        correct:"¿Por qué se demoran en entregar los medicamentos?",
+        explanation:"Eso es una pregunta (pregunta problema), no un objetivo."
+      },
+      {
+        id:"Q8",
+        prompt:"¿Qué relación correcta existe entre pregunta problema y objetivos?",
+        instruction:"Elige la opción correcta.",
+        hint:"Los objetivos deben responder a la pregunta problema.",
+        options:[
+          "Los objetivos deben estar alineados para responder la pregunta problema",
+          "La pregunta problema se escribe después de los resultados finales",
+          "Los objetivos no necesitan relación con la pregunta problema"
+        ],
+        correct:"Los objetivos deben estar alineados para responder la pregunta problema",
+        explanation:"La pregunta guía el trabajo y los objetivos indican qué se hará para responderla."
+      }
+    ];
+
+    // =========================
+    // ESTADO
+    // =========================
+    let player = { nombre:"", nrc:"" };
+    let questions = [];
+    let current = 0;
+
+    let totalPoints = 0;
+    let wrongTriesTotal = 0;
+    let wrongTriesByQuestion = [];
+    let answers = [];
+
+    let startAt = null;
+    let endAt = null;
+
+    const okTitles = ["¡Bien!","Correcto.","Listo.","Perfecto."];
+    const badTitles = ["Intenta otra vez.","Sigue.","Casi.","Revisa."];
+
+    function $(id){ return document.getElementById(id); }
+
+    function shuffle(arr){
+      const a = [...arr];
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    function prepareQuestions(){
+      const cloned = BASE_QUESTIONS.map(q => {
+        const opts = q.options.map(t => ({ text:t, isCorrect:t===q.correct }));
+        return { ...q, shuffledOptions: shuffle(opts) };
+      });
+      return shuffle(cloned);
+    }
+
+    function showScreen(id){
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      $(id).classList.add('active');
+    }
+
+    function formatDateTime(d){
+      try{
+        return new Intl.DateTimeFormat('es-CO',{
+          year:'numeric', month:'2-digit', day:'2-digit',
+          hour:'2-digit', minute:'2-digit', second:'2-digit',
+          hour12:false
+        }).format(d);
+      }catch(e){
+        return d.toLocaleString();
+      }
+    }
+
+    function formatDuration(ms){
+      const s = Math.max(0, Math.floor(ms/1000));
+      const m = Math.floor(s/60);
+      const r = s % 60;
+      return `${m}m ${r}s`;
+    }
+
+    function rand(list){ return list[Math.floor(Math.random()*list.length)]; }
+
+    // =========================
+    // INICIO
+    // =========================
+    function startGame(skip=false){
+      let nombre = $('nombre').value.trim();
+      let nrc = $('nrc').value.trim();
+
+      if(skip){
+        nombre = "INVITADO";
+        nrc = "SIN NRC";
+      }else{
+        let ok = true;
+        if(!nombre || nombre.length < 3){ $('errNombre').classList.add('show'); ok=false; }
+        else $('errNombre').classList.remove('show');
+
+        if(!nrc){ $('errNrc').classList.add('show'); ok=false; }
+        else $('errNrc').classList.remove('show');
+
+        if(!ok) return;
+      }
+
+      player.nombre = nombre.toUpperCase();
+      player.nrc = nrc.toUpperCase();
+
+      questions = prepareQuestions();
+      current = 0;
+
+      totalPoints = 0;
+      wrongTriesTotal = 0;
+      wrongTriesByQuestion = new Array(questions.length).fill(0);
+      answers = new Array(questions.length).fill(null);
+
+      startAt = new Date();
+      endAt = null;
+
+      $('metaNombre').textContent = player.nombre;
+      $('metaNrc').textContent = player.nrc;
+
+      renderQuestion();
+      showScreen('screenQuiz');
+    }
+
+    $('btnSkip').addEventListener('click', () => startGame(true));
+
+    // =========================
+    // QUIZ
+    // =========================
+    function renderQuestion(){
+      const q = questions[current];
+      const total = questions.length;
+
+      $('qNum').textContent = `Pregunta ${current+1} de ${total}`;
+      $('qTitle').textContent = q.prompt;
+      $('qInstruction').textContent = q.instruction || "Selecciona una respuesta.";
+      $('progressText').textContent = `${current+1}/${total}`;
+      $('progressFill').style.width = `${Math.round(((current+1)/total)*100)}%`;
+
+      $('hintPanel').classList.remove('show');
+      $('hintPanel').textContent = q.hint || "Sin pista.";
+      $('btnHint').textContent = "Ver pista";
+
+      const box = $('optionsBox');
+      box.innerHTML = "";
+      q.shuffledOptions.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt';
+        btn.innerHTML = `<span class="dot"></span><span class="txt">${opt.text}</span>`;
+        btn.addEventListener('click', () => answerQuestion(idx));
+        box.appendChild(btn);
+      });
+
+      const fb = $('feedbackBox');
+      fb.className = 'feedback';
+      fb.innerHTML = '';
+
+      if(answers[current]){
+        paintCorrectAnswer(answers[current].selectedIndex);
+        showFeedback(true, `Ya resuelta. Puntaje obtenido: ${answers[current].pointsEarned} puntos.`);
+        $('btnNext').disabled = false;
+      }else{
+        $('btnNext').disabled = true;
+      }
+
+      $('btnNext').textContent = (current === total-1) ? "Finalizar" : "Siguiente";
+      updateMini();
+    }
+
+    function toggleHint(){
+      const p = $('hintPanel');
+      const show = p.classList.toggle('show');
+      $('btnHint').textContent = show ? "Ocultar pista" : "Ver pista";
+    }
+
+    function answerQuestion(selectedIndex){
+      if(answers[current] && answers[current].isCorrect) return;
+
+      const q = questions[current];
+      const picked = q.shuffledOptions[selectedIndex];
+      const optionEls = [...document.querySelectorAll('#optionsBox .opt')];
+
+      if(optionEls[selectedIndex].classList.contains('disabled')) return;
+
+      const isCorrect = !!picked.isCorrect;
+
+      if(isCorrect){
+        const pointsThisQuestion = Math.max(0, 1000 - (wrongTriesByQuestion[current] * 100));
+        totalPoints += pointsThisQuestion;
+
+        answers[current] = {
+          selectedIndex,
+          selectedText: picked.text,
+          isCorrect: true,
+          pointsEarned: pointsThisQuestion,
+          wrongAttempts: wrongTriesByQuestion[current]
+        };
+
+        paintCorrectAnswer(selectedIndex);
+        showFeedback(true, `${q.explanation} Puntaje de esta pregunta: ${pointsThisQuestion} puntos.`);
+        $('btnNext').disabled = false;
+      } else {
+        wrongTriesByQuestion[current] += 1;
+        wrongTriesTotal += 1;
+
+        markWrongAttempt(selectedIndex);
+
+        const remaining = Math.max(0, 1000 - (wrongTriesByQuestion[current] * 100));
+        showFeedback(false, `${q.explanation} Puedes corregir. Esta pregunta ahora vale ${remaining} puntos.`);
+        $('btnNext').disabled = true;
+      }
+
+      updateMini();
+    }
+
+    function markWrongAttempt(selectedIndex){
+      const opts = [...document.querySelectorAll('#optionsBox .opt')];
+      const el = opts[selectedIndex];
+      el.classList.add('selected', 'wrong', 'disabled');
+    }
+
+    function paintCorrectAnswer(selectedIndex){
+      const q = questions[current];
+      const opts = [...document.querySelectorAll('#optionsBox .opt')];
+
+      opts.forEach((el, idx) => {
+        el.classList.add('disabled');
+
+        if(idx === selectedIndex){
+          el.classList.add('selected', 'correct');
+        }
+        if(q.shuffledOptions[idx].isCorrect){
+          el.classList.add('correct');
+        }
+      });
+    }
+
+    function showFeedback(isCorrect, explanation){
+      const fb = $('feedbackBox');
+      fb.className = `feedback ${isCorrect ? 'ok' : 'no'} show`;
+      const title = isCorrect ? rand(okTitles) : rand(badTitles);
+      const tail = isCorrect ? "Bien." : "Sigue.";
+      fb.innerHTML = `
+        <div class="fb-title">${title}</div>
+        <div class="fb-text">${explanation} ${tail}</div>
+      `;
+    }
+
+    function nextQuestion(){
+      if(!answers[current] || !answers[current].isCorrect) return;
+
+      if(current < questions.length - 1){
+        current++;
+        renderQuestion();
+      }else{
+        finishGame();
+      }
+    }
+
+    function updateMini(){
+      $('scoreMini').textContent = `Puntos: ${totalPoints} | Errores: ${wrongTriesTotal}`;
+    }
+
+    // =========================
+    // FINAL
+    // =========================
+    function finishGame(){
+      endAt = new Date();
+
+      const totalQuestions = questions.length;
+      const maxPoints = totalQuestions * 1000; // 8000
+      const pct = Math.round((totalPoints / maxPoints) * 100);
+
+      $('fScore').textContent = `${totalPoints} pts`;
+      $('fPercent').textContent = `${pct}%`;
+      $('fTime').textContent = formatDuration(endAt - startAt);
+      $('fNombre').textContent = player.nombre;
+      $('fNrc').textContent = player.nrc;
+      $('fFechaHora').textContent = formatDateTime(endAt);
+
+      const badge = $('finalBadge');
+      const msg = $('finalMsg');
+
+      if(pct >= 80){
+        badge.className = 'result-chip good';
+        badge.textContent = 'Buen resultado';
+        msg.textContent = `Puntaje obtenido: ${totalPoints} de ${maxPoints} puntos.`;
+      } else if(pct >= 60){
+        badge.className = 'result-chip mid';
+        badge.textContent = 'Resultado medio';
+        msg.textContent = `Puntaje obtenido: ${totalPoints} de ${maxPoints} puntos.`;
+      } else {
+        badge.className = 'result-chip low';
+        badge.textContent = 'Sigue practicando';
+        msg.textContent = `Puntaje obtenido: ${totalPoints} de ${maxPoints} puntos.`;
+      }
+
+      showScreen('screenFinal');
+    }
+
+    function playAgain(){
+      questions = prepareQuestions();
+      current = 0;
+
+      totalPoints = 0;
+      wrongTriesTotal = 0;
+      wrongTriesByQuestion = new Array(questions.length).fill(0);
+      answers = new Array(questions.length).fill(null);
+
+      startAt = new Date();
+      endAt = null;
+
+      $('metaNombre').textContent = player.nombre;
+      $('metaNrc').textContent = player.nrc;
+
+      renderQuestion();
+      showScreen('screenQuiz');
+    }
+
+    function goHome(){
+      if(!confirm('¿Volver al inicio y reiniciar el juego?')) return;
+
+      player = { nombre:"", nrc:"" };
+      questions = [];
+      current = 0;
+      totalPoints = 0;
+      wrongTriesTotal = 0;
+      wrongTriesByQuestion = [];
+      answers = [];
+      startAt = null;
+      endAt = null;
+
+      $('nombre').value = '';
+      $('nrc').value = '';
+      $('errNombre').classList.remove('show');
+      $('errNrc').classList.remove('show');
+
+      showScreen('screenStart');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if($('screenStart').classList.contains('active') && e.key === 'Enter'){
+        startGame();
+      }
+    });
+  </script>
+</body>
+</html>
