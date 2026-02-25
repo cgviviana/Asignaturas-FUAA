@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Marco Teórico en Investigación | Recurso Interactivo</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body{
+      font-family:'Inter', sans-serif;
+      background:#0a0e27;
+      color:#2c3e50;
+      overflow:hidden;
+      height:100vh;
+    }
+
+    /* ===== FORMULARIO DE REGISTRO ===== */
+    .registro-screen{
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .registro-card{
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 30px 80px rgba(0,0,0,0.3);
+      padding:60px 50px;
+      max-width:650px;
+      width:100%;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn{
+      from{ opacity:0; transform:translateY(-30px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    .registro-card h1{
+      color:#667eea;
+      font-family:'Libre Baskerville', serif;
+      font-size:2.1em;
+      margin-bottom:15px;
+      text-align:center;
+    }
+
+    .registro-card .subtitle{
+      color:#666;
+      text-align:center;
+      margin-bottom:36px;
+      font-size:1.02em;
+      line-height:1.6;
+    }
+
+    .form-group{
+      margin-bottom:22px;
+    }
+
+    .form-group label{
+      display:block;
+      font-weight:700;
+      color:#2c3e50;
+      margin-bottom:8px;
+      font-size:0.95em;
+    }
+
+    .form-group input{
+      width:100%;
+      padding:15px;
+      border:2px solid #dfe6e9;
+      border-radius:10px;
+      font-size:1em;
+      font-family:'Inter', sans-serif;
+      transition:all 0.3s;
+      background:#fff;
+    }
+
+    .form-group input:focus{
+      outline:none;
+      border-color:#667eea;
+      box-shadow:0 0 0 4px rgba(102,126,234,0.1);
+    }
+
+    .form-group input::placeholder{
+      color:#bdc3c7;
+    }
+
+    .btn-comenzar{
+      width:100%;
+      background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color:#fff;
+      border:none;
+      padding:18px;
+      font-size:1.05em;
+      font-weight:700;
+      border-radius:10px;
+      cursor:pointer;
+      transition:all 0.3s;
+      margin-top:10px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+    }
+
+    .btn-comenzar:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 30px rgba(102,126,234,0.4);
+    }
+
+    .error-message{
+      color:#e74c3c;
+      font-size:0.9em;
+      margin-top:8px;
+      display:none;
+      font-weight:600;
+    }
+
+    .error-message.show{
+      display:block;
+    }
+
+    /* ===== PRESENTACIÓN ===== */
+    .presentation-wrapper{
+      height:100vh;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:40px;
+    }
+
+    .presentation-wrapper.active{
+      display:flex;
+    }
+
+    .slide{
+      background:#fff;
+      width:100%;
+      max-width:1400px;
+      height:85vh;
+      border-radius:0;
+      box-shadow:0 20px 60px rgba(0,0,0,0.5);
+      display:none;
+      flex-direction:column;
+      position:relative;
+    }
+
+    .slide.active{ display:flex; animation:fadeIn .45s ease; }
+    @keyframes fadeIn{ from{opacity:0; transform:scale(.985);} to{opacity:1; transform:scale(1);} }
+
+    .slide-header{
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      padding:34px 56px;
+      color:#fff;
+      border-bottom:4px solid #e74c3c;
+      flex-shrink:0;
+    }
+    .slide-number{
+      font-size:13px;
+      font-weight:300;
+      letter-spacing:2px;
+      opacity:.85;
+      margin-bottom:8px;
+      text-transform:uppercase;
+    }
+    .slide-title{
+      font-family:'Libre Baskerville', serif;
+      font-size:40px;
+      font-weight:700;
+      line-height:1.2;
+    }
+
+    .slide-content{
+      flex:1;
+      padding:40px 56px;
+      overflow-y:auto;
+      min-height:0;
+    }
+    .slide-content::-webkit-scrollbar{ width:8px; }
+    .slide-content::-webkit-scrollbar-track{ background:#f1f1f1; }
+    .slide-content::-webkit-scrollbar-thumb{ background:#bdc3c7; border-radius:4px; }
+
+    .slide-footer{
+      padding:18px 56px;
+      border-top:1px solid #ecf0f1;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:#fafafa;
+      gap:16px;
+      flex-shrink:0;
+      position:relative;
+    }
+    .progress-indicator{
+      font-size:13px;
+      color:#95a5a6;
+      font-weight:600;
+      white-space:nowrap;
+    }
+    .footer-brand{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:12px;
+      color:#95a5a6;
+      font-weight:600;
+      letter-spacing:0.5px;
+    }
+    .footer-brand strong{
+      color:#667eea;
+      font-weight:800;
+    }
+
+    /* Botones */
+    .btn{
+      padding:12px 26px;
+      border:none;
+      border-radius:4px;
+      font-family:'Inter', sans-serif;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:all .18s ease;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+    .btn-nav{
+      background:transparent;
+      color:#7f8c8d;
+      border:2px solid #bdc3c7;
+    }
+    .btn-nav:hover{ background:#ecf0f1; border-color:#95a5a6; }
+    .btn-primary{
+      background:#e74c3c;
+      color:#fff;
+      border:2px solid #e74c3c;
+    }
+    .btn-primary:hover{
+      background:#c0392b;
+      border-color:#c0392b;
+      transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(231,76,60,.28);
+    }
+    .btn-secondary{
+      background:transparent;
+      color:#3498db;
+      border:2px solid #3498db;
+    }
+    .btn-secondary:hover{ background:#3498db; color:#fff; }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+
+    /* Tipografía */
+    h2{
+      font-family:'Libre Baskerville', serif;
+      font-size:30px;
+      color:#2c3e50;
+      margin-bottom:18px;
+      padding-bottom:10px;
+      border-bottom:3px solid #e74c3c;
+      display:inline-block;
+    }
+    h3{
+      font-family:'Libre Baskerville', serif;
+      font-size:20px;
+      color:#34495e;
+      margin:22px 0 12px;
+    }
+    h4{
+      font-family:'Libre Baskerville', serif;
+      font-size:17px;
+      color:#2c3e50;
+      margin-bottom:10px;
+    }
+    p{
+      font-size:16px;
+      line-height:1.7;
+      color:#2c3e50;
+      margin-bottom:14px;
+    }
+    code{
+      background:#f1f3f4;
+      padding:3px 8px;
+      border-radius:3px;
+      font-family:'Courier New', monospace;
+      color:#e74c3c;
+      font-size:13px;
+    }
+
+    /* Cards */
+    .info-card{
+      background:#ecf9ff;
+      border-left:5px solid #3498db;
+      padding:18px 20px;
+      margin:18px 0;
+    }
+    .info-card-title{
+      font-weight:800;
+      font-size:16.5px;
+      color:#2980b9;
+      margin-bottom:10px;
+    }
+    .warning-card{
+      background:#fff4e6;
+      border-left:5px solid #f39c12;
+      padding:18px 20px;
+      margin:18px 0;
+    }
+    .warning-card-title{
+      font-weight:800;
+      font-size:16.5px;
+      color:#e67e22;
+      margin-bottom:10px;
+    }
+    .success-card{
+      background:#e8f8f5;
+      border-left:5px solid #27ae60;
+      padding:18px 20px;
+      margin:18px 0;
+    }
+    .success-card-title{
+      font-weight:800;
+      font-size:16.5px;
+      color:#27ae60;
+      margin-bottom:10px;
+    }
+
+    /* Listas */
+    .content-list{ list-style:none; padding:0; }
+    .content-list li{
+      padding:8px 0 8px 26px;
+      position:relative;
+      font-size:16px;
+      line-height:1.6;
+      color:#2c3e50;
+    }
+    .content-list li::before{
+      content:"▸";
+      position:absolute;
+      left:0;
+      color:#e74c3c;
+      font-size:18px;
+      font-weight:800;
+    }
+
+    /* Paneles / columnas */
+    .two-columns{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:18px;
+      margin:16px 0;
+      align-items:start;
+    }
+    .panel{
+      background:#f8f9fa;
+      border:1px solid #ecf0f1;
+      border-radius:4px;
+      padding:16px 18px;
+    }
+
+    /* Preguntas */
+    .question-area{
+      background:#f8fbff;
+      border:2px solid rgba(52,152,219,.22);
+      border-radius:4px;
+      padding:16px 18px;
+      margin-top:14px;
+    }
+    .question-title{
+      font-weight:800;
+      font-size:17px;
+      color:#2c3e50;
+      margin-bottom:12px;
+    }
+
+    /* Opción radio */
+    .options-grid{ display:grid; gap:10px; }
+    .option-card{
+      background:#fff;
+      border:2px solid #dfe6e9;
+      border-radius:4px;
+      padding:14px 14px;
+      cursor:pointer;
+      transition:all .15s ease;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .option-card:hover{ border-color:#3498db; background:#f8f9fa; }
+    .option-card.selected{ border-color:#3498db; background:#ecf9ff; }
+    .option-radio{
+      width:18px; height:18px;
+      border:2px solid #bdc3c7;
+      border-radius:50%;
+      position:relative;
+      flex-shrink:0;
+    }
+    .option-card.selected .option-radio{ border-color:#3498db; }
+    .option-card.selected .option-radio::after{
+      content:'';
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:9px; height:9px;
+      background:#3498db;
+      border-radius:50%;
+    }
+    .option-text{ font-size:16px; color:#2c3e50; }
+
+    /* Checkbox cards */
+    .checkbox-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+    }
+    .checkbox-card{
+      background:#fff;
+      border:2px solid #dfe6e9;
+      border-radius:4px;
+      padding:14px 14px;
+      cursor:pointer;
+      transition:all .15s ease;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .checkbox-card:hover{ border-color:#3498db; background:#f8f9fa; }
+    .checkbox-card.selected{ border-color:#3498db; background:#ecf9ff; }
+    .option-checkbox{
+      width:18px; height:18px;
+      border:2px solid #bdc3c7;
+      border-radius:4px;
+      position:relative;
+      flex-shrink:0;
+      background:#fff;
+    }
+    .checkbox-card.selected .option-checkbox{
+      border-color:#3498db;
+      background:#3498db;
+    }
+    .checkbox-card.selected .option-checkbox::after{
+      content:'';
+      position:absolute;
+      top:1px; left:5px;
+      width:5px; height:10px;
+      border:solid #fff;
+      border-width:0 2px 2px 0;
+      transform:rotate(45deg);
+    }
+
+    /* Inputs / textarea */
+    input[type="text"], textarea, select{
+      width:100%;
+      padding:10px 10px;
+      border:2px solid #dfe6e9;
+      border-radius:4px;
+      font-family:'Inter', sans-serif;
+      font-size:14px;
+      transition:border-color .2s;
+      background:#fff;
+      color:#2c3e50;
+      line-height:1.35;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus{
+      outline:none; border-color:#3498db;
+    }
+    textarea{
+      min-height:95px;
+      resize:vertical;
+    }
+
+    /* Tabla */
+    .data-table{
+      width:100%;
+      border-collapse:collapse;
+      border:1px solid #dfe6e9;
+      margin:16px 0;
+    }
+    .data-table th{
+      background:#34495e;
+      color:#fff;
+      padding:12px 12px;
+      text-align:left;
+      font-weight:800;
+      font-size:13.5px;
+    }
+    .data-table td{
+      padding:10px 12px;
+      border-bottom:1px solid #ecf0f1;
+      vertical-align:top;
+      font-size:14.5px;
+      color:#2c3e50;
+    }
+    .data-table tbody tr:nth-child(even){ background:#f8f9fa; }
+
+    /* Feedback */
+    .feedback{
+      padding:14px 16px;
+      border-radius:4px;
+      margin-top:12px;
+      display:none;
+      font-weight:700;
+    }
+    .feedback.show{ display:block; }
+    .feedback.success{ background:#e8f8f5; border-left:5px solid #27ae60; color:#27ae60; }
+    .feedback.error{ background:#fadbd8; border-left:5px solid #e74c3c; color:#c0392b; }
+    .feedback.partial{ background:#fff4e6; border-left:5px solid #f39c12; color:#e67e22; }
+    .feedback-title{ font-weight:900; margin-bottom:6px; }
+    .feedback-text{ font-weight:700; opacity:.95; line-height:1.55; }
+
+    .helper{
+      font-size:13.5px;
+      color:#7f8c8d;
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+    }
+    .helper .icon{ font-size:15px; }
+
+    .btn-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:16px 0;
+    }
+
+    .code-box{
+      background:#f8f9fa;
+      border:1px solid #dfe6e9;
+      border-left:5px solid #3498db;
+      border-radius:4px;
+      padding:14px 16px;
+      font-family:'Courier New', monospace;
+      font-size:14px;
+      line-height:1.7;
+      white-space:pre-wrap;
+      word-break:break-word;
+      margin:14px 0;
+    }
+
+    .example-gray{
+      background:#f2f2f2;
+      border:1px solid #d9d9d9;
+      border-left:5px solid #b3b3b3;
+      border-radius:4px;
+      padding:14px 16px;
+      color:#666;
+      margin:12px 0;
+    }
+    .example-gray strong{ color:#555; }
+
+    .mini-tag{
+      display:inline-block;
+      background:#eef3ff;
+      color:#4b63c4;
+      font-weight:700;
+      border:1px solid #d7dfff;
+      font-size:12px;
+      padding:4px 8px;
+      border-radius:20px;
+      margin-bottom:8px;
+    }
+
+    .completion-card{
+      background:#fff;
+      border-radius:12px;
+      padding:40px;
+      max-width:760px;
+      margin:0 auto;
+      box-shadow:0 10px 40px rgba(0,0,0,0.1);
+    }
+    .completion-icon{
+      width:80px;
+      height:80px;
+      background:#27ae60;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:0 auto 25px;
+      font-size:40px;
+      color:#fff;
+      font-weight:800;
+    }
+
+    .student-data{
+      background:#f8f9fa;
+      border:2px solid #ecf0f1;
+      border-radius:8px;
+      padding:25px;
+      margin:25px 0;
+    }
+    .student-data h3{
+      color:#2c3e50;
+      margin-bottom:18px;
+      font-size:18px;
+    }
+    .data-item{
+      display:flex;
+      padding:12px 0;
+      border-bottom:1px solid #ecf0f1;
+    }
+    .data-item:last-child{ border-bottom:none; }
+    .data-label{
+      font-weight:700;
+      color:#7f8c8d;
+      min-width:170px;
+      font-size:14px;
+    }
+    .data-value{
+      color:#2c3e50;
+      font-weight:600;
+      font-size:15px;
+    }
+
+    .resource-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .resource-row a{
+      text-decoration:none;
+      color:#2c3e50;
+      background:#fff;
+      border:2px solid #dfe6e9;
+      padding:10px 12px;
+      border-radius:4px;
+      font-weight:800;
+      font-size:13px;
+      transition:all .15s ease;
+    }
+    .resource-row a:hover{
+      border-color:#3498db;
+      background:#ecf9ff;
+      transform:translateY(-1px);
+    }
+
+    @media (max-width: 1200px){
+      .slide-title{ font-size:34px; }
+      .two-columns{ grid-template-columns:1fr; }
+      .checkbox-grid{ grid-template-columns:1fr; }
+    }
+    @media (max-width: 768px){
+      .presentation-wrapper{ padding:0; }
+      .slide{ height:100vh; border-radius:0; }
+      .slide-header,.slide-footer{ padding:20px; }
+      .slide-content{ padding:20px; }
+      .slide-title{ font-size:26px; }
+      .registro-card{ padding:40px 30px; }
+      .footer-brand{ display:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ===== PANTALLA DE REGISTRO ===== -->
+  <div class="registro-screen" id="registroScreen">
+    <div class="registro-card">
+      <h1>Marco Teórico en Investigación</h1>
+      <p class="subtitle">Ingresa tus datos para comenzar el recurso interactivo sobre <strong>Antecedentes</strong>, <strong>Bases teóricas</strong> y <strong>Definición de conceptos</strong>.</p>
+
+      <form id="registroForm" onsubmit="return false;">
+        <div class="form-group">
+          <label for="nombreCompleto">Nombre completo *</label>
+          <input type="text" id="nombreCompleto" placeholder="Ingresa tu nombre completo" required>
+          <div class="error-message" id="errorNombre">Por favor ingresa tu nombre completo</div>
+        </div>
+
+        <div class="form-group">
+          <label for="curso">Curso / NRC *</label>
+          <input type="text" id="curso" placeholder="Ejemplo: NRC 12345 o nombre del curso" required>
+          <div class="error-message" id="errorCurso">Por favor ingresa el curso o NRC</div>
+        </div>
+
+        <div class="form-group">
+          <label for="grupo">Grupo *</label>
+          <input type="text" id="grupo" placeholder="Ingresa tu grupo" required>
+          <div class="error-message" id="errorGrupo">Por favor ingresa tu grupo</div>
+        </div>
+
+        <button type="button" class="btn-comenzar" onclick="validarRegistro()">
+          Comenzar Recurso
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== PRESENTACIÓN ===== -->
+  <div class="presentation-wrapper" id="presentationWrapper">
+
+    <!-- SLIDE 1 -->
+    <section class="slide active">
+      <header class="slide-header">
+        <div class="slide-number">INTRODUCCIÓN</div>
+        <h1 class="slide-title">Marco teórico: qué es y para qué sirve</h1>
+      </header>
+
+      <div class="slide-content">
+        <div class="info-card">
+          <div class="info-card-title">Objetivo del recurso</div>
+          <p>Comprender de forma clara y didáctica cómo se desarrolla el <strong>marco teórico</strong> de una investigación usando tres partes: <strong>Antecedentes</strong>, <strong>Bases teóricas</strong> y <strong>Definición de conceptos</strong>.</p>
+        </div>
+
+        <h2>Idea central</h2>
+        <ul class="content-list">
+          <li>El marco teórico es la <strong>base de conocimiento</strong> del trabajo.</li>
+          <li>Sirve para demostrar que investigaste fuentes confiables antes de analizar o proponer soluciones.</li>
+          <li>Ayuda a entender mejor el problema y a usar términos correctos.</li>
+          <li>Se escribe con <strong>claridad</strong>, no copiando textos largos.</li>
+        </ul>
+
+        <div class="warning-card">
+          <div class="warning-card-title">Regla de oro</div>
+          <p><strong>No escribas “bonito”; escribe claro.</strong> Una idea por oración, con palabras simples y relación directa con tu problemática.</p>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div class="progress-indicator">1 de 8</div>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <button class="btn btn-primary" onclick="nextSlide()">COMENZAR →</button>
+      </footer>
+    </section>
+
+    <!-- SLIDE 2 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">ESTRUCTURA</div>
+        <h1 class="slide-title">Las 3 partes del marco teórico</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>¿Cómo se organiza?</h2>
+
+        <div class="two-columns">
+          <div class="panel">
+            <h4>Partes obligatorias (en esta guía)</h4>
+            <ul class="content-list">
+              <li><strong>Antecedentes</strong></li>
+              <li><strong>Bases teóricas</strong></li>
+              <li><strong>Definición de conceptos</strong></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h4>¿Qué evita esta estructura?</h4>
+            <ul class="content-list">
+              <li>Mezclar estudios previos con definiciones</li>
+              <li>Poner teorías sin explicar para qué sirven</li>
+              <li>Hacer un marco teórico desordenado</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="question-area">
+          <div class="question-title">Pregunta rápida: ¿Qué parte responde “qué se ha investigado antes sobre temas parecidos”?</div>
+
+          <div class="options-grid">
+            <div class="option-card" onclick="selectOptionSlide2(this, 'antecedentes')">
+              <div class="option-radio"></div><div class="option-text">Antecedentes</div>
+            </div>
+            <div class="option-card" onclick="selectOptionSlide2(this, 'bases')">
+              <div class="option-radio"></div><div class="option-text">Bases teóricas</div>
+            </div>
+            <div class="option-card" onclick="selectOptionSlide2(this, 'conceptos')">
+              <div class="option-radio"></div><div class="option-text">Definición de conceptos</div>
+            </div>
+          </div>
+
+          <div id="feedback2" class="feedback"></div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">2 de 8</div>
+          <button class="btn btn-primary" onclick="checkSlide2()">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 3 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PARTE 1</div>
+        <h1 class="slide-title">Antecedentes</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>¿Qué son los antecedentes?</h2>
+
+        <div class="info-card">
+          <div class="info-card-title">Definición didáctica</div>
+          <p>Los <strong>antecedentes</strong> son estudios, tesis, artículos o informes que ya investigaron un tema parecido al tuyo.</p>
+        </div>
+
+        <div class="two-columns">
+          <div class="panel">
+            <h4>¿Para qué sirven?</h4>
+            <ul class="content-list">
+              <li>Conocer qué se ha estudiado antes</li>
+              <li>Ver resultados de otros autores</li>
+              <li>Tomar ideas útiles para tu trabajo</li>
+              <li>No empezar desde cero</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h4>¿Qué debo escribir aquí?</h4>
+            <ul class="content-list">
+              <li>Autor o institución (si se conoce)</li>
+              <li>Tema del estudio</li>
+              <li>Hallazgo principal</li>
+              <li>Relación con mi problemática</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Estructura fácil para redactar</h3>
+        <div class="code-box">Autor/año + tema + hallazgo principal + relación con mi trabajo</div>
+
+        <div class="mini-tag">Ejemplo (poner en gris en tu guía)</div>
+        <div class="example-gray">
+          <strong>Ejemplo (EPS):</strong> Un estudio sobre atención en servicios de salud reportó que los retrasos en procesos de entrega afectan la satisfacción del usuario. Este antecedente sirve porque muestra que los tiempos de atención influyen en la percepción del servicio, algo relacionado con la entrega de medicamentos en la EPS.
+        </div>
+
+        <div class="warning-card">
+          <div class="warning-card-title">Error común</div>
+          <p>Poner solo el título del artículo o copiar párrafos completos sin explicar <strong>qué aporta</strong> a tu problema.</p>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">3 de 8</div>
+          <button class="btn btn-primary" onclick="nextSlide()">CONTINUAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 4 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PARTE 2</div>
+        <h1 class="slide-title">Bases teóricas</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>¿Qué son las bases teóricas?</h2>
+
+        <div class="info-card">
+          <div class="info-card-title">Definición didáctica</div>
+          <p>Las <strong>bases teóricas</strong> son ideas, enfoques, modelos o teorías que ayudan a <strong>explicar</strong> tu problemática.</p>
+        </div>
+
+        <div class="warning-card">
+          <div class="warning-card-title">Importante</div>
+          <p>No siempre son teorías complejas. También pueden ser <strong>enfoques</strong> o <strong>modelos sencillos</strong> (por ejemplo: calidad del servicio, gestión de procesos, atención al usuario).</p>
+        </div>
+
+        <h3>¿Qué debe escribir el estudiante?</h3>
+        <ul class="content-list">
+          <li>Qué teoría / enfoque / modelo usará</li>
+          <li>Qué explica esa teoría (en palabras claras)</li>
+          <li>Cómo se aplica a su caso</li>
+        </ul>
+
+        <div class="question-area">
+          <div class="question-title">Actividad: Para el caso “entrega de medicamentos en una EPS”, selecciona SOLO las bases teóricas más pertinentes</div>
+          <div class="checkbox-grid">
+            <div class="checkbox-card" onclick="toggleCheckboxSlide4(this,'calidad_servicio')">
+              <div class="option-checkbox"></div><div class="option-text">Calidad del servicio</div>
+            </div>
+            <div class="checkbox-card" onclick="toggleCheckboxSlide4(this,'gestion_procesos')">
+              <div class="option-checkbox"></div><div class="option-text">Gestión de procesos</div>
+            </div>
+            <div class="checkbox-card" onclick="toggleCheckboxSlide4(this,'atencion_usuario')">
+              <div class="option-checkbox"></div><div class="option-text">Atención al usuario</div>
+            </div>
+            <div class="checkbox-card" onclick="toggleCheckboxSlide4(this,'tabla_periodica')">
+              <div class="option-checkbox"></div><div class="option-text">Tabla periódica</div>
+            </div>
+            <div class="checkbox-card" onclick="toggleCheckboxSlide4(this,'fotosintesis')">
+              <div class="option-checkbox"></div><div class="option-text">Fotosíntesis</div>
+            </div>
+            <div class="checkbox-card" onclick="toggleCheckboxSlide4(this,'orbita_planetas')">
+              <div class="option-checkbox"></div><div class="option-text">Movimiento de planetas</div>
+            </div>
+          </div>
+          <div id="feedback4" class="feedback"></div>
+        </div>
+
+        <div class="mini-tag">Ejemplo (poner en gris en tu guía)</div>
+        <div class="example-gray">
+          <strong>Ejemplo (EPS):</strong> Una base teórica útil es la <strong>calidad del servicio</strong>, porque permite analizar la oportunidad, el cumplimiento y la satisfacción del usuario. También puede usarse <strong>gestión de procesos</strong>, ya que la entrega de medicamentos depende de etapas organizadas.
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">4 de 8</div>
+          <button class="btn btn-primary" onclick="checkSlide4()">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 5 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PARTE 3</div>
+        <h1 class="slide-title">Definición de conceptos</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>¿Qué es esta parte?</h2>
+
+        <div class="info-card">
+          <div class="info-card-title">Definición didáctica</div>
+          <p>Es la sección donde se explican las <strong>palabras clave</strong> del trabajo para que todos entiendan lo mismo.</p>
+        </div>
+
+        <div class="two-columns">
+          <div class="panel">
+            <h4>¿Qué conceptos se eligen?</h4>
+            <ul class="content-list">
+              <li>Los que aparecen en la problemática</li>
+              <li>Los que aparecen en la pregunta problema</li>
+              <li>Los que aparecen en los objetivos</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h4>¿Qué debe incluir cada concepto?</h4>
+            <ul class="content-list">
+              <li>Nombre del concepto</li>
+              <li>Definición (con fuente)</li>
+              <li>Explicación con mis palabras</li>
+              <li>Relación con mi trabajo</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Estructura fácil para redactar cada concepto</h3>
+        <div class="code-box">Concepto + definición (fuente) + explicación con mis palabras + relación con mi trabajo</div>
+
+        <div class="mini-tag">Ejemplo (poner en gris en tu guía)</div>
+        <div class="example-gray">
+          <strong>Oportunidad en el servicio:</strong> se refiere a que la atención se brinde en el tiempo adecuado, sin retrasos que afecten al usuario. En este trabajo, este concepto es importante porque la entrega tardía de medicamentos puede afectar la atención y la continuidad del tratamiento.
+        </div>
+
+        <div class="warning-card">
+          <div class="warning-card-title">Error común</div>
+          <p>Definir demasiados conceptos o poner definiciones sin explicar <strong>por qué ese concepto importa</strong> en tu investigación.</p>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">5 de 8</div>
+          <button class="btn btn-primary" onclick="nextSlide()">CONTINUAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 6 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PROCESO</div>
+        <h1 class="slide-title">Cómo desarrollar el contenido paso a paso</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>Secuencia recomendada</h2>
+
+        <div class="success-card">
+          <div class="success-card-title">Ruta simple de trabajo</div>
+          <ul class="content-list">
+            <li>Revisar problemática, pregunta problema y objetivos</li>
+            <li>Buscar fuentes confiables</li>
+            <li>Separar información en 3 grupos (antecedentes / bases / conceptos)</li>
+            <li>Redactar con tus palabras</li>
+            <li>Conectar todo con tu problemática</li>
+          </ul>
+        </div>
+
+        <div class="question-area">
+          <div class="question-title">Pregunta rápida: ¿Qué paso debe hacerse primero antes de redactar el marco teórico?</div>
+          <div class="options-grid">
+            <div class="option-card" onclick="selectOptionSlide6(this, 'copiar')">
+              <div class="option-radio"></div><div class="option-text">Copiar varias definiciones y luego ordenarlas</div>
+            </div>
+            <div class="option-card" onclick="selectOptionSlide6(this, 'revisar')">
+              <div class="option-radio"></div><div class="option-text">Revisar problemática, pregunta problema y objetivos</div>
+            </div>
+            <div class="option-card" onclick="selectOptionSlide6(this, 'conclusion')">
+              <div class="option-radio"></div><div class="option-text">Escribir conclusiones primero</div>
+            </div>
+          </div>
+          <div id="feedback6" class="feedback"></div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-title">Dónde buscar fuentes (nivel básico)</div>
+          <p>Google Académico, SciELO, Redalyc, repositorios universitarios y páginas institucionales.</p>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">6 de 8</div>
+          <button class="btn btn-primary" onclick="checkSlide6()">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 7 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PLANTILLAS</div>
+        <h1 class="slide-title">Cómo redactar cada parte (formato guía)</h1>
+      </header>
+
+      <div class="slide-content">
+        <h2>Plantillas de apoyo para escribir</h2>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:22%;">Parte</th>
+              <th style="width:34%;">Qué escribir</th>
+              <th style="width:44%;">Plantilla breve</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Antecedentes</strong></td>
+              <td>Autor/institución, tema, hallazgo, relación con mi problema</td>
+              <td><code>Autor/año + tema + hallazgo + relación con mi trabajo</code></td>
+            </tr>
+            <tr>
+              <td><strong>Bases teóricas</strong></td>
+              <td>Teoría/enfoque, qué explica, cómo se aplica al caso</td>
+              <td><code>Teoría + explicación breve + aplicación al caso</code></td>
+            </tr>
+            <tr>
+              <td><strong>Definición de conceptos</strong></td>
+              <td>Concepto, definición (fuente), explicación propia, relación</td>
+              <td><code>Concepto + definición + explicación propia + relación</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Espacio de práctica (opcional)</h3>
+        <div class="two-columns">
+          <div class="panel">
+            <h4>Escribe un antecedente breve</h4>
+            <textarea id="txtAntecedente" placeholder="Autor/año + tema + hallazgo + relación con tu problemática"></textarea>
+          </div>
+          <div class="panel">
+            <h4>Escribe una base teórica breve</h4>
+            <textarea id="txtBase" placeholder="Teoría o enfoque + explicación + aplicación a tu caso"></textarea>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h4>Escribe una definición de concepto breve</h4>
+          <textarea id="txtConcepto" placeholder="Concepto + definición (fuente) + explicación con tus palabras + relación con tu trabajo"></textarea>
+        </div>
+
+        <div class="helper">
+          <span class="icon">💡</span>
+          <div><strong>Consejo:</strong> escribe primero una versión simple. Luego revisa si se entiende y si se relaciona con tu problema.</div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">7 de 8</div>
+          <button class="btn btn-primary" onclick="nextSlide()">FINALIZAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 8 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">CIERRE</div>
+        <h1 class="slide-title">Resumen y checklist final</h1>
+      </header>
+
+      <div class="slide-content">
+        <div class="completion-card">
+          <div class="completion-icon">✓</div>
+
+          <h2 style="text-align:center; color:#27ae60; margin-bottom:10px;">¡Recurso completado!</h2>
+          <p style="text-align:center; color:#7f8c8d; margin-bottom:26px;">
+            Ya tienes una guía clara para desarrollar el marco teórico con sus 3 partes.
+          </p>
+
+          <div class="student-data">
+            <h3>📋 Datos del estudiante</h3>
+            <div class="data-item">
+              <div class="data-label">Nombre:</div>
+              <div class="data-value" id="finalNombre">-</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Curso / NRC:</div>
+              <div class="data-value" id="finalCurso">-</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Grupo:</div>
+              <div class="data-value" id="finalGrupo">-</div>
+            </div>
+          </div>
+
+          <div class="success-card">
+            <div class="success-card-title">✅ Qué debe contener tu marco teórico</div>
+            <ul class="content-list" style="margin:0;">
+              <li><strong>Antecedentes:</strong> estudios previos relacionados</li>
+              <li><strong>Bases teóricas:</strong> teorías/enfoques que explican el problema</li>
+              <li><strong>Definición de conceptos:</strong> términos clave del trabajo</li>
+              <li>Redacción clara, con fuentes confiables y relación con la problemática</li>
+            </ul>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title">Checklist final (para revisar tu trabajo)</div>
+            <ul class="content-list">
+              <li>¿Mi marco teórico está dividido en las 3 partes correctas?</li>
+              <li>¿Cada parte se relaciona con mi problemática?</li>
+              <li>¿Usé fuentes confiables?</li>
+              <li>¿Redacté con mis palabras?</li>
+              <li>¿Expliqué para qué sirve cada información en mi trabajo?</li>
+            </ul>
+          </div>
+
+          <div class="resource-row">
+            <a href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer">Google Académico</a>
+            <a href="https://scielo.org/" target="_blank" rel="noopener noreferrer">SciELO</a>
+            <a href="https://www.redalyc.org/" target="_blank" rel="noopener noreferrer">Redalyc</a>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <div class="progress-indicator">8 de 8</div>
+          <button class="btn btn-primary" onclick="resetAll()">🔄 REINICIAR</button>
+        </div>
+      </footer>
+    </section>
+
+  </div>
+
+  <script>
+    // ===== Variables globales =====
+    let studentData = { nombre:'', curso:'', grupo:'' };
+
+    // ===== Registro =====
+    function validarRegistro(){
+      const nombre = document.getElementById('nombreCompleto').value.trim();
+      const curso = document.getElementById('curso').value.trim();
+      const grupo = document.getElementById('grupo').value.trim();
+
+      let ok = true;
+
+      if(!nombre || nombre.length < 3){
+        document.getElementById('errorNombre').classList.add('show');
+        ok = false;
+      } else document.getElementById('errorNombre').classList.remove('show');
+
+      if(!curso){
+        document.getElementById('errorCurso').classList.add('show');
+        ok = false;
+      } else document.getElementById('errorCurso').classList.remove('show');
+
+      if(!grupo){
+        document.getElementById('errorGrupo').classList.add('show');
+        ok = false;
+      } else document.getElementById('errorGrupo').classList.remove('show');
+
+      if(ok){
+        studentData.nombre = nombre.toUpperCase();
+        studentData.curso = curso.toUpperCase();
+        studentData.grupo = grupo.toUpperCase();
+
+        document.getElementById('registroScreen').style.display = 'none';
+        document.getElementById('presentationWrapper').classList.add('active');
+      }
+    }
+
+    // ===== Navegación slides =====
+    let currentSlide = 0;
+
+    function showSlide(index){
+      const slides = document.querySelectorAll('.slide');
+      slides.forEach((s,i)=>s.classList.toggle('active', i===index));
+      currentSlide = index;
+
+      if(index === 7){
+        document.getElementById('finalNombre').textContent = studentData.nombre || '-';
+        document.getElementById('finalCurso').textContent = studentData.curso || '-';
+        document.getElementById('finalGrupo').textContent = studentData.grupo || '-';
+      }
+    }
+
+    function nextSlide(){
+      const slides = document.querySelectorAll('.slide');
+      if(currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+    }
+
+    function prevSlide(){
+      if(currentSlide > 0) showSlide(currentSlide - 1);
+    }
+
+    // ===== Helpers de feedback =====
+    function showFeedback(id, type, title, message){
+      const fb = document.getElementById(id);
+      fb.className = `feedback ${type} show`;
+      fb.innerHTML = `<div class="feedback-title">${title}</div><div class="feedback-text">${message}</div>`;
+    }
+
+    function clearFeedback(id){
+      const fb = document.getElementById(id);
+      if(!fb) return;
+      fb.className = 'feedback';
+      fb.innerHTML = '';
+    }
+
+    // ===== Slide 2 (radio) =====
+    let selectedSlide2 = null;
+
+    function selectOptionSlide2(el, value){
+      const cards = el.closest('.options-grid').querySelectorAll('.option-card');
+      cards.forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedSlide2 = value;
+      clearFeedback('feedback2');
+    }
+
+    function checkSlide2(){
+      if(!selectedSlide2){
+        showFeedback('feedback2','error','Selecciona una opción','Marca una respuesta antes de verificar.');
+        return;
+      }
+
+      if(selectedSlide2 === 'antecedentes'){
+        showFeedback('feedback2','success','¡Correcto!','Los antecedentes reúnen estudios previos relacionados con tu tema.');
+        setTimeout(()=>nextSlide(), 800);
+      } else if(selectedSlide2 === 'bases'){
+        showFeedback('feedback2','error','Casi','Las bases teóricas explican el problema con teorías o enfoques, pero no responden qué se investigó antes.');
+      } else {
+        showFeedback('feedback2','error','No exactamente','La definición de conceptos aclara términos clave, no resume estudios previos.');
+      }
+    }
+
+    // ===== Slide 4 (checkbox) =====
+    let selectedBases = new Set();
+    const correctBases = new Set(['calidad_servicio','gestion_procesos','atencion_usuario']);
+
+    function toggleCheckboxSlide4(el, value){
+      el.classList.toggle('selected');
+      if(el.classList.contains('selected')) selectedBases.add(value);
+      else selectedBases.delete(value);
+      clearFeedback('feedback4');
+    }
+
+    function checkSlide4(){
+      if(selectedBases.size === 0){
+        showFeedback('feedback4','error','Selecciona opciones','Marca las bases teóricas que consideres pertinentes.');
+        return;
+      }
+
+      const incorrectSelected = [...selectedBases].filter(v => !correctBases.has(v));
+      const correctSelected = [...selectedBases].filter(v => correctBases.has(v));
+
+      if(incorrectSelected.length > 0){
+        showFeedback('feedback4','error','Revisa tu selección','Seleccionaste elementos que no funcionan como bases teóricas para este caso (por ejemplo, temas de otras áreas sin relación).');
+        return;
+      }
+
+      if(correctSelected.length === 3){
+        showFeedback('feedback4','success','¡Muy bien!','Esas opciones sí ayudan a explicar el problema desde enfoques aplicables al servicio en salud.');
+        setTimeout(()=>nextSlide(), 900);
+      } else {
+        showFeedback('feedback4','partial','Vas bien, pero falta','Te falta seleccionar una o más bases teóricas pertinentes.');
+      }
+    }
+
+    // ===== Slide 6 (radio) =====
+    let selectedSlide6 = null;
+
+    function selectOptionSlide6(el, value){
+      const cards = el.closest('.options-grid').querySelectorAll('.option-card');
+      cards.forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedSlide6 = value;
+      clearFeedback('feedback6');
+    }
+
+    function checkSlide6(){
+      if(!selectedSlide6){
+        showFeedback('feedback6','error','Selecciona una opción','Marca una respuesta antes de verificar.');
+        return;
+      }
+
+      if(selectedSlide6 === 'revisar'){
+        showFeedback('feedback6','success','¡Correcto!','Primero se revisan la problemática, la pregunta problema y los objetivos. De ahí salen los temas que vas a investigar.');
+        setTimeout(()=>nextSlide(), 900);
+      } else if(selectedSlide6 === 'copiar'){
+        showFeedback('feedback6','error','No recomendado','Copiar definiciones sin entenderlas genera un marco teórico débil y desordenado.');
+      } else {
+        showFeedback('feedback6','error','Orden incorrecto','Las conclusiones van al final, no antes del marco teórico.');
+      }
+    }
+
+    // ===== Reset =====
+    function resetAll(){
+      if(!confirm('¿Deseas reiniciar el recurso? Se borrarán las respuestas y datos ingresados.')) return;
+
+      // reset variables
+      studentData = { nombre:'', curso:'', grupo:'' };
+      currentSlide = 0;
+      selectedSlide2 = null;
+      selectedSlide6 = null;
+      selectedBases.clear();
+
+      // reset ui
+      document.querySelectorAll('.slide').forEach((s,i)=>s.classList.toggle('active', i===0));
+      document.querySelectorAll('.option-card, .checkbox-card').forEach(c=>c.classList.remove('selected'));
+      document.querySelectorAll('.feedback').forEach(f=>{ f.className='feedback'; f.innerHTML=''; });
+
+      document.getElementById('txtAntecedente').value = '';
+      document.getElementById('txtBase').value = '';
+      document.getElementById('txtConcepto').value = '';
+
+      document.getElementById('nombreCompleto').value = '';
+      document.getElementById('curso').value = '';
+      document.getElementById('grupo').value = '';
+
+      document.getElementById('errorNombre').classList.remove('show');
+      document.getElementById('errorCurso').classList.remove('show');
+      document.getElementById('errorGrupo').classList.remove('show');
+
+      document.getElementById('presentationWrapper').classList.remove('active');
+      document.getElementById('registroScreen').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
