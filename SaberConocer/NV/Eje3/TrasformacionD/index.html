@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Arquitecto Digital — Guía Interactiva</title>
+
+  <!-- ✅ ESTILO COPIADO (tal cual) -->
+  <style>
+    :root{
+      --ink:#0b0b0b;
+      --paper:#fff7d6;
+      --bg1:#ffffff;
+      --bg2:#eef6ff;
+
+      --leftBg:#ffffff;
+      --rightBg:#eef6ff;
+
+      --accent:#2d7dff;
+      --tagExplain:#2d7dff;
+      --tagExample:#ffd400;
+      --check:#20c997;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      min-height:100vh;
+      padding:16px;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255,212,0,.18) 0 18%, transparent 19%),
+        radial-gradient(circle at 72% 22%, rgba(45,125,255,.14) 0 16%, transparent 17%),
+        radial-gradient(circle at 85% 80%, rgba(32,201,151,.12) 0 14%, transparent 15%),
+        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    .app{max-width:1200px;margin:0 auto;display:grid;gap:12px}
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+      gap:10px;
+    }
+    h1{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(16px, 2.2vw, 22px);
+    }
+
+    .sub{
+      margin:0;
+      font-weight:800;
+      font-size:12px;
+      opacity:.85;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+
+    /* ✅ Siempre horizontal */
+    .row{
+      display:flex;
+      gap:12px;
+      align-items:stretch;
+      flex-wrap:nowrap;
+    }
+
+    .panel{
+      border:4px solid var(--ink);
+      border-radius:20px;
+      background:#fff;
+      overflow:hidden;
+      position:relative;
+      flex: 1 1 0;
+      min-width: 320px;
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      background: radial-gradient(circle, rgba(0,0,0,.10) 10%, transparent 11%) 0 0/14px 14px;
+      opacity:.18;
+      pointer-events:none;
+      mix-blend-mode:multiply;
+    }
+    .inner{position:relative;padding:12px;display:grid;gap:10px}
+
+    /* izquierda */
+    .left{background:var(--leftBg)}
+    .listTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:15px;
+    }
+
+    .listBox{
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#fff;
+      padding:8px;
+    }
+    .list{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:grid;
+      gap:0;
+    }
+    .li{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding:10px 8px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .li:not(:last-child){
+      border-bottom:2px solid rgba(11,11,11,.20);
+    }
+    .li.selected{
+      background: #f3f7ff;
+    }
+    .lbl{
+      font-weight:900;
+      line-height:1.2;
+      margin-top:1px;
+    }
+
+    input[type="checkbox"]{
+      width:20px;height:20px;
+      accent-color: var(--check);
+      cursor:pointer;
+      flex:0 0 auto;
+      margin-top:1px;
+    }
+
+    /* derecha */
+    .right{background:var(--rightBg)}
+    .detailTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      font-size:18px;
+      line-height:1.15;
+    }
+    .card{
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#fff;
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .pill{
+      display:inline-block;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      padding:4px 10px;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      width:max-content;
+    }
+    .pill.explain{background:var(--tagExplain); color:#fff;}
+    .pill.example{background:var(--tagExample); color:#0b0b0b;}
+    .pill.task{background:var(--check); color:#fff;}
+
+    .p{
+      margin:0;
+      font-weight:800;
+      line-height:1.35;
+      font-size:14px;
+      white-space:normal;
+    }
+
+    .tip{
+      border:3px dashed var(--ink);
+      border-radius:14px;
+      background:#fffdf2;
+      padding:10px;
+      display:grid;
+      gap:6px;
+    }
+    .tipTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.6px;
+    }
+
+    .formula{
+      border:3px solid var(--ink);
+      border-radius:14px;
+      background:#f4f8ff;
+      padding:10px;
+      font-weight:900;
+      line-height:1.3;
+      font-size:13px;
+    }
+
+    footer{
+      text-align:center;
+      font-weight:800;
+      font-size:13px;
+      padding:8px 0 2px;
+      opacity:.9;
+    }
+
+    .rowWrap{
+      overflow-x:auto;
+      padding-bottom:6px;
+    }
+    .rowWrap::-webkit-scrollbar{height:10px}
+    .rowWrap::-webkit-scrollbar-thumb{background:rgba(0,0,0,.25);border-radius:999px}
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>El Arquitecto Digital</h1>
+        <p class="sub">Apps móviles y dashboards • versión didáctica (sin densidad)</p>
+      </div>
+    </header>
+
+    <div class="rowWrap">
+      <section class="row">
+        <!-- IZQUIERDA -->
+        <div class="panel left">
+          <div class="inner">
+            <p class="listTitle">Ruta</p>
+            <div class="listBox">
+              <ul class="list" id="list"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- DERECHA -->
+        <div class="panel right">
+          <div class="inner">
+            <div class="card">
+              <p class="detailTitle" id="dTitle">Selecciona un tema</p>
+
+              <div>
+                <span class="pill explain">En 1 frase</span>
+                <p class="p" id="dExplain">Haz clic en un tema de la izquierda.</p>
+              </div>
+
+              <div>
+                <span class="pill example">Ejemplo</span>
+                <p class="p" id="dExample">Aquí aparece un ejemplo corto.</p>
+              </div>
+
+              <div>
+                <span class="pill task">Hazlo en 1 minuto</span>
+                <p class="p" id="dTask">Aquí aparece una mini-actividad.</p>
+              </div>
+
+              <div class="tip">
+                <p class="tipTitle">Plantilla express</p>
+                <div class="formula" id="tipFormula">Problema + Usuario + Datos + Solución + Métrica</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ✅ Tu footer abajo -->
+    <footer>@LaProfeVivy</footer>
+  </div>
+
+  <script>
+    // ✅ Contenido basado en PPT + PDF, pero simplificado (menos texto, más ejemplo/acción).
+    // ✅ SIN numeración en la ruta: los labels NO llevan números.
+    const topics = [
+      {
+        id:"mision",
+        label:"La era digital (Explorar • Errar • Resolver)",
+        explain:"No es “usar tecnología”: es resolver problemas reales con pensamiento crítico.",
+        example:"Explorar: ideas • Errar: aprender • Resolver: impacto social/ambiental.",
+        task:"Escribe 1 problema real (una frase) + quién lo sufre + cómo lo medirías (tiempo/costo).",
+        template:"Problema + Usuario + Impacto medible"
+      },
+      {
+        id:"dilema",
+        label:"App móvil vs Dashboard",
+        explain:"App = acción en el bolsillo. Dashboard = decisión con datos (KPIs).",
+        example:"App: capturar pedidos en campo • Dashboard: ver ventas por zona y decidir.",
+        task:"Marca tu idea: ¿necesitas ACCIÓN (app), DECISIÓN (dashboard) o ambas?",
+        template:"Acción → App | Decisión → Dashboard"
+      },
+      {
+        id:"casos",
+        label:"Impacto real en Colombia",
+        explain:"Los casos muestran el “para qué” y qué dato mueve la solución.",
+        example:"Taxis Libres: GPS/seguridad • AgroTIC: mercado/cultivos • COVID-19: KPIs para decisión.",
+        task:"Elige 1 caso y completa: Dato clave → decisión que mejora → beneficio.",
+        template:"Dato clave → Decisión → Beneficio"
+      },
+      {
+        id:"blueprint",
+        label:"Anatomía (las 5 capas)",
+        explain:"Una solución funciona cuando sus capas encajan: personas, datos y tecnología.",
+        example:"Usuarios/Procesos (corazón) • Datos (combustible) • Software (mente) • Redes (autopista) • Hardware (cuerpo).",
+        task:"Escribe tus 5 capas en 5 líneas (sin explicación larga).",
+        template:"Usuarios + Datos + Software + Redes + Hardware"
+      },
+      {
+        id:"requisitos",
+        label:"Requisitos (3 cajas fáciles)",
+        explain:"Define qué hace, cómo se comporta y con qué infraestructura/seguridad.",
+        example:"Funcional: login • No funcional: carga < 5s • Técnico: nube/BD • Seguridad: Ley 1581 + HTTPS.",
+        task:"Escribe 2 por caja: Funcionales (2) + No funcionales (2) + Técnicos/Seguridad (2).",
+        template:"F(2) + NF(2) + Tec/Seg(2)"
+      },
+      {
+        id:"especificaciones",
+        label:"Especificaciones (lo medible)",
+        explain:"Si no es medible, se vuelve discusión. Especifica rendimiento, datos, roles y seguridad.",
+        example:"Carga < 5s • +100 usuarios • actualización cada 5 min • backups diarios • admin vs usuario • bloqueo 3 intentos.",
+        task:"Elige 4 reglas para tu proyecto: Rendimiento + Datos + Roles + Seguridad (1 cada una).",
+        template:"Rendimiento + Datos + Roles + Seguridad"
+      },
+      {
+        id:"ui",
+        label:"UI y maquetación (que se entienda rápido)",
+        explain:"UI es la cara. Maquetación manda: jerarquía, consistencia y espacio (respiro).",
+        example:"App: simple y táctil • Dashboard: lectura rápida de KPIs + filtros + gráficos.",
+        task:"Regla: 1 pantalla = 1 objetivo. Escribe el objetivo de tu pantalla principal + 3 acciones máximo.",
+        template:"Objetivo único + 3 acciones + 1 elemento principal"
+      },
+      {
+        id:"proto",
+        label:"Prototipado y herramientas",
+        explain:"Antes de programar: prototipa para validar UX, detectar errores y ahorrar tiempo/dinero.",
+        example:"Apps: Figma/Marvel/GoodBarber • Dashboards: Power BI/Tableau/Data Studio.",
+        task:"Haz un flujo de 5 pasos (pantallas/vistas) y pruébalo con 1 persona (¿entiende sin explicación?).",
+        template:"Flujo 5 pasos + prueba con 1 usuario"
+      },
+      {
+        id:"hibrida",
+        label:"La solución híbrida (App + Nube + Dashboard)",
+        explain:"App captura en campo, nube procesa seguro, dashboard decide: ciclo infinito de mejora.",
+        example:"Campo → envío en tiempo real → oficina analiza KPIs → decisión → mejora del proceso.",
+        task:"Define tu loop: ¿qué captura la app? ¿qué KPI mira el dashboard? ¿qué acción cambia?",
+        template:"Captura → Procesa → Visualiza → Decide → Mejora"
+      },
+      {
+        id:"seguridad",
+        label:"Balance, seguridad y propósito",
+        explain:"Tecnología con impacto: beneficios reales, pero con retos y ética de datos.",
+        example:"Beneficios: ahorro/decisión • Retos: internet rural/alfabetización/privacidad • Seguridad: MFA + SHA-256 + HTTPS + backups + anti SQLi.",
+        task:"Lista 3 riesgos (infraestructura/alfabetización/seguridad) y 1 mitigación concreta por cada uno.",
+        template:"Riesgo → Mitigación → Responsable"
+      }
+    ];
+
+    const elList = document.getElementById("list");
+    const elTitle = document.getElementById("dTitle");
+    const elExplain = document.getElementById("dExplain");
+    const elExample = document.getElementById("dExample");
+    const elTask = document.getElementById("dTask");
+    const elTipFormula = document.getElementById("tipFormula");
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+    }
+    function setRichText(el, text){
+      el.innerHTML = escapeHtml(text).replaceAll("\n","<br>");
+    }
+
+    function selectItem(id){
+      const t = topics.find(x => x.id === id);
+      if(!t) return;
+
+      [...elList.querySelectorAll(".li")].forEach(li=>{
+        li.classList.toggle("selected", li.dataset.id === id);
+      });
+
+      elTitle.textContent = t.label;
+      setRichText(elExplain, t.explain);
+      setRichText(elExample, t.example);
+      setRichText(elTask, t.task);
+      elTipFormula.textContent = t.template;
+    }
+
+    function render(){
+      elList.innerHTML = "";
+      topics.forEach((t) => {
+        const li = document.createElement("li");
+        li.className = "li";
+        li.dataset.id = t.id;
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.setAttribute("aria-label", `Marcar: ${t.label}`);
+
+        const lbl = document.createElement("div");
+        lbl.className = "lbl";
+        lbl.textContent = t.label; // ✅ SIN numeración
+
+        li.addEventListener("click", (e)=>{
+          if(e.target === cb) return;
+          selectItem(t.id);
+        });
+
+        li.appendChild(cb);
+        li.appendChild(lbl);
+        elList.appendChild(li);
+      });
+
+      selectItem(topics[0].id);
+    }
+
+    render();
+  </script>
+</body>
+</html>
