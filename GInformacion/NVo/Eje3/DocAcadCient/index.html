@@ -1,1 +1,460 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Documentos Académicos — Búsqueda Científica</title>
 
+  <style>
+    :root{
+      --ink:#0b0b0b;
+      --paper:#fff7d6;
+      --bg1:#ffffff;
+      --bg2:#eef6ff;
+
+      --leftBg:#ffffff;
+      --rightBg:#eef6ff;
+
+      --accent:#2d7dff;
+      --tagExplain:#2d7dff;
+      --tagExample:#ffd400;
+      --check:#20c997;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      min-height:100vh;
+      padding:16px;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255,212,0,.18) 0 18%, transparent 19%),
+        radial-gradient(circle at 72% 22%, rgba(45,125,255,.14) 0 16%, transparent 17%),
+        radial-gradient(circle at 85% 80%, rgba(32,201,151,.12) 0 14%, transparent 15%),
+        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    .app{max-width:1200px;margin:0 auto;display:grid;gap:12px}
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+      gap:10px;
+    }
+    h1{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(16px, 2.2vw, 22px);
+    }
+
+    .sub{
+      margin:0;
+      font-weight:800;
+      font-size:12px;
+      opacity:.85;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+
+    .row{display:flex;gap:12px;align-items:stretch;flex-wrap:nowrap;}
+
+    .panel{
+      border:4px solid var(--ink);
+      border-radius:20px;
+      background:#fff;
+      overflow:hidden;
+      position:relative;
+      flex: 1 1 0;
+      min-width: 320px;
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      background: radial-gradient(circle, rgba(0,0,0,.10) 10%, transparent 11%) 0 0/14px 14px;
+      opacity:.18;
+      pointer-events:none;
+      mix-blend-mode:multiply;
+    }
+    .inner{position:relative;padding:12px;display:grid;gap:10px}
+
+    .left{background:var(--leftBg)}
+    .listTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:15px;
+    }
+
+    .listBox{
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#fff;
+      padding:8px;
+    }
+    .list{list-style:none;margin:0;padding:0;display:grid;gap:0;}
+    .li{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding:10px 8px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .li:not(:last-child){border-bottom:2px solid rgba(11,11,11,.20);}
+    .li.selected{background:#f3f7ff;}
+    .lbl{font-weight:900;line-height:1.2;margin-top:1px;}
+
+    input[type="checkbox"]{
+      width:20px;height:20px;
+      accent-color: var(--check);
+      cursor:pointer;
+      flex:0 0 auto;
+      margin-top:1px;
+    }
+
+    .right{background:var(--rightBg)}
+    .detailTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      font-size:18px;
+      line-height:1.15;
+    }
+
+    .card{
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#fff;
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+
+    .pill{
+      display:inline-block;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      padding:4px 10px;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      width:max-content;
+    }
+    .pill.explain{background:var(--tagExplain); color:#fff;}
+    .pill.example{background:var(--tagExample); color:#0b0b0b;}
+    .pill.task{background:var(--check); color:#fff;}
+
+    .p{
+      margin:0;
+      font-weight:800;
+      line-height:1.35;
+      font-size:14px;
+      white-space:normal;
+    }
+
+    .tip{
+      border:3px dashed var(--ink);
+      border-radius:14px;
+      background:#fffdf2;
+      padding:10px;
+      display:grid;
+      gap:6px;
+    }
+    .tipTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.6px;
+    }
+
+    .formula{
+      border:3px solid var(--ink);
+      border-radius:14px;
+      background:#f4f8ff;
+      padding:10px;
+      font-weight:900;
+      line-height:1.3;
+      font-size:13px;
+    }
+
+    footer{
+      text-align:center;
+      font-weight:800;
+      font-size:13px;
+      padding:8px 0 2px;
+      opacity:.9;
+    }
+
+    .rowWrap{overflow-x:auto;padding-bottom:6px;}
+    .rowWrap::-webkit-scrollbar{height:10px}
+    .rowWrap::-webkit-scrollbar-thumb{background:rgba(0,0,0,.25);border-radius:999px}
+
+    .miniGrid{
+      display:grid;
+      gap:8px;
+    }
+    .chipRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .chip{
+      display:inline-block;
+      border:2px solid rgba(11,11,11,.35);
+      border-radius:999px;
+      padding:4px 8px;
+      font-weight:900;
+      font-size:12px;
+      background:#fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Documentos Académicos</h1>
+        <p class="sub">Cómo escribir • cómo buscar ciencia • cómo filtrar calidad</p>
+      </div>
+    </header>
+
+    <div class="rowWrap">
+      <section class="row">
+        <!-- IZQUIERDA -->
+        <div class="panel left">
+          <div class="inner">
+            <p class="listTitle">Ruta</p>
+            <div class="listBox">
+              <ul class="list" id="list"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- DERECHA -->
+        <div class="panel right">
+          <div class="inner">
+            <div class="card">
+              <p class="detailTitle" id="dTitle">Selecciona un tema</p>
+
+              <div class="miniGrid">
+                <span class="pill explain">Idea clave</span>
+                <p class="p" id="dExplain">Haz clic en un tema de la izquierda.</p>
+              </div>
+
+              <div class="miniGrid">
+                <span class="pill example">Ejemplo</span>
+                <p class="p" id="dExample">Aquí aparece un ejemplo corto.</p>
+              </div>
+
+              <div class="miniGrid">
+                <span class="pill task">Hazlo rápido</span>
+                <p class="p" id="dTask">Aquí aparece una mini-actividad.</p>
+              </div>
+
+              <div class="tip">
+                <p class="tipTitle" id="tipTitle">Plantilla express</p>
+                <div class="formula" id="tipFormula">Pregunta + Palabras clave + Base de datos + Filtros + Selección</div>
+              </div>
+
+              <div class="chipRow" id="chips"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ✅ Tu footer abajo -->
+    <footer>Guía de estudio • Ingeniería de Prompt • @LaProfeVivy</footer>
+  </div>
+
+  <script>
+    // ✅ Sin numeración: la ruta ya está en orden.
+    const topics = [
+      {
+        id:"quees",
+        label:"Qué es un documento académico",
+        explain:"Es un texto con objetivo formativo o investigativo que argumenta con fuentes confiables y deja evidencia verificable.",
+        example:"Informe, ensayo, artículo, revisión, monografía, tesis.",
+        task:"Define tu tipo: ¿ensayo argumentativo, informe técnico o artículo? (elige uno y di por qué).",
+        tipTitle:"Plantilla mínima",
+        tip:"Tema + propósito + fuente principal + criterio de evaluación",
+        chips:["Informe","Ensayo","Artículo","Tesis"]
+      },
+      {
+        id:"cientifico",
+        label:"Qué lo vuelve científico",
+        explain:"Lo científico no es “sonar formal”: es método, datos/argumentos revisables, citas claras y (idealmente) revisión por pares.",
+        example:"Un artículo científico describe cómo se obtuvo la evidencia y permite que otro lo verifique.",
+        task:"Escribe tu pregunta en formato investigable: “¿Cómo afecta X a Y en Z contexto?”",
+        tipTitle:"Señales de ciencia",
+        tip:"Método + evidencia + replicabilidad + referencias",
+        chips:["Método","Evidencia","Revisión por pares","Referencias"]
+      },
+      {
+        id:"estructura",
+        label:"Estructura que casi siempre funciona",
+        explain:"Organiza para que el lector entienda rápido: problema, objetivo, método, resultados, discusión y conclusiones.",
+        example:"IMRaD: Introducción • Método • Resultados • Discusión (+ referencias).",
+        task:"Haz tu índice en 6 líneas: Introducción, Marco teórico, Método, Resultados, Discusión, Conclusiones.",
+        tipTitle:"Checklist de secciones",
+        tip:"Título + Resumen + Cuerpo + Referencias",
+        chips:["IMRaD","Resumen/Abstract","Conclusión","Bibliografía"]
+      },
+      {
+        id:"donde",
+        label:"Dónde buscar (públicas vs privadas)",
+        explain:"Primero busca en bases públicas (acceso abierto). Si necesitas más, usa privadas (normalmente con acceso institucional).",
+        example:"Públicas: Google Scholar, PubMed (salud), DOAJ (revistas OA), SciELO/Redalyc.\nPrivadas: Scopus, Web of Science, IEEE Xplore, ACM DL, ScienceDirect, SpringerLink, JSTOR/EBSCO.",
+        task:"Elige 2 públicas y 1 privada para tu tema (según disciplina) y justifica en 1 frase.",
+        tipTitle:"Regla práctica",
+        tip:"Empieza abierto → filtra → luego paga si hace falta",
+        chips:["Públicas","Privadas","Acceso institucional","Open Access"]
+      },
+      {
+        id:"buscar",
+        label:"Cómo buscar sin perder tiempo",
+        explain:"No busques con una sola palabra: usa sinónimos + operadores (AND/OR) + comillas para frases + filtros por año/tema.",
+        example:"(“transformación digital” OR “digital transformation”) AND (educación OR universidad) AND (2020..2025).",
+        task:"Crea tu ecuación: 2 sinónimos de tu tema + 2 variables + 1 contexto.",
+        tipTitle:"Ecuación de búsqueda",
+        tip:"(Tema OR sinónimo) AND (Variable) AND (Contexto)",
+        chips:["AND","OR","\"frase exacta\"","Año"]
+      },
+      {
+        id:"filtrar",
+        label:"Cómo filtrar resultados (lo que sí sirve)",
+        explain:"Filtra por: tipo de documento (artículo/revisión), año, idioma, área, acceso abierto y ‘peer-reviewed’ cuando exista.",
+        example:"Prioriza revisiones sistemáticas y artículos en revistas reconocidas; baja prioridad: blogs/opinión.",
+        task:"Aplica 5 filtros a tu búsqueda: año, tipo, área, idioma, acceso (OA / no OA).",
+        tipTitle:"Filtro rápido",
+        tip:"Año + tipo + área + idioma + calidad",
+        chips:["Revisión","Artículo","Peer-reviewed","Open Access","Idioma"]
+      },
+      {
+        id:"calidad",
+        label:"Cómo evaluar calidad (sin “ruido”)",
+        explain:"Calidad = evidencia + transparencia + reputación. Publicar mucho no basta: importa el impacto (citas).",
+        example:"Índice h (base): combina publicaciones y citas para estimar impacto; sirve para curar fuentes y separar opinión de conocimiento validado.",
+        task:"Elige 1 autor o revista y verifica: ¿tiene citas? ¿en qué revistas publica? ¿hay consistencia en el tema?",
+        tipTitle:"Regla de oro (impacto)",
+        tip:"Relevancia (citas) > volumen (cantidad)",
+        chips:["Citas","Índice h","Revistas","Autoridad"]
+      },
+      {
+        id:"bases",
+        label:"Búsqueda en bases (paso a paso)",
+        explain:"Estrategia estándar: define pregunta → keywords → base adecuada → filtros → lectura rápida → selección final por calidad.",
+        example:"Lectura rápida (screening): título → resumen → conclusiones → método → referencias.",
+        task:"Haz screening de 5 resultados: deja 2 finalistas y anota por qué (1 línea cada uno).",
+        tipTitle:"Ruta de lectura",
+        tip:"Título → Resumen → Método → Resultados → Referencias",
+        chips:["Screening","Resumen","Método","Referencias"]
+      },
+      {
+        id:"citar",
+        label:"Citas, referencias y ética",
+        explain:"Citar da trazabilidad y evita plagio. Usa gestor (Zotero/Mendeley) y un estilo (APA/IEEE/Vancouver) consistente.",
+        example:"Paráfrasis + cita: explicas con tus palabras, pero dejas el autor y año/fuente.",
+        task:"Define tu estilo de citación y crea una bibliografía mínima de 5 fuentes (2 artículos, 1 libro, 1 norma, 1 reporte).",
+        tipTitle:"Regla anti-plagio",
+        tip:"Idea ajena → cita. Texto ajeno literal → comillas + cita",
+        chips:["APA","Zotero","Paráfrasis","Bibliografía"]
+      }
+    ];
+
+    const elList = document.getElementById("list");
+    const elTitle = document.getElementById("dTitle");
+    const elExplain = document.getElementById("dExplain");
+    const elExample = document.getElementById("dExample");
+    const elTask = document.getElementById("dTask");
+    const elTipTitle = document.getElementById("tipTitle");
+    const elTipFormula = document.getElementById("tipFormula");
+    const elChips = document.getElementById("chips");
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+    }
+    function setRichText(el, text){
+      el.innerHTML = escapeHtml(text).replaceAll("\n","<br>");
+    }
+
+    function renderChips(items){
+      elChips.innerHTML = "";
+      (items || []).forEach(t=>{
+        const span = document.createElement("span");
+        span.className = "chip";
+        span.textContent = t;
+        elChips.appendChild(span);
+      });
+    }
+
+    function selectItem(id){
+      const t = topics.find(x => x.id === id);
+      if(!t) return;
+
+      [...elList.querySelectorAll(".li")].forEach(li=>{
+        li.classList.toggle("selected", li.dataset.id === id);
+      });
+
+      elTitle.textContent = t.label;
+      setRichText(elExplain, t.explain);
+      setRichText(elExample, t.example);
+      setRichText(elTask, t.task);
+
+      elTipTitle.textContent = t.tipTitle || "Plantilla express";
+      elTipFormula.textContent = t.tip || "Pregunta + Palabras clave + Base de datos + Filtros + Selección";
+
+      renderChips(t.chips);
+    }
+
+    function render(){
+      elList.innerHTML = "";
+      topics.forEach((t) => {
+        const li = document.createElement("li");
+        li.className = "li";
+        li.dataset.id = t.id;
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.setAttribute("aria-label", `Marcar: ${t.label}`);
+
+        const lbl = document.createElement("div");
+        lbl.className = "lbl";
+        lbl.textContent = t.label; // ✅ sin numeración
+
+        li.addEventListener("click", (e)=>{
+          if(e.target === cb) return;
+          selectItem(t.id);
+        });
+
+        li.appendChild(cb);
+        li.appendChild(lbl);
+        elList.appendChild(li);
+      });
+
+      selectItem(topics[0].id);
+    }
+
+    render();
+  </script>
+</body>
+</html>
