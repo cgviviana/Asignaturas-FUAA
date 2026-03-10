@@ -1,1 +1,986 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patrones y más en el pensamiento algorítmico</title>
+  <style>
+    :root {
+      --bg1: #eef7ff;
+      --bg2: #fff8e7;
+      --card: #ffffff;
+      --text: #24324a;
+      --muted: #5c6e8d;
+      --line: #d9e7f7;
+      --good: #1f9f5a;
+      --bad: #d9534f;
+      --shadow: 0 12px 30px rgba(36, 50, 74, 0.12);
+      --radius: 24px;
+      --accent: #3b82f6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, var(--bg1) 0%, #f8fbff 45%, var(--bg2) 100%);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #7fd7ff, #9cf0c1, #ffe082);
+      border-radius: 30px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0;
+      text-align: center;
+      font-size: clamp(2rem, 4.6vw, 3.4rem);
+      line-height: 1.05;
+    }
+
+    .hero h1 span {
+      display: block;
+      font-size: clamp(1.1rem, 2.8vw, 1.9rem);
+      margin-top: 6px;
+    }
+
+    .levels-bar {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .level-btn {
+      border: 0;
+      border-radius: 18px;
+      padding: 14px 10px;
+      background: rgba(255,255,255,0.9);
+      color: var(--text);
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .level-btn:hover { transform: translateY(-2px); }
+
+    .level-btn.active {
+      background: #ffffff;
+      outline: 3px solid rgba(59,130,246,0.28);
+    }
+
+    .toolbar {
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+      transition: transform 0.15s ease;
+    }
+
+    .button:hover, .choice:hover, .step:hover { transform: translateY(-2px) scale(1.02); }
+    .button:active, .choice:active, .step:active { transform: scale(0.98); }
+
+    .meta {
+      margin-top: 18px;
+      background: rgba(255,255,255,0.88);
+      border-radius: 22px;
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: center;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+    }
+
+    .meta-box {
+      background: #fff;
+      border: 1px solid #edf3fb;
+      border-radius: 18px;
+      padding: 12px 14px;
+      min-height: 72px;
+    }
+
+    .meta-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .meta-value {
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      min-height: 330px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 0 0 14px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #4c6183;
+    }
+
+    .pattern-row, .choices, .steps, .count-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .token, .blank, .step, .count-token {
+      width: 70px;
+      height: 70px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      background: #f4f8ff;
+      border: 3px dashed #d3e3ff;
+    }
+
+    .token, .count-token {
+      border-style: solid;
+      background: #fff;
+    }
+
+    .blank {
+      color: #9aaed1;
+      background: #fff8dc;
+    }
+
+    .choice {
+      min-width: 82px;
+      min-height: 82px;
+      border-radius: 22px;
+      border: none;
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: #f7fbff;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      cursor: pointer;
+      color: var(--text);
+      padding: 8px 12px;
+    }
+
+    .choice.choice-text {
+      font-size: 1rem;
+      min-width: 120px;
+      min-height: 70px;
+    }
+
+    .feedback {
+      min-height: 34px;
+      margin-top: 14px;
+      font-size: 1rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .good { color: var(--good); }
+    .bad { color: var(--bad); }
+
+    .step {
+      width: 88px;
+      height: 88px;
+      background: #fff;
+      flex-direction: column;
+      gap: 6px;
+      text-align: center;
+      padding: 8px;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text);
+    }
+
+    .step span {
+      font-size: 0.82rem;
+      line-height: 1.05;
+      font-weight: 800;
+    }
+
+    .step.done {
+      outline: 4px solid #9fe870;
+      background: #f4ffe9;
+    }
+
+    .big-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      min-height: 110px;
+      text-align: center;
+      line-height: 1.2;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 900;
+      color: #58708e;
+    }
+
+    @media (max-width: 980px) {
+      .levels-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .meta { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .levels-bar { grid-template-columns: 1fr; }
+      .token, .blank, .count-token { width: 60px; height: 60px; font-size: 1.7rem; }
+      .choice { min-width: 72px; min-height: 72px; font-size: 1.5rem; }
+      .choice.choice-text { min-width: 100px; min-height: 64px; font-size: 0.92rem; }
+      .step { width: 76px; height: 76px; }
+      .card { min-height: 290px; }
+      .big-center { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Patrones y más<span>en el pensamiento algorítmico</span></h1>
+
+      <div class="levels-bar" id="levelButtons"></div>
+
+      <div class="toolbar">
+        <button class="button" id="speakBtn">🔊 Instrucciones</button>
+        <button class="button" id="resetBtn">🔄 Reiniciar nivel</button>
+      </div>
+
+      <div class="meta">
+        <div class="meta-box">
+          <div class="meta-label">Nivel activo</div>
+          <div class="meta-value" id="levelTitle"></div>
+        </div>
+        <div class="meta-box">
+          <div class="meta-label">Enfoque</div>
+          <div class="meta-value" id="levelFocus"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div>
+          <h2 id="title1"></h2>
+          <p class="subtitle" id="subtitle1"></p>
+          <div class="pattern-row" id="pattern1Row"></div>
+          <div class="choices" id="pattern1Choices"></div>
+          <div class="feedback" id="pattern1Feedback"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div>
+          <h2 id="title2"></h2>
+          <p class="subtitle" id="subtitle2"></p>
+          <div class="pattern-row" id="pattern2Row"></div>
+          <div class="choices" id="pattern2Choices"></div>
+          <div class="feedback" id="pattern2Feedback"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div>
+          <h2 id="title3"></h2>
+          <p class="subtitle" id="subtitle3"></p>
+          <div class="steps" id="stepsGame"></div>
+          <div class="feedback" id="stepsFeedback"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div>
+          <h2 id="title4"></h2>
+          <p class="subtitle" id="subtitle4"></p>
+          <div class="big-center" id="pattern3Row"></div>
+          <div class="choices" id="pattern3Choices"></div>
+          <div class="feedback" id="pattern3Feedback"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div>
+          <h2 id="title5"></h2>
+          <p class="subtitle" id="subtitle5"></p>
+          <div class="count-row" id="countRow"></div>
+          <div class="choices" id="countChoices"></div>
+          <div class="feedback" id="countFeedback"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div>
+          <h2 id="title6"></h2>
+          <p class="subtitle" id="subtitle6"></p>
+          <div class="pattern-row" id="pattern4Row"></div>
+          <div class="choices" id="pattern4Choices"></div>
+          <div class="feedback" id="pattern4Feedback"></div>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer-note">Aprendiendo con @LaProfeVivy</div>
+  </div>
+
+  <script>
+    const levels = [
+      {
+        key: 0,
+        button: 'Nivel 1',
+        title: 'Nivel 1',
+        focus: 'Patrones simples, orden y conteo visual',
+        instructions: 'Nivel uno. Reconocer patrones básicos, secuencias cortas y conteo visual.',
+        board1: {
+          title: '1. Patrón AB',
+          subtitle: 'Completa la secuencia.',
+          sequence: ['🍎', '🍌', '🍎', '🍌'],
+          answer: '🍎',
+          options: ['🍎', '🍇', '🍉'],
+          okText: 'Correcto.',
+          helpText: 'Observa el cambio entre los dos elementos.',
+          voiceOk: 'Correcto.'
+        },
+        board2: {
+          title: '2. Serie visual',
+          subtitle: 'Encuentra la figura que falta.',
+          sequence: ['🔺', '🟩', '⭐', '🔺', '🟩'],
+          answer: '⭐',
+          options: ['⭐', '🟠', '❤️'],
+          okText: 'Correcto.',
+          helpText: 'Revisa el orden de las figuras.',
+          voiceOk: 'Correcto.'
+        },
+        board3: {
+          title: '3. Orden secuencial',
+          subtitle: 'Selecciona los pasos en orden.',
+          steps: [
+            { icon: '🚰', label: 'Abrir agua' },
+            { icon: '🧼', label: 'Jabón' },
+            { icon: '🫧', label: 'Frotar' },
+            { icon: '👐', label: 'Secar' }
+          ],
+          okFinal: 'Secuencia completada.',
+          okMid: 'Continúa.',
+          bad: 'Ese paso no corresponde todavía.'
+        },
+        board4: {
+          title: '4. Alternancia',
+          subtitle: 'Determina qué sigue.',
+          row: '🐸 🚗 🐸',
+          answer: '🚗',
+          options: ['🚗', '🦋', '🍎'],
+          finalRow: '🐸 🚗 🐸 🚗',
+          okText: 'Correcto.',
+          helpText: 'La secuencia alterna dos elementos.'
+        },
+        board5: {
+          title: '5. Conteo visual',
+          subtitle: 'Cuenta y elige el valor correcto.',
+          items: ['❤️', '❤️', '❤️', '❤️'],
+          answer: '4',
+          options: ['3', '4', '5'],
+          okText: 'Correcto.',
+          helpText: 'Cuenta nuevamente.'
+        },
+        board6: {
+          title: '6. Repetición AAB',
+          subtitle: 'Identifica el siguiente elemento.',
+          sequence: ['🐟', '🐟', '🦀', '🐟', '🐟', '🦀'],
+          answer: '🐟',
+          options: ['🐟', '🦀', '🐙'],
+          okText: 'Correcto.',
+          helpText: 'La regla es dos iguales y uno distinto.',
+          voiceOk: 'Correcto.'
+        }
+      },
+      {
+        key: 1,
+        button: 'Nivel 2',
+        title: 'Nivel 2',
+        focus: 'Patrones de tres elementos y clasificación',
+        instructions: 'Nivel dos. Reconocer reglas, ampliar series y organizar secuencias con mayor precisión.',
+        board1: {
+          title: '1. Patrón ABC',
+          subtitle: 'Completa la secuencia.',
+          sequence: ['🔴', '🟦', '🟨', '🔴', '🟦'],
+          answer: '🟨',
+          options: ['🟨', '🟩', '⭐'],
+          okText: 'Correcto.',
+          helpText: 'La serie repite tres elementos.',
+          voiceOk: 'Correcto.'
+        },
+        board2: {
+          title: '2. Secuencia numérica',
+          subtitle: 'Encuentra el número que falta.',
+          sequence: ['2', '4', '6', '8'],
+          answer: '10',
+          options: ['9', '10', '12'],
+          okText: 'Correcto.',
+          helpText: 'La regla aumenta de dos en dos.',
+          voiceOk: 'Correcto.'
+        },
+        board3: {
+          title: '3. Algoritmo cotidiano',
+          subtitle: 'Ordena la rutina correctamente.',
+          steps: [
+            { icon: '📚', label: 'Abrir cuaderno' },
+            { icon: '✏️', label: 'Escribir' },
+            { icon: '📖', label: 'Revisar' },
+            { icon: '✅', label: 'Entregar' }
+          ],
+          okFinal: 'Secuencia completada.',
+          okMid: 'Continúa.',
+          bad: 'Ese paso todavía no corresponde.'
+        },
+        board4: {
+          title: '4. Serie lógica',
+          subtitle: 'Determina qué sigue.',
+          row: '▲ ▲ ■ ▲ ▲',
+          answer: '■',
+          options: ['■', '▲', '●'],
+          finalRow: '▲ ▲ ■ ▲ ▲ ■',
+          okText: 'Correcto.',
+          helpText: 'Observa grupos repetidos.'
+        },
+        board5: {
+          title: '5. Conteo y elección',
+          subtitle: 'Selecciona el resultado correcto.',
+          items: ['⭐', '⭐', '⭐', '⭐', '⭐', '⭐'],
+          answer: '6',
+          options: ['5', '6', '7'],
+          okText: 'Correcto.',
+          helpText: 'Verifica el total.'
+        },
+        board6: {
+          title: '6. Clasificación por regla',
+          subtitle: 'Elige el elemento que sigue.',
+          sequence: ['A', 'A', 'B', 'A', 'A', 'B'],
+          answer: 'A',
+          options: ['A', 'B', 'C'],
+          okText: 'Correcto.',
+          helpText: 'La regla repite A, A, B.',
+          voiceOk: 'Correcto.'
+        }
+      },
+      {
+        key: 2,
+        button: 'Nivel 3',
+        title: 'Nivel 3',
+        focus: 'Reglas, inferencia y secuencias mixtas',
+        instructions: 'Nivel tres. Inferir reglas, completar series numéricas y analizar secuencias compuestas.',
+        board1: {
+          title: '1. Progresión numérica',
+          subtitle: 'Completa la secuencia.',
+          sequence: ['3', '6', '9', '12'],
+          answer: '15',
+          options: ['14', '15', '18'],
+          okText: 'Correcto.',
+          helpText: 'La regla suma tres.',
+          voiceOk: 'Correcto.'
+        },
+        board2: {
+          title: '2. Patrón mixto',
+          subtitle: 'Identifica el valor faltante.',
+          sequence: ['A1', 'B2', 'C3', 'A1', 'B2'],
+          answer: 'C3',
+          options: ['A3', 'C3', 'B3'],
+          okText: 'Correcto.',
+          helpText: 'Se repite un bloque de tres pares.',
+          voiceOk: 'Correcto.'
+        },
+        board3: {
+          title: '3. Procedimiento',
+          subtitle: 'Ordena correctamente el proceso.',
+          steps: [
+            { icon: '🔍', label: 'Observar' },
+            { icon: '🧠', label: 'Analizar' },
+            { icon: '📝', label: 'Registrar' },
+            { icon: '📌', label: 'Concluir' }
+          ],
+          okFinal: 'Secuencia completada.',
+          okMid: 'Continúa.',
+          bad: 'Ese paso rompe el orden lógico.'
+        },
+        board4: {
+          title: '4. Alternancia doble',
+          subtitle: 'Determina qué sigue.',
+          row: '1 2 1 2 1',
+          answer: '2',
+          options: ['2', '3', '1'],
+          finalRow: '1 2 1 2 1 2',
+          okText: 'Correcto.',
+          helpText: 'Hay alternancia entre dos valores.'
+        },
+        board5: {
+          title: '5. Conteo estructurado',
+          subtitle: 'Cuenta los elementos.',
+          items: ['⬛', '⬛', '⬛', '⬛', '⬛', '⬛', '⬛'],
+          answer: '7',
+          options: ['6', '7', '8'],
+          okText: 'Correcto.',
+          helpText: 'Revisa el total completo.'
+        },
+        board6: {
+          title: '6. Serie AABB',
+          subtitle: 'Encuentra el siguiente término.',
+          sequence: ['X', 'X', 'Y', 'Y', 'X', 'X'],
+          answer: 'Y',
+          options: ['X', 'Y', 'Z'],
+          okText: 'Correcto.',
+          helpText: 'La estructura repite dos y dos.',
+          voiceOk: 'Correcto.'
+        }
+      },
+      {
+        key: 3,
+        button: 'Nivel 4',
+        title: 'Nivel 4',
+        focus: 'Abstracción, patrones algebraicos y procesos',
+        instructions: 'Nivel cuatro. Trabajar regularidades abstractas, relaciones y secuencias de procedimientos.',
+        board1: {
+          title: '1. Secuencia aritmética',
+          subtitle: 'Completa el siguiente valor.',
+          sequence: ['5', '10', '15', '20'],
+          answer: '25',
+          options: ['24', '25', '30'],
+          okText: 'Correcto.',
+          helpText: 'La diferencia entre términos es constante.',
+          voiceOk: 'Correcto.'
+        },
+        board2: {
+          title: '2. Patrón de símbolos',
+          subtitle: 'Selecciona el símbolo que sigue.',
+          sequence: ['◇', '○', '◇', '○', '◇'],
+          answer: '○',
+          options: ['○', '△', '◇'],
+          okText: 'Correcto.',
+          helpText: 'La serie alterna dos símbolos.',
+          voiceOk: 'Correcto.'
+        },
+        board3: {
+          title: '3. Flujo de resolución',
+          subtitle: 'Ordena la estrategia lógica.',
+          steps: [
+            { icon: '❓', label: 'Definir problema' },
+            { icon: '📥', label: 'Recoger datos' },
+            { icon: '⚙️', label: 'Procesar' },
+            { icon: '📤', label: 'Presentar' }
+          ],
+          okFinal: 'Secuencia completada.',
+          okMid: 'Continúa.',
+          bad: 'Ese paso no corresponde en este punto.'
+        },
+        board4: {
+          title: '4. Doble regularidad',
+          subtitle: 'Identifica el siguiente valor.',
+          row: '2 4 6 8',
+          answer: '10',
+          options: ['9', '10', '12'],
+          finalRow: '2 4 6 8 10',
+          okText: 'Correcto.',
+          helpText: 'La secuencia crece con una diferencia fija.'
+        },
+        board5: {
+          title: '5. Conteo lógico',
+          subtitle: 'Selecciona la cantidad correcta.',
+          items: ['●', '●', '●', '●', '●', '●', '●', '●'],
+          answer: '8',
+          options: ['7', '8', '9'],
+          okText: 'Correcto.',
+          helpText: 'Cuenta todos los elementos antes de elegir.'
+        },
+        board6: {
+          title: '6. Secuencia condicional',
+          subtitle: 'Identifica el término siguiente.',
+          sequence: ['P', 'Q', 'Q', 'P', 'Q', 'Q'],
+          answer: 'P',
+          options: ['P', 'Q', 'R'],
+          okText: 'Correcto.',
+          helpText: 'Se repite un bloque de tres términos.',
+          voiceOk: 'Correcto.'
+        }
+      },
+      {
+        key: 4,
+        button: 'Nivel 5',
+        title: 'Nivel 5',
+        focus: 'Pensamiento algorítmico, abstracción y generalización',
+        instructions: 'Nivel cinco. Analizar reglas formales, secuencias abstractas y decisiones algorítmicas.',
+        board1: {
+          title: '1. Progresión formal',
+          subtitle: 'Completa la secuencia.',
+          sequence: ['1', '1', '2', '3', '5'],
+          answer: '8',
+          options: ['7', '8', '9'],
+          okText: 'Correcto.',
+          helpText: 'Cada término depende de los anteriores.',
+          voiceOk: 'Correcto.'
+        },
+        board2: {
+          title: '2. Patrón abstracto',
+          subtitle: 'Elige el término que falta.',
+          sequence: ['AB', 'BA', 'AB', 'BA'],
+          answer: 'AB',
+          options: ['AA', 'AB', 'BB'],
+          okText: 'Correcto.',
+          helpText: 'La secuencia alterna dos bloques.',
+          voiceOk: 'Correcto.'
+        },
+        board3: {
+          title: '3. Diseño de algoritmo',
+          subtitle: 'Ordena el proceso de resolución.',
+          steps: [
+            { icon: '🎯', label: 'Definir objetivo' },
+            { icon: '📚', label: 'Establecer entradas' },
+            { icon: '⚙️', label: 'Aplicar regla' },
+            { icon: '📊', label: 'Evaluar salida' }
+          ],
+          okFinal: 'Secuencia completada.',
+          okMid: 'Continúa.',
+          bad: 'Ese paso no sigue la estructura del algoritmo.'
+        },
+        board4: {
+          title: '4. Inferencia de regla',
+          subtitle: 'Determina qué sigue.',
+          row: '2 3 5 8',
+          answer: '13',
+          options: ['11', '12', '13'],
+          finalRow: '2 3 5 8 13',
+          okText: 'Correcto.',
+          helpText: 'Observa cómo se genera cada término.'
+        },
+        board5: {
+          title: '5. Conteo estructural',
+          subtitle: 'Selecciona el total correcto.',
+          items: ['■', '■', '■', '■', '■', '■', '■', '■', '■'],
+          answer: '9',
+          options: ['8', '9', '10'],
+          okText: 'Correcto.',
+          helpText: 'Cuenta con precisión.'
+        },
+        board6: {
+          title: '6. Repetición modular',
+          subtitle: 'Encuentra el siguiente elemento.',
+          sequence: ['0', '1', '0', '1', '0', '1'],
+          answer: '0',
+          options: ['0', '1', '2'],
+          okText: 'Correcto.',
+          helpText: 'La regla repite un patrón binario.',
+          voiceOk: 'Correcto.'
+        }
+      }
+    ];
+
+    let currentLevel = 0;
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'es-ES';
+      utter.rate = 0.95;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function disableChildren(node) {
+      [...node.children].forEach(child => child.disabled = true);
+    }
+
+    function renderLevelButtons() {
+      const box = document.getElementById('levelButtons');
+      box.innerHTML = '';
+      levels.forEach((level, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'level-btn' + (index === currentLevel ? ' active' : '');
+        btn.textContent = level.button;
+        btn.onclick = () => {
+          currentLevel = index;
+          renderAll();
+        };
+        box.appendChild(btn);
+      });
+    }
+
+    function renderHeader() {
+      const level = levels[currentLevel];
+      document.getElementById('levelTitle').textContent = level.title;      document.getElementById('levelFocus').textContent = level.focus;
+    }
+
+    function setTitles(level) {
+      document.getElementById('title1').textContent = level.board1.title;
+      document.getElementById('subtitle1').textContent = level.board1.subtitle;
+      document.getElementById('title2').textContent = level.board2.title;
+      document.getElementById('subtitle2').textContent = level.board2.subtitle;
+      document.getElementById('title3').textContent = level.board3.title;
+      document.getElementById('subtitle3').textContent = level.board3.subtitle;
+      document.getElementById('title4').textContent = level.board4.title;
+      document.getElementById('subtitle4').textContent = level.board4.subtitle;
+      document.getElementById('title5').textContent = level.board5.title;
+      document.getElementById('subtitle5').textContent = level.board5.subtitle;
+      document.getElementById('title6').textContent = level.board6.title;
+      document.getElementById('subtitle6').textContent = level.board6.subtitle;
+    }
+
+    function renderPatternGame({rowId, choicesId, feedbackId, sequence, answer, options, okText, helpText, voiceOk}) {
+      const row = document.getElementById(rowId);
+      const choices = document.getElementById(choicesId);
+      const feedback = document.getElementById(feedbackId);
+      row.innerHTML = '';
+      choices.innerHTML = '';
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+
+      sequence.forEach(item => {
+        const token = document.createElement('div');
+        token.className = 'token';
+        token.textContent = item;
+        row.appendChild(token);
+      });
+
+      const blank = document.createElement('div');
+      blank.className = 'blank';
+      blank.textContent = '❓';
+      row.appendChild(blank);
+
+      shuffle(options).forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        if (String(option).length > 2 && !/^[\p{Emoji}\p{Extended_Pictographic}\d]+$/u.test(String(option))) {
+          btn.classList.add('choice-text');
+        }
+        btn.textContent = option;
+        btn.onclick = () => {
+          if (option === answer) {
+            blank.textContent = answer;
+            blank.style.borderStyle = 'solid';
+            blank.style.background = '#f1ffea';
+            feedback.textContent = okText;
+            feedback.classList.add('good');
+            speak(voiceOk || 'Correcto.');
+            disableChildren(choices);
+          } else {
+            feedback.textContent = helpText;
+            feedback.classList.add('bad');
+            speak('Revisa la regla.');
+          }
+        };
+        choices.appendChild(btn);
+      });
+    }
+
+    function renderInlinePatternGame(board) {
+      const row = document.getElementById('pattern3Row');
+      const choices = document.getElementById('pattern3Choices');
+      const feedback = document.getElementById('pattern3Feedback');
+      row.textContent = board.row;
+      choices.innerHTML = '';
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+
+      shuffle(board.options).forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        if (String(option).length > 2 && !/^[\p{Emoji}\p{Extended_Pictographic}\d]+$/u.test(String(option))) {
+          btn.classList.add('choice-text');
+        }
+        btn.textContent = option;
+        btn.onclick = () => {
+          if (option === board.answer) {
+            row.textContent = board.finalRow;
+            feedback.textContent = board.okText;
+            feedback.classList.add('good');
+            speak('Correcto.');
+            disableChildren(choices);
+          } else {
+            feedback.textContent = board.helpText;
+            feedback.classList.add('bad');
+            speak('Revisa la secuencia.');
+          }
+        };
+        choices.appendChild(btn);
+      });
+    }
+
+    function renderStepsGame(board) {
+      const container = document.getElementById('stepsGame');
+      const feedback = document.getElementById('stepsFeedback');
+      const correct = board.steps.map(step => step.icon);
+      let current = 0;
+      const steps = shuffle(board.steps);
+
+      container.innerHTML = '';
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+
+      steps.forEach(stepData => {
+        const step = document.createElement('button');
+        step.className = 'step';
+        step.innerHTML = `<div>${stepData.icon}</div><span>${stepData.label}</span>`;
+        step.onclick = () => {
+          if (stepData.icon === correct[current]) {
+            step.classList.add('done');
+            step.disabled = true;
+            current++;
+            speak(stepData.label);
+            if (current === correct.length) {
+              feedback.textContent = board.okFinal;
+              feedback.classList.add('good');
+            } else {
+              feedback.textContent = board.okMid;
+              feedback.classList.add('good');
+            }
+          } else {
+            feedback.textContent = board.bad;
+            feedback.classList.add('bad');
+            speak('Orden incorrecto.');
+          }
+        };
+        container.appendChild(step);
+      });
+    }
+
+    function renderCountGame(board) {
+      const row = document.getElementById('countRow');
+      const choices = document.getElementById('countChoices');
+      const feedback = document.getElementById('countFeedback');
+      row.innerHTML = '';
+      choices.innerHTML = '';
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+
+      board.items.forEach(item => {
+        const token = document.createElement('div');
+        token.className = 'count-token';
+        token.textContent = item;
+        row.appendChild(token);
+      });
+
+      shuffle(board.options).forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'choice choice-text';
+        btn.textContent = option;
+        btn.onclick = () => {
+          if (option === board.answer) {
+            feedback.textContent = board.okText;
+            feedback.classList.add('good');
+            speak('Correcto.');
+            disableChildren(choices);
+          } else {
+            feedback.textContent = board.helpText;
+            feedback.classList.add('bad');
+            speak('Revisa el conteo.');
+          }
+        };
+        choices.appendChild(btn);
+      });
+    }
+
+    function renderAll() {
+      const level = levels[currentLevel];
+      renderLevelButtons();
+      renderHeader();
+      setTitles(level);
+
+      renderPatternGame({
+        rowId: 'pattern1Row',
+        choicesId: 'pattern1Choices',
+        feedbackId: 'pattern1Feedback',
+        ...level.board1
+      });
+
+      renderPatternGame({
+        rowId: 'pattern2Row',
+        choicesId: 'pattern2Choices',
+        feedbackId: 'pattern2Feedback',
+        ...level.board2
+      });
+
+      renderStepsGame(level.board3);
+      renderInlinePatternGame(level.board4);
+      renderCountGame(level.board5);
+
+      renderPatternGame({
+        rowId: 'pattern4Row',
+        choicesId: 'pattern4Choices',
+        feedbackId: 'pattern4Feedback',
+        ...level.board6
+      });
+    }
+
+    document.getElementById('speakBtn').onclick = () => {
+      speak(levels[currentLevel].instructions);
+    };
+
+    document.getElementById('resetBtn').onclick = () => {
+      renderAll();
+      speak('Nivel reiniciado.');
+    };
+
+    renderAll();
+  </script>
+</body>
+</html>
 
