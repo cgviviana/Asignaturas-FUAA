@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego: Descubre cómo funciona</title>
+  <style>
+    :root {
+      --bg: #f7fbff;
+      --panel: #ffffff;
+      --soft: #f2f8ff;
+      --line: #d6e5f8;
+      --text: #1b2b42;
+      --muted: #6a7f99;
+      --blue: #4c8dff;
+      --cyan: #38cfff;
+      --green: #17a673;
+      --red: #d84e63;
+      --yellow: #d28a18;
+      --shadow: 0 14px 34px rgba(31, 52, 84, 0.08);
+      --r1: 30px;
+      --r2: 22px;
+      --r3: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(56,207,255,0.14), transparent 24%),
+        radial-gradient(circle at top right, rgba(76,141,255,0.12), transparent 24%),
+        linear-gradient(180deg, #fcfeff 0%, #f7fbff 100%);
+    }
+
+    .page {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .app {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 28px 22px 18px;
+      text-align: center;
+      border-bottom: 1px solid rgba(27,43,66,0.06);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    h1 {
+      margin: 16px 0 8px;
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      line-height: 1;
+      letter-spacing: -0.06em;
+      font-weight: 900;
+    }
+
+    .hero p {
+      margin: 0 auto;
+      max-width: 38ch;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .content {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--r1);
+      padding: 18px;
+      box-shadow: 0 8px 20px rgba(31, 52, 84, 0.04);
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 1.12rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      color: var(--muted);
+      line-height: 1.5;
+      margin: -4px 0 14px;
+    }
+
+    .pairs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .pair {
+      padding: 16px 10px;
+      border-radius: var(--r2);
+      background: var(--soft);
+      border: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .num {
+      font-size: 1.15rem;
+      font-weight: 900;
+      margin-top: 6px;
+    }
+
+    .arrow {
+      color: var(--blue);
+      font-size: 1rem;
+      font-weight: 900;
+      margin: 8px 0;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+    }
+
+    .step {
+      padding: 16px;
+      border-radius: var(--r2);
+      border: 1px solid var(--line);
+      background: var(--soft);
+    }
+
+    .step h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .step p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .twins {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    input {
+      width: 100%;
+      height: 52px;
+      border-radius: var(--r3);
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      padding: 0 14px;
+      font-size: 1rem;
+      outline: none;
+      transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    input:focus {
+      border-color: rgba(76,141,255,0.42);
+      box-shadow: 0 0 0 5px rgba(76,141,255,0.10);
+    }
+
+    button {
+      height: 52px;
+      padding: 0 18px;
+      border: none;
+      border-radius: var(--r3);
+      font-size: 0.95rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+
+    .primary {
+      color: white;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      box-shadow: 0 10px 22px rgba(76,141,255,0.20);
+    }
+
+    .secondary {
+      color: var(--text);
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .feedback {
+      min-height: 24px;
+      margin-top: 10px;
+      font-size: 0.95rem;
+      font-weight: 900;
+    }
+
+    .ok { color: var(--green); }
+    .bad { color: var(--red); }
+    .warn { color: var(--yellow); }
+
+    .test-grid,
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .panel,
+    .box {
+      padding: 18px;
+      border-radius: var(--r2);
+      background: var(--soft);
+      border: 1px solid var(--line);
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+    }
+
+    .big {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      color: var(--blue);
+      line-height: 1.05;
+      text-align: center;
+    }
+
+    .words {
+      font-size: 1.08rem;
+      font-weight: 900;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .muted {
+      color: var(--muted);
+      line-height: 1.5;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .panel button { width: 100%; margin-top: 10px; }
+
+    .out {
+      margin-top: 12px;
+      min-height: 28px;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .work {
+      margin-top: 10px;
+      padding: 14px;
+      border-radius: 16px;
+      background: white;
+      border: 1px solid var(--line);
+      min-height: 74px;
+      line-height: 1.6;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 760px) {
+      .page { padding: 10px; }
+      .pairs, .twins, .row, .test-grid, .result-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="app">
+      <header class="hero">
+        <div class="badge">Juego de lógica</div>
+        <h1>Descubre cómo funciona</h1>
+        <p>No adivines una fórmula. Mira los ejemplos y sigue las pistas para descubrir qué pasa.</p>
+      </header>
+
+      <section class="content">
+        <section class="card">
+          <h2>Ejemplos</h2>
+          <div class="pairs">
+            <div class="pair"><div class="label">Izquierda</div><div class="num">2</div><div class="arrow">→</div><div class="label">Derecha</div><div class="num">7</div></div>
+            <div class="pair"><div class="label">Izquierda</div><div class="num">4</div><div class="arrow">→</div><div class="label">Derecha</div><div class="num">11</div></div>
+            <div class="pair"><div class="label">Izquierda</div><div class="num">6</div><div class="arrow">→</div><div class="label">Derecha</div><div class="num">15</div></div>
+            <div class="pair"><div class="label">Izquierda</div><div class="num">9</div><div class="arrow">→</div><div class="label">Derecha</div><div class="num">21</div></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Así se descubre</h2>
+          <div class="steps">
+            <div class="step">
+              <h3>1. Primero compara cuánto cambian</h3>
+              <p>Mira los dos primeros ejemplos. De 2 a 4, la izquierda sube 2. De 7 a 11, la derecha sube 4.</p>
+              <div class="twins">
+                <input id="leftChangeInput" type="number" placeholder="La izquierda sube...">
+                <input id="rightChangeInput" type="number" placeholder="La derecha sube...">
+              </div>
+              <button class="secondary" id="checkChangesBtn" style="margin-top:10px; width:100%;">Comprobar</button>
+              <div class="feedback" id="changesFeedback"></div>
+            </div>
+
+            <div class="step">
+              <h3>2. Luego prueba una idea</h3>
+              <p>Si la derecha sube el doble, prueba esto: multiplica el número de la izquierda por 2. ¿Qué sale para 2, 4, 6 y 9?</p>
+              <div class="twins">
+                <input id="doubleInput1" type="text" placeholder="Ejemplo: 4, 8, 12, 18">
+                <button class="secondary" id="checkDoublesBtn">Comprobar</button>
+              </div>
+              <div class="feedback" id="doublesFeedback"></div>
+            </div>
+
+            <div class="step">
+              <h3>3. Mira qué falta</h3>
+              <p>Compara tus resultados con los números de la derecha: 4→7, 8→11, 12→15, 18→21. ¿Cuánto falta siempre?</p>
+              <div class="row">
+                <input id="offsetInput" type="number" placeholder="Falta siempre...">
+                <button class="secondary" id="checkOffsetBtn">Comprobar</button>
+              </div>
+              <div class="feedback" id="offsetFeedback"></div>
+            </div>
+
+            <div class="step">
+              <h3>4. Ahora sí escribe la regla</h3>
+              <p>Completa: número de la derecha = número de la izquierda × ___ y después + ___</p>
+              <div class="twins">
+                <input id="guessA" type="number" placeholder="primero ×">
+                <input id="guessB" type="number" placeholder="después +">
+              </div>
+              <button class="primary" id="verifyRuleBtn" style="margin-top:10px; width:100%;">Verificar regla</button>
+              <div class="feedback" id="ruleFeedback"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card hidden" id="resultCard">
+          <h2>La regla era...</h2>
+          <div class="result-grid">
+            <div class="box">
+              <div class="mini">En palabras</div>
+              <div class="words">Primero multiplica por 2.<br>Después suma 3.</div>
+              <div class="muted">No era para adivinarlo. Era para descubrirlo paso a paso.</div>
+            </div>
+            <div class="box">
+              <div class="mini">Resumen</div>
+              <div class="big">izquierda × 2 + 3</div>
+              <div class="muted">Eso te da el número de la derecha.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card hidden" id="practiceCard">
+          <h2>Ahora practica</h2>
+          <div class="test-grid">
+            <div class="panel">
+              <div class="mini">Si sabes la izquierda</div>
+              <input id="trialInput" type="number" placeholder="Escribe el número de la izquierda">
+              <button class="primary" id="simulateBtn">Calcular la derecha</button>
+              <div class="out" id="trialResult"></div>
+              <div class="work" id="trialProcess">Aquí aparece el paso a paso.</div>
+            </div>
+            <div class="panel">
+              <div class="mini">Si sabes la derecha</div>
+              <input id="targetOutput" type="number" placeholder="Escribe el número de la derecha">
+              <button class="secondary" id="inverseBtn">Calcular la izquierda</button>
+              <div class="out" id="inverseResult"></div>
+              <div class="work" id="inverseProcess">Aquí aparece el paso a paso.</div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const leftChangeInput = document.getElementById('leftChangeInput');
+    const rightChangeInput = document.getElementById('rightChangeInput');
+    const doubleInput1 = document.getElementById('doubleInput1');
+    const offsetInput = document.getElementById('offsetInput');
+    const guessA = document.getElementById('guessA');
+    const guessB = document.getElementById('guessB');
+
+    const checkChangesBtn = document.getElementById('checkChangesBtn');
+    const checkDoublesBtn = document.getElementById('checkDoublesBtn');
+    const checkOffsetBtn = document.getElementById('checkOffsetBtn');
+    const verifyRuleBtn = document.getElementById('verifyRuleBtn');
+    const simulateBtn = document.getElementById('simulateBtn');
+    const inverseBtn = document.getElementById('inverseBtn');
+
+    const changesFeedback = document.getElementById('changesFeedback');
+    const doublesFeedback = document.getElementById('doublesFeedback');
+    const offsetFeedback = document.getElementById('offsetFeedback');
+    const ruleFeedback = document.getElementById('ruleFeedback');
+
+    const resultCard = document.getElementById('resultCard');
+    const practiceCard = document.getElementById('practiceCard');
+
+    const trialInput = document.getElementById('trialInput');
+    const targetOutput = document.getElementById('targetOutput');
+    const trialResult = document.getElementById('trialResult');
+    const inverseResult = document.getElementById('inverseResult');
+    const trialProcess = document.getElementById('trialProcess');
+    const inverseProcess = document.getElementById('inverseProcess');
+
+    function fmt(n) {
+      if (!Number.isFinite(n)) return '—';
+      const v = Math.round(n * 1000) / 1000;
+      return Number.isInteger(v) ? String(v) : String(v);
+    }
+
+    function normalizeList(text) {
+      return text.replace(/\s+/g, '').replace(/;/g, ',');
+    }
+
+    checkChangesBtn.addEventListener('click', () => {
+      const left = Number(leftChangeInput.value);
+      const right = Number(rightChangeInput.value);
+      if (!Number.isFinite(left) || !Number.isFinite(right)) {
+        changesFeedback.innerHTML = '<span class="warn">Escribe los dos cambios.</span>';
+        return;
+      }
+      if (left === 2 && right === 4) {
+        changesFeedback.innerHTML = '<span class="ok">Bien. La izquierda sube 2 y la derecha sube 4.</span>';
+      } else {
+        changesFeedback.innerHTML = '<span class="bad">Revisa los dos primeros ejemplos: 2→4 y 7→11.</span>';
+      }
+    });
+
+    checkDoublesBtn.addEventListener('click', () => {
+      const value = normalizeList(doubleInput1.value);
+      const valid = ['4,8,12,18', '4,8,12,18,'];
+      if (!value) {
+        doublesFeedback.innerHTML = '<span class="warn">Escribe los números.</span>';
+        return;
+      }
+      if (valid.includes(value)) {
+        doublesFeedback.innerHTML = '<span class="ok">Bien. Si duplicas la izquierda sale 4, 8, 12 y 18.</span>';
+      } else {
+        doublesFeedback.innerHTML = '<span class="bad">Prueba duplicar 2, 4, 6 y 9.</span>';
+      }
+    });
+
+    checkOffsetBtn.addEventListener('click', () => {
+      const value = Number(offsetInput.value);
+      if (!Number.isFinite(value)) {
+        offsetFeedback.innerHTML = '<span class="warn">Escribe un número.</span>';
+        return;
+      }
+      if (value === 3) {
+        offsetFeedback.innerHTML = '<span class="ok">Sí. Siempre faltan 3.</span>';
+      } else {
+        offsetFeedback.innerHTML = '<span class="bad">Mira 4→7, 8→11, 12→15 y 18→21.</span>';
+      }
+    });
+
+    verifyRuleBtn.addEventListener('click', () => {
+      const a = Number(guessA.value);
+      const b = Number(guessB.value);
+      if (!Number.isFinite(a) || !Number.isFinite(b)) {
+        ruleFeedback.innerHTML = '<span class="warn">Completa los dos huecos.</span>';
+        return;
+      }
+      if (a === 2 && b === 3) {
+        ruleFeedback.innerHTML = '<span class="ok">Correcto. Descubriste la regla.</span>';
+        resultCard.classList.remove('hidden');
+        practiceCard.classList.remove('hidden');
+      } else {
+        ruleFeedback.innerHTML = '<span class="bad">No. Revisa lo que descubriste en los pasos anteriores.</span>';
+        resultCard.classList.add('hidden');
+        practiceCard.classList.add('hidden');
+      }
+    });
+
+    simulateBtn.addEventListener('click', () => {
+      const left = Number(trialInput.value);
+      if (!Number.isFinite(left)) {
+        trialResult.textContent = 'Escribe un número.';
+        trialProcess.textContent = 'No se pudo calcular.';
+        return;
+      }
+      const doubled = left * 2;
+      const right = doubled + 3;
+      trialResult.textContent = `La derecha es ${fmt(right)}`;
+      trialProcess.textContent = `${fmt(left)} × 2 = ${fmt(doubled)} → ${fmt(doubled)} + 3 = ${fmt(right)}`;
+    });
+
+    inverseBtn.addEventListener('click', () => {
+      const right = Number(targetOutput.value);
+      if (!Number.isFinite(right)) {
+        inverseResult.textContent = 'Escribe un número.';
+        inverseProcess.textContent = 'No se pudo calcular.';
+        return;
+      }
+      const without3 = right - 3;
+      const left = without3 / 2;
+      inverseResult.textContent = `La izquierda es ${fmt(left)}`;
+      inverseProcess.textContent = `${fmt(right)} - 3 = ${fmt(without3)} → ${fmt(without3)} ÷ 2 = ${fmt(left)}`;
+    });
+  </script>
+</body>
+</html>
