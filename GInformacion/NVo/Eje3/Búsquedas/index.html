@@ -1,1 +1,555 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Búsqueda Académica con IA</title>
+  <style>
+    :root{
+      --ink:#0b0b0b;
+      --paper:#fff7d6;
+      --bg1:#ffffff;
+      --bg2:#eef6ff;
+      --leftBg:#ffffff;
+      --rightBg:#eef6ff;
+      --accent:#2d7dff;
+      --tagExplain:#2d7dff;
+      --tagExample:#ffd400;
+      --check:#20c997;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--ink);
+      min-height:100vh;
+      padding:16px;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(255,212,0,.18) 0 18%, transparent 19%),
+        radial-gradient(circle at 72% 22%, rgba(45,125,255,.14) 0 16%, transparent 17%),
+        radial-gradient(circle at 85% 80%, rgba(32,201,151,.12) 0 14%, transparent 15%),
+        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    .app{max-width:1200px;margin:0 auto;display:grid;gap:12px}
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border:4px solid var(--ink);
+      border-radius:18px;
+      background:var(--paper);
+      gap:10px;
+    }
+    h1{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size: clamp(16px, 2.2vw, 22px);
+    }
+
+    .sub{
+      margin:0;
+      font-weight:800;
+      font-size:12px;
+      opacity:.85;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+
+    .row{display:flex;gap:12px;align-items:stretch;flex-wrap:nowrap;}
+
+    .panel{
+      border:4px solid var(--ink);
+      border-radius:20px;
+      background:#fff;
+      overflow:hidden;
+      position:relative;
+      flex: 1 1 0;
+      min-width: 320px;
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      background: radial-gradient(circle, rgba(0,0,0,.10) 10%, transparent 11%) 0 0/14px 14px;
+      opacity:.18;
+      pointer-events:none;
+      mix-blend-mode:multiply;
+    }
+    .inner{position:relative;padding:12px;display:grid;gap:10px}
+
+    .left{background:var(--leftBg)}
+    .listTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:15px;
+    }
+
+    .listBox{
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#fff;
+      padding:8px;
+    }
+    .list{list-style:none;margin:0;padding:0;display:grid;gap:0;}
+    .li{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding:10px 8px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .li:not(:last-child){border-bottom:2px solid rgba(11,11,11,.20);}
+    .li.selected{background:#f3f7ff;}
+    .lbl{font-weight:900;line-height:1.2;margin-top:1px;}
+
+    input[type="checkbox"]{
+      width:20px;height:20px;
+      accent-color: var(--check);
+      cursor:pointer;
+      flex:0 0 auto;
+      margin-top:1px;
+    }
+
+    .right{background:var(--rightBg)}
+    .detailTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      font-size:18px;
+      line-height:1.15;
+    }
+
+    .card{
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#fff;
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+
+    .pill{
+      display:inline-block;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      font-size:12px;
+      padding:4px 10px;
+      border:3px solid var(--ink);
+      border-radius:999px;
+      width:max-content;
+    }
+    .pill.explain{background:var(--tagExplain); color:#fff;}
+    .pill.example{background:var(--tagExample); color:#0b0b0b;}
+    .pill.task{background:var(--check); color:#fff;}
+
+    .p{
+      margin:0;
+      font-weight:800;
+      line-height:1.35;
+      font-size:14px;
+      white-space:normal;
+    }
+
+    .tip{
+      border:3px dashed var(--ink);
+      border-radius:14px;
+      background:#fffdf2;
+      padding:10px;
+      display:grid;
+      gap:6px;
+    }
+    .tipTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.6px;
+    }
+
+    .formula{
+      border:3px solid var(--ink);
+      border-radius:14px;
+      background:#f4f8ff;
+      padding:10px;
+      font-weight:900;
+      line-height:1.3;
+      font-size:13px;
+    }
+
+    footer{
+      text-align:center;
+      font-weight:800;
+      font-size:13px;
+      padding:8px 0 2px;
+      opacity:.9;
+    }
+
+    .rowWrap{overflow-x:auto;padding-bottom:6px;}
+    .rowWrap::-webkit-scrollbar{height:10px}
+    .rowWrap::-webkit-scrollbar-thumb{background:rgba(0,0,0,.25);border-radius:999px}
+
+    .miniGrid{display:grid;gap:8px;}
+    .chipRow{display:flex;flex-wrap:wrap;gap:6px;}
+    .chip{
+      display:inline-block;
+      border:2px solid rgba(11,11,11,.35);
+      border-radius:999px;
+      padding:4px 8px;
+      font-weight:900;
+      font-size:12px;
+      background:#fff;
+    }
+
+    .subWrap{
+      display:grid;
+      gap:8px;
+      border:3px solid var(--ink);
+      border-radius:16px;
+      background:#f8fbff;
+      padding:10px;
+    }
+    .subBlockTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.6px;
+    }
+    .subBtnRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .subBtn{
+      border:3px solid var(--ink);
+      border-radius:999px;
+      background:#fff;
+      padding:6px 10px;
+      font-weight:900;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .subBtn.active{
+      background:#dceaff;
+    }
+    .subCard{
+      border:3px solid var(--ink);
+      border-radius:14px;
+      background:#fff;
+      padding:10px;
+      display:grid;
+      gap:8px;
+    }
+    .subCardTitle{
+      margin:0;
+      font-weight:1000;
+      text-transform:uppercase;
+      font-size:13px;
+      letter-spacing:.5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Búsqueda Académica con IA</h1>
+        <p class="sub">Gratis • pago • cómo buscar • filtros • asistentes IA</p>
+      </div>
+    </header>
+
+    <div class="rowWrap">
+      <section class="row">
+        <div class="panel left">
+          <div class="inner">
+            <p class="listTitle">Pasos</p>
+            <div class="listBox">
+              <ul class="list" id="list"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel right">
+          <div class="inner">
+            <div class="card">
+              <p class="detailTitle" id="dTitle">Selecciona un tema</p>
+
+              <div class="miniGrid">
+                <span class="pill explain">Idea clave</span>
+                <p class="p" id="dExplain">Haz clic en un tema de la izquierda.</p>
+              </div>
+
+              <div class="miniGrid">
+                <span class="pill example">Ejemplo</span>
+                <p class="p" id="dExample">Aquí aparece un ejemplo corto.</p>
+              </div>
+
+              <div class="miniGrid">
+                <span class="pill task">Hazlo rápido</span>
+                <p class="p" id="dTask">Aquí aparece una mini-actividad.</p>
+              </div>
+
+              <div class="tip">
+                <p class="tipTitle" id="tipTitle">Plantilla express</p>
+                <div class="formula" id="tipFormula">Pregunta + Palabras clave + Herramienta + Filtros + Selección</div>
+              </div>
+
+              <div class="subWrap" id="subWrap" style="display:none;">
+                <p class="subBlockTitle" id="subBlockTitle">Herramientas</p>
+                <div class="subBtnRow" id="subBtnRow"></div>
+                <div class="subCard" id="subCard">
+                  <p class="subCardTitle" id="subCardTitle">Selecciona una herramienta</p>
+                  <p class="p" id="subExplain">Aquí aparecerá cómo usar la herramienta.</p>
+                  <p class="p" id="subExample">Aquí aparecerá un ejemplo aplicado.</p>
+                  <p class="p" id="subTask">Aquí aparecerá una acción rápida.</p>
+                </div>
+              </div>
+
+              <div class="chipRow" id="chips"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>Guía de estudio • Búsqueda académica con IA • @LaProfeVivy</footer>
+  </div>
+
+  <script>
+    const topics = [
+      {
+        id:"gratis",
+        label:"Dónde buscar gratis",
+        explain:"Empieza por herramientas abiertas o de uso básico. Sirven para explorar el tema, encontrar artículos y ubicar palabras clave sin entrar todavía a opciones más complejas.",
+        example:"Google Scholar para búsqueda amplia; PubMed para salud; SciELO y DOAJ para acceso abierto; ERIC para educación.",
+        task:"Elige 2 herramientas gratuitas para tu tema y di con cuál empezarías.",
+        tipTitle:"Idea rápida",
+        tip:"Primero abierto, luego especializado",
+        chips:["Google Scholar","PubMed","SciELO","DOAJ","ERIC"]
+      },
+      {
+        id:"pago",
+        label:"Dónde buscar de pago",
+        explain:"Las bases de pago sirven cuando necesitas mejores filtros, rastreo de citas, cobertura más curada o acceso por universidad. No son el primer paso para todo, pero sí son útiles cuando ya afinaste la búsqueda.",
+        example:"Scopus y Web of Science para análisis de citas y seguimiento de literatura; IEEE Xplore para ingeniería y tecnología.",
+        task:"Decide si tu necesidad es exploración o precisión. Si es precisión, aquí tiene más sentido entrar.",
+        tipTitle:"Úsalas cuando",
+        tip:"Necesites precisión, métricas o acceso institucional",
+        chips:["Scopus","Web of Science","IEEE Xplore","Institucional"]
+      },
+      {
+        id:"buscar",
+        label:"Cómo hacer la búsqueda",
+        explain:"No busques con una sola palabra. Busca por ideas. Junta sinónimos y conceptos con AND y OR para que la búsqueda te devuelva resultados útiles y no ruido.",
+        example:"(teletrabajo OR \"remote work\") AND (productividad OR productivity) AND universidad.",
+        task:"Escribe tu ecuación con 1 tema, 1 variable y 1 contexto.",
+        tipTitle:"Plantilla",
+        tip:"(Tema OR sinónimo) AND (variable) AND (contexto)",
+        chips:["AND","OR","Sinónimos","Comillas"]
+      },
+      {
+        id:"filtrar",
+        label:"Cómo filtrar rápido",
+        explain:"Después de buscar, limpia el ruido. Los filtros más útiles suelen ser año, tipo de documento, idioma y área. Primero abre la búsqueda; después la depuras.",
+        example:"Deja solo artículos y revisiones de 2020 a 2026, en español o inglés, del área que te interesa.",
+        task:"Aplica 4 filtros a tu búsqueda y mira cuál te mejora más los resultados.",
+        tipTitle:"Orden fácil",
+        tip:"Año + tipo + idioma + área",
+        chips:["Año","Artículo","Revisión","Idioma","Área"]
+      },
+      {
+        id:"asistentes",
+        label:"Asistentes de investigación IA",
+        explain:"Aquí la IA sí es el centro. Estas herramientas no sustituyen la lectura académica, pero sí ayudan a buscar más rápido, resumir, comparar estudios y decidir qué leer primero. La clave es usarlas como apoyo y luego verificar en la fuente original.",
+        example:"Puedes usarlas para transformar una pregunta en búsqueda, revisar rápidamente varios papers o comprobar si una afirmación está bien respaldada.",
+        task:"Entra al submenú y elige la herramienta según tu tarea: buscar, resumir, contrastar o seguir citas.",
+        tipTitle:"Cómo pensarlas",
+        tip:"La herramienta cambia según la tarea, no al revés",
+        chips:["Buscar","Resumir","Comparar","Citas"],
+        subtopics:[
+          {
+            id:"consensus",
+            label:"Consensus",
+            title:"Consensus: para preguntar en lenguaje natural",
+            explain:"Úsala cuando quieras hacer una pregunta directa y obtener una síntesis apoyada en literatura revisada por pares. Es especialmente útil para empezar rápido, ver estudios relevantes y después aplicar filtros por fecha, tipo de estudio o población.",
+            example:"Pregunta útil: '¿Qué dice la evidencia sobre burnout en docentes universitarios desde 2020?'. Luego revisa los papers que sustenta la respuesta y filtra por años o diseño.",
+            task:"Haz una pregunta concreta, revisa la síntesis y abre al menos 2 estudios fuente antes de sacar conclusiones."
+          },
+          {
+            id:"elicit",
+            label:"Elicit",
+            title:"Elicit: para explorar cuando no tienes keywords claras",
+            explain:"Úsala cuando tu tema todavía está abierto o no conoces bien los términos de búsqueda. Funciona bien para convertir preguntas amplias en hallazgos, agrupar papers y comparar información en tablas.",
+            example:"Pregunta útil: '¿Cómo afecta la fatiga digital al aprendizaje universitario?'. Elicit te ayuda a encontrar estudios aunque no uses exactamente las mismas palabras que aparecen en los papers.",
+            task:"Empieza con tu pregunta natural, luego refínala y compara una pequeña tabla con autor, método y hallazgo principal."
+          },
+          {
+            id:"scite",
+            label:"Scite",
+            title:"Scite: para verificar cómo se cita una afirmación",
+            explain:"Úsala cuando ya tengas una idea, un paper o una afirmación y quieras ver si otros estudios la apoyan, la contradicen o solo la mencionan. Aquí la fortaleza está en la validación y el contexto de la cita.",
+            example:"Si encuentras una afirmación como 'la gamificación mejora el rendimiento', Scite te sirve para revisar cómo ha sido citada esa evidencia en otros trabajos.",
+            task:"Toma una afirmación de tu tema y revisa si las citas la apoyan, la discuten o solo la nombran."
+          },
+          {
+            id:"semantic",
+            label:"Semantic Scholar",
+            title:"Semantic Scholar: para descubrir papers relacionados rápido",
+            explain:"Úsala cuando quieras explorar un campo, encontrar artículos relacionados y decidir qué leer primero. Es buena para descubrimiento, recomendaciones y lectura inicial rápida con resúmenes cortos.",
+            example:"Buscas un paper útil, entras a su página y desde ahí sigues papers relacionados, citas, autores y resúmenes breves para ampliar la revisión.",
+            task:"Localiza un paper semilla y desde ahí abre 3 relacionados para ampliar tu mapa del tema."
+          }
+        ]
+      },
+      {
+        id:"ruta",
+        label:"Ruta simple final",
+        explain:"La ruta corta queda así: define tu tema, entra a una herramienta abierta, escribe una buena búsqueda, filtra resultados y usa un asistente IA para acelerar la comparación o la exploración. Luego valida todo en la fuente original.",
+        example:"1) Tema claro. 2) Base abierta o académica. 3) Ecuación de búsqueda. 4) Filtros. 5) Asistente IA. 6) Verificación final.",
+        task:"Haz la ruta completa con un tema real y quédate con 3 fuentes útiles y revisadas.",
+        tipTitle:"Secuencia práctica",
+        tip:"Tema + base + búsqueda + filtros + IA + verificación",
+        chips:["Tema","Base","Filtros","IA","Verificación"]
+      }
+    ];
+
+    const elList = document.getElementById("list");
+    const elTitle = document.getElementById("dTitle");
+    const elExplain = document.getElementById("dExplain");
+    const elExample = document.getElementById("dExample");
+    const elTask = document.getElementById("dTask");
+    const elTipTitle = document.getElementById("tipTitle");
+    const elTipFormula = document.getElementById("tipFormula");
+    const elChips = document.getElementById("chips");
+    const elSubWrap = document.getElementById("subWrap");
+    const elSubBlockTitle = document.getElementById("subBlockTitle");
+    const elSubBtnRow = document.getElementById("subBtnRow");
+    const elSubCardTitle = document.getElementById("subCardTitle");
+    const elSubExplain = document.getElementById("subExplain");
+    const elSubExample = document.getElementById("subExample");
+    const elSubTask = document.getElementById("subTask");
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+    }
+
+    function setRichText(el, text){
+      el.innerHTML = escapeHtml(text).replaceAll("\n","<br>");
+    }
+
+    function renderChips(items){
+      elChips.innerHTML = "";
+      (items || []).forEach(t=>{
+        const span = document.createElement("span");
+        span.className = "chip";
+        span.textContent = t;
+        elChips.appendChild(span);
+      });
+    }
+
+    function renderSubtopics(topic){
+      if(!topic.subtopics || !topic.subtopics.length){
+        elSubWrap.style.display = "none";
+        elSubBtnRow.innerHTML = "";
+        return;
+      }
+
+      elSubWrap.style.display = "grid";
+      elSubBlockTitle.textContent = "Cómo se usa en cada herramienta";
+      elSubBtnRow.innerHTML = "";
+
+      topic.subtopics.forEach((s, index) => {
+        const btn = document.createElement("button");
+        btn.className = "subBtn";
+        btn.type = "button";
+        btn.textContent = s.label;
+        btn.addEventListener("click", ()=> selectSubtopic(topic, s.id));
+        if(index === 0) btn.classList.add("active");
+        elSubBtnRow.appendChild(btn);
+      });
+
+      selectSubtopic(topic, topic.subtopics[0].id);
+    }
+
+    function selectSubtopic(topic, subId){
+      const s = (topic.subtopics || []).find(x => x.id === subId);
+      if(!s) return;
+
+      [...elSubBtnRow.querySelectorAll(".subBtn")].forEach(btn=>{
+        btn.classList.toggle("active", btn.textContent === s.label);
+      });
+
+      elSubCardTitle.textContent = s.title;
+      setRichText(elSubExplain, s.explain);
+      setRichText(elSubExample, "Ejemplo: " + s.example);
+      setRichText(elSubTask, "Hazlo así: " + s.task);
+    }
+
+    function selectItem(id){
+      const t = topics.find(x => x.id === id);
+      if(!t) return;
+
+      [...elList.querySelectorAll(".li")].forEach(li=>{
+        li.classList.toggle("selected", li.dataset.id === id);
+      });
+
+      elTitle.textContent = t.label;
+      setRichText(elExplain, t.explain);
+      setRichText(elExample, t.example);
+      setRichText(elTask, t.task);
+      elTipTitle.textContent = t.tipTitle || "Plantilla express";
+      elTipFormula.textContent = t.tip || "Pregunta + Palabras clave + Herramienta + Filtros + Selección";
+      renderChips(t.chips);
+      renderSubtopics(t);
+    }
+
+    function render(){
+      elList.innerHTML = "";
+      topics.forEach((t) => {
+        const li = document.createElement("li");
+        li.className = "li";
+        li.dataset.id = t.id;
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.setAttribute("aria-label", `Marcar: ${t.label}`);
+
+        const lbl = document.createElement("div");
+        lbl.className = "lbl";
+        lbl.textContent = t.label;
+
+        li.addEventListener("click", (e)=>{
+          if(e.target === cb) return;
+          selectItem(t.id);
+        });
+
+        li.appendChild(cb);
+        li.appendChild(lbl);
+        elList.appendChild(li);
+      });
+
+      selectItem(topics[0].id);
+    }
+
+    render();
+  </script>
+</body>
+</html>
 
