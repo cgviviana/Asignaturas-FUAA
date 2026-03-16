@@ -4,258 +4,276 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arma el diagrama - Preparar un huevo</title>
+  <title>Diagramas de flujo por arrastre</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       background: #efefef;
-      color: #475569;
+      color: #334155;
     }
     .page {
-      max-width: 1200px;
+      max-width: 1180px;
       margin: 0 auto;
-      padding: 14px;
+      padding: 12px;
     }
-    .title {
+    .header {
       text-align: center;
-      font-size: 34px;
+      font-size: 32px;
       font-weight: 700;
       color: #475569;
       margin: 8px 0 14px;
     }
-    .topbar {
-      background: #4c5b68;
-      color: white;
-      padding: 12px;
-      border-radius: 14px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .badge {
-      background: white;
-      color: #475569;
-      border: 2px solid #64748b;
-      border-radius: 999px;
-      padding: 10px 16px;
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .screen-card {
-      border: 2px solid #cbd5e1;
-      background: #f8f8f8;
-      border-radius: 26px;
-      padding: 18px;
-    }
-    .center { text-align: center; }
-    .big {
-      font-size: 34px;
-      font-weight: 700;
-      color: #475569;
-      margin-bottom: 8px;
-    }
-    .sub {
+    .footer {
+      text-align: center;
       font-size: 20px;
       color: #6b7280;
-      line-height: 1.35;
+      margin: 18px 0 8px;
     }
-    .level-buttons {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-top: 20px;
+
+    .topbar {
+      background: #4c5b68;
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 14px;
     }
-    .level-btn {
+    .top-chip {
+      background: #f8fafc;
       border: 2px solid #94a3b8;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .panel {
+      background: #f8f8f8;
+      border: 2px solid #cbd5e1;
       border-radius: 22px;
+      padding: 16px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .mode-btn {
+      border: 2px solid #94a3b8;
+      border-radius: 18px;
       padding: 18px;
       font-size: 28px;
       font-weight: 700;
       color: white;
       cursor: pointer;
-      min-height: 110px;
+      min-height: 100px;
     }
     .btn-blue { background: #42A5F5; }
-    .btn-pink { background: #EC407A; }
-    .btn-orange { background: #FFA726; }
     .btn-green { background: #66BB6A; }
-    .btn-purple { background: #AB47BC; }
-    .footer {
-      text-align: center;
-      font-size: 22px;
-      color: #6b7280;
-      margin: 18px 0 8px;
+    .btn-orange { background: #FFA726; }
+    .btn-pink { background: #EC407A; }
+    .btn-purple { background: #8B5CF6; }
+
+    .problem-list {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
     }
-    .stage-row {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
+    .problem-card {
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 10px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #64748b;
+      line-height: 1.25;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       margin-bottom: 14px;
     }
-    .stage {
-      border: 2px solid #cbd5e1;
+    .stat {
       background: white;
-      color: #64748b;
-      border-radius: 999px;
-      padding: 10px 16px;
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .stage.active {
-      background: #fff7cc;
-      border-color: #475569;
-      color: #334155;
-    }
-    .info-strip {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-    .info-card {
       border: 2px solid #cbd5e1;
-      background: white;
-      border-radius: 20px;
-      padding: 12px;
+      border-radius: 14px;
+      padding: 10px;
       text-align: center;
     }
-    .info-card .label {
-      font-size: 16px;
-      color: #6b7280;
-      margin-bottom: 4px;
+    .stat .label {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 2px;
     }
-    .info-card .value {
+    .stat .value {
       font-size: 28px;
       font-weight: 700;
       color: #475569;
+      line-height: 1.15;
     }
+
     .main-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 14px;
     }
-    .panel {
-      border: 2px solid #cbd5e1;
-      background: #f8f8f8;
-      border-radius: 24px;
-      padding: 16px;
-      min-height: 760px;
-    }
-    .panel-title {
+
+    .section-title {
       text-align: center;
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       color: #475569;
       margin-bottom: 12px;
     }
 
+    .flow-wrap {
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 18px;
+      padding: 16px;
+      min-height: 760px;
+      overflow: auto;
+    }
+
+    .tray-wrap {
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 520px;
+    }
     .tray {
       display: grid;
-      gap: 12px;
+      gap: 10px;
       align-content: start;
     }
     .piece {
+      background: #ffffff;
+      border: 2px solid #94a3b8;
+      border-radius: 16px;
+      padding: 12px;
       cursor: grab;
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
       user-select: none;
-      transition: transform .15s ease, box-shadow .15s ease;
     }
-    .piece:hover { transform: scale(1.02); }
-    .piece.used { opacity: .25; pointer-events: none; }
-    .shape {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #334155;
-      font-weight: 700;
-      font-size: 19px;
-      line-height: 1.2;
-      padding: 8px;
-      margin: 0 auto;
-      border: 3px solid #555;
-      background: white;
-      min-height: 84px;
-      max-width: 250px;
+    .piece:hover { transform: scale(1.01); }
+    .piece.selected {
+      box-shadow: 0 0 0 5px rgba(66, 165, 245, 0.20);
+      border-color: #42A5F5;
     }
-    .start-end {
-      width: 220px;
+    .piece.used {
+      opacity: .28;
+      pointer-events: none;
+    }
+    .piece-type {
+      display: inline-block;
       border-radius: 999px;
-      background: #eaf8ff;
-    }
-    .io {
-      width: 230px;
-      background: #fff1f1;
-      clip-path: polygon(12% 0%, 100% 0%, 88% 100%, 0% 100%);
-    }
-    .process {
-      width: 230px;
-      background: #f2fff2;
-    }
-    .decision {
-      width: 180px;
-      height: 180px;
-      min-height: 180px;
-      padding: 0 20px;
-      background: #fff7e8;
-      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    }
-    .slot {
-      position: relative;
-      width: 250px;
-      min-height: 96px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .slot .placeholder {
-      opacity: .45;
-      border-style: dashed;
-      background: #f8fafc;
-    }
-    .slot.current .placeholder {
-      opacity: 1;
-      box-shadow: 0 0 0 6px rgba(255, 235, 59, 0.35);
-      animation: pulse 1.2s infinite;
-    }
-    .slot.correct .placeholder {
-      opacity: .2;
-    }
-    .slot-label {
-      position: absolute;
-      top: -24px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 16px;
+      padding: 4px 10px;
+      color: white;
+      font-size: 13px;
       font-weight: 700;
-      color: #64748b;
+      margin-bottom: 7px;
+    }
+    .t-start { background: #42A5F5; }
+    .t-process { background: #66BB6A; }
+    .t-decision { background: #FFA726; }
+    .t-io { background: #EC407A; }
+    .piece-text {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.22;
+      color: #475569;
+    }
+
+    .feedback {
+      margin-top: 14px;
       background: white;
-      padding: 2px 10px;
-      border-radius: 999px;
       border: 2px solid #cbd5e1;
-      white-space: nowrap;
+      border-radius: 18px;
+      padding: 14px;
+      text-align: center;
+      min-height: 190px;
     }
+    .feedback h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      color: #475569;
+    }
+    .feedback p {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.34;
+      color: #6b7280;
+    }
+    .plus {
+      color: #2E7D32;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .minus {
+      color: #C62828;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .nav-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .small-btn {
+      border: 2px solid #94a3b8;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* flowchart */
     .flowchart {
-      position: relative;
-      min-height: 700px;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: auto 44px auto 44px auto 44px auto 60px auto 40px auto;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-items: center;
+      gap: 10px;
+      min-width: 660px;
+      padding: 10px 0;
     }
-    .arrow-down {
+    .row {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 26px;
+    }
+    .row.spread {
+      justify-content: space-between;
+      padding: 0 36px;
+    }
+    .v-arrow {
       width: 4px;
+      height: 30px;
       background: #64748b;
-      height: 44px;
       position: relative;
     }
-    .arrow-down::after {
+    .v-arrow::after {
       content: "";
       position: absolute;
       bottom: -2px;
@@ -265,98 +283,120 @@
       border-right: 8px solid transparent;
       border-top: 12px solid #64748b;
     }
-    .arrow-right {
+    .h-arrow {
       width: 90px;
       height: 4px;
       background: #64748b;
       position: relative;
-      align-self: center;
+      margin-top: 36px;
     }
-    .arrow-right::after {
+    .h-arrow.right::after {
       content: "";
       position: absolute;
-      right: -2px;
+      right: -1px;
       top: 50%;
       transform: translateY(-50%);
       border-top: 8px solid transparent;
       border-bottom: 8px solid transparent;
       border-left: 12px solid #64748b;
     }
-    .arrow-left {
-      width: 90px;
-      height: 4px;
-      background: #64748b;
-      position: relative;
-      align-self: center;
-    }
-    .arrow-left::after {
+    .h-arrow.left::after {
       content: "";
       position: absolute;
-      left: -2px;
+      left: -1px;
       top: 50%;
       transform: translateY(-50%);
       border-top: 8px solid transparent;
       border-bottom: 8px solid transparent;
       border-right: 12px solid #64748b;
     }
+    .branch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 210px;
+      justify-content: center;
+    }
     .branch-label {
       font-size: 18px;
       font-weight: 700;
       color: #64748b;
-      margin-bottom: 4px;
     }
-    .result-box {
-      margin-top: 16px;
-      border: 2px solid #cbd5e1;
-      background: white;
-      border-radius: 22px;
-      padding: 16px;
-      text-align: center;
-      min-height: 150px;
-    }
-    .result-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: #475569;
-      margin-bottom: 8px;
-    }
-    .result-text {
-      font-size: 22px;
-      color: #6b7280;
-      line-height: 1.35;
-    }
-    .points-up { color: #2E7D32; font-size: 28px; font-weight: 700; }
-    .points-down { color: #C62828; font-size: 28px; font-weight: 700; }
-    .next-btn, .back-btn {
-      margin-top: 14px;
-      border: 2px solid #94a3b8;
-      border-radius: 18px;
-      padding: 14px 24px;
-      font-size: 24px;
-      font-weight: 700;
-      color: white;
-      cursor: pointer;
-    }
-    .next-btn { background: #66BB6A; }
-    .back-btn { background: #42A5F5; }
 
-    .drop-hover .placeholder {
-      box-shadow: 0 0 0 6px rgba(66, 165, 245, 0.25);
+    .slot {
+      width: 220px;
+      min-height: 88px;
+      border: 2px dashed #94a3b8;
+      border-radius: 16px;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      position: relative;
+      transition: box-shadow .15s ease, border-color .15s ease, background .15s ease;
+    }
+    .slot.empty::before {
+      content: "Suelta aquí";
+      font-size: 18px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    .slot.current {
+      border-color: #f59e0b;
+      background: #fff8dc;
+      box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.20);
+      animation: pulse 1.25s infinite;
+    }
+    .slot.filled {
+      background: white;
+      border-style: solid;
+    }
+    .slot.drop-hover {
+      border-color: #42A5F5;
+      box-shadow: 0 0 0 5px rgba(66, 165, 245, 0.18);
+    }
+
+    .slot-top {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .slot-label {
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+    }
+    .hint-btn {
+      background: #42A5F5;
+      color: white;
+      border: 2px solid #94a3b8;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(255, 235, 59, 0.35); }
-      70% { box-shadow: 0 0 0 10px rgba(255, 235, 59, 0.05); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 235, 59, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.20); }
+      70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0.04); }
+      100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
     }
 
     @media (max-width: 980px) {
-      .main-grid, .level-buttons, .info-strip { grid-template-columns: 1fr; }
-      .flowchart {
-        transform: scale(0.92);
-        transform-origin: top center;
-      }
-      .title { font-size: 28px; }
+      .menu-grid, .problem-list, .stats, .main-grid { grid-template-columns: 1fr; }
+      .flowchart { min-width: 620px; }
+      .header { font-size: 28px; }
     }
   </style>
 </head>
@@ -364,157 +404,212 @@
   <div id="app"></div>
 
   <script>
-    const PIECES = [
+    const PROBLEMS = [
       {
-        id: "start",
-        type: "start-end",
-        shortType: "Inicio / Fin",
-        text: "Inicio"
+        title: "Sembrar una semilla",
+        difficulty: "1/5",
+        layout: "linear",
+        order: ["start", "p1", "p2", "p3", "p4", "end"],
+        slots: {
+          start:  { type: "Inicio / Fin", typeClass: "t-start", text: "Inicio" },
+          p1:     { type: "Proceso", typeClass: "t-process", text: "Poner tierra en la maceta" },
+          p2:     { type: "Proceso", typeClass: "t-process", text: "Poner la semilla" },
+          p3:     { type: "Proceso", typeClass: "t-process", text: "Cubrir con tierra" },
+          p4:     { type: "Entrada / Salida", typeClass: "t-io", text: "Echar un poco de agua" },
+          end:    { type: "Inicio / Fin", typeClass: "t-start", text: "Fin" }
+        },
+        hints: {
+          start: "Aquí va el paso inicial.",
+          p1: "Primero preparas la maceta.",
+          p2: "Después colocas lo principal.",
+          p3: "Luego tapas la semilla.",
+          p4: "Al final haces una acción con agua.",
+          end: "Aquí termina el problema."
+        }
       },
       {
-        id: "input",
-        type: "io",
-        shortType: "Entrada / Salida",
-        text: "Tener huevo, sartén y aceite"
+        title: "Regar una planta",
+        difficulty: "2/5",
+        layout: "oneDecision",
+        order: ["start", "p1", "d1", "no1", "yes1", "end"],
+        slots: {
+          start:  { type: "Inicio / Fin", typeClass: "t-start", text: "Inicio" },
+          p1:     { type: "Proceso", typeClass: "t-process", text: "Tocar la tierra" },
+          d1:     { type: "Decisión", typeClass: "t-decision", text: "¿La tierra está seca?" },
+          no1:    { type: "Proceso", typeClass: "t-process", text: "Dejar la planta igual" },
+          yes1:   { type: "Entrada / Salida", typeClass: "t-io", text: "Echar agua" },
+          end:    { type: "Inicio / Fin", typeClass: "t-start", text: "Fin" }
+        },
+        hints: {
+          start: "Aquí empieza el diagrama.",
+          p1: "Primero revisas algo de la planta.",
+          d1: "Aquí debes verificar cómo está la tierra.",
+          no1: "Si NO está seca, no haces mucho más.",
+          yes1: "Si SÍ está seca, realizas la acción principal.",
+          end: "Aquí termina el problema."
+        }
       },
       {
-        id: "process1",
-        type: "process",
-        shortType: "Proceso",
-        text: "Romper el huevo y ponerlo en la sartén"
+        title: "Preparar un huevo",
+        difficulty: "3/5",
+        layout: "oneDecision",
+        order: ["start", "p1", "d1", "no1", "yes1", "end"],
+        slots: {
+          start:  { type: "Inicio / Fin", typeClass: "t-start", text: "Inicio" },
+          p1:     { type: "Proceso", typeClass: "t-process", text: "Poner el huevo en la sartén" },
+          d1:     { type: "Decisión", typeClass: "t-decision", text: "¿Está cocido?" },
+          no1:    { type: "Proceso", typeClass: "t-process", text: "Cocinar un poco más" },
+          yes1:   { type: "Entrada / Salida", typeClass: "t-io", text: "Servir el huevo" },
+          end:    { type: "Inicio / Fin", typeClass: "t-start", text: "Fin" }
+        },
+        hints: {
+          start: "Aquí comienza el problema.",
+          p1: "Primero haces una acción para empezar a cocinar.",
+          d1: "Después tienes que verificar si ya está listo.",
+          no1: "Si NO está listo, necesitas otra acción.",
+          yes1: "Si SÍ está listo, ya puedes mostrar el resultado.",
+          end: "Aquí termina el diagrama."
+        }
       },
       {
-        id: "decision",
-        type: "decision",
-        shortType: "Decisión",
-        text: "¿Está cocido?"
+        title: "Cruzar la calle",
+        difficulty: "4/5",
+        layout: "twoDecision",
+        order: ["start", "p1", "d1", "p2", "d2", "no1", "yes2", "no2", "end"],
+        slots: {
+          start:  { type: "Inicio / Fin", typeClass: "t-start", text: "Inicio" },
+          p1:     { type: "Proceso", typeClass: "t-process", text: "Mirar el semáforo" },
+          d1:     { type: "Decisión", typeClass: "t-decision", text: "¿Está en verde?" },
+          p2:     { type: "Proceso", typeClass: "t-process", text: "Mirar a ambos lados" },
+          d2:     { type: "Decisión", typeClass: "t-decision", text: "¿Vienen carros?" },
+          no1:    { type: "Proceso", typeClass: "t-process", text: "Esperar" },
+          yes2:   { type: "Proceso", typeClass: "t-process", text: "Esperar" },
+          no2:    { type: "Entrada / Salida", typeClass: "t-io", text: "Cruzar la calle" },
+          end:    { type: "Inicio / Fin", typeClass: "t-start", text: "Fin" }
+        },
+        hints: {
+          start: "Aquí va el inicio.",
+          p1: "Primero observas algo importante.",
+          d1: "Luego verificas el color del semáforo.",
+          p2: "Si puedes seguir, haces otra revisión.",
+          d2: "Aquí verificas si hay carros.",
+          no1: "Si NO está en verde, debes detenerte.",
+          yes2: "Si SÍ vienen carros, también debes detenerte.",
+          no2: "Si NO vienen carros, ya puedes realizar la acción final.",
+          end: "Aquí termina el diagrama."
+        }
       },
       {
-        id: "process2",
-        type: "process",
-        shortType: "Proceso",
-        text: "Cocinar un poco más"
-      },
-      {
-        id: "output",
-        type: "io",
-        shortType: "Entrada / Salida",
-        text: "Servir el huevo en el plato"
-      },
-      {
-        id: "end",
-        type: "start-end",
-        shortType: "Inicio / Fin",
-        text: "Fin"
+        title: "Encender una lámpara",
+        difficulty: "5/5",
+        layout: "threeDecision",
+        order: ["start", "p1", "d1", "yes1", "d2", "no2", "d3", "yes3", "no3", "end"],
+        slots: {
+          start:  { type: "Inicio / Fin", typeClass: "t-start", text: "Inicio" },
+          p1:     { type: "Proceso", typeClass: "t-process", text: "Mover el interruptor" },
+          d1:     { type: "Decisión", typeClass: "t-decision", text: "¿La lámpara enciende?" },
+          yes1:   { type: "Entrada / Salida", typeClass: "t-io", text: "Usar la lámpara" },
+          d2:     { type: "Decisión", typeClass: "t-decision", text: "¿Está conectada?" },
+          no2:    { type: "Proceso", typeClass: "t-process", text: "Conectar la lámpara" },
+          d3:     { type: "Decisión", typeClass: "t-decision", text: "¿El foco está fundido?" },
+          yes3:   { type: "Proceso", typeClass: "t-process", text: "Cambiar el foco" },
+          no3:    { type: "Entrada / Salida", typeClass: "t-io", text: "Pedir ayuda" },
+          end:    { type: "Inicio / Fin", typeClass: "t-start", text: "Fin" }
+        },
+        hints: {
+          start: "Aquí empieza el problema de la lámpara.",
+          p1: "Primero intentas encenderla.",
+          d1: "Después verificas si funcionó.",
+          yes1: "Si SÍ enciende, ya puedes usarla.",
+          d2: "Si NO enciende, revisas si está conectada.",
+          no2: "Si NO está conectada, debes hacer una acción.",
+          d3: "Si sí está conectada, revisas el foco.",
+          yes3: "Si el foco está dañado, debes cambiarlo.",
+          no3: "Si no es el foco, buscas otra solución.",
+          end: "Aquí termina el diagrama."
+        }
       }
     ];
 
-    const GUIDED_ORDER = ["start", "input", "process1", "decision", "process2", "output", "end"];
-
     const state = {
       screen: "menu",
-      level: 0,
+      mode: "basic",
+      problemIndex: 0,
       score: 0,
       mistakes: 0,
       placed: {},
-      selectedPiece: null,
-      draggedPiece: null,
-      message: "Arrastra cada parte al lugar correcto.",
-      pointsChange: 0
+      selectedPieceId: null,
+      draggedPieceId: null,
+      message: "Arrastra una pieza o tócala y luego toca un espacio.",
+      pointsChange: 0,
+      trayOrder: []
     };
-
-    function pieceById(id) {
-      return PIECES.find(p => p.id === id);
-    }
 
     function shuffle(arr) {
       return [...arr].sort(() => Math.random() - 0.5);
     }
 
-    function resetGame(level) {
-      state.screen = "game";
-      state.level = level;
+    function currentProblem() {
+      return PROBLEMS[state.problemIndex];
+    }
+
+    function resetProblem() {
+      state.placed = {};
+      state.selectedPieceId = null;
+      state.draggedPieceId = null;
+      state.pointsChange = 0;
+      state.message = state.mode === "basic"
+        ? "Nivel básico: mira la casilla amarilla y usa las pistas."
+        : "Nivel avanzado: arma el diagrama sin ayuda.";
+      state.trayOrder = shuffle(currentProblem().order.slice());
+    }
+
+    function startMode(mode) {
+      state.mode = mode;
+      state.problemIndex = 0;
       state.score = 0;
       state.mistakes = 0;
-      state.placed = {};
-      state.selectedPiece = null;
-      state.draggedPiece = null;
-      state.pointsChange = 0;
-      state.message = level === 0
-        ? "Nivel 0: sigue la luz amarilla y coloca esa pieza."
-        : "Nivel 1: arma todo el diagrama sin ayuda.";
-      state.piecesOrder = shuffle(PIECES.map(p => p.id));
+      state.screen = "game";
+      resetProblem();
       render();
     }
 
-    function currentGuidedId() {
-      if (state.level !== 0) return null;
-      for (const id of GUIDED_ORDER) {
+    function nextExpectedSlot() {
+      if (state.mode !== "basic") return null;
+      const order = currentProblem().order;
+      for (const id of order) {
         if (!state.placed[id]) return id;
       }
       return null;
     }
 
-    function isComplete() {
-      return Object.keys(state.placed).length === PIECES.length;
-    }
-
     function addPoints(n) {
-      state.score = Math.max(state.score + n, 0);
+      state.score = Math.max(0, state.score + n);
       state.pointsChange = n;
     }
 
-    function tryPlace(pieceId, slotId) {
-      const piece = pieceById(pieceId);
-      if (!piece || state.placed[pieceId]) return;
-
-      if (state.level === 0) {
-        const guided = currentGuidedId();
-        if (slotId !== guided) {
-          state.message = "Ahora va otra parte. Mira la casilla amarilla.";
-          addPoints(-5);
-          state.mistakes += 1;
-          render();
-          return;
-        }
-      }
-
-      if (pieceId === slotId) {
-        state.placed[pieceId] = true;
-        state.selectedPiece = null;
-        state.message = "Muy bien. Esa parte está correcta.";
-        addPoints(10);
-        if (isComplete()) {
-          state.screen = "done";
-        }
-        render();
-      } else {
-        state.message = "Esa pieza no va allí. Intenta de nuevo.";
-        addPoints(-5);
-        state.mistakes += 1;
-        render();
-      }
-    }
-
-    function clickPiece(pieceId) {
-      if (state.placed[pieceId]) return;
-      state.selectedPiece = pieceId;
-      state.message = "Ahora toca una casilla del diagrama.";
+    function showHint(slotId) {
+      state.message = currentProblem().hints[slotId];
+      state.pointsChange = 0;
       render();
     }
 
-    function clickSlot(slotId) {
-      if (!state.selectedPiece) return;
-      tryPlace(state.selectedPiece, slotId);
+    function selectPiece(pieceId) {
+      if (state.placed[pieceId]) return;
+      state.selectedPieceId = pieceId;
+      state.message = "Ahora toca o suelta esa pieza en el espacio correcto.";
+      state.pointsChange = 0;
+      render();
     }
 
-    function dragStart(pieceId) {
+    function dragStart(pieceId, ev) {
       if (state.placed[pieceId]) return;
-      state.draggedPiece = pieceId;
+      state.draggedPieceId = pieceId;
+      ev.dataTransfer.setData("text/plain", pieceId);
     }
 
     function dragEnd() {
-      state.draggedPiece = null;
+      state.draggedPieceId = null;
     }
 
     function allowDrop(ev) {
@@ -526,86 +621,292 @@
       ev.currentTarget.classList.remove("drop-hover");
     }
 
-    function onDrop(ev, slotId) {
+    function dropPiece(slotId, ev) {
       ev.preventDefault();
       ev.currentTarget.classList.remove("drop-hover");
-      if (!state.draggedPiece) return;
-      tryPlace(state.draggedPiece, slotId);
-      state.draggedPiece = null;
+      const pieceId = ev.dataTransfer.getData("text/plain") || state.draggedPieceId;
+      if (!pieceId) return;
+      placePiece(pieceId, slotId);
+      state.draggedPieceId = null;
+    }
+
+    function clickSlot(slotId) {
+      if (!state.selectedPieceId) return;
+      placePiece(state.selectedPieceId, slotId);
+    }
+
+    function placePiece(pieceId, slotId) {
+      if (state.placed[pieceId]) return;
+
+      if (state.mode === "basic" && slotId !== nextExpectedSlot()) {
+        state.message = "Todavía no va ese espacio. Mira la casilla amarilla.";
+        addPoints(-5);
+        state.mistakes += 1;
+        state.selectedPieceId = null;
+        render();
+        return;
+      }
+
+      if (pieceId === slotId) {
+        state.placed[pieceId] = true;
+        state.selectedPieceId = null;
+        state.message = "Muy bien. Esa parte está correcta.";
+        addPoints(10);
+
+        if (Object.keys(state.placed).length === currentProblem().order.length) {
+          state.screen = "problem-done";
+        }
+        render();
+      } else {
+        state.message = "Esa pieza no corresponde a ese lugar.";
+        addPoints(-5);
+        state.mistakes += 1;
+        state.selectedPieceId = null;
+        render();
+      }
+    }
+
+    function nextProblem() {
+      if (state.problemIndex < PROBLEMS.length - 1) {
+        state.problemIndex += 1;
+        state.screen = "game";
+        resetProblem();
+      } else {
+        state.screen = "final";
+      }
+      render();
     }
 
     function backToMenu() {
       state.screen = "menu";
-      state.selectedPiece = null;
-      state.draggedPiece = null;
       render();
     }
 
-    function pieceHTML(piece, inTray = false) {
-      const usedClass = state.placed[piece.id] ? "used" : "";
-      const trayAttrs = inTray
-        ? `draggable="true"
-           ondragstart="dragStart('${piece.id}')"
-           ondragend="dragEnd()"
-           onclick="clickPiece('${piece.id}')"`
-        : "";
+    function restartCurrent() {
+      resetProblem();
+      render();
+    }
+
+    function pieceData(id) {
+      return { pieceId: id, ...currentProblem().slots[id] };
+    }
+
+    function pieceCard(piece, used = false) {
       return `
-        <div class="piece ${usedClass}" ${trayAttrs}>
-          <div class="shape ${piece.type}">
-            ${piece.text}
-          </div>
+        <div class="piece ${used ? "used" : ""} ${state.selectedPieceId === piece.pieceId ? "selected" : ""}"
+             draggable="${used ? "false" : "true"}"
+             ondragstart="dragStart('${piece.pieceId}', event)"
+             ondragend="dragEnd()"
+             onclick="selectPiece('${piece.pieceId}')">
+          <div class="piece-type ${piece.typeClass}">${piece.type}</div>
+          <div class="piece-text">${piece.text}</div>
         </div>
       `;
     }
 
-    function slotHTML(slotId, label) {
-      const piece = pieceById(slotId);
-      const hasPiece = !!state.placed[slotId];
-      const current = currentGuidedId() === slotId;
-      const slotClass = `slot ${hasPiece ? "correct" : ""} ${current ? "current" : ""}`;
+    function slotTop(label, slotId) {
       return `
-        <div class="${slotClass}"
+        <div class="slot-top">
+          <div class="slot-label">${label}</div>
+          ${state.mode === "basic" ? `<button class="hint-btn" onclick="showHint('${slotId}')">Pista</button>` : ``}
+        </div>
+      `;
+    }
+
+    function slotBox(slotId, label) {
+      const filled = !!state.placed[slotId];
+      const current = state.mode === "basic" && nextExpectedSlot() === slotId;
+      const classes = [
+        "slot",
+        filled ? "filled" : "empty",
+        current ? "current" : ""
+      ].join(" ").trim();
+      return `
+        <div class="${classes}"
              onclick="clickSlot('${slotId}')"
              ondragover="allowDrop(event)"
              ondragleave="leaveDrop(event)"
-             ondrop="onDrop(event, '${slotId}')">
-          <div class="slot-label">${label}</div>
-          ${
-            hasPiece
-              ? pieceHTML(piece, false)
-              : `<div class="shape ${piece.type} placeholder"></div>`
-          }
+             ondrop="dropPiece('${slotId}', event)">
+          ${slotTop(label, slotId)}
+          ${filled ? pieceCard(pieceData(slotId), false) : ``}
         </div>
       `;
+    }
+
+    function renderLinear(problem) {
+      return `
+        <div class="flowchart">
+          ${slotBox("start", "Inicio")}
+          <div class="v-arrow"></div>
+          ${slotBox("p1", "Paso 1")}
+          <div class="v-arrow"></div>
+          ${slotBox("p2", "Paso 2")}
+          <div class="v-arrow"></div>
+          ${slotBox("p3", "Paso 3")}
+          <div class="v-arrow"></div>
+          ${slotBox("p4", "Salida")}
+          <div class="v-arrow"></div>
+          ${slotBox("end", "Fin")}
+        </div>
+      `;
+    }
+
+    function renderOneDecision(problem) {
+      return `
+        <div class="flowchart">
+          ${slotBox("start", "Inicio")}
+          <div class="v-arrow"></div>
+          ${slotBox("p1", "Paso")}
+          <div class="v-arrow"></div>
+          ${slotBox("d1", "Verifica")}
+          <div class="row spread">
+            <div class="branch">
+              <div class="branch-label">No</div>
+              <div class="h-arrow left"></div>
+              ${slotBox("no1", "Si NO")}
+            </div>
+            <div class="branch">
+              ${slotBox("yes1", "Si SÍ")}
+              <div class="h-arrow right"></div>
+              <div class="branch-label">Sí</div>
+            </div>
+          </div>
+          <div class="v-arrow"></div>
+          ${slotBox("end", "Fin")}
+        </div>
+      `;
+    }
+
+    function renderTwoDecision(problem) {
+      return `
+        <div class="flowchart">
+          ${slotBox("start", "Inicio")}
+          <div class="v-arrow"></div>
+          ${slotBox("p1", "Paso 1")}
+          <div class="v-arrow"></div>
+          ${slotBox("d1", "Decisión 1")}
+          <div class="row spread">
+            <div class="branch">
+              <div class="branch-label">No</div>
+              <div class="h-arrow left"></div>
+              ${slotBox("no1", "Si NO")}
+            </div>
+            <div class="branch">
+              ${slotBox("p2", "Sigue")}
+              <div class="h-arrow right"></div>
+              <div class="branch-label">Sí</div>
+            </div>
+          </div>
+          <div class="v-arrow"></div>
+          ${slotBox("d2", "Decisión 2")}
+          <div class="row spread">
+            <div class="branch">
+              <div class="branch-label">Sí</div>
+              <div class="h-arrow left"></div>
+              ${slotBox("yes2", "Si SÍ")}
+            </div>
+            <div class="branch">
+              ${slotBox("no2", "Si NO")}
+              <div class="h-arrow right"></div>
+              <div class="branch-label">No</div>
+            </div>
+          </div>
+          <div class="v-arrow"></div>
+          ${slotBox("end", "Fin")}
+        </div>
+      `;
+    }
+
+    function renderThreeDecision(problem) {
+      return `
+        <div class="flowchart">
+          ${slotBox("start", "Inicio")}
+          <div class="v-arrow"></div>
+          ${slotBox("p1", "Paso")}
+          <div class="v-arrow"></div>
+          ${slotBox("d1", "Decisión 1")}
+          <div class="row spread">
+            <div class="branch">
+              <div class="branch-label">SÍ</div>
+              <div class="h-arrow left"></div>
+              ${slotBox("yes1", "Si SÍ")}
+            </div>
+            <div class="branch">
+              ${slotBox("d2", "Decisión 2")}
+              <div class="h-arrow right"></div>
+              <div class="branch-label">NO</div>
+            </div>
+          </div>
+          <div class="v-arrow"></div>
+          <div class="row spread">
+            <div class="branch">
+              <div class="branch-label">NO</div>
+              <div class="h-arrow left"></div>
+              ${slotBox("no2", "Si NO")}
+            </div>
+            <div class="branch">
+              ${slotBox("d3", "Decisión 3")}
+              <div class="h-arrow right"></div>
+              <div class="branch-label">SÍ</div>
+            </div>
+          </div>
+          <div class="v-arrow"></div>
+          <div class="row spread">
+            <div class="branch">
+              <div class="branch-label">SÍ</div>
+              <div class="h-arrow left"></div>
+              ${slotBox("yes3", "Si SÍ")}
+            </div>
+            <div class="branch">
+              ${slotBox("no3", "Si NO")}
+              <div class="h-arrow right"></div>
+              <div class="branch-label">NO</div>
+            </div>
+          </div>
+          <div class="v-arrow"></div>
+          ${slotBox("end", "Fin")}
+        </div>
+      `;
+    }
+
+    function renderDiagram(problem) {
+      if (problem.layout === "linear") return renderLinear(problem);
+      if (problem.layout === "oneDecision") return renderOneDecision(problem);
+      if (problem.layout === "twoDecision") return renderTwoDecision(problem);
+      return renderThreeDecision(problem);
     }
 
     function renderMenu() {
       return `
         <div class="page">
-          <div class="title">Arma el Diagrama: Preparar un Huevo</div>
+          <div class="header">Diagramas de Flujo por Arrastre</div>
 
           <div class="topbar">
-            <div class="badge">Juego de arrastre</div>
-            <div class="badge">Diagrama de flujo</div>
-            <div class="badge">Aprender jugando</div>
+            <div class="top-chip">5 problemas progresivos</div>
+            <div class="top-chip">Básico con pistas</div>
+            <div class="top-chip">Avanzado directo</div>
           </div>
 
-          <div class="screen-card">
-            <div class="center">
-              <div class="big">Elige un nivel</div>
-              <div class="sub">
-                Debes arrastrar cada parte para formar el diagrama correcto.<br>
-                En el nivel 0 se enciende la casilla que debes completar.
+          <div class="panel">
+            <div style="text-align:center;">
+              <div style="font-size:34px;font-weight:700;color:#475569;margin-bottom:8px;">Elige un modo</div>
+              <div style="font-size:20px;color:#6b7280;line-height:1.4;">
+                Cada problema sube de dificultad.<br>
+                El último es la lámpara con 3 decisiones.
               </div>
             </div>
 
-            <div class="level-buttons">
-              <button class="level-btn btn-blue" onclick="resetGame(0)">
-                Nivel 0<br><span style="font-size:20px;font-weight:600;">Guiado con luz</span>
+            <div class="menu-grid">
+              <button class="mode-btn btn-blue" onclick="startMode('basic')">
+                Nivel básico<br><span style="font-size:19px;font-weight:600;">con casilla guiada y pistas</span>
               </button>
-              <button class="level-btn btn-green" onclick="resetGame(1)">
-                Nivel 1<br><span style="font-size:20px;font-weight:600;">Sin ayuda</span>
+              <button class="mode-btn btn-green" onclick="startMode('advanced')">
+                Nivel avanzado<br><span style="font-size:19px;font-weight:600;">sin ayuda</span>
               </button>
+            </div>
+
+            <div class="problem-list">
+              ${PROBLEMS.map((p, i) => `<div class="problem-card">${i + 1}. ${p.title}<br><span style="font-size:14px;">Dificultad ${p.difficulty}</span></div>`).join("")}
             </div>
           </div>
 
@@ -615,87 +916,63 @@
     }
 
     function renderGame() {
-      const guided = currentGuidedId();
+      const problem = currentProblem();
       return `
         <div class="page">
-          <div class="title">Arma el Diagrama: Preparar un Huevo</div>
+          <div class="header">Problema ${state.problemIndex + 1}: ${problem.title}</div>
 
           <div class="topbar">
-            <div class="badge">Nivel: ${state.level === 0 ? "0 guiado" : "1 libre"}</div>
-            <div class="badge">Puntos: ${String(state.score).padStart(2, "0")}</div>
-            <div class="badge">Errores: ${String(state.mistakes).padStart(2, "0")}</div>
-            <div class="badge">Colocadas: ${Object.keys(state.placed).length}/${PIECES.length}</div>
+            <div class="top-chip">Modo: ${state.mode === "basic" ? "Básico" : "Avanzado"}</div>
+            <div class="top-chip">Dificultad: ${problem.difficulty}</div>
+            <div class="top-chip">Puntos: ${String(state.score).padStart(2, "0")}</div>
+            <div class="top-chip">Errores: ${String(state.mistakes).padStart(2, "0")}</div>
           </div>
 
-          <div class="stage-row">
-            <div class="stage ${state.level === 0 ? "active" : ""}">Nivel 0</div>
-            <div class="stage ${state.level === 1 ? "active" : ""}">Nivel 1</div>
-          </div>
-
-          <div class="info-strip">
-            <div class="info-card">
+          <div class="stats">
+            <div class="stat">
               <div class="label">Problema</div>
-              <div class="value" style="font-size:22px;">Preparar un huevo</div>
+              <div class="value" style="font-size:22px;">${problem.title}</div>
             </div>
-            <div class="info-card">
+            <div class="stat">
+              <div class="label">Progreso</div>
+              <div class="value">${state.problemIndex + 1}/5</div>
+            </div>
+            <div class="stat">
+              <div class="label">Casilla guiada</div>
+              <div class="value" style="font-size:22px;">${state.mode === "basic" ? (nextExpectedSlot() || "Completo") : "Sin guía"}</div>
+            </div>
+            <div class="stat">
               <div class="label">Pieza elegida</div>
-              <div class="value" style="font-size:22px;">${state.selectedPiece ? pieceById(state.selectedPiece).shortType : "Ninguna"}</div>
-            </div>
-            <div class="info-card">
-              <div class="label">Ayuda</div>
-              <div class="value" style="font-size:22px;">${guided ? pieceById(guided).shortType : "Completo"}</div>
-            </div>
-            <div class="info-card">
-              <div class="label">Acción</div>
-              <div class="value" style="font-size:22px;">Arrastra o toca</div>
+              <div class="value" style="font-size:22px;">${state.selectedPieceId ? currentProblem().slots[state.selectedPieceId].type : "Ninguna"}</div>
             </div>
           </div>
 
           <div class="main-grid">
             <div class="panel">
-              <div class="panel-title">Diagrama</div>
-
-              <div class="flowchart">
-                <div style="grid-column:2;grid-row:1;">${slotHTML("start", "Inicio")}</div>
-                <div style="grid-column:2;grid-row:2;" class="arrow-down"></div>
-
-                <div style="grid-column:2;grid-row:3;">${slotHTML("input", "Entrada")}</div>
-                <div style="grid-column:2;grid-row:4;" class="arrow-down"></div>
-
-                <div style="grid-column:2;grid-row:5;">${slotHTML("process1", "Proceso")}</div>
-                <div style="grid-column:2;grid-row:6;" class="arrow-down"></div>
-
-                <div style="grid-column:2;grid-row:7;">${slotHTML("decision", "Decisión")}</div>
-
-                <div style="grid-column:1;grid-row:8;" class="center">
-                  <div class="branch-label">No</div>
-                  <div class="arrow-left"></div>
-                </div>
-                <div style="grid-column:3;grid-row:8;" class="center">
-                  <div class="branch-label">Sí</div>
-                  <div class="arrow-right"></div>
-                </div>
-
-                <div style="grid-column:1;grid-row:9;">${slotHTML("process2", "Proceso")}</div>
-                <div style="grid-column:3;grid-row:9;">${slotHTML("output", "Salida")}</div>
-
-                <div style="grid-column:3;grid-row:10;" class="arrow-down"></div>
-                <div style="grid-column:3;grid-row:11;">${slotHTML("end", "Fin")}</div>
+              <div class="section-title">Diagrama</div>
+              <div class="flow-wrap">
+                ${renderDiagram(problem)}
               </div>
             </div>
 
             <div class="panel">
-              <div class="panel-title">Piezas para arrastrar</div>
+              <div class="section-title">Piezas</div>
 
-              <div class="tray">
-                ${state.piecesOrder.map(id => pieceHTML(pieceById(id), true)).join("")}
+              <div class="tray-wrap">
+                <div class="tray">
+                  ${state.trayOrder.map(id => pieceCard(pieceData(id), !!state.placed[id])).join("")}
+                </div>
               </div>
 
-              <div class="result-box">
-                <div class="result-title">${state.pointsChange >= 0 ? "Mensaje" : "Atención"}</div>
-                ${state.pointsChange !== 0 ? `<div class="${state.pointsChange > 0 ? "points-up" : "points-down"}">${state.pointsChange > 0 ? "+" : ""}${state.pointsChange} puntos</div>` : ""}
-                <div class="result-text">${state.message}</div>
-                <button class="back-btn" onclick="backToMenu()">Volver al menú</button>
+              <div class="feedback">
+                <h3>Ayuda textual</h3>
+                ${state.pointsChange !== 0 ? `<div class="${state.pointsChange > 0 ? "plus" : "minus"}">${state.pointsChange > 0 ? "+" : ""}${state.pointsChange} puntos</div>` : ``}
+                <p>${state.message}</p>
+
+                <div class="nav-row">
+                  <button class="small-btn btn-blue" onclick="backToMenu()">Menú</button>
+                  <button class="small-btn btn-purple" onclick="restartCurrent()">Reiniciar</button>
+                </div>
               </div>
             </div>
           </div>
@@ -705,39 +982,81 @@
       `;
     }
 
-    function renderDone() {
+    function renderProblemDone() {
+      const problem = currentProblem();
       return `
         <div class="page">
-          <div class="title">Arma el Diagrama: Preparar un Huevo</div>
+          <div class="header">Problema completado</div>
 
-          <div class="screen-card">
-            <div class="center">
-              <div class="big">¡Diagrama completo!</div>
-              <div class="sub">Lograste ordenar todas las partes del problema.</div>
+          <div class="panel">
+            <div style="text-align:center;">
+              <div style="font-size:34px;font-weight:700;color:#475569;margin-bottom:8px;">¡Muy bien!</div>
+              <div style="font-size:20px;color:#6b7280;">Terminaste: ${problem.title}</div>
             </div>
 
-            <div class="info-strip" style="margin-top:18px;">
-              <div class="info-card">
-                <div class="label">Nivel</div>
-                <div class="value">${state.level === 0 ? "0" : "1"}</div>
+            <div class="stats" style="margin-top:18px;">
+              <div class="stat">
+                <div class="label">Problema</div>
+                <div class="value">${state.problemIndex + 1}/5</div>
               </div>
-              <div class="info-card">
+              <div class="stat">
+                <div class="label">Modo</div>
+                <div class="value" style="font-size:22px;">${state.mode === "basic" ? "Básico" : "Avanzado"}</div>
+              </div>
+              <div class="stat">
                 <div class="label">Puntos</div>
                 <div class="value">${String(state.score).padStart(2, "0")}</div>
               </div>
-              <div class="info-card">
+              <div class="stat">
                 <div class="label">Errores</div>
                 <div class="value">${String(state.mistakes).padStart(2, "0")}</div>
               </div>
-              <div class="info-card">
-                <div class="label">Resultado</div>
-                <div class="value" style="font-size:22px;">Muy bien</div>
+            </div>
+
+            <div class="nav-row">
+              <button class="small-btn btn-green" onclick="nextProblem()">${state.problemIndex < PROBLEMS.length - 1 ? "Siguiente problema" : "Resultado final"}</button>
+              <button class="small-btn btn-blue" onclick="backToMenu()">Menú</button>
+            </div>
+          </div>
+
+          <div class="footer">Aprendiendo con ProfeVivy</div>
+        </div>
+      `;
+    }
+
+    function renderFinal() {
+      return `
+        <div class="page">
+          <div class="header">Resultado final</div>
+
+          <div class="panel">
+            <div style="text-align:center;">
+              <div style="font-size:34px;font-weight:700;color:#475569;margin-bottom:8px;">Completaste los 5 problemas</div>
+              <div style="font-size:20px;color:#6b7280;">Ya terminaste el recorrido progresivo.</div>
+            </div>
+
+            <div class="stats" style="margin-top:18px;">
+              <div class="stat">
+                <div class="label">Modo</div>
+                <div class="value" style="font-size:22px;">${state.mode === "basic" ? "Básico" : "Avanzado"}</div>
+              </div>
+              <div class="stat">
+                <div class="label">Problemas</div>
+                <div class="value">5/5</div>
+              </div>
+              <div class="stat">
+                <div class="label">Puntos</div>
+                <div class="value">${String(state.score).padStart(2, "0")}</div>
+              </div>
+              <div class="stat">
+                <div class="label">Errores</div>
+                <div class="value">${String(state.mistakes).padStart(2, "0")}</div>
               </div>
             </div>
 
-            <div class="level-buttons">
-              <button class="level-btn btn-green" onclick="resetGame(1)">Jugar nivel 1</button>
-              <button class="level-btn btn-blue" onclick="backToMenu()">Volver al menú</button>
+            <div class="nav-row">
+              <button class="small-btn btn-blue" onclick="backToMenu()">Volver al menú</button>
+              <button class="small-btn btn-green" onclick="startMode('${state.mode}')">Jugar otra vez</button>
             </div>
           </div>
 
@@ -750,18 +1069,22 @@
       const app = document.getElementById("app");
       if (state.screen === "menu") app.innerHTML = renderMenu();
       else if (state.screen === "game") app.innerHTML = renderGame();
-      else app.innerHTML = renderDone();
+      else if (state.screen === "problem-done") app.innerHTML = renderProblemDone();
+      else app.innerHTML = renderFinal();
     }
 
-    window.resetGame = resetGame;
-    window.clickPiece = clickPiece;
-    window.clickSlot = clickSlot;
+    window.startMode = startMode;
+    window.showHint = showHint;
+    window.selectPiece = selectPiece;
     window.dragStart = dragStart;
     window.dragEnd = dragEnd;
     window.allowDrop = allowDrop;
     window.leaveDrop = leaveDrop;
-    window.onDrop = onDrop;
+    window.dropPiece = dropPiece;
+    window.clickSlot = clickSlot;
+    window.nextProblem = nextProblem;
     window.backToMenu = backToMenu;
+    window.restartCurrent = restartCurrent;
 
     render();
   </script>
