@@ -1,1 +1,837 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Símbolos de Diagramas de Flujo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #efefef;
+      color: #4b5563;
+    }
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+    .main-title {
+      text-align: center;
+      font-size: 34px;
+      font-weight: 700;
+      color: #475569;
+      margin: 10px 0 14px;
+    }
+    .topbar {
+      background: #4c5b68;
+      color: white;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+    .badge {
+      background: white;
+      color: #475569;
+      border: 2px solid #64748b;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .stage-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .stage {
+      border: 2px solid #cbd5e1;
+      background: white;
+      color: #64748b;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .stage.active {
+      background: #fff7cc;
+      border-color: #475569;
+      color: #334155;
+    }
+    .panel {
+      border: 2px solid #cbd5e1;
+      background: #f8f8f8;
+      border-radius: 24px;
+      padding: 18px;
+    }
+    .panel-white {
+      border: 2px solid #cbd5e1;
+      background: white;
+      border-radius: 24px;
+      padding: 18px;
+    }
+    .center { text-align: center; }
+    .subtitle {
+      font-size: 20px;
+      color: #6b7280;
+    }
+    .big {
+      font-size: 34px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .flip-wrap {
+      perspective: 1000px;
+      height: 230px;
+    }
+    .flip-card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform .5s;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+    .flip-card.flipped { transform: rotateY(180deg); }
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border: 2px solid #cbd5e1;
+      border-radius: 24px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .flip-back { transform: rotateY(180deg); display: block; }
+    .emoji {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    .flip-text {
+      font-size: 28px;
+      font-weight: 700;
+      color: #64748b;
+      text-align: center;
+    }
+    .card-name {
+      font-size: 28px;
+      font-weight: 700;
+      color: #475569;
+      text-align: center;
+      margin: 6px 0;
+    }
+    .card-def {
+      font-size: 20px;
+      color: #6b7280;
+      text-align: center;
+      line-height: 1.35;
+    }
+    .btn {
+      border: 2px solid #94a3b8;
+      border-radius: 18px;
+      padding: 16px 24px;
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 78px;
+    }
+    .btn:disabled { cursor: default; opacity: 1; }
+    .btn-blue { background: #42A5F5; }
+    .btn-pink { background: #EC407A; }
+    .btn-orange { background: #FFA726; }
+    .btn-green { background: #66BB6A; }
+    .btn-correct { background: #81C784 !important; border-color: #43A047 !important; }
+    .btn-wrong { background: #E57373 !important; border-color: #D32F2F !important; }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px;
+      margin-bottom: 12px;
+      font-size: 30px;
+      font-weight: 700;
+      color: #475569;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .left-box, .right-box {
+      min-height: 340px;
+    }
+    .left-box {
+      border: 2px solid #cbd5e1;
+      background: white;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .right-box {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 14px;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-rows: repeat(4, 1fr);
+      gap: 12px;
+      min-height: 340px;
+    }
+    .info-box {
+      border: 2px solid #cbd5e1;
+      background: white;
+      border-radius: 24px;
+      padding: 18px;
+      text-align: center;
+    }
+    .help-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    .help-text {
+      font-size: 22px;
+      color: #6b7280;
+      line-height: 1.35;
+    }
+    .points-up {
+      color: #2E7D32;
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .points-down {
+      color: #C62828;
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .next-btn {
+      margin-top: 14px;
+      background: #66BB6A;
+      color: white;
+      border: 2px solid #94a3b8;
+      border-radius: 18px;
+      padding: 16px 28px;
+      font-size: 28px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .start-btn {
+      margin-top: 20px;
+      background: #42A5F5;
+      color: white;
+      border: 2px solid #94a3b8;
+      border-radius: 18px;
+      padding: 16px 28px;
+      font-size: 28px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .start-btn[disabled] {
+      background: #cbd5e1;
+      border-color: #cbd5e1;
+      cursor: default;
+    }
+    .footer {
+      text-align: center;
+      font-size: 22px;
+      color: #6b7280;
+      margin: 18px 0 8px;
+    }
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .result-card {
+      border: 2px solid #cbd5e1;
+      border-radius: 24px;
+      background: white;
+      padding: 18px;
+      text-align: center;
+    }
+    .result-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    .result-value {
+      font-size: 42px;
+      color: #6b7280;
+    }
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .review-card {
+      border: 2px solid #cbd5e1;
+      border-radius: 24px;
+      background: white;
+      padding: 16px;
+      text-align: center;
+    }
+    .phrase-box {
+      font-size: 34px;
+      line-height: 1.35;
+      font-weight: 700;
+      color: #475569;
+      text-align: center;
+      max-width: 460px;
+    }
+    .symbol-svg {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    @media (max-width: 860px) {
+      .two-col, .cards-grid, .review-grid, .results-grid {
+        grid-template-columns: 1fr;
+      }
+      .main-title { font-size: 28px; }
+      .btn { font-size: 22px; }
+      .phrase-box { font-size: 28px; }
+      .status-row { font-size: 24px; }
+      .big { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const SYMBOLS = [
+      {
+        id: "inicio-fin",
+        name: "Inicio / Fin",
+        definition: "Indica dónde empieza o termina un algoritmo.",
+        svg: (size = 250) => `
+          <div class="symbol-svg">
+            <svg viewBox="0 0 320 220" width="${size}" height="${(size * 220) / 320}" role="img" aria-label="Inicio / Fin">
+              <ellipse cx="160" cy="110" rx="110" ry="62" fill="#EAF8FF" stroke="#555" stroke-width="4"></ellipse>
+            </svg>
+          </div>
+        `
+      },
+      {
+        id: "proceso",
+        name: "Proceso",
+        definition: "Representa una acción o paso que se realiza.",
+        svg: (size = 250) => `
+          <div class="symbol-svg">
+            <svg viewBox="0 0 320 220" width="${size}" height="${(size * 220) / 320}" role="img" aria-label="Proceso">
+              <rect x="70" y="55" width="180" height="110" fill="#F2FFF2" stroke="#555" stroke-width="4"></rect>
+            </svg>
+          </div>
+        `
+      },
+      {
+        id: "decision",
+        name: "Decisión",
+        definition: "Sirve para hacer una pregunta y elegir un camino.",
+        svg: (size = 250) => `
+          <div class="symbol-svg">
+            <svg viewBox="0 0 320 220" width="${size}" height="${(size * 220) / 320}" role="img" aria-label="Decisión">
+              <polygon points="160,35 245,110 160,185 75,110" fill="#FFF7E8" stroke="#555" stroke-width="4"></polygon>
+            </svg>
+          </div>
+        `
+      },
+      {
+        id: "entrada-salida",
+        name: "Entrada / Salida",
+        definition: "Muestra información que entra o sale.",
+        svg: (size = 250) => `
+          <div class="symbol-svg">
+            <svg viewBox="0 0 320 220" width="${size}" height="${(size * 220) / 320}" role="img" aria-label="Entrada / Salida">
+              <polygon points="95,55 255,55 225,165 65,165" fill="#FFF1F1" stroke="#555" stroke-width="4"></polygon>
+            </svg>
+          </div>
+        `
+      }
+    ];
+
+    const LEVEL3_EXAMPLES = [
+      { text: "Comenzar el programa.", answerId: "inicio-fin", explanation: "Es Inicio / Fin porque marca el comienzo." },
+      { text: "Terminar el juego.", answerId: "inicio-fin", explanation: "Es Inicio / Fin porque marca el final." },
+      { text: "Sumar 2 + 3.", answerId: "proceso", explanation: "Es Proceso porque aquí se realiza una acción." },
+      { text: "Guardar la respuesta.", answerId: "proceso", explanation: "Es Proceso porque se hace un paso del algoritmo." },
+      { text: "¿El número es mayor que 10?", answerId: "decision", explanation: "Es Decisión porque hace una pregunta." },
+      { text: "¿La respuesta es correcta?", answerId: "decision", explanation: "Es Decisión porque hay que elegir entre opciones." },
+      { text: "Escribir tu nombre.", answerId: "entrada-salida", explanation: "Es Entrada / Salida porque entra información." },
+      { text: "Mostrar el resultado en pantalla.", answerId: "entrada-salida", explanation: "Es Entrada / Salida porque sale información." }
+    ];
+
+    const POINTS_CORRECT = 10;
+    const POINTS_WRONG = 5;
+    const START_LIVES = 3;
+    const START_TIME = 18;
+
+    const state = {
+      screen: "level0",
+      introFlipped: [],
+      quizRounds: [],
+      quizCurrent: 0,
+      quizLives: START_LIVES,
+      quizScore: 0,
+      totalPoints: 0,
+      timeLeft: START_TIME,
+      selected: null,
+      showInfo: false,
+      lastPointsChange: 0,
+      results: {
+        level1: null,
+        level3: null
+      }
+    };
+
+    let timerId = null;
+
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function buildLevel1Rounds(total = 8) {
+      const rounds = [];
+      for (let i = 0; i < total; i++) {
+        const symbol = SYMBOLS[i % SYMBOLS.length];
+        rounds.push({
+          id: `${symbol.id}-${i}`,
+          kind: "symbol",
+          symbol,
+          options: shuffle(SYMBOLS.map(item => item.name)),
+          answerId: symbol.id,
+          answerName: symbol.name,
+          infoTitle: symbol.name,
+          infoText: symbol.definition
+        });
+      }
+      return shuffle(rounds);
+    }
+
+    function buildLevel3Rounds() {
+      return shuffle(LEVEL3_EXAMPLES).map((example, index) => {
+        const symbol = SYMBOLS.find(item => item.id === example.answerId);
+        return {
+          id: `${example.answerId}-example-${index}`,
+          kind: "example",
+          text: example.text,
+          options: shuffle(SYMBOLS.map(item => item.name)),
+          answerId: symbol.id,
+          answerName: symbol.name,
+          infoTitle: symbol.name,
+          infoText: example.explanation
+        };
+      });
+    }
+
+    function currentRound() {
+      return state.quizRounds[state.quizCurrent];
+    }
+
+    function resetQuizState(rounds) {
+      state.quizRounds = rounds;
+      state.quizCurrent = 0;
+      state.quizLives = START_LIVES;
+      state.quizScore = 0;
+      state.timeLeft = START_TIME;
+      state.selected = null;
+      state.showInfo = false;
+      state.lastPointsChange = 0;
+    }
+
+    function startLevel1() {
+      resetQuizState(buildLevel1Rounds());
+      state.screen = "level1";
+      render();
+    }
+
+    function startLevel3() {
+      resetQuizState(buildLevel3Rounds());
+      state.screen = "level3";
+      render();
+    }
+
+    function finishCurrentLevel() {
+      if (state.screen === "level1") {
+        state.results.level1 = {
+          score: state.quizScore,
+          total: state.quizRounds.length
+        };
+        startLevel3();
+        return;
+      }
+
+      if (state.screen === "level3") {
+        state.results.level3 = {
+          score: state.quizScore,
+          total: state.quizRounds.length
+        };
+        state.screen = "final";
+        render();
+      }
+    }
+
+    function goNext() {
+      if (state.quizLives <= 0 || state.quizCurrent + 1 >= state.quizRounds.length) {
+        finishCurrentLevel();
+        return;
+      }
+      state.quizCurrent += 1;
+      state.selected = null;
+      state.showInfo = false;
+      state.timeLeft = START_TIME;
+      state.lastPointsChange = 0;
+      render();
+    }
+
+    function chooseOption(option) {
+      const round = currentRound();
+      if (!round || state.selected || state.showInfo) return;
+
+      state.selected = option;
+
+      if (option === round.answerName) {
+        state.quizScore += 1;
+        state.totalPoints += POINTS_CORRECT;
+        state.lastPointsChange = POINTS_CORRECT;
+      } else {
+        state.quizLives = Math.max(state.quizLives - 1, 0);
+        state.totalPoints = Math.max(state.totalPoints - POINTS_WRONG, 0);
+        state.lastPointsChange = -POINTS_WRONG;
+      }
+
+      state.showInfo = true;
+      render();
+    }
+
+    function onTimeout() {
+      state.quizLives = Math.max(state.quizLives - 1, 0);
+      state.totalPoints = Math.max(state.totalPoints - POINTS_WRONG, 0);
+      state.lastPointsChange = -POINTS_WRONG;
+      state.selected = "__timeout__";
+      state.showInfo = true;
+      render();
+    }
+
+    function resetAll() {
+      state.screen = "level0";
+      state.introFlipped = [];
+      state.quizRounds = [];
+      state.quizCurrent = 0;
+      state.quizLives = START_LIVES;
+      state.quizScore = 0;
+      state.totalPoints = 0;
+      state.timeLeft = START_TIME;
+      state.selected = null;
+      state.showInfo = false;
+      state.lastPointsChange = 0;
+      state.results = { level1: null, level3: null };
+      render();
+    }
+
+    function revealIntroCard(id) {
+      if (!state.introFlipped.includes(id)) {
+        state.introFlipped.push(id);
+        render();
+      }
+    }
+
+    function getButtonClass(option, round) {
+      if (!state.selected) return "";
+      if (option === round.answerName) return "btn-correct";
+      if (option === state.selected) return "btn-wrong";
+      return "";
+    }
+
+    function getHelpMessage(round) {
+      if (!state.showInfo) {
+        return state.screen === "level1"
+          ? "Observa la figura y toca el nombre correcto."
+          : "Lee la frase y decide qué símbolo usarías.";
+      }
+      if (state.selected === "__timeout__") return "Se acabó el tiempo. Mira la respuesta correcta.";
+      if (state.selected === round.answerName) return "¡Correcto!";
+      return "Casi. Mira la respuesta correcta.";
+    }
+
+    function mainHeader() {
+      return `<div class="main-title">Símbolos de Diagramas de Flujo</div>`;
+    }
+
+    function mainFooter() {
+      return `<div class="footer">Aprendiendo con ProfeVivy</div>`;
+    }
+
+    function topbarLevel0() {
+      return `
+        <div class="topbar">
+          <div class="stage active">Nivel 0</div>
+          <div class="stage">Nivel 1</div>
+          <div class="stage">Nivel 3</div>
+          <div class="badge">Puntos: ${String(state.totalPoints).padStart(2, "0")}</div>
+        </div>
+      `;
+    }
+
+    function levelRow() {
+      return `
+        <div class="stage-row">
+          <div class="stage ${state.screen === "level0" ? "active" : ""}">Nivel 0</div>
+          <div class="stage ${state.screen === "level1" ? "active" : ""}">Nivel 1</div>
+          <div class="stage ${state.screen === "level3" ? "active" : ""}">Nivel 3</div>
+        </div>
+      `;
+    }
+
+    function renderLevel0() {
+      const introComplete = state.introFlipped.length === SYMBOLS.length;
+      return `
+        <div class="page">
+          ${mainHeader()}
+          ${topbarLevel0()}
+          <div class="panel">
+            <div class="center">
+              <div class="big">Nivel 0</div>
+              <div class="subtitle">Toca cada tarjeta para ver el símbolo, su nombre y su definición.</div>
+            </div>
+
+            <div class="cards-grid">
+              ${SYMBOLS.map(item => `
+                <div class="flip-wrap">
+                  <div class="flip-card ${state.introFlipped.includes(item.id) ? "flipped" : ""}" onclick="revealIntroCard('${item.id}')">
+                    <div class="flip-face">
+                      <div>
+                        <div class="emoji">👀</div>
+                        <div class="flip-text">Toca para ver</div>
+                      </div>
+                    </div>
+                    <div class="flip-face flip-back">
+                      ${item.svg(145)}
+                      <div class="card-name">${item.name}</div>
+                      <div class="card-def">${item.definition}</div>
+                    </div>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+
+            <div class="center">
+              <button class="start-btn" ${introComplete ? "" : "disabled"} onclick="startLevel1()">
+                Ir al nivel 1
+              </button>
+            </div>
+          </div>
+          ${mainFooter()}
+        </div>
+      `;
+    }
+
+    function renderPlay() {
+      const round = currentRound();
+      const optionColors = ["btn-blue", "btn-pink", "btn-orange", "btn-green"];
+      const help = getHelpMessage(round);
+      const pointsClass = state.lastPointsChange >= 0 ? "points-up" : "points-down";
+
+      return `
+        <div class="page">
+          ${mainHeader()}
+
+          <div class="topbar" style="justify-content:space-between;">
+            <div class="badge">Aciertos: ${String(state.quizScore).padStart(2, "0")}/${String(state.quizRounds.length).padStart(2, "0")}</div>
+            <div class="badge">Puntos: ${String(state.totalPoints).padStart(2, "0")}</div>
+            <div class="badge">${String(Math.floor(state.timeLeft / 60)).padStart(2, "0")}:${String(state.timeLeft % 60).padStart(2, "0")}</div>
+          </div>
+
+          ${levelRow()}
+
+          <div class="status-row">
+            <div>${state.quizCurrent + 1} de ${state.quizRounds.length}</div>
+            <div>${state.quizLives > 0 ? "❤".repeat(state.quizLives) : "0"}</div>
+          </div>
+
+          <div class="two-col">
+            <div class="panel left-box">
+              ${state.screen === "level1"
+                ? round.symbol.svg(250)
+                : `<div class="phrase-box">${round.text}</div>`}
+            </div>
+
+            <div class="right-box">
+              <div class="options-grid">
+                ${round.options.map((option, index) => `
+                  <button
+                    class="btn ${optionColors[index % optionColors.length]} ${getButtonClass(option, round)}"
+                    onclick="chooseOption('${option.replace(/'/g, "\\'")}')"
+                    ${state.selected ? "disabled" : ""}
+                  >
+                    ${option}
+                  </button>
+                `).join("")}
+              </div>
+
+              <div class="info-box">
+                <div class="help-title">${help}</div>
+                ${
+                  !state.showInfo
+                    ? `<div class="help-text">${state.screen === "level1" ? "Mira bien la forma." : "Piensa qué hace la frase."}</div>`
+                    : `
+                      <div class="${pointsClass}">
+                        ${state.lastPointsChange >= 0 ? "+" + state.lastPointsChange : state.lastPointsChange} puntos
+                      </div>
+                      <div class="help-title">${round.infoTitle}</div>
+                      <div class="help-text">${round.infoText}</div>
+                      <button class="next-btn" onclick="goNext()">
+                        ${
+                          state.quizLives <= 0
+                            ? (state.screen === "level1" ? "Ir al nivel 3" : "Ver resultado")
+                            : (state.quizCurrent + 1 >= state.quizRounds.length
+                              ? (state.screen === "level1" ? "Ir al nivel 3" : "Ver resultado")
+                              : "Siguiente")
+                        }
+                      </button>
+                    `
+                }
+              </div>
+            </div>
+          </div>
+
+          ${mainFooter()}
+        </div>
+      `;
+    }
+
+    function renderFinal() {
+      return `
+        <div class="page">
+          ${mainHeader()}
+
+          <div class="panel">
+            <div class="topbar">
+              <div class="stage">Nivel 0</div>
+              <div class="stage">Nivel 1</div>
+              <div class="stage active">Nivel 3</div>
+              <div class="badge">Puntos: ${String(state.totalPoints).padStart(2, "0")}</div>
+            </div>
+
+            <div class="center">
+              <div class="big">¡Terminaste!</div>
+              <div class="subtitle">Aquí están tus resultados.</div>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-card">
+                <div class="result-title">Nivel 1</div>
+                <div class="result-value">${String(state.results.level1?.score || 0).padStart(2, "0")}/${String(state.results.level1?.total || 0).padStart(2, "0")}</div>
+              </div>
+              <div class="result-card">
+                <div class="result-title">Nivel 3</div>
+                <div class="result-value">${String(state.results.level3?.score || 0).padStart(2, "0")}/${String(state.results.level3?.total || 0).padStart(2, "0")}</div>
+              </div>
+              <div class="result-card">
+                <div class="result-title">Puntos</div>
+                <div class="result-value">${String(state.totalPoints).padStart(2, "0")}</div>
+              </div>
+            </div>
+
+            <div class="review-grid">
+              ${SYMBOLS.map(item => `
+                <div class="review-card">
+                  ${item.svg(160)}
+                  <div class="card-name">${item.name}</div>
+                  <div class="card-def">${item.definition}</div>
+                </div>
+              `).join("")}
+            </div>
+
+            <div class="center">
+              <button class="start-btn" onclick="resetAll()">Volver al nivel 0</button>
+            </div>
+          </div>
+
+          ${mainFooter()}
+        </div>
+      `;
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      if (state.screen !== "level1" && state.screen !== "level3") return;
+      if (state.showInfo) return;
+
+      timerId = setInterval(() => {
+        if (state.screen !== "level1" && state.screen !== "level3") {
+          clearInterval(timerId);
+          return;
+        }
+        if (state.showInfo) {
+          clearInterval(timerId);
+          return;
+        }
+        state.timeLeft -= 1;
+        if (state.timeLeft <= 0) {
+          state.timeLeft = 0;
+          clearInterval(timerId);
+          onTimeout();
+          return;
+        }
+        updateTopOnly();
+      }, 1000);
+    }
+
+    function updateTopOnly() {
+      render();
+    }
+
+    function render() {
+      clearInterval(timerId);
+      const app = document.getElementById("app");
+      if (state.screen === "level0") {
+        app.innerHTML = renderLevel0();
+      } else if (state.screen === "final") {
+        app.innerHTML = renderFinal();
+      } else {
+        app.innerHTML = renderPlay();
+      }
+      startTimer();
+    }
+
+    window.startLevel1 = startLevel1;
+    window.startLevel3 = startLevel3;
+    window.chooseOption = chooseOption;
+    window.goNext = goNext;
+    window.resetAll = resetAll;
+    window.revealIntroCard = revealIntroCard;
+
+    render();
+  </script>
+</body>
+</html>
+
