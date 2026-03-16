@@ -1,0 +1,905 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Búsqueda de literatura con IA | OVA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#0a0e27;color:#2c3e50;overflow:hidden;height:100vh}
+    .registro-screen{height:100vh;display:flex;align-items:center;justify-content:center;padding:40px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}
+    .registro-card{background:#fff;border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.28);padding:54px 48px 38px;max-width:700px;width:100%}
+    .registro-card h1{color:#667eea;font-family:'Libre Baskerville',serif;font-size:2.1em;margin-bottom:12px;text-align:center;line-height:1.2}
+    .registro-card .subtitle{color:#666;text-align:center;margin-bottom:26px;font-size:1.02em;line-height:1.6}
+    .skip-dot{cursor:pointer;color:#e74c3c;font-weight:800}
+    .skip-dot:hover{opacity:.8}
+    .form-group{margin-bottom:22px}
+    .form-group label{display:block;font-weight:700;color:#2c3e50;margin-bottom:8px;font-size:.95em}
+    .form-group input,.form-group textarea{width:100%;padding:15px;border:2px solid #dfe6e9;border-radius:10px;font-size:1em;font-family:'Inter',sans-serif;background:#fff}
+    .form-group textarea{min-height:95px;resize:vertical}
+    .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 4px rgba(102,126,234,.1)}
+    .btn-comenzar{width:100%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;padding:18px;font-size:1.03em;font-weight:700;border-radius:10px;cursor:pointer;margin-top:10px;text-transform:uppercase;letter-spacing:1px}
+    .btn-comenzar:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(102,126,234,.35)}
+    .error-message{color:#e74c3c;font-size:.9em;margin-top:8px;display:none;font-weight:600}
+    .error-message.show{display:block}
+    .presentation-wrapper{height:100vh;display:none;align-items:center;justify-content:center;padding:40px}
+    .presentation-wrapper.active{display:flex}
+    .slide{background:#fff;width:100%;max-width:1450px;height:87vh;display:none;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+    .slide.active{display:flex;animation:fadeIn .35s ease}
+    @keyframes fadeIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+    .slide-header{background:linear-gradient(135deg,#2c3e50 0%,#34495e 100%);padding:32px 56px;color:#fff;border-bottom:4px solid #e74c3c;flex-shrink:0}
+    .slide-number{font-size:13px;font-weight:300;letter-spacing:2px;opacity:.85;margin-bottom:8px;text-transform:uppercase}
+    .slide-title{font-family:'Libre Baskerville',serif;font-size:38px;font-weight:700;line-height:1.2}
+    .slide-content{flex:1;padding:36px 56px;overflow-y:auto;min-height:0}
+    .slide-content::-webkit-scrollbar{width:8px}
+    .slide-content::-webkit-scrollbar-thumb{background:#bdc3c7;border-radius:4px}
+    .slide-footer{padding:18px 56px;border-top:1px solid #ecf0f1;display:flex;justify-content:space-between;align-items:center;background:#fafafa;gap:16px;flex-shrink:0;position:relative}
+    .progress-indicator{font-size:13px;color:#95a5a6;font-weight:600;white-space:nowrap}
+    .footer-brand{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;color:#95a5a6;font-weight:600;letter-spacing:.5px}
+    .footer-brand strong{color:#667eea;font-weight:800}
+    .btn{padding:12px 24px;border:none;border-radius:4px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.4px}
+    .btn-nav{background:transparent;color:#7f8c8d;border:2px solid #bdc3c7}
+    .btn-nav:hover{background:#ecf0f1}
+    .btn-primary{background:#e74c3c;color:#fff;border:2px solid #e74c3c}
+    .btn-primary:hover{background:#c0392b;border-color:#c0392b}
+    .btn-secondary{background:transparent;color:#3498db;border:2px solid #3498db}
+    .btn-secondary:hover{background:#3498db;color:#fff}
+    h2{font-family:'Libre Baskerville',serif;font-size:28px;color:#2c3e50;margin-bottom:18px;padding-bottom:10px;border-bottom:3px solid #e74c3c;display:inline-block}
+    h3{font-family:'Libre Baskerville',serif;font-size:20px;color:#34495e;margin:22px 0 12px}
+    h4{font-family:'Libre Baskerville',serif;font-size:17px;color:#2c3e50;margin-bottom:10px}
+    p{font-size:16px;line-height:1.7;color:#2c3e50;margin-bottom:14px}
+    .info-card,.warning-card,.success-card{padding:18px 20px;margin:18px 0;border-left:5px solid}
+    .info-card{background:#ecf9ff;border-left-color:#3498db}
+    .warning-card{background:#fff4e6;border-left-color:#f39c12}
+    .success-card{background:#e8f8f5;border-left-color:#27ae60}
+    .info-card-title,.warning-card-title,.success-card-title{font-weight:800;font-size:16.5px;margin-bottom:10px}
+    .info-card-title{color:#2980b9}.warning-card-title{color:#e67e22}.success-card-title{color:#27ae60}
+    .content-list{list-style:none;padding:0}
+    .content-list li{padding:8px 0 8px 26px;position:relative;font-size:16px;line-height:1.6;color:#2c3e50}
+    .content-list li::before{content:"▸";position:absolute;left:0;color:#e74c3c;font-size:18px;font-weight:800}
+    .two-columns{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0;align-items:start}
+    .three-columns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:16px 0}
+    .panel{background:#f8f9fa;border:1px solid #ecf0f1;border-radius:4px;padding:16px 18px}
+    .question-area{background:#f8fbff;border:2px solid rgba(52,152,219,.22);border-radius:4px;padding:16px 18px;margin-top:14px}
+    .question-title{font-weight:800;font-size:17px;color:#2c3e50;margin-bottom:12px}
+    .options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .option-card{background:#fff;border:2px solid #dfe6e9;border-radius:4px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px}
+    .option-card:hover{border-color:#3498db;background:#f8f9fa}
+    .option-card.selected{border-color:#3498db;background:#ecf9ff}
+    .option-radio{width:18px;height:18px;border:2px solid #bdc3c7;border-radius:50%;position:relative;flex-shrink:0}
+    .option-card.selected .option-radio{border-color:#3498db}
+    .option-card.selected .option-radio::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:9px;height:9px;background:#3498db;border-radius:50%}
+    .option-text{font-size:15.5px;line-height:1.45}
+    .checkbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .checkbox-card{background:#fff;border:2px solid #dfe6e9;border-radius:4px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px}
+    .checkbox-card:hover{border-color:#3498db;background:#f8f9fa}
+    .checkbox-card.selected{border-color:#3498db;background:#ecf9ff}
+    .option-checkbox{width:18px;height:18px;border:2px solid #bdc3c7;border-radius:4px;position:relative;flex-shrink:0;background:#fff}
+    .checkbox-card.selected .option-checkbox{border-color:#3498db;background:#3498db}
+    .checkbox-card.selected .option-checkbox::after{content:'';position:absolute;top:1px;left:5px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+    input[type="text"], textarea, select{width:100%;padding:10px 10px;border:2px solid #dfe6e9;border-radius:4px;font-family:'Inter',sans-serif;font-size:14px;background:#fff;color:#2c3e50;line-height:1.35}
+    input[type="text"]:focus, textarea:focus, select:focus{outline:none;border-color:#3498db}
+    textarea{min-height:92px;resize:vertical}
+    .small-textarea{min-height:72px}
+    .data-table{width:100%;border-collapse:collapse;border:1px solid #dfe6e9;margin:16px 0}
+    .data-table th{background:#34495e;color:#fff;padding:12px;text-align:left;font-weight:800;font-size:13.5px}
+    .data-table td{padding:10px 12px;border-bottom:1px solid #ecf0f1;vertical-align:top;font-size:14.5px}
+    .data-table tbody tr:nth-child(even){background:#f8f9fa}
+    .feedback{padding:14px 16px;border-radius:4px;margin-top:12px;display:none;font-weight:700}
+    .feedback.show{display:block}
+    .feedback.success{background:#e8f8f5;border-left:5px solid #27ae60;color:#27ae60}
+    .feedback.error{background:#fadbd8;border-left:5px solid #e74c3c;color:#c0392b}
+    .feedback.partial{background:#fff4e6;border-left:5px solid #f39c12;color:#e67e22}
+    .feedback-title{font-weight:900;margin-bottom:6px}.feedback-text{font-weight:700;line-height:1.55}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+    .code-box{background:#f8f9fa;border:1px solid #dfe6e9;border-left:5px solid #3498db;border-radius:4px;padding:14px 16px;font-family:'Courier New',monospace;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;margin:14px 0}
+    .resource-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .resource-row a{text-decoration:none;color:#2c3e50;background:#fff;border:2px solid #dfe6e9;padding:10px 12px;border-radius:4px;font-weight:800;font-size:13px}
+    .helper{font-size:13.5px;color:#7f8c8d;margin-top:8px;line-height:1.6}
+    .completion-card{background:#fff;border-radius:12px;padding:40px;max-width:800px;margin:0 auto;box-shadow:0 10px 40px rgba(0,0,0,.08)}
+    .completion-icon{width:80px;height:80px;background:#27ae60;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 25px;font-size:40px;color:#fff}
+    .student-data{background:#f8f9fa;border:2px solid #ecf0f1;border-radius:8px;padding:25px;margin:25px 0}
+    .data-item{display:flex;padding:12px 0;border-bottom:1px solid #ecf0f1;gap:14px}.data-item:last-child{border-bottom:none}
+    .data-label{font-weight:700;color:#7f8c8d;min-width:170px;font-size:14px}
+    .data-value{color:#2c3e50;font-weight:600;font-size:15px;word-break:break-word}
+    @media (max-width:1200px){.slide-title{font-size:33px}.two-columns,.three-columns,.options-grid,.checkbox-grid{grid-template-columns:1fr}}
+    @media (max-width:768px){.presentation-wrapper{padding:0}.slide{height:100vh}.slide-header,.slide-footer{padding:18px}.slide-content{padding:20px}.slide-title{font-size:25px}.registro-card{padding:38px 28px}.footer-brand{display:none}}
+  </style>
+</head>
+<body>
+  <div class="registro-screen" id="registroScreen">
+    <div class="registro-card">
+      <h1>Búsqueda de literatura con IA <span class="skip-dot" title="Saltar inicio" onclick="skipRegistro()">●</span></h1>
+      <p class="subtitle">Práctica guiada para estudiantes que empiezan. Si tocan el punto rojo del título, entran directamente sin diligenciar los datos iniciales.</p>
+      <form onsubmit="return false;">
+        <div class="form-group">
+          <label for="nombreCompleto">Nombre completo *</label>
+          <input type="text" id="nombreCompleto" placeholder="Ingresa tu nombre completo">
+          <div class="error-message" id="errorNombre">Por favor ingresa tu nombre completo</div>
+        </div>
+        <div class="form-group">
+          <label for="nrc">NRC *</label>
+          <input type="text" id="nrc" placeholder="Ingresa el NRC del curso">
+          <div class="error-message" id="errorNrc">Por favor ingresa el NRC</div>
+        </div>
+        <div class="form-group">
+          <label for="grupo">Número de grupo *</label>
+          <input type="text" id="grupo" placeholder="Ingresa tu número de grupo">
+          <div class="error-message" id="errorGrupo">Por favor ingresa tu número de grupo</div>
+        </div>
+        <button type="button" class="btn-comenzar" onclick="validarRegistro()">Comenzar práctica</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="presentation-wrapper" id="presentationWrapper">
+    <!-- SLIDE 1 -->
+    <section class="slide active">
+      <header class="slide-header">
+        <div class="slide-number">INTRODUCCIÓN</div>
+        <h1 class="slide-title">Ruta básica para buscar literatura con IA</h1>
+      </header>
+      <div class="slide-content">
+        <div class="info-card">
+          <div class="info-card-title">Tema ejemplo de la práctica</div>
+          <p><strong>Pregunta problema:</strong> ¿cómo se relaciona la participación en deporte recreativo con el estrés académico en estudiantes universitarios?</p>
+        </div>
+
+        <h2>Primero aclaremos el cuento del prompt</h2>
+        <div class="two-columns">
+          <div class="panel">
+            <h4>Cuándo sí usar un prompt tipo “Actúa como…”</h4>
+            <ul class="content-list">
+              <li>En asistentes conversacionales o híbridos: <strong>Perplexity, Elicit y Consensus</strong>.</li>
+              <li>Sirve para orientar la respuesta, pedir estructura y delimitar la tarea.</li>
+              <li>No hace magia: ayuda a que la salida sea más clara y útil.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h4>Cuándo no es lo central</h4>
+            <ul class="content-list">
+              <li>En <strong>Semantic Scholar</strong> el trabajo principal es la <strong>búsqueda por palabras clave o ecuación</strong>.</li>
+              <li>En <strong>ResearchRabbit</strong> lo central es partir de un <strong>artículo semilla</strong>.</li>
+              <li>Ahí importa más la consulta o el paper base que el “actúa como”.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="warning-card">
+          <div class="warning-card-title">Regla simple para los chicos</div>
+          <p><strong>Chat general o asistente textual:</strong> sí conviene una estructura de prompt. <strong>Buscador académico o mapa por citas:</strong> conviene más una buena ecuación o un buen artículo semilla.</p>
+        </div>
+
+        <h3>Ruta de la clase</h3>
+        <div class="code-box">Perplexity → Semantic Scholar → Elicit → ResearchRabbit → Consensus</div>
+      </div>
+      <footer class="slide-footer">
+        <div class="progress-indicator">1 de 8</div>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <button class="btn btn-primary" onclick="nextSlide()">COMENZAR →</button>
+      </footer>
+    </section>
+
+    <!-- SLIDE 2 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PASO 1</div>
+        <h1 class="slide-title">Perplexity: orientar el tema</h1>
+      </header>
+      <div class="slide-content">
+        <div class="info-card">
+          <div class="info-card-title">Para qué sí sirve aquí</div>
+          <p>Para aclarar el tema, extraer palabras clave, variables, subtemas y formas de reformular la pregunta problema. Aquí sí tiene sentido un prompt con rol.</p>
+        </div>
+
+        <div class="two-columns">
+          <div class="panel">
+            <h4>1. Ejemplo de prompt</h4>
+            <div class="code-box" id="perplexityExample">Actúa como experto investigador académico. Analiza el tema "deporte recreativo y estrés académico en estudiantes universitarios". Dame: 1) palabras clave en español, 2) posibles términos en inglés, 3) variables principales, 4) subtemas útiles para una búsqueda bibliográfica inicial. Responde en lista breve.</div>
+          </div>
+          <div class="panel">
+            <h4>2. Estructura para completar</h4>
+            <div class="three-columns">
+              <div>
+                <label>Tema</label>
+                <input type="text" id="pxTema" value="deporte recreativo y estrés académico">
+              </div>
+              <div>
+                <label>Población / contexto</label>
+                <input type="text" id="pxContexto" value="estudiantes universitarios">
+              </div>
+              <div>
+                <label>Qué necesito</label>
+                <input type="text" id="pxNecesito" value="palabras clave, términos en inglés, variables y subtemas">
+              </div>
+            </div>
+            <div class="panel" style="padding:12px 0 0;border:none;background:transparent">
+              <label>Formato de salida</label>
+              <input type="text" id="pxFormato" value="lista breve y clara">
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-secondary" onclick="buildPrompt('perplexity')">GENERAR PROMPT</button>
+              <button class="btn btn-secondary" onclick="copyBox('perplexityBuilt')">COPIAR</button>
+              <button class="btn btn-secondary" onclick="translateBox('perplexityBuilt')">TRADUCIR</button>
+              <a class="btn btn-primary" href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer">ABRIR PERPLEXITY</a>
+            </div>
+            <div class="code-box" id="perplexityBuilt">(Aquí aparecerá el prompt generado)</div>
+            <div class="helper">Si quieren usarlo en inglés, generan el prompt, lo traducen con el botón y luego lo pegan en el asistente.</div>
+          </div>
+        </div>
+
+        <div class="question-area">
+          <div class="question-title">¿Qué función cumple Perplexity en esta práctica?</div>
+          <div class="options-grid" id="q-perplexity"></div>
+          <div id="feedbackPerplexity" class="feedback"></div>
+        </div>
+      </div>
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div class="progress-indicator">2 de 8</div>
+          <button class="btn btn-primary" onclick="checkQuestion('perplexity')">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 3 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PASO 2</div>
+        <h1 class="slide-title">Semantic Scholar: encontrar artículos semilla</h1>
+      </header>
+      <div class="slide-content">
+        <h2>Qué es un artículo semilla</h2>
+        <div class="success-card">
+          <div class="success-card-title">Definición simple</div>
+          <p>Es un artículo que sí parece central para tu tema y que te sirve como <strong>punto de partida</strong> para seguir buscando más literatura relacionada.</p>
+        </div>
+
+        <div class="two-columns">
+          <div class="panel">
+            <h4>Qué se hace aquí</h4>
+            <ul class="content-list">
+              <li>Pegar la ecuación booleana o combinar palabras clave.</li>
+              <li>Leer título, resumen, año y tema del paper.</li>
+              <li>Elegir 2 o 3 artículos que sí respondan a la pregunta.</li>
+              <li>Registrar esos referentes en la bitácora del grupo o del estudiante.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h4>Importante</h4>
+            <ul class="content-list">
+              <li>Aquí <strong>no necesitas un prompt tipo “actúa como”</strong>.</li>
+              <li>Lo central es una <strong>buena ecuación</strong> o buenos términos de búsqueda.</li>
+              <li>Si la plataforma les pide iniciar sesión para otras funciones, ingresan y continúan; la lógica de la práctica no depende de guardar allí.</li>
+            </ul>
+          </div>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Entrada</th>
+              <th>Acción</th>
+              <th>Salida esperada</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ecuación booleana</td>
+              <td>Pegarla en el buscador</td>
+              <td>Lista inicial de papers</td>
+            </tr>
+            <tr>
+              <td>Título y resumen</td>
+              <td>Revisar pertinencia</td>
+              <td>Descartar o seleccionar</td>
+            </tr>
+            <tr>
+              <td>Paper relevante</td>
+              <td>Marcarlo como semilla en la bitácora</td>
+              <td>2 o 3 artículos base</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="btn-row">
+          <a class="btn btn-primary" href="https://www.semanticscholar.org/" target="_blank" rel="noopener noreferrer">ABRIR SEMANTIC SCHOLAR</a>
+        </div>
+
+        <div class="question-area">
+          <div class="question-title">¿Cuál afirmación describe mejor el uso de Semantic Scholar en esta clase?</div>
+          <div class="options-grid" id="q-semantic"></div>
+          <div id="feedbackSemantic" class="feedback"></div>
+        </div>
+      </div>
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div class="progress-indicator">3 de 8</div>
+          <button class="btn btn-primary" onclick="checkQuestion('semantic')">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 4 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PASO 3</div>
+        <h1 class="slide-title">Elicit: comparar y entender papers</h1>
+      </header>
+      <div class="slide-content">
+        <div class="info-card">
+          <div class="info-card-title">Sentido del paso</div>
+          <p>Elicit sirve para comparar estudios y entender rápido qué hicieron, con qué población y qué hallaron. Aquí sí puedes usar un prompt claro y estructurado.</p>
+        </div>
+
+        <div class="two-columns">
+          <div class="panel">
+            <h4>1. Ejemplo de prompt</h4>
+            <div class="code-box" id="elicitExample">Actúa como experto investigador académico. Busca estudios sobre la relación entre deporte recreativo y estrés académico en estudiantes universitarios. Compárame los papers encontrados en estos campos: diseño del estudio, muestra, variable principal, hallazgo clave y utilidad para una revisión de literatura. Responde en tabla breve.</div>
+          </div>
+          <div class="panel">
+            <h4>2. Estructura para completar</h4>
+            <div class="three-columns">
+              <div>
+                <label>Fenómeno</label>
+                <input type="text" id="elFenomeno" value="relación entre deporte recreativo y estrés académico">
+              </div>
+              <div>
+                <label>Población</label>
+                <input type="text" id="elPoblacion" value="estudiantes universitarios">
+              </div>
+              <div>
+                <label>Campos a comparar</label>
+                <input type="text" id="elCampos" value="diseño, muestra, variable, hallazgo, utilidad">
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-secondary" onclick="buildPrompt('elicit')">GENERAR PROMPT</button>
+              <button class="btn btn-secondary" onclick="copyBox('elicitBuilt')">COPIAR</button>
+              <button class="btn btn-secondary" onclick="translateBox('elicitBuilt')">TRADUCIR</button>
+              <a class="btn btn-primary" href="https://elicit.com/" target="_blank" rel="noopener noreferrer">ABRIR ELICIT</a>
+            </div>
+            <div class="code-box" id="elicitBuilt">(Aquí aparecerá el prompt generado)</div>
+            <div class="helper">En algunos asistentes académicos el inglés puede funcionar mejor. Por eso el botón de traducir les ayuda a llevar el mismo prompt a inglés sin reescribirlo.</div>
+          </div>
+        </div>
+
+        <div class="question-area">
+          <div class="question-title">¿Qué producto es más razonable pedirle a Elicit?</div>
+          <div class="options-grid" id="q-elicit"></div>
+          <div id="feedbackElicit" class="feedback"></div>
+        </div>
+      </div>
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div class="progress-indicator">4 de 8</div>
+          <button class="btn btn-primary" onclick="checkQuestion('elicit')">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 5 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PASO 4</div>
+        <h1 class="slide-title">ResearchRabbit: ampliar desde la semilla</h1>
+      </header>
+      <div class="slide-content">
+        <div class="warning-card">
+          <div class="warning-card-title">Idea clave</div>
+          <p>ResearchRabbit no se usa como primer buscador. Se usa cuando ya tienes un artículo semilla y quieres descubrir trabajos relacionados, referencias citadas o estudios que lo citan.</p>
+        </div>
+
+        <div class="two-columns">
+          <div class="panel">
+            <h4>Qué haces aquí</h4>
+            <ul class="content-list">
+              <li>Tomas uno de tus artículos semilla.</li>
+              <li>Lo llevas a ResearchRabbit.</li>
+              <li>Revisas trabajos similares y conexiones.</li>
+              <li>Registras nuevos referentes que sí valgan la pena.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h4>Qué no haces aquí</h4>
+            <ul class="content-list">
+              <li>No empiezas desde cero sin paper base.</li>
+              <li>No reemplazas la revisión del resumen o del artículo.</li>
+              <li>No dependes de un prompt tipo “actúa como”.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <a class="btn btn-primary" href="https://www.researchrabbit.ai/" target="_blank" rel="noopener noreferrer">ABRIR RESEARCHRABBIT</a>
+        </div>
+
+        <div class="question-area">
+          <div class="question-title">Selecciona la mejor definición de artículo semilla</div>
+          <div class="options-grid" id="q-rabbit"></div>
+          <div id="feedbackRabbit" class="feedback"></div>
+        </div>
+      </div>
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div class="progress-indicator">5 de 8</div>
+          <button class="btn btn-primary" onclick="checkQuestion('rabbit')">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 6 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">PASO 5</div>
+        <h1 class="slide-title">Consensus: contrastar la evidencia</h1>
+      </header>
+      <div class="slide-content">
+        <div class="success-card">
+          <div class="success-card-title">Uso correcto</div>
+          <p>Consensus sirve para preguntar de forma directa qué dice la evidencia académica sobre una relación o efecto. Ayuda a contrastar, no a reemplazar la lectura del artículo original.</p>
+        </div>
+
+        <div class="two-columns">
+          <div class="panel">
+            <h4>1. Ejemplo de prompt</h4>
+            <div class="code-box" id="consensusExample">Actúa como experto investigador académico. Resume qué dice la evidencia científica sobre la relación entre deporte recreativo y estrés académico en estudiantes universitarios. Indica si la evidencia parece consistente, mixta o insuficiente. Responde breve y con foco en estudios académicos.</div>
+          </div>
+          <div class="panel">
+            <h4>2. Estructura para completar</h4>
+            <div class="three-columns">
+              <div>
+                <label>Relación a evaluar</label>
+                <input type="text" id="coRelacion" value="deporte recreativo y estrés académico">
+              </div>
+              <div>
+                <label>Población</label>
+                <input type="text" id="coPoblacion" value="estudiantes universitarios">
+              </div>
+              <div>
+                <label>Qué quiero saber</label>
+                <input type="text" id="coSalida" value="si la evidencia es consistente, mixta o insuficiente">
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-secondary" onclick="buildPrompt('consensus')">GENERAR PROMPT</button>
+              <button class="btn btn-secondary" onclick="copyBox('consensusBuilt')">COPIAR</button>
+              <button class="btn btn-secondary" onclick="translateBox('consensusBuilt')">TRADUCIR</button>
+              <a class="btn btn-primary" href="https://consensus.app/search/" target="_blank" rel="noopener noreferrer">ABRIR CONSENSUS</a>
+            </div>
+            <div class="code-box" id="consensusBuilt">(Aquí aparecerá el prompt generado)</div>
+          </div>
+        </div>
+
+        <div class="question-area">
+          <div class="question-title">¿Qué sería un uso inadecuado de Consensus?</div>
+          <div class="options-grid" id="q-consensus"></div>
+          <div id="feedbackConsensus" class="feedback"></div>
+        </div>
+      </div>
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div class="progress-indicator">6 de 8</div>
+          <button class="btn btn-primary" onclick="checkQuestion('consensus')">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 7 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">CIERRE OPERATIVO</div>
+        <h1 class="slide-title">Bitácora y referentes útiles</h1>
+      </header>
+      <div class="slide-content">
+        <h2>Qué sí deben registrar</h2>
+        <div class="question-area">
+          <div class="question-title">Marca los elementos mínimos que sí deben quedar en la bitácora del referente</div>
+          <div class="checkbox-grid" id="q-checklist"></div>
+          <div id="feedbackChecklist" class="feedback"></div>
+        </div>
+
+        <h3>Bitácora mínima sugerida</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Herramienta</th>
+              <th>Qué registras</th>
+              <th>Para qué sirve</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Semantic Scholar</td>
+              <td>Artículo semilla + datos básicos</td>
+              <td>Punto de partida</td>
+            </tr>
+            <tr>
+              <td>Elicit</td>
+              <td>Comparación de estudios</td>
+              <td>Decidir inclusión o descarte</td>
+            </tr>
+            <tr>
+              <td>ResearchRabbit</td>
+              <td>Nuevos referentes conectados</td>
+              <td>Ampliar la red de literatura</td>
+            </tr>
+            <tr>
+              <td>Consensus</td>
+              <td>Conclusión breve de la evidencia</td>
+              <td>Contrastar la tendencia general</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div class="progress-indicator">7 de 8</div>
+          <button class="btn btn-primary" onclick="checkChecklist()">VERIFICAR →</button>
+        </div>
+      </footer>
+    </section>
+
+    <!-- SLIDE 8 -->
+    <section class="slide">
+      <header class="slide-header">
+        <div class="slide-number">FINALIZACIÓN</div>
+        <h1 class="slide-title">¡Práctica completada!</h1>
+      </header>
+      <div class="slide-content">
+        <div class="completion-card">
+          <div class="completion-icon">✓</div>
+          <h2 style="text-align:center;color:#27ae60;margin-bottom:10px;">Resumen final</h2>
+          <p style="text-align:center;color:#7f8c8d;margin-bottom:28px;">Ya tienes una ruta básica y la lógica de cuándo usar prompt y cuándo no.</p>
+
+          <div class="student-data">
+            <div class="data-item"><div class="data-label">Nombre:</div><div class="data-value" id="finalNombre">-</div></div>
+            <div class="data-item"><div class="data-label">NRC:</div><div class="data-value" id="finalNrc">-</div></div>
+            <div class="data-item"><div class="data-label">Grupo:</div><div class="data-value" id="finalGrupo">-</div></div>
+          </div>
+
+          <div class="success-card">
+            <div class="success-card-title">Ruta de trabajo</div>
+            <div class="code-box">Perplexity → Semantic Scholar → Elicit → ResearchRabbit → Consensus</div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title">Lo más importante</div>
+            <ul class="content-list">
+              <li>Prompt estructurado en asistentes textuales.</li>
+              <li>Ecuación o palabras clave en Semantic Scholar.</li>
+              <li>Artículo semilla en ResearchRabbit.</li>
+              <li>Bitácora limpia con referentes útiles.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-footer">
+        <button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button>
+        <div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div>
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div class="progress-indicator">8 de 8</div>
+          <button class="btn btn-primary" onclick="resetAll()">🔄 REINICIAR</button>
+        </div>
+      </footer>
+    </section>
+  </div>
+
+  <script>
+    let studentData = {nombre:'',nrc:'',grupo:''};
+    let currentSlide = 0;
+    const answers = {};
+    const checklistSelected = new Set();
+
+    const questionBank = {
+      perplexity: {
+        correct: 'orientar',
+        target: 'q-perplexity',
+        feedback: 'feedbackPerplexity',
+        choices: [
+          {id:'orientar', text:'Orientar el tema, sacar palabras clave y reformular la pregunta.'},
+          {id:'cerrar', text:'Reemplazar toda la revisión bibliográfica y sacar conclusiones finales.'},
+          {id:'pdf', text:'Descargar automáticamente todos los PDF del tema.'},
+          {id:'citar', text:'Citar la respuesta como si fuera la fuente académica principal.'}
+        ]
+      },
+      semantic: {
+        correct: 'semilla',
+        target: 'q-semantic',
+        feedback: 'feedbackSemantic',
+        choices: [
+          {id:'semilla', text:'Se usa con ecuación o términos para localizar papers y elegir artículos semilla.'},
+          {id:'rol', text:'Se usa mejor con el prompt “actúa como experto investigador académico”.'},
+          {id:'final', text:'Sirve principalmente para escribir directamente el marco teórico final.'},
+          {id:'logo', text:'Su función principal es tomar capturas visuales para la bitácora.'}
+        ]
+      },
+      elicit: {
+        correct: 'comparar',
+        target: 'q-elicit',
+        feedback: 'feedbackElicit',
+        choices: [
+          {id:'comparar', text:'Una tabla breve que compare diseño, muestra, variables y hallazgos.'},
+          {id:'portada', text:'Una portada decorativa para la investigación.'},
+          {id:'logo', text:'Una lista de logos de revistas científicas.'},
+          {id:'pdf', text:'Una descarga masiva sin revisar pertinencia.'}
+        ]
+      },
+      rabbit: {
+        correct: 'base',
+        target: 'q-rabbit',
+        feedback: 'feedbackRabbit',
+        choices: [
+          {id:'base', text:'Un paper pertinente que sirve como punto de partida para hallar literatura conectada.'},
+          {id:'cualquiera', text:'El primer artículo que aparezca, aunque no tenga relación directa.'},
+          {id:'resumen', text:'Una respuesta breve generada por cualquier chatbot.'},
+          {id:'captura', text:'La imagen del buscador o de la plataforma.'}
+        ]
+      },
+      consensus: {
+        correct: 'reemplazar',
+        target: 'q-consensus',
+        feedback: 'feedbackConsensus',
+        choices: [
+          {id:'reemplazar', text:'Usarlo para reemplazar la lectura del artículo original y citar solo el resumen.'},
+          {id:'contrastar', text:'Usarlo para contrastar qué tendencia general muestra la evidencia.'},
+          {id:'preguntar', text:'Formular la pregunta en lenguaje natural.'},
+          {id:'verificar', text:'Revisar si parece haber evidencia consistente o mixta.'}
+        ]
+      }
+    };
+
+    const checklistBank = [
+      {id:'titulo', text:'Título del artículo', correct:true},
+      {id:'doi', text:'DOI o enlace estable', correct:true},
+      {id:'anio', text:'Año', correct:true},
+      {id:'autores', text:'Autores', correct:true},
+      {id:'pdf', text:'PDF si está disponible', correct:true},
+      {id:'nota', text:'Resumen o nota breve', correct:true},
+      {id:'logo', text:'Captura del logo de la plataforma', correct:false},
+      {id:'export', text:'Archivo exportado de referencia si existe', correct:true}
+    ];
+
+    function validarRegistro(){
+      const nombre = document.getElementById('nombreCompleto').value.trim();
+      const nrc = document.getElementById('nrc').value.trim();
+      const grupo = document.getElementById('grupo').value.trim();
+      let ok = true;
+      document.getElementById('errorNombre').classList.toggle('show', !nombre || nombre.length < 3);
+      document.getElementById('errorNrc').classList.toggle('show', !nrc);
+      document.getElementById('errorGrupo').classList.toggle('show', !grupo);
+      if (!nombre || nombre.length < 3 || !nrc || !grupo) ok = false;
+      if (!ok) return;
+      studentData = {nombre:nombre.toUpperCase(), nrc:nrc.toUpperCase(), grupo:grupo.toUpperCase()};
+      entrarOVA();
+    }
+
+    function skipRegistro(){
+      studentData = {nombre:'SIN REGISTRO', nrc:'N/A', grupo:'N/A'};
+      entrarOVA();
+    }
+
+    function entrarOVA(){
+      document.getElementById('registroScreen').style.display = 'none';
+      document.getElementById('presentationWrapper').classList.add('active');
+      showSlide(0);
+    }
+
+    function showSlide(index){
+      const slides = document.querySelectorAll('.slide');
+      slides.forEach((s,i)=>s.classList.toggle('active', i===index));
+      currentSlide = index;
+      if (index === 7){
+        document.getElementById('finalNombre').textContent = studentData.nombre || '-';
+        document.getElementById('finalNrc').textContent = studentData.nrc || '-';
+        document.getElementById('finalGrupo').textContent = studentData.grupo || '-';
+      }
+    }
+
+    function nextSlide(){
+      const slides = document.querySelectorAll('.slide');
+      if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+    }
+
+    function prevSlide(){
+      if (currentSlide > 0) showSlide(currentSlide - 1);
+    }
+
+    function shuffle(arr){
+      const a = [...arr];
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    function renderQuestions(){
+      Object.keys(questionBank).forEach(key=>{
+        const q = questionBank[key];
+        const target = document.getElementById(q.target);
+        const shuffled = shuffle(q.choices);
+        q.currentOrder = shuffled.map(c=>c.id);
+        target.innerHTML = '';
+        shuffled.forEach(choice=>{
+          const card = document.createElement('div');
+          card.className = 'option-card';
+          card.innerHTML = `<div class="option-radio"></div><div class="option-text">${choice.text}</div>`;
+          card.onclick = ()=>selectOption(key, card, choice.id);
+          target.appendChild(card);
+        });
+      });
+
+      const ck = document.getElementById('q-checklist');
+      ck.innerHTML = '';
+      shuffle(checklistBank).forEach(item=>{
+        const card = document.createElement('div');
+        card.className = 'checkbox-card';
+        card.dataset.id = item.id;
+        card.dataset.correct = item.correct ? '1' : '0';
+        card.innerHTML = `<div class="option-checkbox"></div><div class="option-text">${item.text}</div>`;
+        card.onclick = ()=>toggleChecklist(card, item.id);
+        ck.appendChild(card);
+      });
+    }
+
+    function selectOption(group, el, value){
+      const parent = el.parentElement;
+      parent.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+      answers[group] = value;
+      const fb = questionBank[group].feedback;
+      clearFeedback(fb);
+    }
+
+    function showFeedback(id, type, title, message){
+      const fb = document.getElementById(id);
+      fb.className = `feedback ${type} show`;
+      fb.innerHTML = `<div class="feedback-title">${title}</div><div class="feedback-text">${message}</div>`;
+    }
+
+    function clearFeedback(id){
+      const fb = document.getElementById(id);
+      if (!fb) return;
+      fb.className = 'feedback';
+      fb.innerHTML = '';
+    }
+
+    function checkQuestion(group){
+      const q = questionBank[group];
+      if (!answers[group]){
+        showFeedback(q.feedback, 'error', 'Selecciona una opción', 'Marca una respuesta antes de continuar.');
+        return;
+      }
+      if (answers[group] === q.correct){
+        showFeedback(q.feedback, 'success', '¡Correcto!', 'Respuesta acertada.');
+        setTimeout(()=>nextSlide(), 800);
+      } else {
+        let msg = 'Revisa la función de esta herramienta dentro de la ruta de clase.';
+        if (group === 'semantic') msg = 'Aquí importa más la ecuación o los términos de búsqueda y la elección de artículos semilla.';
+        if (group === 'consensus') msg = 'Consensus ayuda a contrastar la evidencia, pero no sustituye la lectura del paper original.';
+        showFeedback(q.feedback, 'error', 'Revisa tu respuesta', msg);
+      }
+    }
+
+    function toggleChecklist(el, id){
+      el.classList.toggle('selected');
+      if (el.classList.contains('selected')) checklistSelected.add(id);
+      else checklistSelected.delete(id);
+      clearFeedback('feedbackChecklist');
+    }
+
+    function checkChecklist(){
+      if (checklistSelected.size === 0){
+        showFeedback('feedbackChecklist', 'error', 'Selecciona opciones', 'Marca los elementos mínimos de la bitácora.');
+        return;
+      }
+      const wrong = [];
+      const missing = [];
+      checklistBank.forEach(item=>{
+        if (item.correct && !checklistSelected.has(item.id)) missing.push(item.id);
+        if (!item.correct && checklistSelected.has(item.id)) wrong.push(item.id);
+      });
+
+      if (wrong.length > 0){
+        showFeedback('feedbackChecklist', 'error', 'Hay una opción incorrecta', 'El logo de la plataforma no es un dato bibliográfico útil.');
+        return;
+      }
+      if (missing.length > 0){
+        showFeedback('feedbackChecklist', 'partial', 'Vas bien, pero falta', 'Aún faltan elementos bibliográficos importantes para registrar bien el referente.');
+        return;
+      }
+      showFeedback('feedbackChecklist', 'success', '¡Muy bien!', 'Ese bloque sí sirve para registrar referentes útiles.');
+      setTimeout(()=>nextSlide(), 800);
+    }
+
+    function buildPrompt(tool){
+      if (tool === 'perplexity'){
+        const tema = document.getElementById('pxTema').value.trim();
+        const contexto = document.getElementById('pxContexto').value.trim();
+        const necesito = document.getElementById('pxNecesito').value.trim();
+        const formato = document.getElementById('pxFormato').value.trim();
+        const out = `Actúa como experto investigador académico. Analiza el tema "${tema}" en ${contexto}. Necesito: ${necesito}. Responde en formato de ${formato}.`;
+        document.getElementById('perplexityBuilt').textContent = out;
+      }
+      if (tool === 'elicit'){
+        const f = document.getElementById('elFenomeno').value.trim();
+        const p = document.getElementById('elPoblacion').value.trim();
+        const c = document.getElementById('elCampos').value.trim();
+        const out = `Actúa como experto investigador académico. Busca estudios sobre ${f} en ${p}. Compárame los papers en estos campos: ${c}. Responde en tabla breve.`;
+        document.getElementById('elicitBuilt').textContent = out;
+      }
+      if (tool === 'consensus'){
+        const r = document.getElementById('coRelacion').value.trim();
+        const p = document.getElementById('coPoblacion').value.trim();
+        const s = document.getElementById('coSalida').value.trim();
+        const out = `Actúa como experto investigador académico. Resume qué dice la evidencia científica sobre ${r} en ${p}. Indica ${s}. Responde breve y con foco en estudios académicos.`;
+        document.getElementById('consensusBuilt').textContent = out;
+      }
+    }
+
+    function copyBox(id){
+      const text = document.getElementById(id).textContent.trim();
+      copyText(text);
+    }
+
+    function translateBox(id){
+      const text = document.getElementById(id).textContent.trim();
+      if (!text || text.startsWith('(Aquí aparecerá')) return alert('Primero genera el prompt.');
+      const url = 'https://translate.google.com/?sl=es&tl=en&text=' + encodeURIComponent(text) + '&op=translate';
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function copyText(text){
+      navigator.clipboard?.writeText(text).then(()=>alert('Copiado')).catch(()=>{
+        const t = document.createElement('textarea');
+        t.value = text;
+        document.body.appendChild(t);
+        t.select();
+        document.execCommand('copy');
+        document.body.removeChild(t);
+        alert('Copiado');
+      });
+    }
+
+    function resetAll(){
+      if (!confirm('¿Deseas reiniciar la práctica?')) return;
+      studentData = {nombre:'',nrc:'',grupo:''};
+      currentSlide = 0;
+      Object.keys(answers).forEach(k=>delete answers[k]);
+      checklistSelected.clear();
+      document.querySelectorAll('.feedback').forEach(f=>{f.className='feedback';f.innerHTML='';});
+      document.querySelectorAll('input').forEach(i=>{ if(['pxTema','pxContexto','pxNecesito','pxFormato','elFenomeno','elPoblacion','elCampos','coRelacion','coPoblacion','coSalida'].includes(i.id)) return; i.value='';});
+      document.getElementById('perplexityBuilt').textContent='(Aquí aparecerá el prompt generado)';
+      document.getElementById('elicitBuilt').textContent='(Aquí aparecerá el prompt generado)';
+      document.getElementById('consensusBuilt').textContent='(Aquí aparecerá el prompt generado)';
+      renderQuestions();
+      document.getElementById('presentationWrapper').classList.remove('active');
+      document.getElementById('registroScreen').style.display='flex';
+      showSlide(0);
+    }
+
+    document.addEventListener('keydown', e=>{
+      if (!document.getElementById('presentationWrapper').classList.contains('active')) return;
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    renderQuestions();
+  </script>
+</body>
+</html>
