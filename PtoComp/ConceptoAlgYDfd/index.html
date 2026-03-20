@@ -1,0 +1,1600 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlgoritmoVis - Algoritmos, Diagramas y Bubble Sort</title>
+  <script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=HRL4klyplQMQdte9wKwrekMh7daVE00HIQDcjFllr8kiRuR-rAloa_De4Fw5QZqq-mt3gI6B5Max94zclrCPxcepRT_KDdZoCQmpd-TeAnCFHGNk2eg6O_o0UDFKFveHCyuklxcJOkCblBId8Y3WUNdIFV2uIVnUlEEg49PAv2x406oylBO10qhEBzfHuh6R2Qb5SVePEusWYBBD4a1qBv2On9OalF7PG9jTSHaVhBjrBXGi3A77ER3wpGJN7GqRmjSzTDpRxhOUBL9IVLEDCg" charset="UTF-8"></script><style>
+    :root {
+      --bg: #f6f8fc;
+      --panel: #ffffff;
+      --panel-soft: #f8fbff;
+      --panel-2: #eef2ff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #4f46e5;
+      --primary-2: #6366f1;
+      --danger: #e11d48;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --yellow: #facc15;
+      --sky: #0ea5e9;
+      --green: #22c55e;
+      --graybar: #cbd5e1;
+      --shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    h1, h2, h3, h4, p { margin: 0; }
+
+    .container {
+      width: min(1200px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .header-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 22px 0;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.16);
+      font-size: 22px;
+    }
+
+    .tabs {
+      display: inline-flex;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      border: 0;
+      background: transparent;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+    }
+
+    main { padding: 26px 0 36px; }
+
+    .section-hidden { display: none; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr .95fr;
+      gap: 22px;
+      padding: 26px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .pill-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .pill-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fafcff;
+    }
+
+    .pill-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: #e0e7ff;
+      color: var(--primary);
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .type-card {
+      padding: 22px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .type-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+
+    .amber { background: #fef3c7; }
+    .green { background: #d1fae5; }
+    .rose { background: #ffe4e6; }
+
+    .concept-grid,
+    .flow-grid,
+    .sim-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .concept-grid { grid-template-columns: 1.1fr .9fr; }
+    .flow-grid { grid-template-columns: .95fr 1.05fr; }
+    .sim-grid { grid-template-columns: 1.05fr .95fr; }
+
+    .box {
+      padding: 22px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .box-soft {
+      background: linear-gradient(180deg, #f8fbff 0%, #eef2ff 100%);
+      border: 1px solid #c7d2fe;
+    }
+
+    .mini-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .symbol-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .symbol-title {
+      font-weight: 800;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .symbol-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .shape {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: #334155;
+      font-weight: 800;
+      font-size: 10px;
+      background: white;
+      border: 2px solid var(--border);
+    }
+
+    .shape-terminal {
+      width: 86px;
+      height: 40px;
+      border-radius: 999px;
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    .shape-process {
+      width: 96px;
+      height: 46px;
+      border-radius: 10px;
+      background: #e0f2fe;
+      border-color: #0ea5e9;
+    }
+
+    .shape-io {
+      width: 96px;
+      height: 46px;
+      border-radius: 10px;
+      background: #f0fdf4;
+      border-color: #22c55e;
+      transform: skewX(-15deg);
+    }
+
+    .shape-io > span { transform: skewX(15deg); }
+
+    .shape-decision {
+      width: 62px;
+      height: 62px;
+      background: #fef9c3;
+      border-color: #eab308;
+      transform: rotate(45deg);
+      border-radius: 6px;
+    }
+
+    .shape-decision > span {
+      transform: rotate(-45deg);
+      padding: 4px;
+      font-size: 9px;
+      line-height: 1.2;
+    }
+
+    .flow-canvas {
+      min-height: 620px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .flow-stage {
+      padding: 22px;
+      border-radius: 24px;
+      background: white;
+      border: 1px solid var(--border);
+    }
+
+    .flow-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      padding-top: 12px;
+      min-height: 420px;
+    }
+
+    .flow-node {
+      transition: all 0.25s ease;
+      cursor: default;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      color: #334155;
+      font-weight: 700;
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      background: white;
+    }
+
+    .flow-terminal {
+      width: 170px;
+      min-height: 50px;
+      border-radius: 999px;
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    .flow-process {
+      width: 240px;
+      min-height: 64px;
+      border-radius: 12px;
+      background: #e0f2fe;
+      border-color: #0ea5e9;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .flow-decision {
+      width: 126px;
+      height: 126px;
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    .flow-decision::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      background: #fef9c3;
+      border: 2px solid #eab308;
+      transform: rotate(45deg);
+      border-radius: 10px;
+    }
+
+    .flow-decision > span {
+      position: relative;
+      z-index: 1;
+      font-size: 12px;
+      line-height: 1.3;
+      width: 74px;
+    }
+
+    .flow-connector {
+      width: 2px;
+      height: 30px;
+      background: #cbd5e1;
+      position: relative;
+      margin: 6px 0;
+    }
+
+    .flow-connector::after {
+      content: '▼';
+      position: absolute;
+      bottom: -9px;
+      left: -5px;
+      font-size: 10px;
+      color: #cbd5e1;
+    }
+
+    .flow-branch {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin: 8px 0 10px;
+    }
+
+    .flow-branch-line {
+      position: absolute;
+      right: 104px;
+      top: 14px;
+      width: 88px;
+      height: 2px;
+      background: #cbd5e1;
+    }
+
+    .flow-branch-label {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .flow-branch-label.yes {
+      color: var(--success);
+      left: calc(50% + 14px);
+      top: -8px;
+    }
+
+    .flow-branch-label.no {
+      color: var(--danger);
+      right: 10px;
+      top: 0;
+    }
+
+    .branch-box {
+      position: absolute;
+      right: 0;
+      top: -4px;
+      width: 176px;
+      min-height: 58px;
+      border-radius: 12px;
+      border: 2px dashed #f59e0b;
+      background: #fff7ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #9a3412;
+      padding: 10px;
+    }
+
+    .active-step {
+      outline: 4px solid #3b82f6;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.18);
+      transform: scale(1.03);
+    }
+
+    .flow-note {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px dashed #cbd5e1;
+      background: #f8fafc;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .controls {
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .controls-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .btn {
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: .2s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-secondary { background: #eef2ff; color: var(--primary); }
+    .btn-secondary:hover { background: #e0e7ff; }
+    .btn-neutral { background: #f1f5f9; color: #334155; }
+    .btn-neutral:hover { background: #e2e8f0; }
+    .btn-danger { background: #ffe4e6; color: var(--danger); }
+    .btn-danger:hover { background: #fecdd3; }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+    .speed-wrap {
+      min-width: 230px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .speed-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      padding: 16px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .stat-card .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .bar-area { padding: 20px 22px 26px; }
+
+    .array-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .chip.active { background: #e0e7ff; color: var(--primary); border-color: #c7d2fe; }
+    .chip.sorted { background: #d1fae5; color: #047857; border-color: #a7f3d0; }
+
+    .bar-chart {
+      height: 320px;
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      padding: 18px 16px 0;
+      border-bottom: 2px solid #e2e8f0;
+      overflow-x: auto;
+    }
+
+    .bar-wrap {
+      min-width: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bar {
+      width: 48px;
+      border-radius: 16px 16px 6px 6px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 10px;
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+      transition: transform .18s ease, height .25s ease, background .18s ease, box-shadow .18s ease;
+      background: var(--graybar);
+      color: #334155;
+    }
+
+    .bar.active-left {
+      background: #6366f1;
+      color: white;
+      box-shadow: 0 0 0 4px rgba(99,102,241,.18);
+      transform: translateY(-4px);
+    }
+
+    .bar.active-right {
+      background: #8b5cf6;
+      color: white;
+      box-shadow: 0 0 0 4px rgba(139,92,246,.18);
+      transform: translateY(-4px);
+    }
+
+    .bar.swapping {
+      background: #f59e0b;
+      color: white;
+      transform: translateY(-8px);
+      box-shadow: 0 0 0 4px rgba(245,158,11,.18);
+    }
+
+    .bar.sorted {
+      background: var(--success);
+      color: white;
+    }
+
+    .bar-index {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .explain-grid {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 18px;
+    }
+
+    .code-card {
+      padding: 22px;
+      border-radius: 28px;
+      background: #0f172a;
+      color: #cbd5e1;
+      border: 1px solid #1e293b;
+      box-shadow: var(--shadow);
+    }
+
+    .code-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #94a3b8;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+
+    .code-lines {
+      display: grid;
+      gap: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+    }
+
+    .code-line {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      transition: .2s ease;
+    }
+
+    .code-line.active {
+      background: rgba(99,102,241,.22);
+      outline: 1px solid rgba(129,140,248,.45);
+    }
+
+    .ln { color: #64748b; text-align: right; }
+    .kw1 { color: #34d399; }
+    .kw2 { color: #818cf8; }
+    .kw3 { color: #fbbf24; }
+    .cm { color: #94a3b8; }
+
+    .explain-card {
+      padding: 22px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, #eef2ff 0%, #f8faff 100%);
+      border: 1px solid #c7d2fe;
+      box-shadow: var(--shadow);
+    }
+
+    .step-box {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: white;
+      border: 1px solid var(--border);
+      display: grid;
+      gap: 10px;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #312e81;
+    }
+
+    .step-detail {
+      color: #4338ca;
+      line-height: 1.55;
+    }
+
+    .comparison-box {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .compare-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .compare-card strong {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .compare-card span {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1e1b4b;
+    }
+
+    .hint-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .hint-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.55;
+    }
+
+    .num-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      background: #c7d2fe;
+      color: #3730a3;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .process-map {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .map-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .map-node {
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: white;
+      min-width: 136px;
+      text-align: center;
+      font-weight: 700;
+      color: #334155;
+      transition: .2s ease;
+    }
+
+    .map-node.decision {
+      background: #fef9c3;
+      border-color: #fde047;
+    }
+
+    .map-node.process {
+      background: #e0f2fe;
+      border-color: #7dd3fc;
+    }
+
+    .map-node.final {
+      background: #d1fae5;
+      border-color: #86efac;
+    }
+
+    .map-node.active {
+      outline: 3px solid #818cf8;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(99,102,241,.12);
+    }
+
+    .arrow {
+      color: #94a3b8;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    footer {
+      padding: 26px 0 40px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1024px) {
+      .hero,
+      .concept-grid,
+      .flow-grid,
+      .sim-grid,
+      .explain-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cards,
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .container { width: min(100% - 18px, 100%); }
+      .header-wrap { padding: 18px 0; }
+      .hero,
+      .box,
+      .controls,
+      .bar-area,
+      .code-card,
+      .explain-card { padding: 16px; }
+      .cards,
+      .stats,
+      .comparison-box { grid-template-columns: 1fr; }
+      .bar-wrap { min-width: 40px; }
+      .bar { width: 40px; }
+      .flow-stage { padding: 14px; }
+      .flow-process { width: 210px; }
+      .branch-box { position: static; width: 210px; margin-top: 6px; }
+      .flow-branch-line,
+      .flow-branch-label.no { display: none; }
+      .flow-column { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-wrap">
+      <div class="brand">
+        <div class="brand-badge">⚡</div>
+        <div>
+          <h1>AlgoritmoVis</h1>
+          <p style="opacity:.85">Algoritmos + diagramas de flujo + simulación paso a paso</p>
+        </div>
+      </div>
+
+      <nav class="tabs" aria-label="Navegación principal">
+        <button class="tab-btn active" data-tab="conceptos">Conceptos</button>
+        <button class="tab-btn" data-tab="diagramas">Diagramas</button>
+        <button class="tab-btn" data-tab="simulador">Simulador</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="conceptos-section">
+      <div class="panel hero">
+        <div>
+          <h2 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 12px;">¿Qué es un algoritmo?</h2>
+          <p class="muted" style="font-size: 1.08rem; line-height: 1.7;">
+            Un algoritmo es una secuencia finita de pasos claros para resolver un problema.
+            Tiene una <strong style="color:var(--primary)">entrada</strong>, un
+            <strong style="color:var(--primary)">proceso</strong> y una
+            <strong style="color:var(--primary)">salida</strong>. Un diagrama de flujo sirve para
+            representar visualmente esa lógica antes o durante la programación.
+          </p>
+
+          <div class="pill-list">
+            <div class="pill-item">
+              <div class="pill-icon">1</div>
+              <div>
+                <h4>Preciso</h4>
+                <p class="muted">Cada paso indica qué hacer y en qué orden hacerlo.</p>
+              </div>
+            </div>
+            <div class="pill-item">
+              <div class="pill-icon">2</div>
+              <div>
+                <h4>Definido</h4>
+                <p class="muted">Con la misma entrada, sigue las mismas reglas y produce el mismo resultado.</p>
+              </div>
+            </div>
+            <div class="pill-item">
+              <div class="pill-icon">3</div>
+              <div>
+                <h4>Finito</h4>
+                <p class="muted">Debe terminar en una cantidad limitada de pasos.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box box-soft" style="box-shadow:none;">
+          <h3 style="margin-bottom: 12px;">Relación entre algoritmo y diagrama</h3>
+          <div class="mini-grid">
+            <div class="symbol-row">
+              <div class="shape shape-terminal">INICIO</div>
+              <div>
+                <div class="symbol-title">1. Inicio / fin</div>
+                <div class="symbol-desc">Marca el punto de partida y el cierre del procedimiento.</div>
+              </div>
+            </div>
+            <div class="symbol-row">
+              <div class="shape shape-process">PROCESO</div>
+              <div>
+                <div class="symbol-title">2. Acción</div>
+                <div class="symbol-desc">Representa cálculos, asignaciones o transformaciones.</div>
+              </div>
+            </div>
+            <div class="symbol-row">
+              <div class="shape shape-io"><span>LEER</span></div>
+              <div>
+                <div class="symbol-title">3. Entrada / salida</div>
+                <div class="symbol-desc">Sirve para leer datos o mostrar resultados.</div>
+              </div>
+            </div>
+            <div class="symbol-row">
+              <div class="shape shape-decision"><span>¿COND?</span></div>
+              <div>
+                <div class="symbol-title">4. Decisión</div>
+                <div class="symbol-desc">Divide el flujo según se cumpla o no una condición.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cards">
+        <article class="type-card">
+          <div class="type-icon amber">🔎</div>
+          <h3>Búsqueda</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">Se usan para encontrar elementos dentro de una estructura de datos.</p>
+        </article>
+        <article class="type-card">
+          <div class="type-icon green">↕️</div>
+          <h3>Ordenamiento</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">Organizan datos siguiendo un criterio como menor a mayor o alfabético.</p>
+        </article>
+        <article class="type-card">
+          <div class="type-icon rose">🧠</div>
+          <h3>Representación visual</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">Los diagramas de flujo permiten entender la lógica antes de leer el código.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="diagramas-section" class="section-hidden">
+      <div class="flow-grid">
+        <div class="box">
+          <h2 style="margin-bottom: 8px;">Simbología básica de diagramas de flujo</h2>
+          <p class="muted" style="line-height:1.65;">Cada figura expresa una idea distinta. El objetivo es que el lector entienda el proceso sin necesidad de revisar código.</p>
+
+          <div class="mini-grid" style="margin-top:18px;">
+            <div class="symbol-row">
+              <div class="shape shape-terminal">INICIO</div>
+              <div>
+                <div class="symbol-title">Terminal</div>
+                <div class="symbol-desc">Indica el inicio o el fin del algoritmo.</div>
+              </div>
+            </div>
+            <div class="symbol-row">
+              <div class="shape shape-process">X = X + 1</div>
+              <div>
+                <div class="symbol-title">Proceso</div>
+                <div class="symbol-desc">Describe una operación, cálculo o instrucción.</div>
+              </div>
+            </div>
+            <div class="symbol-row">
+              <div class="shape shape-io"><span>LEER</span></div>
+              <div>
+                <div class="symbol-title">Entrada / salida</div>
+                <div class="symbol-desc">Se usa para capturar o mostrar información.</div>
+              </div>
+            </div>
+            <div class="symbol-row">
+              <div class="shape shape-decision"><span>¿SI?</span></div>
+              <div>
+                <div class="symbol-title">Decisión</div>
+                <div class="symbol-desc">Evalúa una condición y divide el camino en sí o no.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flow-note" style="margin-top:18px;">
+            <strong>Idea clave:</strong> un algoritmo dice <em>qué pasos hay que hacer</em> y el diagrama de flujo muestra <em>cómo se conectan esos pasos</em>. Ambos representan la misma lógica, pero en formatos distintos.
+          </div>
+        </div>
+
+        <div class="box flow-canvas">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div>
+              <h2>Ejemplo guiado: preparar café</h2>
+              <p class="muted" style="margin-top:6px;">Usa este ejemplo para entender cómo avanza un diagrama con una decisión intermedia.</p>
+            </div>
+            <div class="buttons">
+              <button id="coffeeNextBtn" class="btn btn-primary">Siguiente paso</button>
+              <button id="coffeeResetBtn" class="btn btn-neutral">Reiniciar</button>
+            </div>
+          </div>
+
+          <div class="flow-stage">
+            <div id="coffeeFlow" class="flow-column">
+              <div id="coffee-step-1" class="flow-node flow-terminal">INICIO</div>
+              <div class="flow-connector"></div>
+
+              <div id="coffee-step-2" class="flow-node flow-process">Calentar agua en la tetera</div>
+              <div class="flow-connector"></div>
+
+              <div id="coffee-step-3" class="flow-node flow-decision"><span>¿El agua está hirviendo?</span></div>
+              <div class="flow-branch">
+                <div class="flow-branch-line"></div>
+                <div class="flow-branch-label yes">SÍ</div>
+                <div class="flow-branch-label no">NO</div>
+                <div id="coffee-no-box" class="branch-box">Esperar y seguir calentando</div>
+              </div>
+              <div class="flow-connector"></div>
+
+              <div id="coffee-step-4" class="flow-node flow-process">Verter agua en la taza</div>
+              <div class="flow-connector"></div>
+
+              <div id="coffee-step-5" class="flow-node flow-terminal">FIN</div>
+            </div>
+          </div>
+
+          <div class="flow-note">
+            <div style="font-weight:800; margin-bottom:8px; color:#312e81;">Explicación del paso actual</div>
+            <div id="coffeeInstruction" style="line-height:1.65; color:#475569;">Haz clic en <strong>Siguiente paso</strong> para recorrer el diagrama.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="simulador-section" class="section-hidden">
+      <div class="controls panel">
+        <div class="controls-top">
+          <div>
+            <h2>Bubble Sort paso a paso</h2>
+            <p class="muted" style="margin-top:6px; line-height:1.6; max-width: 780px;">
+              Este simulador conecta tres cosas al mismo tiempo: las barras, el pseudocódigo y el flujo lógico.
+              Así puedes ver qué se compara, por qué se decide intercambiar y cuándo una parte de la lista ya quedó ordenada.
+            </p>
+          </div>
+
+          <div class="buttons">
+            <button id="playBtn" class="btn btn-primary">▶ Iniciar</button>
+            <button id="stepBtn" class="btn btn-secondary">⏭ Siguiente paso</button>
+            <button id="pauseBtn" class="btn btn-danger">⏸ Pausar</button>
+            <button id="restartBtn" class="btn btn-neutral">↺ Reiniciar mismos datos</button>
+            <button id="randomBtn" class="btn btn-neutral">🎲 Nuevos datos</button>
+          </div>
+        </div>
+
+        <div class="speed-wrap">
+          <div class="speed-label">
+            <span>Velocidad</span>
+            <span id="speedText">650 ms</span>
+          </div>
+          <input id="speedRange" type="range" min="150" max="1200" step="50" value="650" />
+        </div>
+
+        <div class="stats">
+          <div class="stat-card">
+            <div class="label">Pasada actual</div>
+            <div class="value" id="passValue">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Comparaciones</div>
+            <div class="value" id="compareValue">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Intercambios</div>
+            <div class="value" id="swapValue">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Índice j</div>
+            <div class="value" id="indexValue">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Estado</div>
+            <div class="value" id="stateValue" style="font-size: 1.05rem; line-height:1.3;">Listo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-grid" style="margin-top:18px;">
+        <div class="panel bar-area">
+          <h3 style="margin-bottom:10px;">Visualización del arreglo</h3>
+          <div class="array-strip" id="arrayStrip"></div>
+          <div class="bar-chart" id="barChart"></div>
+          <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#6366f1"></span> Izquierda</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Derecha</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Intercambio</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Zona ordenada</div>
+          </div>
+        </div>
+
+        <div class="box box-soft">
+          <h3>Mapa lógico del Bubble Sort</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">
+            Este flujo resume la decisión interna del algoritmo. El nodo resaltado indica en qué parte exacta está el simulador.
+          </p>
+
+          <div class="process-map">
+            <div class="map-row">
+              <div id="map-start" class="map-node process">Inicio de pasada</div>
+              <div class="arrow">→</div>
+              <div id="map-compare" class="map-node process">Tomar j y j+1</div>
+              <div class="arrow">→</div>
+              <div id="map-decision" class="map-node decision">¿izq &gt; der?</div>
+            </div>
+            <div class="map-row">
+              <div id="map-swap" class="map-node process">Intercambiar</div>
+              <div class="arrow">→</div>
+              <div id="map-advance" class="map-node process">Avanzar j</div>
+              <div class="arrow">→</div>
+              <div id="map-pass" class="map-node process">Cerrar pasada</div>
+              <div class="arrow">→</div>
+              <div id="map-finish" class="map-node final">Fin</div>
+            </div>
+          </div>
+
+          <div class="flow-note" style="margin-top:18px;">
+            <strong>Lectura rápida:</strong> si el número de la izquierda es mayor, se intercambian. Si no, el algoritmo sigue avanzando hasta cerrar la pasada. Al terminar cada pasada, un elemento queda definitivamente en su lugar.
+          </div>
+        </div>
+      </div>
+
+      <div class="explain-grid" style="margin-top:18px;">
+        <div class="code-card">
+          <div class="code-title">💻 pseudocodigo.algo</div>
+          <div class="code-lines">
+            <div class="code-line" data-line="1"><span class="ln">1</span><span><span class="kw1">PROCEDURE</span> BubbleSort(lista)</span></div>
+            <div class="code-line" data-line="2"><span class="ln">2</span><span>&nbsp;&nbsp;<span class="kw2">PARA</span> i desde 0 hasta n - 1</span></div>
+            <div class="code-line" data-line="3"><span class="ln">3</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw2">PARA</span> j desde 0 hasta n - i - 2</span></div>
+            <div class="code-line" data-line="4"><span class="ln">4</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw3">SI</span> lista[j] &gt; lista[j + 1]</span></div>
+            <div class="code-line" data-line="5"><span class="ln">5</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Intercambiar</span></span></div>
+            <div class="code-line" data-line="6"><span class="ln">6</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;temp = lista[j]</span></div>
+            <div class="code-line" data-line="7"><span class="ln">7</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lista[j] = lista[j + 1]</span></div>
+            <div class="code-line" data-line="8"><span class="ln">8</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lista[j + 1] = temp</span></div>
+            <div class="code-line" data-line="9"><span class="ln">9</span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw3">FIN SI</span></span></div>
+            <div class="code-line" data-line="10"><span class="ln">10</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw2">FIN PARA</span></span></div>
+            <div class="code-line" data-line="11"><span class="ln">11</span><span>&nbsp;&nbsp;<span class="kw2">FIN PARA</span></span></div>
+            <div class="code-line" data-line="12"><span class="ln">12</span><span><span class="kw1">END PROCEDURE</span></span></div>
+          </div>
+        </div>
+
+        <div class="explain-card">
+          <h3 style="color:#312e81; display:flex; align-items:center; gap:8px;">ℹ️ ¿Qué está pasando?</h3>
+          <div class="step-box">
+            <div class="step-title" id="stepTitle">Preparado para comenzar</div>
+            <div class="step-detail" id="stepDetail">
+              Presiona <strong>Iniciar</strong> para reproducir automáticamente o usa <strong>Siguiente paso</strong>
+              para avanzar manualmente y entender cada decisión del algoritmo.
+            </div>
+          </div>
+
+          <div class="comparison-box">
+            <div class="compare-card">
+              <strong>Elemento izquierdo</strong>
+              <span id="leftValue">—</span>
+            </div>
+            <div class="compare-card">
+              <strong>Elemento derecho</strong>
+              <span id="rightValue">—</span>
+            </div>
+          </div>
+
+          <div class="hint-list">
+            <div class="hint-item">
+              <div class="num-badge">1</div>
+              <div>Las barras verdes ya quedaron en su posición final y no se vuelven a comparar.</div>
+            </div>
+            <div class="hint-item">
+              <div class="num-badge">2</div>
+              <div>Bubble Sort siempre trabaja con vecinos: <strong>j</strong> y <strong>j + 1</strong>.</div>
+            </div>
+            <div class="hint-item">
+              <div class="num-badge">3</div>
+              <div>La decisión central es: <strong>si izquierda &gt; derecha, intercambiar</strong>.</div>
+            </div>
+            <div class="hint-item">
+              <div class="num-badge">4</div>
+              <div>Al final de cada pasada, el valor más grande pendiente “flota” hacia el final.</div>
+            </div>
+            <div class="hint-item">
+              <div class="num-badge">5</div>
+              <div>Complejidad temporal: <strong>O(n²)</strong>. Es muy útil para aprender la lógica de comparación e intercambio.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container">
+    Material interactivo para entender algoritmos, diagramas de flujo y Bubble Sort en una sola página.
+  </footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // ---------- Tabs ----------
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        $('conceptos-section').classList.toggle('section-hidden', tab !== 'conceptos');
+        $('diagramas-section').classList.toggle('section-hidden', tab !== 'diagramas');
+        $('simulador-section').classList.toggle('section-hidden', tab !== 'simulador');
+      });
+    });
+
+    // ---------- Coffee flow simulator ----------
+    let coffeeStep = 0;
+    const coffeeTotalSteps = 5;
+    const coffeeInstructions = [
+      'Todo algoritmo debe tener un punto de partida claro. Aquí comienza el proceso.',
+      'Este bloque es un proceso: el sistema ejecuta una acción concreta, en este caso calentar el agua.',
+      'Este rombo representa una decisión. Si la condición no se cumple, el flujo no puede seguir y debe esperar o repetir.',
+      'Una vez que la condición sí se cumple, el flujo continúa con la siguiente acción.',
+      'El algoritmo termina cuando ya se completó el objetivo planteado.'
+    ];
+
+    function updateCoffeeUI() {
+      for (let i = 1; i <= coffeeTotalSteps; i++) {
+        const el = $(`coffee-step-${i}`);
+        if (el) el.classList.remove('active-step');
+      }
+
+      $('coffee-no-box').style.opacity = coffeeStep === 3 ? '1' : '.45';
+      $('coffee-no-box').style.transform = coffeeStep === 3 ? 'scale(1.02)' : 'scale(1)';
+
+      if (coffeeStep > 0) {
+        const activeEl = $(`coffee-step-${coffeeStep}`);
+        if (activeEl) activeEl.classList.add('active-step');
+        $('coffeeInstruction').innerHTML = coffeeInstructions[coffeeStep - 1];
+      } else {
+        $('coffeeInstruction').innerHTML = 'Haz clic en <strong>Siguiente paso</strong> para recorrer el diagrama.';
+      }
+
+      $('coffeeNextBtn').textContent = coffeeStep === coffeeTotalSteps ? 'Empezar de nuevo' : 'Siguiente paso';
+    }
+
+    function nextCoffeeStep() {
+      coffeeStep = coffeeStep < coffeeTotalSteps ? coffeeStep + 1 : 1;
+      updateCoffeeUI();
+    }
+
+    function resetCoffeeFlow() {
+      coffeeStep = 0;
+      updateCoffeeUI();
+    }
+
+    $('coffeeNextBtn').addEventListener('click', nextCoffeeStep);
+    $('coffeeResetBtn').addEventListener('click', resetCoffeeFlow);
+    updateCoffeeUI();
+
+    // ---------- Bubble sort simulator ----------
+    const state = {
+      originalArray: [],
+      array: [],
+      i: 0,
+      j: 0,
+      comparisons: 0,
+      swaps: 0,
+      activeLeft: -1,
+      activeRight: -1,
+      sortedStart: Infinity,
+      phase: 'idle',
+      running: false,
+      timer: null,
+      finished: false,
+      highlightedLines: [],
+      messageTitle: 'Preparado para comenzar',
+      messageDetail: 'Presiona Iniciar para empezar la simulación.',
+      statusLabel: 'Listo',
+      delay: 650,
+      willSwap: false,
+      swappedNow: false,
+      mapPhase: 'start'
+    };
+
+    const barChart = $('barChart');
+    const arrayStrip = $('arrayStrip');
+    const playBtn = $('playBtn');
+    const pauseBtn = $('pauseBtn');
+    const stepBtn = $('stepBtn');
+    const restartBtn = $('restartBtn');
+    const randomBtn = $('randomBtn');
+    const speedRange = $('speedRange');
+    const speedText = $('speedText');
+    const passValue = $('passValue');
+    const compareValue = $('compareValue');
+    const swapValue = $('swapValue');
+    const indexValue = $('indexValue');
+    const stateValue = $('stateValue');
+    const stepTitle = $('stepTitle');
+    const stepDetail = $('stepDetail');
+    const leftValue = $('leftValue');
+    const rightValue = $('rightValue');
+
+    function randomArray(length = 12) {
+      return Array.from({ length }, () => Math.floor(Math.random() * 90) + 10);
+    }
+
+    function initializeState(newArray) {
+      stopAuto(true);
+      state.originalArray = [...newArray];
+      state.array = [...newArray];
+      state.i = 0;
+      state.j = 0;
+      state.comparisons = 0;
+      state.swaps = 0;
+      state.activeLeft = -1;
+      state.activeRight = -1;
+      state.sortedStart = state.array.length;
+      state.phase = 'compare';
+      state.running = false;
+      state.finished = false;
+      state.highlightedLines = [1, 2, 3];
+      state.messageTitle = 'Preparado para comenzar';
+      state.messageDetail = 'Se recorrerá la lista comparando elementos vecinos desde el inicio.';
+      state.statusLabel = 'Listo';
+      state.willSwap = false;
+      state.swappedNow = false;
+      state.mapPhase = 'start';
+      render();
+    }
+
+    function render() {
+      renderBars();
+      renderStrip();
+      passValue.textContent = state.finished ? Math.max(state.array.length - 1, 0) : Math.min(state.i + 1, state.array.length - 1);
+      compareValue.textContent = state.comparisons;
+      swapValue.textContent = state.swaps;
+      indexValue.textContent = state.finished ? '—' : state.j;
+      stateValue.textContent = state.statusLabel;
+      stepTitle.textContent = state.messageTitle;
+      stepDetail.innerHTML = state.messageDetail;
+      leftValue.textContent = state.activeLeft >= 0 ? state.array[state.activeLeft] : '—';
+      rightValue.textContent = state.activeRight >= 0 ? state.array[state.activeRight] : '—';
+
+      document.querySelectorAll('.code-line').forEach(line => {
+        const num = Number(line.dataset.line);
+        line.classList.toggle('active', state.highlightedLines.includes(num));
+      });
+
+      document.querySelectorAll('.map-node').forEach(node => node.classList.remove('active'));
+      const activeMapNode = {
+        start: 'map-start',
+        compare: 'map-compare',
+        decision: 'map-decision',
+        swap: 'map-swap',
+        advance: 'map-advance',
+        pass: 'map-pass',
+        finish: 'map-finish'
+      }[state.mapPhase];
+      if (activeMapNode) $(activeMapNode).classList.add('active');
+
+      playBtn.disabled = state.finished;
+      pauseBtn.disabled = !state.running;
+      stepBtn.disabled = state.finished;
+    }
+
+    function renderStrip() {
+      arrayStrip.innerHTML = '';
+      state.array.forEach((value, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.textContent = value;
+        if (idx >= state.sortedStart) chip.classList.add('sorted');
+        if (idx === state.activeLeft || idx === state.activeRight) chip.classList.add('active');
+        arrayStrip.appendChild(chip);
+      });
+    }
+
+    function renderBars() {
+      barChart.innerHTML = '';
+      state.array.forEach((value, idx) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'bar-wrap';
+
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = `${Math.max(36, value * 2.6)}px`;
+        bar.textContent = value;
+
+        if (idx >= state.sortedStart) bar.classList.add('sorted');
+        if (idx === state.activeLeft) bar.classList.add('active-left');
+        if (idx === state.activeRight) bar.classList.add('active-right');
+        if (state.swappedNow && (idx === state.activeLeft || idx === state.activeRight)) {
+          bar.classList.remove('active-left', 'active-right');
+          bar.classList.add('swapping');
+        }
+
+        const index = document.createElement('div');
+        index.className = 'bar-index';
+        index.textContent = `idx ${idx}`;
+
+        wrap.appendChild(bar);
+        wrap.appendChild(index);
+        barChart.appendChild(wrap);
+      });
+    }
+
+    function finishSimulation() {
+      state.finished = true;
+      state.running = false;
+      state.activeLeft = -1;
+      state.activeRight = -1;
+      state.sortedStart = 0;
+      state.highlightedLines = [12];
+      state.messageTitle = 'Ordenamiento completado';
+      state.messageDetail = 'Todos los elementos quedaron en orden ascendente. El algoritmo ya no necesita comparar más.';
+      state.statusLabel = 'Terminado';
+      state.phase = 'done';
+      state.swappedNow = false;
+      state.mapPhase = 'finish';
+      stopAuto(true);
+      render();
+    }
+
+    function advanceIndices() {
+      const n = state.array.length;
+      state.swappedNow = false;
+
+      if (state.j < n - state.i - 2) {
+        state.j += 1;
+        state.phase = 'compare';
+        state.highlightedLines = [2, 3];
+        state.messageTitle = `Siguiente comparación en la pasada ${state.i + 1}`;
+        state.messageDetail = `Ahora el algoritmo avanza a la posición <strong>j = ${state.j}</strong> para comparar el siguiente par de vecinos.`;
+        state.statusLabel = `Pasada ${state.i + 1}`;
+        state.mapPhase = 'advance';
+        return;
+      }
+
+      state.sortedStart = n - state.i - 1;
+      state.i += 1;
+      state.j = 0;
+      state.mapPhase = 'pass';
+
+      if (state.i >= n - 1) {
+        finishSimulation();
+        return;
+      }
+
+      state.phase = 'compare';
+      state.highlightedLines = [2, 10, 11];
+      state.messageTitle = `Fin de la pasada ${state.i}`;
+      state.messageDetail = `El elemento en la posición <strong>${state.sortedStart}</strong> ya quedó fijo. Comienza la pasada <strong>${state.i + 1}</strong> desde el inicio del tramo no ordenado.`;
+      state.statusLabel = `Pasada ${state.i + 1}`;
+    }
+
+    function nextStep() {
+      if (state.finished) return;
+
+      const n = state.array.length;
+      if (n <= 1) {
+        finishSimulation();
+        return;
+      }
+
+      if (state.phase === 'advance') {
+        advanceIndices();
+        render();
+        return;
+      }
+
+      state.activeLeft = state.j;
+      state.activeRight = state.j + 1;
+
+      if (state.phase === 'compare') {
+        const left = state.array[state.j];
+        const right = state.array[state.j + 1];
+        state.comparisons += 1;
+        state.swappedNow = false;
+        state.highlightedLines = [2, 3, 4];
+        state.statusLabel = `Comparando ${left} y ${right}`;
+        state.mapPhase = 'decision';
+
+        if (left > right) {
+          state.willSwap = true;
+          state.phase = 'swap';
+          state.messageTitle = 'Comparación verdadera';
+          state.messageDetail = `<strong>${left}</strong> es mayor que <strong>${right}</strong>, así que deben intercambiarse para acercar la lista al orden ascendente.`;
+        } else {
+          state.willSwap = false;
+          state.phase = 'advance';
+          state.messageTitle = 'Comparación falsa';
+          state.messageDetail = `<strong>${left}</strong> no es mayor que <strong>${right}</strong>, por eso este par ya está en el orden correcto y el algoritmo avanza.`;
+        }
+      } else if (state.phase === 'swap') {
+        const left = state.array[state.j];
+        const right = state.array[state.j + 1];
+        [state.array[state.j], state.array[state.j + 1]] = [state.array[state.j + 1], state.array[state.j]];
+        state.swaps += 1;
+        state.swappedNow = true;
+        state.phase = 'advance';
+        state.highlightedLines = [5, 6, 7, 8, 9];
+        state.statusLabel = `Intercambio ${state.swaps}`;
+        state.messageTitle = 'Se realizó el intercambio';
+        state.messageDetail = `Ahora <strong>${right}</strong> queda antes que <strong>${left}</strong>. Esto corrige el desorden local de ese par.`;
+        state.mapPhase = 'swap';
+      }
+
+      render();
+    }
+
+    function startAuto() {
+      if (state.finished || state.running) return;
+      state.running = true;
+      state.statusLabel = 'Reproduciendo';
+      render();
+      state.timer = setInterval(nextStep, state.delay);
+    }
+
+    function stopAuto(silent = false) {
+      state.running = false;
+      clearInterval(state.timer);
+      state.timer = null;
+      if (!state.finished && !silent) state.statusLabel = 'Pausado';
+      render();
+    }
+
+    playBtn.addEventListener('click', startAuto);
+    pauseBtn.addEventListener('click', () => stopAuto(false));
+    stepBtn.addEventListener('click', () => {
+      stopAuto(true);
+      nextStep();
+    });
+    restartBtn.addEventListener('click', () => initializeState(state.originalArray));
+    randomBtn.addEventListener('click', () => initializeState(randomArray()));
+
+    speedRange.addEventListener('input', (event) => {
+      state.delay = Number(event.target.value);
+      speedText.textContent = `${state.delay} ms`;
+      if (state.running) {
+        clearInterval(state.timer);
+        state.timer = setInterval(nextStep, state.delay);
+      }
+    });
+
+    speedText.textContent = `${state.delay} ms`;
+    initializeState(randomArray());
+  </script>
+</body>
+</html>
