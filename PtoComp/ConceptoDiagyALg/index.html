@@ -1,1 +1,1297 @@
 
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Algoritmo Kawaii - Operaciones básicas y calculadora</title>
+  <script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=jrBP0O_HPCSUvwxPyP9vVsv4tqPISZ-ak1paghtBPWG6iuqUE0jRi2SGkmlmzOQsFpws1M60mI3GAUlnmw4HHFPXzfpXVfkcf7tq-TSRz3JPoAt0hE8ERB-Pus55Eh2QoOjWI1D3SsY07zSo0I6oeiWsffOhoHgbQvoJly8_N7zOAtqPOmV6Vubx8FP5INB1I9ETNNOMBow8kIWukkg7jioPUn0adnWGinqgKTiNqiNKihsnW_cAG09ROWfasU4oTGCuaXeHw5ScDVbN4mIO6g" charset="UTF-8"></script><style>
+    :root {
+      --bg: #fff7fb;
+      --panel: #ffffff;
+      --panel-soft: #fff1f8;
+      --panel-2: #f8edff;
+      --text: #5b3b57;
+      --muted: #8f728a;
+      --border: #f3c8db;
+      --primary: #ff77b7;
+      --primary-2: #b88cff;
+      --danger: #ff6f91;
+      --success: #78d7bd;
+      --warning: #ffc66d;
+      --sky: #8cd7ff;
+      --green: #8fe3b5;
+      --shadow: 0 16px 30px rgba(255, 119, 183, 0.12);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 187, 221, 0.45), transparent 22%),
+        radial-gradient(circle at top right, rgba(196, 181, 253, 0.38), transparent 20%),
+        radial-gradient(circle at bottom left, rgba(186, 230, 253, 0.32), transparent 18%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    h1, h2, h3, h4, p { margin: 0; }
+
+    .container {
+      width: min(1200px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, #ff9ac8 0%, #b88cff 100%);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .header-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 22px 0;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.16);
+      font-size: 22px;
+    }
+
+    .tabs {
+      display: inline-flex;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      border: 0;
+      background: transparent;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+    }
+
+    main { padding: 26px 0 36px; }
+    .section-hidden { display: none; }
+
+    .panel,
+    .box,
+    .code-card,
+    .demo-box,
+    .summary-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr .95fr;
+      gap: 22px;
+      padding: 26px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .pill-list,
+    .step-list,
+    .mini-grid,
+    .concept-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .pill-item,
+    .step-item,
+    .concept-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fffafc;
+    }
+
+    .pill-icon,
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: #ffe0ee;
+      color: #d14c93;
+      font-weight: 800;
+      flex: 0 0 auto;
+      box-shadow: 0 6px 14px rgba(255, 119, 183, 0.14);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .type-card {
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .type-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+
+    .amber { background: #ffe6f2; }
+    .green-soft { background: #ddfff2; }
+    .rose { background: #ffe4f1; }
+    .sky-soft { background: #e6f7ff; }
+    .violet-soft { background: #f1e7ff; }
+
+    .level-grid,
+    .dual-grid,
+    .calc-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.1fr .9fr;
+    }
+
+    .box { padding: 22px; }
+    .box-soft {
+      background: linear-gradient(180deg, #fff5fb 0%, #f7ecff 100%);
+      border: 1px solid #efd1ff;
+    }
+
+    .level-tag {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #ffe3f1;
+      color: #d14c93;
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .io-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .mini-card {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: white;
+    }
+
+    .mini-card strong {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .mini-card span {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e1b4b;
+      line-height: 1.45;
+    }
+
+    .flow-stage {
+      padding: 20px;
+      border-radius: 24px;
+      background: white;
+      border: 1px solid var(--border);
+      margin-top: 16px;
+    }
+
+    .flow-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      padding-top: 12px;
+      min-height: 420px;
+    }
+
+    .flow-node {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      color: #334155;
+      font-weight: 700;
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      background: white;
+    }
+
+    .flow-terminal {
+      width: 170px;
+      min-height: 50px;
+      border-radius: 999px;
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    .flow-process {
+      width: 240px;
+      min-height: 62px;
+      border-radius: 12px;
+      background: #e0f2fe;
+      border-color: #0ea5e9;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .flow-io {
+      width: 240px;
+      min-height: 62px;
+      border-radius: 12px;
+      background: #f0fdf4;
+      border-color: #22c55e;
+      font-size: 14px;
+      line-height: 1.35;
+      transform: skewX(-15deg);
+    }
+
+    .flow-io > span { transform: skewX(15deg); }
+
+    .flow-decision {
+      width: 126px;
+      height: 126px;
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    .flow-decision::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      background: #fef9c3;
+      border: 2px solid #eab308;
+      transform: rotate(45deg);
+      border-radius: 10px;
+    }
+
+    .flow-decision > span {
+      position: relative;
+      z-index: 1;
+      font-size: 12px;
+      line-height: 1.3;
+      width: 76px;
+    }
+
+    .flow-connector {
+      width: 2px;
+      height: 28px;
+      background: #cbd5e1;
+      position: relative;
+      margin: 6px 0;
+    }
+
+    .flow-connector::after {
+      content: '▼';
+      position: absolute;
+      bottom: -9px;
+      left: -5px;
+      font-size: 10px;
+      color: #cbd5e1;
+    }
+
+    .flow-branch {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin: 8px 0 10px;
+      min-height: 76px;
+    }
+
+    .flow-branch-line {
+      position: absolute;
+      right: 104px;
+      top: 16px;
+      width: 88px;
+      height: 2px;
+      background: #cbd5e1;
+    }
+
+    .flow-branch-label {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .flow-branch-label.yes {
+      color: var(--success);
+      left: calc(50% + 14px);
+      top: -8px;
+    }
+
+    .flow-branch-label.no {
+      color: var(--danger);
+      right: 10px;
+      top: 0;
+    }
+
+    .branch-box {
+      position: absolute;
+      right: 0;
+      top: -4px;
+      width: 188px;
+      min-height: 58px;
+      border-radius: 12px;
+      border: 2px dashed #f59e0b;
+      background: #fff7ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #9a3412;
+      padding: 10px;
+    }
+
+    .code-card {
+      padding: 22px;
+      margin-top: 18px;
+      background: #5f4b8b;
+      color: #f8ecff;
+      border: 1px solid #8e74c5;
+    }
+
+    .code-title {
+      color: #f2d9ff;
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .kw1 { color: #34d399; font-weight: 700; }
+    .kw2 { color: #818cf8; font-weight: 700; }
+    .kw3 { color: #fbbf24; font-weight: 700; }
+
+    .demo-box,
+    .summary-card {
+      padding: 20px;
+      margin-top: 18px;
+    }
+
+    .demo-controls {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr) auto;
+      gap: 10px;
+      margin-top: 14px;
+      align-items: center;
+    }
+
+    .calc-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 10px;
+      margin-top: 14px;
+      align-items: center;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+      background: white;
+      color: var(--text);
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .btn {
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: .2s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: #4338ca; }
+
+    .result-box {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      background: #fff9fc;
+      border: 1px solid var(--border);
+      font-weight: 700;
+      color: #334155;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+    }
+
+    .note {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px dashed #cbd5e1;
+      background: #fff9fc;
+      color: #475569;
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+
+    .summary-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 16px;
+    }
+
+    .summary-mini {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #fff9fc;
+    }
+
+    .summary-mini strong {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .summary-mini span {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e1b4b;
+      line-height: 1.45;
+    }
+
+    footer {
+      padding: 26px 0 40px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1100px) {
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .level-grid,
+      .dual-grid,
+      .calc-grid,
+      .hero { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 760px) {
+      .container { width: min(100% - 18px, 100%); }
+      .cards,
+      .io-grid,
+      .summary-grid,
+      .demo-controls,
+      .calc-controls { grid-template-columns: 1fr; }
+      .box,
+      .code-card,
+      .demo-box,
+      .summary-card,
+      .hero { padding: 16px; }
+      .branch-box { position: static; width: 210px; margin-top: 6px; }
+      .flow-branch-line,
+      .flow-branch-label.no { display: none; }
+      .flow-column { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-wrap">
+      <div class="brand">
+        <div class="brand-badge">🌸</div>
+        <div>
+          <h1>Algoritmo Kawaii</h1>
+          <p style="opacity:.85">Operaciones básicas paso a paso con estilo tierno: algoritmo + diagrama + práctica</p>
+        </div>
+      </div>
+
+      <nav class="tabs" aria-label="Niveles de aprendizaje">
+        <button class="tab-btn active" data-tab="inicio">Inicio</button>
+        <button class="tab-btn" data-tab="suma">Nivel 1</button>
+        <button class="tab-btn" data-tab="resta">Nivel 2</button>
+        <button class="tab-btn" data-tab="multiplicacion">Nivel 3</button>
+        <button class="tab-btn" data-tab="division">Nivel 4</button>
+        <button class="tab-btn" data-tab="calculadora">Nivel 5</button>
+        <button class="tab-btn" data-tab="ideas">Nivel 6</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="inicio-section">
+      <div class="panel hero">
+        <div>
+          <h2 style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 12px;">Aprender operaciones básicas nivel por nivel</h2>
+          <p class="muted" style="font-size: 1.06rem; line-height: 1.7;">
+            Esta página organiza el aprendizaje en seis niveles. Primero entiendes cómo resolver una
+            <strong style="color:var(--primary)">suma</strong>, luego una
+            <strong style="color:var(--primary)">resta</strong>, después una
+            <strong style="color:var(--primary)">multiplicación</strong>, luego una
+            <strong style="color:var(--primary)">división</strong>, después integras todo en una
+            <strong style="color:var(--primary)">calculadora</strong> y al final encuentras
+            <strong style="color:var(--primary)">ideas fáciles</strong> para practicar algoritmos escritos.
+          </p>
+
+          <div class="pill-list">
+            <div class="pill-item">
+              <div class="pill-icon">1</div>
+              <div>
+                <h4>Entrada</h4>
+                <p class="muted">Se leen los datos necesarios, en este caso dos números.</p>
+              </div>
+            </div>
+            <div class="pill-item">
+              <div class="pill-icon">2</div>
+              <div>
+                <h4>Proceso</h4>
+                <p class="muted">Se aplica la operación matemática correspondiente.</p>
+              </div>
+            </div>
+            <div class="pill-item">
+              <div class="pill-icon">3</div>
+              <div>
+                <h4>Salida</h4>
+                <p class="muted">Se muestra el resultado o un mensaje de error si hace falta validar.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box box-soft cute-banner" style="box-shadow:none;">
+          <h3 style="margin-bottom: 6px;">Mini guía kawaii ✨</h3>
+          <div class="cute-bubble">
+            <h3>Cómo escribir un algoritmo fácil</h3>
+            <ul>
+              <li>Empieza con <strong>Inicio</strong>.</li>
+              <li>Luego escribe qué datos vas a <strong>leer</strong>.</li>
+              <li>Después anota el <strong>proceso</strong> o cálculo.</li>
+              <li>Al final indica qué vas a <strong>mostrar</strong>.</li>
+              <li>Cierra siempre con <strong>Fin</strong>.</li>
+            </ul>
+          </div>
+          <div class="cute-bubble">
+            <h3>Idea clave 🌷</h3>
+            <p class="muted">Si entiendes entrada, proceso y salida, puedes construir casi cualquier algoritmo básico sin complicarte.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cards">
+        <article class="type-card">
+          <div class="type-icon amber">➕</div>
+          <h3>Suma</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">Combina dos valores y entrega un total.</p>
+        </article>
+        <article class="type-card">
+          <div class="type-icon green-soft">➖</div>
+          <h3>Resta</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">Obtiene la diferencia entre dos valores.</p>
+        </article>
+        <article class="type-card">
+          <div class="type-icon rose">✖️</div>
+          <h3>Multiplicación</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">Repite una cantidad según otra cantidad.</p>
+        </article>
+        <article class="type-card">
+          <div class="type-icon sky-soft">➗</div>
+          <h3>División</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">Reparte una cantidad en partes iguales.</p>
+        </article>
+        <article class="type-card">
+          <div class="type-icon violet-soft">🧮</div>
+          <h3>Calculadora</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">Integra las cuatro operaciones en una sola lógica.</p>
+        </article>
+        <article class="type-card">
+          <div class="type-icon amber">📝</div>
+          <h3>Ideas fáciles</h3>
+          <p class="muted" style="margin-top:8px; line-height:1.6;">Ejercicios básicos para practicar algoritmos escritos.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="suma-section" class="section-hidden">
+      <div class="level-grid">
+        <div class="box">
+          <div class="level-tag">Nivel 1</div>
+          <h2>Suma de dos números</h2>
+          <p class="muted" style="margin-top:8px; line-height:1.65;">
+            La suma es la operación más simple para comenzar. El algoritmo solo necesita leer dos valores,
+            sumarlos y mostrar el resultado.
+          </p>
+
+          <div class="io-grid">
+            <div class="mini-card"><strong>Entrada</strong><span>A y B</span></div>
+            <div class="mini-card"><strong>Proceso</strong><span>Suma ← A + B</span></div>
+            <div class="mini-card"><strong>Salida</strong><span>Mostrar Suma</span></div>
+          </div>
+
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div><strong>Inicio.</strong><p class="muted">El algoritmo arranca.</p></div></div>
+            <div class="step-item"><div class="step-num">2</div><div><strong>Leer A y B.</strong><p class="muted">Se capturan los dos números.</p></div></div>
+            <div class="step-item"><div class="step-num">3</div><div><strong>Calcular.</strong><p class="muted">Se hace Suma ← A + B.</p></div></div>
+            <div class="step-item"><div class="step-num">4</div><div><strong>Mostrar.</strong><p class="muted">Se enseña el resultado al usuario.</p></div></div>
+            <div class="step-item"><div class="step-num">5</div><div><strong>Fin.</strong><p class="muted">El proceso termina.</p></div></div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-title">💻 algoritmo_suma.algo</div>
+<pre><span class="kw1">Algoritmo</span> SumaDosNumeros
+  <span class="kw2">Definir</span> A, B, Suma <span class="kw2">Como</span> Real
+  <span class="kw3">Escribir</span> "Ingrese el primer número:"
+  <span class="kw3">Leer</span> A
+  <span class="kw3">Escribir</span> "Ingrese el segundo número:"
+  <span class="kw3">Leer</span> B
+  Suma &lt;- A + B
+  <span class="kw3">Escribir</span> "La suma es: ", Suma
+<span class="kw1">FinAlgoritmo</span></pre>
+          </div>
+
+          <div class="demo-box">
+            <h3>Prueba rápida</h3>
+            <div class="demo-controls">
+              <input type="number" id="sumaA" placeholder="Número A" />
+              <input type="number" id="sumaB" placeholder="Número B" />
+              <button class="btn btn-primary" data-op="suma">Calcular</button>
+            </div>
+            <div class="result-box" id="sumaResultado">Aquí aparecerá el resultado.</div>
+          </div>
+        </div>
+
+        <div class="box box-soft">
+          <h3>Diagrama de flujo (suma)</h3>
+          <div class="flow-stage">
+            <div class="flow-column">
+              <div class="flow-node flow-terminal">INICIO</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Leer A y B</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-process">Suma ← A + B</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Mostrar Suma</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-terminal">FIN</div>
+            </div>
+          </div>
+          <div class="note"><strong>Lectura:</strong> este flujo no necesita decisiones porque sumar dos números siempre es un proceso directo.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="resta-section" class="section-hidden">
+      <div class="level-grid">
+        <div class="box">
+          <div class="level-tag">Nivel 2</div>
+          <h2>Resta de dos números</h2>
+          <p class="muted" style="margin-top:8px; line-height:1.65;">
+            La resta sigue la misma estructura que la suma. Solo cambia la operación central:
+            ahora se calcula la diferencia entre dos valores.
+          </p>
+
+          <div class="io-grid">
+            <div class="mini-card"><strong>Entrada</strong><span>A y B</span></div>
+            <div class="mini-card"><strong>Proceso</strong><span>Resta ← A - B</span></div>
+            <div class="mini-card"><strong>Salida</strong><span>Mostrar Resta</span></div>
+          </div>
+
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div><strong>Inicio.</strong><p class="muted">Se prepara la ejecución.</p></div></div>
+            <div class="step-item"><div class="step-num">2</div><div><strong>Leer A y B.</strong><p class="muted">Se reciben los dos números.</p></div></div>
+            <div class="step-item"><div class="step-num">3</div><div><strong>Restar.</strong><p class="muted">Se calcula Resta ← A - B.</p></div></div>
+            <div class="step-item"><div class="step-num">4</div><div><strong>Mostrar.</strong><p class="muted">Se presenta el resultado obtenido.</p></div></div>
+            <div class="step-item"><div class="step-num">5</div><div><strong>Fin.</strong><p class="muted">El algoritmo termina.</p></div></div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-title">💻 algoritmo_resta.algo</div>
+<pre><span class="kw1">Algoritmo</span> RestaDosNumeros
+  <span class="kw2">Definir</span> A, B, Resta <span class="kw2">Como</span> Real
+  <span class="kw3">Escribir</span> "Ingrese el primer número:"
+  <span class="kw3">Leer</span> A
+  <span class="kw3">Escribir</span> "Ingrese el segundo número:"
+  <span class="kw3">Leer</span> B
+  Resta &lt;- A - B
+  <span class="kw3">Escribir</span> "La resta es: ", Resta
+<span class="kw1">FinAlgoritmo</span></pre>
+          </div>
+
+          <div class="demo-box">
+            <h3>Prueba rápida</h3>
+            <div class="demo-controls">
+              <input type="number" id="restaA" placeholder="Número A" />
+              <input type="number" id="restaB" placeholder="Número B" />
+              <button class="btn btn-primary" data-op="resta">Calcular</button>
+            </div>
+            <div class="result-box" id="restaResultado">Aquí aparecerá el resultado.</div>
+          </div>
+        </div>
+
+        <div class="box box-soft">
+          <h3>Diagrama de flujo (resta)</h3>
+          <div class="flow-stage">
+            <div class="flow-column">
+              <div class="flow-node flow-terminal">INICIO</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Leer A y B</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-process">Resta ← A - B</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Mostrar Resta</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-terminal">FIN</div>
+            </div>
+          </div>
+          <div class="note"><strong>Idea clave:</strong> la lógica general sigue igual; solo cambia el operador de la operación principal.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="multiplicacion-section" class="section-hidden">
+      <div class="level-grid">
+        <div class="box">
+          <div class="level-tag">Nivel 3</div>
+          <h2>Multiplicación de dos números</h2>
+          <p class="muted" style="margin-top:8px; line-height:1.65;">
+            La multiplicación también mantiene la misma estructura. En esta etapa el estudiante ve que
+            muchos algoritmos cambian poco: entrada, proceso y salida siguen presentes.
+          </p>
+
+          <div class="io-grid">
+            <div class="mini-card"><strong>Entrada</strong><span>A y B</span></div>
+            <div class="mini-card"><strong>Proceso</strong><span>Producto ← A * B</span></div>
+            <div class="mini-card"><strong>Salida</strong><span>Mostrar Producto</span></div>
+          </div>
+
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div><strong>Inicio.</strong><p class="muted">Comienza el algoritmo.</p></div></div>
+            <div class="step-item"><div class="step-num">2</div><div><strong>Leer A y B.</strong><p class="muted">Se leen los datos de entrada.</p></div></div>
+            <div class="step-item"><div class="step-num">3</div><div><strong>Multiplicar.</strong><p class="muted">Se hace Producto ← A * B.</p></div></div>
+            <div class="step-item"><div class="step-num">4</div><div><strong>Mostrar.</strong><p class="muted">Se visualiza el producto calculado.</p></div></div>
+            <div class="step-item"><div class="step-num">5</div><div><strong>Fin.</strong><p class="muted">Se cierra la ejecución.</p></div></div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-title">💻 algoritmo_multiplicacion.algo</div>
+<pre><span class="kw1">Algoritmo</span> MultiplicarDosNumeros
+  <span class="kw2">Definir</span> A, B, Producto <span class="kw2">Como</span> Real
+  <span class="kw3">Escribir</span> "Ingrese el primer número:"
+  <span class="kw3">Leer</span> A
+  <span class="kw3">Escribir</span> "Ingrese el segundo número:"
+  <span class="kw3">Leer</span> B
+  Producto &lt;- A * B
+  <span class="kw3">Escribir</span> "La multiplicación es: ", Producto
+<span class="kw1">FinAlgoritmo</span></pre>
+          </div>
+
+          <div class="demo-box">
+            <h3>Prueba rápida</h3>
+            <div class="demo-controls">
+              <input type="number" id="multiA" placeholder="Número A" />
+              <input type="number" id="multiB" placeholder="Número B" />
+              <button class="btn btn-primary" data-op="multiplicacion">Calcular</button>
+            </div>
+            <div class="result-box" id="multiResultado">Aquí aparecerá el resultado.</div>
+          </div>
+        </div>
+
+        <div class="box box-soft">
+          <h3>Diagrama de flujo (multiplicación)</h3>
+          <div class="flow-stage">
+            <div class="flow-column">
+              <div class="flow-node flow-terminal">INICIO</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Leer A y B</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-process">Producto ← A * B</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Mostrar Producto</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-terminal">FIN</div>
+            </div>
+          </div>
+          <div class="note"><strong>Patrón repetido:</strong> ya se empieza a ver que las cuatro operaciones básicas pueden modelarse con la misma estructura general.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="division-section" class="section-hidden">
+      <div class="level-grid">
+        <div class="box">
+          <div class="level-tag">Nivel 4</div>
+          <h2>División de dos números</h2>
+          <p class="muted" style="margin-top:8px; line-height:1.65;">
+            La división introduce una validación importante: no se puede dividir entre cero.
+            Por eso este nivel agrega una <strong style="color:var(--warning)">decisión</strong> dentro del algoritmo.
+          </p>
+
+          <div class="io-grid">
+            <div class="mini-card"><strong>Entrada</strong><span>A y B</span></div>
+            <div class="mini-card"><strong>Proceso</strong><span>Si B ≠ 0 entonces Cociente ← A / B</span></div>
+            <div class="mini-card"><strong>Salida</strong><span>Resultado o mensaje de error</span></div>
+          </div>
+
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div><strong>Inicio.</strong><p class="muted">Arranca el proceso.</p></div></div>
+            <div class="step-item"><div class="step-num">2</div><div><strong>Leer A y B.</strong><p class="muted">Se ingresan dividendo y divisor.</p></div></div>
+            <div class="step-item"><div class="step-num">3</div><div><strong>Validar.</strong><p class="muted">Se revisa si B es igual a 0.</p></div></div>
+            <div class="step-item"><div class="step-num">4</div><div><strong>Decidir.</strong><p class="muted">Si B es distinto de 0 se divide; si no, se muestra error.</p></div></div>
+            <div class="step-item"><div class="step-num">5</div><div><strong>Fin.</strong><p class="muted">Se termina el algoritmo.</p></div></div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-title">💻 algoritmo_division.algo</div>
+<pre><span class="kw1">Algoritmo</span> DividirDosNumeros
+  <span class="kw2">Definir</span> A, B, Cociente <span class="kw2">Como</span> Real
+  <span class="kw3">Escribir</span> "Ingrese el primer número:"
+  <span class="kw3">Leer</span> A
+  <span class="kw3">Escribir</span> "Ingrese el segundo número:"
+  <span class="kw3">Leer</span> B
+  <span class="kw2">Si</span> B &lt;&gt; 0 <span class="kw2">Entonces</span>
+     Cociente &lt;- A / B
+     <span class="kw3">Escribir</span> "La división es: ", Cociente
+  <span class="kw2">SiNo</span>
+     <span class="kw3">Escribir</span> "Error: no se puede dividir entre cero"
+  <span class="kw2">FinSi</span>
+<span class="kw1">FinAlgoritmo</span></pre>
+          </div>
+
+          <div class="demo-box">
+            <h3>Prueba rápida</h3>
+            <div class="demo-controls">
+              <input type="number" id="divisionA" placeholder="Número A" />
+              <input type="number" id="divisionB" placeholder="Número B" />
+              <button class="btn btn-primary" data-op="division">Calcular</button>
+            </div>
+            <div class="result-box" id="divisionResultado">Aquí aparecerá el resultado.</div>
+          </div>
+        </div>
+
+        <div class="box box-soft">
+          <h3>Diagrama de flujo (división)</h3>
+          <div class="flow-stage">
+            <div class="flow-column">
+              <div class="flow-node flow-terminal">INICIO</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Leer A y B</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-decision"><span>¿B = 0?</span></div>
+              <div class="flow-branch">
+                <div class="flow-branch-line"></div>
+                <div class="flow-branch-label yes">NO</div>
+                <div class="flow-branch-label no">SÍ</div>
+                <div class="branch-box">Mostrar error: no se puede dividir entre cero</div>
+              </div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-process">Cociente ← A / B</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Mostrar Cociente</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-terminal">FIN</div>
+            </div>
+          </div>
+          <div class="note"><strong>Punto importante:</strong> aquí aparece por primera vez una condición. Esa validación será útil cuando construyas la calculadora completa.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="calculadora-section" class="section-hidden">
+      <div class="calc-grid">
+        <div class="box">
+          <div class="level-tag">Nivel 5</div>
+          <h2>Integración de las cuatro operaciones: calculadora</h2>
+          <p class="muted" style="margin-top:8px; line-height:1.65;">
+            La calculadora junta las cuatro operaciones en una sola estructura. La diferencia frente a los niveles anteriores
+            es que ahora el algoritmo primero debe <strong style="color:var(--primary)">leer una opción</strong> y luego decidir qué operación ejecutar.
+          </p>
+
+          <div class="summary-grid">
+            <div class="summary-mini"><strong>Opción 1</strong><span>Suma</span></div>
+            <div class="summary-mini"><strong>Opción 2</strong><span>Resta</span></div>
+            <div class="summary-mini"><strong>Opción 3</strong><span>Multiplicación</span></div>
+            <div class="summary-mini"><strong>Opción 4</strong><span>División</span></div>
+          </div>
+
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div><strong>Mostrar menú.</strong><p class="muted">El usuario elige qué operación quiere realizar.</p></div></div>
+            <div class="step-item"><div class="step-num">2</div><div><strong>Leer opción.</strong><p class="muted">Se captura un número entre 1 y 4.</p></div></div>
+            <div class="step-item"><div class="step-num">3</div><div><strong>Leer A y B.</strong><p class="muted">Se capturan los dos operandos.</p></div></div>
+            <div class="step-item"><div class="step-num">4</div><div><strong>Decidir operación.</strong><p class="muted">Según la opción, se suma, resta, multiplica o divide.</p></div></div>
+            <div class="step-item"><div class="step-num">5</div><div><strong>Validar división.</strong><p class="muted">Si la opción es dividir, hay que revisar si B es cero.</p></div></div>
+            <div class="step-item"><div class="step-num">6</div><div><strong>Mostrar resultado.</strong><p class="muted">Se presenta el valor calculado o un error.</p></div></div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-title">💻 calculadora_basica.algo</div>
+<pre><span class="kw1">Algoritmo</span> CalculadoraBasica
+  <span class="kw2">Definir</span> A, B, Resultado <span class="kw2">Como</span> Real
+  <span class="kw2">Definir</span> Opcion <span class="kw2">Como</span> Entero
+
+  <span class="kw3">Escribir</span> "1. Sumar"
+  <span class="kw3">Escribir</span> "2. Restar"
+  <span class="kw3">Escribir</span> "3. Multiplicar"
+  <span class="kw3">Escribir</span> "4. Dividir"
+  <span class="kw3">Leer</span> Opcion
+
+  <span class="kw3">Escribir</span> "Ingrese el primer número:"
+  <span class="kw3">Leer</span> A
+  <span class="kw3">Escribir</span> "Ingrese el segundo número:"
+  <span class="kw3">Leer</span> B
+
+  <span class="kw2">Segun</span> Opcion <span class="kw2">Hacer</span>
+    1:
+      Resultado &lt;- A + B
+      <span class="kw3">Escribir</span> "Resultado: ", Resultado
+    2:
+      Resultado &lt;- A - B
+      <span class="kw3">Escribir</span> "Resultado: ", Resultado
+    3:
+      Resultado &lt;- A * B
+      <span class="kw3">Escribir</span> "Resultado: ", Resultado
+    4:
+      <span class="kw2">Si</span> B &lt;&gt; 0 <span class="kw2">Entonces</span>
+        Resultado &lt;- A / B
+        <span class="kw3">Escribir</span> "Resultado: ", Resultado
+      <span class="kw2">SiNo</span>
+        <span class="kw3">Escribir</span> "Error: no se puede dividir entre cero"
+      <span class="kw2">FinSi</span>
+    <span class="kw2">De Otro Modo</span>:
+      <span class="kw3">Escribir</span> "Opción no válida"
+  <span class="kw2">FinSegun</span>
+<span class="kw1">FinAlgoritmo</span></pre>
+          </div>
+
+          <div class="summary-card">
+            <h3>Calculadora interactiva</h3>
+            <div class="calc-controls">
+              <input type="number" id="calcA" placeholder="Número A" />
+              <input type="number" id="calcB" placeholder="Número B" />
+              <select id="calcOperacion">
+                <option value="sumar">Sumar</option>
+                <option value="restar">Restar</option>
+                <option value="multiplicar">Multiplicar</option>
+                <option value="dividir">Dividir</option>
+              </select>
+              <button class="btn btn-primary" id="calcBtn">Calcular</button>
+            </div>
+            <div class="result-box" id="calcResultado">Aquí aparecerá el resultado de la calculadora.</div>
+          </div>
+        </div>
+
+        <div class="box box-soft">
+          <h3>Diagrama de flujo (calculadora)</h3>
+          <div class="flow-stage">
+            <div class="flow-column" style="min-height: 620px;">
+              <div class="flow-node flow-terminal">INICIO</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Mostrar menú y leer opción</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Leer A y B</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-decision"><span>¿Qué opción eligió?</span></div>
+              <div class="flow-branch">
+                <div class="branch-box" style="width: 220px;">1 → sumar<br>2 → restar<br>3 → multiplicar<br>4 → dividir</div>
+              </div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-process">Ejecutar operación seleccionada</div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-decision"><span>Si divide, ¿B = 0?</span></div>
+              <div class="flow-branch">
+                <div class="flow-branch-line"></div>
+                <div class="flow-branch-label yes">NO</div>
+                <div class="flow-branch-label no">SÍ</div>
+                <div class="branch-box">Mostrar error</div>
+              </div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-io"><span>Mostrar resultado</span></div>
+              <div class="flow-connector"></div>
+              <div class="flow-node flow-terminal">FIN</div>
+            </div>
+          </div>
+          <div class="note"><strong>Integración:</strong> la calculadora reutiliza la lógica de los cuatro niveles anteriores y agrega una decisión inicial para escoger la operación.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ideas-section" class="section-hidden">
+      <div class="level-grid">
+        <div class="box">
+          <div class="level-tag">Nivel 6</div>
+          <h2>Sugerencias de algoritmos fáciles para escribir</h2>
+          <p class="muted" style="margin-top:8px; line-height:1.7;">
+            Aquí tienes ejercicios básicos para practicar sin programar todavía. La idea es escribirlos
+            con palabras claras usando la estructura: <strong style="color:var(--primary)">Inicio → Leer → Procesar → Mostrar → Fin</strong>.
+          </p>
+
+          <div class="practice-grid">
+            <div class="practice-card">
+              <h4>1. Número par o impar</h4>
+              <p>Lee un número, revisa si al dividirlo entre 2 el residuo es 0 y muestra si es par o impar.</p>
+              <ol>
+                <li>Leer N.</li>
+                <li>Si N mod 2 = 0, mostrar "Par".</li>
+                <li>Si no, mostrar "Impar".</li>
+              </ol>
+            </div>
+
+            <div class="practice-card">
+              <h4>2. Mayor de dos números</h4>
+              <p>Lee A y B y muestra cuál es mayor. Si son iguales, también se puede indicar.</p>
+              <ol>
+                <li>Leer A y B.</li>
+                <li>Si A &gt; B, mostrar A.</li>
+                <li>Si B &gt; A, mostrar B.</li>
+                <li>Si A = B, mostrar "Son iguales".</li>
+              </ol>
+            </div>
+
+            <div class="practice-card">
+              <h4>3. Promedio de tres notas</h4>
+              <p>Lee tres calificaciones, calcula el promedio y muestra el resultado.</p>
+              <ol>
+                <li>Leer N1, N2 y N3.</li>
+                <li>Promedio ← (N1 + N2 + N3) / 3.</li>
+                <li>Mostrar Promedio.</li>
+              </ol>
+            </div>
+
+            <div class="practice-card">
+              <h4>4. Área de un rectángulo</h4>
+              <p>Lee base y altura, calcula el área y la muestra.</p>
+              <ol>
+                <li>Leer Base y Altura.</li>
+                <li>Área ← Base * Altura.</li>
+                <li>Mostrar Área.</li>
+              </ol>
+            </div>
+
+            <div class="practice-card">
+              <h4>5. Tabla de multiplicar</h4>
+              <p>Lee un número y escribe su tabla del 1 al 10. Este ya introduce repetición.</p>
+              <ol>
+                <li>Leer N.</li>
+                <li>Repetir desde i = 1 hasta 10.</li>
+                <li>Mostrar N * i.</li>
+              </ol>
+            </div>
+
+            <div class="practice-card">
+              <h4>6. Conversión de centímetros a metros</h4>
+              <p>Lee una cantidad en centímetros, conviértela a metros y muestra el nuevo valor.</p>
+              <ol>
+                <li>Leer Cm.</li>
+                <li>Metros ← Cm / 100.</li>
+                <li>Mostrar Metros.</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="template-box">
+            <strong>Plantilla escrita que puedes copiar</strong>
+            <pre>Inicio
+  Definir variables
+  Leer datos
+  Realizar proceso
+  Mostrar resultado
+Fin</pre>
+          </div>
+        </div>
+
+        <div class="box box-soft">
+          <h3>Consejos para que te salgan bien 🌸</h3>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div><strong>Usa verbos claros.</strong><p class="muted">Leer, calcular, comparar, mostrar.</p></div></div>
+            <div class="step-item"><div class="step-num">2</div><div><strong>Un paso por línea.</strong><p class="muted">Así el algoritmo se entiende mejor.</p></div></div>
+            <div class="step-item"><div class="step-num">3</div><div><strong>Nombra bien las variables.</strong><p class="muted">Ejemplo: nota1, nota2, promedio.</p></div></div>
+            <div class="step-item"><div class="step-num">4</div><div><strong>Valida cuando haga falta.</strong><p class="muted">Como evitar dividir entre cero.</p></div></div>
+            <div class="step-item"><div class="step-num">5</div><div><strong>Empieza por lo más simple.</strong><p class="muted">Primero suma, luego comparación, luego ciclos.</p></div></div>
+          </div>
+
+          <div class="code-card" style="margin-top:18px;">
+            <div class="code-title">💻 ejemplo_escrito.algo</div>
+<pre><span class="kw1">Algoritmo</span> MayorDeDos
+  <span class="kw2">Definir</span> A, B <span class="kw2">Como</span> Real
+  <span class="kw3">Leer</span> A
+  <span class="kw3">Leer</span> B
+  <span class="kw2">Si</span> A &gt; B <span class="kw2">Entonces</span>
+    <span class="kw3">Escribir</span> "El mayor es: ", A
+  <span class="kw2">SiNo</span>
+    <span class="kw3">Escribir</span> "El mayor es: ", B
+  <span class="kw2">FinSi</span>
+<span class="kw1">FinAlgoritmo</span></pre>
+          </div>
+
+          <div class="note"><strong>Sugerencia:</strong> antes de dibujar el diagrama o programar, escribe el algoritmo con tus palabras. Eso te obliga a ordenar la lógica.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="container">
+    Material interactivo para aprender operaciones básicas, una calculadora y nuevas ideas de algoritmos fáciles en estilo kawaii.
+  </footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.tab;
+        $('inicio-section').classList.toggle('section-hidden', tab !== 'inicio');
+        $('suma-section').classList.toggle('section-hidden', tab !== 'suma');
+        $('resta-section').classList.toggle('section-hidden', tab !== 'resta');
+        $('multiplicacion-section').classList.toggle('section-hidden', tab !== 'multiplicacion');
+        $('division-section').classList.toggle('section-hidden', tab !== 'division');
+        $('calculadora-section').classList.toggle('section-hidden', tab !== 'calculadora');
+        $('ideas-section').classList.toggle('section-hidden', tab !== 'ideas');
+      });
+    });
+
+    function numValue(id) {
+      const value = Number($(id).value);
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    function setResult(id, text) {
+      $(id).textContent = text;
+    }
+
+    document.querySelector('[data-op="suma"]').addEventListener('click', () => {
+      const a = numValue('sumaA');
+      const b = numValue('sumaB');
+      setResult('sumaResultado', `Resultado: ${a} + ${b} = ${a + b}`);
+    });
+
+    document.querySelector('[data-op="resta"]').addEventListener('click', () => {
+      const a = numValue('restaA');
+      const b = numValue('restaB');
+      setResult('restaResultado', `Resultado: ${a} - ${b} = ${a - b}`);
+    });
+
+    document.querySelector('[data-op="multiplicacion"]').addEventListener('click', () => {
+      const a = numValue('multiA');
+      const b = numValue('multiB');
+      setResult('multiResultado', `Resultado: ${a} × ${b} = ${a * b}`);
+    });
+
+    document.querySelector('[data-op="division"]').addEventListener('click', () => {
+      const a = numValue('divisionA');
+      const b = numValue('divisionB');
+      if (b === 0) {
+        setResult('divisionResultado', 'Error: no se puede dividir entre cero.');
+        return;
+      }
+      setResult('divisionResultado', `Resultado: ${a} ÷ ${b} = ${a / b}`);
+    });
+
+    $('calcBtn').addEventListener('click', () => {
+      const a = numValue('calcA');
+      const b = numValue('calcB');
+      const op = $('calcOperacion').value;
+      let texto = '';
+
+      switch (op) {
+        case 'sumar':
+          texto = `Resultado: ${a} + ${b} = ${a + b}`;
+          break;
+        case 'restar':
+          texto = `Resultado: ${a} - ${b} = ${a - b}`;
+          break;
+        case 'multiplicar':
+          texto = `Resultado: ${a} × ${b} = ${a * b}`;
+          break;
+        case 'dividir':
+          if (b === 0) {
+            texto = 'Error: no se puede dividir entre cero.';
+          } else {
+            texto = `Resultado: ${a} ÷ ${b} = ${a / b}`;
+          }
+          break;
+        default:
+          texto = 'Opción no válida.';
+      }
+
+      setResult('calcResultado', texto);
+    });
+  </script>
+</body>
+</html>
