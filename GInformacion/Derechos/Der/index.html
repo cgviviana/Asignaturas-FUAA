@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz · Derechos de Autor</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#f0f9ff;padding:16px;}
+#app{border-radius:20px;overflow:hidden;background:#f0f9ff;font-family:'Nunito',sans-serif;max-width:600px;margin:0 auto;}
+.hdr{background:#0369a1;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-title{font-family:'Fredoka One',cursive;font-size:20px;color:#fff;}
+.hdr-score{background:rgba(255,255,255,0.2);color:#fff;font-weight:800;font-size:15px;padding:5px 14px;border-radius:999px;}
+#play-content{padding:18px;}
+
+/* PANTALLA NOMBRE */
+.name-screen{background:#fff;border-radius:14px;border:1.5px solid #bae6fd;padding:20px;text-align:center;}
+.name-title{font-family:'Fredoka One',cursive;font-size:20px;color:#0369a1;margin-bottom:6px;}
+.name-sub{font-size:13px;color:#888;margin-bottom:14px;line-height:1.6;}
+.name-input{width:100%;padding:11px 14px;border-radius:10px;border:2px solid #7dd3fc;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;color:#0c4a6e;margin-bottom:12px;}
+.name-input:focus{border-color:#0369a1;}
+.start-btn{width:100%;background:#0369a1;color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Fredoka One',cursive;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #075985;transition:transform .1s;}
+.start-btn:hover{transform:translateY(-2px);}
+
+/* QUIZ */
+.quiz-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.q-counter{font-size:13px;font-weight:700;color:#888;}
+.q-score-lbl{font-family:'Fredoka One',cursive;font-size:16px;color:#0369a1;}
+.prog-bar{background:#e0f2fe;border-radius:999px;height:8px;margin-bottom:14px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:999px;background:#0369a1;transition:width .4s;}
+.mascot-wrap{display:flex;justify-content:center;margin-bottom:8px;}
+.q-box{background:#fff;border-radius:14px;border:2px solid #bae6fd;padding:16px;text-align:center;margin-bottom:14px;}
+.q-label{font-size:11px;font-weight:700;color:#0369a1;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.q-val{font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#0c4a6e;line-height:1.55;text-align:left;}
+.q-cat{display:inline-block;font-size:10px;font-weight:800;padding:2px 10px;border-radius:999px;margin-bottom:8px;letter-spacing:.5px;}
+.cat-plagio   {background:#fef08a;color:#78350f;}
+.cat-autor    {background:#ddd6fe;color:#4c1d95;}
+.cat-intelectual{background:#bbf7d0;color:#14532d;}
+.cat-industrial {background:#fed7aa;color:#7c2d12;}
+.cat-licencias  {background:#fecdd3;color:#881337;}
+
+/* OPCIONES */
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.opt{padding:11px 14px;border-radius:12px;border:2.5px solid #bae6fd;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:#fff;color:#0c4a6e;text-align:left;line-height:1.4;}
+.opt:hover:not(:disabled){transform:translateY(-2px);border-color:#0369a1;background:#f0f9ff;}
+.opt:disabled{cursor:not-allowed;opacity:.75;transform:none;}
+.opt.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;}
+.opt.wrong  {background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.exp-box{background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:10px 12px;font-size:12px;color:#0369a1;margin-top:6px;line-height:1.55;display:none;}
+.exp-box.show{display:block;}
+
+.feedback{text-align:center;font-family:'Fredoka One',cursive;font-size:17px;min-height:24px;margin-bottom:4px;}
+.fb-ok{color:#16a34a;}.fb-err{color:#dc2626;}
+.delta{font-size:22px;font-weight:800;text-align:center;min-height:28px;margin-bottom:4px;}
+.delta.up{color:#16a34a;}.delta.down{color:#dc2626;}
+
+/* RESULTADO */
+.result{text-align:center;padding:14px 8px;}
+.res-title{font-family:'Fredoka One',cursive;font-size:26px;color:#0369a1;margin-bottom:4px;}
+.res-stars{font-size:34px;margin:8px 0;}
+.res-card{background:#fff;border-radius:14px;border:1.5px solid #bae6fd;padding:16px;margin:12px 0;text-align:left;}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid #e0f2fe;font-size:14px;}
+.res-row:last-child{border:none;font-weight:800;font-size:16px;color:#0369a1;}
+.res-lbl{color:#888;font-weight:600;}
+.res-val{font-weight:700;color:#0c4a6e;}
+.rbtn{background:#0369a1;color:#fff;border:none;border-radius:12px;padding:11px 22px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;box-shadow:0 4px 0 #075985;margin:4px;transition:transform .1s;}
+.rbtn:hover{transform:translateY(-2px);}
+</style>
+
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-title">Derechos de Autor</div>
+    <div class="hdr-score" id="hdr-score">0 pts</div>
+  </div>
+  <div id="play-content"></div>
+</div>
+
+<script>
+let playerName='', score=0, curQ=0, questions=[], answered=false;
+
+/* ——— MASCOTA SVG ——— */
+const M_OK  =`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#15803d"/><circle cx="46" cy="28" r="4" fill="#15803d"/><path d="M22 44 Q35 56 48 44" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/><polyline points="14,35 22,43 40,25" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const M_ERR =`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#dc2626"/><circle cx="46" cy="28" r="4" fill="#dc2626"/><path d="M22 50 Q35 40 48 50" stroke="#dc2626" stroke-width="3" stroke-linecap="round" fill="none"/><line x1="18" y1="18" x2="30" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="18" x2="18" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></svg>`;
+const M_IDL =`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#e0f2fe" stroke="#0369a1" stroke-width="2.5"/><circle cx="24" cy="30" r="4" fill="#0369a1"/><circle cx="46" cy="30" r="4" fill="#0369a1"/><path d="M24 46 Q35 52 46 46" stroke="#0369a1" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="25" cy="30" r="1.5" fill="#fff"/><circle cx="47" cy="30" r="1.5" fill="#fff"/></svg>`;
+const M_WIN =`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#92400e"/><circle cx="46" cy="28" r="4" fill="#92400e"/><path d="M20 44 Q35 60 50 44" stroke="#92400e" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(44,2) scale(0.6)" fill="#eab308"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(8,5) scale(0.5)" fill="#eab308"/></svg>`;
+
+/* ——— BANCO DE PREGUNTAS ——— */
+const BANCO = [
+
+  /* PLAGIO */
+  {cat:'plagio', catLabel:'Plagio',
+   q:'¿Cuál es la definición de plagio según la Real Academia de la Lengua (RAE)?',
+   opts:['Crear una obra original basada en ideas propias.',
+         'Copiar obras ajenas presentándolas como propias.',
+         'Citar correctamente las fuentes de un trabajo.',
+         'Modificar una obra con el permiso del autor.'],
+   a:1, exp:'La RAE define el plagio como la copia de obras ajenas, presentándolas como propias, sin reconocer al verdadero creador.'},
+
+  {cat:'plagio', catLabel:'Plagio',
+   q:'En el ámbito académico en Colombia, ¿qué implica usar palabras o ideas de otros sin darles crédito?',
+   opts:['Es una práctica aceptada si se parafrasea.',
+         'Es obligatorio solo en trabajos de grado.',
+         'Equivale a engañar y debe evitarse siempre.',
+         'Solo aplica para publicaciones científicas.'],
+   a:2, exp:'En Colombia, usar ideas ajenas sin citar la fuente equivale a engañar. Siempre debemos mencionar de dónde proviene la información para reconocer el esfuerzo del autor.'},
+
+  {cat:'plagio', catLabel:'Plagio',
+   q:'¿Cuál de estos ejemplos ilustra mejor el plagio?',
+   opts:['Citar una frase de un libro con su referencia completa.',
+         'Copiar el dibujo de un amigo y presentarlo como propio.',
+         'Resumir un artículo indicando el autor.',
+         'Adaptar una canción con permiso del compositor.'],
+   a:1, exp:'Copiar una obra sin mencionar al creador y presentarla como propia es exactamente la definición de plagio.'},
+
+  /* DERECHOS DE AUTOR — MORALES */
+  {cat:'autor', catLabel:'Derechos de autor',
+   q:'¿En cuántos grupos se dividen los derechos de autor?',
+   opts:['Tres: morales, patrimoniales y conexos.',
+         'Cuatro: morales, económicos, civiles y penales.',
+         'Dos: morales y patrimoniales.',
+         'Uno: solo patrimoniales.'],
+   a:2, exp:'Los derechos de autor se dividen en dos grupos: Derechos Morales (relación personal autor-obra) y Derechos Patrimoniales (explotación económica de la obra).'},
+
+  {cat:'autor', catLabel:'Derechos de autor',
+   q:'¿Qué protegen los Derechos Morales?',
+   opts:['La explotación económica de la obra.',
+         'La relación personal entre el autor y su obra.',
+         'El registro de marcas e inventos.',
+         'Las licencias de uso comercial.'],
+   a:1, exp:'Los Derechos Morales protegen el vínculo personal entre el autor y su obra, incluyendo el reconocimiento de autoría, la integridad y el control sobre la divulgación.'},
+
+  {cat:'autor', catLabel:'Derechos de autor',
+   q:'El derecho de Autoría, dentro de los Derechos Morales, se refiere a:',
+   opts:['Vender copias de la obra al público.',
+         'Retirar la obra del mercado cuando se desee.',
+         'Reconocer al creador como autor de la obra.',
+         'Adaptar la obra a otro formato.'],
+   a:2, exp:'El derecho de Autoría garantiza que el creador sea reconocido como el legítimo autor de su obra.'},
+
+  {cat:'autor', catLabel:'Derechos de autor',
+   q:'¿Qué derecho moral permite al autor decidir cuándo se da a conocer su obra al público?',
+   opts:['Derecho de Integridad',
+         'Derecho de Divulgación',
+         'Derecho de Reproducción',
+         'Derecho de Distribución'],
+   a:1, exp:'El derecho de Divulgación le permite al autor decidir cuándo y cómo su obra se da a conocer por primera vez.'},
+
+  {cat:'autor', catLabel:'Derechos de autor',
+   q:'¿Cuál de los siguientes es un Derecho Patrimonial de autor?',
+   opts:['Derecho de Integridad',
+         'Derecho de Autoría',
+         'Derecho de Divulgación',
+         'Derecho de Reproducción'],
+   a:3, exp:'El derecho de Reproducción (hacer copias de la obra) es un Derecho Patrimonial, ya que permite la explotación económica. Los otros tres son Derechos Morales.'},
+
+  {cat:'autor', catLabel:'Derechos de autor',
+   q:'El derecho de Transformación, dentro de los Derechos Patrimoniales, permite:',
+   opts:['Decidir cuándo retirar la obra del mercado.',
+         'Adaptar o modificar la obra.',
+         'Reconocer al creador públicamente.',
+         'Mostrar la obra en un solo ejemplar único.'],
+   a:1, exp:'El derecho de Transformación le otorga al autor el control sobre las adaptaciones, traducciones o modificaciones de su obra.'},
+
+  {cat:'autor', catLabel:'Derechos de autor',
+   q:'¿Qué Derecho Patrimonial se relaciona con mostrar la obra públicamente?',
+   opts:['Derecho de Colección',
+         'Derecho de Distribución',
+         'Derecho de Comunicación',
+         'Derecho de Modificación'],
+   a:2, exp:'El derecho de Comunicación permite al autor mostrar o transmitir su obra al público (en conciertos, exposiciones, transmisiones, etc.).'},
+
+  /* PROPIEDAD INTELECTUAL */
+  {cat:'intelectual', catLabel:'Propiedad intelectual',
+   q:'¿Qué protege la propiedad intelectual?',
+   opts:['Solo los inventos tecnológicos registrados.',
+         'Cualquier creación de la mente: cuentos, dibujos, canciones o inventos.',
+         'Únicamente las obras de arte publicadas.',
+         'Solo las marcas comerciales registradas.'],
+   a:1, exp:'La propiedad intelectual protege cualquier creación de la mente humana, incluyendo obras artísticas, literarias, científicas e inventos.'},
+
+  {cat:'intelectual', catLabel:'Propiedad intelectual',
+   q:'¿Qué abarca el concepto de propiedad intelectual?',
+   opts:['Solo los derechos de autor sobre obras artísticas.',
+         'Los derechos de autor y otros derechos vinculados a invenciones y marcas.',
+         'Únicamente las patentes industriales.',
+         'Solo las licencias de software.'],
+   a:1, exp:'La propiedad intelectual es un concepto amplio que abarca tanto los derechos de autor (obras artísticas y científicas) como derechos vinculados a invenciones, marcas y diseños industriales.'},
+
+  /* PROPIEDAD INDUSTRIAL */
+  {cat:'industrial', catLabel:'Propiedad industrial',
+   q:'¿Qué tipo de creaciones protege la propiedad industrial?',
+   opts:['Obras literarias y musicales.',
+         'Bases de datos y programas de computador.',
+         'Creaciones inmateriales del mundo industrial, como inventos o diseños.',
+         'Solo las marcas registradas en el exterior.'],
+   a:2, exp:'La propiedad industrial protege las creaciones inmateriales del mundo industrial: inventos, diseños industriales, marcas y patentes.'},
+
+  {cat:'industrial', catLabel:'Propiedad industrial',
+   q:'En Colombia, ¿qué entidad protege los derechos de propiedad industrial?',
+   opts:['El Ministerio de Educación Nacional.',
+         'La Superintendencia de Industria y Comercio.',
+         'La Dirección Nacional de Derechos de Autor.',
+         'El Ministerio de Ciencia y Tecnología.'],
+   a:1, exp:'En Colombia, la Superintendencia de Industria y Comercio (SIC) es la entidad encargada de proteger los derechos de propiedad industrial.'},
+
+  /* LICENCIAS */
+  {cat:'licencias', catLabel:'Licencias',
+   q:'¿Qué son las licencias en el contexto de la propiedad intelectual?',
+   opts:['Documentos que transfieren la autoría de una obra.',
+         'Acuerdos legales que definen cómo se puede usar, compartir y modificar una obra.',
+         'Permisos otorgados por el Estado para publicar.',
+         'Registros obligatorios ante notaría.'],
+   a:1, exp:'Las licencias son acuerdos legales que establecen las condiciones bajo las cuales una obra puede ser usada, compartida o modificada, sin transferir la autoría.'},
+
+  {cat:'licencias', catLabel:'Licencias',
+   q:'¿Cuál de estos es un tipo de licencia mencionado en el contenido?',
+   opts:['Licencia GNU',
+         'Licencia Creative Commons',
+         'Licencia MIT',
+         'Licencia BSD'],
+   a:1, exp:'Las Licencias Creative Commons ofrecen combinaciones de condiciones (dar crédito, uso no comercial, compartir igual, no modificar) para facilitar la reutilización respetando al autor.'},
+
+  {cat:'licencias', catLabel:'Licencias',
+   q:'¿Qué tipo de licencia permite al creador controlar estrictamente el uso de su obra?',
+   opts:['Licencia Creative Commons',
+         'Licencia de uso',
+         'Licencia de autor',
+         'Licencia abierta'],
+   a:2, exp:'Las licencias de autor son las más restrictivas: el creador controla estrictamente quién puede usar su obra y bajo qué condiciones.'},
+
+  {cat:'licencias', catLabel:'Licencias',
+   q:'Las Licencias Creative Commons pueden incluir condiciones como:',
+   opts:['Registro obligatorio ante el Estado.',
+         'Pago de derechos en moneda extranjera.',
+         'Dar crédito, uso no comercial y compartir igual.',
+         'Solo pueden usarse para obras musicales.'],
+   a:2, exp:'Las Licencias Creative Commons combinan condiciones como: dar crédito al autor, restricción de uso no comercial, compartir bajo la misma licencia (compartir igual) y no modificar la obra.'},
+
+  {cat:'licencias', catLabel:'Licencias',
+   q:'¿Con qué analogía se resume el concepto de licencia en el contenido?',
+   opts:['Un contrato de compraventa entre dos empresas.',
+         'Un conjunto de reglas que protege y regula el uso de la creatividad.',
+         'Una patente que impide toda reproducción.',
+         'Un permiso gubernamental para publicar en internet.'],
+   a:1, exp:'El contenido resume la licencia como "un conjunto de reglas que protege y regula el uso de la creatividad", estableciendo lo que se puede y no se puede hacer con una obra.'},
+
+  /* IDENTIFICACIÓN GENERAL */
+  {cat:'intelectual', catLabel:'Propiedad intelectual',
+   q:'¿Cuál es la diferencia principal entre propiedad intelectual y propiedad industrial?',
+   opts:['Son exactamente lo mismo.',
+         'La intelectual protege obras artísticas y científicas; la industrial protege inventos y diseños.',
+         'La industrial protege solo obras literarias.',
+         'La intelectual solo aplica a empresas multinacionales.'],
+   a:1, exp:'La propiedad intelectual es el concepto amplio que incluye obras artísticas y científicas. La propiedad industrial es una rama que protege específicamente inventos, diseños y marcas del mundo industrial.'},
+
+  {cat:'autor', catLabel:'Derechos de autor',
+   q:'¿Cuál de los siguientes es un Derecho Moral de autor?',
+   opts:['Derecho de Reproducción',
+         'Derecho de Distribución',
+         'Derecho de Integridad',
+         'Derecho de Colección'],
+   a:2, exp:'El derecho de Integridad es moral: protege la forma original de la obra e impide que sea alterada de manera que perjudique el honor o la reputación del autor.'},
+];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+
+function showNameScreen(){
+  document.getElementById('play-content').innerHTML=`
+    <div class="name-screen">
+      <div style="display:flex;justify-content:center;margin-bottom:14px">${M_IDL}</div>
+      <div class="name-title">¡Bienvenido al quiz!</div>
+      <div class="name-sub">
+        Pon a prueba lo que aprendiste sobre<br>
+        <b style="color:#0369a1">Derechos de Autor y Propiedad Intelectual</b>.<br><br>
+        <b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp; <b style="color:#dc2626">Error: -10 pts</b>
+      </div>
+      <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="60">
+      <button class="start-btn" onclick="startQuiz()">¡Comenzar!</button>
+    </div>`;
+  setTimeout(()=>{const i=document.getElementById('name-inp');if(i)i.focus();},100);
+}
+
+function startQuiz(){
+  const inp=document.getElementById('name-inp');
+  const n=inp?inp.value.trim():'';
+  if(!n){inp.style.borderColor='#ef4444';inp.placeholder='¡Escribe tu nombre primero!';return;}
+  playerName=n; score=0; curQ=0; answered=false;
+  questions=shuffle(BANCO).slice(0,15);
+  updHdr(); renderQ();
+}
+
+function updHdr(){document.getElementById('hdr-score').textContent=score+' pts';}
+
+const CAT_CLASS={
+  plagio:'cat-plagio',
+  autor:'cat-autor',
+  intelectual:'cat-intelectual',
+  industrial:'cat-industrial',
+  licencias:'cat-licencias',
+};
+
+function renderQ(){
+  if(curQ>=questions.length){showResult();return;}
+  const q=questions[curQ];
+  const pct=Math.round((curQ/questions.length)*100);
+  answered=false;
+
+  const optsHtml=q.opts.map((o,i)=>
+    `<button class="opt" onclick="checkAns(${i},this)">${o}</button>`
+  ).join('');
+
+  document.getElementById('play-content').innerHTML=`
+    <div class="quiz-hdr">
+      <div class="q-counter">Pregunta ${curQ+1} / ${questions.length}</div>
+      <div class="q-score-lbl">${score} pts</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="mascot-wrap" id="mc">${M_IDL}</div>
+    <div class="q-box">
+      <div><span class="q-cat ${CAT_CLASS[q.cat]}">${q.catLabel}</span></div>
+      <div class="q-label">Selecciona la respuesta correcta</div>
+      <div class="q-val">${q.q}</div>
+    </div>
+    <div class="opts">${optsHtml}</div>
+    <div class="exp-box" id="exp"></div>
+    <div class="delta" id="delta"></div>
+    <div class="feedback" id="fb"></div>`;
+}
+
+function checkAns(idx, btn){
+  if(answered) return;
+  answered=true;
+  const q=questions[curQ];
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach(b=>b.disabled=true);
+
+  const exp=document.getElementById('exp');
+  exp.textContent=q.exp;
+  exp.classList.add('show');
+
+  if(idx===q.a){
+    btn.classList.add('correct');
+    score+=100; updHdr();
+    document.getElementById('fb').textContent='¡Correcto!';
+    document.getElementById('fb').className='feedback fb-ok';
+    document.getElementById('delta').textContent='+100 puntos';
+    document.getElementById('delta').className='delta up';
+    document.getElementById('mc').innerHTML=M_OK;
+  } else {
+    btn.classList.add('wrong');
+    btns[q.a].classList.add('correct');
+    score=Math.max(0,score-10); updHdr();
+    document.getElementById('fb').textContent='¡Incorrecto!';
+    document.getElementById('fb').className='feedback fb-err';
+    document.getElementById('delta').textContent='-10 puntos';
+    document.getElementById('delta').className='delta down';
+    document.getElementById('mc').innerHTML=M_ERR;
+  }
+  setTimeout(()=>{curQ++;renderQ();},2600);
+}
+
+function showResult(){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const max=questions.length*100;
+  const pct=Math.round((score/max)*100);
+  const stars=pct>=90?'★★★':pct>=60?'★★':'★';
+  const msg=pct>=90?'¡Excelente! Dominas los derechos de autor.'
+           :pct>=60?'¡Muy bien! Repasa los temas donde fallaste.'
+           :'Vuelve a leer el contenido y lo lograrás.';
+
+  document.getElementById('play-content').innerHTML=`
+    <div class="result">
+      <div style="display:flex;justify-content:center;margin-bottom:10px">${M_WIN}</div>
+      <div class="res-title">¡Quiz completado!</div>
+      <div class="res-stars" style="color:#eab308">${stars}</div>
+      <div style="font-size:13px;color:#888;margin-bottom:12px;line-height:1.5">${msg}</div>
+      <div class="res-card">
+        <div class="res-row"><span class="res-lbl">Jugador</span><span class="res-val">${playerName}</span></div>
+        <div class="res-row"><span class="res-lbl">Fecha</span><span class="res-val">${dateStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Hora</span><span class="res-val">${timeStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Correctas</span><span class="res-val">${Math.round(score/100)} de ${questions.length}</span></div>
+        <div class="res-row"><span class="res-lbl">Puntos obtenidos</span><span class="res-val">${score} / ${max} pts</span></div>
+      </div>
+      <button class="rbtn" onclick="rePlay()">Jugar de nuevo</button>
+    </div>`;
+  document.getElementById('hdr-score').textContent=score+' pts';
+}
+
+function rePlay(){
+  score=0; curQ=0; answered=false;
+  questions=shuffle(BANCO).slice(0,15);
+  updHdr(); renderQ();
+}
+
+/* Arrancar */
+showNameScreen();
+</script>
+</html>
