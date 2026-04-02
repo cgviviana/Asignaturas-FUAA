@@ -1,0 +1,466 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz · Licencias Creative Commons</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#fff7ed;padding:16px;}
+#app{border-radius:20px;overflow:hidden;background:#fff7ed;font-family:'Nunito',sans-serif;max-width:600px;margin:0 auto;}
+.hdr{background:#c2410c;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-title{font-family:'Fredoka One',cursive;font-size:20px;color:#fff;}
+.hdr-score{background:rgba(255,255,255,0.2);color:#fff;font-weight:800;font-size:15px;padding:5px 14px;border-radius:999px;}
+#play-content{padding:18px;}
+
+/* PANTALLA NOMBRE */
+.name-screen{background:#fff;border-radius:14px;border:1.5px solid #fed7aa;padding:20px;text-align:center;}
+.name-title{font-family:'Fredoka One',cursive;font-size:20px;color:#c2410c;margin-bottom:6px;}
+.name-sub{font-size:13px;color:#888;margin-bottom:14px;line-height:1.6;}
+.name-input{width:100%;padding:11px 14px;border-radius:10px;border:2px solid #fdba74;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;color:#7c2d12;margin-bottom:12px;}
+.name-input:focus{border-color:#c2410c;}
+.start-btn{width:100%;background:#c2410c;color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Fredoka One',cursive;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #9a3412;transition:transform .1s;}
+.start-btn:hover{transform:translateY(-2px);}
+
+/* QUIZ */
+.quiz-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.q-counter{font-size:13px;font-weight:700;color:#888;}
+.q-score-lbl{font-family:'Fredoka One',cursive;font-size:16px;color:#c2410c;}
+.prog-bar{background:#fed7aa;border-radius:999px;height:8px;margin-bottom:14px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:999px;background:#c2410c;transition:width .4s;}
+.mascot-wrap{display:flex;justify-content:center;margin-bottom:8px;}
+.q-box{background:#fff;border-radius:14px;border:2px solid #fed7aa;padding:16px;margin-bottom:14px;}
+.q-label{font-size:11px;font-weight:700;color:#c2410c;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;text-align:center;}
+.q-val{font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#7c2d12;line-height:1.6;}
+
+/* BADGE de licencia */
+.lic-badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 12px;border-radius:999px;margin-bottom:10px;letter-spacing:.5px;font-family:monospace;}
+.b-base    {background:#fef08a;color:#78350f;}
+.b-cc      {background:#fed7aa;color:#7c2d12;}
+.b-copyleft{background:#bbf7d0;color:#14532d;}
+.b-copy    {background:#ddd6fe;color:#4c1d95;}
+
+/* TIPO ESPECIAL: elige la licencia */
+.licencias-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.lic-opt{padding:10px 8px;border-radius:12px;border:2.5px solid #fdba74;font-family:'Fredoka One',cursive;font-size:13px;cursor:pointer;transition:all .15s;background:#fff;color:#7c2d12;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.06);}
+.lic-opt:hover:not(:disabled){transform:translateY(-2px);border-color:#c2410c;background:#fff7ed;}
+.lic-opt:disabled{cursor:not-allowed;opacity:.75;transform:none;}
+.lic-opt.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;transform:scale(1.04);}
+.lic-opt.wrong  {background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+
+/* OPCIONES normales */
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.opt{padding:11px 14px;border-radius:12px;border:2.5px solid #fdba74;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:#fff;color:#7c2d12;text-align:left;line-height:1.4;}
+.opt:hover:not(:disabled){transform:translateY(-2px);border-color:#c2410c;background:#fff7ed;}
+.opt:disabled{cursor:not-allowed;opacity:.75;transform:none;}
+.opt.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;}
+.opt.wrong  {background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.exp-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px 12px;font-size:12px;color:#9a3412;margin-top:6px;line-height:1.6;display:none;}
+.exp-box.show{display:block;}
+
+.feedback{text-align:center;font-family:'Fredoka One',cursive;font-size:17px;min-height:24px;margin-bottom:4px;}
+.fb-ok{color:#16a34a;}.fb-err{color:#dc2626;}
+.delta{font-size:22px;font-weight:800;text-align:center;min-height:28px;margin-bottom:4px;}
+.delta.up{color:#16a34a;}.delta.down{color:#dc2626;}
+
+/* RESULTADO */
+.result{text-align:center;padding:14px 8px;}
+.res-title{font-family:'Fredoka One',cursive;font-size:26px;color:#c2410c;margin-bottom:4px;}
+.res-stars{font-size:34px;margin:8px 0;}
+.res-card{background:#fff;border-radius:14px;border:1.5px solid #fed7aa;padding:16px;margin:12px 0;text-align:left;}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid #fed7aa;font-size:14px;}
+.res-row:last-child{border:none;font-weight:800;font-size:16px;color:#c2410c;}
+.res-lbl{color:#888;font-weight:600;}
+.res-val{font-weight:700;color:#7c2d12;}
+.rbtn{background:#c2410c;color:#fff;border:none;border-radius:12px;padding:11px 22px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;box-shadow:0 4px 0 #9a3412;margin:4px;transition:transform .1s;}
+.rbtn:hover{transform:translateY(-2px);}
+</style>
+
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-title">Licencias Creative Commons</div>
+    <div class="hdr-score" id="hdr-score">0 pts</div>
+  </div>
+  <div id="play-content"></div>
+</div>
+
+<script>
+let playerName='', score=0, curQ=0, questions=[], answered=false;
+
+const M_OK =`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#15803d"/><circle cx="46" cy="28" r="4" fill="#15803d"/><path d="M22 44 Q35 56 48 44" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/><polyline points="14,35 22,43 40,25" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const M_ERR=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#dc2626"/><circle cx="46" cy="28" r="4" fill="#dc2626"/><path d="M22 50 Q35 40 48 50" stroke="#dc2626" stroke-width="3" stroke-linecap="round" fill="none"/><line x1="18" y1="18" x2="30" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="18" x2="18" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></svg>`;
+const M_IDL=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fff7ed" stroke="#c2410c" stroke-width="2.5"/><circle cx="24" cy="30" r="4" fill="#c2410c"/><circle cx="46" cy="30" r="4" fill="#c2410c"/><path d="M24 46 Q35 52 46 46" stroke="#c2410c" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="25" cy="30" r="1.5" fill="#fff"/><circle cx="47" cy="30" r="1.5" fill="#fff"/></svg>`;
+const M_WIN=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#92400e"/><circle cx="46" cy="28" r="4" fill="#92400e"/><path d="M20 44 Q35 60 50 44" stroke="#92400e" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(44,2) scale(0.6)" fill="#eab308"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(8,5) scale(0.5)" fill="#eab308"/></svg>`;
+
+/* ───────────────────────────────────────────
+   BANCO DE PREGUNTAS
+   tipo: 'M' = opción múltiple (opts/a)
+         'L' = elige la licencia (grilla)
+─────────────────────────────────────────── */
+const BANCO = [
+
+  /* ── CONCEPTOS BASE ── */
+  {tipo:'M', badge:'b-base', badgeLabel:'Conceptos base',
+   q:'¿Qué son las licencias según el contenido?',
+   opts:['Contratos de compraventa entre empresas.',
+         'Reglas que indican cómo se puede usar, compartir y modificar una obra.',
+         'Registros obligatorios ante el Estado.',
+         'Permisos para publicar en redes sociales.'],
+   a:1, exp:'Las licencias son reglas o acuerdos que protegen las ideas y el trabajo de los creadores, definiendo cómo puede usarse, compartirse y modificarse una obra.'},
+
+  {tipo:'M', badge:'b-copy', badgeLabel:'Copyright',
+   q:'¿Qué es el copyright?',
+   opts:['Una licencia que permite modificar obras libremente.',
+         'Un acuerdo para compartir obras sin restricciones.',
+         'Un conjunto de derechos legales que protegen las obras de los autores y les permiten controlar su uso.',
+         'Una marca registrada para productos industriales.'],
+   a:2, exp:'El copyright es un conjunto de derechos legales que protegen obras como libros o canciones, permitiendo que el creador controle el uso de su obra y reciba reconocimiento.'},
+
+  {tipo:'M', badge:'b-copy', badgeLabel:'Copyright',
+   q:'¿Cuál es el principal objetivo del copyright?',
+   opts:['Permitir que cualquiera use y modifique la obra.',
+         'Que el creador controle el uso de su obra y reciba reconocimiento.',
+         'Colocar la obra en el dominio público.',
+         'Facilitar el uso no comercial de las obras.'],
+   a:1, exp:'El copyright busca que el creador tenga control total sobre su obra y sea reconocido como autor, impidiendo usos no autorizados.'},
+
+  {tipo:'M', badge:'b-copyleft', badgeLabel:'Copyleft',
+   q:'¿Qué caracteriza al copyleft?',
+   opts:['Prohíbe cualquier uso de la obra sin permiso expreso.',
+         'Permite usar, modificar y compartir la obra, siempre que se distribuya bajo los mismos términos.',
+         'Solo permite el uso comercial de la obra.',
+         'Elimina todos los derechos del autor.'],
+   a:1, exp:'El copyleft permite usar, modificar y compartir una obra, pero con la condición de que las obras derivadas se distribuyan bajo los mismos términos. "Si compartes, hazlo de igual manera."'},
+
+  {tipo:'M', badge:'b-copyleft', badgeLabel:'Copyleft',
+   q:'La frase "Si compartes, hazlo de igual manera" resume el concepto de:',
+   opts:['Copyright','CC0','Copyleft','CC BY-ND'],
+   a:2, exp:'Esa frase resume el copyleft: quien use y redistribuya la obra debe hacerlo bajo las mismas condiciones con que fue recibida.'},
+
+  /* ── CC BY ── */
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY',
+   q:'¿Qué permite la licencia CC BY?',
+   opts:['Solo compartir la obra sin modificarla.',
+         'Usar, compartir y modificar la obra únicamente sin fines comerciales.',
+         'Usar, compartir y modificar la obra, siempre dando crédito al autor.',
+         'Renunciar a todos los derechos sobre la obra.'],
+   a:2, exp:'CC BY (Atribución) es la licencia más permisiva de Creative Commons: permite usar, compartir y modificar la obra para cualquier fin, incluso comercial, con la única condición de dar crédito al autor.'},
+
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY',
+   q:'¿Cuál es la única condición de la licencia CC BY?',
+   opts:['No modificar la obra.',
+         'Usar la obra solo sin fines comerciales.',
+         'Dar crédito al autor.',
+         'Compartir bajo los mismos términos.'],
+   a:2, exp:'CC BY solo exige dar crédito al autor (atribución). No restringe el uso comercial ni las modificaciones.'},
+
+  /* ── CC BY-NC ── */
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-NC',
+   q:'¿Qué restringe la licencia CC BY-NC respecto a CC BY?',
+   opts:['No permite modificar la obra.',
+         'No permite compartir la obra.',
+         'No permite el uso comercial.',
+         'No permite dar crédito al autor.'],
+   a:2, exp:'CC BY-NC añade la restricción "No Comercial" (NC): se puede compartir y modificar la obra, pero no con fines comerciales. Siempre se debe dar crédito al autor.'},
+
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-NC',
+   q:'La analogía "prestar algo sin que se pueda vender" ilustra la licencia:',
+   opts:['CC BY','CC BY-NC','CC BY-SA','CC0'],
+   a:1, exp:'CC BY-NC se describe en el contenido como "prestar algo sin que se pueda vender", haciendo énfasis en la restricción de uso no comercial.'},
+
+  /* ── CC BY-NC-SA ── */
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-NC-SA',
+   q:'¿Qué condición añade CC BY-NC-SA respecto a CC BY-NC?',
+   opts:['Prohíbe toda modificación de la obra.',
+         'Las obras derivadas deben compartirse bajo las mismas condiciones.',
+         'Permite el uso comercial.',
+         'No requiere dar crédito al autor.'],
+   a:1, exp:'CC BY-NC-SA agrega "Compartir Igual" (SA): quien modifique la obra debe distribuir sus creaciones bajo las mismas condiciones (no comercial + atribución + compartir igual).'},
+
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-NC-SA',
+   q:'Con CC BY-NC-SA, ¿se pueden hacer modificaciones a la obra?',
+   opts:['No, nunca está permitido modificar la obra.',
+         'Sí, pero solo para fines no comerciales y compartiendo bajo las mismas condiciones.',
+         'Sí, con cualquier fin incluyendo el comercial.',
+         'Solo si se paga una licencia adicional.'],
+   a:1, exp:'CC BY-NC-SA permite modificar la obra, pero únicamente para fines no comerciales y siempre que las nuevas creaciones se compartan con la misma licencia.'},
+
+  /* ── CC BY-NC-ND ── */
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-NC-ND',
+   q:'¿Qué combinación de restricciones tiene la licencia CC BY-NC-ND?',
+   opts:['Solo no comercial.',
+         'No comercial y compartir igual.',
+         'No comercial y sin modificaciones.',
+         'Sin modificaciones y uso comercial permitido.'],
+   a:2, exp:'CC BY-NC-ND combina "No Comercial" (NC) y "Sin Derivadas" (ND): se puede compartir la obra tal cual, sin modificarla, solo para fines no comerciales, reconociendo al autor.'},
+
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-NC-ND',
+   q:'Bajo la licencia CC BY-NC-ND, ¿se puede crear una versión modificada de la obra?',
+   opts:['Sí, siempre que sea sin fines comerciales.',
+         'Sí, siempre que se dé crédito.',
+         'No, la obra debe compartirse sin cambios.',
+         'Solo si se obtiene permiso del autor.'],
+   a:2, exp:'ND significa "Sin Derivadas": la obra no puede modificarse. Solo puede compartirse tal como fue creada, sin fines comerciales y reconociendo al autor.'},
+
+  /* ── CC BY-SA ── */
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-SA',
+   q:'¿En qué se diferencia CC BY-SA de CC BY-NC-SA?',
+   opts:['CC BY-SA no permite modificar la obra.',
+         'CC BY-SA sí permite el uso comercial; CC BY-NC-SA no.',
+         'CC BY-SA no requiere dar crédito al autor.',
+         'CC BY-SA prohíbe compartir la obra.'],
+   a:1, exp:'La diferencia clave es el uso comercial: CC BY-SA lo permite (solo exige atribución y compartir igual), mientras que CC BY-NC-SA lo restringe con la condición "No Comercial".'},
+
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-SA',
+   q:'¿Qué condición exige CC BY-SA a quien modifique la obra?',
+   opts:['Pagar derechos al autor original.',
+         'Usar la obra solo sin fines comerciales.',
+         'Compartir las nuevas obras bajo los mismos términos.',
+         'No distribuir la obra modificada.'],
+   a:2, exp:'CC BY-SA exige "Compartir Igual" (SA): quien modifique y redistribuya la obra debe hacerlo bajo la misma licencia CC BY-SA.'},
+
+  /* ── CC BY-ND ── */
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-ND',
+   q:'¿Qué permite la licencia CC BY-ND que CC BY-NC-ND no permite?',
+   opts:['Modificar la obra.',
+         'Compartir la obra con fines comerciales.',
+         'No dar crédito al autor.',
+         'Distribuir la obra modificada.'],
+   a:1, exp:'CC BY-ND no tiene la restricción "No Comercial": permite compartir la obra (sin modificar) tanto para fines comerciales como no comerciales, siempre con atribución al autor.'},
+
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC BY-ND',
+   q:'Bajo CC BY-ND, ¿es válido compartir la obra en una revista comercial?',
+   opts:['No, está prohibido el uso comercial.',
+         'Sí, siempre que no se modifique y se dé crédito al autor.',
+         'Solo si se paga al autor.',
+         'Solo si la revista tiene licencia Creative Commons.'],
+   a:1, exp:'CC BY-ND permite usos comerciales (como publicar en una revista) siempre que la obra se comparta sin modificaciones y se reconozca al autor.'},
+
+  /* ── CC0 ── */
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC0',
+   q:'¿Qué hace especial la licencia CC0 respecto a las demás?',
+   opts:['Permite solo el uso académico de la obra.',
+         'Requiere dar crédito en todos los casos.',
+         'El autor renuncia a todos los derechos y coloca la obra en el dominio público.',
+         'Permite modificar la obra solo para fines no comerciales.'],
+   a:2, exp:'CC0 es la "renuncia de derechos": el autor renuncia a todos sus derechos y coloca la obra en el dominio público. Cualquiera puede usarla, modificarla y compartirla sin restricciones ni necesidad de dar crédito.'},
+
+  {tipo:'M', badge:'b-cc', badgeLabel:'CC0',
+   q:'Una obra con licencia CC0, ¿requiere dar crédito al autor para poder usarla?',
+   opts:['Sí, siempre es obligatorio.',
+         'Solo si se usa con fines comerciales.',
+         'No, puede usarse sin ninguna restricción ni dar crédito.',
+         'Solo si se modifica la obra.'],
+   a:2, exp:'CC0 elimina todas las restricciones, incluida la atribución. La obra pasa al dominio público y puede usarse libremente sin necesidad de mencionar al autor.'},
+
+  /* ── PREGUNTAS DE IDENTIFICACIÓN ── */
+  {tipo:'L', badge:'b-cc', badgeLabel:'Identifica la licencia',
+   q:'Quieres compartir una fotografía tuya. Permites que cualquiera la use y modifique, incluso para ganar dinero, pero exiges que siempre te nombren. ¿Qué licencia usas?',
+   opts:['CC BY','CC BY-NC','CC BY-SA','CC0'],
+   a:0, exp:'CC BY (Atribución) es la indicada: permite todo tipo de uso, incluido el comercial y las modificaciones, con la única condición de dar crédito al autor.'},
+
+  {tipo:'L', badge:'b-cc', badgeLabel:'Identifica la licencia',
+   q:'Un profesor comparte un video educativo. Permite usarlo y modificarlo, pero solo en contextos no comerciales y siempre que las versiones modificadas se publiquen bajo las mismas condiciones. ¿Qué licencia es?',
+   opts:['CC BY-NC','CC BY-NC-SA','CC BY-SA','CC BY-ND'],
+   a:1, exp:'CC BY-NC-SA combina las tres condiciones: atribución, no comercial y compartir igual. Es ideal para materiales educativos que quieren mantenerse libres y no comerciales.'},
+
+  {tipo:'L', badge:'b-cc', badgeLabel:'Identifica la licencia',
+   q:'Una artista publica su obra y permite que cualquiera la use o venda, incluso sin modificarla, pero prohíbe toda modificación. ¿Qué licencia corresponde?',
+   opts:['CC BY-NC-ND','CC BY-ND','CC BY-SA','CC0'],
+   a:1, exp:'CC BY-ND permite uso y distribución (incluyendo comercial), pero prohíbe las modificaciones. Solo se puede compartir tal como fue creada.'},
+
+  {tipo:'L', badge:'b-cc', badgeLabel:'Identifica la licencia',
+   q:'Un músico quiere que su canción sea completamente libre: que cualquiera la use, modifique o venda sin pedir permiso ni dar crédito. ¿Qué licencia elige?',
+   opts:['CC BY','CC BY-NC','CC BY-SA','CC0'],
+   a:3, exp:'CC0 es la opción cuando el autor renuncia a todos sus derechos. La obra entra al dominio público y puede usarse sin restricciones ni necesidad de dar crédito.'},
+
+  {tipo:'L', badge:'b-cc', badgeLabel:'Identifica la licencia',
+   q:'Una ONG comparte un informe. Permite copiarlo y redistribuirlo (incluso venderlo), pero exige no modificarlo y mencionar a los autores. ¿Qué licencia aplica?',
+   opts:['CC BY-NC-ND','CC BY-ND','CC BY-NC','CC BY'],
+   a:1, exp:'CC BY-ND permite uso comercial y redistribución, pero prohíbe modificaciones. Solo exige atribución al autor.'},
+
+  {tipo:'L', badge:'b-cc', badgeLabel:'Identifica la licencia',
+   q:'Un fotógrafo permite usar y modificar sus fotos solo para proyectos sin ánimo de lucro, sin exigir que las versiones modificadas usen la misma licencia, pero sí que le den crédito. ¿Qué licencia es?',
+   opts:['CC BY-NC-SA','CC BY-NC','CC BY-SA','CC BY-NC-ND'],
+   a:1, exp:'CC BY-NC permite modificar y compartir la obra solo para fines no comerciales, dando crédito al autor. No exige que las obras derivadas usen la misma licencia (eso sería SA).'},
+
+  {tipo:'M', badge:'b-base', badgeLabel:'Comparación',
+   q:'¿Cuál es la diferencia entre copyright y copyleft?',
+   opts:['Son lo mismo, solo cambia la ortografía.',
+         'El copyright da control total al autor; el copyleft permite usar y modificar la obra si se comparte en los mismos términos.',
+         'El copyleft prohíbe compartir la obra; el copyright la permite.',
+         'El copyright es solo para música; el copyleft para texto.'],
+   a:1, exp:'El copyright da control total al autor sobre el uso de su obra. El copyleft permite usarla, modificarla y compartirla, pero con la condición de mantener los mismos términos de libertad.'},
+
+  {tipo:'M', badge:'b-base', badgeLabel:'Comparación',
+   q:'¿Cuál de estas licencias es la MÁS restrictiva?',
+   opts:['CC0','CC BY','CC BY-NC-ND','CC BY-SA'],
+   a:2, exp:'CC BY-NC-ND combina las tres restricciones posibles: atribución obligatoria, sin uso comercial y sin modificaciones. Es la más restrictiva dentro de las licencias Creative Commons.'},
+
+  {tipo:'M', badge:'b-base', badgeLabel:'Comparación',
+   q:'¿Cuál de estas licencias es la MENOS restrictiva (más permisiva)?',
+   opts:['CC BY-NC-ND','CC BY-NC','CC BY','CC0'],
+   a:3, exp:'CC0 es la más permisiva de todas: elimina todas las restricciones y coloca la obra en el dominio público. Ni siquiera requiere atribución.'},
+
+  {tipo:'M', badge:'b-base', badgeLabel:'Comparación',
+   q:'¿Qué significa la sigla "SA" en las licencias Creative Commons?',
+   opts:['Sin Autor','Uso Sin restricciones en América','Compartir Igual (Share Alike)','Solo para uso Académico'],
+   a:2, exp:'"SA" viene de "Share Alike" (Compartir Igual en español): quien use y redistribuya la obra debe hacerlo bajo los mismos términos de licencia.'},
+
+  {tipo:'M', badge:'b-base', badgeLabel:'Comparación',
+   q:'¿Qué significa la sigla "ND" en las licencias Creative Commons?',
+   opts:['No Distribuir','Sin Derivadas (No Derivatives)','No Dar crédito','Nuevos Derechos'],
+   a:1, exp:'"ND" viene de "No Derivatives" (Sin Derivadas): prohíbe crear obras derivadas o modificaciones de la obra original.'},
+
+  {tipo:'M', badge:'b-base', badgeLabel:'Comparación',
+   q:'¿Qué tienen en común TODAS las licencias Creative Commons excepto CC0?',
+   opts:['Prohíben el uso comercial.',
+         'Requieren compartir bajo los mismos términos.',
+         'Requieren dar crédito al autor (atribución BY).',
+         'Prohíben toda modificación de la obra.'],
+   a:2, exp:'Todas las licencias Creative Commons (excepto CC0) incluyen la condición BY de atribución: siempre se debe dar crédito al autor original.'},
+];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+
+function showNameScreen(){
+  document.getElementById('play-content').innerHTML=`
+    <div class="name-screen">
+      <div style="display:flex;justify-content:center;margin-bottom:14px">${M_IDL}</div>
+      <div class="name-title">¡Bienvenido al quiz!</div>
+      <div class="name-sub">
+        Pon a prueba lo que aprendiste sobre<br>
+        <b style="color:#c2410c">Licencias Creative Commons</b>.<br><br>
+        <b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp; <b style="color:#dc2626">Error: -10 pts</b>
+      </div>
+      <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="60">
+      <button class="start-btn" onclick="startQuiz()">¡Comenzar!</button>
+    </div>`;
+  setTimeout(()=>{const i=document.getElementById('name-inp');if(i)i.focus();},100);
+}
+
+function startQuiz(){
+  const inp=document.getElementById('name-inp');
+  const n=inp?inp.value.trim():'';
+  if(!n){inp.style.borderColor='#ef4444';inp.placeholder='¡Escribe tu nombre primero!';return;}
+  playerName=n; score=0; curQ=0; answered=false;
+  questions=shuffle(BANCO).slice(0,15);
+  updHdr(); renderQ();
+}
+
+function updHdr(){document.getElementById('hdr-score').textContent=score+' pts';}
+
+function renderQ(){
+  if(curQ>=questions.length){showResult();return;}
+  const q=questions[curQ];
+  const pct=Math.round((curQ/questions.length)*100);
+  answered=false;
+
+  const hdr=`
+    <div class="quiz-hdr">
+      <div class="q-counter">Pregunta ${curQ+1} / ${questions.length}</div>
+      <div class="q-score-lbl">${score} pts</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="mascot-wrap" id="mc">${M_IDL}</div>`;
+
+  const qbox=`
+    <div class="q-box">
+      <div><span class="lic-badge ${q.badge}">${q.badgeLabel}</span></div>
+      <div class="q-label">Selecciona la respuesta correcta</div>
+      <div class="q-val">${q.q}</div>
+    </div>`;
+
+  let optsHtml='';
+  if(q.tipo==='L'){
+    optsHtml=`<div class="licencias-grid">${
+      q.opts.map((o,i)=>`<button class="lic-opt" onclick="checkAns(${i},this)">${o}</button>`).join('')
+    }</div>`;
+  } else {
+    optsHtml=`<div class="opts">${
+      q.opts.map((o,i)=>`<button class="opt" onclick="checkAns(${i},this)">${o}</button>`).join('')
+    }</div>`;
+  }
+
+  document.getElementById('play-content').innerHTML=
+    hdr + qbox + optsHtml +
+    `<div class="exp-box" id="exp"></div>
+     <div class="delta" id="delta"></div>
+     <div class="feedback" id="fb"></div>`;
+}
+
+function checkAns(idx, btn){
+  if(answered) return;
+  answered=true;
+  const q=questions[curQ];
+  const sel = q.tipo==='L' ? '.lic-opt' : '.opt';
+  const btns=document.querySelectorAll(sel);
+  btns.forEach(b=>b.disabled=true);
+
+  const exp=document.getElementById('exp');
+  exp.textContent=q.exp;
+  exp.classList.add('show');
+
+  if(idx===q.a){
+    btn.classList.add('correct');
+    score+=100; updHdr();
+    document.getElementById('fb').textContent='¡Correcto!';
+    document.getElementById('fb').className='feedback fb-ok';
+    document.getElementById('delta').textContent='+100 puntos';
+    document.getElementById('delta').className='delta up';
+    document.getElementById('mc').innerHTML=M_OK;
+  } else {
+    btn.classList.add('wrong');
+    btns[q.a].classList.add('correct');
+    score=Math.max(0,score-10); updHdr();
+    document.getElementById('fb').textContent='¡Incorrecto!';
+    document.getElementById('fb').className='feedback fb-err';
+    document.getElementById('delta').textContent='-10 puntos';
+    document.getElementById('delta').className='delta down';
+    document.getElementById('mc').innerHTML=M_ERR;
+  }
+  setTimeout(()=>{curQ++;renderQ();},2600);
+}
+
+function showResult(){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const max=questions.length*100;
+  const pct=Math.round((score/max)*100);
+  const stars=pct>=90?'★★★':pct>=60?'★★':'★';
+  const msg=pct>=90?'¡Excelente! Dominas las licencias Creative Commons.'
+           :pct>=60?'¡Muy bien! Repasa las licencias donde fallaste.'
+           :'Vuelve a revisar el contenido y lo lograrás.';
+  document.getElementById('play-content').innerHTML=`
+    <div class="result">
+      <div style="display:flex;justify-content:center;margin-bottom:10px">${M_WIN}</div>
+      <div class="res-title">¡Quiz completado!</div>
+      <div class="res-stars" style="color:#eab308">${stars}</div>
+      <div style="font-size:13px;color:#888;margin-bottom:12px;line-height:1.5">${msg}</div>
+      <div class="res-card">
+        <div class="res-row"><span class="res-lbl">Jugador</span><span class="res-val">${playerName}</span></div>
+        <div class="res-row"><span class="res-lbl">Fecha</span><span class="res-val">${dateStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Hora</span><span class="res-val">${timeStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Correctas</span><span class="res-val">${Math.round(score/100)} de ${questions.length}</span></div>
+        <div class="res-row"><span class="res-lbl">Puntos obtenidos</span><span class="res-val">${score} / ${max} pts</span></div>
+      </div>
+      <button class="rbtn" onclick="rePlay()">Jugar de nuevo</button>
+    </div>`;
+  document.getElementById('hdr-score').textContent=score+' pts';
+}
+
+function rePlay(){
+  score=0; curQ=0; answered=false;
+  questions=shuffle(BANCO).slice(0,15);
+  updHdr(); renderQ();
+}
+
+showNameScreen();
+</script>
+</html>
