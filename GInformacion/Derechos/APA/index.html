@@ -1,0 +1,591 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APA 7 · Juego de Referencias</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  min-height:100vh;
+  background:linear-gradient(160deg,#e0f0ff 0%,#f5e6ff 50%,#fff3e0 100%);
+  font-family:'Nunito',sans-serif;
+  padding:10px;
+}
+#app{max-width:640px;margin:0 auto;}
+
+/* ── HEADER ── */
+.top-bar{
+  background:linear-gradient(90deg,#7c3aed,#2563eb);
+  border-radius:20px 20px 0 0;
+  padding:12px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 4px 14px rgba(124,58,237,.35);
+}
+.top-title{font-family:'Fredoka One',cursive;font-size:19px;color:#fff;letter-spacing:.5px;}
+.top-score{background:rgba(255,255,255,.22);color:#fff;font-weight:800;font-size:15px;
+  padding:5px 16px;border-radius:999px;border:2px solid rgba(255,255,255,.35);}
+
+/* ── CONTENIDO ── */
+#game-wrap{
+  background:#fff;
+  border-radius:0 0 20px 20px;
+  padding:18px 16px;
+  box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+
+/* ── FOOTER ── */
+.footer{
+  text-align:center;
+  margin-top:8px;
+  font-family:'Fredoka One',cursive;
+  font-size:13px;
+  color:#7c3aed;
+  opacity:.8;
+  letter-spacing:.3px;
+}
+
+/* ── PANTALLA NOMBRE ── */
+.name-screen{text-align:center;padding:10px 0;}
+.lion-wrap{display:flex;justify-content:center;margin-bottom:14px;}
+.name-title{font-family:'Fredoka One',cursive;font-size:24px;color:#7c3aed;margin-bottom:4px;}
+.name-sub{font-size:13px;color:#888;margin-bottom:16px;line-height:1.6;}
+.name-input{width:100%;padding:12px 14px;border-radius:12px;border:2.5px solid #d8b4fe;
+  font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;color:#1e1b4b;margin-bottom:12px;}
+.name-input:focus{border-color:#7c3aed;}
+.start-btn{width:100%;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;
+  border-radius:14px;padding:13px;font-family:'Fredoka One',cursive;font-size:19px;
+  cursor:pointer;box-shadow:0 5px 0 #4c1d95;transition:transform .1s,box-shadow .1s;}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 #4c1d95;}
+.start-btn:active{transform:translateY(2px);box-shadow:0 3px 0 #4c1d95;}
+
+/* ── BARRA PROGRESO ── */
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.prog-lbl{font-size:12px;font-weight:700;color:#888;white-space:nowrap;}
+.prog-bar{flex:1;background:#e9d5ff;border-radius:999px;height:10px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#2563eb);transition:width .4s;}
+
+/* ── TARJETA PREGUNTA ── */
+.q-card{
+  background:linear-gradient(135deg,#f5f3ff,#eff6ff);
+  border:2.5px solid #ddd6fe;
+  border-radius:18px;padding:16px 14px;
+  text-align:center;margin-bottom:16px;
+  box-shadow:0 4px 12px rgba(124,58,237,.1);
+}
+.q-ronda{font-size:11px;font-weight:800;color:#a855f7;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.q-tipo-badge{display:inline-block;padding:3px 12px;border-radius:999px;font-size:11px;font-weight:800;
+  margin-bottom:10px;letter-spacing:.4px;}
+.q-pregunta{font-family:'Fredoka One',cursive;font-size:16px;color:#1e1b4b;line-height:1.5;margin-bottom:10px;}
+.q-ref{font-family:monospace;font-size:12px;background:#fff;border:1.5px solid #e0e7ff;
+  border-radius:10px;padding:10px 12px;text-align:left;line-height:2;color:#1e1b4b;margin-top:6px;}
+
+/* ── TARJETAS ARRASTRABLES ── */
+.cards-row{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+  min-height:90px;padding:8px;
+  background:rgba(255,255,255,.6);border-radius:14px;
+  border:2px dashed #c4b5fd;margin-bottom:16px;
+}
+.drag-card{
+  width:115px;height:82px;
+  background:#fff;border:3px solid #c4b5fd;border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:grab;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
+  transition:transform .15s,box-shadow .15s,opacity .15s;
+  user-select:none;
+  position:relative;
+}
+.drag-card:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 8px 20px rgba(124,58,237,.25);}
+.drag-card.dragging{opacity:.45;transform:scale(.95);}
+.drag-card.used{opacity:.2;pointer-events:none;}
+.card-icon{font-size:30px;line-height:1;}
+.card-txt{font-size:10px;font-weight:800;color:#4c1d95;text-align:center;line-height:1.2;padding:0 4px;}
+
+/* ── CUBETAS ── */
+.cubetas-row{
+  display:grid;gap:10px;margin-bottom:14px;
+}
+.cubeta-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.cubeta-label{
+  font-family:'Fredoka One',cursive;font-size:13px;color:#fff;
+  padding:5px 14px;border-radius:999px;text-align:center;
+  box-shadow:0 3px 0 rgba(0,0,0,.15);
+}
+.cubeta{
+  width:100%;min-height:80px;border-radius:14px;
+  border:3px dashed rgba(255,255,255,.7);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;
+  padding:8px;transition:transform .15s,border-color .15s;
+  position:relative;
+}
+.cubeta.over{transform:scale(1.03);border-color:#fff;border-style:solid;}
+.cubeta-icon{font-size:36px;opacity:.35;position:absolute;}
+.chip-placed{
+  background:rgba(255,255,255,.9);border-radius:10px;padding:5px 9px;
+  font-size:10px;font-weight:800;color:#1e1b4b;display:flex;align-items:center;gap:4px;
+  box-shadow:0 2px 6px rgba(0,0,0,.12);max-width:100%;
+}
+.chip-placed .chip-icon{font-size:16px;}
+.chip-placed button{background:none;border:none;cursor:pointer;color:#ef4444;font-size:13px;font-weight:800;padding:0 2px;line-height:1;}
+.chip-placed.c-ok{border:2px solid #22c55e;background:#f0fdf4;}
+.chip-placed.c-err{border:2px solid #ef4444;background:#fef2f2;}
+
+/* ── BOTÓN VERIFICAR ── */
+.verificar-btn{
+  width:100%;background:linear-gradient(135deg,#059669,#0891b2);color:#fff;border:none;
+  border-radius:14px;padding:12px;font-family:'Fredoka One',cursive;font-size:16px;
+  cursor:pointer;box-shadow:0 4px 0 #065f46;transition:transform .1s;margin-bottom:10px;
+}
+.verificar-btn:hover{transform:translateY(-2px);}
+.verificar-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* ── FEEDBACK ── */
+.feedback-box{
+  border-radius:12px;padding:11px 14px;font-size:12px;font-weight:700;
+  line-height:1.6;display:none;margin-bottom:8px;
+}
+.feedback-box.show{display:block;}
+.feedback-box.ok{background:#f0fdf4;border:2px solid #22c55e;color:#15803d;}
+.feedback-box.err{background:#fef2f2;border:2px solid #ef4444;color:#dc2626;}
+.mascot-row{display:flex;justify-content:center;margin-bottom:6px;}
+.fb-text{text-align:center;font-family:'Fredoka One',cursive;font-size:18px;min-height:24px;margin-bottom:2px;}
+.fb-ok{color:#16a34a;}.fb-err{color:#dc2626;}
+.delta-txt{font-size:22px;font-weight:800;text-align:center;min-height:26px;margin-bottom:4px;}
+.delta-up{color:#16a34a;}.delta-down{color:#dc2626;}
+
+/* ── RESULTADO ── */
+.result{text-align:center;padding:10px 4px;}
+.res-title{font-family:'Fredoka One',cursive;font-size:28px;color:#7c3aed;margin-bottom:4px;}
+.res-stars{font-size:38px;margin:8px 0;}
+.res-msg{font-size:13px;color:#888;margin-bottom:14px;line-height:1.6;}
+.res-card{background:linear-gradient(135deg,#f5f3ff,#eff6ff);border-radius:16px;
+  border:2px solid #ddd6fe;padding:16px;margin:10px 0;text-align:left;}
+.res-row{display:flex;justify-content:space-between;padding:7px 0;
+  border-bottom:.5px solid #e9d5ff;font-size:14px;}
+.res-row:last-child{border:none;font-weight:800;font-size:16px;color:#7c3aed;}
+.res-lbl{color:#888;font-weight:600;}
+.res-val{font-weight:700;color:#1e1b4b;}
+.rbtn{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;
+  border-radius:12px;padding:11px 24px;font-family:'Fredoka One',cursive;font-size:16px;
+  cursor:pointer;box-shadow:0 4px 0 #4c1d95;margin:4px;transition:transform .1s;}
+.rbtn:hover{transform:translateY(-2px);}
+
+/* COLORES CUBETAS */
+.cb-azul .cubeta{background:linear-gradient(135deg,#2563eb,#0ea5e9);}
+.cb-azul .cubeta-label{background:linear-gradient(135deg,#2563eb,#0ea5e9);}
+.cb-verde .cubeta{background:linear-gradient(135deg,#059669,#10b981);}
+.cb-verde .cubeta-label{background:linear-gradient(135deg,#059669,#10b981);}
+.cb-naranja .cubeta{background:linear-gradient(135deg,#ea580c,#f59e0b);}
+.cb-naranja .cubeta-label{background:linear-gradient(135deg,#ea580c,#f59e0b);}
+.cb-rosa .cubeta{background:linear-gradient(135deg,#db2777,#a855f7);}
+.cb-rosa .cubeta-label{background:linear-gradient(135deg,#db2777,#a855f7);}
+.cb-teal .cubeta{background:linear-gradient(135deg,#0891b2,#06b6d4);}
+.cb-teal .cubeta-label{background:linear-gradient(135deg,#0891b2,#06b6d4);}
+
+@keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake-el{animation:shake .3s;}
+</style>
+
+<div id="app">
+  <div class="top-bar">
+    <div class="top-title">🎓 APA 7 · Referencias</div>
+    <div class="top-score" id="top-score">0 pts</div>
+  </div>
+  <div id="game-wrap"></div>
+  <div class="footer">Aprendiendo con @LaProfeVivy 💜</div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   MASCOTAS SVG
+═══════════════════════════════════════ */
+const LION=`<svg width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="45" cy="50" r="30" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+  <circle cx="45" cy="50" r="22" fill="#fbbf24"/>
+  <!-- melena -->
+  <circle cx="20" cy="40" r="12" fill="#d97706"/><circle cx="25" cy="25" r="11" fill="#d97706"/>
+  <circle cx="45" cy="18" r="11" fill="#d97706"/><circle cx="65" cy="25" r="11" fill="#d97706"/>
+  <circle cx="70" cy="40" r="12" fill="#d97706"/>
+  <circle cx="22" cy="58" r="11" fill="#d97706"/><circle cx="68" cy="58" r="11" fill="#d97706"/>
+  <!-- cara -->
+  <circle cx="35" cy="46" r="5" fill="#fff"/><circle cx="55" cy="46" r="5" fill="#fff"/>
+  <circle cx="36" cy="47" r="3" fill="#1e1b4b"/><circle cx="56" cy="47" r="3" fill="#1e1b4b"/>
+  <circle cx="37" cy="46" r="1" fill="#fff"/><circle cx="57" cy="46" r="1" fill="#fff"/>
+  <ellipse cx="45" cy="56" rx="9" ry="6" fill="#f97316"/>
+  <path d="M38 58 Q45 64 52 58" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <circle cx="30" cy="54" r="5" fill="#fca5a5" opacity=".6"/>
+  <circle cx="60" cy="54" r="5" fill="#fca5a5" opacity=".6"/>
+  <!-- corona -->
+  <polygon points="30,28 35,18 40,26 45,16 50,26 55,18 60,28" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5"/>
+  <circle cx="45" cy="18" r="3" fill="#ef4444"/>
+</svg>`;
+
+const M_OK=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#15803d"/><circle cx="46" cy="28" r="4" fill="#15803d"/><path d="M22 44 Q35 56 48 44" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/><polyline points="14,35 22,43 40,25" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const M_ERR=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#dc2626"/><circle cx="46" cy="28" r="4" fill="#dc2626"/><path d="M22 50 Q35 40 48 50" stroke="#dc2626" stroke-width="3" stroke-linecap="round" fill="none"/><line x1="18" y1="18" x2="30" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="18" x2="18" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></svg>`;
+const M_WIN=`<svg width="80" height="80" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#92400e"/><circle cx="46" cy="28" r="4" fill="#92400e"/><path d="M20 44 Q35 60 50 44" stroke="#92400e" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(44,2) scale(0.6)" fill="#eab308"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(8,5) scale(0.5)" fill="#eab308"/></svg>`;
+
+/* ═══════════════════════════════════════
+   RONDAS DEL JUEGO
+═══════════════════════════════════════ */
+const RONDAS=[
+
+/* ─── RONDA 1: Clasifica el tipo de fuente ─── */
+{titulo:'¿A qué tipo de fuente pertenece?',
+ instruccion:'Arrastra cada tarjeta a la cubeta correcta según el tipo de fuente APA 7.',
+ cubetas:[
+   {id:'libro',   label:'📚 Libro',      clase:'cb-azul',    icono:'📚'},
+   {id:'revista', label:'📰 Revista',    clase:'cb-verde',   icono:'📰'},
+   {id:'web',     label:'🌐 Web',        clase:'cb-naranja', icono:'🌐'},
+   {id:'ia',      label:'🤖 IA',         clase:'cb-rosa',    icono:'🤖'},
+ ],
+ tarjetas:[
+   {id:'t1',icono:'📖',texto:'Aprendizaje activo\nGarcía, M. (2020)',cubeta:'libro'},
+   {id:'t2',icono:'🔬',texto:'Artículo con DOI\nRevista Pedagogía',cubeta:'revista'},
+   {id:'t3',icono:'💻',texto:'Ministerio de Ed.\nhttps://minedu.gov',cubeta:'web'},
+   {id:'t4',icono:'🤖',texto:'OpenAI (2023)\nChatGPT [LLM]',cubeta:'ia'},
+   {id:'t5',icono:'📗',texto:'Historia del arte\nLópez, A. (2019)',cubeta:'libro'},
+   {id:'t6',icono:'🌍',texto:'ONU.org (2024)\nInforme mundial',cubeta:'web'},
+ ],
+ exp:'Cada fuente tiene su formato en APA 7. Los libros llevan editorial. Las revistas llevan volumen y DOI. Las páginas web llevan URL y fecha de acceso. Las IAs llevan empresa, versión y tipo de modelo entre corchetes.'},
+
+/* ─── RONDA 2: Clasifica tipo de cita ─── */
+{titulo:'¿Cita directa o paráfrasis?',
+ instruccion:'Identifica si cada ejemplo es una cita directa (textual) o una paráfrasis (indirecta).',
+ cubetas:[
+   {id:'directa',    label:'📝 Cita directa',   clase:'cb-azul',  icono:'📝'},
+   {id:'parafrasis', label:'💬 Paráfrasis',      clase:'cb-verde', icono:'💬'},
+ ],
+ tarjetas:[
+   {id:'c1',icono:'💬',texto:'"El aprendizaje\nes activo"\n(García, 2020, p.45)',cubeta:'directa'},
+   {id:'c2',icono:'🗣️',texto:'García (2020)\naflrma que aprender\nimplica participar.',cubeta:'parafrasis'},
+   {id:'c3',icono:'💬',texto:'"La memoria opera\nen varios niveles"\n(López, 2019, párr.3)',cubeta:'directa'},
+   {id:'c4',icono:'🗣️',texto:'Martínez (2021)\ndice que los métodos\nactivos mejoran.',cubeta:'parafrasis'},
+   {id:'c5',icono:'💬',texto:'"Educar es encender\nuna llama"\n(Sócrates, s.f., p.1)',cubeta:'directa'},
+   {id:'c6',icono:'🗣️',texto:'Según Ruiz (2022)\nlos estudiantes\naprendem mejor.',cubeta:'parafrasis'},
+ ],
+ exp:'Cita DIRECTA: reproduce palabras exactas, siempre entre comillas y con página/párrafo. PARÁFRASIS: reformula las ideas con tus propias palabras; no lleva comillas y la página no es obligatoria.'},
+
+/* ─── RONDA 3: ¿Quién es el autor? ─── */
+{titulo:'¿Quién es el autor de la referencia?',
+ instruccion:'Identifica qué tipo de autor tiene cada fuente y arrastra a la cubeta correcta.',
+ cubetas:[
+   {id:'persona',   label:'👤 Persona',       clase:'cb-azul',    icono:'👤'},
+   {id:'org',       label:'🏛️ Organización',  clase:'cb-verde',   icono:'🏛️'},
+   {id:'empresa',   label:'🏢 Empresa (IA)',   clase:'cb-rosa',    icono:'🏢'},
+   {id:'sin-autor', label:'❓ Sin autor',      clase:'cb-naranja', icono:'❓'},
+ ],
+ tarjetas:[
+   {id:'a1',icono:'📘',texto:'García, M. (2020)\nAprendizaje activo.',cubeta:'persona'},
+   {id:'a2',icono:'🌐',texto:'Ministerio de Ed.\n(2023). Informe.',cubeta:'org'},
+   {id:'a3',icono:'🤖',texto:'OpenAI. (2023).\nChatGPT [LLM].',cubeta:'empresa'},
+   {id:'a4',icono:'📄',texto:'Cómo estudiar APA.\n(2021). Sitio web.',cubeta:'sin-autor'},
+   {id:'a5',icono:'🤖',texto:'Google. (2024).\nGemini [LLM].',cubeta:'empresa'},
+   {id:'a6',icono:'🏛️',texto:'OMS. (2022).\nSalud global.',cubeta:'org'},
+ ],
+ exp:'APA 7 acepta cuatro tipos de autor: persona natural (Apellido, N.), organización o institución, empresa (para IA: la empresa es el autor), y sin autor (la referencia empieza por el título).'},
+
+/* ─── RONDA 4: ¿Digital o físico? ─── */
+{titulo:'¿La fuente es digital o física?',
+ instruccion:'Clasifica cada fuente según si es digital (lleva URL/DOI) o física (no lleva URL).',
+ cubetas:[
+   {id:'digital',  label:'💻 Digital / En línea', clase:'cb-teal',   icono:'💻'},
+   {id:'fisico',   label:'📦 Físico / Impreso',   clase:'cb-naranja', icono:'📦'},
+ ],
+ tarjetas:[
+   {id:'d1',icono:'🌐',texto:'Artículo con DOI\nhttps://doi.org/...',cubeta:'digital'},
+   {id:'d2',icono:'📚',texto:'Libro físico\nEditorial Planeta',cubeta:'fisico'},
+   {id:'d3',icono:'▶️',texto:'Video de YouTube\nhttps://youtube.com',cubeta:'digital'},
+   {id:'d4',icono:'📰',texto:'Periódico impreso\nEl Tiempo, 2024',cubeta:'fisico'},
+   {id:'d5',icono:'📱',texto:'Post de Instagram\nhttps://instagram.com',cubeta:'digital'},
+   {id:'d6',icono:'📖',texto:'Tesis impresa\nBiblioteca FUAA',cubeta:'fisico'},
+ ],
+ exp:'Fuentes digitales SIEMPRE incluyen URL o DOI al final de la referencia. Fuentes físicas (libros, periódicos impresos) no llevan URL pero sí editorial o lugar de publicación.'},
+
+/* ─── RONDA 5: Casos especiales ─── */
+{titulo:'¿Qué caso especial aplica?',
+ instruccion:'Identifica qué caso especial de APA 7 corresponde a cada situación.',
+ cubetas:[
+   {id:'sf',    label:'📅 Sin fecha (s.f.)',          clase:'cb-azul',   icono:'📅'},
+   {id:'sa',    label:'❓ Sin autor (→ título)',       clase:'cb-verde',  icono:'❓'},
+   {id:'2020a', label:'🔡 Mismo año (2020a/2020b)',    clase:'cb-naranja',icono:'🔡'},
+   {id:'etal',  label:'👥 3+ autores (et al.)',        clase:'cb-rosa',   icono:'👥'},
+ ],
+ tarjetas:[
+   {id:'e1',icono:'📅',texto:'Página web sin\nfecha de publicación',cubeta:'sf'},
+   {id:'e2',icono:'📄',texto:'Artículo sin nombre\nde autor conocido',cubeta:'sa'},
+   {id:'e3',icono:'📚',texto:'García publicó\n2 libros en 2020',cubeta:'2020a'},
+   {id:'e4',icono:'👥',texto:'Obra de García,\nLópez, Martínez\ny Ruiz (2020)',cubeta:'etal'},
+   {id:'e5',icono:'📅',texto:'Organización sin\nfecha en su web',cubeta:'sf'},
+   {id:'e6',icono:'🔡',texto:'López escribió\n3 artículos en 2022',cubeta:'2020a'},
+ ],
+ exp:'Sin fecha → (s.f.). Sin autor → referencia empieza por el título. Mismo autor mismo año → añade letra (2020a, 2020b). 3 o más autores → desde la primera cita usa et al.'},
+];
+
+/* ═══════════════════════════════════════
+   ESTADO
+═══════════════════════════════════════ */
+let playerName='', score=0, ronda=0, answered=false;
+let asignados={};   // id_tarjeta → id_cubeta
+let dragId=null;
+let selCard=null;   // para tap en móvil
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+function updScore(){document.getElementById('top-score').textContent=score+' pts';}
+
+/* ═══════════════════════════════════════
+   PANTALLA NOMBRE
+═══════════════════════════════════════ */
+function showName(){
+  document.getElementById('game-wrap').innerHTML=`
+    <div class="name-screen">
+      <div class="lion-wrap">${LION}</div>
+      <div class="name-title">¡Hola! Soy Leo 🦁</div>
+      <div class="name-sub">
+        Vamos a practicar <b style="color:#7c3aed">Normas APA 7</b><br>
+        Arrastra las tarjetas a la cubeta correcta.<br><br>
+        <b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp; <b style="color:#dc2626">Error: -10 pts</b>
+      </div>
+      <input class="name-input" id="ninp" type="text" placeholder="Tu nombre completo..." maxlength="60">
+      <button class="start-btn" onclick="startGame()">¡Comenzar! 🚀</button>
+    </div>`;
+  setTimeout(()=>{const i=document.getElementById('ninp');if(i)i.focus();},100);
+}
+
+function startGame(){
+  const i=document.getElementById('ninp');
+  const n=i?i.value.trim():'';
+  if(!n){i.style.borderColor='#ef4444';i.placeholder='¡Escribe tu nombre primero!';return;}
+  playerName=n;score=0;ronda=0;updScore();renderRonda();
+}
+
+/* ═══════════════════════════════════════
+   RENDER RONDA
+═══════════════════════════════════════ */
+function renderRonda(){
+  if(ronda>=RONDAS.length){showResult();return;}
+  const R=RONDAS[ronda];
+  answered=false;asignados={};selCard=null;
+  const tarjetas=shuffle([...R.tarjetas]);
+  const pct=Math.round((ronda/RONDAS.length)*100);
+  const cols=R.cubetas.length<=2?'1fr 1fr':R.cubetas.length===3?'1fr 1fr 1fr':'1fr 1fr';
+
+  const cubaHtml=R.cubetas.map(c=>`
+    <div class="cubeta-wrap ${c.clase}">
+      <div class="cubeta-label">${c.label}</div>
+      <div class="cubeta" id="cub-${c.id}"
+           ondragover="ev.preventDefault();this.classList.add('over')"
+           ondragleave="this.classList.remove('over')"
+           ondrop="dropCard(event,'${c.id}')"
+           onclick="tapCubeta('${c.id}')">
+        <span class="cubeta-icon">${c.icono}</span>
+        <div id="chips-${c.id}" style="display:flex;flex-wrap:wrap;gap:5px;position:relative;z-index:1;width:100%;"></div>
+      </div>
+    </div>`).join('');
+
+  const tarjHtml=tarjetas.map(t=>`
+    <div class="drag-card" id="dc-${t.id}"
+         draggable="true"
+         ondragstart="dragStart(event,'${t.id}')"
+         ondragend="dragEnd(event)"
+         onclick="tapCard('${t.id}')">
+      <span class="card-icon">${t.icono}</span>
+      <span class="card-txt">${t.texto.replace(/\n/g,'<br>')}</span>
+    </div>`).join('');
+
+  document.getElementById('game-wrap').innerHTML=`
+    <div class="prog-row">
+      <div class="prog-lbl">Ronda ${ronda+1}/${RONDAS.length}</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+      <div style="font-size:12px;font-weight:700;color:#7c3aed;white-space:nowrap">${score} pts</div>
+    </div>
+    <div class="q-card">
+      <div class="q-ronda">Ronda ${ronda+1} · APA 7</div>
+      <div class="q-pregunta">${R.titulo}</div>
+      <div style="font-size:12px;color:#6d28d9;font-weight:700">${R.instruccion}</div>
+    </div>
+    <div class="cards-row" id="cards-row">${tarjHtml}</div>
+    <div class="cubetas-row" style="grid-template-columns:${cols}">${cubaHtml}</div>
+    <button class="verificar-btn" id="vbtn" onclick="verificar()">Verificar ✓</button>
+    <div class="mascot-row" id="mascot-row" style="display:none">${M_OK}</div>
+    <div class="fb-text" id="fbt"></div>
+    <div class="delta-txt" id="dlt"></div>
+    <div class="feedback-box" id="fbox"></div>`;
+}
+
+/* ═══════════════════════════════════════
+   DRAG & DROP (escritorio)
+═══════════════════════════════════════ */
+function dragStart(ev,id){
+  dragId=id;
+  ev.dataTransfer.effectAllowed='move';
+  setTimeout(()=>{const el=document.getElementById('dc-'+id);if(el)el.classList.add('dragging');},0);
+}
+function dragEnd(ev){
+  if(dragId){const el=document.getElementById('dc-'+dragId);if(el)el.classList.remove('dragging');}
+  document.querySelectorAll('.cubeta').forEach(c=>c.classList.remove('over'));
+}
+function dropCard(ev,cubetaId){
+  ev.preventDefault();
+  document.querySelectorAll('.cubeta').forEach(c=>c.classList.remove('over'));
+  if(!dragId||answered)return;
+  colocarEnCubeta(dragId,cubetaId);
+  dragId=null;
+}
+
+/* ═══════════════════════════════════════
+   TAP (móvil: seleccionar → tocar cubeta)
+═══════════════════════════════════════ */
+function tapCard(id){
+  if(answered)return;
+  // deselect anterior
+  document.querySelectorAll('.drag-card').forEach(c=>{
+    c.style.outline='';c.style.transform='';
+  });
+  if(selCard===id){selCard=null;return;}
+  selCard=id;
+  const el=document.getElementById('dc-'+id);
+  if(el){el.style.outline='3px solid #7c3aed';el.style.transform='translateY(-6px) scale(1.06)';}
+}
+function tapCubeta(cubetaId){
+  if(!selCard||answered)return;
+  colocarEnCubeta(selCard,cubetaId);
+  selCard=null;
+}
+
+/* ═══════════════════════════════════════
+   COLOCAR TARJETA EN CUBETA
+═══════════════════════════════════════ */
+function colocarEnCubeta(cardId,cubetaId){
+  const R=RONDAS[ronda];
+  const tarjeta=R.tarjetas.find(t=>t.id===cardId);
+  if(!tarjeta)return;
+
+  // quitar de cubeta anterior si ya estaba
+  const prev=asignados[cardId];
+  if(prev){
+    const prevChip=document.getElementById('chip-'+cardId);
+    if(prevChip)prevChip.remove();
+  }
+  asignados[cardId]=cubetaId;
+
+  // ocultar tarjeta original
+  const cardEl=document.getElementById('dc-'+cardId);
+  if(cardEl){cardEl.classList.add('used');cardEl.style.outline='';cardEl.style.transform='';}
+
+  // añadir chip en cubeta
+  const chipsEl=document.getElementById('chips-'+cubetaId);
+  if(chipsEl){
+    const chip=document.createElement('div');
+    chip.className='chip-placed pop';chip.id='chip-'+cardId;
+    chip.innerHTML=`<span class="chip-icon">${tarjeta.icono}</span>
+      <span style="font-size:10px;font-weight:700;max-width:80px;line-height:1.2">${tarjeta.texto.split('\n')[0]}</span>
+      <button onclick="quitarChip('${cardId}','${cubetaId}')">✕</button>`;
+    chipsEl.appendChild(chip);
+  }
+}
+
+function quitarChip(cardId,cubetaId){
+  if(answered)return;
+  delete asignados[cardId];
+  const chip=document.getElementById('chip-'+cardId);if(chip)chip.remove();
+  const cardEl=document.getElementById('dc-'+cardId);
+  if(cardEl){cardEl.classList.remove('used');cardEl.style.outline='';cardEl.style.transform='';}
+}
+
+/* ═══════════════════════════════════════
+   VERIFICAR
+═══════════════════════════════════════ */
+function verificar(){
+  if(answered)return;
+  const R=RONDAS[ronda];
+  const total=Object.keys(asignados).length;
+  if(total<R.tarjetas.length){
+    const fbt=document.getElementById('fbt');
+    if(fbt){fbt.textContent='¡Clasifica todas las tarjetas primero!';fbt.className='fb-text fb-err';}
+    const el=document.getElementById('game-wrap');
+    if(el)el.classList.add('shake-el');
+    setTimeout(()=>el&&el.classList.remove('shake-el'),400);
+    return;
+  }
+  answered=true;
+  document.getElementById('vbtn').disabled=true;
+
+  let correctos=0;
+  R.tarjetas.forEach(t=>{
+    const chip=document.getElementById('chip-'+t.id);
+    if(asignados[t.id]===t.cubeta){correctos++;if(chip)chip.classList.add('c-ok');}
+    else{if(chip)chip.classList.add('c-err');}
+  });
+
+  const pct=correctos/R.tarjetas.length;
+  const ganados=pct===1?100:pct>=.66?60:pct>=.5?30:0;
+  const perdidos=pct<.5?10:0;
+  score=Math.max(0,score+ganados-perdidos);updScore();
+
+  const masEl=document.getElementById('mascot-row');
+  const fbt=document.getElementById('fbt');
+  const dlt=document.getElementById('dlt');
+  const fbox=document.getElementById('fbox');
+
+  if(masEl)masEl.style.display='flex';
+  if(pct===1){
+    if(masEl)masEl.innerHTML=M_OK;
+    if(fbt){fbt.textContent='¡Perfecto! 🎉';fbt.className='fb-text fb-ok';}
+    if(dlt){dlt.textContent='+100 puntos';dlt.className='delta-txt delta-up';}
+  } else if(pct>=.5){
+    if(masEl)masEl.innerHTML=M_OK;
+    if(fbt){fbt.textContent=`Bien! ${correctos}/${R.tarjetas.length} correctas`;fbt.className='fb-text fb-ok';}
+    if(dlt){dlt.textContent='+'+ganados+' puntos';dlt.className='delta-txt delta-up';}
+  } else {
+    if(masEl)masEl.innerHTML=M_ERR;
+    if(fbt){fbt.textContent=`Solo ${correctos}/${R.tarjetas.length} correctas`;fbt.className='fb-text fb-err';}
+    if(dlt){dlt.textContent=perdidos?'-10 puntos':'0 puntos';dlt.className='delta-txt delta-down';}
+  }
+  if(fbox){fbox.textContent='💡 '+R.exp;fbox.className='feedback-box show '+(pct>=.5?'ok':'err');}
+
+  setTimeout(()=>{ronda++;renderRonda();},3400);
+}
+
+/* ═══════════════════════════════════════
+   RESULTADO FINAL
+═══════════════════════════════════════ */
+function showResult(){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const max=RONDAS.length*100;
+  const pct=Math.round((score/max)*100);
+  const stars=pct>=90?'★★★':pct>=60?'★★':'★';
+  const msg=pct>=90?'¡Excelente! Dominas las referencias APA 7. 🏆'
+           :pct>=60?'¡Muy bien! Repasa los tipos donde fallaste. 💪'
+           :'Vuelve a repasar el material. ¡Tú puedes! 🦁';
+  document.getElementById('game-wrap').innerHTML=`
+    <div class="result">
+      <div style="display:flex;justify-content:center;margin-bottom:10px">${M_WIN}</div>
+      <div class="res-title">¡Juego terminado! 🎓</div>
+      <div class="res-stars" style="color:#eab308">${stars}</div>
+      <div class="res-msg">${msg}</div>
+      <div class="res-card">
+        <div class="res-row"><span class="res-lbl">Jugador</span><span class="res-val">${playerName}</span></div>
+        <div class="res-row"><span class="res-lbl">Fecha</span><span class="res-val">${dateStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Hora</span><span class="res-val">${timeStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Rondas completadas</span><span class="res-val">${RONDAS.length} de ${RONDAS.length}</span></div>
+        <div class="res-row"><span class="res-lbl">Puntos obtenidos</span><span class="res-val">${score} / ${max} pts</span></div>
+      </div>
+      <button class="rbtn" onclick="rePlay()">Jugar de nuevo 🔄</button>
+    </div>`;
+  document.getElementById('top-score').textContent=score+' pts';
+}
+
+function rePlay(){score=0;ronda=0;updScore();renderRonda();}
+
+/* inicio */
+showName();
+</script>
+</html>
