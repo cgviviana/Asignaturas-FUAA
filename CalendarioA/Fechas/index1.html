@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendario Académico</title>
+  <script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=hjyZfZO_vfup9rqdSKt5vuOLNwe8EZNQe96KDIAW2PIi7v3UdgzwPHwkZe3NU4xd8ib09k9cM_ut4AnX8l2CJwltSfoW6-lEUJdkSqsSyOVgEUMOo28T7G2f0joI2I_v" charset="UTF-8"></script><style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f4f8f7;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h3 {
+      color: #006241;
+      font-size: 4em;
+      margin-bottom: 1.5rem;
+    }
+    .semana {
+      background: #e8f5e9;
+      border: 1px solid #006241;
+      border-radius: 12px;
+      padding: 5px 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 500px;
+      font-size: 1.1em;
+    }
+    .semana strong {
+      color: #00784a;
+      font-size: 1.1em;
+    }
+    .rango {
+      display: block;
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #333;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="semana" id="resultado"></div>
+
+  <script>
+    // Zona horaria (Bogotá)
+    const TZ = "America/Bogota";
+
+    // "Hoy" en Bogotá (evita desfases por zona horaria del navegador)
+    function hoyEnBogota() {
+      return new Date(new Date().toLocaleString("en-US", { timeZone: TZ }));
+    }
+
+    // Fechas de inicio y fin del calendario (Semana 1 inicia 2 de feb)
+    const inicio = new Date("2026-02-02T00:00:00-05:00");
+    const fin    = new Date("2026-05-30T23:59:59-05:00");
+    const hoy    = hoyEnBogota();
+
+    // Semana Santa / receso académico
+    const recesoInicio = new Date("2026-03-30T00:00:00-05:00");
+    const recesoFin    = new Date("2026-04-05T23:59:59-05:00");
+
+    function formatearFecha(fecha) {
+      return fecha.toLocaleDateString("es-CO", {
+        timeZone: TZ,
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+    }
+
+    function calcularSemana() {
+      if (hoy < inicio) {
+        return "El periodo académico aún no ha iniciado.";
+      }
+      if (hoy > fin) {
+        return "El periodo académico ha finalizado.";
+      }
+
+      // Si estamos en Semana Santa
+      if (hoy >= recesoInicio && hoy <= recesoFin) {
+        return `
+          Estamos en <strong>Semana Santa</strong>.
+          <span class="rango">(Del ${formatearFecha(recesoInicio)} al ${formatearFecha(recesoFin)})</span>
+        `;
+      }
+
+      const msPorDia = 1000 * 60 * 60 * 24;
+      const msPorSemana = msPorDia * 7;
+
+      let diffTiempo = hoy - inicio;
+
+      // Si ya pasó Semana Santa, se descuenta esa semana del conteo académico
+      if (hoy > recesoFin) {
+        diffTiempo -= msPorSemana;
+      }
+
+      const numSemana = Math.floor(diffTiempo / msPorSemana) + 1;
+
+      // Para ubicar el rango real de fechas mostrado
+      let desplazamientoSemanas = numSemana - 1;
+
+      // Después del receso, las fechas reales sí van corridas una semana
+      if (hoy > recesoFin) {
+        desplazamientoSemanas += 1;
+      }
+
+      const inicioSemana = new Date(inicio);
+      inicioSemana.setDate(inicio.getDate() + desplazamientoSemanas * 7);
+
+      const finSemana = new Date(inicioSemana);
+      finSemana.setDate(inicioSemana.getDate() + 6);
+
+      const finSemanaAjustado = (finSemana > fin) ? fin : finSemana;
+
+      return `
+        Estamos en la <strong>Semana ${numSemana}</strong> del calendario académico.
+        <span class="rango">(Del ${formatearFecha(inicioSemana)} al ${formatearFecha(finSemanaAjustado)})</span>
+      `;
+    }
+
+    document.getElementById("resultado").innerHTML = calcularSemana();
+  </script>
+
+</body>
+</html>
