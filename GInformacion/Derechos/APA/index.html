@@ -4,588 +4,740 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APA 7 · Juego de Referencias</title>
+<title>Juego APA 7 · Citación y Referenciación</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{
-  min-height:100vh;
-  background:linear-gradient(160deg,#e0f0ff 0%,#f5e6ff 50%,#fff3e0 100%);
-  font-family:'Nunito',sans-serif;
-  padding:10px;
-}
-#app{max-width:640px;margin:0 auto;}
-
-/* ── HEADER ── */
-.top-bar{
-  background:linear-gradient(90deg,#7c3aed,#2563eb);
-  border-radius:20px 20px 0 0;
-  padding:12px 18px;
-  display:flex;align-items:center;justify-content:space-between;
-  box-shadow:0 4px 14px rgba(124,58,237,.35);
-}
-.top-title{font-family:'Fredoka One',cursive;font-size:19px;color:#fff;letter-spacing:.5px;}
-.top-score{background:rgba(255,255,255,.22);color:#fff;font-weight:800;font-size:15px;
-  padding:5px 16px;border-radius:999px;border:2px solid rgba(255,255,255,.35);}
-
-/* ── CONTENIDO ── */
-#game-wrap{
-  background:#fff;
-  border-radius:0 0 20px 20px;
-  padding:18px 16px;
-  box-shadow:0 8px 30px rgba(0,0,0,.08);
-}
-
-/* ── FOOTER ── */
-.footer{
-  text-align:center;
-  margin-top:8px;
-  font-family:'Fredoka One',cursive;
-  font-size:13px;
-  color:#7c3aed;
-  opacity:.8;
-  letter-spacing:.3px;
-}
+body{background:#f0f4ff;padding:12px;font-family:'Nunito',sans-serif;}
+#app{max-width:620px;margin:0 auto;border-radius:20px;overflow:hidden;background:#f0f4ff;}
+.hdr{background:#1e40af;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-title{font-family:'Fredoka One',cursive;font-size:19px;color:#fff;line-height:1.2;}
+.hdr-score{background:rgba(255,255,255,0.2);color:#fff;font-weight:800;font-size:15px;padding:5px 14px;border-radius:999px;white-space:nowrap;}
+#game-wrap{padding:16px;}
 
 /* ── PANTALLA NOMBRE ── */
-.name-screen{text-align:center;padding:10px 0;}
-.lion-wrap{display:flex;justify-content:center;margin-bottom:14px;}
-.name-title{font-family:'Fredoka One',cursive;font-size:24px;color:#7c3aed;margin-bottom:4px;}
-.name-sub{font-size:13px;color:#888;margin-bottom:16px;line-height:1.6;}
-.name-input{width:100%;padding:12px 14px;border-radius:12px;border:2.5px solid #d8b4fe;
-  font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;color:#1e1b4b;margin-bottom:12px;}
-.name-input:focus{border-color:#7c3aed;}
-.start-btn{width:100%;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;
-  border-radius:14px;padding:13px;font-family:'Fredoka One',cursive;font-size:19px;
-  cursor:pointer;box-shadow:0 5px 0 #4c1d95;transition:transform .1s,box-shadow .1s;}
-.start-btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 #4c1d95;}
-.start-btn:active{transform:translateY(2px);box-shadow:0 3px 0 #4c1d95;}
+.name-screen{background:#fff;border-radius:16px;border:1.5px solid #bfdbfe;padding:22px;text-align:center;}
+.name-title{font-family:'Fredoka One',cursive;font-size:21px;color:#1e40af;margin-bottom:6px;}
+.name-sub{font-size:13px;color:#64748b;margin-bottom:16px;line-height:1.6;}
+.name-input{width:100%;padding:11px 14px;border-radius:10px;border:2px solid #93c5fd;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;color:#1e3a8a;margin-bottom:12px;}
+.name-input:focus{border-color:#1e40af;}
+.start-btn{width:100%;background:#1e40af;color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Fredoka One',cursive;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #1e3a8a;transition:transform .1s;}
+.start-btn:hover{transform:translateY(-2px);}
 
-/* ── BARRA PROGRESO ── */
-.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.prog-lbl{font-size:12px;font-weight:700;color:#888;white-space:nowrap;}
-.prog-bar{flex:1;background:#e9d5ff;border-radius:999px;height:10px;overflow:hidden;}
-.prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#2563eb);transition:width .4s;}
+/* ── MODOS ── */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
+.mode-card{background:#fff;border:2.5px solid #bfdbfe;border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s;}
+.mode-card:hover{border-color:#1e40af;transform:translateY(-2px);background:#eff6ff;}
+.mode-icon{font-size:28px;margin-bottom:6px;}
+.mode-name{font-family:'Fredoka One',cursive;font-size:14px;color:#1e40af;}
+.mode-desc{font-size:11px;color:#64748b;margin-top:3px;line-height:1.4;}
 
-/* ── TARJETA PREGUNTA ── */
-.q-card{
-  background:linear-gradient(135deg,#f5f3ff,#eff6ff);
-  border:2.5px solid #ddd6fe;
-  border-radius:18px;padding:16px 14px;
-  text-align:center;margin-bottom:16px;
-  box-shadow:0 4px 12px rgba(124,58,237,.1);
-}
-.q-ronda{font-size:11px;font-weight:800;color:#a855f7;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.q-tipo-badge{display:inline-block;padding:3px 12px;border-radius:999px;font-size:11px;font-weight:800;
-  margin-bottom:10px;letter-spacing:.4px;}
-.q-pregunta{font-family:'Fredoka One',cursive;font-size:16px;color:#1e1b4b;line-height:1.5;margin-bottom:10px;}
-.q-ref{font-family:monospace;font-size:12px;background:#fff;border:1.5px solid #e0e7ff;
-  border-radius:10px;padding:10px 12px;text-align:left;line-height:2;color:#1e1b4b;margin-top:6px;}
+/* ── HEADER DE RONDA ── */
+.round-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.round-lbl{font-size:12px;font-weight:700;color:#64748b;}
+.round-score{font-family:'Fredoka One',cursive;font-size:15px;color:#1e40af;}
+.prog-bar{background:#dbeafe;border-radius:999px;height:7px;margin-bottom:14px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:999px;background:#1e40af;transition:width .4s;}
+.mascot{display:flex;justify-content:center;margin-bottom:8px;}
 
-/* ── TARJETAS ARRASTRABLES ── */
-.cards-row{
-  display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
-  min-height:90px;padding:8px;
-  background:rgba(255,255,255,.6);border-radius:14px;
-  border:2px dashed #c4b5fd;margin-bottom:16px;
-}
-.drag-card{
-  width:115px;height:82px;
-  background:#fff;border:3px solid #c4b5fd;border-radius:14px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-  cursor:grab;
-  box-shadow:0 4px 10px rgba(0,0,0,.1);
-  transition:transform .15s,box-shadow .15s,opacity .15s;
-  user-select:none;
-  position:relative;
-}
-.drag-card:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 8px 20px rgba(124,58,237,.25);}
-.drag-card.dragging{opacity:.45;transform:scale(.95);}
-.drag-card.used{opacity:.2;pointer-events:none;}
-.card-icon{font-size:30px;line-height:1;}
-.card-txt{font-size:10px;font-weight:800;color:#4c1d95;text-align:center;line-height:1.2;padding:0 4px;}
+/* ── BADGE TEMA ── */
+.tema-badge{display:inline-block;font-size:10px;font-weight:800;padding:3px 11px;border-radius:999px;margin-bottom:8px;letter-spacing:.4px;}
+.t-libro    {background:#dbeafe;color:#1e3a8a;}
+.t-revista  {background:#ede9fe;color:#4c1d95;}
+.t-web      {background:#dcfce7;color:#14532d;}
+.t-red      {background:#fce7f3;color:#9d174d;}
+.t-video    {background:#fef3c7;color:#78350f;}
+.t-periodico{background:#fee2e2;color:#7f1d1d;}
+.t-ia       {background:#f0fdf4;color:#15803d;}
+.t-citacion {background:#fff7ed;color:#7c2d12;}
+.t-especial {background:#f5f3ff;color:#5b21b6;}
+.t-elementos{background:#ecfeff;color:#0e7490;}
 
-/* ── CUBETAS ── */
-.cubetas-row{
-  display:grid;gap:10px;margin-bottom:14px;
-}
-.cubeta-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
-.cubeta-label{
-  font-family:'Fredoka One',cursive;font-size:13px;color:#fff;
-  padding:5px 14px;border-radius:999px;text-align:center;
-  box-shadow:0 3px 0 rgba(0,0,0,.15);
-}
-.cubeta{
-  width:100%;min-height:80px;border-radius:14px;
-  border:3px dashed rgba(255,255,255,.7);
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;
-  padding:8px;transition:transform .15s,border-color .15s;
-  position:relative;
-}
-.cubeta.over{transform:scale(1.03);border-color:#fff;border-style:solid;}
-.cubeta-icon{font-size:36px;opacity:.35;position:absolute;}
-.chip-placed{
-  background:rgba(255,255,255,.9);border-radius:10px;padding:5px 9px;
-  font-size:10px;font-weight:800;color:#1e1b4b;display:flex;align-items:center;gap:4px;
-  box-shadow:0 2px 6px rgba(0,0,0,.12);max-width:100%;
-}
-.chip-placed .chip-icon{font-size:16px;}
-.chip-placed button{background:none;border:none;cursor:pointer;color:#ef4444;font-size:13px;font-weight:800;padding:0 2px;line-height:1;}
-.chip-placed.c-ok{border:2px solid #22c55e;background:#f0fdf4;}
-.chip-placed.c-err{border:2px solid #ef4444;background:#fef2f2;}
+/* ── CAJA PREGUNTA ── */
+.q-box{background:#fff;border-radius:14px;border:2px solid #bfdbfe;padding:14px;margin-bottom:12px;}
+.q-lbl{font-size:11px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;text-align:center;}
+.q-text{font-size:13px;font-weight:700;color:#1e3a8a;line-height:1.6;margin-bottom:4px;}
+.ref-bloque{font-family:monospace;font-size:12px;background:#f8fafc;border-radius:8px;padding:10px;border:1px solid #e2e8f0;line-height:1.9;margin-top:6px;color:#1e293b;}
+.ref-bloque em{font-style:italic;}
+.ref-bloque u{text-decoration:underline;}
 
-/* ── BOTÓN VERIFICAR ── */
-.verificar-btn{
-  width:100%;background:linear-gradient(135deg,#059669,#0891b2);color:#fff;border:none;
-  border-radius:14px;padding:12px;font-family:'Fredoka One',cursive;font-size:16px;
-  cursor:pointer;box-shadow:0 4px 0 #065f46;transition:transform .1s;margin-bottom:10px;
-}
-.verificar-btn:hover{transform:translateY(-2px);}
-.verificar-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+/* ── OPCIONES MÚLTIPLE ── */
+.opts-col{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.opt-btn{padding:10px 14px;border-radius:11px;border:2.5px solid #bfdbfe;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#1e3a8a;text-align:left;transition:all .15s;line-height:1.4;}
+.opt-btn:hover:not(:disabled){transform:translateY(-2px);border-color:#1e40af;background:#eff6ff;}
+.opt-btn:disabled{cursor:not-allowed;opacity:.75;}
+.opt-btn.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;}
+.opt-btn.wrong  {background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 
-/* ── FEEDBACK ── */
-.feedback-box{
-  border-radius:12px;padding:11px 14px;font-size:12px;font-weight:700;
-  line-height:1.6;display:none;margin-bottom:8px;
-}
-.feedback-box.show{display:block;}
-.feedback-box.ok{background:#f0fdf4;border:2px solid #22c55e;color:#15803d;}
-.feedback-box.err{background:#fef2f2;border:2px solid #ef4444;color:#dc2626;}
-.mascot-row{display:flex;justify-content:center;margin-bottom:6px;}
-.fb-text{text-align:center;font-family:'Fredoka One',cursive;font-size:18px;min-height:24px;margin-bottom:2px;}
+/* ── ORDENAR (drag-like con botones flecha) ── */
+.orden-lista{display:flex;flex-direction:column;gap:7px;margin-bottom:12px;}
+.orden-item{background:#fff;border:2.5px solid #93c5fd;border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#1e3a8a;font-family:monospace;}
+.orden-item.locked{border-color:#22c55e;background:#f0fdf4;color:#15803d;}
+.orden-num{font-family:'Fredoka One',cursive;font-size:16px;color:#93c5fd;min-width:20px;}
+.orden-flechas{display:flex;flex-direction:column;gap:2px;margin-left:auto;}
+.flecha{background:#dbeafe;border:none;border-radius:6px;width:26px;height:22px;cursor:pointer;font-size:13px;color:#1e40af;font-weight:800;transition:background .1s;}
+.flecha:hover{background:#bfdbfe;}
+.check-orden-btn{width:100%;background:#1e40af;color:#fff;border:none;border-radius:11px;padding:10px;font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;box-shadow:0 3px 0 #1e3a8a;margin-bottom:10px;transition:transform .1s;}
+.check-orden-btn:hover{transform:translateY(-1px);}
+
+/* ── CLASIFICAR (drag-like con click) ── */
+.clasif-tokens{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;padding:10px;background:#f8fafc;border-radius:11px;border:1.5px dashed #93c5fd;min-height:48px;}
+.token{padding:6px 12px;background:#dbeafe;border:2px solid #93c5fd;border-radius:999px;font-size:12px;font-weight:700;color:#1e3a8a;cursor:pointer;transition:all .15s;font-family:monospace;}
+.token:hover{background:#bfdbfe;transform:scale(1.05);}
+.token.used{opacity:.35;cursor:default;pointer-events:none;}
+.clasif-zonas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.zona{background:#fff;border:2.5px dashed #93c5fd;border-radius:12px;padding:10px;min-height:80px;}
+.zona-title{font-family:'Fredoka One',cursive;font-size:13px;color:#1e40af;margin-bottom:6px;text-align:center;}
+.zona-items{display:flex;flex-direction:column;gap:5px;}
+.zona-chip{background:#eff6ff;border:1.5px solid #93c5fd;border-radius:8px;padding:5px 8px;font-size:11px;font-weight:700;color:#1e3a8a;display:flex;justify-content:space-between;align-items:center;font-family:monospace;}
+.zona-chip button{background:none;border:none;cursor:pointer;color:#ef4444;font-size:13px;font-weight:800;padding:0 2px;}
+.zona-chip.c-ok{border-color:#22c55e;background:#f0fdf4;color:#15803d;}
+.zona-chip.c-err{border-color:#ef4444;background:#fef2f2;color:#dc2626;}
+.check-clasif-btn{width:100%;background:#1e40af;color:#fff;border:none;border-radius:11px;padding:10px;font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;box-shadow:0 3px 0 #1e3a8a;margin-bottom:10px;transition:transform .1s;}
+.check-clasif-btn:hover{transform:translateY(-1px);}
+
+/* ── FEEDBACK / EXPLICACIÓN ── */
+.exp-box{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:10px 12px;font-size:12px;color:#1e40af;margin-bottom:8px;line-height:1.6;display:none;}
+.exp-box.show{display:block;}
+.feedback{text-align:center;font-family:'Fredoka One',cursive;font-size:17px;min-height:22px;margin-bottom:3px;}
 .fb-ok{color:#16a34a;}.fb-err{color:#dc2626;}
-.delta-txt{font-size:22px;font-weight:800;text-align:center;min-height:26px;margin-bottom:4px;}
-.delta-up{color:#16a34a;}.delta-down{color:#dc2626;}
+.delta{font-size:20px;font-weight:800;text-align:center;min-height:26px;margin-bottom:6px;}
+.delta.up{color:#16a34a;}.delta.down{color:#dc2626;}
 
 /* ── RESULTADO ── */
-.result{text-align:center;padding:10px 4px;}
-.res-title{font-family:'Fredoka One',cursive;font-size:28px;color:#7c3aed;margin-bottom:4px;}
-.res-stars{font-size:38px;margin:8px 0;}
-.res-msg{font-size:13px;color:#888;margin-bottom:14px;line-height:1.6;}
-.res-card{background:linear-gradient(135deg,#f5f3ff,#eff6ff);border-radius:16px;
-  border:2px solid #ddd6fe;padding:16px;margin:10px 0;text-align:left;}
-.res-row{display:flex;justify-content:space-between;padding:7px 0;
-  border-bottom:.5px solid #e9d5ff;font-size:14px;}
-.res-row:last-child{border:none;font-weight:800;font-size:16px;color:#7c3aed;}
-.res-lbl{color:#888;font-weight:600;}
-.res-val{font-weight:700;color:#1e1b4b;}
-.rbtn{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;
-  border-radius:12px;padding:11px 24px;font-family:'Fredoka One',cursive;font-size:16px;
-  cursor:pointer;box-shadow:0 4px 0 #4c1d95;margin:4px;transition:transform .1s;}
+.result{text-align:center;padding:16px 8px;}
+.res-title{font-family:'Fredoka One',cursive;font-size:26px;color:#1e40af;margin-bottom:4px;}
+.res-stars{font-size:34px;margin:8px 0;}
+.res-card{background:#fff;border-radius:14px;border:1.5px solid #bfdbfe;padding:14px;margin:12px 0;text-align:left;}
+.res-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #dbeafe;font-size:14px;}
+.res-row:last-child{border:none;font-weight:800;font-size:15px;color:#1e40af;}
+.res-lbl{color:#64748b;font-weight:600;}
+.res-val{font-weight:700;color:#1e3a8a;}
+.rbtn{background:#1e40af;color:#fff;border:none;border-radius:12px;padding:10px 22px;font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;box-shadow:0 3px 0 #1e3a8a;margin:4px;transition:transform .1s;}
 .rbtn:hover{transform:translateY(-2px);}
-
-/* COLORES CUBETAS */
-.cb-azul .cubeta{background:linear-gradient(135deg,#2563eb,#0ea5e9);}
-.cb-azul .cubeta-label{background:linear-gradient(135deg,#2563eb,#0ea5e9);}
-.cb-verde .cubeta{background:linear-gradient(135deg,#059669,#10b981);}
-.cb-verde .cubeta-label{background:linear-gradient(135deg,#059669,#10b981);}
-.cb-naranja .cubeta{background:linear-gradient(135deg,#ea580c,#f59e0b);}
-.cb-naranja .cubeta-label{background:linear-gradient(135deg,#ea580c,#f59e0b);}
-.cb-rosa .cubeta{background:linear-gradient(135deg,#db2777,#a855f7);}
-.cb-rosa .cubeta-label{background:linear-gradient(135deg,#db2777,#a855f7);}
-.cb-teal .cubeta{background:linear-gradient(135deg,#0891b2,#06b6d4);}
-.cb-teal .cubeta-label{background:linear-gradient(135deg,#0891b2,#06b6d4);}
-
-@keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
-.pop{animation:pop .3s ease;}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.shake-el{animation:shake .3s;}
+.rbtn.sec{background:#dbeafe;color:#1e40af;box-shadow:0 3px 0 #93c5fd;}
 </style>
 
 <div id="app">
-  <div class="top-bar">
-    <div class="top-title">🎓 APA 7 · Referencias</div>
-    <div class="top-score" id="top-score">0 pts</div>
+  <div class="hdr">
+    <div class="hdr-title">APA 7 · Citación &amp; Referencias</div>
+    <div class="hdr-score" id="hdr-score">0 pts</div>
   </div>
   <div id="game-wrap"></div>
-  <div class="footer">Aprendiendo con @LaProfeVivy 💜</div>
 </div>
 
 <script>
-/* ═══════════════════════════════════════
+/* ══════════════════════════════════════════
    MASCOTAS SVG
-═══════════════════════════════════════ */
-const LION=`<svg width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="45" cy="50" r="30" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
-  <circle cx="45" cy="50" r="22" fill="#fbbf24"/>
-  <!-- melena -->
-  <circle cx="20" cy="40" r="12" fill="#d97706"/><circle cx="25" cy="25" r="11" fill="#d97706"/>
-  <circle cx="45" cy="18" r="11" fill="#d97706"/><circle cx="65" cy="25" r="11" fill="#d97706"/>
-  <circle cx="70" cy="40" r="12" fill="#d97706"/>
-  <circle cx="22" cy="58" r="11" fill="#d97706"/><circle cx="68" cy="58" r="11" fill="#d97706"/>
-  <!-- cara -->
-  <circle cx="35" cy="46" r="5" fill="#fff"/><circle cx="55" cy="46" r="5" fill="#fff"/>
-  <circle cx="36" cy="47" r="3" fill="#1e1b4b"/><circle cx="56" cy="47" r="3" fill="#1e1b4b"/>
-  <circle cx="37" cy="46" r="1" fill="#fff"/><circle cx="57" cy="46" r="1" fill="#fff"/>
-  <ellipse cx="45" cy="56" rx="9" ry="6" fill="#f97316"/>
-  <path d="M38 58 Q45 64 52 58" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <circle cx="30" cy="54" r="5" fill="#fca5a5" opacity=".6"/>
-  <circle cx="60" cy="54" r="5" fill="#fca5a5" opacity=".6"/>
-  <!-- corona -->
-  <polygon points="30,28 35,18 40,26 45,16 50,26 55,18 60,28" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5"/>
-  <circle cx="45" cy="18" r="3" fill="#ef4444"/>
-</svg>`;
+══════════════════════════════════════════ */
+const M_IDL=`<svg width="64" height="64" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#dbeafe" stroke="#1e40af" stroke-width="2.5"/><circle cx="24" cy="30" r="4" fill="#1e40af"/><circle cx="46" cy="30" r="4" fill="#1e40af"/><path d="M24 46 Q35 52 46 46" stroke="#1e40af" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="25" cy="30" r="1.5" fill="#fff"/><circle cx="47" cy="30" r="1.5" fill="#fff"/></svg>`;
+const M_OK =`<svg width="64" height="64" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#15803d"/><circle cx="46" cy="28" r="4" fill="#15803d"/><path d="M22 44 Q35 56 48 44" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/><polyline points="14,35 22,43 40,25" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const M_ERR=`<svg width="64" height="64" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#dc2626"/><circle cx="46" cy="28" r="4" fill="#dc2626"/><path d="M22 50 Q35 40 48 50" stroke="#dc2626" stroke-width="3" stroke-linecap="round" fill="none"/><line x1="18" y1="18" x2="30" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="18" x2="18" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></svg>`;
+const M_WIN=`<svg width="64" height="64" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#92400e"/><circle cx="46" cy="28" r="4" fill="#92400e"/><path d="M20 44 Q35 60 50 44" stroke="#92400e" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(44,2) scale(0.6)" fill="#eab308"/></svg>`;
 
-const M_OK=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#15803d"/><circle cx="46" cy="28" r="4" fill="#15803d"/><path d="M22 44 Q35 56 48 44" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/><polyline points="14,35 22,43 40,25" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
-const M_ERR=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#dc2626"/><circle cx="46" cy="28" r="4" fill="#dc2626"/><path d="M22 50 Q35 40 48 50" stroke="#dc2626" stroke-width="3" stroke-linecap="round" fill="none"/><line x1="18" y1="18" x2="30" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="18" x2="18" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></svg>`;
-const M_WIN=`<svg width="80" height="80" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#92400e"/><circle cx="46" cy="28" r="4" fill="#92400e"/><path d="M20 44 Q35 60 50 44" stroke="#92400e" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(44,2) scale(0.6)" fill="#eab308"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(8,5) scale(0.5)" fill="#eab308"/></svg>`;
+/* ══════════════════════════════════════════
+   BANCO DE PREGUNTAS
+   tipo: 'M'=múltiple, 'O'=ordenar, 'C'=clasificar
+══════════════════════════════════════════ */
+const BANCO=[
 
-/* ═══════════════════════════════════════
-   RONDAS DEL JUEGO
-═══════════════════════════════════════ */
-const RONDAS=[
+/* ─── ELEMENTOS DE UNA REFERENCIA ─── */
+{tipo:'M',tema:'t-elementos',temaLabel:'Elementos de referencia',
+ q:'¿En qué orden correcto se escriben los elementos de una referencia APA 7?',
+ opts:['Título, Autor, Año, Fuente',
+       'Autor, Año, Título, Fuente',
+       'Año, Autor, Fuente, Título',
+       'Fuente, Título, Autor, Año'],
+ a:1,exp:'En APA 7 el orden es siempre: Autor. (Año). Título. Fuente. Este orden aplica a todos los tipos de referencia.'},
 
-/* ─── RONDA 1: Clasifica el tipo de fuente ─── */
-{titulo:'¿A qué tipo de fuente pertenece?',
- instruccion:'Arrastra cada tarjeta a la cubeta correcta según el tipo de fuente APA 7.',
- cubetas:[
-   {id:'libro',   label:'📚 Libro',      clase:'cb-azul',    icono:'📚'},
-   {id:'revista', label:'📰 Revista',    clase:'cb-verde',   icono:'📰'},
-   {id:'web',     label:'🌐 Web',        clase:'cb-naranja', icono:'🌐'},
-   {id:'ia',      label:'🤖 IA',         clase:'cb-rosa',    icono:'🤖'},
- ],
- tarjetas:[
-   {id:'t1',icono:'📖',texto:'Aprendizaje activo\nGarcía, M. (2020)',cubeta:'libro'},
-   {id:'t2',icono:'🔬',texto:'Artículo con DOI\nRevista Pedagogía',cubeta:'revista'},
-   {id:'t3',icono:'💻',texto:'Ministerio de Ed.\nhttps://minedu.gov',cubeta:'web'},
-   {id:'t4',icono:'🤖',texto:'OpenAI (2023)\nChatGPT [LLM]',cubeta:'ia'},
-   {id:'t5',icono:'📗',texto:'Historia del arte\nLópez, A. (2019)',cubeta:'libro'},
-   {id:'t6',icono:'🌍',texto:'ONU.org (2024)\nInforme mundial',cubeta:'web'},
- ],
- exp:'Cada fuente tiene su formato en APA 7. Los libros llevan editorial. Las revistas llevan volumen y DOI. Las páginas web llevan URL y fecha de acceso. Las IAs llevan empresa, versión y tipo de modelo entre corchetes.'},
+{tipo:'M',tema:'t-elementos',temaLabel:'Elementos de referencia',
+ q:'En la referencia: Gargallo, B., Morera, I. … y García, E. (2014). Metodología… Revista Española de Pedagogía. (259) pp.415-435\n¿Qué elemento es "Revista Española de Pedagogía"?',
+ opts:['El autor','El año de publicación','El título del artículo','La fuente (revista)'],
+ a:3,exp:'La fuente en una referencia de artículo de revista es el nombre de la revista, escrito en cursiva. Es el elemento 4 según la estructura APA 7.'},
 
-/* ─── RONDA 2: Clasifica tipo de cita ─── */
-{titulo:'¿Cita directa o paráfrasis?',
- instruccion:'Identifica si cada ejemplo es una cita directa (textual) o una paráfrasis (indirecta).',
- cubetas:[
-   {id:'directa',    label:'📝 Cita directa',   clase:'cb-azul',  icono:'📝'},
-   {id:'parafrasis', label:'💬 Paráfrasis',      clase:'cb-verde', icono:'💬'},
- ],
- tarjetas:[
-   {id:'c1',icono:'💬',texto:'"El aprendizaje\nes activo"\n(García, 2020, p.45)',cubeta:'directa'},
-   {id:'c2',icono:'🗣️',texto:'García (2020)\naflrma que aprender\nimplica participar.',cubeta:'parafrasis'},
-   {id:'c3',icono:'💬',texto:'"La memoria opera\nen varios niveles"\n(López, 2019, párr.3)',cubeta:'directa'},
-   {id:'c4',icono:'🗣️',texto:'Martínez (2021)\ndice que los métodos\nactivos mejoran.',cubeta:'parafrasis'},
-   {id:'c5',icono:'💬',texto:'"Educar es encender\nuna llama"\n(Sócrates, s.f., p.1)',cubeta:'directa'},
-   {id:'c6',icono:'🗣️',texto:'Según Ruiz (2022)\nlos estudiantes\naprendem mejor.',cubeta:'parafrasis'},
- ],
- exp:'Cita DIRECTA: reproduce palabras exactas, siempre entre comillas y con página/párrafo. PARÁFRASIS: reformula las ideas con tus propias palabras; no lleva comillas y la página no es obligatoria.'},
+{tipo:'M',tema:'t-elementos',temaLabel:'Elementos de referencia',
+ q:'¿Cómo se escribe el título de un libro en la lista de referencias APA 7?',
+ opts:['Entre comillas: "El título"',
+       'En cursiva y solo la primera letra en mayúscula: El título del libro',
+       'Todo en mayúsculas: EL TÍTULO DEL LIBRO',
+       'Subrayado y entre comillas: "El título"'],
+ a:1,exp:'En APA 7 el título del libro va en cursiva. Solo la primera palabra y los nombres propios llevan mayúscula inicial.'},
 
-/* ─── RONDA 3: ¿Quién es el autor? ─── */
-{titulo:'¿Quién es el autor de la referencia?',
- instruccion:'Identifica qué tipo de autor tiene cada fuente y arrastra a la cubeta correcta.',
- cubetas:[
-   {id:'persona',   label:'👤 Persona',       clase:'cb-azul',    icono:'👤'},
-   {id:'org',       label:'🏛️ Organización',  clase:'cb-verde',   icono:'🏛️'},
-   {id:'empresa',   label:'🏢 Empresa (IA)',   clase:'cb-rosa',    icono:'🏢'},
-   {id:'sin-autor', label:'❓ Sin autor',      clase:'cb-naranja', icono:'❓'},
- ],
- tarjetas:[
-   {id:'a1',icono:'📘',texto:'García, M. (2020)\nAprendizaje activo.',cubeta:'persona'},
-   {id:'a2',icono:'🌐',texto:'Ministerio de Ed.\n(2023). Informe.',cubeta:'org'},
-   {id:'a3',icono:'🤖',texto:'OpenAI. (2023).\nChatGPT [LLM].',cubeta:'empresa'},
-   {id:'a4',icono:'📄',texto:'Cómo estudiar APA.\n(2021). Sitio web.',cubeta:'sin-autor'},
-   {id:'a5',icono:'🤖',texto:'Google. (2024).\nGemini [LLM].',cubeta:'empresa'},
-   {id:'a6',icono:'🏛️',texto:'OMS. (2022).\nSalud global.',cubeta:'org'},
- ],
- exp:'APA 7 acepta cuatro tipos de autor: persona natural (Apellido, N.), organización o institución, empresa (para IA: la empresa es el autor), y sin autor (la referencia empieza por el título).'},
+/* ─── REFERENCIA LIBRO ─── */
+{tipo:'O',tema:'t-libro',temaLabel:'Referencia · Libro',
+ instruccion:'Ordena los elementos para construir la referencia de un libro en APA 7:',
+ items:['Apellido, N. (Autor)',
+        '(Año).',
+        'Título del libro en cursiva.',
+        'Editorial.'],
+ orden_correcto:[0,1,2,3],
+ exp:'Libro APA 7: Apellido, N. (Año). Título en cursiva. Editorial.'},
 
-/* ─── RONDA 4: ¿Digital o físico? ─── */
-{titulo:'¿La fuente es digital o física?',
- instruccion:'Clasifica cada fuente según si es digital (lleva URL/DOI) o física (no lleva URL).',
- cubetas:[
-   {id:'digital',  label:'💻 Digital / En línea', clase:'cb-teal',   icono:'💻'},
-   {id:'fisico',   label:'📦 Físico / Impreso',   clase:'cb-naranja', icono:'📦'},
- ],
- tarjetas:[
-   {id:'d1',icono:'🌐',texto:'Artículo con DOI\nhttps://doi.org/...',cubeta:'digital'},
-   {id:'d2',icono:'📚',texto:'Libro físico\nEditorial Planeta',cubeta:'fisico'},
-   {id:'d3',icono:'▶️',texto:'Video de YouTube\nhttps://youtube.com',cubeta:'digital'},
-   {id:'d4',icono:'📰',texto:'Periódico impreso\nEl Tiempo, 2024',cubeta:'fisico'},
-   {id:'d5',icono:'📱',texto:'Post de Instagram\nhttps://instagram.com',cubeta:'digital'},
-   {id:'d6',icono:'📖',texto:'Tesis impresa\nBiblioteca FUAA',cubeta:'fisico'},
- ],
- exp:'Fuentes digitales SIEMPRE incluyen URL o DOI al final de la referencia. Fuentes físicas (libros, periódicos impresos) no llevan URL pero sí editorial o lugar de publicación.'},
+{tipo:'M',tema:'t-libro',temaLabel:'Referencia · Libro',
+ q:'¿Cuál es la referencia correcta de un libro en APA 7?',
+ opts:['García, M. (2020). Aprendizaje activo. Universidad Nacional.',
+       '"Aprendizaje activo" García, M. Universidad Nacional, 2020.',
+       'García, M. Aprendizaje activo. 2020. Universidad Nacional.',
+       'M. García (2020) — Aprendizaje activo — Universidad Nacional.'],
+ a:0,exp:'Formato libro APA 7: Apellido, N. (Año). Título en cursiva. Editorial. Los elementos siempre van en ese orden y con esa puntuación.'},
 
-/* ─── RONDA 5: Casos especiales ─── */
-{titulo:'¿Qué caso especial aplica?',
- instruccion:'Identifica qué caso especial de APA 7 corresponde a cada situación.',
- cubetas:[
-   {id:'sf',    label:'📅 Sin fecha (s.f.)',          clase:'cb-azul',   icono:'📅'},
-   {id:'sa',    label:'❓ Sin autor (→ título)',       clase:'cb-verde',  icono:'❓'},
-   {id:'2020a', label:'🔡 Mismo año (2020a/2020b)',    clase:'cb-naranja',icono:'🔡'},
-   {id:'etal',  label:'👥 3+ autores (et al.)',        clase:'cb-rosa',   icono:'👥'},
+/* ─── REFERENCIA REVISTA ─── */
+{tipo:'O',tema:'t-revista',temaLabel:'Referencia · Revista',
+ instruccion:'Ordena los elementos de la referencia de un artículo de revista:',
+ items:['Apellido, N. (Autor)',
+        '(Año).',
+        'Título del artículo.',
+        'Nombre de la Revista, volumen(número), páginas. DOI/URL'],
+ orden_correcto:[0,1,2,3],
+ exp:'Artículo de revista APA 7: Apellido, N. (Año). Título del artículo. Nombre de la Revista en cursiva, volumen(número), páginas. https://doi.org/...'},
+
+{tipo:'M',tema:'t-revista',temaLabel:'Referencia · Revista',
+ q:'En la referencia de un artículo de revista, ¿qué elemento va en cursiva?',
+ opts:['El título del artículo',
+       'El nombre de la revista y el número de volumen',
+       'El apellido del autor',
+       'El DOI o URL'],
+ a:1,exp:'En APA 7, el nombre de la revista y el número de volumen van en cursiva. El título del artículo NO lleva cursiva (solo mayúscula inicial).'},
+
+/* ─── REFERENCIA PERIÓDICO ─── */
+{tipo:'M',tema:'t-periodico',temaLabel:'Referencia · Periódico',
+ q:'¿Cuál es la diferencia en la fecha de una referencia de periódico respecto a un libro?',
+ opts:['No hay diferencia, ambos usan solo el año.',
+       'En periódico se incluye año, mes y día: (2024, 15 de marzo).',
+       'En periódico solo se escribe el mes.',
+       'En periódico se omite la fecha.'],
+ a:1,exp:'Las referencias de periódico incluyen la fecha completa: (Año, día de mes). Ejemplo: (2024, 15 de marzo). Esto permite identificar exactamente qué edición se consultó.'},
+
+{tipo:'M',tema:'t-periodico',temaLabel:'Referencia · Periódico',
+ q:'¿Cuál es el formato correcto para referenciar un artículo de periódico en APA 7?',
+ opts:['Autor. (Año, día de mes). Título del artículo. Nombre del Periódico. URL',
+       'Autor. (Año). Título del artículo. Nombre del Periódico. Editorial.',
+       'Nombre del Periódico. (Año). Título. Autor. URL',
+       'Autor. Nombre del Periódico. (Año, día de mes). Título. URL'],
+ a:0,exp:'Periódico APA 7: Autor. (Año, día de mes). Título del artículo. Nombre del Periódico en cursiva. URL. La fecha completa distingue este tipo de fuente.'},
+
+/* ─── REFERENCIA WEB ─── */
+{tipo:'M',tema:'t-web',temaLabel:'Referencia · Página web',
+ q:'¿Cuál es el formato correcto para referenciar una página web en APA 7?',
+ opts:['Autor. (Año, día de mes). Título de la página. Nombre del sitio web. URL',
+       'URL. Autor. (Año). Título.',
+       'Autor. Título. URL. (Año).',
+       'Nombre del sitio. (Año). URL. Autor. Título.'],
+ a:0,exp:'Web APA 7: Autor. (Año, día de mes). Título de la página en cursiva. Nombre del sitio web. https://... La fecha puede incluir mes y día cuando el contenido cambia con frecuencia.'},
+
+{tipo:'M',tema:'t-web',temaLabel:'Referencia · Página web',
+ q:'Cuando el autor de una página web es una organización (no una persona), ¿cómo se escribe?',
+ opts:['Se omite el autor y se empieza por el título.',
+       'Se escribe el nombre de la organización como autor: Organización. (Año).',
+       'Se escribe "Anónimo" como autor.',
+       'Se escribe el nombre del director de la organización.'],
+ a:1,exp:'En APA 7, cuando el autor es una organización o institución, se escribe su nombre completo en el lugar del autor. Ejemplo: Ministerio de Educación. (2023).'},
+
+/* ─── REFERENCIA RED SOCIAL ─── */
+{tipo:'M',tema:'t-red',temaLabel:'Referencia · Red social',
+ q:'¿Cómo se referencia una publicación de Instagram en APA 7?',
+ opts:['Autor [@usuario]. (Año, día de mes). Contenido de la publicación [Fotografía/Video]. Instagram. URL',
+       'Instagram. (Año). Autor. URL.',
+       '@usuario. (Año). Publicación. Instagram.',
+       'Autor. Año. Título. Instagram. URL.'],
+ a:0,exp:'Redes sociales APA 7: Autor real [@usuario]. (Año, día mes). Primeras palabras del contenido [Tipo de publicación]. Nombre de la red. URL. El nombre de usuario entre corchetes ayuda a identificar la fuente.'},
+
+{tipo:'M',tema:'t-red',temaLabel:'Referencia · Red social',
+ q:'En una referencia de Twitter/X en APA 7, ¿qué se usa como "título" de la publicación?',
+ opts:['El hashtag principal del tweet.',
+       'Las primeras 20 palabras del tweet, entre corchetes.',
+       'El título que asigna la plataforma.',
+       'El tema general de la cuenta.'],
+ a:1,exp:'En APA 7, para tweets y publicaciones cortas se usan las primeras 20 palabras del contenido como título, seguidas de la descripción del formato entre corchetes: [Tweet].'},
+
+/* ─── REFERENCIA CANAL DE VIDEO ─── */
+{tipo:'M',tema:'t-video',temaLabel:'Referencia · Canal de video',
+ q:'¿Cuál es el formato para referenciar un video de YouTube en APA 7?',
+ opts:['Autor [Canal]. (Año, día de mes). Título del video [Video]. YouTube. URL',
+       'YouTube. (Año). Autor. Título. URL.',
+       'Autor. Título. [Video YouTube]. Año. URL.',
+       'Canal de YouTube. (Año). URL. Título del video.'],
+ a:0,exp:'Video YouTube APA 7: Autor o nombre del canal [Canal]. (Año, día mes). Título del video en cursiva [Video]. YouTube. https://... El tipo de fuente va entre corchetes.'},
+
+{tipo:'M',tema:'t-video',temaLabel:'Referencia · Canal de video',
+ q:'Si el nombre del canal de YouTube es diferente al nombre real del creador, ¿cómo se escribe en APA 7?',
+ opts:['Solo el nombre real del creador.',
+       'Solo el nombre del canal.',
+       'Nombre Real [NombreDelCanal]. (Año).',
+       'Se omite el autor y se empieza por el título.'],
+ a:2,exp:'Cuando el nombre real y el nombre del canal difieren, APA 7 recomienda: Nombre Real [NombreDelCanal]. Esto permite identificar tanto a la persona como al canal.'},
+
+/* ─── REFERENCIA INTELIGENCIA ARTIFICIAL ─── */
+{tipo:'M',tema:'t-ia',temaLabel:'Referencia · IA (ChatGPT)',
+ q:'¿Cuál es el formato correcto para referenciar ChatGPT en APA 7?',
+ opts:['ChatGPT. (2023). Respuesta a mi pregunta. OpenAI.',
+       'OpenAI. (2023). ChatGPT (versión del 14 de marzo) [Modelo de lenguaje grande]. https://chat.openai.com',
+       'OpenAI, 2023. ChatGPT. www.openai.com.',
+       'ChatGPT [IA]. OpenAI. (2023). https://chat.openai.com'],
+ a:1,exp:'IA APA 7: Empresa. (Año). Nombre del modelo (versión) [Tipo de modelo]. URL. El descriptor entre corchetes (Modelo de lenguaje grande) explica al lector qué tipo de fuente es.'},
+
+{tipo:'M',tema:'t-ia',temaLabel:'Referencia · IA (ChatGPT)',
+ q:'Según APA 7, ¿quién es el "autor" de ChatGPT en una referencia?',
+ opts:['ChatGPT, porque es quien genera el texto.',
+       'El estudiante que hizo la consulta.',
+       'OpenAI, la empresa que creó el modelo.',
+       'La IA no tiene autor y no se referencia.'],
+ a:2,exp:'La IA no puede ser autora porque no puede asumir responsabilidad moral ni legal. El autor es la empresa desarrolladora: OpenAI para ChatGPT, Google para Gemini, Anthropic para Claude, etc.'},
+
+{tipo:'M',tema:'t-ia',temaLabel:'Referencia · IA (ChatGPT)',
+ q:'¿Qué información especial se debe incluir en la referencia de un modelo de IA que no se incluye en otras fuentes?',
+ opts:['El número de palabras de la respuesta.',
+       'El nombre del usuario que hizo la consulta.',
+       'La versión del modelo y el descriptor del tipo de modelo entre corchetes.',
+       'El idioma en que se hizo la consulta.'],
+ a:2,exp:'Para referencias de IA es obligatorio incluir la versión específica del modelo y una descripción entre corchetes que explique qué tipo de herramienta es, ej. [Modelo de lenguaje grande].'},
+
+{tipo:'M',tema:'t-ia',temaLabel:'Referencia · IA (ChatGPT)',
+ q:'¿Cómo se cita en el texto (cita parentética) una respuesta de ChatGPT en APA 7?',
+ opts:['(ChatGPT, 2023)',
+       '(OpenAI, 2023)',
+       '(IA, 2023)',
+       '(chat.openai.com, 2023)'],
+ a:1,exp:'La cita en el texto sigue el sistema autor-fecha de APA: (OpenAI, 2023). El autor es la empresa, no el nombre del modelo. Narrativa: OpenAI (2023) señaló que…'},
+
+{tipo:'M',tema:'t-ia',temaLabel:'Referencia · IA (Gemini)',
+ q:'¿Cuál sería la referencia correcta para Gemini de Google?',
+ opts:['Gemini. (2024). [IA Google]. https://gemini.google.com',
+       'Google. (2024). Gemini [Modelo de lenguaje grande]. https://gemini.google.com',
+       'IA. (2024). Gemini (Google). https://gemini.google.com',
+       'Google Gemini. 2024. Modelo de lenguaje. URL.'],
+ a:1,exp:'El formato es el mismo para cualquier IA: Empresa. (Año). Nombre del modelo (versión si la hay) [Tipo de modelo]. URL. Para Gemini: Google. (2024). Gemini [Modelo de lenguaje grande]. https://gemini.google.com'},
+
+/* ─── CITACIÓN ─── */
+{tipo:'M',tema:'t-citacion',temaLabel:'Citación en el texto',
+ q:'¿Cuál es la diferencia entre cita narrativa y cita parentética en APA 7?',
+ opts:['Son exactamente lo mismo.',
+       'Narrativa: el autor va dentro del texto; parentética: autor y año van entre paréntesis al final.',
+       'Parentética: solo el año entre paréntesis; narrativa: solo el autor.',
+       'Narrativa: se usa para citas textuales; parentética: para paráfrasis.'],
+ a:1,exp:'Narrativa: García (2020) afirmó que… / Parentética: …(García, 2020). En narrativa el autor forma parte de la oración; en parentética va entre paréntesis con el año.'},
+
+{tipo:'M',tema:'t-citacion',temaLabel:'Citación · Cita directa',
+ q:'¿Cuándo se convierte en cita en bloque una cita textual en APA 7?',
+ opts:['Cuando tiene más de 20 palabras.',
+       'Cuando tiene 40 o más palabras.',
+       'Cuando tiene más de 3 líneas, sin importar el número de palabras.',
+       'Siempre que se citen más de 2 autores.'],
+ a:1,exp:'En APA 7, las citas textuales de 40 o más palabras se presentan como bloque independiente, con sangría de 1.27 cm, sin comillas y con el mismo tipo y tamaño de letra.'},
+
+{tipo:'M',tema:'t-citacion',temaLabel:'Citación · Cita directa',
+ q:'¿Qué información obligatoria debe incluir una cita directa (textual) en APA 7?',
+ opts:['Solo el apellido del autor.',
+       'Apellido del autor y año.',
+       'Apellido del autor, año y número de página o párrafo.',
+       'Apellido, año, título y editorial.'],
+ a:2,exp:'Las citas directas siempre requieren: autor, año y ubicación exacta (página o párrafo). Ejemplo: (García, 2020, p. 45) o (García, 2020, párr. 3).'},
+
+{tipo:'M',tema:'t-citacion',temaLabel:'Citación · Paráfrasis',
+ q:'Una cita indirecta o paráfrasis en APA 7 requiere:',
+ opts:['Comillas y número de página obligatorio.',
+       'Autor y año; la página es recomendada pero no obligatoria.',
+       'Solo el año, sin mencionar el autor.',
+       'Exactamente las mismas palabras del autor original.'],
+ a:1,exp:'En la paráfrasis se reformulan las ideas del autor con palabras propias. APA 7 exige citar autor y año; la página se recomienda para facilitar la localización pero no es obligatoria.'},
+
+{tipo:'M',tema:'t-citacion',temaLabel:'Citación · Varios autores',
+ q:'En APA 7, una obra con 3 o más autores, ¿cómo se cita en el texto desde la primera mención?',
+ opts:['Se listan todos los apellidos: (García, López, Martínez y Ruiz, 2020)',
+       'Primer autor + et al.: (García et al., 2020)',
+       'Solo el primer autor: (García, 2020)',
+       'Se usa "y otros": (García y otros, 2020)'],
+ a:1,exp:'APA 7 simplificó la regla: desde la primera cita en el texto, obras con 3 o más autores usan "et al.": (García et al., 2020). Esto aplica tanto a citas narrativas como parentéticas.'},
+
+{tipo:'M',tema:'t-citacion',temaLabel:'Citación · Dos autores',
+ q:'¿Cómo se cita en el texto una obra con DOS autores en APA 7?',
+ opts:['Solo el primer autor + et al.',
+       'García & López (2020) o (García & López, 2020)',
+       'García y López (2020) o (García y López, 2020)',
+       'García-López (2020)'],
+ a:2,exp:'Con dos autores siempre se mencionan ambos, unidos por "y" (en texto en español): García y López (2020) o (García y López, 2020). En inglés se usa "&" dentro del paréntesis.'},
+
+/* ─── CASOS ESPECIALES ─── */
+{tipo:'M',tema:'t-especial',temaLabel:'Casos especiales · Sin autor',
+ q:'Cuando una fuente no tiene autor identificado, ¿cómo se referencia en APA 7?',
+ opts:['Se escribe "Anónimo" como autor.',
+       'Se omite el elemento autor y la referencia empieza por el título.',
+       'Se escribe "Desconocido" como autor.',
+       'No se puede referenciar una fuente sin autor.'],
+ a:1,exp:'Sin autor: la referencia empieza por el título de la obra. En la cita en el texto se usan las primeras palabras del título entre comillas: ("Título del artículo", 2020).'},
+
+{tipo:'M',tema:'t-especial',temaLabel:'Casos especiales · Sin fecha',
+ q:'¿Qué se escribe en el campo del año cuando una fuente no tiene fecha de publicación?',
+ opts:['Se escribe "sin fecha".',
+       'Se escribe s.f. entre paréntesis: (s.f.).',
+       'Se deja el espacio en blanco.',
+       'Se usa la fecha de acceso.'],
+ a:1,exp:'Cuando no hay fecha de publicación, APA 7 usa (s.f.) —sin fecha— en el lugar del año. En la cita en el texto: (García, s.f.).'},
+
+{tipo:'M',tema:'t-especial',temaLabel:'Casos especiales · Mismo autor mismo año',
+ q:'Tienes dos artículos del mismo autor publicados el mismo año. ¿Cómo los diferencias en APA 7?',
+ opts:['Se añade el mes entre paréntesis: (2020, marzo).',
+       'Se añade una letra minúscula después del año: (2020a) y (2020b).',
+       'Se añade el título completo en la cita.',
+       'Se usa solo el primer artículo y se omite el segundo.'],
+ a:1,exp:'Obras del mismo autor del mismo año se ordenan alfabéticamente por título y se les añade una letra: (García, 2020a) y (García, 2020b). Esta letra aparece también en la lista de referencias.'},
+
+{tipo:'M',tema:'t-especial',temaLabel:'Casos especiales · Autoría anónima',
+ q:'¿Cuándo se usa "Anónimo" como autor en APA 7?',
+ opts:['Siempre que no se conozca el autor.',
+       'Solo cuando la propia obra indica explícitamente "Anónimo" como autoría.',
+       'Cuando el autor es una organización.',
+       'Cuando el autor tiene más de dos apellidos.'],
+ a:1,exp:'En APA 7 "Anónimo" solo se usa como autor cuando la obra así lo indica explícitamente. Si simplemente no se conoce el autor, la referencia empieza por el título (no se escribe "Anónimo").'},
+
+/* ─── CLASIFICAR TIPOS ─── */
+{tipo:'C',tema:'t-elementos',temaLabel:'Clasifica el tipo de fuente',
+ instruccion:'Clasifica cada fuente en su categoría correcta:',
+ zonas:['Digital / En línea','Impreso / Físico'],
+ items:[
+   {texto:'Artículo de revista con DOI',zona:0},
+   {texto:'Libro físico de editorial',zona:1},
+   {texto:'Video de YouTube',zona:0},
+   {texto:'Periódico impreso',zona:1},
+   {texto:'Página web',zona:0},
+   {texto:'Tweet de Twitter/X',zona:0},
  ],
- tarjetas:[
-   {id:'e1',icono:'📅',texto:'Página web sin\nfecha de publicación',cubeta:'sf'},
-   {id:'e2',icono:'📄',texto:'Artículo sin nombre\nde autor conocido',cubeta:'sa'},
-   {id:'e3',icono:'📚',texto:'García publicó\n2 libros en 2020',cubeta:'2020a'},
-   {id:'e4',icono:'👥',texto:'Obra de García,\nLópez, Martínez\ny Ruiz (2020)',cubeta:'etal'},
-   {id:'e5',icono:'📅',texto:'Organización sin\nfecha en su web',cubeta:'sf'},
-   {id:'e6',icono:'🔡',texto:'López escribió\n3 artículos en 2022',cubeta:'2020a'},
+ exp:'Las fuentes digitales siempre deben incluir URL o DOI en la referencia. Las fuentes físicas no requieren URL pero sí editorial o lugar de publicación.'},
+
+{tipo:'C',tema:'t-citacion',temaLabel:'Clasifica el tipo de cita',
+ instruccion:'Clasifica cada ejemplo en su tipo de cita:',
+ zonas:['Cita directa (textual)','Cita indirecta (paráfrasis)'],
+ items:[
+   {texto:'"El aprendizaje es un proceso activo" (García, 2020, p. 45)',zona:0},
+   {texto:'García (2020) sostiene que aprender implica participación activa.',zona:1},
+   {texto:'"La memoria opera en múltiples niveles" (López, 2019, párr. 3)',zona:0},
+   {texto:'Según Martínez (2021) los métodos activos mejoran la retención.',zona:1},
  ],
- exp:'Sin fecha → (s.f.). Sin autor → referencia empieza por el título. Mismo autor mismo año → añade letra (2020a, 2020b). 3 o más autores → desde la primera cita usa et al.'},
+ exp:'Cita directa: reproduce las palabras exactas del autor, siempre entre comillas (o en bloque) y con número de página/párrafo. Paráfrasis: reformula las ideas con palabras propias.'},
+
 ];
 
-/* ═══════════════════════════════════════
-   ESTADO
-═══════════════════════════════════════ */
-let playerName='', score=0, ronda=0, answered=false;
-let asignados={};   // id_tarjeta → id_cubeta
-let dragId=null;
-let selCard=null;   // para tap en móvil
+/* ══════════════════════════════════════════
+   ESTADO GLOBAL
+══════════════════════════════════════════ */
+let playerName='', score=0, curQ=0, questions=[], answered=false;
+let ordenState=[], clasificState={items:[],asignados:[]};
 
 function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
-function updScore(){document.getElementById('top-score').textContent=score+' pts';}
+function updHdr(){document.getElementById('hdr-score').textContent=score+' pts';}
 
-/* ═══════════════════════════════════════
+/* ══════════════════════════════════════════
    PANTALLA NOMBRE
-═══════════════════════════════════════ */
+══════════════════════════════════════════ */
 function showName(){
   document.getElementById('game-wrap').innerHTML=`
     <div class="name-screen">
-      <div class="lion-wrap">${LION}</div>
-      <div class="name-title">¡Hola! Soy Leo 🦁</div>
-      <div class="name-sub">
-        Vamos a practicar <b style="color:#7c3aed">Normas APA 7</b><br>
-        Arrastra las tarjetas a la cubeta correcta.<br><br>
+      <div style="display:flex;justify-content:center;margin-bottom:14px">${M_IDL}</div>
+      <div class="name-title">¡Bienvenido!</div>
+      <div class="name-sub">Juega y practica la citación y referenciación en<br><b style="color:#1e40af">Normas APA 7ª edición</b>.<br><br>
         <b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp; <b style="color:#dc2626">Error: -10 pts</b>
       </div>
-      <input class="name-input" id="ninp" type="text" placeholder="Tu nombre completo..." maxlength="60">
-      <button class="start-btn" onclick="startGame()">¡Comenzar! 🚀</button>
+      <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="60">
+      <button class="start-btn" onclick="startGame()">¡Comenzar!</button>
     </div>`;
-  setTimeout(()=>{const i=document.getElementById('ninp');if(i)i.focus();},100);
+  setTimeout(()=>{const i=document.getElementById('name-inp');if(i)i.focus();},100);
 }
 
 function startGame(){
-  const i=document.getElementById('ninp');
-  const n=i?i.value.trim():'';
-  if(!n){i.style.borderColor='#ef4444';i.placeholder='¡Escribe tu nombre primero!';return;}
-  playerName=n;score=0;ronda=0;updScore();renderRonda();
+  const inp=document.getElementById('name-inp');
+  const n=inp?inp.value.trim():'';
+  if(!n){inp.style.borderColor='#ef4444';inp.placeholder='¡Escribe tu nombre primero!';return;}
+  playerName=n; score=0; curQ=0; answered=false;
+  questions=shuffle(BANCO).slice(0,16);
+  updHdr(); renderQ();
 }
 
-/* ═══════════════════════════════════════
-   RENDER RONDA
-═══════════════════════════════════════ */
-function renderRonda(){
-  if(ronda>=RONDAS.length){showResult();return;}
-  const R=RONDAS[ronda];
-  answered=false;asignados={};selCard=null;
-  const tarjetas=shuffle([...R.tarjetas]);
-  const pct=Math.round((ronda/RONDAS.length)*100);
-  const cols=R.cubetas.length<=2?'1fr 1fr':R.cubetas.length===3?'1fr 1fr 1fr':'1fr 1fr';
+/* ══════════════════════════════════════════
+   RENDER PREGUNTA
+══════════════════════════════════════════ */
+function renderQ(){
+  if(curQ>=questions.length){showResult();return;}
+  const q=questions[curQ];
+  const pct=Math.round((curQ/questions.length)*100);
+  answered=false;
 
-  const cubaHtml=R.cubetas.map(c=>`
-    <div class="cubeta-wrap ${c.clase}">
-      <div class="cubeta-label">${c.label}</div>
-      <div class="cubeta" id="cub-${c.id}"
-           ondragover="ev.preventDefault();this.classList.add('over')"
-           ondragleave="this.classList.remove('over')"
-           ondrop="dropCard(event,'${c.id}')"
-           onclick="tapCubeta('${c.id}')">
-        <span class="cubeta-icon">${c.icono}</span>
-        <div id="chips-${c.id}" style="display:flex;flex-wrap:wrap;gap:5px;position:relative;z-index:1;width:100%;"></div>
+  const hdr=`
+    <div class="round-hdr">
+      <div class="round-lbl">Pregunta ${curQ+1} / ${questions.length}</div>
+      <div class="round-score">${score} pts</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="mascot" id="mc">${M_IDL}</div>`;
+
+  if(q.tipo==='M') renderMultiple(q,hdr);
+  else if(q.tipo==='O') renderOrden(q,hdr);
+  else if(q.tipo==='C') renderClasif(q,hdr);
+}
+
+/* ── MÚLTIPLE ── */
+function renderMultiple(q,hdr){
+  const badge=`<span class="tema-badge ${q.tema}">${q.temaLabel}</span>`;
+  const optsHtml=q.opts.map((o,i)=>
+    `<button class="opt-btn" onclick="checkM(${i},this)">${o}</button>`
+  ).join('');
+  document.getElementById('game-wrap').innerHTML=hdr+`
+    <div class="q-box">
+      <div>${badge}</div>
+      <div class="q-lbl">Selecciona la respuesta correcta</div>
+      <div class="q-text">${q.q.replace(/\n/g,'<br>')}</div>
+    </div>
+    <div class="opts-col">${optsHtml}</div>
+    <div class="exp-box" id="exp"></div>
+    <div class="delta" id="delta"></div>
+    <div class="feedback" id="fb"></div>`;
+}
+
+function checkM(idx,btn){
+  if(answered)return; answered=true;
+  const q=questions[curQ];
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  showExp(q.exp);
+  if(idx===q.a){
+    btn.classList.add('correct'); score+=100; updHdr();
+    setFb(true,'+100 puntos'); document.getElementById('mc').innerHTML=M_OK;
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn')[q.a].classList.add('correct');
+    score=Math.max(0,score-10); updHdr();
+    setFb(false,'-10 puntos'); document.getElementById('mc').innerHTML=M_ERR;
+  }
+  setTimeout(()=>{curQ++;renderQ();},2400);
+}
+
+/* ── ORDENAR ── */
+function renderOrden(q,hdr){
+  const badge=`<span class="tema-badge ${q.tema}">${q.temaLabel}</span>`;
+  // estado inicial: items en orden aleatorio
+  ordenState=shuffle(q.items.map((_,i)=>i)); // índices mezclados
+  document.getElementById('game-wrap').innerHTML=hdr+`
+    <div class="q-box">
+      <div>${badge}</div>
+      <div class="q-lbl">Ordena los elementos</div>
+      <div class="q-text">${q.instruccion}</div>
+    </div>
+    <div class="orden-lista" id="ol"></div>
+    <button class="check-orden-btn" onclick="checkOrden()">Verificar orden ✓</button>
+    <div class="exp-box" id="exp"></div>
+    <div class="delta" id="delta"></div>
+    <div class="feedback" id="fb"></div>`;
+  renderOrdenLista(q);
+}
+
+function renderOrdenLista(q){
+  const ol=document.getElementById('ol');
+  if(!ol)return;
+  ol.innerHTML=ordenState.map((itemIdx,pos)=>`
+    <div class="orden-item" id="oi-${pos}">
+      <span class="orden-num">${pos+1}.</span>
+      <span style="flex:1;font-size:12px">${q.items[itemIdx]}</span>
+      <div class="orden-flechas">
+        ${pos>0?`<button class="flecha" onclick="moverOrden(${pos},-1)">▲</button>`:'<div style="height:22px"></div>'}
+        ${pos<ordenState.length-1?`<button class="flecha" onclick="moverOrden(${pos},1)">▼</button>`:'<div style="height:22px"></div>'}
       </div>
     </div>`).join('');
-
-  const tarjHtml=tarjetas.map(t=>`
-    <div class="drag-card" id="dc-${t.id}"
-         draggable="true"
-         ondragstart="dragStart(event,'${t.id}')"
-         ondragend="dragEnd(event)"
-         onclick="tapCard('${t.id}')">
-      <span class="card-icon">${t.icono}</span>
-      <span class="card-txt">${t.texto.replace(/\n/g,'<br>')}</span>
-    </div>`).join('');
-
-  document.getElementById('game-wrap').innerHTML=`
-    <div class="prog-row">
-      <div class="prog-lbl">Ronda ${ronda+1}/${RONDAS.length}</div>
-      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
-      <div style="font-size:12px;font-weight:700;color:#7c3aed;white-space:nowrap">${score} pts</div>
-    </div>
-    <div class="q-card">
-      <div class="q-ronda">Ronda ${ronda+1} · APA 7</div>
-      <div class="q-pregunta">${R.titulo}</div>
-      <div style="font-size:12px;color:#6d28d9;font-weight:700">${R.instruccion}</div>
-    </div>
-    <div class="cards-row" id="cards-row">${tarjHtml}</div>
-    <div class="cubetas-row" style="grid-template-columns:${cols}">${cubaHtml}</div>
-    <button class="verificar-btn" id="vbtn" onclick="verificar()">Verificar ✓</button>
-    <div class="mascot-row" id="mascot-row" style="display:none">${M_OK}</div>
-    <div class="fb-text" id="fbt"></div>
-    <div class="delta-txt" id="dlt"></div>
-    <div class="feedback-box" id="fbox"></div>`;
 }
 
-/* ═══════════════════════════════════════
-   DRAG & DROP (escritorio)
-═══════════════════════════════════════ */
-function dragStart(ev,id){
-  dragId=id;
-  ev.dataTransfer.effectAllowed='move';
-  setTimeout(()=>{const el=document.getElementById('dc-'+id);if(el)el.classList.add('dragging');},0);
-}
-function dragEnd(ev){
-  if(dragId){const el=document.getElementById('dc-'+dragId);if(el)el.classList.remove('dragging');}
-  document.querySelectorAll('.cubeta').forEach(c=>c.classList.remove('over'));
-}
-function dropCard(ev,cubetaId){
-  ev.preventDefault();
-  document.querySelectorAll('.cubeta').forEach(c=>c.classList.remove('over'));
-  if(!dragId||answered)return;
-  colocarEnCubeta(dragId,cubetaId);
-  dragId=null;
+function moverOrden(pos,dir){
+  const q=questions[curQ];
+  const tmp=ordenState[pos]; ordenState[pos]=ordenState[pos+dir]; ordenState[pos+dir]=tmp;
+  renderOrdenLista(q);
 }
 
-/* ═══════════════════════════════════════
-   TAP (móvil: seleccionar → tocar cubeta)
-═══════════════════════════════════════ */
-function tapCard(id){
-  if(answered)return;
-  // deselect anterior
-  document.querySelectorAll('.drag-card').forEach(c=>{
-    c.style.outline='';c.style.transform='';
+function checkOrden(){
+  if(answered)return; answered=true;
+  const q=questions[curQ];
+  const correcto=q.orden_correcto.every((v,i)=>ordenState[i]===v);
+  document.querySelectorAll('.flecha').forEach(b=>b.disabled=true);
+  document.querySelector('.check-orden-btn').disabled=true;
+  showExp(q.exp);
+  // colorear
+  ordenState.forEach((itemIdx,pos)=>{
+    const el=document.getElementById('oi-'+pos);
+    if(el) el.classList.add('locked');
   });
-  if(selCard===id){selCard=null;return;}
-  selCard=id;
-  const el=document.getElementById('dc-'+id);
-  if(el){el.style.outline='3px solid #7c3aed';el.style.transform='translateY(-6px) scale(1.06)';}
-}
-function tapCubeta(cubetaId){
-  if(!selCard||answered)return;
-  colocarEnCubeta(selCard,cubetaId);
-  selCard=null;
-}
-
-/* ═══════════════════════════════════════
-   COLOCAR TARJETA EN CUBETA
-═══════════════════════════════════════ */
-function colocarEnCubeta(cardId,cubetaId){
-  const R=RONDAS[ronda];
-  const tarjeta=R.tarjetas.find(t=>t.id===cardId);
-  if(!tarjeta)return;
-
-  // quitar de cubeta anterior si ya estaba
-  const prev=asignados[cardId];
-  if(prev){
-    const prevChip=document.getElementById('chip-'+cardId);
-    if(prevChip)prevChip.remove();
+  if(correcto){
+    score+=100; updHdr();
+    setFb(true,'+100 puntos'); document.getElementById('mc').innerHTML=M_OK;
+  } else {
+    score=Math.max(0,score-10); updHdr();
+    setFb(false,'El orden correcto es: '+q.items.join(' → '));
+    document.getElementById('mc').innerHTML=M_ERR;
   }
-  asignados[cardId]=cubetaId;
+  setTimeout(()=>{curQ++;renderQ();},3000);
+}
 
-  // ocultar tarjeta original
-  const cardEl=document.getElementById('dc-'+cardId);
-  if(cardEl){cardEl.classList.add('used');cardEl.style.outline='';cardEl.style.transform='';}
+/* ── CLASIFICAR ── */
+function renderClasif(q,hdr){
+  const badge=`<span class="tema-badge ${q.tema}">${q.temaLabel}</span>`;
+  clasificState={items:shuffle(q.items.map((it,i)=>({...it,id:i}))),asignados:q.zonas.map(()=>[])};
+  document.getElementById('game-wrap').innerHTML=hdr+`
+    <div class="q-box">
+      <div>${badge}</div>
+      <div class="q-lbl">Arrastra / selecciona y clasifica</div>
+      <div class="q-text">${q.instruccion}</div>
+    </div>
+    <div class="clasif-tokens" id="tokens"></div>
+    <div class="clasif-zonas" id="zonas"></div>
+    <button class="check-clasif-btn" onclick="checkClasif()">Verificar ✓</button>
+    <div class="exp-box" id="exp"></div>
+    <div class="delta" id="delta"></div>
+    <div class="feedback" id="fb"></div>`;
+  renderClasifUI(q);
+}
 
-  // añadir chip en cubeta
-  const chipsEl=document.getElementById('chips-'+cubetaId);
-  if(chipsEl){
-    const chip=document.createElement('div');
-    chip.className='chip-placed pop';chip.id='chip-'+cardId;
-    chip.innerHTML=`<span class="chip-icon">${tarjeta.icono}</span>
-      <span style="font-size:10px;font-weight:700;max-width:80px;line-height:1.2">${tarjeta.texto.split('\n')[0]}</span>
-      <button onclick="quitarChip('${cardId}','${cubetaId}')">✕</button>`;
-    chipsEl.appendChild(chip);
+let selectedToken=null;
+
+function renderClasifUI(q){
+  // tokens disponibles
+  const tk=document.getElementById('tokens');
+  if(!tk)return;
+  const usedIds=clasificState.asignados.flat().map(x=>x.id);
+  tk.innerHTML=clasificState.items.map(it=>`
+    <div class="token${usedIds.includes(it.id)?' used':''}" 
+         id="tok-${it.id}"
+         onclick="selectToken(${it.id})">${it.texto}</div>`).join('');
+  // zonas
+  const zn=document.getElementById('zonas');
+  if(!zn)return;
+  zn.innerHTML=q.zonas.map((zname,zi)=>`
+    <div class="zona" onclick="dropToZona(${zi})">
+      <div class="zona-title">${zname}</div>
+      <div class="zona-items" id="zona-${zi}">
+        ${clasificState.asignados[zi].map(it=>`
+          <div class="zona-chip" id="chip-${it.id}">
+            <span style="font-size:11px">${it.texto}</span>
+            <button onclick="quitarDeZona(${zi},${it.id},event)">✕</button>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function selectToken(id){
+  // deselect prev
+  if(selectedToken!==null){
+    const prev=document.getElementById('tok-'+selectedToken);
+    if(prev) prev.style.outline='';
   }
+  const el=document.getElementById('tok-'+id);
+  const usedIds=clasificState.asignados.flat().map(x=>x.id);
+  if(usedIds.includes(id)) return;
+  if(selectedToken===id){selectedToken=null; return;}
+  selectedToken=id;
+  if(el) el.style.outline='3px solid #1e40af';
 }
 
-function quitarChip(cardId,cubetaId){
-  if(answered)return;
-  delete asignados[cardId];
-  const chip=document.getElementById('chip-'+cardId);if(chip)chip.remove();
-  const cardEl=document.getElementById('dc-'+cardId);
-  if(cardEl){cardEl.classList.remove('used');cardEl.style.outline='';cardEl.style.transform='';}
+function dropToZona(zi){
+  if(selectedToken===null) return;
+  const q=questions[curQ];
+  const item=clasificState.items.find(x=>x.id===selectedToken);
+  if(!item) return;
+  const usedIds=clasificState.asignados.flat().map(x=>x.id);
+  if(usedIds.includes(item.id)) return;
+  clasificState.asignados[zi].push(item);
+  selectedToken=null;
+  renderClasifUI(q);
 }
 
-/* ═══════════════════════════════════════
-   VERIFICAR
-═══════════════════════════════════════ */
-function verificar(){
-  if(answered)return;
-  const R=RONDAS[ronda];
-  const total=Object.keys(asignados).length;
-  if(total<R.tarjetas.length){
-    const fbt=document.getElementById('fbt');
-    if(fbt){fbt.textContent='¡Clasifica todas las tarjetas primero!';fbt.className='fb-text fb-err';}
-    const el=document.getElementById('game-wrap');
-    if(el)el.classList.add('shake-el');
-    setTimeout(()=>el&&el.classList.remove('shake-el'),400);
+function quitarDeZona(zi,id,e){
+  e.stopPropagation();
+  const q=questions[curQ];
+  clasificState.asignados[zi]=clasificState.asignados[zi].filter(x=>x.id!==id);
+  renderClasifUI(q);
+}
+
+function checkClasif(){
+  if(answered) return;
+  const q=questions[curQ];
+  // todos clasificados?
+  const total=clasificState.asignados.flat().length;
+  if(total<q.items.length){
+    const fb=document.getElementById('fb');
+    if(fb){fb.textContent='¡Clasifica todos los elementos primero!';fb.className='feedback fb-err';}
     return;
   }
   answered=true;
-  document.getElementById('vbtn').disabled=true;
-
   let correctos=0;
-  R.tarjetas.forEach(t=>{
-    const chip=document.getElementById('chip-'+t.id);
-    if(asignados[t.id]===t.cubeta){correctos++;if(chip)chip.classList.add('c-ok');}
-    else{if(chip)chip.classList.add('c-err');}
+  clasificState.asignados.forEach((zona,zi)=>{
+    zona.forEach(it=>{
+      const chip=document.getElementById('chip-'+it.id);
+      if(it.zona===zi){correctos++;if(chip)chip.classList.add('c-ok');}
+      else{if(chip)chip.classList.add('c-err');}
+    });
   });
-
-  const pct=correctos/R.tarjetas.length;
-  const ganados=pct===1?100:pct>=.66?60:pct>=.5?30:0;
-  const perdidos=pct<.5?10:0;
-  score=Math.max(0,score+ganados-perdidos);updScore();
-
-  const masEl=document.getElementById('mascot-row');
-  const fbt=document.getElementById('fbt');
-  const dlt=document.getElementById('dlt');
-  const fbox=document.getElementById('fbox');
-
-  if(masEl)masEl.style.display='flex';
+  document.querySelector('.check-clasif-btn').disabled=true;
+  showExp(q.exp);
+  const pct=correctos/q.items.length;
   if(pct===1){
-    if(masEl)masEl.innerHTML=M_OK;
-    if(fbt){fbt.textContent='¡Perfecto! 🎉';fbt.className='fb-text fb-ok';}
-    if(dlt){dlt.textContent='+100 puntos';dlt.className='delta-txt delta-up';}
-  } else if(pct>=.5){
-    if(masEl)masEl.innerHTML=M_OK;
-    if(fbt){fbt.textContent=`Bien! ${correctos}/${R.tarjetas.length} correctas`;fbt.className='fb-text fb-ok';}
-    if(dlt){dlt.textContent='+'+ganados+' puntos';dlt.className='delta-txt delta-up';}
+    score+=100; updHdr();
+    setFb(true,'+100 puntos'); document.getElementById('mc').innerHTML=M_OK;
+  } else if(pct>=0.5){
+    score+=50; updHdr();
+    setFb(true,'+50 puntos (parcial)'); document.getElementById('mc').innerHTML=M_OK;
   } else {
-    if(masEl)masEl.innerHTML=M_ERR;
-    if(fbt){fbt.textContent=`Solo ${correctos}/${R.tarjetas.length} correctas`;fbt.className='fb-text fb-err';}
-    if(dlt){dlt.textContent=perdidos?'-10 puntos':'0 puntos';dlt.className='delta-txt delta-down';}
+    score=Math.max(0,score-10); updHdr();
+    setFb(false,'-10 puntos'); document.getElementById('mc').innerHTML=M_ERR;
   }
-  if(fbox){fbox.textContent='💡 '+R.exp;fbox.className='feedback-box show '+(pct>=.5?'ok':'err');}
-
-  setTimeout(()=>{ronda++;renderRonda();},3400);
+  setTimeout(()=>{curQ++;renderQ();},3000);
 }
 
-/* ═══════════════════════════════════════
-   RESULTADO FINAL
-═══════════════════════════════════════ */
+/* ── HELPERS ── */
+function showExp(txt){
+  const e=document.getElementById('exp');
+  if(e){e.textContent=txt;e.classList.add('show');}
+}
+function setFb(ok,pts){
+  const fb=document.getElementById('fb');
+  const dl=document.getElementById('delta');
+  if(fb){fb.textContent=ok?'¡Correcto!':'Incorrecto';fb.className='feedback '+(ok?'fb-ok':'fb-err');}
+  if(dl){dl.textContent=pts;dl.className='delta '+(ok?'up':'down');}
+}
+
+/* ══════════════════════════════════════════
+   RESULTADO
+══════════════════════════════════════════ */
 function showResult(){
   const now=new Date();
   const dateStr=now.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
   const timeStr=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  const max=RONDAS.length*100;
+  const max=questions.length*100;
   const pct=Math.round((score/max)*100);
   const stars=pct>=90?'★★★':pct>=60?'★★':'★';
-  const msg=pct>=90?'¡Excelente! Dominas las referencias APA 7. 🏆'
-           :pct>=60?'¡Muy bien! Repasa los tipos donde fallaste. 💪'
-           :'Vuelve a repasar el material. ¡Tú puedes! 🦁';
+  const msg=pct>=90?'¡Excelente! Dominas las normas APA 7.'
+           :pct>=60?'¡Muy bien! Repasa los temas donde fallaste.'
+           :'Revisa el material y vuelve a intentarlo.';
   document.getElementById('game-wrap').innerHTML=`
     <div class="result">
       <div style="display:flex;justify-content:center;margin-bottom:10px">${M_WIN}</div>
-      <div class="res-title">¡Juego terminado! 🎓</div>
+      <div class="res-title">¡Juego terminado!</div>
       <div class="res-stars" style="color:#eab308">${stars}</div>
-      <div class="res-msg">${msg}</div>
+      <div style="font-size:13px;color:#64748b;margin-bottom:12px;line-height:1.5">${msg}</div>
       <div class="res-card">
         <div class="res-row"><span class="res-lbl">Jugador</span><span class="res-val">${playerName}</span></div>
         <div class="res-row"><span class="res-lbl">Fecha</span><span class="res-val">${dateStr}</span></div>
         <div class="res-row"><span class="res-lbl">Hora</span><span class="res-val">${timeStr}</span></div>
-        <div class="res-row"><span class="res-lbl">Rondas completadas</span><span class="res-val">${RONDAS.length} de ${RONDAS.length}</span></div>
+        <div class="res-row"><span class="res-lbl">Correctas</span><span class="res-val">${Math.round(score/100)} de ${questions.length}</span></div>
         <div class="res-row"><span class="res-lbl">Puntos obtenidos</span><span class="res-val">${score} / ${max} pts</span></div>
       </div>
-      <button class="rbtn" onclick="rePlay()">Jugar de nuevo 🔄</button>
+      <button class="rbtn" onclick="startGame2()">Jugar de nuevo</button>
     </div>`;
-  document.getElementById('top-score').textContent=score+' pts';
+  document.getElementById('hdr-score').textContent=score+' pts';
 }
 
-function rePlay(){score=0;ronda=0;updScore();renderRonda();}
+function startGame2(){
+  score=0;curQ=0;answered=false;
+  questions=shuffle(BANCO).slice(0,16);
+  updHdr();renderQ();
+}
 
 /* inicio */
 showName();
 </script>
 </html>
+
+
