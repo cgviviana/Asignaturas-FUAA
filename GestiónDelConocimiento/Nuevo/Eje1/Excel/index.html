@@ -1,0 +1,1442 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aprendiendo con @LaProfeVivy | Cursos de Excel</title>
+  <style>
+    :root{
+      --bg:#efefef;
+      --panel:#ffffff;
+      --line:#d8dbe2;
+      --text:#1f2f46;
+      --muted:#7a8698;
+      --green:#24b34b;
+      --green-soft:#cfeecf;
+      --blue-soft:#d9ecff;
+      --pink-soft:#f5dff0;
+      --gray-soft:#e7e9ee;
+      --shadow:0 4px 16px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    body{
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .app{
+      max-width:1280px;
+      margin:0 auto;
+      min-height:100vh;
+    }
+
+    .hidden{display:none !important}
+
+    /* HEADER */
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:10px 18px;
+      background:#f5f5f5;
+      border-bottom:1px solid #e0e0e0;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      font-size:1.15rem;
+      font-weight:800;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      min-width:220px;
+    }
+
+    .brand-blue{color:#0b5ea8}
+    .brand-green{color:#20d120}
+
+    .nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      flex:1;
+    }
+
+    .nav-btn{
+      background:#f7f7f7;
+      border:1px solid #d4d8df;
+      padding:10px 18px;
+      border-radius:10px;
+      color:#33445b;
+      font-size:1rem;
+      cursor:pointer;
+      box-shadow:0 1px 4px rgba(0,0,0,.04);
+      transition:.15s ease;
+    }
+
+    .nav-btn:hover{
+      background:#fff;
+    }
+
+    .player{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:220px;
+      justify-content:flex-end;
+    }
+
+    .player .score{
+      font-size:1.9rem;
+      font-weight:800;
+      color:#7a8698;
+      line-height:1;
+    }
+
+    .hearts{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:#c82929;
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:.95rem;
+    }
+
+    .player-info{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .player-name{
+      font-size:1rem;
+      line-height:1.25;
+    }
+
+    .player-name strong{
+      display:block;
+      font-weight:700;
+      color:#1f2f46;
+    }
+
+    /* GENERAL */
+    .view{
+      padding:22px 28px 34px;
+    }
+
+    .section-title{
+      background:var(--panel);
+      border-radius:12px;
+      padding:16px 22px;
+      box-shadow:var(--shadow);
+      font-size:1.1rem;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:22px;
+    }
+
+    .dot{
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      background:#39d114;
+      display:inline-block;
+      flex-shrink:0;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(260px, 1fr));
+      gap:24px 28px;
+    }
+
+    .course-card{
+      background:var(--panel);
+      border-radius:22px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      position:relative;
+      transition:.15s ease;
+    }
+
+    .course-card:hover{
+      transform:translateY(-2px);
+    }
+
+    .course-banner{
+      height:130px;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 18px;
+      overflow:hidden;
+    }
+
+    .banner-green{background:linear-gradient(90deg, #45b8d3 0%, #9ad369 100%)}
+    .banner-blue{background:linear-gradient(90deg, #a7dfe8 0%, #9fbce6 100%)}
+    .banner-pink{background:linear-gradient(90deg, #ceb7f3 0%, #f0c7b6 100%)}
+
+    .banner-pattern{
+      position:absolute;
+      inset:0;
+      opacity:.10;
+      background:
+        radial-gradient(circle at 20% 30%, #ffffff 0 20px, transparent 21px),
+        radial-gradient(circle at 80% 20%, #ffffff 0 18px, transparent 19px),
+        radial-gradient(circle at 60% 80%, #ffffff 0 22px, transparent 23px),
+        radial-gradient(circle at 35% 70%, #ffffff 0 14px, transparent 15px);
+    }
+
+    .mascot{
+      position:relative;
+      width:92px;
+      height:92px;
+      flex-shrink:0;
+      z-index:1;
+    }
+
+    .mascot .head{
+      width:78px;
+      height:58px;
+      border:4px solid #3c7cad;
+      border-radius:50%;
+      background:#edf3fb;
+      position:absolute;
+      left:7px;
+      top:0;
+    }
+
+    .mascot .face{
+      width:52px;
+      height:30px;
+      background:#135a93;
+      border-radius:20px;
+      position:absolute;
+      left:20px;
+      top:13px;
+    }
+
+    .mascot .eye{
+      width:12px;
+      height:12px;
+      background:#4dff2b;
+      border-radius:50%;
+      position:absolute;
+      top:9px;
+    }
+
+    .mascot .eye.left{left:9px}
+    .mascot .eye.right{right:9px}
+
+    .mascot .mouth{
+      width:10px;
+      height:8px;
+      background:#4dff2b;
+      border-radius:0 0 10px 10px;
+      position:absolute;
+      left:21px;
+      top:18px;
+    }
+
+    .mascot .body{
+      width:48px;
+      height:58px;
+      background:#f4f5f7;
+      border:3px solid #90a8c8;
+      border-top:none;
+      border-radius:0 0 26px 26px;
+      position:absolute;
+      left:22px;
+      top:40px;
+    }
+
+    .mascot .arm{
+      width:18px;
+      height:34px;
+      border:3px solid #90a8c8;
+      border-top:none;
+      border-radius:0 0 18px 18px;
+      background:#f4f5f7;
+      position:absolute;
+      top:40px;
+    }
+
+    .mascot .arm.left{
+      left:6px;
+      transform:rotate(20deg);
+    }
+
+    .mascot .arm.right{
+      right:6px;
+      transform:rotate(-20deg);
+    }
+
+    .banner-text{
+      position:relative;
+      z-index:1;
+      text-align:right;
+      color:white;
+      text-shadow:2px 2px 0 rgba(0,0,0,.35);
+      font-weight:900;
+      line-height:1;
+    }
+
+    .banner-text .big{
+      display:block;
+      font-size:2.25rem;
+    }
+
+    .banner-text .small{
+      display:block;
+      font-size:1.25rem;
+      margin-top:2px;
+    }
+
+    .course-bottom{
+      padding:14px 16px 18px;
+      font-size:1rem;
+      font-weight:700;
+      color:#243852;
+      min-height:54px;
+    }
+
+    .course-card.locked{
+      opacity:.72;
+    }
+
+    .lock-badge,
+    .play-badge{
+      position:absolute;
+      right:-10px;
+      bottom:-14px;
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.5rem;
+      box-shadow:var(--shadow);
+      z-index:2;
+    }
+
+    .lock-badge{
+      background:#9fa7b5;
+      color:white;
+    }
+
+    .play-badge{
+      background:#1fa847;
+      color:white;
+      cursor:pointer;
+    }
+
+    /* COURSE DETAIL */
+    .course-wrap{
+      max-width:880px;
+      margin:0 auto;
+    }
+
+    .course-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:20px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .back-btn{
+      border:none;
+      background:#f7f7f7;
+      border:1px solid #d5d9e0;
+      padding:10px 16px;
+      border-radius:10px;
+      font-size:.98rem;
+      color:#33445b;
+      cursor:pointer;
+    }
+
+    .progress-box{
+      background:var(--panel);
+      box-shadow:var(--shadow);
+      border-radius:12px;
+      padding:14px 16px 16px;
+      margin-bottom:28px;
+    }
+
+    .progress-line{
+      width:100%;
+      height:12px;
+      background:#d9dde3;
+      border-radius:999px;
+      overflow:hidden;
+      margin:8px 0 14px;
+    }
+
+    .progress-fill{
+      height:100%;
+      width:0%;
+      background:#7fe59d;
+      border-radius:999px;
+      transition:.25s ease;
+    }
+
+    .progress-meta{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-weight:700;
+      color:#22b245;
+    }
+
+    .unlock-text{
+      color:#5e6c80;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:4px;
+    }
+
+    .course-center{
+      text-align:center;
+      margin-bottom:22px;
+    }
+
+    .big-mascot{
+      display:inline-flex;
+      justify-content:center;
+      margin-bottom:8px;
+      transform:scale(1.2);
+    }
+
+    .course-center h1{
+      font-size:2rem;
+      margin-top:16px;
+      margin-bottom:10px;
+      color:#000;
+    }
+
+    .course-center p{
+      color:#667487;
+      max-width:700px;
+      margin:0 auto;
+      line-height:1.55;
+    }
+
+    .level-list{
+      display:grid;
+      gap:16px;
+      margin-top:24px;
+    }
+
+    .level-btn{
+      width:100%;
+      border:none;
+      border-radius:12px;
+      background:#fff;
+      box-shadow:var(--shadow);
+      padding:18px 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:1rem;
+      cursor:pointer;
+      color:#000;
+    }
+
+    .level-btn.locked{
+      background:#dfe2e8;
+      color:#5f6978;
+      cursor:not-allowed;
+    }
+
+    .play-icon{
+      font-size:1.4rem;
+      color:#25b84a;
+      font-weight:900;
+    }
+
+    .lesson-box{
+      background:#fff;
+      box-shadow:var(--shadow);
+      border-radius:16px;
+      padding:22px;
+      margin-top:24px;
+    }
+
+    /* TABS */
+    .tabs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .tab-btn{
+      border:none;
+      background:#eef2f6;
+      color:#415166;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .tab-btn.active{
+      background:#dff2e2;
+      color:#1c8a3c;
+    }
+
+    .tab-panel{
+      display:none;
+    }
+
+    .tab-panel.active{
+      display:block;
+    }
+
+    .tab-panel p{
+      line-height:1.65;
+      color:#415166;
+      margin-bottom:12px;
+    }
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:18px;
+      margin-top:8px;
+    }
+
+    .mini-card{
+      background:#f9fafc;
+      border:1px solid #e3e7ee;
+      border-radius:14px;
+      padding:16px;
+    }
+
+    .mini-card h3{
+      margin-bottom:10px;
+      color:#20324a;
+    }
+
+    .chip-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .chip{
+      background:#edf6ef;
+      color:#258544;
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:.88rem;
+      font-weight:700;
+    }
+
+    /* EXCEL MOCK */
+    .excel-mock{
+      border:1px solid #cfd6df;
+      border-radius:12px;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .excel-top{
+      background:#e9f3ec;
+      padding:10px 14px;
+      font-weight:700;
+      color:#1a6b37;
+      border-bottom:1px solid #d6e2d9;
+    }
+
+    .excel-toolbar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      padding:10px;
+      background:#f7fbf8;
+      border-bottom:1px solid #e2e8e3;
+    }
+
+    .tool{
+      background:white;
+      border:1px solid #d9e1db;
+      padding:6px 10px;
+      border-radius:8px;
+      font-size:.85rem;
+      color:#516172;
+    }
+
+    .formula-bar{
+      padding:10px;
+      border-bottom:1px solid #eceff3;
+      color:#4c5d6f;
+      font-size:.92rem;
+    }
+
+    .sheet{
+      padding:12px;
+      overflow:auto;
+    }
+
+    .sheet-grid{
+      min-width:520px;
+      display:grid;
+      grid-template-columns:42px repeat(6, 1fr);
+      border:1px solid #d8dce4;
+    }
+
+    .cell{
+      border-right:1px solid #d8dce4;
+      border-bottom:1px solid #d8dce4;
+      min-height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:.88rem;
+      color:#2d3c51;
+      background:#fff;
+    }
+
+    .cell.header{
+      background:#f5f7fa;
+      font-weight:700;
+    }
+
+    .cell.active{
+      outline:2px solid #22b245;
+      background:#f7fff9;
+      font-weight:700;
+    }
+
+    /* QUIZ */
+    .question-title{
+      font-size:1.35rem;
+      font-weight:800;
+      color:#000;
+      margin-bottom:12px;
+    }
+
+    .question-text{
+      font-size:1.2rem;
+      font-weight:700;
+      line-height:1.45;
+      color:#000;
+      margin-bottom:18px;
+    }
+
+    .options{
+      display:grid;
+      gap:12px;
+    }
+
+    .option{
+      border:none;
+      background:#f5f7fb;
+      border:1px solid #dde3ec;
+      color:#243852;
+      padding:14px 16px;
+      border-radius:12px;
+      font-size:1rem;
+      text-align:left;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+
+    .option:hover{
+      background:#fff;
+      border-color:#c8d7cc;
+    }
+
+    .option.correct{
+      background:#e7f8eb;
+      border-color:#92d7a1;
+      color:#1d7d39;
+    }
+
+    .option.incorrect{
+      background:#fff0f0;
+      border-color:#efb0b0;
+      color:#b64141;
+    }
+
+    .feedback{
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:12px;
+      display:none;
+      font-weight:700;
+      line-height:1.5;
+    }
+
+    .feedback.show{display:block}
+    .feedback.ok{
+      background:#e9f8ed;
+      color:#1c7d39;
+    }
+
+    .feedback.bad{
+      background:#fff2f2;
+      color:#b23e3e;
+    }
+
+    .quiz-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .soft-btn{
+      border:none;
+      background:#79d89a;
+      color:white;
+      font-weight:700;
+      padding:12px 22px;
+      border-radius:999px;
+      cursor:pointer;
+      min-width:170px;
+    }
+
+    .soft-btn.secondary{
+      background:#e8edf3;
+      color:#4d5b6b;
+    }
+
+    .result{
+      text-align:center;
+      padding:16px 4px;
+    }
+
+    .result h3{
+      font-size:1.6rem;
+      margin-bottom:10px;
+      color:#000;
+    }
+
+    .result-score{
+      font-size:2rem;
+      font-weight:900;
+      color:#28ae4a;
+      margin-bottom:10px;
+    }
+
+    .result p{
+      color:#617082;
+      line-height:1.6;
+    }
+
+    @media (max-width: 980px){
+      .cards,
+      .mini-grid{
+        grid-template-columns:1fr;
+      }
+
+      .player{
+        justify-content:flex-start;
+      }
+    }
+
+    @media (max-width: 680px){
+      .view{
+        padding:18px 14px 28px;
+      }
+
+      .topbar{
+        padding:10px 12px;
+      }
+
+      .nav{
+        order:3;
+        width:100%;
+      }
+
+      .nav-btn{
+        flex:1;
+        min-width:120px;
+      }
+
+      .cards{
+        grid-template-columns:1fr;
+      }
+
+      .course-center h1{
+        font-size:1.6rem;
+      }
+
+      .lesson-box{
+        padding:16px;
+      }
+
+      .soft-btn{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-blue">Aprendiendo con</span>
+        <span class="brand-green">@LaProfeVivy</span>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn" onclick="goHome()">🏠 Inicio</button>
+        <button class="nav-btn" onclick="goHome()">📚 Cursos</button>
+        <button class="nav-btn">📊 Ranking</button>
+        <button class="nav-btn">⚙️ Configuración</button>
+        <button class="nav-btn">💬 Mensaje</button>
+      </nav>
+
+      <div class="player">
+        <div class="score" id="globalPoints">0</div>
+        <div class="hearts" id="globalLives">5</div>
+        <div class="player-info">
+          <div style="font-size:1.8rem;">👩🏻‍🏫</div>
+          <div class="player-name">
+            <strong>Profe Vivy Rojas</strong>
+            <span>puntos: <span id="globalPointsText">0</span></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- HOME -->
+    <main id="homeView" class="view">
+      <div class="section-title">
+        <span class="dot"></span>
+        <span>Cursos de Excel</span>
+      </div>
+
+      <div class="cards" id="courseCards"></div>
+    </main>
+
+    <!-- COURSE DETAIL -->
+    <main id="courseView" class="view hidden">
+      <div class="course-wrap">
+        <div class="course-top">
+          <button class="back-btn" onclick="goHome()">← Volver</button>
+        </div>
+
+        <div class="progress-box">
+          <div class="progress-meta">
+            <span>Progreso en el curso:</span>
+            <span id="courseProgressText">0%</span>
+          </div>
+          <div class="progress-line">
+            <div class="progress-fill" id="courseProgressFill"></div>
+          </div>
+          <div class="unlock-text" id="unlockMessage">🔒 1/2 Desbloquea el siguiente curso completando el 60%</div>
+        </div>
+
+        <div class="course-center">
+          <div class="big-mascot">
+            <div class="mascot">
+              <div class="head"></div>
+              <div class="face">
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+                <div class="mouth"></div>
+              </div>
+              <div class="body"></div>
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+            </div>
+          </div>
+          <h1 id="courseTitle">Curso</h1>
+          <p id="courseDescription"></p>
+        </div>
+
+        <div class="level-list" id="levelList"></div>
+
+        <div id="lessonContainer"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const courses = [
+      {
+        id: 0,
+        bannerClass: 'banner-green',
+        bannerTitle: 'Excel',
+        bannerSub: 'Starter',
+        title: 'Starter - Definición e Interfaz',
+        description: 'Inicia con lo esencial: qué es Excel, para qué sirve y cómo reconocer su interfaz.',
+        unlockText: '🔓 Al completar este nivel básico se desbloquea el siguiente curso.'
+      },
+      {
+        id: 1,
+        bannerClass: 'banner-blue',
+        bannerTitle: 'Excel',
+        bannerSub: 'Funciones',
+        title: 'Operaciones y Funciones Básicas',
+        description: 'Practica suma, resta, multiplicación, división y funciones básicas como SUMA y PROMEDIO.',
+        unlockText: '🔒 Desbloquea el siguiente curso alcanzando mínimo 60% en este curso.'
+      },
+      {
+        id: 2,
+        bannerClass: 'banner-pink',
+        bannerTitle: 'Excel',
+        bannerSub: 'Gráficos',
+        title: 'Tablas y Gráficos',
+        description: 'Reconoce qué gráfico conviene usar según el tipo de información.',
+        unlockText: '🔓 Último curso disponible.'
+      }
+    ];
+
+    const state = {
+      points: 0,
+      lives: 5,
+      unlockedCourses: [0],
+      progress: { 0: 0, 1: 0, 2: 0 },
+      completed: {
+        intro: false,
+        ops: false,
+        charts: false
+      },
+      currentCourse: 0
+    };
+
+    const opsQuestions = [
+      {
+        question: '¿Qué función permite sumar los valores del rango A1:A5?',
+        options: ['=SUMA(A1:A5)', '=PROMEDIO(A1:A5)', '=MAX(A1:A5)', '=A1+A5'],
+        correct: '=SUMA(A1:A5)',
+        tip: 'SUMA agrega todos los valores contenidos en un rango.'
+      },
+      {
+        question: '¿Cuál es la fórmula correcta para promediar B1:B4?',
+        options: ['=PROMEDIO(B1:B4)', '=SUMA(B1:B4)', '=MEDIA(B1:B4)', '=MIN(B1:B4)'],
+        correct: '=PROMEDIO(B1:B4)',
+        tip: 'PROMEDIO calcula el valor medio.'
+      },
+      {
+        question: 'Si A1 tiene 8 y B1 tiene 3, ¿qué fórmula los multiplica?',
+        options: ['=A1+B1', '=A1/B1', '=A1*B1', '=A1-B1'],
+        correct: '=A1*B1',
+        tip: 'En Excel la multiplicación usa el signo *.'
+      },
+      {
+        question: 'Toda fórmula en Excel debe comenzar con:',
+        options: ['=', '@', '#', '&'],
+        correct: '=',
+        tip: 'El signo = indica a Excel que vas a escribir una fórmula.'
+      },
+      {
+        question: 'Si C1 = 20 y D1 = 5, ¿qué resultado da =C1/D1?',
+        options: ['25', '4', '15', '100'],
+        correct: '4',
+        tip: '20 dividido entre 5 es 4.'
+      }
+    ];
+
+    const chartQuestions = [
+      {
+        question: 'Quieres comparar las ventas de varios productos en un mismo mes.',
+        options: ['Gráfico de líneas', 'Gráfico circular', 'Gráfico de columnas', 'Mapa'],
+        correct: 'Gráfico de columnas',
+        tip: 'Las columnas sirven para comparar categorías.'
+      },
+      {
+        question: 'Quieres mostrar cómo cambian las visitas de enero a junio.',
+        options: ['Gráfico de líneas', 'Gráfico circular', 'Tabla simple', 'Tarjeta'],
+        correct: 'Gráfico de líneas',
+        tip: 'Las líneas muestran cambios a lo largo del tiempo.'
+      },
+      {
+        question: 'Necesitas representar qué porcentaje del gasto corresponde a comida, transporte y servicios.',
+        options: ['Gráfico circular', 'Gráfico de líneas', 'Gráfico de columnas', 'Lista'],
+        correct: 'Gráfico circular',
+        tip: 'El circular sirve para mostrar partes de un total.'
+      },
+      {
+        question: 'Deseas comparar el número de estudiantes por curso.',
+        options: ['Gráfico de columnas', 'Gráfico circular', 'Gráfico de líneas', 'Calendario'],
+        correct: 'Gráfico de columnas',
+        tip: 'Para comparar grupos o categorías conviene columnas.'
+      },
+      {
+        question: 'Quieres ver la evolución mensual de la temperatura.',
+        options: ['Gráfico circular', 'Gráfico de líneas', 'Gráfico de columnas apiladas', 'Lista'],
+        correct: 'Gráfico de líneas',
+        tip: 'Cuando interesa la evolución en el tiempo, usa líneas.'
+      }
+    ];
+
+    function saveState(){
+      localStorage.setItem('excel_vivy_soft', JSON.stringify(state));
+    }
+
+    function loadState(){
+      const data = localStorage.getItem('excel_vivy_soft');
+      if(data){
+        try{
+          const parsed = JSON.parse(data);
+          Object.assign(state, parsed);
+        }catch(e){}
+      }
+    }
+
+    function updateHeader(){
+      document.getElementById('globalPoints').textContent = state.points;
+      document.getElementById('globalPointsText').textContent = state.points;
+      document.getElementById('globalLives').textContent = state.lives;
+    }
+
+    function goHome(){
+      document.getElementById('homeView').classList.remove('hidden');
+      document.getElementById('courseView').classList.add('hidden');
+      renderCourses();
+      updateHeader();
+      saveState();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function renderCourses(){
+      const wrap = document.getElementById('courseCards');
+      wrap.innerHTML = '';
+
+      courses.forEach(course => {
+        const unlocked = state.unlockedCourses.includes(course.id);
+
+        wrap.innerHTML += `
+          <div class="course-card ${unlocked ? '' : 'locked'}">
+            <div class="course-banner ${course.bannerClass}">
+              <div class="banner-pattern"></div>
+
+              <div class="mascot">
+                <div class="head"></div>
+                <div class="face">
+                  <div class="eye left"></div>
+                  <div class="eye right"></div>
+                  <div class="mouth"></div>
+                </div>
+                <div class="body"></div>
+                <div class="arm left"></div>
+                <div class="arm right"></div>
+              </div>
+
+              <div class="banner-text">
+                <span class="big">${course.bannerTitle}</span>
+                <span class="small">${course.bannerSub}</span>
+              </div>
+            </div>
+
+            <div class="course-bottom">${course.title}</div>
+
+            ${
+              unlocked
+                ? `<div class="play-badge" onclick="openCourse(${course.id})">▷</div>`
+                : `<div class="lock-badge">🔒</div>`
+            }
+          </div>
+        `;
+      });
+    }
+
+    function openCourse(id){
+      if(!state.unlockedCourses.includes(id)) return;
+
+      state.currentCourse = id;
+
+      document.getElementById('homeView').classList.add('hidden');
+      document.getElementById('courseView').classList.remove('hidden');
+
+      const course = courses.find(c => c.id === id);
+
+      document.getElementById('courseTitle').textContent = course.title;
+      document.getElementById('courseDescription').textContent = course.description;
+
+      const progress = state.progress[id] || 0;
+      document.getElementById('courseProgressText').textContent = progress + '%';
+      document.getElementById('courseProgressFill').style.width = progress + '%';
+      document.getElementById('unlockMessage').textContent = course.unlockText;
+
+      renderLevels(id);
+      document.getElementById('lessonContainer').innerHTML = '';
+      updateHeader();
+      saveState();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function renderLevels(courseId){
+      const levelList = document.getElementById('levelList');
+
+      let html = '';
+
+      if(courseId === 0){
+        html = `
+          <button class="level-btn" onclick="openIntroLesson()">
+            <span>Nivel 1 (Básico)</span>
+            <span class="play-icon">▷</span>
+          </button>
+          <button class="level-btn locked">
+            <span>Nivel 2 (Intermedio)</span>
+            <span>🔒</span>
+          </button>
+          <button class="level-btn locked">
+            <span>Nivel 3 (Avanzado)</span>
+            <span>🔒</span>
+          </button>
+        `;
+      }
+
+      if(courseId === 1){
+        html = `
+          <button class="level-btn" onclick="startOpsQuiz()">
+            <span>Nivel 1 (Básico)</span>
+            <span class="play-icon">▷</span>
+          </button>
+          <button class="level-btn locked">
+            <span>Nivel 2 (Intermedio)</span>
+            <span>🔒</span>
+          </button>
+          <button class="level-btn locked">
+            <span>Nivel 3 (Avanzado)</span>
+            <span>🔒</span>
+          </button>
+        `;
+      }
+
+      if(courseId === 2){
+        html = `
+          <button class="level-btn" onclick="startChartQuiz()">
+            <span>Nivel 1 (Básico)</span>
+            <span class="play-icon">▷</span>
+          </button>
+          <button class="level-btn locked">
+            <span>Nivel 2 (Intermedio)</span>
+            <span>🔒</span>
+          </button>
+          <button class="level-btn locked">
+            <span>Nivel 3 (Avanzado)</span>
+            <span>🔒</span>
+          </button>
+        `;
+      }
+
+      levelList.innerHTML = html;
+    }
+
+    function openIntroLesson(){
+      const container = document.getElementById('lessonContainer');
+
+      container.innerHTML = `
+        <div class="lesson-box">
+          <div class="tabs">
+            <button class="tab-btn active" onclick="showIntroTab(event,'defTab')">Definición</button>
+            <button class="tab-btn" onclick="showIntroTab(event,'appTab')">Aplicabilidad</button>
+            <button class="tab-btn" onclick="showIntroTab(event,'intTab')">Interfaz</button>
+          </div>
+
+          <div id="defTab" class="tab-panel active">
+            <div class="mini-grid">
+              <div class="mini-card">
+                <h3>¿Qué es Excel?</h3>
+                <p>
+                  Excel es una hoja de cálculo que permite organizar datos,
+                  hacer operaciones, usar funciones, construir tablas y representar información con gráficos.
+                </p>
+                <div class="chip-row">
+                  <span class="chip">Celdas</span>
+                  <span class="chip">Filas</span>
+                  <span class="chip">Columnas</span>
+                  <span class="chip">Funciones</span>
+                  <span class="chip">Gráficos</span>
+                </div>
+              </div>
+              <div class="mini-card">
+                <h3>Conceptos base</h3>
+                <p><strong>Celda:</strong> intersección entre fila y columna.</p>
+                <p><strong>Rango:</strong> grupo de celdas, por ejemplo A1:A5.</p>
+                <p><strong>Fórmula:</strong> instrucción que inicia con =.</p>
+                <p><strong>Función:</strong> fórmula ya construida, como SUMA o PROMEDIO.</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="appTab" class="tab-panel">
+            <div class="mini-grid">
+              <div class="mini-card">
+                <h3>Uso personal</h3>
+                <p>Presupuestos, listas, control de gastos, pagos y organización diaria.</p>
+              </div>
+              <div class="mini-card">
+                <h3>Uso académico</h3>
+                <p>Notas, asistencia, ejercicios, tablas y análisis básico de datos.</p>
+              </div>
+            </div>
+            <div class="mini-card" style="margin-top:18px;">
+              <h3>Uso laboral</h3>
+              <p>Inventarios, reportes, ventas, bases de datos, seguimiento y análisis.</p>
+            </div>
+          </div>
+
+          <div id="intTab" class="tab-panel">
+            <div class="mini-grid">
+              <div class="mini-card">
+                <h3>Interfaz básica</h3>
+                <div class="excel-mock">
+                  <div class="excel-top">Excel</div>
+                  <div class="excel-toolbar">
+                    <span class="tool">Archivo</span>
+                    <span class="tool">Inicio</span>
+                    <span class="tool">Insertar</span>
+                    <span class="tool">Fórmulas</span>
+                    <span class="tool">Datos</span>
+                  </div>
+                  <div class="formula-bar">A1 &nbsp;&nbsp; =SUMA(B2:B4)</div>
+                  <div class="sheet">
+                    <div class="sheet-grid">
+                      <div class="cell header"></div>
+                      <div class="cell header">A</div>
+                      <div class="cell header">B</div>
+                      <div class="cell header">C</div>
+                      <div class="cell header">D</div>
+                      <div class="cell header">E</div>
+                      <div class="cell header">F</div>
+
+                      <div class="cell header">1</div>
+                      <div class="cell active">A1</div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+
+                      <div class="cell header">2</div>
+                      <div class="cell"></div>
+                      <div class="cell">12</div>
+                      <div class="cell">6</div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+
+                      <div class="cell header">3</div>
+                      <div class="cell"></div>
+                      <div class="cell">8</div>
+                      <div class="cell">4</div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+
+                      <div class="cell header">4</div>
+                      <div class="cell"></div>
+                      <div class="cell">5</div>
+                      <div class="cell">2</div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+                      <div class="cell"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mini-card">
+                <h3>Partes importantes</h3>
+                <p><strong>Barra de título:</strong> muestra el nombre del archivo.</p>
+                <p><strong>Cinta de opciones:</strong> reúne herramientas y comandos.</p>
+                <p><strong>Barra de fórmulas:</strong> sirve para escribir o editar contenido.</p>
+                <p><strong>Filas y columnas:</strong> organizan la hoja de cálculo.</p>
+                <p><strong>Celda activa:</strong> es la celda seleccionada en ese momento.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="quiz-actions">
+            <button class="soft-btn" onclick="completeIntro()">Completar nivel</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function showIntroTab(e, id){
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      e.target.classList.add('active');
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function completeIntro(){
+      state.completed.intro = true;
+      state.progress[0] = 60;
+      if(!state.unlockedCourses.includes(1)){
+        state.unlockedCourses.push(1);
+      }
+      state.points += 10;
+      updateHeader();
+      openCourse(0);
+      alert('Nivel completado. Se desbloqueó el curso de Operaciones y Funciones Básicas.');
+      saveState();
+    }
+
+    function startOpsQuiz(){
+      launchQuiz({
+        title: 'Operaciones y Funciones Básicas',
+        questions: opsQuestions,
+        passPercent: 60,
+        onFinish: (score, percent) => {
+          state.progress[1] = Math.max(state.progress[1], percent);
+          state.points += score * 10;
+          if(percent >= 60){
+            state.completed.ops = true;
+            if(!state.unlockedCourses.includes(2)){
+              state.unlockedCourses.push(2);
+            }
+          }
+          saveState();
+        },
+        successMessage: 'Completaste el curso y desbloqueaste Tablas y Gráficos.'
+      });
+    }
+
+    function startChartQuiz(){
+      launchQuiz({
+        title: 'Tablas y Gráficos',
+        questions: chartQuestions,
+        passPercent: 60,
+        onFinish: (score, percent) => {
+          state.progress[2] = Math.max(state.progress[2], percent);
+          state.points += score * 10;
+          state.completed.charts = percent >= 60;
+          saveState();
+        },
+        successMessage: 'Curso completado.'
+      });
+    }
+
+    function launchQuiz(config){
+      const container = document.getElementById('lessonContainer');
+      const questions = [...config.questions].sort(() => Math.random() - 0.5);
+      let index = 0;
+      let score = 0;
+      let locked = false;
+
+      function render(){
+        if(index >= questions.length){
+          const percent = Math.round((score / questions.length) * 100);
+          config.onFinish(score, percent);
+          updateHeader();
+
+          container.innerHTML = `
+            <div class="lesson-box">
+              <div class="result">
+                <h3>${config.title}</h3>
+                <div class="result-score">${score} / ${questions.length}</div>
+                <p>Tu resultado fue <strong>${percent}%</strong>.</p>
+                <p style="margin-top:10px;">
+                  ${percent >= config.passPercent ? config.successMessage : 'No alcanzaste el 60%. Puedes intentarlo de nuevo.'}
+                </p>
+                <div class="quiz-actions" style="justify-content:center;">
+                  <button class="soft-btn" onclick="${config.title === 'Operaciones y Funciones Básicas' ? 'startOpsQuiz()' : 'startChartQuiz()'}">Reintentar</button>
+                </div>
+              </div>
+            </div>
+          `;
+
+          openCourse(state.currentCourse);
+          container.innerHTML += `
+            <div class="lesson-box">
+              <div class="result">
+                <h3>${config.title}</h3>
+                <div class="result-score">${score} / ${questions.length}</div>
+                <p>Tu resultado fue <strong>${percent}%</strong>.</p>
+                <p style="margin-top:10px;">
+                  ${percent >= config.passPercent ? config.successMessage : 'No alcanzaste el 60%. Puedes intentarlo de nuevo.'}
+                </p>
+                <div class="quiz-actions" style="justify-content:center;">
+                  <button class="soft-btn" onclick="${config.title === 'Operaciones y Funciones Básicas' ? 'startOpsQuiz()' : 'startChartQuiz()'}">Reintentar</button>
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        const q = questions[index];
+        container.innerHTML = `
+          <div class="lesson-box">
+            <div class="question-title">${config.title}</div>
+            <div style="color:#6a7788; font-weight:700; margin-bottom:12px;">Pregunta ${index + 1} de ${questions.length}</div>
+            <div class="question-text">${q.question}</div>
+
+            <div class="options">
+              ${q.options.map(opt => `
+                <button class="option" onclick="answerQuiz(this, ${JSON.stringify(opt).replace(/"/g,'&quot;')})">${opt}</button>
+              `).join('')}
+            </div>
+
+            <div class="feedback" id="quizFeedback"></div>
+
+            <div class="quiz-actions">
+              <button class="soft-btn secondary" onclick="${config.title === 'Operaciones y Funciones Básicas' ? 'startOpsQuiz()' : 'startChartQuiz()'}">Reiniciar</button>
+              <button class="soft-btn hidden" id="nextBtn">Siguiente</button>
+            </div>
+          </div>
+        `;
+
+        window.answerQuiz = function(button, value){
+          if(locked) return;
+          locked = true;
+
+          const all = container.querySelectorAll('.option');
+          const feedback = document.getElementById('quizFeedback');
+          const nextBtn = document.getElementById('nextBtn');
+
+          all.forEach(btn => {
+            btn.disabled = true;
+            if(btn.textContent.trim() === q.correct){
+              btn.classList.add('correct');
+            }
+          });
+
+          if(value === q.correct){
+            score++;
+            button.classList.add('correct');
+            feedback.className = 'feedback show ok';
+            feedback.innerHTML = `✅ Correcto. ${q.tip}`;
+          }else{
+            state.lives = Math.max(0, state.lives - 1);
+            updateHeader();
+            button.classList.add('incorrect');
+            feedback.className = 'feedback show bad';
+            feedback.innerHTML = `❌ Incorrecto. La respuesta correcta es <strong>${q.correct}</strong>. ${q.tip}`;
+          }
+
+          nextBtn.classList.remove('hidden');
+          nextBtn.onclick = () => {
+            index++;
+            locked = false;
+            render();
+          };
+        };
+      }
+
+      render();
+    }
+
+    loadState();
+    updateHeader();
+    renderCourses();
+  </script>
+</body>
+</html>
