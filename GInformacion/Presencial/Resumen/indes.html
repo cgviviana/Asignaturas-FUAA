@@ -1,0 +1,1215 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paso a paso vamos sintetizando</title>
+  <script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=rmfn2nznb-VB0vVk2TnU8LVGfG_ef7o22Bs30r251_7B9pb2emHrZU4QQRFi7UUrucjTaQJozwJBh4OJ57FKVJIfRRtPq647-i9YEmedo9l2BHILtXuR55YiiwGTisDK41gRsTETswJMZHDP6LPTgH1bnvjyJMmkY6Za5OLRmzWN5JKIV9fTek9ddd-pJz6pxSCT7qGWg6hhNoUT3vw1cRy9fgWkhsiyAtDmgrmG-stJh1Xp5VeVP0NdTtQNEUJrEI1D0bnOhV9xAyA269UfDA" charset="UTF-8"></script><style>
+    :root{
+      --navy:#33485f;
+      --navy-2:#2c3f53;
+      --accent:#ef5c49;
+      --ink:#1f3550;
+      --muted:#64748b;
+      --bg:#efefee;
+      --panel:#ffffff;
+      --soft:#e8f0f6;
+      --soft-2:#f7f8fa;
+      --line:#d8d5cf;
+      --ok:#2f8f57;
+      --bad:#d74f45;
+      --sel:#d7e9fb;
+      --shadow:0 10px 28px rgba(33, 48, 68, 0.08);
+      --radius:20px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:#e9e8e6;color:var(--ink);font-family:Segoe UI, Roboto, Helvetica, Arial, sans-serif}
+    body{min-height:100vh}
+
+    .app{width:min(96vw,1575px);margin:0 auto;background:#f5f3ef;min-height:100vh;box-shadow:0 0 0 1px rgba(0,0,0,.02)}
+
+    .hero{
+      background:var(--navy);
+      color:#fff;
+      padding:34px 52px 36px;
+      border-bottom:4px solid var(--accent);
+    }
+
+    .hero .eyebrow{
+      font-size:13px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      opacity:.9;
+      margin-bottom:8px;
+    }
+
+    .hero h1{
+      margin:0;
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:clamp(34px,4.5vw,56px);
+      line-height:1.03;
+      font-weight:700;
+      letter-spacing:-.02em;
+    }
+
+    .content{padding:24px 32px 18px}
+
+    .accordion{
+      background:#dfe8ef;
+      border-left:5px solid #49a1e3;
+      border-radius:0 18px 18px 0;
+      overflow:hidden;
+      margin-bottom:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .accordion-btn{
+      width:100%;
+      border:0;
+      background:transparent;
+      color:var(--ink);
+      padding:16px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:18px;
+      font-weight:700;
+      cursor:pointer;
+      text-align:left;
+    }
+
+    .accordion-btn .chevron{font-size:20px;line-height:1;color:var(--navy);transition:transform .2s ease}
+    .accordion.open .accordion-btn .chevron{transform:rotate(180deg)}
+    .accordion-panel{display:none;padding:0 20px 18px 20px;color:#29435f}
+    .accordion.open .accordion-panel{display:block}
+    .accordion-panel p{margin:0 0 10px 0;line-height:1.65}
+    .accordion-panel strong{color:#17324d}
+
+    .workspace{
+      display:grid;
+      grid-template-columns:minmax(0,1.38fr) minmax(340px,.82fr);
+      gap:24px;
+      align-items:start;
+    }
+
+    .left-panel,.right-panel{
+      background:var(--panel);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      border:1px solid rgba(52,72,95,.08);
+    }
+
+    .left-top{
+      padding:18px 20px 10px;
+      background:#fbfbfa;
+      border-bottom:1px solid #ebe8e3;
+    }
+
+    .exercise-nav{
+      display:grid;
+      grid-template-columns:44px 1fr 44px;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .nav-btn{
+      width:44px;height:44px;border-radius:50%;border:1px solid #d4d1cb;background:#fff;color:var(--navy);
+      cursor:pointer;font-size:20px;display:grid;place-items:center;
+    }
+    .nav-btn:hover{background:#f4f5f7}
+
+    .exercise-meta{text-align:center}
+    .exercise-label{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:#6d7e91;margin-bottom:4px}
+    .exercise-title{font-size:28px;line-height:1.15;font-weight:800;color:var(--navy);margin:0 0 6px}
+    .source-line{font-size:14px;color:#5b6d80}
+    .source-line a{color:#315f92;text-decoration:none;font-weight:600}
+    .source-line a:hover{text-decoration:underline}
+
+    .paragraph-wrap{padding:18px}
+
+    .para-card{
+      background:linear-gradient(180deg,#eef4f8 0%, #f8fafc 100%);
+      border:1px solid #dde5eb;
+      border-left:5px solid #4aa2e5;
+      border-radius:22px;
+      padding:18px 18px 20px;
+    }
+
+    .para-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+    .para-head .tag{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#6b7e90;font-weight:700}
+    .para-head .counter{font-size:14px;color:#5d6f82;font-weight:600}
+
+    .step-nav{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .step-item{
+      border:1px solid #d6d1cb;
+      border-radius:18px;
+      padding:14px 15px;
+      background:#fff;
+      min-height:78px;
+    }
+    .step-item.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .step-item .mini{font-size:12px;text-transform:uppercase;letter-spacing:.13em;display:block;margin-bottom:4px;opacity:.9}
+    .step-item h3{margin:0 0 4px 0;font-size:17px;line-height:1.2}
+    .step-item p{margin:0;font-size:15px;line-height:1.45;color:inherit;opacity:.9}
+
+
+    .paragraph{
+      background:#f5f7fa;
+      border-radius:20px;
+      padding:18px 18px;
+      margin-bottom:18px;
+      font-size:25px;
+      line-height:1.85;
+      color:#203751;
+      word-wrap:break-word;
+    }
+
+    .sentence-list{display:grid;gap:12px;margin-bottom:18px}
+
+    .sentence-btn{
+      text-align:left;width:100%;background:#fff;border:1px solid #d8d5cf;border-radius:16px;padding:14px 16px;
+      color:#243f5d;font-size:17px;line-height:1.55;cursor:pointer;transition:.15s ease;
+    }
+    .sentence-btn:hover{transform:translateY(-1px);box-shadow:0 8px 16px rgba(44,63,83,.06)}
+    .sentence-btn.selected{background:#edf5ff;border-color:#78a9de;box-shadow:inset 0 0 0 1px #78a9de}
+    .sentence-btn.correct{background:#edf8f1;border-color:#5fa97c;color:#1f5938}
+    .sentence-btn.incorrect{background:#fff0ef;border-color:#e48b83;color:#7b2e28}
+    .sentence-btn.dim{opacity:.65}
+
+    .selectable-word{padding:.08em .16em;border-radius:8px;cursor:pointer;transition:.12s ease;display:inline-block}
+    .selectable-word:hover{background:#eaf1f8}
+    .selectable-word.selected{background:#d7e9fb;box-shadow:inset 0 0 0 1px #7da8d8}
+    .selectable-word.correct{background:#dff3e6;color:#1f5938;box-shadow:inset 0 0 0 1px #5fa97c}
+    .selectable-word.incorrect{background:#ffe6e4;color:#7b2e28;box-shadow:inset 0 0 0 1px #df867f}
+
+    .section-title{font-size:19px;font-weight:800;margin:0 0 8px;color:#1f3550}
+    .section-help{font-size:14px;color:#637487;line-height:1.5;margin-bottom:10px}
+
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 12px}
+    .btn{
+      border:0;border-radius:14px;padding:12px 18px;font-size:16px;font-weight:700;cursor:pointer;
+      background:var(--accent);color:#fff;box-shadow:0 8px 18px rgba(239,92,73,.2);
+    }
+    .btn.secondary{background:#fff;color:var(--navy);border:1px solid #d8d5cf;box-shadow:none}
+    .btn.ghost{background:#f0f4f8;color:var(--navy);box-shadow:none}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+
+    .feedback{
+      min-height:28px;
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:15px;
+      line-height:1.5;
+      display:none;
+      margin:0 0 12px;
+    }
+    .feedback.show{display:block}
+    .feedback.ok{background:#edf8f1;color:#20583b;border:1px solid #bfe0cb}
+    .feedback.warn{background:#fff4e8;color:#7a4a14;border:1px solid #f0d2aa}
+    .feedback.bad{background:#fff0ef;color:#7b2e28;border:1px solid #f0c0bb}
+
+    .write-box{margin-top:10px;border-top:1px solid #e4e1db;padding-top:16px}
+    .write-box textarea{
+      width:100%;min-height:96px;resize:vertical;border-radius:16px;border:1px solid #d8d5cf;padding:14px 15px;
+      font:inherit;font-size:16px;line-height:1.55;color:#1f3550;background:#fff;
+    }
+    .helper{font-size:14px;color:#687b8e;line-height:1.5;margin:8px 0 0}
+
+    .right-panel{position:sticky;top:18px}
+    .summary-head{
+      background:var(--navy);
+      color:#fff;
+      padding:20px 22px 18px;
+      border-bottom:4px solid var(--accent);
+    }
+    .summary-head .mini{font-size:12px;text-transform:uppercase;letter-spacing:.16em;opacity:.85;margin-bottom:6px}
+    .summary-head h2{margin:0;font-family:Georgia, "Times New Roman", serif;font-size:32px;line-height:1.08}
+
+    .summary-body{padding:18px 20px 20px;background:#fbfbfa}
+    .score-box{
+      display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;
+    }
+    .metric{background:#edf3f7;border:1px solid #dde6ee;border-radius:18px;padding:12px 14px}
+    .metric .label{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#617588;margin-bottom:4px}
+    .metric .value{font-size:28px;font-weight:800;color:var(--navy)}
+
+    .summary-card{
+      background:#fff;border:1px solid #dfdbd5;border-radius:18px;padding:14px 15px;margin-bottom:12px;
+    }
+    .summary-card h3{margin:0 0 6px;font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:#6a7a8d}
+    .summary-card p{margin:0;font-size:16px;line-height:1.6;color:#213850}
+    .summary-card.empty{background:#f2f4f6;color:#64748b}
+
+    .final-summary{background:#eef4f8;border:1px solid #d8e3eb;border-radius:18px;padding:16px 16px 18px;margin-top:10px}
+    .final-summary h3{margin:0 0 8px;font-size:16px;color:#1f3550}
+    .final-summary p{margin:0;font-size:17px;line-height:1.7;color:#243d59;white-space:pre-wrap}
+
+    .footer{
+      display:flex;justify-content:center;align-items:center;gap:10px;padding:14px 20px 20px;color:#9aa1a8;font-weight:700
+    }
+    .footer .brand{color:#5865f2}
+
+    .hidden{display:none!important}
+
+    .exercise-status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:6px;
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      color:#556b81;
+      background:#eef3f7;
+      border:1px solid #dde6ee;
+    }
+    .exercise-status.done{
+      color:#1f5938;
+      background:#edf8f1;
+      border-color:#bfe0cb;
+    }
+
+    .paragraph-tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .para-tab{
+      border:1px solid #d4d1cb;
+      background:#fff;
+      color:#45607e;
+      border-radius:999px;
+      padding:9px 14px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .para-tab:hover{transform:translateY(-1px)}
+    .para-tab.active{
+      background:var(--navy);
+      color:#fff;
+      border-color:var(--navy);
+    }
+    .para-tab.done{
+      background:#edf8f1;
+      color:#1f5938;
+      border-color:#bfe0cb;
+    }
+
+    .completion-box{
+      display:none;
+      margin-top:14px;
+      background:#edf8f1;
+      border:1px solid #bfe0cb;
+      border-radius:18px;
+      padding:14px 15px;
+      color:#1f5938;
+    }
+    .completion-box.show{display:block}
+    .completion-box h3{
+      margin:0 0 8px;
+      font-size:18px;
+      color:#1f5938;
+    }
+    .completion-box p{
+      margin:0 0 4px;
+      line-height:1.55;
+      font-size:15px;
+    }
+
+    .start-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(33,48,68,.52);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:30;
+    }
+    .start-card{
+      width:min(100%, 560px);
+      background:#fbfbfa;
+      border-radius:24px;
+      box-shadow:0 20px 50px rgba(33,48,68,.16);
+      overflow:hidden;
+      border:1px solid rgba(52,72,95,.08);
+    }
+    .start-head{
+      background:var(--navy);
+      color:#fff;
+      padding:22px 24px 18px;
+      border-bottom:4px solid var(--accent);
+    }
+    .start-head .mini{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      opacity:.85;
+      margin-bottom:6px;
+    }
+    .start-head h2{
+      margin:0;
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:34px;
+      line-height:1.05;
+    }
+    .start-body{padding:20px 24px 24px}
+    .start-body p{
+      margin:0 0 16px;
+      color:#29435f;
+      line-height:1.6;
+      font-size:16px;
+    }
+    .field-group{margin-bottom:14px}
+    .field-group label{
+      display:block;
+      margin-bottom:6px;
+      font-weight:700;
+      color:#1f3550;
+    }
+    .field-group input{
+      width:100%;
+      border:1px solid #d8d5cf;
+      background:#fff;
+      border-radius:14px;
+      padding:13px 14px;
+      font:inherit;
+      font-size:16px;
+      color:#1f3550;
+    }
+    .field-group input.error{
+      border-color:#d74f45;
+      background:#fff3f2;
+    }
+    .start-note{
+      display:none;
+      margin:12px 0 0;
+      padding:10px 12px;
+      border-radius:12px;
+      background:#fff0ef;
+      color:#7b2e28;
+      border:1px solid #f0c0bb;
+      font-size:15px;
+      line-height:1.5;
+    }
+    .start-note.show{display:block}
+
+
+    @media (max-width:1180px){
+      .workspace{grid-template-columns:1fr}
+      .right-panel{position:static}
+    }
+
+    @media (max-width:780px){
+      .app{width:100%}
+      .hero{padding:24px 22px 28px}
+      .content{padding:16px}
+      .exercise-title{font-size:22px}
+      .exercise-nav{grid-template-columns:40px 1fr 40px;gap:8px}
+      .paragraph-tabs{justify-content:flex-start}
+      .left-top{padding:16px 14px 10px}
+      .paragraph-wrap{padding:14px}
+      .para-card{padding:16px}
+      .step-nav{grid-template-columns:1fr}
+      .paragraph-tabs{gap:8px}
+      .para-tab{font-size:13px;padding:8px 12px}
+      .paragraph{font-size:20px;line-height:1.75;padding:16px}
+      .score-box{grid-template-columns:1fr}
+      .sentence-btn{font-size:16px}
+      .summary-head h2{font-size:28px}
+      .footer{padding:12px 16px 18px;text-align:center}
+      .start-head h2{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="start-overlay" id="startOverlay">
+    <div class="start-card">
+      <div class="start-head">
+        <div class="mini">Antes de comenzar</div>
+        <h2>Identificación del estudiante</h2>
+      </div>
+      <div class="start-body">
+        <p>Completa estos datos para iniciar la actividad. Al finalizar se mostrará el nombre, el grupo, la fecha y la hora de cierre.</p>
+        <div class="field-group">
+          <label for="studentNameInput">Nombre completo</label>
+          <input id="studentNameInput" type="text" placeholder="Escribe tu nombre completo" />
+        </div>
+        <div class="field-group">
+          <label for="studentGroupInput">Grupo</label>
+          <input id="studentGroupInput" type="text" placeholder="Escribe tu grupo" />
+        </div>
+        <button class="btn" id="startActivityBtn" type="button">Iniciar actividad</button>
+        <div class="start-note" id="startNote">Debes completar nombre completo y grupo para continuar.</div>
+      </div>
+    </div>
+  </div>
+  <div class="app">
+    <header class="hero">
+      <div class="eyebrow">Guía interactiva</div>
+      <h1>Paso a paso vamos sintetizando</h1>
+    </header>
+
+    <main class="content">
+      <section class="accordion" id="instructionAccordion">
+        <button class="accordion-btn" type="button" aria-expanded="false">
+          <span>Instrucciones</span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="accordion-panel">
+          <p><strong>1.</strong> Lee el párrafo de la tarjeta actual.</p>
+          <p><strong>2.</strong> En <strong>Idea principal</strong>, elige la oración que concentra el sentido del párrafo.</p>
+          <p><strong>3.</strong> En <strong>Ideas secundarias</strong>, elige máximo dos oraciones que amplían, prueban o precisan la idea principal.</p>
+          <p><strong>4.</strong> En el mismo párrafo, toca entre <strong>4 y 6 palabras clave</strong>. Al revisar, lo correcto se marcará en verde y lo que debas corregir se verá en rojo.</p>
+          <p><strong>5.</strong> Redacta con tus palabras una o dos oraciones breves y agrégalas al resumen de la derecha.</p>
+          <p><strong>Criterio de este recurso:</strong> un resumen debe ser <strong>más breve</strong> que el original, conservar ideas principales y secundarias, usar palabras propias, mantener objetividad y no copiar ni añadir opiniones personales.</p>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="left-panel">
+          <div class="left-top">
+            <div class="exercise-nav">
+              <button class="nav-btn" id="prevExercise" aria-label="Ejercicio anterior">←</button>
+              <div class="exercise-meta">
+                <div class="exercise-label" id="exerciseLabel">Ejercicio 1 de 4</div>
+                <h2 class="exercise-title" id="exerciseTitle"></h2>
+                <div class="exercise-status" id="exerciseStatus">En proceso</div>
+                <div class="source-line">Fuentes: <a id="sourceLink" href="#" target="_blank" rel="noopener noreferrer">enlace</a></div>
+              </div>
+              <button class="nav-btn" id="nextExercise" aria-label="Ejercicio siguiente">→</button>
+            </div>
+          </div>
+
+          <div class="paragraph-wrap">
+            <div class="para-card">
+              <div class="para-head">
+                <div class="tag" id="paraTag"></div>
+                <div class="paragraph-tabs" id="paragraphTabs"></div>
+              </div>
+
+              <div class="step-nav">
+                <div class="step-item active">
+                  <span class="mini">Paso 1</span>
+                  <h3>Idea principal</h3>
+                  <p>Elige una sola oración.</p>
+                </div>
+                <div class="step-item">
+                  <span class="mini">Paso 2</span>
+                  <h3>Ideas secundarias</h3>
+                  <p>Elige máximo dos.</p>
+                </div>
+                <div class="step-item">
+                  <span class="mini">Paso 3</span>
+                  <h3>Palabras clave</h3>
+                  <p>Elige de cuatro a seis.</p>
+                </div>
+              </div>
+
+
+              <div class="paragraph" id="paragraphText"></div>
+
+              <section>
+                <h3 class="section-title">1. Idea principal</h3>
+                <div class="section-help">Selecciona la oración que resume el núcleo del párrafo.</div>
+                <div class="sentence-list" id="mainOptions"></div>
+              </section>
+
+              <section>
+                <h3 class="section-title">2. Ideas secundarias</h3>
+                <div class="section-help">Selecciona hasta dos oraciones que amplían o explican la idea principal.</div>
+                <div class="sentence-list" id="secondaryOptions"></div>
+              </section>
+
+              <section>
+                <h3 class="section-title">3. Palabras clave</h3>
+                <div class="section-help">Dentro del párrafo, toca las palabras clave. Deben ayudar a reconstruir el sentido sin copiar todo el texto.</div>
+              </section>
+
+              <div class="actions">
+                <button class="btn" id="reviewBtn">Revisar este párrafo</button>
+                <button class="btn secondary" id="hintBtn">Ver pista</button>
+                <button class="btn ghost" id="nextParagraphBtn">Siguiente párrafo</button>
+              </div>
+
+              <div class="feedback" id="feedbackBox"></div>
+
+              <div class="write-box">
+                <h3 class="section-title">4. Redacción del aporte al resumen</h3>
+                <div class="section-help">Escribe una o dos oraciones con tus palabras. Deben ser breves, claras y fieles al párrafo.</div>
+                <textarea id="summaryInput" placeholder="Escribe aquí el aporte de este párrafo al resumen general..."></textarea>
+                <div class="actions" style="margin-top:12px">
+                  <button class="btn" id="addSummaryBtn">Agregar al resumen</button>
+                  <button class="btn secondary" id="suggestBtn">Usar sugerencia guiada</button>
+                </div>
+                <p class="helper">Cuando agregas este texto, se actualiza el resumen de la derecha y luego puedes pasar al siguiente párrafo.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="right-panel">
+          <div class="summary-head">
+            <div class="mini">Seguimiento</div>
+            <h2>Resumen en construcción</h2>
+          </div>
+          <div class="summary-body">
+            <div class="score-box">
+              <div class="metric">
+                <div class="label">Puntaje</div>
+                <div class="value" id="scoreValue">0</div>
+              </div>
+              <div class="metric">
+                <div class="label">Progreso</div>
+                <div class="value" id="progressValue">0%</div>
+              </div>
+            </div>
+
+            <div id="summaryList"></div>
+
+            <div class="final-summary">
+              <h3>Versión integrada</h3>
+              <p id="finalSummaryText">Aún no has agregado aportes al resumen.</p>
+            </div>
+
+            <div class="completion-box" id="completionBox">
+              <h3>Actividad completada</h3>
+              <p id="completionLine1"></p>
+              <p id="completionLine2"></p>
+            </div>
+
+            <div class="actions" style="margin-top:14px">
+              <button class="btn secondary" id="copySummaryBtn">Copiar resumen</button>
+              <button class="btn ghost" id="clearExerciseBtn">Limpiar ejercicio actual</button>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Aprendiendo con</span>
+      <span class="brand">@LaProfeVivy</span>
+    </footer>
+  </div>
+
+  <script>
+    const exercises = [
+      {
+        type: 'Noticia internacional',
+        sourceLabel: 'OMS y St. Jude',
+        sourceUrl: 'https://www.who.int/news/item/13-12-2021-who-and-st.-jude-to-dramatically-increase-global-access-to-childhood-cancer-medicines',
+        paragraphs: [
+          {
+            text: 'En diciembre de 2021, la Organización Mundial de la Salud y el hospital St. Jude anunciaron una plataforma internacional para mejorar el acceso a medicamentos contra el cáncer infantil en países de ingresos bajos y medios. La propuesta busca asegurar fármacos seguros y continuos, además de apoyar la selección de tratamientos y el seguimiento de la atención. El problema de fondo es que muchos niños no reciben estos medicamentos de manera oportuna o suficiente.',
+            sentences: [
+              'La OMS y St. Jude anunciaron una plataforma internacional para mejorar el acceso a medicamentos contra el cáncer infantil en países de ingresos bajos y medios.',
+              'La propuesta busca asegurar fármacos seguros y continuos, además de apoyar la selección de tratamientos y el seguimiento de la atención.',
+              'El problema de fondo es que muchos niños no reciben estos medicamentos de manera oportuna o suficiente.'
+            ],
+            main: 0,
+            secondary: [1,2],
+            keywords: ['OMS','St. Jude','plataforma','acceso','medicamentos','cáncer','infantil','países'],
+            hint: 'Busca la oración que reúne actor, acción y propósito general del párrafo.',
+            suggestion: 'La OMS y St. Jude presentaron una plataforma internacional para ampliar el acceso a medicamentos contra el cáncer infantil, con apoyo técnico para asegurar continuidad y mejor atención.'
+          },
+          {
+            text: 'Según la nota institucional, la iniciativa pretende beneficiar a miles de niños entre 2022 y 2027 y crecer de manera progresiva. Para lograrlo, no se limita a enviar cajas de medicamentos: también organiza la demanda, fortalece estándares de tratamiento y mejora los sistemas de información. Por eso la noticia no describe una ayuda aislada, sino una estrategia sostenida de alcance internacional.',
+            sentences: [
+              'La iniciativa pretende beneficiar a miles de niños entre 2022 y 2027 y crecer de manera progresiva.',
+              'Para lograrlo, no se limita a enviar cajas de medicamentos: también organiza la demanda, fortalece estándares de tratamiento y mejora los sistemas de información.',
+              'La noticia describe una estrategia sostenida de alcance internacional y no una ayuda aislada.'
+            ],
+            main: 2,
+            secondary: [0,1],
+            keywords: ['iniciativa','niños','2022','2027','demanda','estándares','tratamiento','información','estrategia'],
+            hint: 'La idea principal no es un dato suelto; es la interpretación central de lo que hace la iniciativa.',
+            suggestion: 'La iniciativa se plantea como una estrategia internacional sostenida que, además de distribuir medicamentos, organiza la demanda y fortalece el tratamiento y el seguimiento.'
+          }
+        ]
+      },
+      {
+        type: 'Literatura internacional',
+        sourceLabel: 'Jane Austen, Pride and Prejudice',
+        sourceUrl: 'https://www.gutenberg.org/ebooks/1342',
+        paragraphs: [
+          {
+            text: 'Al comienzo de la novela, la familia Bennet recibe la noticia de que un joven con fortuna ha llegado a vivir cerca. La madre interpreta de inmediato esa llegada como una oportunidad matrimonial para alguna de sus hijas y presiona al padre para que visite al recién llegado. Desde el inicio, el texto deja ver que el matrimonio no aparece solo como asunto afectivo, sino también como expectativa social y familiar.',
+            sentences: [
+              'La familia Bennet recibe la noticia de que un joven con fortuna ha llegado a vivir cerca.',
+              'La madre interpreta esa llegada como una oportunidad matrimonial para alguna de sus hijas y presiona al padre para que lo visite.',
+              'El texto muestra desde el inicio que el matrimonio funciona también como expectativa social y familiar.'
+            ],
+            main: 2,
+            secondary: [0,1],
+            keywords: ['familia','Bennet','joven','fortuna','matrimonial','hijas','padre','expectativa','social'],
+            hint: 'La idea principal explica el sentido social del fragmento, no solo el hecho de que llegó un vecino.',
+            suggestion: 'El inicio de la novela presenta el matrimonio como una expectativa social y familiar, detonada por la llegada de un joven adinerado al vecindario.'
+          },
+          {
+            text: 'La escena también construye el tono irónico característico de Austen. Mientras la madre se muestra ansiosa y práctica, el padre responde con humor y distancia, lo que produce un contraste constante en el diálogo. Ese contraste no solo entretiene: también introduce la mirada crítica de la obra sobre las costumbres sociales de su tiempo.',
+            sentences: [
+              'La escena construye el tono irónico característico de Austen.',
+              'La madre se muestra ansiosa y práctica, mientras el padre responde con humor y distancia.',
+              'Ese contraste introduce una mirada crítica sobre las costumbres sociales del tiempo de la obra.'
+            ],
+            main: 0,
+            secondary: [1,2],
+            keywords: ['escena','tono','irónico','Austen','madre','padre','contraste','diálogo','costumbres'],
+            hint: 'Pregúntate qué rasgo literario organiza todo el párrafo.',
+            suggestion: 'El fragmento destaca el tono irónico de Austen mediante el contraste entre la ansiedad de la madre y el humor del padre, lo que anticipa una crítica social.'
+          }
+        ]
+      },
+      {
+        type: 'Artículo académico de medicina',
+        sourceLabel: 'Medication adherence en PMC',
+        sourceUrl: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3191684/',
+        paragraphs: [
+          {
+            text: 'La literatura sobre adherencia terapéutica explica que seguir de manera constante las indicaciones médicas es un factor decisivo para el éxito del tratamiento. Cuando la adherencia falla, aumentan el empeoramiento de la enfermedad, las hospitalizaciones y los costos del sistema de salud. Por eso el problema no afecta solo a un paciente en particular, sino también a la eficacia global de la atención sanitaria.',
+            sentences: [
+              'Seguir de manera constante las indicaciones médicas es un factor decisivo para el éxito del tratamiento.',
+              'Cuando la adherencia falla, aumentan el empeoramiento de la enfermedad, las hospitalizaciones y los costos del sistema de salud.',
+              'El problema no afecta solo a un paciente, sino también a la eficacia global de la atención sanitaria.'
+            ],
+            main: 0,
+            secondary: [1,2],
+            keywords: ['adherencia','tratamiento','éxito','enfermedad','hospitalizaciones','costos','sistema','salud'],
+            hint: 'Busca la oración que funcione como tesis del párrafo.',
+            suggestion: 'La adherencia terapéutica es clave para el éxito del tratamiento, ya que su incumplimiento agrava la enfermedad y afecta también al sistema de salud.'
+          },
+          {
+            text: 'Los estudios revisados señalan que la falta de adherencia no depende de una sola causa. Intervienen barreras del paciente, del medicamento, del equipo de salud y del contexto en el que se ofrece la atención. Esa complejidad obliga a medir el problema con cuidado y a diseñar intervenciones más amplias que una simple recomendación verbal.',
+            sentences: [
+              'La falta de adherencia no depende de una sola causa.',
+              'Intervienen barreras del paciente, del medicamento, del equipo de salud y del contexto de atención.',
+              'La complejidad del problema exige una medición cuidadosa e intervenciones más amplias que una recomendación verbal.'
+            ],
+            main: 2,
+            secondary: [0,1],
+            keywords: ['causa','barreras','paciente','medicamento','equipo','contexto','medición','intervenciones'],
+            hint: 'La mejor opción es la oración que convierte los datos del párrafo en una conclusión útil.',
+            suggestion: 'Como la falta de adherencia responde a múltiples barreras, se requieren mediciones rigurosas e intervenciones integrales para mejorarla.'
+          }
+        ]
+      },
+      {
+        type: 'Artículo académico de bienestar',
+        sourceLabel: 'Student well-being en PMC',
+        sourceUrl: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9668225/',
+        paragraphs: [
+          {
+            text: 'La revisión sobre bienestar estudiantil muestra que este concepto no se limita al estado de ánimo del momento. Incluye relaciones, compromiso con el aprendizaje, sentido de propósito, logros y factores internos y externos que rodean la vida académica. En consecuencia, hablar de bienestar en la universidad implica reconocer una realidad amplia y multidimensional.',
+            sentences: [
+              'El bienestar estudiantil no se limita al estado de ánimo del momento.',
+              'Incluye relaciones, compromiso con el aprendizaje, sentido de propósito, logros y factores internos y externos.',
+              'Hablar de bienestar universitario implica reconocer una realidad amplia y multidimensional.'
+            ],
+            main: 2,
+            secondary: [0,1],
+            keywords: ['bienestar','estudiantil','relaciones','aprendizaje','propósito','logros','factores','multidimensional'],
+            hint: 'La idea principal integra las dos primeras oraciones en una conclusión general.',
+            suggestion: 'El bienestar universitario debe entenderse como una realidad amplia y multidimensional que incluye relaciones, aprendizaje, propósito y contexto.'
+          },
+          {
+            text: 'Los autores también observan que no existe una única manera de definir el bienestar, porque distintos estudios lo explican desde enfoques hedónicos, eudaimónicos o integrados. Esa diversidad conceptual dificulta comparar resultados entre investigaciones, pero al mismo tiempo ayuda a ver que el bienestar no puede reducirse a una sola variable. Por eso, los programas institucionales necesitan una visión más completa al acompañar a los estudiantes.',
+            sentences: [
+              'No existe una única manera de definir el bienestar, porque distintos estudios lo explican desde enfoques diversos.',
+              'La diversidad conceptual dificulta comparar resultados, pero muestra que el bienestar no puede reducirse a una sola variable.',
+              'Los programas institucionales necesitan una visión más completa para acompañar a los estudiantes.'
+            ],
+            main: 2,
+            secondary: [0,1],
+            keywords: ['definir','bienestar','enfoques','diversidad','comparar','variable','programas','institucionales','estudiantes'],
+            hint: 'Identifica la oración final que transforma la explicación en una implicación práctica.',
+            suggestion: 'Dado que el bienestar se define desde enfoques diversos y no se reduce a una sola variable, las instituciones necesitan estrategias integrales para acompañar a sus estudiantes.'
+          }
+        ]
+      }
+    ];
+
+    const state = {
+      exerciseIndex: 0,
+      paragraphIndex: 0,
+      score: 0,
+      totalChecks: 0,
+      current: {
+        mainSelection: null,
+        secondarySelection: [],
+        keywordSelection: new Set(),
+        reviewed: false
+      },
+      summaries: exercises.map(ex => ex.paragraphs.map(() => '')),
+      results: exercises.map(ex => ex.paragraphs.map(() => 0)),
+      studentName: '',
+      studentGroup: '',
+      activityStarted: false,
+      completionShown: false
+    };
+
+    const els = {
+      exerciseLabel: document.getElementById('exerciseLabel'),
+      exerciseTitle: document.getElementById('exerciseTitle'),
+      sourceLink: document.getElementById('sourceLink'),
+      paraTag: document.getElementById('paraTag'),
+      paraCounter: document.getElementById('paraCounter'),
+      paragraphText: document.getElementById('paragraphText'),
+      mainOptions: document.getElementById('mainOptions'),
+      secondaryOptions: document.getElementById('secondaryOptions'),
+      feedbackBox: document.getElementById('feedbackBox'),
+      summaryInput: document.getElementById('summaryInput'),
+      summaryList: document.getElementById('summaryList'),
+      finalSummaryText: document.getElementById('finalSummaryText'),
+      scoreValue: document.getElementById('scoreValue'),
+      progressValue: document.getElementById('progressValue'),
+      exerciseStatus: document.getElementById('exerciseStatus'),
+      paragraphTabs: document.getElementById('paragraphTabs'),
+      prevExercise: document.getElementById('prevExercise'),
+      nextExercise: document.getElementById('nextExercise'),
+      reviewBtn: document.getElementById('reviewBtn'),
+      hintBtn: document.getElementById('hintBtn'),
+      nextParagraphBtn: document.getElementById('nextParagraphBtn'),
+      addSummaryBtn: document.getElementById('addSummaryBtn'),
+      suggestBtn: document.getElementById('suggestBtn'),
+      copySummaryBtn: document.getElementById('copySummaryBtn'),
+      clearExerciseBtn: document.getElementById('clearExerciseBtn'),
+      startOverlay: document.getElementById('startOverlay'),
+      studentNameInput: document.getElementById('studentNameInput'),
+      studentGroupInput: document.getElementById('studentGroupInput'),
+      startActivityBtn: document.getElementById('startActivityBtn'),
+      startNote: document.getElementById('startNote'),
+      completionBox: document.getElementById('completionBox'),
+      completionLine1: document.getElementById('completionLine1'),
+      completionLine2: document.getElementById('completionLine2')
+    };
+
+    function getCurrentExercise(){ return exercises[state.exerciseIndex]; }
+    function getCurrentParagraph(){ return getCurrentExercise().paragraphs[state.paragraphIndex]; }
+
+    function isParagraphCompleted(exIndex, paraIndex){
+      return Boolean(state.summaries[exIndex][paraIndex] && state.summaries[exIndex][paraIndex].trim());
+    }
+
+    function isExerciseCompleted(exIndex){
+      return state.summaries[exIndex].every(text => Boolean(text && text.trim()));
+    }
+
+    function allExercisesCompleted(){
+      return state.summaries.every((exerciseSummaries, exIndex) =>
+        exerciseSummaries.every((text, paraIndex) => isParagraphCompleted(exIndex, paraIndex))
+      );
+    }
+
+    function formatDateTime(){
+      const now = new Date();
+      const fecha = now.toLocaleDateString('es-CO', {year:'numeric', month:'2-digit', day:'2-digit'});
+      const hora = now.toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+      return { fecha, hora };
+    }
+
+
+    function resetCurrentSelections(){
+      state.current = {
+        mainSelection: null,
+        secondarySelection: [],
+        keywordSelection: new Set(),
+        reviewed: false
+      };
+    }
+
+
+    function tokenizeParagraph(text, validKeywords){
+      const stopwords = new Set(['de','la','el','los','las','y','o','u','un','una','unos','unas','del','al','que','en','por','para','con','sin','a','se','su','sus','es','son','como','más','menos','este','esta','estos','estas','también','pero','no','si','ya','muy','entre','sobre','desde','hasta','lo']);
+      const validSet = new Set(validKeywords.map(k => k.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase()));
+      const words = text.split(/(\s+)/);
+      return words.map(token => {
+        if (/^\s+$/.test(token)) return token;
+        const clean = token.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        const candidate = clean.length >= 4 && !stopwords.has(clean);
+        if (!candidate) return token;
+        const selected = state.current.keywordSelection.has(clean);
+        const isValid = validSet.has(clean);
+        return `<span class="selectable-word ${selected ? 'selected' : ''}" data-key="${clean}" data-valid="${isValid ? '1' : '0'}">${token}</span>`;
+      }).join('');
+    }
+
+function renderParagraphText(){
+      const para = getCurrentParagraph();
+      els.paragraphText.innerHTML = tokenizeParagraph(para.text, para.keywords);
+      els.paragraphText.querySelectorAll('.selectable-word').forEach(el => {
+        el.addEventListener('click', () => {
+          const key = el.dataset.key;
+          if (state.current.keywordSelection.has(key)) {
+            state.current.keywordSelection.delete(key);
+          } else {
+            state.current.keywordSelection.add(key);
+          }
+          renderParagraphText();
+          if (state.current.reviewed) reviewParagraph(false);
+        });
+      });
+      if (state.current.reviewed) applyKeywordResults();
+    }
+
+    function renderSentenceButtons(container, sentences, kind){
+      container.innerHTML = '';
+      sentences.forEach((sentence, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sentence-btn';
+        btn.textContent = sentence;
+
+        if (kind === 'main' && state.current.mainSelection === index) btn.classList.add('selected');
+        if (kind === 'secondary' && state.current.secondarySelection.includes(index)) btn.classList.add('selected');
+
+        btn.addEventListener('click', () => {
+          if (kind === 'main') {
+            state.current.mainSelection = index;
+          } else {
+            if (state.current.secondarySelection.includes(index)) {
+              state.current.secondarySelection = state.current.secondarySelection.filter(i => i !== index);
+            } else {
+              if (state.current.secondarySelection.length >= 2) return;
+              state.current.secondarySelection = [...state.current.secondarySelection, index];
+            }
+          }
+          renderSentenceButtons(container, sentences, kind);
+          if (kind === 'main') renderSentenceButtons(els.secondaryOptions, getCurrentParagraph().sentences, 'secondary');
+          if (kind === 'secondary') renderSentenceButtons(els.mainOptions, getCurrentParagraph().sentences, 'main');
+          if (state.current.reviewed) reviewParagraph(false);
+        });
+        container.appendChild(btn);
+      });
+
+      if (state.current.reviewed) {
+        applySentenceResults();
+      }
+    }
+
+    function applySentenceResults(){
+      const para = getCurrentParagraph();
+      [...els.mainOptions.children].forEach((btn, index) => {
+        btn.classList.remove('correct','incorrect','dim');
+        if (index === para.main) btn.classList.add('correct');
+        if (state.current.mainSelection === index && index !== para.main) btn.classList.add('incorrect');
+        if (state.current.mainSelection !== null && state.current.mainSelection !== index && index !== para.main) btn.classList.add('dim');
+      });
+      [...els.secondaryOptions.children].forEach((btn, index) => {
+        btn.classList.remove('correct','incorrect','dim');
+        if (para.secondary.includes(index)) btn.classList.add('correct');
+        if (state.current.secondarySelection.includes(index) && !para.secondary.includes(index)) btn.classList.add('incorrect');
+        if (state.current.secondarySelection.length && !state.current.secondarySelection.includes(index) && !para.secondary.includes(index)) btn.classList.add('dim');
+      });
+    }
+
+    function applyKeywordResults(){
+      els.paragraphText.querySelectorAll('.selectable-word').forEach(span => {
+        span.classList.remove('correct','incorrect');
+        const isValid = span.dataset.valid === '1';
+        const key = span.dataset.key;
+        if (state.current.keywordSelection.has(key) && isValid) span.classList.add('correct');
+        if (state.current.keywordSelection.has(key) && !isValid) span.classList.add('incorrect');
+      });
+    }
+
+function showFeedback(type, message){
+      els.feedbackBox.className = `feedback show ${type}`;
+      els.feedbackBox.innerHTML = message;
+    }
+
+    function hideFeedback(){
+      els.feedbackBox.className = 'feedback';
+      els.feedbackBox.textContent = '';
+    }
+
+    function playTone(ok=true){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = ok ? 660 : 240;
+        g.gain.setValueAtTime(0.001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start();
+        o.stop(ctx.currentTime + 0.24);
+      }catch(e){}
+    }
+
+    function reviewParagraph(play=true){
+      const para = getCurrentParagraph();
+      state.current.reviewed = true;
+      applySentenceResults();
+      applyKeywordResults();
+
+      const mainOk = state.current.mainSelection === para.main;
+      const secondOk = para.secondary.every(i => state.current.secondarySelection.includes(i)) && state.current.secondarySelection.length === para.secondary.length;
+      const normalizedKeywords = para.keywords.map(k => k.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase());
+      const selectedValidCount = [...state.current.keywordSelection].filter(k => normalizedKeywords.includes(k)).length;
+      const keywordCountOk = state.current.keywordSelection.size >= 4 && state.current.keywordSelection.size <= 6;
+      const keywordQualityOk = selectedValidCount >= 4;
+      const keywordsOk = keywordCountOk && keywordQualityOk;
+
+      let earned = 0;
+      if (mainOk) earned += 2;
+      if (secondOk) earned += 2;
+      if (keywordsOk) earned += 2;
+
+      state.results[state.exerciseIndex][state.paragraphIndex] = earned;
+      updateScore();
+
+      const issues = [];
+      if (!mainOk) issues.push('revisa la <strong>idea principal</strong>');
+      if (!secondOk) issues.push('ajusta las <strong>ideas secundarias</strong>');
+      if (!keywordsOk) issues.push('marca <strong>4 a 6 palabras clave</strong> realmente útiles');
+
+      if (issues.length === 0) {
+        showFeedback('ok', 'Muy bien. Este párrafo quedó correctamente analizado. Ahora redacta con tus palabras el aporte al resumen o usa la sugerencia guiada.');
+        if (play) playTone(true);
+      } else {
+        showFeedback('bad', `Aún debes corregir: ${issues.join(', ')}.`);
+        if (play) playTone(false);
+      }
+    }
+
+    function updateScore(){
+      const totalScore = state.results.flat().reduce((a,b) => a + b, 0);
+      state.score = totalScore;
+      els.scoreValue.textContent = String(totalScore);
+      const filled = state.summaries.flat().filter(Boolean).length;
+      const total = exercises.reduce((sum, ex) => sum + ex.paragraphs.length, 0);
+      els.progressValue.textContent = `${Math.round((filled/total)*100)}%`;
+    }
+
+function renderSummary(){
+      const currentExerciseSummaries = state.summaries[state.exerciseIndex];
+      els.summaryList.innerHTML = '';
+      currentExerciseSummaries.forEach((text, idx) => {
+        const card = document.createElement('div');
+        card.className = 'summary-card' + (text ? '' : ' empty');
+        card.innerHTML = `<h3>Párrafo ${idx+1}</h3><p>${text || 'Aún no agregas el aporte de este párrafo.'}</p>`;
+        els.summaryList.appendChild(card);
+      });
+      const combined = currentExerciseSummaries.filter(Boolean).join(' ');
+      els.finalSummaryText.textContent = combined || 'Aún no has agregado aportes al resumen.';
+      updateScore();
+    }
+
+    function loadSummaryInput(){
+      els.summaryInput.value = state.summaries[state.exerciseIndex][state.paragraphIndex] || '';
+    }
+
+
+    function renderParagraphTabs(){
+      const ex = getCurrentExercise();
+      els.paragraphTabs.innerHTML = '';
+      ex.paragraphs.forEach((_, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'para-tab';
+        btn.textContent = `Párrafo ${index + 1}`;
+        if (index === state.paragraphIndex) btn.classList.add('active');
+        if (isParagraphCompleted(state.exerciseIndex, index)) btn.classList.add('done');
+        btn.addEventListener('click', () => {
+          if (index > state.paragraphIndex && !isParagraphCompleted(state.exerciseIndex, state.paragraphIndex)) {
+            showFeedback('bad', 'Primero agrega el aporte al resumen de este párrafo antes de avanzar al siguiente.');
+            return;
+          }
+          goToParagraph(index);
+        });
+        els.paragraphTabs.appendChild(btn);
+      });
+    }
+
+    function updateCompletionBox(){
+      if (allExercisesCompleted() && state.studentName && state.studentGroup) {
+        const { fecha, hora } = formatDateTime();
+        els.completionBox.classList.add('show');
+        els.completionLine1.textContent = `Estudiante: ${state.studentName} · Grupo: ${state.studentGroup}`;
+        els.completionLine2.textContent = `Fecha: ${fecha} · Hora: ${hora}`;
+      } else {
+        els.completionBox.classList.remove('show');
+        els.completionLine1.textContent = '';
+        els.completionLine2.textContent = '';
+      }
+    }
+
+    function maybeFinishActivity(){
+      if (allExercisesCompleted() && !state.completionShown) {
+        state.completionShown = true;
+        updateCompletionBox();
+        showFeedback('ok', `Bien hecho, ${state.studentName}. Actividad completada.`);
+        playTone(true);
+      }
+    }
+
+    function render(){
+      const ex = getCurrentExercise();
+      const para = getCurrentParagraph();
+      hideFeedback();
+      els.exerciseLabel.textContent = `Ejercicio ${state.exerciseIndex + 1} de ${exercises.length}`;
+      els.exerciseTitle.textContent = ex.type;
+      els.exerciseStatus.textContent = isExerciseCompleted(state.exerciseIndex) ? `Ejercicio ${state.exerciseIndex + 1} completado` : 'En proceso';
+      els.exerciseStatus.className = 'exercise-status' + (isExerciseCompleted(state.exerciseIndex) ? ' done' : '');
+      els.sourceLink.href = ex.sourceUrl;
+      els.sourceLink.textContent = ex.sourceLabel;
+      els.paraTag.textContent = 'Análisis del párrafo';
+      renderParagraphTabs();
+      renderParagraphText();
+      renderSentenceButtons(els.mainOptions, para.sentences, 'main');
+      renderSentenceButtons(els.secondaryOptions, para.sentences, 'secondary');
+      loadSummaryInput();
+      renderSummary();
+      updateCompletionBox();
+      els.prevExercise.disabled = state.exerciseIndex === 0;
+      els.nextExercise.disabled = state.exerciseIndex === exercises.length - 1;
+    }
+
+    function goToExercise(nextIndex){
+      if (nextIndex < 0 || nextIndex >= exercises.length) return;
+      state.exerciseIndex = nextIndex;
+      state.paragraphIndex = 0;
+      resetCurrentSelections();
+      render();
+    }
+
+    function goToParagraph(nextIndex){
+      const total = getCurrentExercise().paragraphs.length;
+      if (nextIndex < 0 || nextIndex >= total) return;
+      state.paragraphIndex = nextIndex;
+      resetCurrentSelections();
+      render();
+    }
+
+    document.querySelector('.accordion-btn').addEventListener('click', () => {
+      const acc = document.getElementById('instructionAccordion');
+      acc.classList.toggle('open');
+      const open = acc.classList.contains('open');
+      document.querySelector('.accordion-btn').setAttribute('aria-expanded', String(open));
+      document.querySelector('.accordion-btn').setAttribute('aria-label', open ? 'Cerrar instrucciones' : 'Abrir instrucciones');
+    });
+
+    els.prevExercise.addEventListener('click', () => goToExercise(state.exerciseIndex - 1));
+    els.nextExercise.addEventListener('click', () => {
+      if (!isExerciseCompleted(state.exerciseIndex)) {
+        showFeedback('bad', `Primero completa el ejercicio ${state.exerciseIndex + 1} antes de pasar al siguiente.`);
+        return;
+      }
+      goToExercise(state.exerciseIndex + 1);
+    });
+    els.nextParagraphBtn.addEventListener('click', () => {
+      if (!isParagraphCompleted(state.exerciseIndex, state.paragraphIndex)) {
+        showFeedback('bad', 'Primero agrega el aporte al resumen de este párrafo antes de avanzar.');
+        return;
+      }
+      const next = state.paragraphIndex + 1;
+      if (next < getCurrentExercise().paragraphs.length) {
+        goToParagraph(next);
+      } else {
+        showFeedback('ok', `Ejercicio ${state.exerciseIndex + 1} completado. Ya puedes pasar al siguiente ejercicio.`);
+      }
+    });
+    els.reviewBtn.addEventListener('click', () => reviewParagraph(true));
+    els.hintBtn.addEventListener('click', () => showFeedback('warn', getCurrentParagraph().hint));
+    els.suggestBtn.addEventListener('click', () => {
+      els.summaryInput.value = getCurrentParagraph().suggestion;
+      showFeedback('ok', 'Se cargó una redacción guiada. Léela, ajústala si quieres y luego agrégala al resumen.');
+    });
+
+    els.addSummaryBtn.addEventListener('click', () => {
+      const value = els.summaryInput.value.trim();
+      if (!value) {
+        showFeedback('bad', 'Primero escribe una o dos oraciones breves para este párrafo.');
+        return;
+      }
+      state.summaries[state.exerciseIndex][state.paragraphIndex] = value;
+      renderSummary();
+      renderParagraphTabs();
+      if (isExerciseCompleted(state.exerciseIndex)) {
+        const currentNumber = state.exerciseIndex + 1;
+        if (currentNumber < exercises.length) {
+          showFeedback('ok', `Ejercicio ${currentNumber} completado. Ya puedes pasar al ejercicio ${currentNumber + 1}.`);
+        } else {
+          showFeedback('ok', 'Bien hecho. Ya completaste el último ejercicio.');
+        }
+      } else {
+        showFeedback('ok', 'Aporte agregado al resumen. Ya puedes pasar al siguiente párrafo o continuar ajustando este.');
+      }
+      playTone(true);
+      maybeFinishActivity();
+    });
+
+    els.copySummaryBtn.addEventListener('click', async () => {
+      const text = els.finalSummaryText.textContent.trim();
+      if (!text || text === 'Aún no has agregado aportes al resumen.') {
+        showFeedback('bad', 'Todavía no hay un resumen integrado para copiar.');
+        return;
+      }
+      try{
+        await navigator.clipboard.writeText(text);
+        showFeedback('ok', 'Resumen copiado.');
+      }catch(e){
+        showFeedback('warn', 'No se pudo copiar automáticamente. Selecciónalo manualmente.');
+      }
+    });
+
+    els.clearExerciseBtn.addEventListener('click', () => {
+      state.summaries[state.exerciseIndex] = state.summaries[state.exerciseIndex].map(() => '');
+      state.results[state.exerciseIndex] = state.results[state.exerciseIndex].map(() => 0);
+      state.completionShown = false;
+      loadSummaryInput();
+      renderSummary();
+      renderParagraphTabs();
+      updateCompletionBox();
+      showFeedback('ok', 'Se limpió el resumen del ejercicio actual.');
+    });
+
+    els.startActivityBtn.addEventListener('click', () => {
+      const name = els.studentNameInput.value.trim();
+      const group = els.studentGroupInput.value.trim();
+      const nameOk = Boolean(name);
+      const groupOk = Boolean(group);
+      els.studentNameInput.classList.toggle('error', !nameOk);
+      els.studentGroupInput.classList.toggle('error', !groupOk);
+      if (!nameOk || !groupOk) {
+        els.startNote.classList.add('show');
+        return;
+      }
+      state.studentName = name;
+      state.studentGroup = group;
+      state.activityStarted = true;
+      els.startNote.classList.remove('show');
+      els.startOverlay.classList.add('hidden');
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
