@@ -1,5 +1,7 @@
 
 
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -130,14 +132,14 @@
         <h2>Parafraseando con intención académica</h2>
       </div>
       <div class="start-body">
-        <p style="margin:0;font-size:16px;line-height:1.6;color:#29435f;">Antes de iniciar, escribe tus datos. La actividad solo comienza cuando completes ambos campos.</p>
+       
         <div class="field">
           <label for="studentName">Nombre completo</label>
           <input id="studentName" type="text" placeholder="Escribe tu nombre completo" />
         </div>
         <div class="field">
           <label for="studentGroup">Grupo</label>
-          <input id="studentGroup" type="text" placeholder="Ejemplo: 101 o NRC 2456" />
+          <input id="studentGroup" type="text" placeholder="Ejemplo: NRC 2456 Grupo 7" />
         </div>
         <div class="error" id="startError">Debes completar nombre y grupo para comenzar.</div>
         <button class="btn btn-primary" id="startBtn">Comenzar actividad</button>
@@ -183,9 +185,9 @@
             </div>
             <div class="guide-box">
               <h3>Ejemplo breve</h3>
-              <p><strong>Original:</strong> “El apoyo social mejora la adaptación universitaria”.</p>
-              <p><strong>No basta:</strong> “La ayuda social mejora la adaptación universitaria”.</p>
-              <p><strong>Mejor:</strong> “Adaptarse a la universidad resulta más fácil cuando el estudiante cuenta con una red de apoyo”.</p>
+              <p><strong>Texto Original:</strong> “El apoyo social mejora la adaptación universitaria”.</p>
+              <p><strong>Parafraseo básico -no recomendado- :</strong> “La ayuda social mejora la adaptación universitaria”.</p>
+              <p><strong>Parafraseo real:</strong> “Adaptarse a la universidad resulta más fácil cuando el estudiante cuenta con una red de apoyo”.</p>
             </div>
           </div>
         </div>
@@ -366,11 +368,28 @@
     function conceptCoverage(exercise, student) {
       const norm = normalize(student);
       let hits = 0;
-      exercise.concepts.forEach(group => {
-        const ok = group.some(term => norm.includes(normalize(term)));
-        if (ok) hits++;
+      const matched = [];
+      const missing = [];
+
+      exercise.concepts.forEach((group, index) => {
+        const foundTerms = group.filter(term => norm.includes(normalize(term)));
+        if (foundTerms.length > 0) {
+          hits++;
+          matched.push({
+            index: index + 1,
+            label: group[0],
+            found: foundTerms
+          });
+        } else {
+          missing.push({
+            index: index + 1,
+            label: group[0],
+            options: group
+          });
+        }
       });
-      return { hits, total: exercise.concepts.length };
+
+      return { hits, total: exercise.concepts.length, matched, missing };
     }
 
     function buildFeedback(ex, student) {
@@ -413,8 +432,20 @@
       const total = Math.max(0, Math.min(100, ideaScore + originalityScore + lengthScore));
       const accepted = wc >= 26 && coverage.hits >= 3 && copied.length <= 2;
       return {
-        total, accepted, wc, coverage, copied, lengthMsg, originalityMsg,
-        ideaMsg: `Conservas ${coverage.hits} de ${coverage.total} núcleos de sentido del texto original.`,
+        total,
+        accepted,
+        wc,
+        coverage,
+        copied,
+        lengthMsg,
+        originalityMsg,
+        ideaMsg: `Conservas ${coverage.hits} de ${coverage.total} ideas clave del texto.`,
+        matchedMsg: coverage.matched.length
+          ? `Ya incluiste estas ideas:<br>` + coverage.matched.map(m => `• Núcleo ${m.index}: (${m.found.join(', ')})`).join('<br>')
+          : 'Aún no se detectan ideas clave claras.',
+        missingMsg: coverage.missing.length
+          ? `Te faltan estas ideas clave:<br>` + coverage.missing.map(m => `• Núcleo ${m.index}: (${m.options.join(' / ')})`).join('<br>')
+          : 'Incluyes todas las ideas clave.',
         suggestion: ex.hint
       };
     }
@@ -474,8 +505,10 @@
           <p>${review.accepted ? 'Bien hecho. Tu texto conserva la idea esencial y se diferencia suficientemente del original.' : 'Todavía necesitas mejorar uno o más aspectos antes de marcar este ejercicio como logrado.'}</p>
         </div>
         <div class="feedback-box">
-          <h4>Ideas esenciales</h4>
+          <h4>Ideas clave que debe conservar</h4>
           <p>${review.ideaMsg}</p>
+          <p>${review.matchedMsg || ''}</p>
+          <p>${review.missingMsg || ''}</p>
         </div>
         <div class="feedback-box ${review.copied.length ? 'bad' : 'ok'}">
           <h4>Redacción propia</h4>
@@ -605,8 +638,13 @@
       const text = els.paraphraseInput.value.trim();
       if (!text) {
         state.reviews[state.current] = {
-          total: 0, accepted: false, wc: 0, copied: [],
+          total: 0,
+          accepted: false,
+          wc: 0,
+          copied: [],
           ideaMsg: 'Aún no escribes tu paráfrasis.',
+          matchedMsg: 'Todavía no hay ideas detectadas porque no has escrito texto.',
+          missingMsg: 'Escribe primero tu paráfrasis para revisar qué ideas clave conservaste y cuáles faltan.',
           originalityMsg: 'Necesitas redactar primero.',
           lengthMsg: 'No hay texto para revisar.'
         };
@@ -658,4 +696,3 @@
   </script>
 </body>
 </html>
-
