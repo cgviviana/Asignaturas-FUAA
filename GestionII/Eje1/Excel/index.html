@@ -1,1 +1,1007 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Excel | Aprendiendo con @LaProfeVivy</title>
+  <script type="text/javascript" src="https://gc.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=IE_0U5R3ZgZbhLuos_f5zANMjC_ccIipmyyTlIbWxghG9DCFZ15tVDSjC-E8o8_AechVkR-dlg3XU64dQlHOquo0tQW1QT6M4gZrObhDuePrjMKAEZA89FJ3kT9VCgNU9uS8Nr9HAuNnW-uWcjmOrYdwJshl9emTJDA3GRs11LIB1vjTC5iqpxRqJzLhvCGGBGNT3hiw3qNmqKDJwPeStTkSHRI_96pfj2NMSxbZuJpPUPGWcK788OJv-v837Sr1soABzJcrA4AuZPW4zB8bSA" charset="UTF-8"></script><style>
+    :root{
+      --bg:#efefef;
+      --panel:#ffffff;
+      --panel-soft:#f7f8fb;
+      --line:#d9dee7;
+      --text:#1f2f46;
+      --muted:#6d7b8d;
+      --excel-green:#217346;
+      --excel-green-2:#2ea85f;
+      --excel-green-soft:#e8f4ec;
+      --excel-blue:#185abd;
+      --excel-blue-2:#2b78d6;
+      --excel-blue-soft:#eaf2fe;
+      --yellow-soft:#fff7de;
+      --shadow:0 6px 18px rgba(24,35,55,.08);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--text)}
+    .hidden{display:none !important}
+
+    .register-screen{
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+    }
+    .register-card{
+      width:min(820px,100%);background:var(--panel);border-radius:22px;box-shadow:var(--shadow);padding:28px;
+    }
+    .register-head{display:flex;gap:18px;align-items:center;margin-bottom:20px}
+    .register-head h1{font-size:2rem;color:var(--excel-blue);margin-bottom:6px}
+    .register-head h1 span{color:var(--excel-green-2)}
+    .register-head p{color:var(--muted);line-height:1.55}
+    .robot-box{width:112px;flex-shrink:0}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+    .field{display:grid;gap:8px}
+    .field.full{grid-column:1 / -1}
+    .field label{font-weight:800;color:#263954}
+    .field input{
+      width:100%;border:1px solid #d7dce5;background:#fff;border-radius:12px;padding:13px 14px;font-size:1rem;color:#243852;outline:none
+    }
+    .field input:focus{border-color:var(--excel-blue-2);box-shadow:0 0 0 3px rgba(24,90,189,.08)}
+    .register-note{
+      margin-top:14px;background:var(--yellow-soft);border:1px solid #f0e2aa;border-radius:12px;padding:12px 14px;
+      color:#7b6500;line-height:1.5;font-weight:700
+    }
+    .main-btn{
+      margin-top:18px;border:none;background:var(--excel-green-2);color:#fff;padding:14px 18px;border-radius:999px;
+      font-weight:800;cursor:pointer;min-width:220px;font-size:1rem
+    }
+
+    .layout{display:grid;grid-template-columns:330px 1fr;min-height:100vh}
+    .sidebar{
+      background:#f1f2f5;border-right:1px solid #d7dbe3;padding:18px 12px;position:sticky;top:0;height:100vh;overflow:auto;
+    }
+    .brand{display:flex;gap:12px;align-items:center;padding:6px 8px 16px}
+    .brand-text h1{font-size:1.22rem;color:var(--excel-blue);margin-bottom:4px;line-height:1.15}
+    .brand-text h1 span{color:var(--excel-green-2)}
+    .brand-text p{font-size:.9rem;color:var(--muted);line-height:1.45}
+    .robot-icon{width:64px;height:64px;flex-shrink:0}
+
+    .student-box{
+      background:var(--panel);border-radius:14px;box-shadow:var(--shadow);padding:14px;margin:0 6px 14px;
+    }
+    .student-box small{display:block;color:var(--muted);font-weight:700;margin-bottom:5px}
+    .student-box strong{display:block;color:#27405f;line-height:1.45}
+    .student-box .course-line{margin-top:6px;font-size:.93rem;color:#4f6178;font-weight:700}
+
+    .accordion{display:grid;gap:10px;margin-top:6px}
+    .topic{border-radius:14px;overflow:hidden;background:#eceff3;border:1px solid #d9dee7}
+    .topic-header{
+      width:100%;border:none;background:var(--excel-blue-soft);color:var(--excel-blue);padding:16px 14px;
+      font-size:1rem;font-weight:800;text-align:left;display:flex;justify-content:space-between;gap:12px;align-items:center;cursor:pointer
+    }
+    .topic-header.locked{background:#e6e8ed;color:#7b8593;cursor:not-allowed}
+    .topic-header .right{font-size:.86rem;color:#5d6a7c;white-space:nowrap}
+    .topic-body{padding:8px;display:none;background:#f3f4f7}
+    .topic.open .topic-body{display:grid;gap:8px}
+    .sub-btn{
+      width:100%;border:1px solid #d8dde6;background:#fff;color:#253a56;padding:14px 14px;border-radius:12px;font-size:.98rem;
+      display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;transition:.16s ease
+    }
+    .sub-btn.active{border-color:var(--excel-blue-2);background:var(--excel-blue-soft);box-shadow:0 0 0 2px rgba(24,90,189,.08) inset}
+    .sub-btn.completed .sub-right{color:var(--excel-green)}
+    .sub-btn .sub-right{font-weight:800;color:#7b8593}
+
+    .sidebar-footer{margin-top:16px;padding:8px 6px;display:grid;gap:10px}
+    .reset-btn,.cert-btn{
+      width:100%;border:none;padding:12px 14px;border-radius:12px;cursor:pointer;font-weight:800;
+    }
+    .reset-btn{background:#e9edf3;color:#536173}
+    .cert-btn{background:var(--excel-green-2);color:#fff}
+    .cert-btn:disabled{background:#bfc8d2;cursor:not-allowed}
+
+    .main{padding:18px 18px 28px;overflow:auto}
+    .topbar{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-bottom:16px}
+    .top-card{
+      background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:16px 18px
+    }
+    .progress-meta{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}
+    .progress-meta strong{font-size:1rem}
+    .progress-meta span{color:var(--excel-green);font-weight:800}
+    .progress-line{height:12px;background:#dcdfe6;border-radius:999px;overflow:hidden;margin:10px 0}
+    .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--excel-green-2),var(--excel-green));border-radius:999px;transition:.25s ease}
+    .unlock-text{color:#5f6c7d;line-height:1.5;font-size:.96rem}
+    .user-box{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .user-stat{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:16px 12px;text-align:center}
+    .user-stat small{display:block;color:var(--muted);font-weight:700;margin-bottom:6px}
+    .user-stat strong{font-size:1.05rem;color:#2a3a54}
+
+    .content-grid{display:grid;grid-template-columns:1fr;gap:16px}
+    .panel{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:18px}
+    .title-panel h1{font-size:2rem;margin-bottom:4px;color:#111}
+    .title-panel .eyebrow{color:#7a8698;font-weight:800;margin-bottom:10px}
+    .title-panel p{color:#415166;line-height:1.7}
+    .fact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .fact{background:var(--panel-soft);border:1px solid #e5e8ef;border-radius:14px;padding:14px}
+    .fact h3{font-size:.95rem;margin-bottom:8px;color:#22344d}
+    .fact p{color:#495b71;line-height:1.55;font-size:.95rem}
+    .code-badge{
+      display:inline-block;padding:10px 12px;border-radius:12px;background:var(--excel-blue-soft);color:var(--excel-blue);
+      font-weight:800;margin:6px 0 10px;word-break:break-word
+    }
+
+    .sheet-wrap{border:1px solid #d4dae4;border-radius:14px;overflow:hidden;background:#fff;margin-top:10px}
+    .sheet-top{background:var(--excel-blue-soft);color:var(--excel-blue);padding:10px 14px;font-weight:800;border-bottom:1px solid #d7e4fb}
+    .sheet-bar{background:#fafcff;padding:10px 14px;border-bottom:1px solid #e6edf8;color:#526174;font-size:.92rem}
+    .sheet-scroll{overflow:auto}
+    .sheet-grid{display:grid;min-width:540px;border-top:1px solid #d8dce4}
+    .cell{
+      border-right:1px solid #d8dce4;border-bottom:1px solid #d8dce4;min-height:36px;display:flex;align-items:center;justify-content:center;
+      padding:4px 6px;font-size:.88rem;color:#2d3c51;background:#fff;text-align:center
+    }
+    .cell.header{background:#f5f7fa;font-weight:800}
+    .cell.active{background:#f5f9ff;outline:2px solid var(--excel-green-2);font-weight:800}
+
+    .error-box{
+      margin-top:12px;background:#fff1f1;border:1px solid #f0c7c7;color:#a04343;border-radius:12px;padding:12px 14px;line-height:1.5;font-weight:700
+    }
+
+    .bottom-actions{display:flex;justify-content:flex-end;margin-top:14px}
+    .mark-btn{
+      border:none;background:var(--excel-green-2);color:#fff;padding:12px 18px;border-radius:999px;cursor:pointer;font-weight:800
+    }
+    .mark-btn.done{background:#b7d9c4;color:#fff;cursor:default}
+
+    .certificate-screen{
+      min-height:100vh;padding:28px;display:flex;align-items:center;justify-content:center;background:#f1f4f8;
+    }
+    .certificate{
+      width:min(980px,100%);background:#fff;border:10px solid #dfe9f5;border-radius:22px;box-shadow:var(--shadow);
+      padding:42px 36px;text-align:center;position:relative;overflow:hidden
+    }
+    .certificate::before{
+      content:"";position:absolute;inset:16px;border:2px solid #c8d9ee;border-radius:14px;pointer-events:none
+    }
+    .certificate h1{font-size:2.4rem;color:var(--excel-blue);margin-bottom:10px}
+    .certificate h2{font-size:1.3rem;color:#2d405a;margin-bottom:26px;font-weight:700}
+    .certificate p{font-size:1.08rem;color:#4d6179;line-height:1.8;margin-bottom:10px}
+    .certificate .name{font-size:2rem;color:var(--excel-green);font-weight:900;margin:14px 0}
+    .certificate .course{font-size:1.35rem;color:#203653;font-weight:800;margin:10px 0 18px}
+    .certificate .meta{
+      margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;background:#f7fafc;border:1px solid #e0e8f2;border-radius:14px;padding:18px
+    }
+    .certificate .meta div{color:#46607b;line-height:1.6;font-weight:700}
+    .certificate .actions{margin-top:22px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .certificate .actions button{border:none;border-radius:999px;padding:12px 18px;font-weight:800;cursor:pointer}
+    .btn-print{background:var(--excel-green-2);color:#fff}
+    .btn-back{background:#e9edf3;color:#4d5b6b}
+
+    @media (max-width:1100px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto}
+      .topbar{grid-template-columns:1fr}
+    }
+    @media (max-width:760px){
+      .fact-grid,.form-grid,.certificate .meta,.user-box{grid-template-columns:1fr}
+      .title-panel h1{font-size:1.55rem}
+      .register-head{flex-direction:column;align-items:flex-start}
+    }
+    @media print{
+      body *{visibility:hidden}
+      #certificateScreen,#certificateScreen *{visibility:visible}
+      #certificateScreen{position:absolute;inset:0;padding:0;background:#fff}
+      .certificate{width:100%;min-height:100vh;border:none;box-shadow:none;border-radius:0}
+      .certificate .actions{display:none !important}
+    }
+  </style>
+</head>
+<body>
+
+<section id="registerScreen" class="register-screen">
+  <div class="register-card">
+    <div class="register-head">
+      <div class="robot-box">
+        <svg viewBox="0 0 120 120" fill="none">
+          <ellipse cx="60" cy="111" rx="26" ry="6" fill="#D7DBE6"/>
+          <rect x="30" y="14" width="60" height="44" rx="22" fill="#F9F9FC" stroke="#185ABD" stroke-width="4"/>
+          <rect x="17" y="27" width="14" height="20" rx="7" fill="#F4F2F8" stroke="#DDDCE7" stroke-width="3"/>
+          <rect x="89" y="27" width="14" height="20" rx="7" fill="#F4F2F8" stroke="#DDDCE7" stroke-width="3"/>
+          <path d="M38 12L33 0" stroke="#185ABD" stroke-width="5" stroke-linecap="round"/>
+          <path d="M82 12L87 0" stroke="#185ABD" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="31" cy="2" r="6" fill="#2EA85F"/>
+          <circle cx="89" cy="2" r="6" fill="#2EA85F"/>
+          <rect x="40" y="23" width="40" height="26" rx="13" fill="#2D2D34"/>
+          <path d="M52 34c3-5 9-5 12 0" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <path d="M68 34c3-5 9-5 12 0" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <path d="M53 42c4 5 14 5 18 0" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M40 62h40v17H40z" fill="#2EA85F"/>
+          <rect x="33" y="58" width="54" height="40" rx="20" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <rect x="8" y="58" width="14" height="34" rx="7" transform="rotate(28 8 58)" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <rect x="98" y="65" width="14" height="30" rx="7" transform="rotate(-14 98 65)" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <circle cx="17" cy="58" r="6" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <circle cx="99" cy="94" r="6" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <rect x="28" y="78" width="64" height="12" rx="6" fill="#2EA85F"/>
+          <circle cx="60" cy="84" r="12" fill="#fff" stroke="#185ABD" stroke-width="4"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Aprendiendo con <span>@LaProfeVivy</span></h1>
+        <p>Registra los datos del estudiante para habilitar el certificado al final. La revisión de cada subtema se marcará manualmente, sin mini retos ni puntos automáticos al abrir.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field full">
+        <label for="studentName">Apellidos y nombre</label>
+        <input id="studentName" type="text" placeholder="Ejemplo: Pérez Gómez, Ana María">
+      </div>
+      <div class="field">
+        <label for="studentCourse">Curso</label>
+        <input id="studentCourse" type="text" placeholder="Ejemplo: Gestión de la Información">
+      </div>
+      <div class="field">
+        <label for="studentGroup">Grupo / NRC</label>
+        <input id="studentGroup" type="text" placeholder="Opcional">
+      </div>
+    </div>
+
+    <div class="register-note">
+      El certificado saldrá con estos datos y con la fecha y hora de finalización.
+    </div>
+
+    <button class="main-btn" onclick="startPlatform()">Ingresar</button>
+  </div>
+</section>
+
+<section id="appScreen" class="hidden">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <svg class="robot-icon" viewBox="0 0 120 120" fill="none">
+          <ellipse cx="60" cy="111" rx="26" ry="6" fill="#D7DBE6"/>
+          <rect x="30" y="14" width="60" height="44" rx="22" fill="#F9F9FC" stroke="#185ABD" stroke-width="4"/>
+          <rect x="17" y="27" width="14" height="20" rx="7" fill="#F4F2F8" stroke="#DDDCE7" stroke-width="3"/>
+          <rect x="89" y="27" width="14" height="20" rx="7" fill="#F4F2F8" stroke="#DDDCE7" stroke-width="3"/>
+          <path d="M38 12L33 0" stroke="#185ABD" stroke-width="5" stroke-linecap="round"/>
+          <path d="M82 12L87 0" stroke="#185ABD" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="31" cy="2" r="6" fill="#2EA85F"/>
+          <circle cx="89" cy="2" r="6" fill="#2EA85F"/>
+          <rect x="40" y="23" width="40" height="26" rx="13" fill="#2D2D34"/>
+          <path d="M52 34c3-5 9-5 12 0" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <path d="M68 34c3-5 9-5 12 0" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <path d="M53 42c4 5 14 5 18 0" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M40 62h40v17H40z" fill="#2EA85F"/>
+          <rect x="33" y="58" width="54" height="40" rx="20" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <rect x="8" y="58" width="14" height="34" rx="7" transform="rotate(28 8 58)" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <rect x="98" y="65" width="14" height="30" rx="7" transform="rotate(-14 98 65)" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <circle cx="17" cy="58" r="6" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <circle cx="99" cy="94" r="6" fill="#fff" stroke="#ECECF3" stroke-width="3"/>
+          <rect x="28" y="78" width="64" height="12" rx="6" fill="#2EA85F"/>
+          <circle cx="60" cy="84" r="12" fill="#fff" stroke="#185ABD" stroke-width="4"/>
+        </svg>
+        <div class="brand-text">
+          <h1>Aprendiendo con <span>@LaProfeVivy</span></h1>
+          <p>Ruta por categorías con acordeón lateral.</p>
+        </div>
+      </div>
+
+      <div class="student-box">
+        <small>Estudiante</small>
+        <strong id="studentBoxName">-</strong>
+        <div class="course-line" id="studentBoxCourse">-</div>
+      </div>
+
+      <div class="accordion" id="accordion"></div>
+
+      <div class="sidebar-footer">
+        <button class="cert-btn" id="certBtn" onclick="showCertificate()" disabled>Ver certificado</button>
+        <button class="reset-btn" onclick="resetProgress()">Reiniciar progreso</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="top-card">
+          <div class="progress-meta">
+            <strong id="currentTopicLabel">Tema actual</strong>
+            <span id="currentTopicPercent">0%</span>
+          </div>
+          <div class="progress-line">
+            <div class="progress-fill" id="currentTopicFill"></div>
+          </div>
+          <div class="unlock-text" id="unlockText"></div>
+        </div>
+
+        <div class="user-box">
+          <div class="user-stat">
+            <small>Progreso general</small>
+            <strong id="totalProgressValue">0%</strong>
+          </div>
+          <div class="user-stat">
+            <small>Subtema</small>
+            <strong id="subtopicCompactLabel">-</strong>
+          </div>
+        </div>
+      </div>
+
+      <div id="contentArea"></div>
+    </main>
+  </div>
+</section>
+
+<section id="certificateScreen" class="certificate-screen hidden">
+  <div class="certificate">
+    <h1>Certificado de participación</h1>
+    <h2>Aprendiendo con @LaProfeVivy</h2>
+    <p>Se certifica que</p>
+    <div class="name" id="certName">-</div>
+    <p>participó y completó satisfactoriamente la ruta de aprendizaje del curso</p>
+    <div class="course" id="certCourse">-</div>
+    <p>demostrando revisión completa de los temas disponibles en la plataforma.</p>
+
+    <div class="meta">
+      <div><strong>Fecha de presentación:</strong><br><span id="certDate">-</span></div>
+      <div><strong>Hora de presentación:</strong><br><span id="certTime">-</span></div>
+      <div><strong>Estudiante:</strong><br><span id="certStudent">-</span></div>
+      <div><strong>Curso / Grupo:</strong><br><span id="certGroup">-</span></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-print" onclick="window.print()">Imprimir / Guardar PDF</button>
+      <button class="btn-back" onclick="backToPlatform()">Volver</button>
+    </div>
+  </div>
+</section>
+
+<script>
+const DATA = [
+  {
+    id: "conceptos",
+    title: "Conceptos",
+    unlockAt: 0,
+    subtopics: [
+      {
+        id: "que_es_excel",
+        title: "1. ¿QUÉ ES EXCEL?",
+        intro: "Excel es una hoja de cálculo que permite organizar, procesar y analizar información.",
+        focus: "Se usa para trabajar con datos, fórmulas, funciones, tablas, filtros y gráficos.",
+        when: "Sirve cuando necesitas ordenar información y realizar cálculos o análisis.",
+        syntax: null,
+        exampleFormula: "Hoja de cálculo para datos, fórmulas, funciones, tablas y gráficos",
+        exampleNote: "Excel se estructura en libros, hojas, filas, columnas y celdas.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Tipo de dato","Ejemplo",""],
+            ["Texto","Nombre",""],
+            ["Número","25",""],
+            ["Fecha","30/10/2028",""],
+            ["Fórmula","=SUMA(B2:B5)",""]
+          ],
+          active: "B4"
+        },
+        error: "No confundas Excel con un editor de texto; su fortaleza está en trabajar datos y cálculos."
+      },
+      {
+        id: "para_que_sirve",
+        title: "2. ¿PARA QUÉ SIRVE?",
+        intro: "Excel sirve para registrar, calcular, resumir, analizar y presentar información.",
+        focus: "Ayuda en presupuestos, notas, inventarios, reportes, cronogramas y seguimiento.",
+        when: "Conviene usarlo cuando los datos necesitan estructura y cálculo.",
+        syntax: null,
+        exampleFormula: "Aplicaciones en organización, control y análisis",
+        exampleNote: "Un mismo archivo puede reunir tablas, fórmulas y gráficos.",
+        table: {
+          columns: ["A","B"],
+          rows: [
+            ["Actividad","Uso de Excel"],
+            ["Gastos","Control y totalización"],
+            ["Notas","Promedios"],
+            ["Ventas","Reportes"],
+            ["Inventario","Seguimiento"]
+          ],
+          active: "B3"
+        },
+        error: "No se usa solo para sumar; también sirve para analizar y visualizar."
+      },
+      {
+        id: "uso_empresas",
+        title: "3. USO EN LAS EMPRESAS",
+        intro: "En las empresas Excel se usa para controlar procesos, reportar resultados y apoyar decisiones.",
+        focus: "Se emplea en finanzas, talento humano, ventas, logística, inventario y administración.",
+        when: "Aparece cuando se necesita consolidar información y generar reportes.",
+        syntax: null,
+        exampleFormula: "Control de inventario, ventas, nómina, presupuestos y seguimiento",
+        exampleNote: "Muchas áreas comparten archivos o reportes hechos en Excel.",
+        table: {
+          columns: ["A","B"],
+          rows: [
+            ["Área","Uso"],
+            ["Ventas","Reporte de ingresos"],
+            ["Talento humano","Asistencia y novedades"],
+            ["Compras","Seguimiento de pedidos"],
+            ["Finanzas","Presupuestos"]
+          ],
+          active: "B2"
+        },
+        error: "No todas las empresas lo usan igual; depende del proceso y del nivel de análisis."
+      },
+      {
+        id: "excel_vs_sheets",
+        title: "4. EXCEL Y GOOGLE SHEETS",
+        intro: "Excel y Google Sheets son hojas de cálculo, pero no son idénticas.",
+        focus: "Excel suele ser más robusto en funciones avanzadas; Google Sheets destaca en colaboración en línea.",
+        when: "La elección depende de si priorizas potencia avanzada o trabajo colaborativo inmediato.",
+        syntax: null,
+        exampleFormula: "Comparación entre herramientas",
+        exampleNote: "Ambas permiten fórmulas, tablas y gráficos, pero tienen diferencias en entorno y alcance.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Aspecto","Excel","Google Sheets"],
+            ["Trabajo en línea","Sí","Sí"],
+            ["Colaboración","Sí","Muy fuerte"],
+            ["Funciones avanzadas","Muy amplio","Más limitado"],
+            ["Integración Microsoft","Alta","No"]
+          ],
+          active: "C2"
+        },
+        error: "No son enemigos; muchas veces se elige una u otra según la necesidad."
+      },
+      {
+        id: "partes_interfaz",
+        title: "5. PARTES DE LA INTERFAZ",
+        intro: "La interfaz de Excel tiene áreas que permiten escribir, calcular y navegar por la información.",
+        focus: "Las partes básicas son barra de título, cinta de opciones, cuadro de nombres, barra de fórmulas y hoja.",
+        when: "Es importante reconocerlas para orientarte dentro del programa.",
+        syntax: null,
+        exampleFormula: "Identificación de partes principales",
+        exampleNote: "Reconocer la interfaz ayuda a saber dónde escribir datos y dónde ver resultados.",
+        table: {
+          columns: ["A","B"],
+          rows: [
+            ["Parte","Función"],
+            ["Barra de fórmulas","Editar contenido"],
+            ["Cinta de opciones","Acceder a herramientas"],
+            ["Hoja","Trabajar datos"],
+            ["Cuadro de nombres","Ver celda activa"]
+          ],
+          active: "B2"
+        },
+        error: "La barra de fórmulas y la hoja cumplen funciones distintas."
+      },
+      {
+        id: "celda_rango",
+        title: "6. CELDA, FILA, COLUMNA Y RANGO",
+        intro: "Estos son los elementos básicos de organización dentro de una hoja de cálculo.",
+        focus: "La celda es la unidad mínima; fila y columna organizan; el rango agrupa varias celdas.",
+        when: "Necesitas entenderlos antes de usar fórmulas y funciones.",
+        syntax: null,
+        exampleFormula: "Ejemplo de rango: B2:B5",
+        exampleNote: "Las referencias permiten decirle a Excel dónde están los datos.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["","A","B"],
+            ["1","", ""],
+            ["2","Dato 1","10"],
+            ["3","Dato 2","12"],
+            ["4","Dato 3","8"],
+            ["5","Dato 4","15"]
+          ],
+          active: "B2"
+        },
+        error: "Una celda no es lo mismo que un rango; el rango incluye varias celdas."
+      }
+    ]
+  },
+  {
+    id: "aritmeticas",
+    title: "Funciones aritméticas",
+    unlockAt: 60,
+    subtopics: [
+      {
+        id: "sumar",
+        title: "1. SUMAR",
+        intro: "Suma varios valores o un rango completo sin escribir operación por operación.",
+        focus: "Usa SUMA para totales rápidos en notas, ventas, gastos o cantidades.",
+        when: "Cuando tienes una lista continua de valores y quieres el total.",
+        syntax: "=SUMA(rango)",
+        exampleFormula: "=SUMA(B2:B5)",
+        exampleNote: "En la columna B están cuatro valores y la función devuelve el total en una sola celda.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Valores","10",""],
+            ["Valores","15",""],
+            ["Valores","8",""],
+            ["Valores","12",""],
+            ["Total","=SUMA(B2:B5)","45"]
+          ],
+          active: "C5"
+        },
+        error: "No confundas =SUMA(B2:B5) con =B2+B5 si necesitas sumar todo el rango."
+      },
+      {
+        id: "redondear",
+        title: "2. REDONDEAR",
+        intro: "Ajusta un número a una cantidad específica de decimales.",
+        focus: "Sirve mucho en promedios, porcentajes, precios y cálculos finales.",
+        when: "Cuando quieres mostrar resultados más limpios o controlar decimales.",
+        syntax: "=REDONDEAR(número; decimales)",
+        exampleFormula: "=REDONDEAR(B2;2)",
+        exampleNote: "Si en B2 tienes 3,14159, el resultado con 2 decimales será 3,14.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Valor original","3,14159",""],
+            ["Decimales","2",""],
+            ["Fórmula","=REDONDEAR(B2;2)",""],
+            ["Resultado","","3,14"]
+          ],
+          active: "C4"
+        },
+        error: "Si pones 0 en los decimales, Excel redondea al entero más cercano."
+      },
+      {
+        id: "producto",
+        title: "3. PRODUCTO",
+        intro: "Multiplica varios números o un rango de una sola vez.",
+        focus: "Es útil cuando varias celdas participan en una multiplicación continua.",
+        when: "Cuando necesitas obtener un producto de varios factores.",
+        syntax: "=PRODUCTO(rango)",
+        exampleFormula: "=PRODUCTO(B2:B4)",
+        exampleNote: "Multiplica 2 × 3 × 4 sin tener que escribir cada asterisco.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Factor","2",""],
+            ["Factor","3",""],
+            ["Factor","4",""],
+            ["Resultado","=PRODUCTO(B2:B4)","24"]
+          ],
+          active: "C4"
+        },
+        error: "PRODUCTO no suma ni promedia; solo multiplica todos los valores."
+      }
+    ]
+  },
+  {
+    id: "estadisticas",
+    title: "Funciones estadísticas",
+    unlockAt: 60,
+    subtopics: [
+      {
+        id: "promedio",
+        title: "1. PROMEDIO",
+        intro: "Calcula el valor medio de un conjunto de números.",
+        focus: "El promedio suma todos los datos y los divide entre la cantidad.",
+        when: "Cuando necesitas un resultado representativo de varios valores.",
+        syntax: "=PROMEDIO(rango)",
+        exampleFormula: "=PROMEDIO(B2:B5)",
+        exampleNote: "Si los valores son 4, 3, 5 y 2, el promedio es 3,5.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Dato","4",""],
+            ["Dato","3",""],
+            ["Dato","5",""],
+            ["Dato","2",""],
+            ["Promedio","=PROMEDIO(B2:B5)","3,5"]
+          ],
+          active: "C5"
+        },
+        error: "PROMEDIO no devuelve el dato mayor ni el menor; devuelve el valor medio."
+      }
+    ]
+  },
+  {
+    id: "conteo",
+    title: "Funciones de conteo",
+    unlockAt: 60,
+    subtopics: [
+      {
+        id: "contar",
+        title: "1. CONTAR",
+        intro: "Cuenta cuántas celdas numéricas hay en un rango.",
+        focus: "Sirve para saber cuántos valores numéricos existen realmente.",
+        when: "Cuando necesitas saber cuántos datos numéricos fueron registrados.",
+        syntax: "=CONTAR(rango)",
+        exampleFormula: "=CONTAR(B2:B6)",
+        exampleNote: "Solo cuenta celdas con números.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Valor","10",""],
+            ["Valor","15",""],
+            ["Texto","Hola",""],
+            ["Vacío","",""],
+            ["Conteo","=CONTAR(B1:B4)","2"]
+          ],
+          active: "C5"
+        },
+        error: "No cuenta texto ni celdas vacías si usas CONTAR."
+      }
+    ]
+  },
+  {
+    id: "fechas",
+    title: "Fecha y hora",
+    unlockAt: 60,
+    subtopics: [
+      {
+        id: "fechas_basicas",
+        title: "1. FECHAS BÁSICAS",
+        intro: "Excel reconoce fechas como datos que pueden calcularse, compararse y formatearse.",
+        focus: "Una fecha bien escrita permite usar funciones como DÍA, MES, AÑO o DÍAS.",
+        when: "Cuando trabajas con entregas, cronogramas, edades o vencimientos.",
+        syntax: null,
+        exampleFormula: "Fecha válida: 30/10/2028",
+        exampleNote: "Una fecha válida puede cambiar de formato sin perder su valor interno.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Evento","Fecha",""],
+            ["Halloween","30/10/2028",""],
+            ["Entrega","15/11/2028",""],
+            ["Examen","20/11/2028",""]
+          ],
+          active: "B2"
+        },
+        error: "Si Excel no reconoce la fecha, muchas funciones posteriores fallan."
+      },
+      {
+        id: "hoy",
+        title: "2. HOY",
+        intro: "Devuelve la fecha actual del sistema sin incluir hora.",
+        focus: "Se actualiza automáticamente al abrir el archivo.",
+        when: "Cuando necesitas comparar vencimientos o calcular días desde hoy.",
+        syntax: "=HOY()",
+        exampleFormula: "=HOY()",
+        exampleNote: "Si hoy es 02/04/2026, la celda mostrará esa fecha.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Hoy","=HOY()",""],
+            ["Entrega","10/04/2026",""],
+            ["Diferencia","=B2-B1","8"]
+          ],
+          active: "B1"
+        },
+        error: "HOY no trae hora; solo fecha."
+      }
+    ]
+  },
+  {
+    id: "graficos",
+    title: "Gráficos",
+    unlockAt: 60,
+    subtopics: [
+      {
+        id: "columnas",
+        title: "1. COLUMNAS",
+        intro: "Compara categorías usando barras verticales.",
+        focus: "Ideal para ventas por producto, estudiantes por curso o gastos por categoría.",
+        when: "Cuando quieres saber qué grupo tiene más o menos.",
+        syntax: null,
+        exampleFormula: "Primero organizas la tabla y luego insertas el gráfico",
+        exampleNote: "Sirve para comparar cantidades entre categorías.",
+        table: {
+          columns: ["A","B","C"],
+          rows: [
+            ["Producto","Venta",""],
+            ["A","10",""],
+            ["B","15",""],
+            ["C","8",""]
+          ],
+          active: "B2"
+        },
+        error: "No es la mejor opción para mostrar tendencia en el tiempo."
+      }
+    ]
+  }
+];
+
+const STORAGE_KEY = "excel_vivy_clean_v1";
+const STUDENT_KEY = "excel_vivy_clean_student";
+
+function createDefaultState(){
+  return {
+    currentTopicId: DATA[0].id,
+    currentSubtopicId: DATA[0].subtopics[0].id,
+    completed: {},
+    finishedAt: null
+  };
+}
+
+let state = loadState();
+let student = loadStudent();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : createDefaultState();
+  }catch(e){ return createDefaultState(); }
+}
+function loadStudent(){
+  try{
+    const raw = localStorage.getItem(STUDENT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function saveStudent(){ localStorage.setItem(STUDENT_KEY, JSON.stringify(student)); }
+
+function startPlatform(){
+  const name = document.getElementById("studentName").value.trim();
+  const course = document.getElementById("studentCourse").value.trim();
+  const group = document.getElementById("studentGroup").value.trim();
+  if(!name || !course){ alert("Debes registrar Apellidos y nombre, y Curso."); return; }
+  student = { name, course, group: group || "-" };
+  saveStudent();
+  document.getElementById("registerScreen").classList.add("hidden");
+  document.getElementById("appScreen").classList.remove("hidden");
+  renderAll();
+}
+
+function resetProgress(){
+  localStorage.removeItem(STORAGE_KEY);
+  state = createDefaultState();
+  renderAll();
+}
+
+function getTopic(id){ return DATA.find(t => t.id === id); }
+function getTopicIndex(id){ return DATA.findIndex(t => t.id === id); }
+function getCurrentTopic(){ return getTopic(state.currentTopicId); }
+function getCurrentSubtopic(){ return getCurrentTopic().subtopics.find(s => s.id === state.currentSubtopicId); }
+function subKey(topicId, subId){ return `${topicId}::${subId}`; }
+function isCompleted(topicId, subId){ return !!state.completed[subKey(topicId, subId)]; }
+
+function topicProgress(topic){
+  const total = topic.subtopics.length;
+  const done = topic.subtopics.filter(s => isCompleted(topic.id, s.id)).length;
+  return Math.round((done / total) * 100);
+}
+function totalProgress(){
+  const all = DATA.flatMap(t => t.subtopics);
+  const done = DATA.reduce((acc, topic) => acc + topic.subtopics.filter(s => isCompleted(topic.id, s.id)).length, 0);
+  return Math.round((done / all.length) * 100);
+}
+function isTopicUnlocked(topic){
+  const index = getTopicIndex(topic.id);
+  if(index === 0) return true;
+  const prev = DATA[index - 1];
+  return topicProgress(prev) >= topic.unlockAt;
+}
+function pendingSubtopics(topic){
+  return topic.subtopics.filter(s => !isCompleted(topic.id, s.id));
+}
+function nextUnlockText(){
+  const topic = getCurrentTopic();
+  const index = getTopicIndex(topic.id);
+  const progress = topicProgress(topic);
+  const next = DATA[index + 1];
+  if(!next) return "Ya no hay otro bloque después de este.";
+  if(progress >= next.unlockAt) return `Ya puedes abrir ${next.title}.`;
+  return `Completa ${next.unlockAt}% de ${topic.title} para desbloquear ${next.title}.`;
+}
+
+function openTopic(topicId){
+  const topic = getTopic(topicId);
+  if(!isTopicUnlocked(topic)) return;
+  state.currentTopicId = topicId;
+  const firstPending = pendingSubtopics(topic)[0];
+  state.currentSubtopicId = firstPending ? firstPending.id : topic.subtopics[0].id;
+  saveState();
+  renderAll();
+}
+function openSubtopic(topicId, subId){
+  state.currentTopicId = topicId;
+  state.currentSubtopicId = subId;
+  saveState();
+  renderAll();
+}
+
+function markReviewed(){
+  const topic = getCurrentTopic();
+  const sub = getCurrentSubtopic();
+  const key = subKey(topic.id, sub.id);
+  state.completed[key] = true;
+
+  if(totalProgress() === 100 && !state.finishedAt){
+    state.finishedAt = new Date().toISOString();
+  }
+
+  const nextPending = pendingSubtopics(topic)[0];
+  if(nextPending && nextPending.id !== sub.id){
+    state.currentSubtopicId = nextPending.id;
+  }
+
+  saveState();
+  renderAll();
+}
+
+function renderAccordion(){
+  const wrap = document.getElementById("accordion");
+  wrap.innerHTML = "";
+
+  DATA.forEach(topic => {
+    const unlocked = isTopicUnlocked(topic);
+    const open = topic.id === state.currentTopicId;
+    const progress = topicProgress(topic);
+
+    const topicEl = document.createElement("div");
+    topicEl.className = `topic ${open ? "open" : ""}`;
+
+    const header = document.createElement("button");
+    header.className = `topic-header ${unlocked ? "" : "locked"}`;
+    header.innerHTML = `<span>${topic.title}</span><span class="right">${unlocked ? progress + "%" : "🔒"}</span>`;
+    header.onclick = () => openTopic(topic.id);
+    topicEl.appendChild(header);
+
+    const body = document.createElement("div");
+    body.className = "topic-body";
+
+    topic.subtopics.forEach(sub => {
+      const completed = isCompleted(topic.id, sub.id);
+      const active = open && state.currentSubtopicId === sub.id;
+      const btn = document.createElement("button");
+      btn.className = `sub-btn ${active ? "active" : ""} ${completed ? "completed" : ""}`;
+      btn.innerHTML = `<span>${sub.title}</span><span class="sub-right">${completed ? "✓" : "▷"}</span>`;
+      btn.onclick = () => openSubtopic(topic.id, sub.id);
+      body.appendChild(btn);
+    });
+
+    topicEl.appendChild(body);
+    wrap.appendChild(topicEl);
+  });
+
+  document.getElementById("certBtn").disabled = totalProgress() !== 100;
+}
+
+function renderTopBar(){
+  const topic = getCurrentTopic();
+  const sub = getCurrentSubtopic();
+  const progress = topicProgress(topic);
+  document.getElementById("currentTopicLabel").textContent = topic.title;
+  document.getElementById("currentTopicPercent").textContent = `${progress}%`;
+  document.getElementById("currentTopicFill").style.width = `${progress}%`;
+  document.getElementById("unlockText").textContent = nextUnlockText();
+  document.getElementById("totalProgressValue").textContent = `${totalProgress()}%`;
+  document.getElementById("subtopicCompactLabel").textContent = sub.title.replace(/^\d+\.\s*/, "");
+  document.getElementById("studentBoxName").textContent = student ? student.name : "-";
+  document.getElementById("studentBoxCourse").textContent = student ? `${student.course} / ${student.group}` : "-";
+}
+
+function renderSheet(sub){
+  const cols = sub.table.columns;
+  const rows = sub.table.rows;
+  let html = `<div class="sheet-wrap">
+    <div class="sheet-top">Ejemplo guiado</div>
+    <div class="sheet-bar">${sub.exampleFormula}</div>
+    <div class="sheet-scroll">
+      <div class="sheet-grid" style="grid-template-columns:42px repeat(${cols.length},1fr)">`;
+
+  html += `<div class="cell header"></div>`;
+  cols.forEach(col => { html += `<div class="cell header">${col}</div>`; });
+
+  rows.forEach((row, i) => {
+    const rowNumber = i + 1;
+    html += `<div class="cell header">${rowNumber}</div>`;
+    row.forEach((value, colIndex) => {
+      const cellRef = `${cols[colIndex]}${rowNumber}`;
+      const active = sub.table.active === cellRef ? "active" : "";
+      html += `<div class="cell ${active}">${value || ""}</div>`;
+    });
+  });
+
+  html += `</div></div></div>`;
+  return html;
+}
+
+function renderContent(){
+  const topic = getCurrentTopic();
+  const sub = getCurrentSubtopic();
+  const completed = isCompleted(topic.id, sub.id);
+  const showSyntax = !!sub.syntax;
+
+  document.getElementById("contentArea").innerHTML = `
+    <div class="panel title-panel">
+      <div class="eyebrow">${topic.title}</div>
+      <h1>${sub.title.replace(/^\d+\.\s*/, "")}</h1>
+      <p>${sub.intro}</p>
+
+      <div class="fact-grid">
+        <div class="fact">
+          <h3>Qué hace</h3>
+          <p>${sub.focus}</p>
+        </div>
+        ${showSyntax ? `
+        <div class="fact">
+          <h3>Sintaxis</h3>
+          <p><span class="code-badge">${sub.syntax}</span></p>
+        </div>` : `
+        <div class="fact">
+          <h3>Referencia</h3>
+          <p><span class="code-badge">${sub.exampleFormula}</span></p>
+        </div>`}
+        <div class="fact">
+          <h3>Cuándo usarlo</h3>
+          <p>${sub.when}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="panel">
+        <h3>Ejemplo guiado</h3>
+        <p>${sub.exampleNote}</p>
+        ${renderSheet(sub)}
+        <div class="error-box">Error frecuente: ${sub.error}</div>
+
+        <div class="bottom-actions">
+          <button class="mark-btn ${completed ? "done" : ""}" ${completed ? "disabled" : ""} onclick="markReviewed()">
+            ${completed ? "Subtema revisado" : "Marcar subtema como revisado"}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function ensureValidSelection(){
+  const currentTopic = getTopic(state.currentTopicId);
+  if(!currentTopic || !isTopicUnlocked(currentTopic)){
+    state.currentTopicId = DATA[0].id;
+    state.currentSubtopicId = DATA[0].subtopics[0].id;
+    return;
+  }
+  const subExists = currentTopic.subtopics.some(s => s.id === state.currentSubtopicId);
+  if(!subExists){
+    state.currentSubtopicId = currentTopic.subtopics[0].id;
+  }
+}
+
+function formatDateTime(isoString){
+  const d = new Date(isoString);
+  return {
+    date: d.toLocaleDateString("es-CO", {year:"numeric", month:"long", day:"numeric"}),
+    time: d.toLocaleTimeString("es-CO", {hour:"2-digit", minute:"2-digit", second:"2-digit"})
+  };
+}
+
+function showCertificate(){
+  if(totalProgress() !== 100) return;
+  if(!state.finishedAt){
+    state.finishedAt = new Date().toISOString();
+    saveState();
+  }
+  const dt = formatDateTime(state.finishedAt);
+  document.getElementById("certName").textContent = student ? student.name : "-";
+  document.getElementById("certCourse").textContent = student ? student.course : "-";
+  document.getElementById("certStudent").textContent = student ? student.name : "-";
+  document.getElementById("certGroup").textContent = student ? `${student.course} / ${student.group}` : "-";
+  document.getElementById("certDate").textContent = dt.date;
+  document.getElementById("certTime").textContent = dt.time;
+  document.getElementById("appScreen").classList.add("hidden");
+  document.getElementById("certificateScreen").classList.remove("hidden");
+}
+function backToPlatform(){
+  document.getElementById("certificateScreen").classList.add("hidden");
+  document.getElementById("appScreen").classList.remove("hidden");
+}
+
+function renderAll(){
+  ensureValidSelection();
+  renderAccordion();
+  renderTopBar();
+  renderContent();
+  saveState();
+}
+
+if(student){
+  document.getElementById("registerScreen").classList.add("hidden");
+  document.getElementById("appScreen").classList.remove("hidden");
+  renderAll();
+}
+</script>
+</body>
+</html>
+
