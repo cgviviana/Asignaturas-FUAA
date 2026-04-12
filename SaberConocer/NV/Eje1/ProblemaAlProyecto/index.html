@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proyecto de Aula</title>
+  <style>
+    :root{
+      --bg:#c8d7e6;
+      --bg2:#b7cadb;
+      --panel:#d8dadd;
+      --dark:#111111;
+      --text:#1f1f1f;
+      --line:#79e7ff;
+      --green:#7ed957;
+      --shadow:0 10px 24px rgba(0,0,0,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Segoe UI, Arial, sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,var(--bg),var(--bg2));
+      min-height:100vh;
+    }
+    .wrap{
+      width:min(1240px,95%);
+      margin:0 auto;
+      padding:20px 0 90px;
+    }
+    .main-header{
+      background:linear-gradient(180deg,#28461e,#1c3116);
+      color:#f5ffe8;
+      border:1px solid rgba(158,255,116,.35);
+      padding:16px 22px;
+      font-size:1.3rem;
+      font-weight:800;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+      text-align:left;
+    }
+    .frame{
+      display:grid;
+      grid-template-columns:270px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+    .tabs-panel,.content-panel{
+      background:rgba(255,255,255,.12);
+      border:2px solid rgba(255,255,255,.25);
+      box-shadow:var(--shadow);
+    }
+    .tabs-panel{
+      padding:14px;
+      position:sticky;
+      top:16px;
+    }
+    .tabs-title{
+      background:var(--dark);
+      color:#fff;
+      padding:14px 16px;
+      font-weight:800;
+      font-size:1.05rem;
+      margin-bottom:14px;
+      text-align:center;
+    }
+    .tab-btn{
+      width:100%;
+      border:none;
+      cursor:pointer;
+      text-align:left;
+      padding:14px 16px;
+      margin-bottom:10px;
+      background:#edf1f5;
+      color:#1c1c1c;
+      font-weight:700;
+      font-size:.98rem;
+      border-left:6px solid transparent;
+      transition:.2s ease;
+    }
+    .tab-btn:hover,.tab-btn.active{
+      background:#111;
+      color:#fff;
+      border-left-color:var(--green);
+    }
+    .content-panel{
+      min-height:680px;
+      overflow:hidden;
+    }
+    .section{display:none}
+    .section.active{display:block}
+    .section-head{
+      background:#111;
+      color:#fff;
+      padding:16px 20px;
+      font-size:1.7rem;
+      font-weight:800;
+    }
+    .section-body{
+      background:#d3d7dc;
+      padding:18px;
+      border-top:2px solid var(--line);
+    }
+    .accordion{display:grid;gap:14px}
+    .acc-item{
+      background:var(--panel);
+      border:2px solid var(--line);
+      overflow:hidden;
+    }
+    .acc-btn{
+      width:100%;
+      border:none;
+      background:#111;
+      color:#fff;
+      padding:14px 18px;
+      text-align:left;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      cursor:pointer;
+      font-size:1rem;
+      font-weight:800;
+    }
+    .plus{
+      width:30px;
+      height:30px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.14);
+      border-radius:50%;
+      transition:.2s ease;
+      flex:0 0 auto;
+    }
+    .acc-item.open .plus{transform:rotate(45deg);background:rgba(126,217,87,.25)}
+    .acc-content{
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .28s ease;
+      background:var(--panel);
+    }
+    .acc-inner{
+      padding:18px 18px 20px;
+      font-size:1rem;
+      line-height:1.6;
+    }
+    .acc-inner p{margin:0 0 12px}
+    .acc-inner ul{margin:0;padding-left:24px}
+    .acc-inner li{margin:7px 0}
+    .example-box,.note-box,.formula-box{
+      margin-top:12px;
+      padding:14px 16px;
+    }
+    .example-box{background:rgba(255,255,255,.55);border-left:5px solid #111}
+    .note-box{background:#f6fff1;border-left:5px solid var(--green)}
+    .formula-box{background:#161616;color:#ecffe0;font-weight:700}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .chip{background:#f5fff0;border:1px solid #97cf83;padding:8px 12px;font-weight:700}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .mini-card{background:rgba(255,255,255,.55);padding:14px 16px;border:1px solid rgba(0,0,0,.08)}
+    .mini-card h4{margin:0 0 8px;font-size:1rem}
+    .mini-card p{margin:0}
+    .embed-wrap{background:rgba(255,255,255,.45);padding:12px;border:1px solid rgba(0,0,0,.08)}
+    iframe{width:100%;height:520px;border:none;background:#fff}
+    .zoom-box{
+      background:rgba(255,255,255,.45);
+      padding:12px;
+      border:1px solid rgba(0,0,0,.08);
+      margin-top:12px;
+      text-align:center;
+    }
+    .zoom-box img{
+      max-width:100%;
+      height:auto;
+      cursor:zoom-in;
+      box-shadow:var(--shadow);
+    }
+    .zoom-note{
+      margin-top:8px;
+      font-weight:700;
+      font-size:.92rem;
+    }
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.85);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      z-index:9999;
+    }
+    .lightbox.open{display:flex}
+    .lightbox img{
+      max-width:95vw;
+      max-height:92vh;
+      background:#fff;
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+    }
+    .lightbox-close{
+      position:absolute;
+      top:18px;
+      right:18px;
+      background:#111;
+      color:#fff;
+      border:none;
+      padding:10px 14px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    footer{
+      margin-top:18px;
+      background:#111;
+      color:#d7ffbf;
+      text-align:center;
+      padding:16px;
+      font-weight:800;
+      box-shadow:var(--shadow);
+    }
+    @media (max-width:900px){
+      .frame{grid-template-columns:1fr}
+      .tabs-panel{position:static}
+      .two-col{grid-template-columns:1fr}
+      iframe{height:420px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="main-header">Proyecto de Aula</header>
+    <div class="frame">
+      <aside class="tabs-panel">
+        <div class="tabs-title">Temas</div>
+        <button class="tab-btn active" data-section="s1">Problemática</button>
+        <button class="tab-btn" data-section="s2">Análisis</button>
+        <button class="tab-btn" data-section="s3">Formulación de objetivos</button>
+        <button class="tab-btn" data-section="s4">Alcance</button>
+      </aside>
+
+      <main class="content-panel">
+        <section id="s1" class="section active">
+          <div class="section-head">Problemática</div>
+          <div class="section-body">
+            <div class="accordion">
+              <article class="acc-item">
+                <button class="acc-btn"><span>Observar el entorno</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>El primer paso para formular una problemática es observar el entorno. Esto permite reconocer situaciones repetitivas, dificultades, necesidades o fallas que realmente valga la pena analizar.</p>
+                    <div class="note-box">
+                      <strong>Tener en cuenta</strong>
+                      <p>Observar el entorno que conocemos ayuda a elegir adecuadamente la problemática, porque evita trabajar sobre supuestos y permite partir de hechos visibles o registrables.</p>
+                     
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Ejemplo </span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>En un colegio, la coordinación nota que muchos estudiantes llegan tarde a la primera hora. Para entender qué está pasando, deciden hacer un registro durante una semana: cada día anotan a qué hora llega cada estudiante y si entró a tiempo o tarde. La idea es identificar patrones, por ejemplo por curso, por día o por rango de minutos de atraso, y con base en eso, proponer una solución digital.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Tipos de problemática</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Aquí se integra el recurso de tipos de problemática dentro de esta misma pestaña.</p>
+                    <div class="embed-wrap">
+                      <iframe src="https://cgviviana.github.io/Asignaturas-FUAA/SaberConocer/Problem%C3%A1ticas/index.html" title="Tipos de problemática"></iframe>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Datos de la problemática</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Toda problemática genera datos o puede analizarse con información. En este caso, por ejemplo, se pueden recoger horas de llegada, días, cursos, estudiantes y frecuencia de atraso.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Tipos de datos</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <ul>
+                      <li><strong>Cuantitativos:</strong> hora de llegada, número de tardanzas, minutos de retraso.</li>
+                      <li><strong>Cualitativos:</strong> posibles razones del atraso, percepciones de docentes o estudiantes, condiciones del contexto.</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Relevancia de los datos</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p> En general los datos son relevantes porque permiten sustentar la problemática con evidencia. No solo muestran que existe una dificultad, sino también su frecuencia, sus patrones y la necesidad de proponer una solución digital pertinente.</p>
+                    <p>Para reconocerlos se dice que si al modificar ese dato la salida cambia, es relevante. Si no cambia, es irrelevante</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s2" class="section">
+          <div class="section-head">Análisis</div>
+          <div class="section-body">
+            <div class="accordion">
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Datos que generan las problemáticas</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:950px;">
+                  <div class="acc-inner">
+                    <p>Las problemáticas generan datos porque dejan huellas observables o medibles. En el caso de las llegadas tarde, los datos pueden ser: hora exacta de llegada, curso, estudiante, día de la semana y cantidad de minutos de atraso.</p>
+                    <div class="example-box">
+                      <strong>Para qué sirven</strong>
+                      <p>Permiten pasar de una percepción general a un análisis con evidencia.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Causas</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Después de organizar los datos, se pueden explorar causas como horarios de transporte, hábitos de ingreso, diferencias entre cursos o días específicos con mayor retraso.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Consecuencias</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Las llegadas tarde afectan la puntualidad, el inicio de las actividades, el seguimiento institucional y posiblemente el rendimiento o la convivencia escolar.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Fuentes</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <ul>
+                      <li>Tipos de soluciones dadas empíricamente o de mercado .</li>
+                      <li>Requerimientos del usuario.</li>
+                      <li>Datos para recolectar.</li>
+                    </ul>
+                    <div class="note-box">
+                      <strong>Ejemplo </strong>
+                      <p>Se pueden usar registros institucionales, observación directa, formularios, entrevistas breves a los actores (padre, estudiantes, personal institucional, etc.) y referentes sobre control de asistencia o seguimiento escolar, entre otros.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Representación </span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>El árbol de problemas es una forma gráfica de organizar el análisis. Sirve para representar visualmente el problema central, sus causas y sus consecuencias.</p>
+                    <p>Se representa ubicando el problema principal en el centro, las causas en la parte inferior y los efectos o consecuencias en la parte superior.</p>
+                    <div class="example-box">
+                      <strong>Enlace</strong>
+                      <p><a href="https://cgviviana.github.io/Asignaturas-FUAA/SaberConocer/NV/Eje1/arbol/index.html" target="_blank" rel="noopener">Árbol de problemas</a></p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s3" class="section">
+          <div class="section-head">Formulación de objetivos</div>
+          <div class="section-body">
+            <div class="accordion">
+                  <article class="acc-item">
+                <button class="acc-btn"><span>Estructura de redacción</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Un objetivo debe dejar claro qué se hará, sobre qué se trabajará y para qué servirá.</p>
+                    <div class="formula-box">Verbo (en infinitivo) + qué se va a estudiar o hacer ( objeto o sujeto de estudio) + para qué + contexto</div>
+                  </div>
+                </div>
+              </article>
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Objetivo general</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1100px;">
+                  <div class="acc-inner">
+                    <p>El objetivo general expresa la meta principal del proyecto y no debe prometer más de lo que el alcance permite.</p>
+                   
+                      <strong>Ejemplo </strong>
+                      <p>Analizar los patrones de llegada tarde de los estudiantes a la primera hora en un colegio para orientar el diseño de una solución digital de registro y seguimiento.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Objetivos específicos</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <ul>
+                      <li>Identificar la frecuencia de llegadas tarde durante una semana.</li>
+                      <li>Describir los patrones de atraso por curso, día y rango de minutos.</li>
+                      <li>Analizar posibles factores asociados a la tardanza.</li>
+                      <li>Proponer una solución digital para registrar y visualizar la información.</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Taxonomía de Bloom</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>La Taxonomía de Bloom ayuda a elegir verbos más adecuados para el objetivo general y para los objetivos específicos.</p>
+                    <div class="zoom-box">
+                      <img src="taxonomia.jpg" alt="Taxonomía de Bloom" id="taxonomiaImg">
+                      <div class="zoom-note">Pulsar imagen para ampliar</div>
+                    </div>
+                    <div class="note-box">
+                      <strong>Uso orientador</strong>
+                      <p>Para el objetivo general convienen verbos más amplios, porque expresan la meta central del proyecto. Para los específicos convienen verbos más concretos, porque muestran acciones parciales y medibles.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+        
+        <section id="s4" class="section">
+          <div class="section-head">Alcance</div>
+          <div class="section-body">
+            <div class="accordion">
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Qué es el alcance</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1200px;">
+                  <div class="acc-inner">
+                    <p>El alcance define hasta dónde llega el proyecto y qué se espera lograr de manera realista. Delimita el trabajo para que el proyecto sea viable y coherente con el tiempo, los recursos y la finalidad propuesta.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Partes del alcance</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <ul>
+                      <li><strong>Qué se va a hacer:</strong> define la acción principal del proyecto.</li>
+                      <li><strong>Hasta dónde llega:</strong> delimita el límite real del proyecto.</li>
+                      <li><strong>Qué no incluye:</strong> aclara qué queda por fuera.</li>
+                      <li><strong>Población o contexto:</strong> indica a quién o dónde aplica.</li>
+                      <li><strong>Resultado esperado:</strong> muestra qué se entregará al final.</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Estructura sugerida</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <div class="formula-box">El proyecto tiene como alcance + qué se hará + dónde o a quién aplica + durante qué periodo o condición + con qué finalidad + qué no incluye</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Aplicado a esta problemática</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>En este caso, el alcance podría centrarse en registrar y analizar los atrasos de una semana en la primera hora, identificar patrones y plantear el diseño de una solución digital. No implica implementar un sistema institucional completo si eso no hace parte del proyecto.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Coherencia con los objetivos</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Si el alcance es de diagnóstico y propuesta, el objetivo general debe orientarse a analizar y proponer, no a garantizar que el problema desaparezca por completo.</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <footer>Aprendiendo con @LaProfeVivy</footer>
+      </main>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">Cerrar ✕</button>
+    <img src="taxonomia.jpg" alt="Taxonomía de Bloom ampliada">
+  </div>
+
+  <script>
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.section');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.section).classList.add('active');
+      });
+    });
+    document.querySelectorAll('.acc-item').forEach(item => {
+      const btn = item.querySelector('.acc-btn');
+      const content = item.querySelector('.acc-content');
+      btn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        item.classList.toggle('open');
+        content.style.maxHeight = isOpen ? null : content.scrollHeight + 'px';
+      });
+    });
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('.acc-item.open .acc-content').forEach(content => {
+        content.style.maxHeight = content.scrollHeight + 'px';
+      });
+    });
+
+    const taxonomiaImg = document.getElementById('taxonomiaImg');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxClose = document.getElementById('lightboxClose');
+
+    if (taxonomiaImg) {
+      taxonomiaImg.addEventListener('click', () => {
+        lightbox.classList.add('open');
+      });
+    }
+
+    lightboxClose.addEventListener('click', () => {
+      lightbox.classList.remove('open');
+    });
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) lightbox.classList.remove('open');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') lightbox.classList.remove('open');
+    });
+  </script>
+</body>
+</html>
