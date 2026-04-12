@@ -1,1 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Árbol de Problemas</title>
+<style>
+  *{
+    box-sizing:border-box;
+  }
 
+  body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#f2f4f7;
+    padding:24px 16px 40px;
+  }
+
+  .wrapper{
+    max-width:1400px;
+    margin:0 auto;
+  }
+
+  .tree-grid{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:18px;
+    align-items:start;
+  }
+
+  .col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .box{
+    width:100%;
+    max-width:220px;
+    min-height:68px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:#fff;
+    padding:12px 10px;
+    border-radius:0;
+    font-size:14px;
+    line-height:1.25;
+    font-weight:500;
+    box-shadow:0 2px 6px rgba(0,0,0,.08);
+  }
+
+  .box.top{
+    background:#11a0db;
+  }
+
+  .box.problem{
+    background:#006fba;
+    min-height:86px;
+    font-size:16px;
+    font-weight:700;
+    max-width:420px;
+    padding:16px 18px;
+  }
+
+  .box.bottom{
+    background:#072b7a;
+  }
+
+  /* Flecha vertical hacia arriba */
+  .arrow-up{
+    position:relative;
+    width:2px;
+    height:34px;
+    background:#2c2c2c;
+    margin:0 auto;
+  }
+
+  .arrow-up::before{
+    content:"";
+    position:absolute;
+    top:-8px;
+    left:50%;
+    transform:translateX(-50%);
+    border-left:7px solid transparent;
+    border-right:7px solid transparent;
+    border-bottom:10px solid #2c2c2c;
+  }
+
+  /* fila superior */
+  .top-section{
+    margin-bottom:22px;
+  }
+
+  .top-group{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:100%;
+  }
+
+  /* conector horizontal hacia el problema */
+  .top-connector{
+    position:relative;
+    width:100%;
+    height:34px;
+  }
+
+  .top-connector .vline{
+    position:absolute;
+    left:50%;
+    top:0;
+    width:2px;
+    height:18px;
+    background:#2c2c2c;
+    transform:translateX(-50%);
+  }
+
+  .top-connector .hline{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    width:calc(250% + 18px);
+    height:2px;
+    background:#2c2c2c;
+    transform:translateX(-50%);
+  }
+
+  /* evitar que el horizontal sobresalga en extremos */
+  .col:first-child .top-connector .hline{
+    width:calc(150% + 9px);
+    left:100%;
+    transform:translateX(-100%);
+  }
+
+  .col:last-child .top-connector .hline{
+    width:calc(150% + 9px);
+    left:0%;
+    transform:translateX(0%);
+  }
+
+  /* problema */
+  .problem-row{
+    position:relative;
+    display:flex;
+    justify-content:center;
+    margin:4px 0 18px;
+  }
+
+  .problem-holder{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .problem-up-arrow{
+    margin-bottom:0;
+  }
+
+  .problem-down-arrow{
+    margin-top:0;
+  }
+
+  /* fila inferior */
+  .bottom-section{
+    margin-top:20px;
+  }
+
+  .bottom-group{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:100%;
+  }
+
+  .bottom-connector{
+    position:relative;
+    width:100%;
+    height:34px;
+  }
+
+  .bottom-connector .vline{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    width:2px;
+    height:18px;
+    background:#2c2c2c;
+    transform:translateX(-50%);
+  }
+
+  .bottom-connector .hline{
+    position:absolute;
+    left:50%;
+    top:0;
+    width:calc(250% + 18px);
+    height:2px;
+    background:#2c2c2c;
+    transform:translateX(-50%);
+  }
+
+  .col:first-child .bottom-connector .hline{
+    width:calc(150% + 9px);
+    left:100%;
+    transform:translateX(-100%);
+  }
+
+  .col:last-child .bottom-connector .hline{
+    width:calc(150% + 9px);
+    left:0%;
+    transform:translateX(0%);
+  }
+
+  .spacer{
+    height:14px;
+  }
+
+  @media (max-width: 1100px){
+    .tree-grid{
+      grid-template-columns: repeat(3, 1fr);
+      row-gap:30px;
+    }
+
+    .top-connector .hline,
+    .bottom-connector .hline,
+    .col:first-child .top-connector .hline,
+    .col:last-child .top-connector .hline,
+    .col:first-child .bottom-connector .hline,
+    .col:last-child .bottom-connector .hline{
+      display:none;
+    }
+  }
+
+  @media (max-width: 700px){
+    .tree-grid{
+      grid-template-columns: 1fr;
+    }
+
+    .box{
+      max-width:320px;
+    }
+
+    .top-connector .hline,
+    .bottom-connector .hline{
+      display:none;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="wrapper">
+
+    <!-- CONSECUENCIAS -->
+    <div class="tree-grid top-section">
+
+      <div class="col">
+        <div class="top-group">
+          <div class="box top">Bajo rendimiento académico temprano</div>
+          <div class="arrow-up"></div>
+          <div class="box top">Alteración del día escolar</div>
+          <div class="top-connector">
+            <div class="vline"></div>
+            <div class="hline"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="top-group">
+          <div class="box top">Afectación del proceso de enseñanza</div>
+          <div class="arrow-up"></div>
+          <div class="box top">Interrupción del inicio de clases</div>
+          <div class="top-connector">
+            <div class="vline"></div>
+            <div class="hline"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="top-group">
+          <div class="box top">Disminución del aprendizaje</div>
+          <div class="arrow-up"></div>
+          <div class="box top">Baja atención en clase</div>
+          <div class="top-connector">
+            <div class="vline"></div>
+            <div class="hline"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="top-group">
+          <div class="box top">Pérdida acumulativa de contenidos</div>
+          <div class="arrow-up"></div>
+          <div class="box top">Ingreso interrumpido al aula</div>
+          <div class="top-connector">
+            <div class="vline"></div>
+            <div class="hline"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="top-group">
+          <div class="box top">Decisiones pedagógicas sin datos</div>
+          <div class="arrow-up"></div>
+          <div class="box top">Desorganización en seguimiento académico</div>
+          <div class="top-connector">
+            <div class="vline"></div>
+            <div class="hline"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PROBLEMA -->
+    <div class="problem-row">
+      <div class="problem-holder">
+        <div class="arrow-up problem-up-arrow"></div>
+        <div class="box problem">Retardo recurrente de los estudiantes en la primera hora de clase</div>
+        <div class="arrow-up problem-down-arrow"></div>
+      </div>
+    </div>
+
+    <!-- CAUSAS -->
+    <div class="tree-grid bottom-section">
+
+      <div class="col">
+        <div class="bottom-group">
+          <div class="bottom-connector">
+            <div class="hline"></div>
+            <div class="vline"></div>
+          </div>
+          <div class="box bottom">Rutinas  desorganizadas</div>
+          <div class="arrow-up"></div>
+          <div class="box bottom">Falta de control familiar en horarios de sueño</div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="bottom-group">
+          <div class="bottom-connector">
+            <div class="hline"></div>
+            <div class="vline"></div>
+          </div>
+          <div class="box bottom">Bajo compromiso de los estudiantes con la puntualidad</div>
+          <div class="arrow-up"></div>
+          <div class="box bottom">Débil seguimiento institucional </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="bottom-group">
+          <div class="bottom-connector">
+            <div class="hline"></div>
+            <div class="vline"></div>
+          </div>
+          <div class="box bottom">Malos hábitos de sueño</div>
+          <div class="arrow-up"></div>
+          <div class="box bottom">Uso excesivo de celular en la noche</div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="bottom-group">
+          <div class="bottom-connector">
+            <div class="hline"></div>
+            <div class="vline"></div>
+          </div>
+          <div class="box bottom">Retrasos en transporte o salida tardía</div>
+          <div class="arrow-up"></div>
+          <div class="box bottom">Mal cálculo del tiempo de desplazamiento</div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="bottom-group">
+          <div class="bottom-connector">
+            <div class="hline"></div>
+            <div class="vline"></div>
+          </div>
+          <div class="box bottom">Bajo control de asistencia</div>
+          <div class="arrow-up"></div>
+          <div class="box bottom">Falta de herramientas de monitoreo</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>
