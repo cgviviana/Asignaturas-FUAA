@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de la Información | Caso JuanX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-soft:#eef6fb;
+      --panel:#ffffff;
+      --panel-2:rgba(255,255,255,.82);
+      --line:rgba(72,109,146,.18);
+      --text:#17324d;
+      --muted:#5f7690;
+      --tab:#eaf2fb;
+      --tab-hover:#dcecff;
+      --tab-active-1:#7d4bff;
+      --tab-active-2:#2e97d1;
+      --card-blue:#eef7ff;
+      --card-cyan:#edf9fb;
+      --card-violet:#f4efff;
+      --shadow:0 14px 34px rgba(39,78,118,.12);
+      --radius-xl:28px;
+      --radius-lg:22px;
+      --radius-md:16px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      font-family:'Inter',sans-serif;
+      color:var(--text);
+      background:
+        linear-gradient(rgba(238,246,251,.82), rgba(238,246,251,.9)),
+        url('fondo.jpg') center/cover fixed no-repeat;
+      min-height:100vh;
+    }
+
+    .wrap{
+      width:min(1380px,92%);
+      margin:auto;
+      padding:28px 0 50px;
+    }
+
+    .main-shell{
+      background:rgba(255,255,255,.48);
+      border:1px solid rgba(255,255,255,.55);
+      border-radius:32px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    .tabs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      padding:18px 18px 0;
+      background:linear-gradient(180deg, rgba(245,250,255,.9), rgba(239,247,252,.82));
+      border-bottom:1px solid rgba(84,118,156,.12);
+    }
+
+    .tab-btn{
+      border:none;
+      padding:15px 20px;
+      border-radius:18px 18px 0 0;
+      font-weight:700;
+      font-size:.97rem;
+      cursor:pointer;
+      color:#214566;
+      background:var(--tab);
+      border:1px solid rgba(82,115,154,.16);
+      border-bottom:none;
+      transition:.25s ease;
+    }
+
+    .tab-btn:hover{
+      background:var(--tab-hover);
+    }
+
+    .tab-btn.active{
+      color:#fff;
+      background:linear-gradient(135deg,var(--tab-active-1),var(--tab-active-2));
+      box-shadow:0 8px 18px rgba(91,110,225,.22);
+    }
+
+    .content{
+      padding:26px;
+      background:linear-gradient(180deg, rgba(255,255,255,.55), rgba(245,250,255,.72));
+    }
+
+    .tab-panel{
+      display:none;
+      animation:fade .28s ease;
+    }
+
+    .tab-panel.active{
+      display:block;
+    }
+
+    @keyframes fade{
+      from{opacity:0; transform:translateY(8px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1.15fr .95fr;
+      gap:22px;
+    }
+
+    .card{
+      background:var(--panel-2);
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      padding:24px;
+      box-shadow:var(--shadow);
+    }
+
+    .card.soft-blue{background:linear-gradient(180deg, rgba(238,247,255,.94), rgba(255,255,255,.9))}
+    .card.soft-cyan{background:linear-gradient(180deg, rgba(237,249,251,.95), rgba(255,255,255,.9))}
+    .card.soft-violet{background:linear-gradient(180deg, rgba(244,239,255,.95), rgba(255,255,255,.9))}
+
+    .hero-card{
+      background:linear-gradient(135deg, rgba(125,75,255,.14), rgba(46,151,209,.14), rgba(255,255,255,.95));
+      border:1px solid rgba(101,131,174,.18);
+      border-radius:30px;
+      padding:30px;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+    }
+
+    .hero-card h1{
+      margin:0 0 14px;
+      font-size:clamp(2rem,4.2vw,3.4rem);
+      line-height:1.05;
+      letter-spacing:-.03em;
+      color:#17324d;
+      max-width:1050px;
+    }
+
+    .hero-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:1.03rem;
+      max-width:1020px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+      margin-top:22px;
+    }
+
+    .stat{
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(96,127,163,.16);
+      border-radius:22px;
+      padding:18px;
+      min-height:95px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .stat span{
+      display:block;
+      font-size:.92rem;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .stat strong{
+      font-size:1.55rem;
+      font-weight:800;
+      letter-spacing:-.02em;
+      color:#17324d;
+    }
+
+    h2{
+      margin:0 0 14px;
+      font-size:1.6rem;
+      letter-spacing:-.02em;
+      color:#17324d;
+    }
+
+    h3{
+      margin:0 0 10px;
+      font-size:1.1rem;
+      color:#17324d;
+    }
+
+    .lead{
+      margin:0;
+      color:var(--muted);
+      line-height:1.85;
+      font-size:1rem;
+    }
+
+    .list{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .item{
+      background:rgba(255,255,255,.8);
+      border:1px solid rgba(90,121,155,.14);
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .item strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:1rem;
+      color:#17324d;
+    }
+
+    .item p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.75;
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    .kpi{
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(90,121,155,.14);
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .kpi .label{
+      color:var(--muted);
+      font-size:.84rem;
+      margin-bottom:6px;
+    }
+
+    .kpi .num{
+      color:#17324d;
+      font-weight:800;
+      font-size:1.15rem;
+      line-height:1.35;
+    }
+
+    .note{
+      margin-top:16px;
+      background:linear-gradient(135deg, rgba(46,151,209,.12), rgba(125,75,255,.08));
+      border-left:4px solid #3b96d0;
+      padding:14px 16px;
+      border-radius:14px;
+      color:#315575;
+      line-height:1.75;
+    }
+
+    .formula{
+      margin-top:10px;
+      background:#f5f9ff;
+      border:1px solid rgba(111,139,173,.2);
+      border-radius:16px;
+      padding:14px 16px;
+      font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+      color:#214566;
+      overflow:auto;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border-radius:22px;
+      border:1px solid rgba(98,129,164,.18);
+      background:rgba(255,255,255,.82);
+      margin-top:16px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:1180px;
+    }
+
+    th,td{
+      padding:12px 14px;
+      text-align:center;
+      border-bottom:1px solid rgba(110,141,176,.14);
+      font-size:.92rem;
+      color:#214566;
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      background:#eaf4ff;
+      color:#17324d;
+      font-weight:700;
+      z-index:1;
+    }
+
+    tr:hover td{
+      background:rgba(109,176,228,.06);
+    }
+
+    .decision-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+      margin-top:16px;
+    }
+
+    .decision{
+      background:rgba(255,255,255,.84);
+      border:1px solid rgba(90,121,155,.14);
+      border-radius:20px;
+      padding:18px;
+    }
+
+    .decision h4{
+      margin:0 0 8px;
+      color:#17324d;
+      font-size:1rem;
+    }
+
+    .decision p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.75;
+    }
+
+    .footer-brand{
+      text-align:center;
+      margin-top:18px;
+      color:#5e7892;
+      font-size:.92rem;
+    }
+
+    @media (max-width:1100px){
+      .grid-2,.stats,.kpis,.decision-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width:760px){
+      .tabs{
+        padding:14px 14px 0;
+      }
+
+      .tab-btn{
+        width:100%;
+        border-radius:16px;
+        border-bottom:1px solid rgba(82,115,154,.16);
+      }
+
+      .content{
+        padding:18px;
+      }
+
+      .hero-card{
+        padding:22px;
+      }
+
+      table{
+        min-width:980px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="main-shell">
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(0)">GI en el mundo laboral</button>
+        <button class="tab-btn" onclick="openTab(1)">Caso aplicado</button>
+        <button class="tab-btn" onclick="openTab(2)">Data</button>
+        <button class="tab-btn" onclick="openTab(3)">Calculos requeridos</button>
+        <button class="tab-btn" onclick="openTab(4)">Representación</button>
+        <button class="tab-btn" onclick="openTab(5)">Toma de decisiones</button>
+      </div>
+
+      <div class="content">
+
+        <!-- TAB 1 -->
+        <section class="tab-panel active">
+          <div class="grid-2">
+            <div class="card soft-blue">
+              <h2>Gestión de la información en el mundo laboral</h2>
+              <p class="lead">
+                Gestionar información  significa  recolectar datos, organizarlos, analizarlos, interpretarlos y usarlos para tomar decisiones.
+              </p>
+              <p class="lead" style="margin-top:12px;">
+                Los datos (números, textos, imágenes) por sí solos no resuelven nada. Lo importante es descubrir qué muestran esos datos, qué patrón revelan y cómo ayudan a mejorar procesos, resolver problemas o tomar decisiones con mayor fundamento.
+              </p>
+
+              <div class="list">
+                <div class="item">
+                  <strong>Dato</strong>
+                  <p>Es un registro aislado: una cifra, una fecha, una nota, una venta, una visualización o una queja.</p>
+              <br>
+                  <strong>Información </strong>
+                  <p>Es el dato ya organizado y analizado para que tenga sentido. Permite entender qué está pasando y por qué.</p>
+                </div>
+                
+              </div>
+ <br>
+              
+
+            <div class="card soft-cyan">
+              <h2>Aplicación en la vida laboral</h2>
+
+              <div class="list">
+                <div class="item">
+                  <strong>Docencia</strong>
+                  <p>Un docente no solo registra notas. Analiza promedios, temas con más fallas y resultados por corte para decidir si debe reforzar, cambiar metodología o ajustar actividades.</p>
+                 <br>
+                  <strong>Empresa</strong>
+                  <p>Una empresa no solo guarda ventas. Revisa qué producto se vende más, qué sede baja su rendimiento y qué periodos requieren acciones comerciales.</p>
+                <br>
+                  <strong>Administración</strong>
+                  <p>Un área administrativa no solo archiva documentos. Detecta retrasos, errores repetidos o cuellos de botella para mejorar procesos.</p>
+                <br>
+                
+                  <strong>Creadores de contenido</strong>
+                  <p>Un influencer no solo publica. Analiza alcance, interacción, crecimiento y rentabilidad para decidir qué estrategia le conviene.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2 -->
+        <section class="tab-panel">
+          <div class="hero-card">
+            <h1>JuanX : La creación de contenido no se maneja por intuición, sino por datos</h1>
+            <p>
+              JuanX no es un creador pequeño. Es un influencer reconocido que vive de las campañas, el alcance, las reproducciones y el crecimiento de su comunidad. Su trabajo no se limita a grabar videos: también debe analizar la información que genera cada publicación para entender qué contenido le da mejores resultados, qué formatos lo hacen crecer, qué días le conviene publicar y dónde está perdiendo dinero, alcance o seguidores.
+            </p>
+
+            <div class="stats">
+              <div class="stat">
+                <span>Seguidores actuales</span>
+                <strong>2.480.000</strong>
+              </div>
+              <div class="stat">
+                <span>Campañas activas del mes</span>
+                <strong>8</strong>
+              </div>
+              <div class="stat">
+                <span>Publicaciones analizadas</span>
+                <strong>30 días</strong>
+              </div>
+              <div class="stat">
+                <span>Objetivo</span>
+                <strong>Crecer + monetizar</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card soft-violet">
+              <h2>Analizando el Caso</h2>
+              <p class="lead">
+                JuanX es un influencer famoso que publica contenido de entretenimiento, estilo de vida, retos, colaboraciones y contenido patrocinado. A simple vista parece que su trabajo consiste en grabar, editar y subir videos, pero en realidad su negocio depende del análisis de la data.
+              </p>
+              <p class="lead" style="margin-top:12px;">
+                Cada día se generan datos sobre lo que pasa con sus publicaciones: visualizaciones, likes, comentarios, compartidos, seguidores ganados, seguidores perdidos, ingresos y tipo de contenido. Si JuanX no analiza esa información, trabaja a ciegas. Puede creer que un contenido fue exitoso solo porque se vio mucho, cuando en realidad no ganó seguidores, no generó interacción o no produjo ingresos.
+              </p>
+
+              <div class="list">
+                <div class="item">
+                  <strong>¿Por qué necesita analizar?</strong>
+                  <p>Porque su marca personal funciona como un negocio digital. Debe saber qué contenido le da crecimiento, qué campañas convierten mejor, qué formato le trae más dinero y en qué días su audiencia responde más.</p>
+                </div>
+                <div class="item">
+                  <strong>¿Qué problema quiere resolver?</strong>
+                  <p>Identificar qué tipo de contenido debe repetir, qué tipo debe mejorar, qué debe dejar de hacer y cómo organizar mejor su estrategia para crecer y monetizar.</p>
+                </div>
+                <div class="item">
+                  <strong>Pregunta central del caso</strong>
+                  <p><b>¿Qué patrones muestran los datos de JuanX y qué decisiones debe tomar para mejorar su alcance, crecimiento e ingresos?</b></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card soft-cyan">
+              <h2>Lo que produce diariamente</h2>
+              <div class="kpis">
+                <div class="kpi">
+                  <div class="label">Tipos de contenido</div>
+                  <div class="num">Reel, Story, Live, Post, Colab</div>
+                </div>
+                <div class="kpi">
+                  <div class="label">Variables medidas</div>
+                  <div class="num">10 campos por día</div>
+                </div>
+                <div class="kpi">
+                  <div class="label">Objetivo mensual</div>
+                  <div class="num">+120.000 seguidores</div>
+                </div>
+                <div class="kpi">
+                  <div class="label">Meta comercial</div>
+                  <div class="num">Aumentar campañas</div>
+                </div>
+              </div>
+
+              <div class="list">
+                <div class="item">
+                  <strong>Datos que registra cada día</strong>
+                  <p>Fecha, tipo de contenido, número de piezas publicadas, visualizaciones, likes, comentarios, compartidos, seguidores ganados, seguidores perdidos e ingresos generados.</p>
+                </div>
+                <div class="item">
+                  <strong>Qué busca descubrir</strong>
+                  <p>Si sus reels generan más seguidores que los lives, si las colaboraciones atraen más visualizaciones, si ciertos días le conviene publicar campañas y qué formatos tienen mejor retorno.</p>
+                </div>
+              </div>
+
+              <div class="note">
+                Aquí no basta con ver números. La idea es usar Excel para transformar esos datos en evidencia que permita decidir.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3 -->
+        <section class="tab-panel">
+          <div class="card soft-blue">
+            <h2>Datos del mes de JuanX</h2>
+            <p class="lead">
+              Esta tabla tiene suficiente volumen para aplicar sumas, conteos, promedios, máximos, mínimos, análisis por fecha, gráficos y tablas dinámicas con sentido.
+            </p>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Piezas</th>
+                    <th>Vistas</th>
+                    <th>Likes</th>
+                    <th>Comentarios</th>
+                    <th>Compartidos</th>
+                    <th>Ganados</th>
+                    <th>Perdidos</th>
+                    <th>Ingresos USD</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>01/03/2026</td><td>Reel</td><td>3</td><td>420000</td><td>38500</td><td>2900</td><td>5200</td><td>8300</td><td>1200</td><td>950</td></tr>
+                  <tr><td>02/03/2026</td><td>Story</td><td>8</td><td>210000</td><td>12400</td><td>860</td><td>900</td><td>2200</td><td>980</td><td>400</td></tr>
+                  <tr><td>03/03/2026</td><td>Post</td><td>2</td><td>180000</td><td>15800</td><td>1100</td><td>1400</td><td>2700</td><td>800</td><td>620</td></tr>
+                  <tr><td>04/03/2026</td><td>Live</td><td>1</td><td>520000</td><td>29400</td><td>5400</td><td>3100</td><td>9100</td><td>1500</td><td>1300</td></tr>
+                  <tr><td>05/03/2026</td><td>Colab</td><td>2</td><td>690000</td><td>48600</td><td>6200</td><td>7500</td><td>13500</td><td>1700</td><td>2100</td></tr>
+                  <tr><td>06/03/2026</td><td>Reel</td><td>4</td><td>470000</td><td>40100</td><td>3300</td><td>5600</td><td>8700</td><td>1300</td><td>980</td></tr>
+                  <tr><td>07/03/2026</td><td>Story</td><td>10</td><td>240000</td><td>13800</td><td>910</td><td>1100</td><td>2600</td><td>1000</td><td>450</td></tr>
+                  <tr><td>08/03/2026</td><td>Post</td><td>1</td><td>160000</td><td>14900</td><td>1020</td><td>1300</td><td>2500</td><td>760</td><td>600</td></tr>
+                  <tr><td>09/03/2026</td><td>Live</td><td>1</td><td>560000</td><td>32200</td><td>5900</td><td>3300</td><td>9800</td><td>1620</td><td>1450</td></tr>
+                  <tr><td>10/03/2026</td><td>Colab</td><td>2</td><td>720000</td><td>51200</td><td>6800</td><td>7900</td><td>14200</td><td>1800</td><td>2250</td></tr>
+                  <tr><td>11/03/2026</td><td>Reel</td><td>3</td><td>450000</td><td>39600</td><td>3100</td><td>5300</td><td>8500</td><td>1250</td><td>960</td></tr>
+                  <tr><td>12/03/2026</td><td>Story</td><td>7</td><td>225000</td><td>13000</td><td>840</td><td>950</td><td>2300</td><td>990</td><td>420</td></tr>
+                  <tr><td>13/03/2026</td><td>Post</td><td>2</td><td>195000</td><td>17100</td><td>1190</td><td>1450</td><td>2900</td><td>840</td><td>660</td></tr>
+                  <tr><td>14/03/2026</td><td>Live</td><td>1</td><td>580000</td><td>33600</td><td>6100</td><td>3400</td><td>10100</td><td>1680</td><td>1490</td></tr>
+                  <tr><td>15/03/2026</td><td>Colab</td><td>2</td><td>760000</td><td>53800</td><td>7100</td><td>8200</td><td>14800</td><td>1900</td><td>2360</td></tr>
+                  <tr><td>16/03/2026</td><td>Reel</td><td>4</td><td>495000</td><td>41800</td><td>3450</td><td>5900</td><td>9200</td><td>1350</td><td>1030</td></tr>
+                  <tr><td>17/03/2026</td><td>Story</td><td>9</td><td>250000</td><td>14150</td><td>940</td><td>1180</td><td>2750</td><td>1010</td><td>470</td></tr>
+                  <tr><td>18/03/2026</td><td>Post</td><td>2</td><td>205000</td><td>17600</td><td>1250</td><td>1500</td><td>3050</td><td>860</td><td>690</td></tr>
+                  <tr><td>19/03/2026</td><td>Live</td><td>1</td><td>600000</td><td>34900</td><td>6250</td><td>3550</td><td>10500</td><td>1720</td><td>1520</td></tr>
+                  <tr><td>20/03/2026</td><td>Colab</td><td>3</td><td>790000</td><td>55100</td><td>7300</td><td>8500</td><td>15400</td><td>1950</td><td>2420</td></tr>
+                  <tr><td>21/03/2026</td><td>Reel</td><td>3</td><td>510000</td><td>42900</td><td>3580</td><td>6100</td><td>9500</td><td>1380</td><td>1060</td></tr>
+                  <tr><td>22/03/2026</td><td>Story</td><td>8</td><td>255000</td><td>14500</td><td>960</td><td>1200</td><td>2820</td><td>1025</td><td>485</td></tr>
+                  <tr><td>23/03/2026</td><td>Post</td><td>1</td><td>210000</td><td>17950</td><td>1290</td><td>1540</td><td>3150</td><td>870</td><td>710</td></tr>
+                  <tr><td>24/03/2026</td><td>Live</td><td>1</td><td>615000</td><td>35500</td><td>6320</td><td>3620</td><td>10750</td><td>1750</td><td>1540</td></tr>
+                  <tr><td>25/03/2026</td><td>Colab</td><td>2</td><td>815000</td><td>56800</td><td>7450</td><td>8700</td><td>15900</td><td>1980</td><td>2480</td></tr>
+                  <tr><td>26/03/2026</td><td>Reel</td><td>4</td><td>530000</td><td>44100</td><td>3650</td><td>6250</td><td>9800</td><td>1400</td><td>1090</td></tr>
+                  <tr><td>27/03/2026</td><td>Story</td><td>9</td><td>265000</td><td>14950</td><td>990</td><td>1240</td><td>2900</td><td>1040</td><td>500</td></tr>
+                  <tr><td>28/03/2026</td><td>Post</td><td>2</td><td>220000</td><td>18600</td><td>1350</td><td>1600</td><td>3300</td><td>890</td><td>730</td></tr>
+                  <tr><td>29/03/2026</td><td>Live</td><td>1</td><td>635000</td><td>36200</td><td>6400</td><td>3700</td><td>11100</td><td>1790</td><td>1570</td></tr>
+                  <tr><td>30/03/2026</td><td>Colab</td><td>3</td><td>840000</td><td>58200</td><td>7600</td><td>8900</td><td>16400</td><td>2020</td><td>2550</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4 -->
+        <section class="tab-panel">
+          <div class="grid-2">
+            <div class="card soft-violet">
+              <h2>Qué debe calcular y cómo</h2>
+              <p class="lead">
+                Aquí no se trata solo de escribir fórmulas, sino de entender para qué sirve cada una dentro del negocio de JuanX.
+              </p>
+
+              <div class="list">
+                <div class="item">
+                  <strong>1. Suma total del mes</strong>
+                  <p>Debe sumar visualizaciones, likes, comentarios, compartidos, seguidores ganados e ingresos para saber el volumen total generado en el periodo.</p>
+                  <div class="formula">=SUMA(D2:D31)</div>
+                </div>
+
+                <div class="item">
+                  <strong>2. Cuántas veces publicó cada tipo</strong>
+                  <p>Usa CONTAR.SI para saber con qué frecuencia publicó reels, stories, posts, lives o colaboraciones.</p>
+                  <div class="formula">=CONTAR.SI(B2:B31,"Reel")</div>
+                </div>
+
+                <div class="item">
+                  <strong>3. Sumar por categoría</strong>
+                  <p>Con SUMAR.SI puede saber, por ejemplo, cuántos seguidores ganó con las colaboraciones.</p>
+                  <div class="formula">=SUMAR.SI(B2:B31,"Colab",H2:H31)</div>
+                </div>
+
+                <div class="item">
+                  <strong>4. Promedio por tipo</strong>
+                  <p>Con PROMEDIO.SI puede comparar el rendimiento medio de cada formato.</p>
+                  <div class="formula">=PROMEDIO.SI(B2:B31,"Live",D2:D31)</div>
+                </div>
+
+                <div class="item">
+                  <strong>5. Crecimiento neto</strong>
+                  <p>Debe crear una nueva columna restando seguidores perdidos a seguidores ganados para ver el impacto real.</p>
+                  <div class="formula">=H2-I2</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card soft-cyan">
+              <h2>Estadística y fechas</h2>
+
+              <div class="list">
+                <div class="item">
+                  <strong>6. Máximo y mínimo</strong>
+                  <p>MAX ayuda a identificar el valor más alto y MIN el más bajo. Sirve para detectar picos y caídas.</p>
+                  <div class="formula">=MAX(D2:D31) &nbsp;&nbsp;&nbsp; =MIN(D2:D31)</div>
+                </div>
+
+                <div class="item">
+                  <strong>7. Día de la semana</strong>
+                  <p>Con la fecha puede obtener el nombre del día para analizar cuándo conviene publicar.</p>
+                  <div class="formula">=TEXTO(A2,"dddd")</div>
+                </div>
+
+                <div class="item">
+                  <strong>8. Promedio general</strong>
+                  <p>Con PROMEDIO puede saber cuántas vistas, likes o ingresos genera en promedio por día.</p>
+                  <div class="formula">=PROMEDIO(D2:D31)</div>
+                </div>
+
+                <div class="item">
+                  <strong>9. Comparaciones</strong>
+                  <p>Puede analizar si el contenido con más vistas también es el que más seguidores gana o el que más ingresos deja.</p>
+                </div>
+              </div>
+
+              <div class="note">
+                El proceso correcto es: organizar datos, calcular, resumir, visualizar e interpretar.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 5 -->
+        <section class="tab-panel">
+          <div class="grid-2">
+            <div class="card soft-blue">
+              <h2>Qué gráficos debe hacer</h2>
+
+              <div class="list">
+                <div class="item">
+                  <strong>Gráfico de pastel</strong>
+                  <p>Sirve para ver la participación porcentual de cada tipo de contenido en el total, por ejemplo en seguidores ganados o ingresos.</p>
+                </div>
+
+                <div class="item">
+                  <strong>Gráfico de barras</strong>
+                  <p>Sirve para comparar categorías. Es útil para mostrar qué formato genera más vistas, más ingresos o más crecimiento neto.</p>
+                </div>
+
+                <div class="item">
+                  <strong>Gráfico de líneas</strong>
+                  <p>Sirve para observar cambios en el tiempo, como la evolución de vistas o ingresos durante el mes.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card soft-cyan">
+              <h2>Qué tablas dinámicas requiere</h2>
+
+              <div class="list">
+                <div class="item">
+                  <strong>Tabla dinámica 1</strong>
+                  <p><b>Filas:</b> tipo de contenido<br><b>Valores:</b> suma de seguidores ganados<br><b>Sirve para:</b> saber qué formato aporta más crecimiento.</p>
+                </div>
+
+                <div class="item">
+                  <strong>Tabla dinámica 2</strong>
+                  <p><b>Filas:</b> tipo de contenido<br><b>Valores:</b> suma de ingresos<br><b>Sirve para:</b> descubrir qué formato monetiza mejor.</p>
+                </div>
+
+                <div class="item">
+                  <strong>Tabla dinámica 3</strong>
+                  <p><b>Filas:</b> día de la semana<br><b>Valores:</b> promedio de vistas<br><b>Sirve para:</b> identificar en qué días conviene publicar.</p>
+                </div>
+
+                <div class="item">
+                  <strong>Tabla dinámica 4</strong>
+                  <p><b>Filas:</b> tipo de contenido<br><b>Valores:</b> suma de crecimiento neto<br><b>Sirve para:</b> ver qué formato realmente hace crecer la cuenta.</p>
+                </div>
+
+                <div class="item">
+                  <strong>Tabla dinámica 5</strong>
+                  <p><b>Filas:</b> tipo de contenido<br><b>Valores:</b> promedio de likes, comentarios y compartidos<br><b>Sirve para:</b> conocer qué contenido conecta más con la audiencia.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 6 -->
+        <section class="tab-panel">
+          <div class="card soft-violet">
+            <h2>Cómo tomar decisiones con esos resultados</h2>
+            <p class="lead">
+              Después de calcular y visualizar, JuanX no debe quedarse mirando tablas. Debe convertir los hallazgos en acciones concretas.
+            </p>
+
+            <div class="decision-grid">
+              <div class="decision">
+                <h4>Si las colaboraciones aportan más seguidores</h4>
+                <p>Debe aumentar alianzas con otros creadores y programar más contenido colaborativo.</p>
+              <br>
+                <h4>Si los lives generan más ingresos</h4>
+                 <p>Debe mantenerlos porque monetizan bien, aunque no siempre sean los más virales..</p>
+              
+               <br>
+                <h4>Si los stories se publican mucho pero aportan poco</h4>
+                <p>Debe revisar si realmente agregan valor o si solo se usan por rutina.</p>
+               <br>
+                <h4>Si ciertos días tienen mejor promedio de vistas</h4>
+                <p>Debe reorganizar el calendario para publicar los contenidos fuertes en esos días.</p>
+              <br>
+                <h4>Si un formato tiene muchas vistas pero poco crecimiento</h4>
+                <p>Debe revisar la llamada a la acción, el mensaje y la calidad de la audiencia.</p>
+              <br>
+                <h4>Si un formato deja mejores ingresos</h4>
+                <p>Debe priorizarlo para campañas con marcas y contenido patrocinado.</p>
+              </div>
+            </div>
+
+            <div class="list">
+              <div class="item">
+                <strong>Conclusión del caso</strong>
+                <p>JuanX no toma decisiones por intuición. Usa la información para entender su negocio, optimizar su estrategia y mejorar resultados.</p>
+              </div>
+             
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="footer-brand">Aprendiendo con @LaProfeVivy</div>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    function openTab(index){
+      tabs.forEach(btn => btn.classList.remove('active'));
+      panels.forEach(panel => panel.classList.remove('active'));
+      tabs[index].classList.add('active');
+      panels[index].classList.add('active');
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+  </script>
+</body>
+</html>
