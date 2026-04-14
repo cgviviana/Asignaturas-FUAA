@@ -1,1 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz · Búsqueda de Información</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#fff7ed;padding:16px;}
+#app{border-radius:20px;overflow:hidden;background:#fff7ed;font-family:'Nunito',sans-serif;max-width:600px;margin:0 auto;}
+.hdr{background:#c2410c;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-title{font-family:'Fredoka One',cursive;font-size:20px;color:#fff;}
+.hdr-score{background:rgba(255,255,255,0.2);color:#fff;font-weight:800;font-size:15px;padding:5px 14px;border-radius:999px;}
+#play-content{padding:18px;}
 
+.name-screen{background:#fff;border-radius:14px;border:1.5px solid #fed7aa;padding:20px;text-align:center;}
+.name-title{font-family:'Fredoka One',cursive;font-size:20px;color:#c2410c;margin-bottom:6px;}
+.name-sub{font-size:13px;color:#888;margin-bottom:14px;line-height:1.6;}
+.name-input{width:100%;padding:11px 14px;border-radius:10px;border:2px solid #fdba74;font-size:15px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;color:#7c2d12;margin-bottom:12px;}
+.name-input:focus{border-color:#c2410c;}
+.start-btn{width:100%;background:#c2410c;color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Fredoka One',cursive;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #9a3412;transition:transform .1s;}
+.start-btn:hover{transform:translateY(-2px);}
+
+.quiz-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.q-counter{font-size:13px;font-weight:700;color:#888;}
+.q-score-lbl{font-family:'Fredoka One',cursive;font-size:16px;color:#c2410c;}
+.prog-bar{background:#fed7aa;border-radius:999px;height:8px;margin-bottom:14px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:999px;background:#c2410c;transition:width .4s;}
+.mascot-wrap{display:flex;justify-content:center;margin-bottom:8px;}
+.q-box{background:#fff;border-radius:14px;border:2px solid #fed7aa;padding:16px;margin-bottom:14px;}
+.q-label{font-size:11px;font-weight:700;color:#c2410c;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;text-align:center;}
+.q-val{font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#7c2d12;line-height:1.6;}
+
+.topic-badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 12px;border-radius:999px;margin-bottom:10px;letter-spacing:.5px;font-family:monospace;}
+.b-fuentes{background:#fef08a;color:#78350f;}
+.b-buscadores{background:#fed7aa;color:#7c2d12;}
+.b-operadores{background:#bbf7d0;color:#14532d;}
+.b-filtros{background:#ddd6fe;color:#4c1d95;}
+.b-ia{background:#bfdbfe;color:#1e3a8a;}
+.b-recursos{background:#fecdd3;color:#9f1239;}
+
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.opt{padding:11px 14px;border-radius:12px;border:2.5px solid #fdba74;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:#fff;color:#7c2d12;text-align:left;line-height:1.4;}
+.opt:hover:not(:disabled){transform:translateY(-2px);border-color:#c2410c;background:#fff7ed;}
+.opt:disabled{cursor:not-allowed;opacity:.75;transform:none;}
+.opt.correct{background:#22c55e!important;border-color:#16a34a!important;color:#fff!important;}
+.opt.wrong{background:#ef4444!important;border-color:#dc2626!important;color:#fff!important;animation:shake .3s;}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.exp-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px 12px;font-size:12px;color:#9a3412;margin-top:6px;line-height:1.6;display:none;}
+.exp-box.show{display:block;}
+
+.feedback{text-align:center;font-family:'Fredoka One',cursive;font-size:17px;min-height:24px;margin-bottom:4px;}
+.fb-ok{color:#16a34a;}.fb-err{color:#dc2626;}
+.delta{font-size:22px;font-weight:800;text-align:center;min-height:28px;margin-bottom:4px;}
+.delta.up{color:#16a34a;}.delta.down{color:#dc2626;}
+
+.result{text-align:center;padding:14px 8px;}
+.res-title{font-family:'Fredoka One',cursive;font-size:26px;color:#c2410c;margin-bottom:4px;}
+.res-stars{font-size:34px;margin:8px 0;}
+.res-card{background:#fff;border-radius:14px;border:1.5px solid #fed7aa;padding:16px;margin:12px 0;text-align:left;}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid #fed7aa;font-size:14px;}
+.res-row:last-child{border:none;font-weight:800;font-size:16px;color:#c2410c;}
+.res-lbl{color:#888;font-weight:600;}
+.res-val{font-weight:700;color:#7c2d12;}
+.rbtn{background:#c2410c;color:#fff;border:none;border-radius:12px;padding:11px 22px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;box-shadow:0 4px 0 #9a3412;margin:4px;transition:transform .1s;}
+.rbtn:hover{transform:translateY(-2px);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-title">Búsqueda de Información</div>
+    <div class="hdr-score" id="hdr-score">0 pts</div>
+  </div>
+  <div id="play-content"></div>
+</div>
+
+<script>
+let playerName='', score=0, curQ=0, questions=[], answered=false;
+
+const M_OK =`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#bbf7d0" stroke="#22c55e" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#15803d"/><circle cx="46" cy="28" r="4" fill="#15803d"/><path d="M22 44 Q35 56 48 44" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/><polyline points="14,35 22,43 40,25" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const M_ERR=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fecaca" stroke="#ef4444" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#dc2626"/><circle cx="46" cy="28" r="4" fill="#dc2626"/><path d="M22 50 Q35 40 48 50" stroke="#dc2626" stroke-width="3" stroke-linecap="round" fill="none"/><line x1="18" y1="18" x2="30" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/><line x1="30" y1="18" x2="18" y2="30" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></svg>`;
+const M_IDL=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fff7ed" stroke="#c2410c" stroke-width="2.5"/><circle cx="24" cy="30" r="4" fill="#c2410c"/><circle cx="46" cy="30" r="4" fill="#c2410c"/><path d="M24 46 Q35 52 46 46" stroke="#c2410c" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="25" cy="30" r="1.5" fill="#fff"/><circle cx="47" cy="30" r="1.5" fill="#fff"/></svg>`;
+const M_WIN=`<svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="32" fill="#fef08a" stroke="#eab308" stroke-width="2.5"/><circle cx="24" cy="28" r="4" fill="#92400e"/><circle cx="46" cy="28" r="4" fill="#92400e"/><path d="M20 44 Q35 60 50 44" stroke="#92400e" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(44,2) scale(0.6)" fill="#eab308"/><path d="M10 15 L14 25 L24 22 L17 30 L22 40 L12 34 L8 44 L7 33 L-3 30 L7 24Z" transform="translate(8,5) scale(0.5)" fill="#eab308"/></svg>`;
+
+const BANCO = [
+  {badge:'b-fuentes', badgeLabel:'Fuentes', q:'¿Qué es una fuente de información?', opts:['Un contenido cualquiera que aparece primero en internet.','Un recurso que aporta datos, ideas o evidencias para responder una necesidad de información.','Solo un libro impreso.','Solo una base de datos científica.'], a:1, exp:'Una fuente de información es cualquier recurso que aporta datos, ideas o evidencias útiles, pero debe evaluarse antes de usarse.'},
+  {badge:'b-fuentes', badgeLabel:'Fuentes', q:'¿Cuál es un ejemplo de fuente primaria?', opts:['Un resumen hecho por un estudiante.','Una noticia que comenta un estudio.','El artículo original donde se reporta una investigación.','Una presentación de clase.'], a:2, exp:'La fuente primaria presenta la información original, como un artículo científico, informe técnico o documento base.'},
+  {badge:'b-buscadores', badgeLabel:'Buscadores', q:'¿Qué caracteriza a un buscador general como Google?', opts:['Solo busca artículos científicos.','Tiene un índice propio de páginas web y muestra resultados amplios.','Solo encuentra archivos PDF.','Busca únicamente en bibliotecas universitarias.'], a:1, exp:'Los buscadores generales rastrean la web y construyen su propio índice para devolver resultados amplios.'},
+  {badge:'b-buscadores', badgeLabel:'Buscadores', q:'Si necesitas artículos científicos de salud, ¿qué opción es más adecuada?', opts:['PubMed','Pexels','Google Imágenes','Tenor'], a:0, exp:'PubMed es un buscador o base especializada en salud y biomedicina.'},
+  {badge:'b-buscadores', badgeLabel:'Buscadores', q:'¿Cuál opción corresponde a un buscador especializado en ingeniería o computación?', opts:['ACM Digital Library','Pinterest','Canva','Unsplash'], a:0, exp:'ACM Digital Library es un recurso especializado en computación e ingeniería informática.'},
+  {badge:'b-operadores', badgeLabel:'Operadores', q:'¿Para qué sirve el operador AND?', opts:['Para ampliar la búsqueda con sinónimos.','Para exigir que aparezcan ambos términos y hacer la búsqueda más precisa.','Para excluir términos.','Para buscar una frase exacta.'], a:1, exp:'AND obliga a que aparezcan ambos términos, lo que reduce y precisa los resultados.'},
+  {badge:'b-operadores', badgeLabel:'Operadores', q:'¿Para qué sirve el operador OR?', opts:['Para unir alternativas o sinónimos y ampliar la búsqueda.','Para excluir palabras no deseadas.','Para buscar solo en el título.','Para limitar a una fecha exacta.'], a:0, exp:'OR permite recuperar resultados que contengan uno u otro término, ampliando la consulta.'},
+  {badge:'b-operadores', badgeLabel:'Operadores', q:'¿Qué logras al escribir una expresión entre comillas?', opts:['Buscar solo imágenes.','Buscar una frase exacta.','Excluir esa expresión.','Traducir automáticamente la búsqueda.'], a:1, exp:'Las comillas fuerzan la coincidencia exacta de la frase escrita.'},
+  {badge:'b-operadores', badgeLabel:'Operadores', q:'¿Qué función cumple el signo menos (-) en una búsqueda?', opts:['Sumar otra palabra clave.','Buscar resultados más recientes.','Excluir un término no deseado.','Buscar solo definiciones.'], a:2, exp:'El signo menos elimina resultados que contengan el término excluido.'},
+  {badge:'b-filtros', badgeLabel:'Campos y filtros', q:'¿Cuál ejemplo usa un campo de búsqueda en el título?', opts:['site:.edu evaluación','title:"inteligencia artificial"','"pensamiento computacional" OR programación','datos abiertos -gobierno'], a:1, exp:'El campo de título ayuda a localizar documentos donde el concepto central aparece en el título.'},
+  {badge:'b-filtros', badgeLabel:'Campos y filtros', q:'¿Para qué sirven los filtros en una búsqueda académica?', opts:['Para decorar la página de resultados.','Para limitar por año, idioma, tipo de documento o tema.','Para quitar todos los artículos científicos.','Para convertir una búsqueda simple en imagen.'], a:1, exp:'Los filtros permiten refinar resultados según criterios como fecha, idioma, documento o área.'},
+  {badge:'b-recursos', badgeLabel:'Recursos digitales', q:'Si buscas imágenes gratuitas para una presentación, ¿qué recurso es adecuado?', opts:['Pexels','Scopus','PubMed','IEEE Xplore'], a:0, exp:'Pexels es un banco de imágenes útil para presentaciones y otros materiales visuales.'},
+  {badge:'b-recursos', badgeLabel:'Recursos digitales', q:'¿Cuál es el portal de datos abiertos de Colombia?', opts:['datos.gov.co','researchrabbit.ai','acm.org','legis.com'], a:0, exp:'datos.gov.co es el portal oficial de datos abiertos de Colombia.'},
+  {badge:'b-ia', badgeLabel:'IA académica', q:'¿Qué herramienta ayuda a ver relaciones entre artículos y mapas de literatura?', opts:['ResearchRabbit','Pexels','Google Maps','Zoom'], a:0, exp:'ResearchRabbit permite explorar redes de artículos y relaciones bibliográficas.'},
+  {badge:'b-ia', badgeLabel:'IA académica', q:'¿Qué herramienta se enfoca en mostrar si un artículo ha sido citado como apoyo o contradicción?', opts:['Scite','Canva','Drive','Moodle'], a:0, exp:'Scite analiza el contexto de citación para ver si un artículo fue apoyado, mencionado o contradicho.'},
+  {badge:'b-ia', badgeLabel:'IA académica', q:'¿Qué uso responsable de la IA es el más adecuado en búsqueda académica?', opts:['Copiar cualquier respuesta sin revisar.','Usarla para orientar la búsqueda, pero verificando fuentes y evidencia.','Reemplazar todas las fuentes por resúmenes automáticos.','Usarla solo para diseñar diapositivas.'], a:1, exp:'La IA puede orientar y acelerar, pero nunca reemplaza la verificación de fuentes confiables.'},
+  {badge:'b-fuentes', badgeLabel:'Estrategia', q:'¿Cuál es una secuencia lógica para buscar mejor información?', opts:['Abrir el primer resultado y copiarlo.','Definir la pregunta, elegir palabras clave, construir la búsqueda, seleccionar la fuente y verificar resultados.','Buscar solo en redes sociales.','Escribir muchas palabras sin orden.'], a:1, exp:'Una búsqueda buena empieza con una necesidad clara, luego palabras clave, ecuación, fuente adecuada y validación.'},
+  {badge:'b-buscadores', badgeLabel:'Buscadores', q:'¿Cuál opción describe mejor la diferencia entre buscador general y especializado?', opts:['No hay diferencia.','El general rastrea toda la web; el especializado se enfoca en un área o tipo de contenido.','El especializado siempre es gratuito y el general no.','El general solo sirve para imágenes.'], a:1, exp:'El buscador general es amplio; el especializado concentra resultados de un campo o colección concreta.'},
+  {badge:'b-operadores', badgeLabel:'Operadores', q:'¿Cuál búsqueda está mejor construida para encontrar información sobre pensamiento computacional en primaria?', opts:['pensamiento computacional primaria','"pensamiento computacional" AND primaria','pensamiento OR computacional OR primaria','-pensamiento computacional primaria'], a:1, exp:'Usar comillas para la frase exacta y AND para unir el nivel educativo mejora la precisión.'},
+  {badge:'b-recursos', badgeLabel:'Recursos digitales', q:'¿Para qué sirven los tesauros en una búsqueda?', opts:['Para decorar informes.','Para encontrar términos controlados o relacionados y mejorar la estrategia de búsqueda.','Para traducir textos completos automáticamente.','Para almacenar imágenes.'], a:1, exp:'Los tesauros ayudan a identificar términos preferidos, relacionados y más precisos para buscar mejor.'}
+];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+
+function showNameScreen(){
+  document.getElementById('play-content').innerHTML=`
+    <div class="name-screen">
+      <div style="display:flex;justify-content:center;margin-bottom:14px">${M_IDL}</div>
+      <div class="name-title">¡Bienvenido al quiz!</div>
+      <div class="name-sub">
+        Pon a prueba lo que aprendiste sobre<br>
+        <b style="color:#c2410c">Búsqueda de Información</b>.<br><br>
+        <b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp; <b style="color:#dc2626">Error: -10 pts</b>
+      </div>
+      <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="60">
+      <button class="start-btn" onclick="startQuiz()">¡Comenzar!</button>
+    </div>`;
+  setTimeout(()=>{const i=document.getElementById('name-inp');if(i)i.focus();},100);
+}
+
+function startQuiz(){
+  const inp=document.getElementById('name-inp');
+  const n=inp?inp.value.trim():'';
+  if(!n){inp.style.borderColor='#ef4444';inp.placeholder='¡Escribe tu nombre primero!';return;}
+  playerName=n; score=0; curQ=0; answered=false;
+  questions=shuffle(BANCO).slice(0,15);
+  updHdr(); renderQ();
+}
+
+function updHdr(){document.getElementById('hdr-score').textContent=score+' pts';}
+
+function renderQ(){
+  if(curQ>=questions.length){showResult();return;}
+  const q=questions[curQ];
+  const pct=Math.round((curQ/questions.length)*100);
+  answered=false;
+
+  const hdr=`
+    <div class="quiz-hdr">
+      <div class="q-counter">Pregunta ${curQ+1} / ${questions.length}</div>
+      <div class="q-score-lbl">${score} pts</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="mascot-wrap" id="mc">${M_IDL}</div>`;
+
+  const qbox=`
+    <div class="q-box">
+      <div><span class="topic-badge ${q.badge}">${q.badgeLabel}</span></div>
+      <div class="q-label">Selecciona la respuesta correcta</div>
+      <div class="q-val">${q.q}</div>
+    </div>`;
+
+  const optsHtml=`<div class="opts">${
+    q.opts.map((o,i)=>`<button class="opt" onclick="checkAns(${i},this)">${o}</button>`).join('')
+  }</div>`;
+
+  document.getElementById('play-content').innerHTML=
+    hdr + qbox + optsHtml +
+    `<div class="exp-box" id="exp"></div>
+     <div class="delta" id="delta"></div>
+     <div class="feedback" id="fb"></div>`;
+}
+
+function checkAns(idx, btn){
+  if(answered) return;
+  answered=true;
+  const q=questions[curQ];
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach(b=>b.disabled=true);
+
+  const exp=document.getElementById('exp');
+  exp.textContent=q.exp;
+  exp.classList.add('show');
+
+  if(idx===q.a){
+    btn.classList.add('correct');
+    score+=100; updHdr();
+    document.getElementById('fb').textContent='¡Correcto!';
+    document.getElementById('fb').className='feedback fb-ok';
+    document.getElementById('delta').textContent='+100 puntos';
+    document.getElementById('delta').className='delta up';
+    document.getElementById('mc').innerHTML=M_OK;
+  } else {
+    btn.classList.add('wrong');
+    btns[q.a].classList.add('correct');
+    score=Math.max(0,score-10); updHdr();
+    document.getElementById('fb').textContent='¡Incorrecto!';
+    document.getElementById('fb').className='feedback fb-err';
+    document.getElementById('delta').textContent='-10 puntos';
+    document.getElementById('delta').className='delta down';
+    document.getElementById('mc').innerHTML=M_ERR;
+  }
+  setTimeout(()=>{curQ++;renderQ();},2600);
+}
+
+function showResult(){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr=now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const max=questions.length*100;
+  const pct=Math.round((score/max)*100);
+  const stars=pct>=90?'★★★':pct>=60?'★★':'★';
+  const msg=pct>=90?'¡Excelente! Dominas muy bien las técnicas de búsqueda.'
+           :pct>=60?'¡Muy bien! Repasa operadores, filtros o buscadores especializados.'
+           :'Vuelve a revisar los recursos y lo lograrás.';
+  document.getElementById('play-content').innerHTML=`
+    <div class="result">
+      <div style="display:flex;justify-content:center;margin-bottom:10px">${M_WIN}</div>
+      <div class="res-title">¡Quiz completado!</div>
+      <div class="res-stars" style="color:#eab308">${stars}</div>
+      <div style="font-size:13px;color:#888;margin-bottom:12px;line-height:1.5">${msg}</div>
+      <div class="res-card">
+        <div class="res-row"><span class="res-lbl">Jugador</span><span class="res-val">${playerName}</span></div>
+        <div class="res-row"><span class="res-lbl">Fecha</span><span class="res-val">${dateStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Hora</span><span class="res-val">${timeStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Correctas</span><span class="res-val">${Math.round(score/100)} de ${questions.length}</span></div>
+        <div class="res-row"><span class="res-lbl">Puntos obtenidos</span><span class="res-val">${score} / ${max} pts</span></div>
+      </div>
+      <button class="rbtn" onclick="rePlay()">Jugar de nuevo</button>
+    </div>`;
+  document.getElementById('hdr-score').textContent=score+' pts';
+}
+
+function rePlay(){
+  score=0; curQ=0; answered=false;
+  questions=shuffle(BANCO).slice(0,15);
+  updHdr(); renderQ();
+}
+
+showNameScreen();
+</script>
+</body>
+</html>
