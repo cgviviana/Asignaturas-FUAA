@@ -1,1 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz · Ruta Metodológica</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#f4f8ff;padding:16px;}
+#app{
+  border-radius:22px;
+  overflow:hidden;
+  background:#f4f8ff;
+  font-family:'Nunito',sans-serif;
+  max-width:640px;
+  margin:0 auto;
+  box-shadow:0 8px 30px rgba(30,58,138,.08);
+}
+.hdr{
+  background:#1e3a8a;
+  padding:12px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.hdr-title{
+  font-family:'Fredoka One',cursive;
+  font-size:20px;
+  color:#fff;
+}
+.hdr-score{
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-weight:800;
+  font-size:15px;
+  padding:6px 14px;
+  border-radius:999px;
+}
+#play-content{padding:18px;}
 
+/* PANTALLA INICIO */
+.name-screen{
+  background:#fff;
+  border-radius:16px;
+  border:1.5px solid #bfdbfe;
+  padding:22px;
+  text-align:center;
+}
+.name-title{
+  font-family:'Fredoka One',cursive;
+  font-size:22px;
+  color:#1e3a8a;
+  margin-bottom:8px;
+}
+.name-sub{
+  font-size:13px;
+  color:#5b6474;
+  margin-bottom:14px;
+  line-height:1.65;
+}
+.name-input{
+  width:100%;
+  padding:11px 14px;
+  border-radius:12px;
+  border:2px solid #93c5fd;
+  font-size:15px;
+  font-family:'Nunito',sans-serif;
+  font-weight:700;
+  outline:none;
+  color:#1e3a8a;
+  margin-bottom:12px;
+}
+.name-input:focus{border-color:#1e3a8a;}
+.start-btn{
+  width:100%;
+  background:#1e3a8a;
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:12px;
+  font-family:'Fredoka One',cursive;
+  font-size:18px;
+  cursor:pointer;
+  box-shadow:0 4px 0 #172b63;
+  transition:transform .1s;
+}
+.start-btn:hover{transform:translateY(-2px);}
+
+/* QUIZ */
+.quiz-hdr{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+.q-counter{
+  font-size:13px;
+  font-weight:700;
+  color:#64748b;
+}
+.q-score-lbl{
+  font-family:'Fredoka One',cursive;
+  font-size:16px;
+  color:#1e3a8a;
+}
+.prog-bar{
+  background:#dbeafe;
+  border-radius:999px;
+  height:8px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.prog-fill{
+  height:100%;
+  border-radius:999px;
+  background:#1e3a8a;
+  transition:width .4s;
+}
+.mascot-wrap{
+  display:flex;
+  justify-content:center;
+  margin-bottom:8px;
+}
+.q-box{
+  background:#fff;
+  border-radius:16px;
+  border:2px solid #bfdbfe;
+  padding:16px;
+  margin-bottom:14px;
+}
+.q-label{
+  font-size:11px;
+  font-weight:800;
+  color:#1e3a8a;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  text-align:center;
+}
+.q-val{
+  font-size:14px;
+  font-weight:700;
+  color:#24324a;
+  line-height:1.7;
+}
+
+/* BADGES */
+.topic-badge{
+  display:inline-block;
+  font-size:11px;
+  font-weight:800;
+  padding:4px 12px;
+  border-radius:999px;
+  margin-bottom:10px;
+  letter-spacing:.4px;
+}
+.b-intro{background:#dbeafe;color:#1e3a8a;}
+.b-order{background:#e0e7ff;color:#4338ca;}
+.b-tools{background:#dcfce7;color:#166534;}
+.b-logic{background:#fef3c7;color:#92400e;}
+.b-filter{background:#fee2e2;color:#b91c1c;}
+
+/* OPCIONES */
+.opts{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:10px;
+}
+.opt{
+  padding:12px 14px;
+  border-radius:12px;
+  border:2.5px solid #93c5fd;
+  font-family:'Nunito',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .15s;
+  background:#fff;
+  color:#1f355e;
+  text-align:left;
+  line-height:1.45;
+  box-shadow:0 3px 0 rgba(0,0,0,.04);
+}
+.opt:hover:not(:disabled){
+  transform:translateY(-2px);
+  border-color:#1e3a8a;
+  background:#eff6ff;
+}
+.opt:disabled{
+  cursor:not-allowed;
+  opacity:.82;
+  transform:none;
+}
+.opt.correct{
+  background:#22c55e!important;
+  border-color:#16a34a!important;
+  color:#fff!important;
+}
+.opt.wrong{
+  background:#ef4444!important;
+  border-color:#dc2626!important;
+  color:#fff!important;
+  animation:shake .3s;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  75%{transform:translateX(6px)}
+}
+
+.exp-box{
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+  border-radius:12px;
+  padding:10px 12px;
+  font-size:12px;
+  color:#1e3a8a;
+  margin-top:6px;
+  line-height:1.65;
+  display:none;
+}
+.exp-box.show{display:block;}
+
+.feedback{
+  text-align:center;
+  font-family:'Fredoka One',cursive;
+  font-size:17px;
+  min-height:24px;
+  margin-bottom:4px;
+}
+.fb-ok{color:#16a34a;}
+.fb-err{color:#dc2626;}
+
+.delta{
+  font-size:22px;
+  font-weight:800;
+  text-align:center;
+  min-height:28px;
+  margin-bottom:4px;
+}
+.delta.up{color:#16a34a;}
+.delta.down{color:#dc2626;}
+
+/* RESULTADO */
+.result{text-align:center;padding:14px 8px;}
+.res-title{
+  font-family:'Fredoka One',cursive;
+  font-size:28px;
+  color:#1e3a8a;
+  margin-bottom:4px;
+}
+.res-stars{font-size:34px;margin:8px 0;}
+.res-card{
+  background:#fff;
+  border-radius:16px;
+  border:1.5px solid #bfdbfe;
+  padding:16px;
+  margin:12px 0;
+  text-align:left;
+}
+.res-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:7px 0;
+  border-bottom:.5px solid #dbeafe;
+  font-size:14px;
+}
+.res-row:last-child{
+  border:none;
+  font-weight:800;
+  font-size:16px;
+  color:#1e3a8a;
+}
+.res-lbl{color:#64748b;font-weight:700;}
+.res-val{font-weight:800;color:#24324a;}
+.rbtn{
+  background:#1e3a8a;
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:11px 22px;
+  font-family:'Fredoka One',cursive;
+  font-size:16px;
+  cursor:pointer;
+  box-shadow:0 4px 0 #172b63;
+  margin:4px;
+  transition:transform .1s;
+}
+.rbtn:hover{transform:translateY(-2px);}
+.footer-brand{
+  text-align:center;
+  font-size:11px;
+  color:#64748b;
+  margin-top:10px;
+  font-weight:700;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-title">Ruta Metodológica</div>
+    <div class="hdr-score" id="hdr-score">0 pts</div>
+  </div>
+  <div id="play-content"></div>
+</div>
+
+<script>
+let playerName='', score=0, curQ=0, questions=[], answered=false;
+
+const M_OK = `<svg width="78" height="78" viewBox="0 0 78 78"><circle cx="39" cy="39" r="35" fill="#dcfce7" stroke="#22c55e" stroke-width="2.8"/><circle cx="27" cy="31" r="4.2" fill="#15803d"/><circle cx="51" cy="31" r="4.2" fill="#15803d"/><path d="M25 49 Q39 61 53 49" stroke="#15803d" stroke-width="3.2" stroke-linecap="round" fill="none"/><polyline points="16,39 24,47 42,28" stroke="#15803d" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const M_ERR = `<svg width="78" height="78" viewBox="0 0 78 78"><circle cx="39" cy="39" r="35" fill="#fee2e2" stroke="#ef4444" stroke-width="2.8"/><circle cx="27" cy="31" r="4.2" fill="#dc2626"/><circle cx="51" cy="31" r="4.2" fill="#dc2626"/><path d="M25 55 Q39 43 53 55" stroke="#dc2626" stroke-width="3.2" stroke-linecap="round" fill="none"/><line x1="20" y1="20" x2="32" y2="32" stroke="#dc2626" stroke-width="3"/><line x1="32" y1="20" x2="20" y2="32" stroke="#dc2626" stroke-width="3"/></svg>`;
+const M_IDL = `<svg width="78" height="78" viewBox="0 0 78 78"><circle cx="39" cy="39" r="35" fill="#eff6ff" stroke="#1e3a8a" stroke-width="2.8"/><circle cx="27" cy="32" r="4.2" fill="#1e3a8a"/><circle cx="51" cy="32" r="4.2" fill="#1e3a8a"/><path d="M27 50 Q39 56 51 50" stroke="#1e3a8a" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M59 18 l5 8 l9 1 l-7 6 l2 9 l-9-4 l-8 5 l1-9 l-7-6 l9-2z" fill="#60a5fa"/></svg>`;
+const M_WIN = `<svg width="78" height="78" viewBox="0 0 78 78"><circle cx="39" cy="39" r="35" fill="#fef3c7" stroke="#f59e0b" stroke-width="2.8"/><circle cx="27" cy="31" r="4.2" fill="#92400e"/><circle cx="51" cy="31" r="4.2" fill="#92400e"/><path d="M23 49 Q39 64 55 49" stroke="#92400e" stroke-width="3.4" stroke-linecap="round" fill="none"/><path d="M14 17 l4 8 l9 1 l-7 6 l2 9 l-8-4 l-8 4 l2-9 l-7-6 l9-1z" fill="#f59e0b"/><path d="M54 14 l4 8 l9 1 l-7 6 l2 9 l-8-4 l-8 4 l2-9 l-7-6 l9-1z" fill="#f59e0b"/></svg>`;
+
+const BANCO = [
+  {badge:'b-intro', badgeLabel:'Qué es', q:'¿Qué es la ruta metodológica?', opts:[
+    'Una aplicación para guardar artículos.',
+    'Un proceso ordenado para transformar una situación en una búsqueda académica estructurada.',
+    'Una lista de autores importantes.',
+    'Un formato de citación.'
+  ], a:1, exp:'La ruta metodológica organiza el proceso de investigación: ayuda a pasar del problema observado en la realidad a una búsqueda estructurada y con evidencia.'},
+
+  {badge:'b-intro', badgeLabel:'Para qué sirve', q:'¿Para qué sirve la ruta metodológica?', opts:[
+    'Para buscar cualquier cosa sin orden.',
+    'Para improvisar conclusiones.',
+    'Para orientar la investigación, delimitar el tema y encontrar evidencia pertinente.',
+    'Para reemplazar el análisis del problema.'
+  ], a:2, exp:'Sirve para dar orden, precisión y lógica a la investigación. No reemplaza pensar: ayuda a pensar mejor.'},
+
+  {badge:'b-order', badgeLabel:'Orden del proceso', q:'¿Cuál de estas secuencias respeta mejor el orden del proceso?', opts:[
+    'Buscar artículos → sacar conclusiones → formular pregunta.',
+    'Analizar realidad → delimitar → formular pregunta → extraer conceptos → normalizar términos → construir ecuación → cribar resultados.',
+    'Elegir base de datos → terminar la investigación → plantear problema.',
+    'Copiar palabras en Google → escoger lo primero que salga.'
+  ], a:1, exp:'Ese es el flujo central del proceso mostrado: primero se aclara el problema y después se busca con lógica.'},
+
+  {badge:'b-order', badgeLabel:'Estación 1', q:'En la estación 1, ¿qué se hace primero?', opts:[
+    'Se redactan conclusiones finales.',
+    'Se diferencia el caos de la realidad del foco analítico.',
+    'Se aplican operadores booleanos.',
+    'Se crea la bitácora final.'
+  ], a:1, exp:'Primero se pasa de una situación general y desordenada a un foco concreto investigable.'},
+
+  {badge:'b-order', badgeLabel:'Delimitación', q:'¿Qué ayuda a construir una delimitación útil?', opts:[
+    'Fenómeno, contexto, población, condición y foco.',
+    'Color, portada, tamaño y diseño.',
+    'Autor, editorial y resumen.',
+    'Conclusión, referencia y anexo.'
+  ], a:0, exp:'La delimitación no se inventa al azar: se arma con piezas concretas que acotan el estudio.'},
+
+  {badge:'b-order', badgeLabel:'Pregunta problema', q:'¿Por qué la pregunta problema se considera una brújula?', opts:[
+    'Porque decora la investigación.',
+    'Porque orienta qué se quiere averiguar y guía la búsqueda de evidencia.',
+    'Porque reemplaza la metodología.',
+    'Porque evita revisar fuentes.'
+  ], a:1, exp:'La pregunta guía todo el proceso. Si está mal planteada, la búsqueda se desvía.'},
+
+  {badge:'b-order', badgeLabel:'Buena pregunta', q:'¿Qué debe evitar una buena pregunta de investigación?', opts:[
+    'Definir claramente sujetos y contexto.',
+    'Poder responderse con evidencia.',
+    'Incluir palabras vagas o soluciones anticipadas.',
+    'Precisar el foco.'
+  ], a:2, exp:'Una buena pregunta no debe traer la solución escondida ni usar expresiones vagas.'},
+
+  {badge:'b-tools', badgeLabel:'Conceptos clave', q:'¿Qué se hace en la extracción y jerarquía de conceptos?', opts:[
+    'Se identifican los núcleos del problema y se ordenan por especificidad.',
+    'Se escriben respuestas sin buscar evidencia.',
+    'Se escoge la portada del informe.',
+    'Se eliminan los conceptos centrales.'
+  ], a:0, exp:'Aquí se sacan los conceptos clave que luego servirán para buscar información con más precisión.'},
+
+  {badge:'b-tools', badgeLabel:'Error común', q:'¿Cuál de estos términos sería inadecuado como concepto central de búsqueda?', opts:[
+    'Usuarios universitarios',
+    'Franja de alta demanda',
+    'Factores que influyen',
+    'Mejorar radicalmente el servicio'
+  ], a:3, exp:'Ese tipo de expresión mete una solución o intención de mejora, no un concepto de búsqueda neutro.'},
+
+  {badge:'b-tools', badgeLabel:'Tesauros', q:'¿Para qué sirve un tesauro en la ruta metodológica?', opts:[
+    'Para convertir lenguaje natural en descriptores controlados.',
+    'Para diseñar diapositivas.',
+    'Para calcular estadísticas.',
+    'Para traducir artículos completos.'
+  ], a:0, exp:'El tesauro ayuda a pasar de palabras cotidianas a términos académicos estandarizados.'},
+
+  {badge:'b-tools', badgeLabel:'Herramientas', q:'¿Cuál de estas opciones sí corresponde a un tesauro o vocabulario controlado?', opts:[
+    'MeSH',
+    'PowerPoint',
+    'Canva',
+    'Excel'
+  ], a:0, exp:'MeSH es un ejemplo de tesauro usado en salud; también aparecen DeCS, ERIC y UNESCO según la disciplina.'},
+
+  {badge:'b-tools', badgeLabel:'Aplicación', q:'Si tu tema es de educación, ¿qué herramienta sería más coherente revisar primero?', opts:[
+    'ERIC',
+    'MeSH',
+    'Photoshop',
+    'WhatsApp'
+  ], a:0, exp:'ERIC está orientado a educación y pedagogía, por eso tendría más sentido en ese campo.'},
+
+  {badge:'b-logic', badgeLabel:'Lenguaje natural', q:'¿Por qué el lenguaje natural puede fallar en una búsqueda académica?', opts:[
+    'Porque siempre usa un único término exacto.',
+    'Porque una misma idea puede nombrarse de muchas maneras y hacer que se pierda información.',
+    'Porque las bases de datos no leen palabras.',
+    'Porque prohíbe usar descriptores.'
+  ], a:1, exp:'Una misma idea puede aparecer con varios nombres. Por eso se normalizan términos antes de buscar.'},
+
+  {badge:'b-logic', badgeLabel:'Booleanos', q:'¿Qué hace el operador OR?', opts:[
+    'Cruza conceptos distintos y reduce resultados.',
+    'Une sinónimos o variantes del mismo concepto y amplía resultados.',
+    'Elimina artículos repetidos.',
+    'Sirve para citar autores.'
+  ], a:1, exp:'OR amplía porque le dice a la base de datos que acepte cualquiera de esos términos.'},
+
+  {badge:'b-logic', badgeLabel:'Booleanos', q:'¿Qué hace el operador AND?', opts:[
+    'Amplía resultados con variantes.',
+    'Agrupa referencias bibliográficas.',
+    'Cruza conceptos diferentes y hace la búsqueda más precisa.',
+    'Sirve para crear tablas.'
+  ], a:2, exp:'AND exige que ambos conceptos aparezcan. Eso reduce y enfoca la búsqueda.'},
+
+  {badge:'b-logic', badgeLabel:'Ecuación', q:'¿Para qué sirven los paréntesis en una ecuación de búsqueda?', opts:[
+    'Para decorar la consulta.',
+    'Para encapsular sinónimos del mismo concepto antes de cruzarlos con otros.',
+    'Para separar autores.',
+    'Para ordenar páginas.'
+  ], a:1, exp:'Los paréntesis agrupan variantes de un mismo concepto y evitan que la lógica de la búsqueda se desordene.'},
+
+  {badge:'b-filter', badgeLabel:'Cribado', q:'¿Qué se revisa en el tamiz o cribado de resultados?', opts:[
+    'Si el documento es pertinente, si la fuente es identificable y si explica su metodología.',
+    'Solo si el título suena bonito.',
+    'Únicamente la cantidad de páginas.',
+    'Si el texto tiene imágenes.'
+  ], a:0, exp:'El cribado ayuda a decidir qué entra y qué se descarta según criterios de calidad y pertinencia.'},
+
+  {badge:'b-filter', badgeLabel:'Bitácora', q:'¿Para qué sirve la bitácora de búsqueda?', opts:[
+    'Para reemplazar la ecuación booleana.',
+    'Para registrar fecha, base, ecuación, filtros, resultados y decisiones.',
+    'Para guardar solo las conclusiones.',
+    'Para evitar el análisis.'
+  ], a:1, exp:'La bitácora documenta el proceso y evita repetir errores o perder decisiones importantes.'},
+
+  {badge:'b-filter', badgeLabel:'Iteración', q:'¿La ruta metodológica termina después de una sola búsqueda?', opts:[
+    'Sí, siempre.',
+    'No, porque es un proceso iterativo que se ajusta con nuevos hallazgos.',
+    'Solo si se usa Google Scholar.',
+    'Solo en investigaciones cortas.'
+  ], a:1, exp:'La búsqueda se recalibra: aparecen nuevos términos, se ajusta la ecuación y se vuelve a revisar.'}
+];
+
+function shuffle(a){ return [...a].sort(()=>Math.random()-.5); }
+
+function showNameScreen(){
+  document.getElementById('play-content').innerHTML = `
+    <div class="name-screen">
+      <div style="display:flex;justify-content:center;margin-bottom:14px">${M_IDL}</div>
+      <div class="name-title">¡Vamos a jugar!</div>
+      <div class="name-sub">
+        Aprende la <b style="color:#1e3a8a">Ruta Metodológica</b><br>
+        de forma clara: qué es, para qué sirve, cómo se aplica,<br>
+        qué herramientas usa y cuál es su orden.<br><br>
+        <b style="color:#16a34a">Acierto: +100 pts</b> &nbsp;|&nbsp;
+        <b style="color:#dc2626">Error: -10 pts</b>
+      </div>
+      <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="60">
+      <button class="start-btn" onclick="startQuiz()">¡Comenzar!</button>
+      <div class="footer-brand">Aprendiendo con @LaProfeVivy</div>
+    </div>`;
+  setTimeout(()=>{
+    const i = document.getElementById('name-inp');
+    if(i) i.focus();
+  },100);
+}
+
+function startQuiz(){
+  const inp = document.getElementById('name-inp');
+  const n = inp ? inp.value.trim() : '';
+  if(!n){
+    inp.style.borderColor = '#ef4444';
+    inp.placeholder = '¡Escribe tu nombre primero!';
+    return;
+  }
+  playerName = n;
+  score = 0;
+  curQ = 0;
+  answered = false;
+  questions = shuffle(BANCO).slice(0,15);
+  updHdr();
+  renderQ();
+}
+
+function updHdr(){
+  document.getElementById('hdr-score').textContent = score + ' pts';
+}
+
+function renderQ(){
+  if(curQ >= questions.length){
+    showResult();
+    return;
+  }
+
+  const q = questions[curQ];
+  const pct = Math.round((curQ / questions.length) * 100);
+  answered = false;
+
+  document.getElementById('play-content').innerHTML = `
+    <div class="quiz-hdr">
+      <div class="q-counter">Pregunta ${curQ + 1} / ${questions.length}</div>
+      <div class="q-score-lbl">${score} pts</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div class="mascot-wrap" id="mc">${M_IDL}</div>
+
+    <div class="q-box">
+      <div><span class="topic-badge ${q.badge}">${q.badgeLabel}</span></div>
+      <div class="q-label">Selecciona la respuesta correcta</div>
+      <div class="q-val">${q.q}</div>
+    </div>
+
+    <div class="opts">
+      ${q.opts.map((o,i)=>`<button class="opt" onclick="checkAns(${i},this)">${o}</button>`).join('')}
+    </div>
+
+    <div class="exp-box" id="exp"></div>
+    <div class="delta" id="delta"></div>
+    <div class="feedback" id="fb"></div>
+    <div class="footer-brand">Aprendiendo con @LaProfeVivy</div>
+  `;
+}
+
+function checkAns(idx, btn){
+  if(answered) return;
+  answered = true;
+
+  const q = questions[curQ];
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach(b=>b.disabled=true);
+
+  const exp = document.getElementById('exp');
+  exp.textContent = q.exp;
+  exp.classList.add('show');
+
+  if(idx === q.a){
+    btn.classList.add('correct');
+    score += 100;
+    updHdr();
+    document.getElementById('fb').textContent = '¡Correcto!';
+    document.getElementById('fb').className = 'feedback fb-ok';
+    document.getElementById('delta').textContent = '+100 puntos';
+    document.getElementById('delta').className = 'delta up';
+    document.getElementById('mc').innerHTML = M_OK;
+  } else {
+    btn.classList.add('wrong');
+    btns[q.a].classList.add('correct');
+    score = Math.max(0, score - 10);
+    updHdr();
+    document.getElementById('fb').textContent = '¡Incorrecto!';
+    document.getElementById('fb').className = 'feedback fb-err';
+    document.getElementById('delta').textContent = '-10 puntos';
+    document.getElementById('delta').className = 'delta down';
+    document.getElementById('mc').innerHTML = M_ERR;
+  }
+
+  setTimeout(()=>{
+    curQ++;
+    renderQ();
+  }, 2600);
+}
+
+function showResult(){
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr = now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const max = questions.length * 100;
+  const pct = Math.round((score / max) * 100);
+  const stars = pct >= 90 ? '★★★' : pct >= 60 ? '★★' : '★';
+  const msg = pct >= 90 ? '¡Excelente! Dominas la lógica general de la ruta metodológica.'
+           : pct >= 60 ? '¡Muy bien! Ya manejas la idea central, pero aún puedes afinar algunos pasos.'
+           : 'Necesitas repasar el orden, las herramientas y la lógica del proceso.';
+
+  document.getElementById('play-content').innerHTML = `
+    <div class="result">
+      <div style="display:flex;justify-content:center;margin-bottom:10px">${M_WIN}</div>
+      <div class="res-title">¡Juego completado!</div>
+      <div class="res-stars" style="color:#f59e0b">${stars}</div>
+      <div style="font-size:13px;color:#64748b;margin-bottom:12px;line-height:1.55">${msg}</div>
+
+      <div class="res-card">
+        <div class="res-row"><span class="res-lbl">Jugador</span><span class="res-val">${playerName}</span></div>
+        <div class="res-row"><span class="res-lbl">Fecha</span><span class="res-val">${dateStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Hora</span><span class="res-val">${timeStr}</span></div>
+        <div class="res-row"><span class="res-lbl">Preguntas</span><span class="res-val">${questions.length}</span></div>
+        <div class="res-row"><span class="res-lbl">Puntos obtenidos</span><span class="res-val">${score} / ${max} pts</span></div>
+      </div>
+
+      <button class="rbtn" onclick="rePlay()">Jugar de nuevo</button>
+      <div class="footer-brand">Aprendiendo con @LaProfeVivy</div>
+    </div>
+  `;
+
+  document.getElementById('hdr-score').textContent = score + ' pts';
+}
+
+function rePlay(){
+  score = 0;
+  curQ = 0;
+  answered = false;
+  questions = shuffle(BANCO).slice(0,15);
+  updHdr();
+  renderQ();
+}
+
+showNameScreen();
+</script>
+</body>
+</html>
