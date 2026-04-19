@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick EMI | Graphic Organizers</title>
+  <style>
+    :root{
+      --bg:#d9e0e6;
+      --text:#3f3f46;
+      --muted:#6b7280;
+      --white:#ffffff;
+      --line:#e4e7ef;
+      --shadow:0 10px 24px rgba(0,0,0,.18);
+      --dark:#2b2b2b;
+
+      --c1:linear-gradient(135deg,#ff8a00,#ff2d00);
+      --c2:linear-gradient(135deg,#d500f9,#7c00ff);
+      --c3:linear-gradient(135deg,#9aa8ff,#4736a9);
+      --c4:linear-gradient(135deg,#33d17a,#16a085);
+      --c5:linear-gradient(135deg,#e5007d,#9c1458);
+      --c6:linear-gradient(90deg,#6177dd 0%, #7e57c2 100%);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    header{
+      background:var(--c6);
+      color:#fff;
+      text-align:center;
+      padding:34px 20px 28px;
+      box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
+
+    header h1{
+      margin:0;
+      font-size:2rem;
+      font-weight:800;
+      line-height:1.2;
+    }
+
+    header h1 span{
+      display:block;
+      margin-top:4px;
+      font-size:.5em;
+      font-weight:500;
+      color:rgba(255,255,255,.84);
+    }
+
+    .wrap{
+      max-width:1380px;
+      margin:0 auto;
+      padding:28px 16px 48px;
+    }
+
+    .row{
+      display:grid;
+      gap:22px;
+      justify-content:center;
+      margin-bottom:22px;
+    }
+
+    .row.top{
+      grid-template-columns:repeat(3, minmax(300px, 380px));
+    }
+
+    .row.bottom{
+      grid-template-columns:repeat(2, minmax(300px, 380px));
+    }
+
+    .card{
+      background:#f5f5f5;
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      width:100%;
+      transform:translateY(0);
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+
+    .card:hover{
+      transform:translateY(-4px);
+      box-shadow:0 14px 28px rgba(0,0,0,.22);
+    }
+
+    .hero{
+      height:180px;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:62px;
+      font-weight:700;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-4px;
+      bottom:-2px;
+      width:80%;
+      height:56%;
+      background:#f5f5f5;
+      border-top-left-radius:180px 90px;
+    }
+
+    .icon{
+      position:relative;
+      z-index:2;
+      filter:drop-shadow(0 3px 4px rgba(0,0,0,.15));
+    }
+
+    .hero1{background:var(--c1)}
+    .hero2{background:var(--c2)}
+    .hero3{background:var(--c3)}
+    .hero4{background:var(--c4)}
+    .hero5{background:var(--c5)}
+
+    .body{
+      padding:14px 18px 18px;
+      position:relative;
+      z-index:2;
+      margin-top:-6px;
+    }
+
+    .body h3{
+      margin:4px 0 8px;
+      text-align:center;
+      line-height:1.28;
+      min-height:54px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:4px;
+    }
+
+    .title-es{
+      display:block;
+      font-size:1rem;
+      font-weight:800;
+      text-transform:uppercase;
+      color:#555;
+    }
+
+    .title-en{
+      display:block;
+      font-size:.72rem;
+      font-weight:500;
+      color:#9aa3af;
+    }
+
+    .body > p{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.5;
+      min-height:44px;
+      text-align:center;
+    }
+
+    .btn-row{
+      display:flex;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .main-btn,.audio-btn,.mini-btn{
+      border:none;
+      cursor:pointer;
+      color:#fff;
+      font-weight:800;
+    }
+
+    .main-btn{
+      flex:1;
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:.92rem;
+    }
+
+    .audio-btn{
+      width:58px;
+      border-radius:14px;
+      font-size:1rem;
+    }
+
+    .mini-btn{
+      border-radius:999px;
+      padding:10px 15px;
+      font-size:.9rem;
+    }
+
+    .btn1{background:var(--c1)}
+    .btn2{background:var(--c2)}
+    .btn3{background:var(--c3)}
+    .btn4{background:var(--c4)}
+    .btn5{background:var(--c5)}
+    .btn-gray{background:#657089}
+
+    .panel{
+      display:none;
+      background:#fff;
+      border-radius:16px;
+      border:1px solid var(--line);
+      padding:14px;
+      animation:fadeIn .22s ease;
+    }
+
+    .card.open .panel{
+      display:block;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:.5; transform:translateY(6px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    .label{
+      display:block;
+      margin-bottom:8px;
+      font-size:.84rem;
+      font-weight:700;
+      color:#798291;
+    }
+
+    .code-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    input[type="password"], input[type="text"], select{
+      width:100%;
+      border:1px solid #d8deea;
+      border-radius:14px;
+      padding:12px 14px;
+      font-family:inherit;
+      font-size:.95rem;
+      outline:none;
+      background:#fff;
+    }
+
+    .code-input{
+      flex:1;
+      min-width:160px;
+    }
+
+    .grid-1{
+      display:grid;
+      gap:12px;
+    }
+
+    .mini-card{
+      background:#fafbff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .mini-card h4{
+      margin:0 0 6px;
+      font-size:.94rem;
+      color:#455063;
+    }
+
+    .mini-card p{
+      margin:0;
+      color:#616a79;
+      font-size:.92rem;
+      line-height:1.45;
+    }
+
+    .structure{
+      background:#eef2ff;
+      border:1px solid #dbe3ff;
+      color:#4c5ea7;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:.9rem;
+      font-weight:700;
+      line-height:1.45;
+    }
+
+    .term{
+      background:#fafbff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .term strong{
+      display:block;
+      margin-bottom:4px;
+      font-size:.93rem;
+      color:#414b5f;
+    }
+
+    .term span{
+      display:block;
+      color:#697281;
+      font-size:.88rem;
+      line-height:1.35;
+    }
+
+    .question{
+      font-size:.96rem;
+      font-weight:800;
+      color:#435065;
+      margin-bottom:10px;
+    }
+
+    .options{
+      display:grid;
+      gap:9px;
+    }
+
+    .option-btn{
+      border:none;
+      background:#f3f5fa;
+      color:#394454;
+      padding:11px 12px;
+      border-radius:12px;
+      text-align:left;
+      cursor:pointer;
+      font-size:.92rem;
+      font-weight:600;
+      transition:.18s ease;
+    }
+
+    .option-btn:hover{
+      background:#e9eeff;
+      transform:translateY(-1px);
+    }
+
+    .feedback{
+      margin-top:10px;
+      padding:11px 12px;
+      border-radius:12px;
+      display:none;
+      font-size:.9rem;
+      line-height:1.45;
+      font-weight:600;
+    }
+
+    .feedback.ok{
+      display:block;
+      background:#e9f8ef;
+      color:#21603a;
+    }
+
+    .feedback.bad{
+      display:block;
+      background:#fff1f1;
+      color:#9a2f2f;
+    }
+
+    .match-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .count{
+      margin-top:10px;
+      font-size:.88rem;
+      color:#6c7382;
+      font-weight:700;
+    }
+
+    footer{
+      background:var(--dark);
+      color:#fff;
+      text-align:center;
+      padding:16px 12px;
+      font-weight:600;
+      letter-spacing:.2px;
+      margin-top:32px;
+      position:relative;
+    }
+
+    #secretDot{
+      position:absolute;
+      right:14px;
+      top:50%;
+      transform:translateY(-50%);
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      cursor:pointer;
+      border:none;
+      background:rgba(255,255,255,.28);
+      box-shadow:0 0 0 1px rgba(255,255,255,.25) inset;
+    }
+
+    #secretDot:hover{
+      background:rgba(255,255,255,.45);
+    }
+
+    .secret-modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+      padding:16px;
+    }
+
+    .secret-modal.show{
+      display:flex;
+    }
+
+    .secret-box{
+      width:min(460px, 100%);
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 20px 40px rgba(0,0,0,.3);
+      overflow:hidden;
+    }
+
+    .secret-head{
+      background:var(--c6);
+      color:#fff;
+      padding:18px 20px;
+      font-size:1.05rem;
+      font-weight:800;
+    }
+
+    .secret-body{
+      padding:18px 20px 20px;
+    }
+
+    .secret-body p{
+      margin:0 0 12px;
+      color:#5c6575;
+      line-height:1.5;
+    }
+
+    .codes-box{
+      background:#f7f8fc;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      display:none;
+      margin-top:12px;
+    }
+
+    .codes-box.show{
+      display:block;
+    }
+
+    .codes-box div{
+      margin-bottom:8px;
+      font-size:.95rem;
+      color:#465064;
+      line-height:1.4;
+      font-weight:700;
+    }
+
+    .codes-box div:last-child{
+      margin-bottom:0;
+    }
+
+    .secret-actions{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+
+    @media (max-width:1250px){
+      .row.top{grid-template-columns:repeat(2, minmax(300px, 380px))}
+      .row.bottom{grid-template-columns:repeat(2, minmax(300px, 380px))}
+    }
+
+    @media (max-width:820px){
+      .row.top,.row.bottom{grid-template-columns:minmax(280px, 380px)}
+      header h1{font-size:1.6rem}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>
+    Graphic Organizers
+    <span>Quick English by coded stages</span>
+  </h1>
+</header>
+
+<main class="wrap">
+
+  <section class="row top">
+
+    <!-- 1 -->
+    <article class="card" id="card1">
+      <div class="hero hero1"><div class="icon">🔥</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Warm-up</span>
+          <span class="title-en">Activate ideas</span>
+        </h3>
+        <p>Start speaking with a guided sentence.</p>
+
+        <div class="btn-row">
+          <button class="main-btn btn1" onclick="toggleCard('card1')">Start activity</button>
+          <button class="audio-btn btn1" onclick="speakText('What is a graphic organizer? Think first. Then say: A graphic organizer is used to...')">🔊</button>
+        </div>
+
+        <div class="panel">
+          <div id="lock1">
+            <span class="label">Enter code</span>
+            <div class="code-row">
+              <input type="password" id="code1" class="code-input" placeholder="Write the code here">
+              <button class="mini-btn btn1" onclick="unlockStage(1,'START1')">Unlock</button>
+            </div>
+          </div>
+
+          <div id="content1" style="display:none;">
+            <div class="grid-1">
+              <div class="mini-card">
+                <h4>Question</h4>
+                <p>What is a graphic organizer? Choose one idea.</p>
+              </div>
+              <div class="mini-card">
+                <h4>Task</h4>
+                <p>Say one short answer in English.</p>
+              </div>
+              <div class="structure">
+                Use this structure:<br>
+                “A graphic organizer is used to ______.”
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2 -->
+    <article class="card" id="card2">
+      <div class="hero hero2"><div class="icon">📚</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Key terms</span>
+          <span class="title-en">Translate and say</span>
+        </h3>
+        <p>Work with the main vocabulary.</p>
+
+        <div class="btn-row">
+          <button class="main-btn btn2" onclick="toggleCard('card2')">Start activity</button>
+          <button class="audio-btn btn2" onclick="speakText('Graphic organizer. Main idea. Supporting idea. Sequence. Comparison.')">🔊</button>
+        </div>
+
+        <div class="panel">
+          <div id="lock2">
+            <span class="label">Enter code</span>
+            <div class="code-row">
+              <input type="password" id="code2" class="code-input" placeholder="Write the code here">
+              <button class="mini-btn btn2" onclick="unlockStage(2,'WORDS2')">Unlock</button>
+            </div>
+          </div>
+
+          <div id="content2" style="display:none;">
+            <div class="mini-card" style="margin-bottom:12px;">
+              <h4>Task</h4>
+              <p>Translate the terms and say one in class.</p>
+            </div>
+
+            <div class="grid-1">
+              <div class="term"><strong>Graphic organizer</strong><span>Visual representation of information.</span></div>
+              <div class="term"><strong>Main idea</strong><span>Central focus of the content.</span></div>
+              <div class="term"><strong>Supporting idea</strong><span>Complement to the main idea.</span></div>
+              <div class="term"><strong>Sequence</strong><span>Logical or temporal order.</span></div>
+              <div class="term"><strong>Comparison</strong><span>Identification of similarities and differences.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3 -->
+    <article class="card" id="card3">
+      <div class="hero hero3"><div class="icon">✅</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Quick check</span>
+          <span class="title-en">Match and choose</span>
+        </h3>
+        <p>Relate situations and organizers.</p>
+
+        <div class="btn-row">
+          <button class="main-btn btn3" onclick="toggleCard('card3')">Start activity</button>
+          <button class="audio-btn btn3" onclick="speakText('Match the situation with the organizer. Then answer the question.')">🔊</button>
+        </div>
+
+        <div class="panel">
+          <div id="lock3">
+            <span class="label">Enter code</span>
+            <div class="code-row">
+              <input type="password" id="code3" class="code-input" placeholder="Write the code here">
+              <button class="mini-btn btn3" onclick="unlockStage(3,'CHECK3')">Unlock</button>
+            </div>
+          </div>
+
+          <div id="content3" style="display:none;">
+            <div class="question">Match each situation with the correct organizer.</div>
+
+            <div class="match-row">
+              <div class="mini-card"><h4>Show steps</h4></div>
+              <select id="match1">
+                <option value="">Select</option>
+                <option value="flowchart">Flowchart</option>
+                <option value="venn">Venn diagram</option>
+                <option value="mindmap">Mind map</option>
+              </select>
+            </div>
+
+            <div class="match-row">
+              <div class="mini-card"><h4>Compare ideas</h4></div>
+              <select id="match2">
+                <option value="">Select</option>
+                <option value="flowchart">Flowchart</option>
+                <option value="venn">Venn diagram</option>
+                <option value="mindmap">Mind map</option>
+              </select>
+            </div>
+
+            <div class="match-row">
+              <div class="mini-card"><h4>Organize ideas</h4></div>
+              <select id="match3">
+                <option value="">Select</option>
+                <option value="flowchart">Flowchart</option>
+                <option value="venn">Venn diagram</option>
+                <option value="mindmap">Mind map</option>
+              </select>
+            </div>
+
+            <button class="mini-btn btn3" onclick="checkMatching()">Check matching</button>
+            <div id="matchFeedback" class="feedback"></div>
+
+            <div style="margin-top:14px;" class="question">Which organizer is best to show steps in order?</div>
+            <div class="options">
+              <button class="option-btn" onclick="checkAnswer3(false)">Mind map</button>
+              <button class="option-btn" onclick="checkAnswer3(true)">Flowchart</button>
+              <button class="option-btn" onclick="checkAnswer3(false)">Venn diagram</button>
+            </div>
+            <div id="feedback3" class="feedback"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <section class="row bottom">
+
+    <!-- 4 -->
+    <article class="card" id="card4">
+      <div class="hero hero4"><div class="icon">✍️</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Guided response</span>
+          <span class="title-en">Build the sentence</span>
+        </h3>
+        <p>Select the correct words and check.</p>
+
+        <div class="btn-row">
+          <button class="main-btn btn4" onclick="toggleCard('card4')">Start activity</button>
+          <button class="audio-btn btn4" onclick="speakText('Build the sentence. I use a flowchart because it shows steps.')">🔊</button>
+        </div>
+
+        <div class="panel">
+          <div id="lock4">
+            <span class="label">Enter code</span>
+            <div class="code-row">
+              <input type="password" id="code4" class="code-input" placeholder="Write the code here">
+              <button class="mini-btn btn4" onclick="unlockStage(4,'WRITE4')">Unlock</button>
+            </div>
+          </div>
+
+          <div id="content4" style="display:none;">
+            <div class="question">Complete the sentence:</div>
+
+            <div class="grid-1">
+              <select id="o1">
+                <option value="">I use a...</option>
+                <option value="flowchart">flowchart</option>
+                <option value="venn">Venn diagram</option>
+                <option value="mindmap">mind map</option>
+              </select>
+
+              <select id="o2">
+                <option value="">because it...</option>
+                <option value="steps">shows steps</option>
+                <option value="compare">compares ideas</option>
+                <option value="organize">organizes information</option>
+              </select>
+
+              <button class="mini-btn btn4" onclick="check4()">Check answer</button>
+              <div id="r4" class="feedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 5 -->
+    <article class="card" id="card5">
+      <div class="hero hero5"><div class="icon">🎯</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Exit ticket</span>
+          <span class="title-en">Final choice</span>
+        </h3>
+        <p>Close the class with one correct idea.</p>
+
+        <div class="btn-row">
+          <button class="main-btn btn5" onclick="toggleCard('card5')">Start activity</button>
+          <button class="audio-btn btn5" onclick="speakText('Complete the final idea. One organizer I can use is... because it...')">🔊</button>
+        </div>
+
+        <div class="panel">
+          <div id="lock5">
+            <span class="label">Enter code</span>
+            <div class="code-row">
+              <input type="password" id="code5" class="code-input" placeholder="Write the code here">
+              <button class="mini-btn btn5" onclick="unlockStage(5,'FINAL5')">Unlock</button>
+            </div>
+          </div>
+
+          <div id="content5" style="display:none;">
+            <div class="question">Select and complete:</div>
+
+            <div class="grid-1">
+              <select id="o3">
+                <option value="">One organizer I can use is...</option>
+                <option value="flowchart">flowchart</option>
+                <option value="venn">Venn diagram</option>
+                <option value="mindmap">mind map</option>
+              </select>
+
+              <select id="o4">
+                <option value="">because it...</option>
+                <option value="steps">shows steps</option>
+                <option value="compare">compares ideas</option>
+                <option value="organize">organizes information</option>
+              </select>
+
+              <button class="mini-btn btn5" onclick="check5()">Check answer</button>
+              <div id="r5" class="feedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<footer>
+  Aprendiendo con @LaProfeVivy
+  <button id="secretDot" aria-label="Show codes" title="Show codes"></button>
+</footer>
+
+<div class="secret-modal" id="secretModal">
+  <div class="secret-box">
+    <div class="secret-head">Access codes</div>
+    <div class="secret-body">
+      <p>Enter keyword:</p>
+      <input type="password" id="secretInput" placeholder="Write the keyword">
+      <div class="secret-actions">
+        <button class="mini-btn" style="background:var(--c6)" id="secretShowBtn">Show codes</button>
+        <button class="mini-btn btn-gray" id="secretCloseBtn">Close</button>
+      </div>
+
+      <div class="codes-box" id="codesBox">
+        <div>Warm-up: <strong>START1</strong></div>
+        <div>Key terms: <strong>WORDS2</strong></div>
+        <div>Quick check: <strong>CHECK3</strong></div>
+        <div>Guided response: <strong>WRITE4</strong></div>
+        <div>Exit ticket: <strong>FINAL5</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleCard(cardId){
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+      if(card.id === cardId){
+        card.classList.toggle('open');
+      } else {
+        card.classList.remove('open');
+      }
+    });
+  }
+
+  function unlockStage(stage, validCode){
+    const input = document.getElementById("code" + stage);
+    const lock = document.getElementById("lock" + stage);
+    const content = document.getElementById("content" + stage);
+
+    if(input.value.trim() === validCode){
+      lock.style.display = "none";
+      content.style.display = "block";
+    }else{
+      alert("Incorrect code");
+    }
+  }
+
+  function speakText(text){
+    if(!("speechSynthesis" in window)){
+      alert("Audio is not supported in this browser.");
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.92;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function checkMatching(){
+    const m1 = document.getElementById("match1").value;
+    const m2 = document.getElementById("match2").value;
+    const m3 = document.getElementById("match3").value;
+    const fb = document.getElementById("matchFeedback");
+
+    if(m1 === "flowchart" && m2 === "venn" && m3 === "mindmap"){
+      fb.className = "feedback ok";
+      fb.textContent = "Correct matching.";
+    }else{
+      fb.className = "feedback bad";
+      fb.textContent = "Try again.";
+    }
+  }
+
+  function checkAnswer3(correct){
+    const feedback = document.getElementById("feedback3");
+    if(correct){
+      feedback.className = "feedback ok";
+      feedback.textContent = "Correct. A flowchart shows steps and sequence.";
+    }else{
+      feedback.className = "feedback bad";
+      feedback.textContent = "Try again.";
+    }
+  }
+
+  function check4(){
+    const a = document.getElementById("o1").value;
+    const b = document.getElementById("o2").value;
+    const r = document.getElementById("r4");
+
+    if(a === "flowchart" && b === "steps"){
+      r.className = "feedback ok";
+      r.textContent = "Correct: I use a flowchart because it shows steps.";
+    }else{
+      r.className = "feedback bad";
+      r.textContent = "Try again.";
+    }
+  }
+
+  function check5(){
+    const a = document.getElementById("o3").value;
+    const b = document.getElementById("o4").value;
+    const r = document.getElementById("r5");
+
+    if(a === "flowchart" && b === "steps"){
+      r.className = "feedback ok";
+      r.textContent = "Correct: One organizer I can use is flowchart because it shows steps.";
+    }else{
+      r.className = "feedback bad";
+      r.textContent = "Try again.";
+    }
+  }
+
+  const secretDot = document.getElementById("secretDot");
+  const secretModal = document.getElementById("secretModal");
+  const secretInput = document.getElementById("secretInput");
+  const codesBox = document.getElementById("codesBox");
+  const secretShowBtn = document.getElementById("secretShowBtn");
+  const secretCloseBtn = document.getElementById("secretCloseBtn");
+
+  secretDot.addEventListener("click", function(){
+    secretModal.classList.add("show");
+    secretInput.value = "";
+    codesBox.classList.remove("show");
+    setTimeout(() => secretInput.focus(), 100);
+  });
+
+  secretShowBtn.addEventListener("click", function(){
+    if(secretInput.value.trim() === "Valeria"){
+      codesBox.classList.add("show");
+    }else{
+      codesBox.classList.remove("show");
+      alert("Incorrect keyword");
+    }
+  });
+
+  secretCloseBtn.addEventListener("click", function(){
+    secretModal.classList.remove("show");
+  });
+
+  secretModal.addEventListener("click", function(e){
+    if(e.target === secretModal){
+      secretModal.classList.remove("show");
+    }
+  });
+
+  secretInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      secretShowBtn.click();
+    }
+  });
+</script>
+
+</body>
+</html>
