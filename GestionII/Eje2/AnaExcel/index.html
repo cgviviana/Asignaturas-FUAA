@@ -1,1 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Análisis de datos en Excel</title>
+  <style>
+    :root{
+      --bg:#c8d7e6;
+      --bg2:#b7cadb;
+      --panel:#d8dadd;
+      --dark:#111111;
+      --text:#1f1f1f;
+      --line:#79e7ff;
+      --green:#7ed957;
+      --shadow:0 10px 24px rgba(0,0,0,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Segoe UI, Arial, sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,var(--bg),var(--bg2));
+      min-height:100vh;
+    }
+    .wrap{
+      width:min(1240px,95%);
+      margin:0 auto;
+      padding:20px 0 90px;
+    }
+    .main-header{
+      background:linear-gradient(180deg,#28461e,#1c3116);
+      color:#f5ffe8;
+      border:1px solid rgba(158,255,116,.35);
+      padding:16px 22px;
+      font-size:1.3rem;
+      font-weight:800;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+      text-align:left;
+    }
+    .frame{
+      display:grid;
+      grid-template-columns:270px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+    .tabs-panel,.content-panel{
+      background:rgba(255,255,255,.12);
+      border:2px solid rgba(255,255,255,.25);
+      box-shadow:var(--shadow);
+    }
+    .tabs-panel{
+      padding:14px;
+      position:sticky;
+      top:16px;
+    }
+    .tabs-title{
+      background:var(--dark);
+      color:#fff;
+      padding:14px 16px;
+      font-weight:800;
+      font-size:1.05rem;
+      margin-bottom:14px;
+      text-align:center;
+    }
+    .tab-btn{
+      width:100%;
+      border:none;
+      cursor:pointer;
+      text-align:left;
+      padding:14px 16px;
+      margin-bottom:10px;
+      background:#edf1f5;
+      color:#1c1c1c;
+      font-weight:700;
+      font-size:.98rem;
+      border-left:6px solid transparent;
+      transition:.2s ease;
+    }
+    .tab-btn:hover,.tab-btn.active{
+      background:#111;
+      color:#fff;
+      border-left-color:var(--green);
+    }
+    .content-panel{
+      min-height:680px;
+      overflow:hidden;
+    }
+    .section{display:none}
+    .section.active{display:block}
+    .section-head{
+      background:#111;
+      color:#fff;
+      padding:16px 20px;
+      font-size:1.7rem;
+      font-weight:800;
+    }
+    .section-body{
+      background:#d3d7dc;
+      padding:18px;
+      border-top:2px solid var(--line);
+    }
+    .accordion{display:grid;gap:14px}
+    .acc-item{
+      background:var(--panel);
+      border:2px solid var(--line);
+      overflow:hidden;
+    }
+    .acc-btn{
+      width:100%;
+      border:none;
+      background:#111;
+      color:#fff;
+      padding:14px 18px;
+      text-align:left;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      cursor:pointer;
+      font-size:1rem;
+      font-weight:800;
+    }
+    .plus{
+      width:30px;
+      height:30px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.14);
+      border-radius:50%;
+      transition:.2s ease;
+      flex:0 0 auto;
+    }
+    .acc-item.open .plus{transform:rotate(45deg);background:rgba(126,217,87,.25)}
+    .acc-content{
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .28s ease;
+      background:var(--panel);
+    }
+    .acc-inner{
+      padding:18px 18px 20px;
+      font-size:1rem;
+      line-height:1.6;
+    }
+    .acc-inner p{margin:0 0 12px}
+    .acc-inner ul{margin:0;padding-left:24px}
+    .acc-inner li{margin:7px 0}
+    .example-box,.note-box,.formula-box{
+      margin-top:12px;
+      padding:14px 16px;
+    }
+    .example-box{background:rgba(255,255,255,.55);border-left:5px solid #111}
+    .note-box{background:#f6fff1;border-left:5px solid var(--green)}
+    .formula-box{background:#161616;color:#ecffe0;font-weight:700}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .chip{background:#f5fff0;border:1px solid #97cf83;padding:8px 12px;font-weight:700}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .mini-card{background:rgba(255,255,255,.55);padding:14px 16px;border:1px solid rgba(0,0,0,.08)}
+    .mini-card h4{margin:0 0 8px;font-size:1rem}
+    .mini-card p{margin:0}
+    .excel-table-wrap{
+      overflow-x:auto;
+      margin-top:12px;
+      background:rgba(255,255,255,.45);
+      padding:10px;
+      border:1px solid rgba(0,0,0,.08);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+      min-width:720px;
+    }
+    th,td{
+      border:1px solid #c9d3dd;
+      padding:10px 12px;
+      text-align:left;
+      font-size:.95rem;
+    }
+    th{
+      background:#1d3b1a;
+      color:#fff;
+    }
+    .step-tag{
+      display:inline-block;
+      background:#111;
+      color:#fff;
+      padding:6px 10px;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+    footer{
+      margin-top:18px;
+      background:#111;
+      color:#d7ffbf;
+      text-align:center;
+      padding:16px;
+      font-weight:800;
+      box-shadow:var(--shadow);
+    }
+    @media (max-width:900px){
+      .frame{grid-template-columns:1fr}
+      .tabs-panel{position:static}
+      .two-col{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="main-header">Análisis de datos en Excel desde una base de datos</header>
 
+    <div class="frame">
+      <aside class="tabs-panel">
+        <div class="tabs-title">Temas</div>
+        <button class="tab-btn active" data-section="s1">1. ¿Qué es?</button>
+        <button class="tab-btn" data-section="s2">2. Limpieza</button>
+        <button class="tab-btn" data-section="s3">3. Organización</button>
+        <button class="tab-btn" data-section="s4">4. Comparativos</button>
+        <button class="tab-btn" data-section="s5">5. Cálculos</button>
+        <button class="tab-btn" data-section="s6">6. Gráficos</button>
+        <button class="tab-btn" data-section="s7">7. Tabla dinámica</button>
+        <button class="tab-btn" data-section="s8">8. Ejemplo completo</button>
+      </aside>
+
+      <main class="content-panel">
+
+        <section id="s1" class="section active">
+          <div class="section-head">¿Qué es el análisis de datos en Excel?</div>
+          <div class="section-body">
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Concepto básico</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:800px;">
+                  <div class="acc-inner">
+                    <p>Analizar datos en Excel es revisar una base de datos para encontrar información útil. No se trata solo de mirar números, sino de organizarlos, compararlos e interpretarlos.</p>
+                    <div class="note-box">
+                      <strong>Idea clave</strong>
+                      <p>La base de datos contiene datos. El análisis convierte esos datos en información.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>¿Para qué sirve?</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <ul>
+                      <li>Encontrar patrones</li>
+                      <li>Comparar grupos o periodos</li>
+                      <li>Resumir información</li>
+                      <li>Tomar decisiones</li>
+                    </ul>
+                    <div class="example-box">
+                      <strong>Ejemplo</strong>
+                      <p>Si una base registra llegadas tarde, Excel permite saber qué curso presenta más retrasos, qué días ocurre más y cuántos casos existen.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <section id="s2" class="section">
+          <div class="section-head">Limpieza de la base de datos</div>
+          <div class="section-body">
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Primer paso: limpiar</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1100px;">
+                  <div class="acc-inner">
+                    <p>Antes de analizar, la base debe estar limpia. Si la base tiene errores, los resultados también tendrán errores.</p>
+                    <div class="two-col">
+                      <div class="mini-card">
+                        <h4>Qué revisar</h4>
+                        <ul>
+                          <li>Filas vacías</li>
+                          <li>Datos repetidos</li>
+                          <li>Nombres mal escritos</li>
+                          <li>Números guardados como texto</li>
+                          <li>Fechas mal registradas</li>
+                        </ul>
+                      </div>
+                      <div class="mini-card">
+                        <h4>Herramientas de Excel</h4>
+                        <ul>
+                          <li>Ordenar</li>
+                          <li>Filtro</li>
+                          <li>Quitar duplicados</li>
+                          <li>Buscar y reemplazar</li>
+                          <li>Formato de celda</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="note-box">
+                      <strong>Ejemplo</strong>
+                      <p>Si en una fila aparece “10A” y en otra “10 A”, Excel podría contarlos como grupos distintos.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Reglas básicas de limpieza</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <ul>
+                      <li>No dejar columnas sin nombre.</li>
+                      <li>No unir celdas dentro de la base.</li>
+                      <li>Una fila = un registro.</li>
+                      <li>Una columna = un tipo de dato.</li>
+                      <li>Todos los datos del mismo tipo deben tener el mismo formato.</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <section id="s3" class="section">
+          <div class="section-head">Organización de datos</div>
+          <div class="section-body">
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Cómo debe verse una base bien organizada</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1000px;">
+                  <div class="acc-inner">
+                    <p>Una base ordenada permite trabajar mejor en filtros, fórmulas, gráficos y tablas dinámicas.</p>
+                    <div class="chips">
+                      <div class="chip">ID</div>
+                      <div class="chip">Nombre</div>
+                      <div class="chip">Curso</div>
+                      <div class="chip">Fecha</div>
+                      <div class="chip">Hora</div>
+                      <div class="chip">Estado</div>
+                    </div>
+                    <div class="example-box">
+                      <strong>Importante</strong>
+                      <p>No se debe mezclar en una sola columna información diferente como “Juan - 10A - tarde”. Eso debe ir separado.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Ventajas de organizar bien</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <ul>
+                      <li>Facilita los filtros</li>
+                      <li>Evita errores en fórmulas</li>
+                      <li>Permite comparar</li>
+                      <li>Hace posible la tabla dinámica</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <section id="s4" class="section">
+          <div class="section-head">Comparativos</div>
+          <div class="section-body">
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn"><span>¿Qué es comparar datos?</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1000px;">
+                  <div class="acc-inner">
+                    <p>Comparar datos es mirar diferencias o comportamientos entre grupos, fechas, categorías o cantidades.</p>
+                    <div class="two-col">
+                      <div class="mini-card">
+                        <h4>Comparativos frecuentes</h4>
+                        <ul>
+                          <li>Curso vs cantidad de casos</li>
+                          <li>Día vs frecuencia</li>
+                          <li>Persona vs rendimiento</li>
+                        </ul>
+                      </div>
+                      <div class="mini-card">
+                        <h4>Preguntas guía</h4>
+                        <ul>
+                          <li>¿Cuál tiene más?</li>
+                          <li>¿Cuál tiene menos?</li>
+                          <li>¿En qué día ocurre más?</li>
+                          <li>¿Qué grupo presenta mayor frecuencia?</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="note-box">
+                      <strong>Ejemplo</strong>
+                      <p>Comparar cursos permite identificar cuál presenta mayor número de llegadas tarde.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <section id="s5" class="section">
+          <div class="section-head">Cálculos básicos en Excel</div>
+          <div class="section-body">
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Funciones útiles</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1200px;">
+                  <div class="acc-inner">
+                    <p>Después de limpiar y organizar, se aplican cálculos sencillos para resumir información.</p>
+
+                    <div class="formula-box">CONTAR.SI = contar cuántas veces aparece una condición</div>
+                    <div class="formula-box">SUMAR.SI = sumar según una condición</div>
+                    <div class="formula-box">PROMEDIO = calcular media</div>
+                    <div class="formula-box">MAX = valor mayor</div>
+                    <div class="formula-box">MIN = valor menor</div>
+
+                    <div class="example-box">
+                      <strong>Ejemplos</strong>
+                      <p>CONTAR.SI puede servir para saber cuántos estudiantes llegaron tarde.</p>
+                      <p>MAX puede mostrar el mayor número de minutos de retraso.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Interpretar el cálculo</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>El cálculo por sí solo no basta. Se debe explicar qué significa.</p>
+                    <div class="note-box">
+                      <strong>Ejemplo</strong>
+                      <p>Si el curso 10A tiene 15 tardanzas y 10B tiene 6, entonces 10A presenta mayor frecuencia de retraso.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <section id="s6" class="section">
+          <div class="section-head">Gráficos</div>
+          <div class="section-body">
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Representar visualmente</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:950px;">
+                  <div class="acc-inner">
+                    <p>Los gráficos ayudan a comprender los resultados de manera rápida.</p>
+                    <div class="chips">
+                      <div class="chip">Barras</div>
+                      <div class="chip">Columnas</div>
+                      <div class="chip">Pastel</div>
+                      <div class="chip">Líneas</div>
+                    </div>
+                    <div class="example-box">
+                      <strong>Uso</strong>
+                      <p>Un gráfico de barras sirve para comparar cursos. Un gráfico de pastel puede mostrar porcentajes.</p>
+                    </div>
+                    <div class="note-box">
+                      <strong>Clave</strong>
+                      <p>El gráfico no reemplaza el análisis. Solo ayuda a visualizarlo.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <section id="s7" class="section">
+          <div class="section-head">Tabla dinámica</div>
+          <div class="section-body">
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn"><span>¿Qué es una tabla dinámica?</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1200px;">
+                  <div class="acc-inner">
+                    <p>La tabla dinámica es una herramienta de Excel que resume grandes cantidades de datos de forma rápida.</p>
+                    <div class="two-col">
+                      <div class="mini-card">
+                        <h4>Permite</h4>
+                        <ul>
+                          <li>Contar</li>
+                          <li>Sumar</li>
+                          <li>Agrupar</li>
+                          <li>Filtrar</li>
+                          <li>Comparar</li>
+                        </ul>
+                      </div>
+                      <div class="mini-card">
+                        <h4>Estructura</h4>
+                        <ul>
+                          <li>Filas</li>
+                          <li>Columnas</li>
+                          <li>Valores</li>
+                          <li>Filtros</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="example-box">
+                      <strong>Ejemplo</strong>
+                      <p>Filas: Curso</p>
+                      <p>Columnas: Día</p>
+                      <p>Valores: Cantidad de tardanzas</p>
+                    </div>
+                    <div class="note-box">
+                      <strong>Resultado</strong>
+                      <p>Con una sola tabla se pueden ver patrones por curso y por día sin hacer conteos manuales.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Pasos básicos para crearla</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <ol>
+                      <li>Seleccionar la base de datos</li>
+                      <li>Ir a Insertar</li>
+                      <li>Elegir Tabla dinámica</li>
+                      <li>Ubicar campos en filas, columnas y valores</li>
+                      <li>Interpretar el resultado</li>
+                    </ol>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <section id="s8" class="section">
+          <div class="section-head">Ejemplo completo</div>
+          <div class="section-body">
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Base de ejemplo</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1300px;">
+                  <div class="acc-inner">
+                    <p>Supongamos una base de datos sobre llegadas de estudiantes.</p>
+
+                    <div class="excel-table-wrap">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Estudiante</th>
+                            <th>Curso</th>
+                            <th>Fecha</th>
+                            <th>Hora llegada</th>
+                            <th>Estado</th>
+                            <th>Minutos retraso</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr><td>Ana</td><td>10A</td><td>08/04/2026</td><td>6:42</td><td>Tarde</td><td>12</td></tr>
+                          <tr><td>Luis</td><td>10A</td><td>08/04/2026</td><td>6:31</td><td>Tarde</td><td>1</td></tr>
+                          <tr><td>Sara</td><td>10B</td><td>08/04/2026</td><td>6:25</td><td>A tiempo</td><td>0</td></tr>
+                          <tr><td>Juan</td><td>10B</td><td>09/04/2026</td><td>6:48</td><td>Tarde</td><td>18</td></tr>
+                          <tr><td>María</td><td>10A</td><td>09/04/2026</td><td>6:29</td><td>A tiempo</td><td>0</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div class="step-tag">Paso 1</div>
+                    <p>Se limpia la base: revisar duplicados, formatos y escritura.</p>
+
+                    <div class="step-tag">Paso 2</div>
+                    <p>Se organiza por columnas claras.</p>
+
+                    <div class="step-tag">Paso 3</div>
+                    <p>Se compara cuántos casos de “Tarde” hay por curso.</p>
+
+                    <div class="step-tag">Paso 4</div>
+                    <p>Se calcula el promedio de minutos de retraso.</p>
+
+                    <div class="step-tag">Paso 5</div>
+                    <p>Se crea un gráfico o una tabla dinámica.</p>
+
+                    <div class="note-box">
+                      <strong>Conclusión del ejemplo</strong>
+                      <p>Excel permite pasar de una lista de registros a conclusiones claras como cuál curso presenta más retrasos y en qué días sucede con mayor frecuencia.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <footer>Aprendiendo con @LaProfeVivy</footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.section');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.section).classList.add('active');
+
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    document.querySelectorAll('.acc-item').forEach(item => {
+      const btn = item.querySelector('.acc-btn');
+      const content = item.querySelector('.acc-content');
+
+      if(item.classList.contains('open')){
+        content.style.maxHeight = content.scrollHeight + 'px';
+      }
+
+      btn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        item.classList.toggle('open');
+        content.style.maxHeight = isOpen ? null : content.scrollHeight + 'px';
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('.acc-item.open .acc-content').forEach(content => {
+        content.style.maxHeight = content.scrollHeight + 'px';
+      });
+    });
+  </script>
+</body>
+</html>
