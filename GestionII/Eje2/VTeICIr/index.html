@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Lente Estratégico | Material didáctico</title>
+  <style>
+    :root{
+      --bg:#c8d7e6;
+      --bg2:#b7cadb;
+      --panel:#d8dadd;
+      --dark:#111111;
+      --text:#1f1f1f;
+      --line:#79e7ff;
+      --green:#7ed957;
+      --blue:#62d8ff;
+      --gold:#ffc857;
+      --shadow:0 10px 24px rgba(0,0,0,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Segoe UI, Arial, sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,var(--bg),var(--bg2));
+      min-height:100vh;
+    }
+    .wrap{
+      width:min(1240px,95%);
+      margin:0 auto;
+      padding:20px 0 90px;
+    }
+    .main-header{
+      background:linear-gradient(180deg,#10293b,#0b1d2b);
+      color:#f2fbff;
+      border:1px solid rgba(121,231,255,.35);
+      padding:18px 22px;
+      font-size:1.35rem;
+      font-weight:800;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+      text-align:left;
+    }
+    .main-header small{
+      display:block;
+      margin-top:6px;
+      font-size:.92rem;
+      font-weight:600;
+      color:#d7f8ff;
+    }
+    .frame{
+      display:grid;
+      grid-template-columns:270px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+    .tabs-panel,.content-panel{
+      background:rgba(255,255,255,.12);
+      border:2px solid rgba(255,255,255,.25);
+      box-shadow:var(--shadow);
+    }
+    .tabs-panel{
+      padding:14px;
+      position:sticky;
+      top:16px;
+    }
+    .tabs-title{
+      background:var(--dark);
+      color:#fff;
+      padding:14px 16px;
+      font-weight:800;
+      font-size:1.05rem;
+      margin-bottom:14px;
+      text-align:center;
+    }
+    .tab-btn{
+      width:100%;
+      border:none;
+      cursor:pointer;
+      text-align:left;
+      padding:14px 16px;
+      margin-bottom:10px;
+      background:#edf1f5;
+      color:#1c1c1c;
+      font-weight:700;
+      font-size:.98rem;
+      border-left:6px solid transparent;
+      transition:.2s ease;
+    }
+    .tab-btn:hover,.tab-btn.active{
+      background:#111;
+      color:#fff;
+      border-left-color:var(--line);
+    }
+    .content-panel{
+      min-height:680px;
+      overflow:hidden;
+    }
+    .section{display:none}
+    .section.active{display:block}
+    .section-head{
+      background:#111;
+      color:#fff;
+      padding:16px 20px;
+      font-size:1.7rem;
+      font-weight:800;
+    }
+    .section-body{
+      background:#d3d7dc;
+      padding:18px;
+      border-top:2px solid var(--line);
+    }
+    .lead-box{
+      background:#eefaff;
+      border-left:5px solid var(--line);
+      padding:14px 16px;
+      margin-bottom:14px;
+      line-height:1.6;
+    }
+    .accordion{display:grid;gap:14px}
+    .acc-item{
+      background:var(--panel);
+      border:2px solid var(--line);
+      overflow:hidden;
+    }
+    .acc-btn{
+      width:100%;
+      border:none;
+      background:#111;
+      color:#fff;
+      padding:14px 18px;
+      text-align:left;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      cursor:pointer;
+      font-size:1rem;
+      font-weight:800;
+    }
+    .plus{
+      width:30px;
+      height:30px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.14);
+      border-radius:50%;
+      transition:.2s ease;
+      flex:0 0 auto;
+    }
+    .acc-item.open .plus{transform:rotate(45deg);background:rgba(126,217,87,.25)}
+    .acc-content{
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .28s ease;
+      background:var(--panel);
+    }
+    .acc-inner{
+      padding:18px 18px 20px;
+      font-size:1rem;
+      line-height:1.6;
+    }
+    .acc-inner p{margin:0 0 12px}
+    .acc-inner ul{margin:0;padding-left:22px}
+    .acc-inner li{margin:7px 0}
+    .example-box,.note-box,.formula-box,.mini-highlight{
+      margin-top:12px;
+      padding:14px 16px;
+    }
+    .example-box{background:rgba(255,255,255,.58);border-left:5px solid #111}
+    .note-box{background:#f6fff1;border-left:5px solid var(--green)}
+    .formula-box{background:#161616;color:#ecffe0;font-weight:700}
+    .mini-highlight{background:#fff8e8;border-left:5px solid var(--gold)}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .chip{background:#f5fff0;border:1px solid #97cf83;padding:8px 12px;font-weight:700}
+    .two-col,.three-col{display:grid;gap:12px;margin-top:12px}
+    .two-col{grid-template-columns:1fr 1fr}
+    .three-col{grid-template-columns:repeat(3,1fr)}
+    .mini-card{background:rgba(255,255,255,.55);padding:14px 16px;border:1px solid rgba(0,0,0,.08)}
+    .mini-card h4{margin:0 0 8px;font-size:1rem}
+    .mini-card p{margin:0}
+    .step-num{
+      display:inline-grid;
+      place-items:center;
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:#111;
+      color:#fff;
+      font-size:.9rem;
+      font-weight:800;
+      margin-right:8px;
+    }
+    .compare-table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      background:rgba(255,255,255,.58);
+      overflow:hidden;
+    }
+    .compare-table th,.compare-table td{
+      border:1px solid rgba(0,0,0,.12);
+      padding:12px;
+      text-align:left;
+      vertical-align:top;
+    }
+    .compare-table th{
+      background:#101010;
+      color:#fff;
+    }
+    footer{
+      margin-top:18px;
+      background:#111;
+      color:#d7ffbf;
+      text-align:center;
+      padding:16px;
+      font-weight:800;
+      box-shadow:var(--shadow);
+    }
+    @media (max-width:900px){
+      .frame{grid-template-columns:1fr}
+      .tabs-panel{position:static}
+      .two-col,.three-col{grid-template-columns:1fr}
+      .main-header{font-size:1.18rem}
+      .section-head{font-size:1.35rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="main-header">
+      El Lente Estratégico
+      <small>Material didáctico sobre vigilancia tecnológica e inteligencia competitiva</small>
+    </header>
+
+    <div class="frame">
+      <aside class="tabs-panel">
+        <div class="tabs-title">Temas</div>
+        <button class="tab-btn active" data-section="s1">Panorama general</button>
+        <button class="tab-btn" data-section="s2">Conceptos clave</button>
+        <button class="tab-btn" data-section="s3">VT vs. IC</button>
+        <button class="tab-btn" data-section="s4">Ciclo de inteligencia</button>
+        <button class="tab-btn" data-section="s5">Herramientas</button>
+        <button class="tab-btn" data-section="s6">Análisis con Excel</button>
+        <button class="tab-btn" data-section="s7">Difusión y decisión</button>
+        <button class="tab-btn" data-section="s8">Beneficios </button>
+      </aside>
+
+      <main class="content-panel">
+        <section id="s1" class="section active">
+          <div class="section-head">Panorama general</div>
+          <div class="section-body">
+            <div class="lead-box">
+              Hoy existe demasiada información y estamos infoxicados. El reto no es solo encontrar datos, sino filtrarlos, analizarlos y convertirlos en señales útiles para decidir mejor.
+            </div>
+            <div class="accordion">
+              <article class="acc-item open">
+                <button class="acc-btn"><span>¿Cuál es el problema?</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:900px;">
+                  <div class="acc-inner">
+                    <p>Las organizaciones viven en una era de sobrecarga informativa. Hay publicaciones, noticias, patentes, reportes, redes y datos internos por todas partes. Tener acceso a todo eso no garantiza claridad.</p>
+                    <div class="mini-highlight">
+                      <strong>Idea central:</strong>
+                      <p>La ventaja no está en acumular información, sino en separar el ruido de lo realmente importante.</p>
+                    </div>
+                    <div class="chips">
+                      <span class="chip">Muchos datos</span>
+                      <span class="chip">Poco tiempo</span>
+                      <span class="chip">Necesidad de decidir</span>
+                      <span class="chip">Riesgo de reaccionar tarde</span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Señal estratégica</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Es un indicio que puede anticipar cambios, riesgos u oportunidades. Al inicio suele ser débil: parece pequeña, aislada o poco visible. Pero si se analiza a tiempo, puede evitar que una empresa actúe tarde.</p>
+                    <div class="example-box">
+                      <strong>Ejemplo sencillo</strong>
+                      <p>Si una tecnología nueva empieza a aparecer en artículos, ferias, patentes y noticias especializadas, eso puede ser una señal de que pronto impactará el mercado.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>¿Por qué reaccionar tarde cuesta caro?</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Cuando la señal ya es muy fuerte, normalmente la competencia también la vio. En ese momento hay menos margen para maniobrar, innovar o adaptarse.</p>
+                    <div class="note-box">
+                      <strong>Tener en cuenta</strong>
+                      <p>La inteligencia estratégica busca actuar cuando la señal todavía es débil, porque allí sí existe espacio para planear y responder.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s2" class="section">
+          <div class="section-head">Conceptos clave</div>
+          <div class="section-body">
+            <div class="accordion">
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Gestión de la información</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1000px;">
+                  <div class="acc-inner">
+                    <p>Es la base de todo el sistema. Consiste en captar, organizar, almacenar y poner en orden información interna y externa para que pueda usarse después.</p>
+                    <div class="formula-box">Primero se organiza la información; luego se vigila; después se convierte en inteligencia.</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Vigilancia tecnológica (VT)</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Es una actividad organizada y continua para buscar, captar y seguir información sobre ciencia, tecnología e innovación. Su propósito es detectar cambios y alertas a tiempo.</p>
+                    <ul>
+                      <li>Observa el entorno.</li>
+                      <li>Rastrea tendencias tecnológicas.</li>
+                      <li>Ayuda a anticiparse.</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Inteligencia competitiva (IC)</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Va un paso más allá. No solo recoge información: la interpreta, la analiza y la traduce en conocimiento útil para apoyar decisiones estratégicas.</p>
+                    <div class="example-box">
+                      <strong>En síntesis</strong>
+                      <p>La vigilancia detecta. La inteligencia interpreta y orienta la acción.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s3" class="section">
+          <div class="section-head">VT vs. IC</div>
+          <div class="section-body">
+            <div class="lead-box">
+              Aunque se relacionan, no son lo mismo. Una se enfoca en observar y alertar; la otra en comprender y decidir.
+            </div>
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>Aspecto</th>
+                  <th>Vigilancia Tecnológica</th>
+                  <th>Inteligencia Competitiva</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Enfoque principal</strong></td>
+                  <td>Ciencia, tecnología e innovación.</td>
+                  <td>Mercado, negocio y competidores.</td>
+                </tr>
+                <tr>
+                  <td><strong>Función</strong></td>
+                  <td>Detectar cambios, alertas y tendencias.</td>
+                  <td>Dar sentido estratégico a la información.</td>
+                </tr>
+                <tr>
+                  <td><strong>Naturaleza</strong></td>
+                  <td>Observacional y preventiva.</td>
+                  <td>Analítica, ofensiva y defensiva.</td>
+                </tr>
+                <tr>
+                  <td><strong>Resultado</strong></td>
+                  <td>Alertas y oportunidades tecnológicas.</td>
+                  <td>Estrategias accionables y ventaja competitiva.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="accordion" style="margin-top:14px;">
+              <article class="acc-item">
+                <button class="acc-btn"><span>Ejemplo comparado</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p><strong>VT:</strong> detectar que una nueva tecnología está apareciendo en patentes y publicaciones.</p>
+                    <p><strong>IC:</strong> analizar cómo esa tecnología podría afectar a la empresa, a sus productos, a sus costos o a sus competidores.</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s4" class="section">
+          <div class="section-head">Ciclo de inteligencia</div>
+          <div class="section-body">
+            <div class="lead-box">
+              El proceso no es lineal ni se hace una sola vez. Es un ciclo continuo: se pregunta, se busca, se analiza, se comunica y se usa para decidir.
+            </div>
+            <div class="accordion">
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Fase 1. Diagnóstico</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:950px;">
+                  <div class="acc-inner">
+                    <p><span class="step-num">1</span>Se define qué se necesita vigilar. Aquí se determinan temas críticos, amenazas, oportunidades o preguntas guía.</p>
+                    <div class="note-box">
+                      <strong>Pregunta clave</strong>
+                      <p>¿Qué debemos observar para no decidir a ciegas?</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Fase 2. Búsqueda</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p><span class="step-num">2</span>Se localizan las fuentes y se captura información. Pueden ser bases de datos, patentes, prensa, congresos, informes sectoriales, clientes, proveedores o redes.</p>
+                    <div class="example-box">
+                      <strong>Idea práctica</strong>
+                      <p>No se trata de buscar en todas partes sin criterio, sino de buscar donde sí haya señales útiles.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Fase 3. Análisis</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p><span class="step-num">3</span>Se filtra, valida y transforma la información en conocimiento. Aquí se diferencia un dato suelto de una señal con sentido estratégico.</p>
+                    <ul>
+                      <li>Eliminar ruido.</li>
+                      <li>Comprobar credibilidad.</li>
+                      <li>Relacionar hallazgos.</li>
+                      <li>Encontrar patrones.</li>
+                    </ul>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Fase 4. Difusión</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p><span class="step-num">4</span>Los resultados se entregan a la persona adecuada, en el formato adecuado. No toda la organización necesita el mismo nivel de detalle.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Fase 5. Decisión / Acción</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p><span class="step-num">5</span>La información analizada se incorpora a la estrategia. El ciclo solo tiene sentido si termina apoyando decisiones reales.</p>
+                    <div class="mini-highlight">
+                      <strong>Clave:</strong>
+                      <p>La inteligencia no se mide por informes, sino por su utilidad para actuar.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s5" class="section">
+          <div class="section-head">Herramientas</div>
+          <div class="section-body">
+            <div class="lead-box">
+              Las herramientas ayudan a capturar y ordenar información, pero no reemplazan el criterio analítico.
+            </div>
+            <div class="three-col">
+              <div class="mini-card">
+                <h4>Google Alerts</h4>
+                <p>Útil para monitorear web y noticias por palabras clave. Funciona bien como rastreo básico.</p>
+              </div>
+              <div class="mini-card">
+                <h4>Talkwalker Alerts</h4>
+                <p>Permite seguimiento ágil de menciones y alertas. Aporta escucha más conversacional.</p>
+              </div>
+              <div class="mini-card">
+                <h4>Feedly</h4>
+                <p>Centraliza fuentes RSS y facilita la lectura diaria organizada de contenidos.</p>
+              </div>
+            </div>
+
+            <div class="accordion" style="margin-top:14px;">
+              <article class="acc-item open">
+                <button class="acc-btn"><span>¿Qué debo tener claro antes de usar una herramienta?</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:950px;">
+                  <div class="acc-inner">
+                    <ul>
+                      <li>Qué tema se quiere vigilar.</li>
+                      <li>Qué palabras clave o variables usar.</li>
+                      <li>Qué fuentes son confiables.</li>
+                      <li>Con qué frecuencia se revisarán los resultados.</li>
+                    </ul>
+                    <div class="formula-box">Herramienta sin pregunta clara = acumulación de datos sin valor.</div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s6" class="section">
+          <div class="section-head">Análisis con Excel</div>
+          <div class="section-body">
+            <div class="lead-box">
+              Excel puede funcionar como motor de análisis estratégico porque ayuda a estructurar, limpiar, resumir y visualizar información.
+            </div>
+            <div class="accordion">
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Ruta básica de trabajo</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1200px;">
+                  <div class="acc-inner">
+                    <div class="two-col">
+                      <div class="mini-card">
+                        <h4>1. Datos no estructurados</h4>
+                        <p>Ingresan alertas, reportes, noticias o hallazgos sueltos.</p>
+                      </div>
+                      <div class="mini-card">
+                        <h4>2. Limpieza y formato</h4>
+                        <p>Se normalizan campos como fecha, fuente, tema, impacto o competidor.</p>
+                      </div>
+                      <div class="mini-card">
+                        <h4>3. Base estructurada</h4>
+                        <p>Se consolida una tabla que sirva como repositorio de inteligencia.</p>
+                      </div>
+                      <div class="mini-card">
+                        <h4>4. Análisis</h4>
+                        <p>Se buscan patrones, frecuencias, vacíos y tendencias.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>¿Por qué sirven las tablas dinámicas?</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Porque convierten muchos registros en una vista resumida y útil para comparar. Ayudan a agrupar por tiempo, tecnología, competidor, tema o impacto.</p>
+                    <div class="example-box">
+                      <strong>Ejemplos de uso</strong>
+                      <ul>
+                        <li>Ver cuántas alertas surgieron por mes.</li>
+                        <li>Comparar qué competidor aparece más.</li>
+                        <li>Detectar áreas donde el mercado aún no se mueve.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Tener en cuenta</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Excel no reemplaza la interpretación. Lo que hace es ordenar el panorama para que la mente analítica vea mejor qué está pasando.</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s7" class="section">
+          <div class="section-head">Difusión y decisión</div>
+          <div class="section-body">
+            <div class="accordion">
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Difusión</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:900px;">
+                  <div class="acc-inner">
+                    <p>Difundir no es enviar todo a todos. Es entregar la información precisa a quien la necesita.</p>
+                    <div class="chips">
+                      <span class="chip">Boletines</span>
+                      <span class="chip">Mapas tecnológicos</span>
+                      <span class="chip">Alertas tempranas</span>
+                      <span class="chip">Cuadros de mando</span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn"><span>Decisión</span><span class="plus">+</span></button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>La decisión es el fin del proceso. Aquí la empresa define si debe innovar, ajustar, protegerse, aliarse, invertir o detener una línea de trabajo.</p>
+                    <div class="note-box">
+                      <strong>Pregunta final</strong>
+                      <p>Con lo que ya sabemos, ¿qué conviene hacer ahora?</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s8" class="section">
+          <div class="section-head">Beneficios </div>
+          <div class="section-body">
+            <div class="three-col">
+              <div class="mini-card">
+                <h4>Minimiza riesgos</h4>
+                <p>Evita invertir tarde o en tecnologías poco convenientes.</p>
+              </div>
+              <div class="mini-card">
+                <h4>Anticipa cambios</h4>
+                <p>Permite detectar normas, tendencias y movimientos del entorno.</p>
+              </div>
+              <div class="mini-card">
+                <h4>Fortalece la estrategia</h4>
+                <p>Ayuda a tomar decisiones con menos improvisación.</p>
+              </div>
+            </div>
+
+            <div class="accordion" style="margin-top:14px;">
+              <article class="acc-item open">
+                <button class="acc-btn"><span>Conclusión didáctica</span><span class="plus">+</span></button>
+                <div class="acc-content" style="max-height:1000px;">
+                  <div class="acc-inner">
+                    <p>La arquitectura de inteligencia estratégica no depende de una sola herramienta. Depende de una secuencia clara: organizar, vigilar, analizar, comunicar y actuar.</p>
+                    <div class="formula-box">Información + criterio + análisis + decisión = valor estratégico</div>
+                    <div class="mini-highlight">
+                      <strong>Para recordar</strong>
+                      <p>No gana quien más datos tiene. Gana quien entiende antes qué significan y cómo usarlos.</p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <footer>Aprendiendo con @LaProfeVivy</footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.section');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.section).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    document.querySelectorAll('.acc-item').forEach(item => {
+      const btn = item.querySelector('.acc-btn');
+      const content = item.querySelector('.acc-content');
+      btn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        item.classList.toggle('open');
+        content.style.maxHeight = isOpen ? null : content.scrollHeight + 'px';
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('.acc-item.open .acc-content').forEach(content => {
+        content.style.maxHeight = content.scrollHeight + 'px';
+      });
+    });
+  </script>
+</body>
+</html>
