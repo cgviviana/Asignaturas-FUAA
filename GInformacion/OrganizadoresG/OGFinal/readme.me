@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Organizadores gráficos</title>
+  <style>
+    :root{
+      --bg:#d9e0e6;
+      --text:#3f3f46;
+      --muted:#6b7280;
+      --muted-soft:#9aa3af;
+      --white:#ffffff;
+      --shadow:0 10px 24px rgba(0,0,0,.18);
+    }
+
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    header{
+      background:linear-gradient(90deg,#6177dd 0%, #7e57c2 100%);
+      color:#fff;
+      text-align:center;
+      padding:34px 20px 28px;
+      box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
+
+    header h1{
+      margin:0;
+      font-size:2rem;
+      font-weight:800;
+      letter-spacing:.4px;
+      line-height:1.2;
+    }
+
+    header h1 .en{
+      display:block;
+      margin-top:4px;
+      font-size:.52em;
+      font-weight:500;
+      color:rgba(255,255,255,.78);
+      letter-spacing:.2px;
+      text-transform:none;
+    }
+
+    .wrap{
+      max-width:1380px;
+      margin:0 auto;
+      padding:36px 18px 48px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+      gap:24px;
+      align-items:stretch;
+    }
+
+    .category-card{
+      background:#f5f5f5;
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      border:none;
+      cursor:pointer;
+      transition:transform .22s ease, box-shadow .22s ease;
+      min-height:340px;
+    }
+
+    .category-card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 16px 28px rgba(0,0,0,.22);
+    }
+
+    .hero{
+      height:190px;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:62px;
+      font-weight:700;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-4px;
+      bottom:-2px;
+      width:80%;
+      height:56%;
+      background:#f5f5f5;
+      border-top-left-radius:180px 90px;
+    }
+
+    .icon{
+      position:relative;
+      z-index:2;
+      line-height:1;
+      filter:drop-shadow(0 3px 4px rgba(0,0,0,.15));
+    }
+
+    .c1{background:linear-gradient(135deg,#ff8a00,#ff2d00);}
+    .c2{background:linear-gradient(135deg,#d500f9,#7c00ff);}
+    .c3{background:linear-gradient(135deg,#9aa8ff,#4736a9);}
+    .c4{background:linear-gradient(135deg,#33d17a,#16a085);}
+    .c5{background:linear-gradient(135deg,#e5007d,#9c1458);}
+
+    .body{
+      padding:14px 18px 22px;
+      text-align:center;
+      position:relative;
+      z-index:2;
+      margin-top:-6px;
+    }
+
+    .body h3{
+      margin:4px 0 10px;
+      color:#5b5b5b;
+      line-height:1.28;
+      min-height:74px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .title-es{
+      display:block;
+      font-size:1rem;
+      font-weight:800;
+      text-transform:uppercase;
+    }
+
+    .title-en{
+      display:block;
+      font-size:.72rem;
+      font-weight:500;
+      color:var(--muted-soft);
+      text-transform:none;
+      letter-spacing:.15px;
+    }
+
+    .body p{
+      margin:0;
+      color:var(--muted);
+      font-size:.96rem;
+      line-height:1.58;
+      min-height:92px;
+    }
+
+    footer{
+      background:#2b2b2b;
+      color:#fff;
+      text-align:center;
+      padding:16px 12px;
+      font-weight:600;
+      letter-spacing:.3px;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(14,18,24,.72);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+      padding:18px;
+    }
+
+    .modal.show{display:flex;}
+
+    .modal-box{
+      width:min(1100px, 100%);
+      max-height:92vh;
+      overflow:auto;
+      background:#f7f7f7;
+      border-radius:24px;
+      box-shadow:0 20px 40px rgba(0,0,0,.35);
+      animation:pop .22s ease;
+    }
+
+    @keyframes pop{
+      from{transform:scale(.96); opacity:.6;}
+      to{transform:scale(1); opacity:1;}
+    }
+
+    .modal-head{
+      color:#fff;
+      padding:22px 80px 22px 26px;
+      position:relative;
+    }
+
+    .modal-head h2{
+      margin:0;
+      line-height:1.25;
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:4px;
+    }
+
+    .modal-head h2 .title-es{
+      font-size:1.35rem;
+      font-weight:800;
+      text-transform:uppercase;
+      color:#fff;
+    }
+
+    .modal-head h2 .title-en{
+      font-size:.8rem;
+      font-weight:500;
+      color:rgba(255,255,255,.8);
+      text-transform:none;
+    }
+
+    .close{
+      position:absolute;
+      right:18px;
+      top:14px;
+      width:46px;
+      height:46px;
+      border:none;
+      border-radius:50%;
+      background:rgba(255,255,255,.22);
+      color:#fff;
+      font-size:2rem;
+      line-height:1;
+      cursor:pointer;
+    }
+
+    .modal-content{
+      padding:22px 22px 28px;
+    }
+
+    .carousel-wrap{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .nav-btn{
+      min-width:52px;
+      width:52px;
+      height:52px;
+      border:none;
+      border-radius:50%;
+      color:#fff;
+      font-size:1.6rem;
+      cursor:pointer;
+      box-shadow:0 8px 16px rgba(0,0,0,.15);
+      flex-shrink:0;
+    }
+
+    .b1{background:linear-gradient(90deg,#ffb000,#ff4b2b);}
+    .b2{background:linear-gradient(90deg,#ff00d4,#7a1fff);}
+    .b3{background:linear-gradient(90deg,#b1bfff,#4b3dbb);}
+    .b4{background:linear-gradient(90deg,#2fe76a,#1bb7a4);}
+    .b5{background:linear-gradient(90deg,#b5236d,#f0008b);}
+
+    .slide-card{
+      flex:1;
+      background:#fff;
+      border-radius:22px;
+      overflow:hidden;
+    }
+
+    .slide-top{
+      display:grid;
+      grid-template-columns:160px 1fr;
+      min-height:180px;
+    }
+
+    .slide-visual{
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:68px;
+      padding:16px;
+    }
+
+    .slide-summary{
+      padding:18px 20px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      background:#fafafa;
+    }
+
+    .slide-summary h3{
+      margin:0 0 10px;
+      line-height:1.28;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .slide-summary .title-es{
+      font-size:1.18rem;
+      font-weight:800;
+      color:#474747;
+      text-transform:uppercase;
+    }
+
+    .slide-summary .title-en{
+      font-size:.76rem;
+      font-weight:500;
+      color:var(--muted-soft);
+      text-transform:none;
+    }
+
+    .slide-summary p{
+      margin:0;
+      line-height:1.65;
+      font-size:1rem;
+    }
+
+    .details{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:16px;
+      padding:18px;
+      background:#fff;
+    }
+
+    .detail{
+      background:#fafafa;
+      border-radius:16px;
+      padding:16px;
+      border:none;
+      box-shadow:none;
+      outline:none;
+    }
+
+    .detail h4{
+      margin:0 0 8px;
+      line-height:1.3;
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+
+    .detail h4 .title-es{
+      font-size:1rem;
+      font-weight:800;
+      text-transform:none;
+      color:#444;
+    }
+
+    .detail h4 .title-en{
+      font-size:.72rem;
+      font-weight:500;
+      color:var(--muted-soft);
+      text-transform:none;
+    }
+
+    .detail p{
+      margin:0;
+      line-height:1.58;
+      font-size:.97rem;
+    }
+
+    .source-box{
+      background:#fff;
+      border-radius:16px;
+      padding:10px 18px 18px;
+      margin:0 18px 18px;
+      border:none;
+      box-shadow:none;
+    }
+
+    .source-box h4{
+      margin:0 0 8px;
+      line-height:1.2;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .source-box h4 .title-es{
+      font-size:.82rem;
+      font-weight:600;
+      text-transform:none;
+      color:var(--muted-soft);
+    }
+
+    .source-box h4 .title-en{
+      font-size:.68rem;
+      font-weight:500;
+      color:#b1b7c0;
+      text-transform:none;
+    }
+
+    .source-box ul{
+      margin:0;
+      padding-left:18px;
+      line-height:1.55;
+      font-size:.9rem;
+      color:#595959;
+    }
+
+    .counter{
+      text-align:center;
+      margin-top:14px;
+      color:#5a5a5a;
+      font-weight:700;
+    }
+
+    @media (max-width:900px){
+      .slide-top{grid-template-columns:1fr;}
+      .slide-visual{min-height:140px;}
+      .details{grid-template-columns:1fr;}
+    }
+
+    @media (max-width:640px){
+      header h1{font-size:1.55rem;}
+      .carousel-wrap{gap:8px;}
+      .nav-btn{
+        min-width:42px;
+        width:42px;
+        height:42px;
+        font-size:1.2rem;
+      }
+      .body h3,.body p{min-height:auto;}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>
+    Organizadores gráficos
+    <span class="en">Graphic Organizers</span>
+  </h1>
+</header>
+
+<main class="wrap">
+  <section class="grid" id="categoriesGrid"></section>
+</main>
+
+<footer>Aprendiendo con @LaProfeVivy</footer>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-head" id="modalHead">
+      <button class="close" id="closeModal" aria-label="Cerrar">×</button>
+      <h2 id="modalCategoryTitle"></h2>
+    </div>
+
+    <div class="modal-content">
+      <div class="carousel-wrap">
+        <button class="nav-btn" id="prevBtn">‹</button>
+
+        <div class="slide-card">
+          <div class="slide-top">
+            <div class="slide-visual" id="slideVisual">🧠</div>
+            <div class="slide-summary">
+              <h3 id="slideTitle"></h3>
+              <p id="slideIntro"></p>
+            </div>
+          </div>
+
+          <div class="details">
+            <div class="detail">
+              <h4>
+                <span class="title-es">Autor / referencia</span>
+                <span class="title-en">Author / reference</span>
+              </h4>
+              <p id="slideAuthor"></p>
+            </div>
+
+            <div class="detail">
+              <h4>
+                <span class="title-es">Función</span>
+                <span class="title-en">Function</span>
+              </h4>
+              <p id="slideFunction"></p>
+            </div>
+
+            <div class="detail">
+              <h4>
+                <span class="title-es">Aplicación</span>
+                <span class="title-en">Application</span>
+              </h4>
+              <p id="slideApplication"></p>
+            </div>
+
+            <div class="detail">
+              <h4>
+                <span class="title-es">Normativa sintetizada</span>
+                <span class="title-en">Synthesized guidelines</span>
+              </h4>
+              <p id="slideNorm"></p>
+            </div>
+          </div>
+
+          <div class="source-box">
+            <h4>
+              <span class="title-es">fuentes</span>
+              <span class="title-en">sources</span>
+            </h4>
+            <ul id="slideSources"></ul>
+          </div>
+        </div>
+
+        <button class="nav-btn" id="nextBtn">›</button>
+      </div>
+
+      <div class="counter" id="slideCounter">1 / 1</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const categories = [
+    {
+      es: "Jerarquización y estructura",
+      en: "Hierarchy and structure",
+      icon: "🧩",
+      color: "c1",
+      button: "b1",
+      frontText: "Agrupa organizadores que ordenan la información desde una idea general hacia niveles subordinados o desde un núcleo central hacia relaciones estructuradas.",
+      items: [
+        {
+          es:"Mapa conceptual",
+          en:"Concept map",
+          icon:"🧩",
+          intro:"Representa conocimiento mediante conceptos, enlaces y proposiciones. Se organiza de lo más general a lo más específico.",
+          author:"Joseph D. Novak y Alberto J. Cañas. Se sustenta en el aprendizaje significativo de Ausubel.",
+          function:"Organizar y representar conocimiento; mostrar relaciones entre conceptos y favorecer comprensión profunda.",
+          application:"Explicar temas complejos, resumir lecturas, relacionar categorías y apoyar exposiciones o evaluaciones.",
+          norm:"Debe partir de conceptos clave, jerarquizarlos y usar palabras de enlace que formen proposiciones con sentido completo.",
+          sources:["Novak y Cañas (IHMC, 2008).","Base conceptual en Ausubel."]
+        },
+        {
+          es:"Cuadro sinóptico",
+          en:"Synoptic chart",
+          icon:"🗂️",
+          intro:"Resume un tema de forma jerárquica, generalmente con llaves, columnas o niveles de sangría.",
+          author:"No se atribuye de forma estable a un autor único; su uso es didáctico y ampliamente extendido.",
+          function:"Sintetizar información y mostrar dependencia entre idea general, subtemas y detalles.",
+          application:"Estudiar capítulos, organizar exposiciones y preparar repasos de contenido.",
+          norm:"Debe iniciar con el tema general y dividirse en categorías y subcategorías breves, sin párrafos extensos.",
+          sources:["Materiales didácticos universitarios sobre organizadores gráficos."]
+        },
+        {
+          es:"Mapa mental",
+          en:"Mind map",
+          icon:"🧠",
+          intro:"Diagrama radial que parte de una idea central y despliega ramas con palabras clave, imágenes o asociaciones.",
+          author:"Tony Buzan es reconocido por popularizar el mind mapping moderno.",
+          function:"Favorecer lluvia de ideas, asociación rápida, memoria visual y organización flexible.",
+          application:"Planeación, estudio, ideación de proyectos y toma de notas.",
+          norm:"Se recomienda una idea central visible, ramas principales y palabras clave cortas con apoyo visual.",
+          sources:["Buzan, T. Obras sobre mind mapping."]
+        },
+        {
+          es:"Organigrama",
+          en:"Organizational chart",
+          icon:"🏢",
+          intro:"Representa gráficamente la estructura de una organización y la relación entre áreas, cargos o niveles de autoridad.",
+          author:"No hay consenso sobre un autor único; es una representación propia del campo administrativo y organizacional.",
+          function:"Visualizar jerarquía, dependencia, coordinación y distribución de responsabilidades.",
+          application:"Empresas, instituciones educativas, equipos de trabajo y proyectos.",
+          norm:"Debe respetar niveles jerárquicos, líneas de dependencia claras y nombres legibles de cargos o áreas.",
+          sources:["Literatura de administración y gestión organizacional."]
+        },
+        {
+          es:"Mapa de telaraña",
+          en:"Spider map",
+          icon:"🕸️",
+          intro:"Organizador visual con un concepto principal en el centro y categorías asociadas alrededor.",
+          author:"No se identificó autor único formal; aparece como variante didáctica de redes de ideas.",
+          function:"Activar saberes previos y mostrar ideas relacionadas con un eje central.",
+          application:"Inicio de tema, lluvia de ideas, clasificación preliminar y exploración conceptual.",
+          norm:"Debe tener un concepto central definido y ramas cortas con ideas relacionadas, sin saturar la composición.",
+          sources:["Materiales didácticos sobre redes de ideas y organizadores gráficos."]
+        }
+      ]
+    },
+    {
+      es: "Comparación y contraste",
+      en: "Comparison and contrast",
+      icon: "⚖️",
+      color: "c2",
+      button: "b2",
+      frontText: "Incluye organizadores que permiten establecer semejanzas, diferencias, agrupaciones y clasificaciones según criterios definidos.",
+      items: [
+        {
+          es:"Diagrama de Venn",
+          en:"Venn diagram",
+          icon:"⭕",
+          intro:"Representa conjuntos y sus intersecciones mediante círculos superpuestos.",
+          author:"John Venn, lógico y filósofo inglés.",
+          function:"Comparar dos o más elementos y distinguir coincidencias y diferencias.",
+          application:"Contrastar teorías, personajes, procesos, productos o conceptos matemáticos.",
+          norm:"Cada círculo debe representar un conjunto; la intersección se usa solo para rasgos compartidos.",
+          sources:["Britannica: Venn diagram.","Britannica: John Venn."]
+        },
+        {
+          es:"Cuadro comparativo",
+          en:"Comparison chart",
+          icon:"📋",
+          intro:"Tabla o esquema que compara varios elementos a partir de criterios definidos.",
+          author:"No tiene autor único identificado; es una técnica didáctica de comparación ampliamente usada.",
+          function:"Ordenar semejanzas, diferencias, ventajas, desventajas o rasgos por criterios.",
+          application:"Comparar herramientas, autores, corrientes, productos, especies o metodologías.",
+          norm:"Debe incluir criterios claros y mantener información equivalente para todos los elementos comparados.",
+          sources:["Materiales didácticos sobre estrategias comparativas."]
+        },
+        {
+          es:"Matriz de clasificación",
+          en:"Classification matrix",
+          icon:"🔢",
+          intro:"Permite ubicar elementos en una tabla según atributos o categorías previamente definidas.",
+          author:"No se atribuye a un creador único; deriva de estrategias de clasificación y categorización académica.",
+          function:"Clasificar, ordenar y distribuir información según varios criterios.",
+          application:"Taxonomías, clasificación de objetos, categorías temáticas y análisis de variables.",
+          norm:"Los criterios deben ser coherentes, claros y útiles para discriminar los elementos.",
+          sources:["Materiales educativos sobre clasificación y categorización."]
+        }
+      ]
+    },
+    {
+      es: "Procesos y cronología",
+      en: "Processes and chronology",
+      icon: "🔄",
+      color: "c3",
+      button: "b3",
+      frontText: "Reúne organizadores útiles para representar secuencias, etapas, órdenes temporales y procesos lineales o cíclicos.",
+      items: [
+        {
+          es:"Línea de tiempo",
+          en:"Timeline",
+          icon:"⏳",
+          intro:"Organiza eventos o etapas según su secuencia temporal.",
+          author:"No posee un autor único reconocido como organizador didáctico; su uso es transversal.",
+          function:"Mostrar cronología, secuencia histórica y evolución de procesos.",
+          application:"Biografías, proyectos, historia, fases de investigación y planificación.",
+          norm:"Debe respetar orden temporal, fechas visibles y relación clara entre evento y momento.",
+          sources:["Recursos académicos sobre cronología y secuenciación temporal."]
+        },
+        {
+          es:"Diagrama de flujo",
+          en:"Flowchart",
+          icon:"🔀",
+          intro:"Representa gráficamente una secuencia de acciones o decisiones mediante símbolos conectados.",
+          author:"No se trabaja hoy con un autor único en la enseñanza general; se reconoce su desarrollo histórico en ingeniería y administración.",
+          function:"Describir procedimientos, decisiones, rutas y lógica de un proceso.",
+          application:"Algoritmos, procesos administrativos, protocolos y procedimientos técnicos.",
+          norm:"Debe seguir secuencia lógica, usar símbolos convencionales y flechas que indiquen dirección.",
+          sources:["Britannica y recursos técnicos sobre flowcharts.","Lucidchart: flowchart maker y ejemplos."]
+        },
+        {
+          es:"Cadena de secuencias",
+          en:"Sequence chain",
+          icon:"🔗",
+          intro:"Organizador lineal que encadena hechos, pasos o momentos en un orden definido.",
+          author:"No se identificó autor único; se emplea como recurso pedagógico para secuenciar acciones.",
+          function:"Describir orden, continuidad y relación entre etapas sucesivas.",
+          application:"Narraciones, experimentos, rutinas, procesos productivos y actividades por pasos.",
+          norm:"Cada etapa debe enlazarse con la anterior y la siguiente, evitando saltos lógicos.",
+          sources:["Recursos pedagógicos sobre secuencias y procedimientos."]
+        },
+        {
+          es:"Ciclo",
+          en:"Cycle",
+          icon:"♻️",
+          intro:"Representa procesos que vuelven a comenzar o que funcionan por fases recurrentes.",
+          author:"No presenta autor único reconocido en didáctica; es una forma visual común para procesos recurrentes.",
+          function:"Explicar repetición, retroalimentación, fases cíclicas y relaciones circulares.",
+          application:"Ciclo del agua, vida de productos, mejora continua y procesos iterativos.",
+          norm:"Las etapas deben cerrar el circuito y mostrar claramente la continuidad entre fases.",
+          sources:["Recursos educativos sobre representación de ciclos y procesos recurrentes."]
+        }
+      ]
+    },
+    {
+      es: "Análisis de problemas",
+      en: "Problem analysis",
+      icon: "🧪",
+      color: "c4",
+      button: "b4",
+      frontText: "Esta tipología organiza causas, efectos y relaciones problemáticas para apoyar el diagnóstico, la mejora y la toma de decisiones.",
+      items: [
+        {
+          es:"Diagrama de Ishikawa",
+          en:"Ishikawa diagram",
+          icon:"🐟",
+          intro:"También llamado fishbone o espina de pescado. Ordena posibles causas de un efecto o problema en categorías.",
+          author:"Kaoru Ishikawa.",
+          function:"Identificar causas posibles y estructurar el análisis de un problema.",
+          application:"Calidad, mejora de procesos, diagnóstico institucional y análisis de fallas.",
+          norm:"Debe iniciar con el efecto o problema y agrupar causas en categorías coherentes.",
+          sources:["ASQ: fishbone / Ishikawa diagram."]
+        },
+        {
+          es:"Árbol de problemas",
+          en:"Problem tree",
+          icon:"🌳",
+          intro:"Ubica un problema central y organiza abajo sus causas y arriba sus efectos.",
+          author:"No se identificó un autor único consolidado; su uso es frecuente en planificación social y de proyectos.",
+          function:"Analizar la estructura causal de una situación problemática.",
+          application:"Proyectos sociales, investigación, diagnósticos y planeación institucional.",
+          norm:"El tronco debe expresar el problema central; raíces para causas y ramas para efectos.",
+          sources:["Bibliografía de formulación y evaluación de proyectos."]
+        },
+        {
+          es:"Diagrama de causa-efecto",
+          en:"Cause-and-effect diagram",
+          icon:"🎯",
+          intro:"Muestra cómo un conjunto de factores se relaciona con un efecto o resultado observable.",
+          author:"Como categoría general no tiene autor único; una forma reconocida es la propuesta por Ishikawa.",
+          function:"Relacionar variables causales con un resultado o problema observable.",
+          application:"Investigación, gestión, educación, análisis técnico y revisión de incidentes.",
+          norm:"Debe definir con claridad el efecto y vincular causas verificables, evitando mezclar síntomas con causas.",
+          sources:["ASQ y literatura sobre análisis causal."]
+        }
+      ]
+    },
+    {
+      es: "Comprensión y atributos",
+      en: "Understanding and attributes",
+      icon: "💡",
+      color: "c5",
+      button: "b5",
+      frontText: "Agrupa organizadores que permiten describir, caracterizar, relacionar atributos y comprender mejor un objeto de estudio.",
+      items: [
+        {
+          es:"Mapa de personajes",
+          en:"Character map",
+          icon:"👥",
+          intro:"Organiza información sobre personajes, rasgos, relaciones, roles y evolución.",
+          author:"No tiene autor único identificado; se usa como recurso de comprensión lectora y análisis narrativo.",
+          function:"Caracterizar personajes y visualizar relaciones entre ellos.",
+          application:"Literatura, cine, historia, estudios de caso, biografías y narrativa digital.",
+          norm:"Debe identificar al personaje o grupo principal y asociar atributos, funciones o vínculos de forma clara.",
+          sources:["Didáctica de comprensión lectora y análisis narrativo."]
+        },
+        {
+          es:"Constelación de ideas",
+          en:"Idea constellation",
+          icon:"✨",
+          intro:"Distribuye ideas relacionadas en torno a un concepto central, con énfasis en asociación libre pero organizada.",
+          author:"No se encontró autor único formal; se usa como variante de redes semánticas y lluvia de ideas.",
+          function:"Explorar asociaciones, activar conocimientos previos y ampliar un tema.",
+          application:"Inicio de clase, lluvia de ideas, creatividad y planificación.",
+          norm:"Debe partir de un eje central y mantener agrupaciones coherentes sin perder legibilidad.",
+          sources:["Recursos pedagógicos sobre ideación y asociaciones conceptuales."]
+        },
+        {
+          es:"Esquema de llaves",
+          en:"Brace diagram",
+          icon:"🔐",
+          intro:"Muestra un tema general que se divide en partes y subpartes mediante llaves o ramificaciones lineales.",
+          author:"No posee autor único identificado; es un formato escolar clásico de organización jerárquica.",
+          function:"Desglosar información de forma sintética y visible.",
+          application:"Clasificación, repaso de temas, taxonomías sencillas y síntesis de contenidos.",
+          norm:"Las llaves deben abrir categorías lógicas y mantener la relación de inclusión entre niveles.",
+          sources:["Recursos didácticos sobre síntesis y clasificación."]
+        },
+        {
+          es:"V de Gowin",
+          en:"Gowin's V",
+          icon:"✅",
+          intro:"Diagrama en forma de V que relaciona pregunta, conceptos, teoría, procedimientos, datos y conclusiones.",
+          author:"D. Bob Gowin.",
+          function:"Ayudar a comprender cómo se construye conocimiento y cómo se conectan lo conceptual y lo metodológico.",
+          application:"Laboratorios, investigación, análisis de problemas, lectura crítica y diseño de indagaciones.",
+          norm:"Debe partir de una pregunta foco y conectar lado conceptual, lado metodológico y afirmaciones derivadas de los datos.",
+          sources:["Gowin, D. B. Obras y materiales académicos sobre Vee diagrams."]
+        },
+        {
+          es:"Rueda de atributos",
+          en:"Attribute wheel",
+          icon:"🎡",
+          intro:"Coloca un concepto u objeto en el centro y alrededor sus rasgos, propiedades o descriptores.",
+          author:"No tiene autor único identificado; se usa como recurso de descripción y caracterización.",
+          function:"Describir atributos esenciales de un objeto, concepto o personaje.",
+          application:"Vocabulario, descripción de fenómenos, análisis de productos, seres vivos o conceptos clave.",
+          norm:"Debe mantener un concepto central claro y atributos breves, pertinentes y no repetidos.",
+          sources:["Recursos didácticos sobre descripción y caracterización."]
+        }
+      ]
+    }
+  ];
+
+  const grid = document.getElementById("categoriesGrid");
+  const modal = document.getElementById("modal");
+  const closeModal = document.getElementById("closeModal");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+
+  const modalHead = document.getElementById("modalHead");
+  const modalCategoryTitle = document.getElementById("modalCategoryTitle");
+
+  const slideVisual = document.getElementById("slideVisual");
+  const slideTitle = document.getElementById("slideTitle");
+  const slideIntro = document.getElementById("slideIntro");
+  const slideAuthor = document.getElementById("slideAuthor");
+  const slideFunction = document.getElementById("slideFunction");
+  const slideApplication = document.getElementById("slideApplication");
+  const slideNorm = document.getElementById("slideNorm");
+  const slideSources = document.getElementById("slideSources");
+  const slideCounter = document.getElementById("slideCounter");
+
+  let currentCategory = null;
+  let currentIndex = 0;
+
+  function bilingualTitle(es, en){
+    return `
+      <span class="title-es">${es}</span>
+      <span class="title-en">${en}</span>
+    `;
+  }
+
+  function createCategoryCard(cat){
+    const card = document.createElement("article");
+    card.className = "category-card";
+    card.innerHTML = `
+      <div class="hero ${cat.color}">
+        <div class="icon">${cat.icon}</div>
+      </div>
+      <div class="body">
+        <h3>${bilingualTitle(cat.es, cat.en)}</h3>
+        <p>${cat.frontText}</p>
+      </div>
+    `;
+    card.addEventListener("click", ()=> openCategory(cat));
+    return card;
+  }
+
+  function openCategory(cat){
+    currentCategory = cat;
+    currentIndex = 0;
+    modalCategoryTitle.innerHTML = bilingualTitle(cat.es, cat.en);
+    modalHead.className = `modal-head ${cat.color}`;
+    prevBtn.className = `nav-btn ${cat.button}`;
+    nextBtn.className = `nav-btn ${cat.button}`;
+    renderSlide();
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+  }
+
+  function renderSlide(){
+    const item = currentCategory.items[currentIndex];
+    slideVisual.textContent = item.icon;
+    slideVisual.className = `slide-visual ${currentCategory.color}`;
+    slideTitle.innerHTML = bilingualTitle(item.es, item.en);
+    slideIntro.textContent = item.intro;
+    slideAuthor.textContent = item.author;
+    slideFunction.textContent = item.function;
+    slideApplication.textContent = item.application;
+    slideNorm.textContent = item.norm;
+    slideSources.innerHTML = item.sources.map(src => `<li>${src}</li>`).join("");
+    slideCounter.textContent = `${currentIndex + 1} / ${currentCategory.items.length}`;
+  }
+
+  function nextSlide(){
+    if(!currentCategory) return;
+    currentIndex = (currentIndex + 1) % currentCategory.items.length;
+    renderSlide();
+  }
+
+  function prevSlide(){
+    if(!currentCategory) return;
+    currentIndex = (currentIndex - 1 + currentCategory.items.length) % currentCategory.items.length;
+    renderSlide();
+  }
+
+  function closeIt(){
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
+  }
+
+  categories.forEach(cat => grid.appendChild(createCategoryCard(cat)));
+
+  nextBtn.addEventListener("click", nextSlide);
+  prevBtn.addEventListener("click", prevSlide);
+  closeModal.addEventListener("click", closeIt);
+
+  modal.addEventListener("click", (e)=>{
+    if(e.target === modal) closeIt();
+  });
+
+  document.addEventListener("keydown", (e)=>{
+    if(modal.classList.contains("show")){
+      if(e.key === "Escape") closeIt();
+      if(e.key === "ArrowRight") nextSlide();
+      if(e.key === "ArrowLeft") prevSlide();
+    }
+  });
+
+  const slideCard = document.querySelector(".slide-card");
+  let startX = 0;
+  let endX = 0;
+
+  slideCard.addEventListener("touchstart", (e)=>{
+    startX = e.changedTouches[0].screenX;
+  });
+
+  slideCard.addEventListener("touchend", (e)=>{
+    endX = e.changedTouches[0].screenX;
+    const diff = endX - startX;
+    if(Math.abs(diff) > 50){
+      if(diff < 0) nextSlide();
+      else prevSlide();
+    }
+  });
+</script>
+
+</body>
+</html>
