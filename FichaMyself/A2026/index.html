@@ -1,0 +1,989 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paso a paso | Proyecto IA y Pensamiento Computacional</title>
+  <style>
+    :root{
+      --bg:#d9e0e6;
+      --text:#3f3f46;
+      --muted:#6b7280;
+      --white:#ffffff;
+      --line:#e4e7ef;
+      --shadow:0 10px 24px rgba(0,0,0,.18);
+      --dark:#2b2b2b;
+
+      --c1:linear-gradient(135deg,#ff8a00,#ff2d00);
+      --c2:linear-gradient(135deg,#d500f9,#7c00ff);
+      --c3:linear-gradient(135deg,#9aa8ff,#4736a9);
+      --c4:linear-gradient(135deg,#33d17a,#16a085);
+      --c5:linear-gradient(135deg,#e5007d,#9c1458);
+      --c6:linear-gradient(135deg,#00acc1,#0077b6);
+      --c7:linear-gradient(135deg,#f9a826,#f57c00);
+      --c8:linear-gradient(135deg,#7cb342,#388e3c);
+      --c9:linear-gradient(135deg,#5c6bc0,#3949ab);
+      --c10:linear-gradient(135deg,#8e24aa,#5e35b1);
+      --c11:linear-gradient(135deg,#ef5350,#d32f2f);
+      --c12:linear-gradient(135deg,#26a69a,#00897b);
+      --header:linear-gradient(90deg,#6177dd 0%, #7e57c2 100%);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    header{
+      background:var(--header);
+      color:#fff;
+      text-align:center;
+      padding:34px 20px 28px;
+      box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
+
+    header h1{
+      margin:0;
+      font-size:2rem;
+      font-weight:800;
+      line-height:1.2;
+    }
+
+    header h1 span{
+      display:block;
+      margin-top:6px;
+      font-size:.48em;
+      font-weight:500;
+      color:rgba(255,255,255,.86);
+    }
+
+    .intro{
+      max-width:1120px;
+      margin:18px auto 0;
+      padding:0 18px;
+    }
+
+    .intro-box{
+      background:rgba(255,255,255,.88);
+      border:1px solid rgba(255,255,255,.6);
+      border-radius:18px;
+      padding:16px 18px;
+      box-shadow:0 8px 18px rgba(0,0,0,.08);
+      color:#4a5568;
+      line-height:1.55;
+      font-size:.98rem;
+    }
+
+    .wrap{
+      max-width:1480px;
+      margin:0 auto;
+      padding:26px 16px 50px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(260px, 1fr));
+      gap:22px;
+    }
+
+    .card{
+      background:#f5f5f5;
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      transition:transform .2s ease, box-shadow .2s ease;
+      cursor:pointer;
+      min-height:330px;
+    }
+
+    .card:hover{
+      transform:translateY(-4px);
+      box-shadow:0 14px 28px rgba(0,0,0,.22);
+    }
+
+    .hero{
+      height:168px;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-4px;
+      bottom:-2px;
+      width:80%;
+      height:56%;
+      background:#f5f5f5;
+      border-top-left-radius:180px 90px;
+    }
+
+    .step-no{
+      position:relative;
+      z-index:2;
+      font-size:3.9rem;
+      font-weight:800;
+      letter-spacing:-1px;
+      color:rgba(255,255,255,.96);
+      text-shadow:0 3px 4px rgba(0,0,0,.12);
+    }
+
+    .hero1{background:var(--c1)}
+    .hero2{background:var(--c2)}
+    .hero3{background:var(--c3)}
+    .hero4{background:var(--c4)}
+    .hero5{background:var(--c5)}
+    .hero6{background:var(--c6)}
+    .hero7{background:var(--c7)}
+    .hero8{background:var(--c8)}
+    .hero9{background:var(--c9)}
+    .hero10{background:var(--c10)}
+    .hero11{background:var(--c11)}
+    .hero12{background:var(--c12)}
+
+    .body{
+      padding:16px 18px 18px;
+      position:relative;
+      z-index:2;
+      margin-top:-6px;
+    }
+
+    .body h3{
+      margin:2px 0 10px;
+      text-align:center;
+      line-height:1.28;
+      min-height:56px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:4px;
+    }
+
+    .title-es{
+      display:block;
+      font-size:1rem;
+      font-weight:800;
+      text-transform:uppercase;
+      color:#555;
+    }
+
+    .title-sub{
+      display:block;
+      font-size:.74rem;
+      font-weight:500;
+      color:#9aa3af;
+    }
+
+    .body > p{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:.94rem;
+      line-height:1.52;
+      min-height:74px;
+      text-align:center;
+    }
+
+    .tag{
+      display:inline-block;
+      margin:0 auto;
+      padding:9px 14px;
+      border-radius:999px;
+      background:#657089;
+      color:#fff;
+      font-size:.83rem;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .tag-wrap{
+      text-align:center;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.56);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+      padding:18px;
+    }
+
+    .modal.show{
+      display:flex;
+    }
+
+    .modal-box{
+      width:min(1060px, 100%);
+      max-height:92vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:24px;
+      box-shadow:0 24px 44px rgba(0,0,0,.34);
+    }
+
+    .modal-head{
+      padding:22px 24px 18px;
+      color:#fff;
+      position:relative;
+    }
+
+    .modal-head h2{
+      margin:0;
+      font-size:1.42rem;
+      line-height:1.25;
+      padding-right:54px;
+    }
+
+    .modal-head p{
+      margin:8px 0 0;
+      color:rgba(255,255,255,.92);
+      line-height:1.55;
+      max-width:900px;
+    }
+
+    .close-btn{
+      position:absolute;
+      top:14px;
+      right:14px;
+      border:none;
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      background:rgba(255,255,255,.2);
+      color:#fff;
+      font-size:1.18rem;
+      cursor:pointer;
+      font-weight:800;
+    }
+
+    .modal-body{
+      padding:22px 24px 26px;
+    }
+
+    .sections{
+      display:grid;
+      gap:14px;
+    }
+
+    .section{
+      background:#fafbff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 15px;
+    }
+
+    .section h4{
+      margin:0 0 8px;
+      font-size:.97rem;
+      color:#455063;
+    }
+
+    .section p{
+      margin:0;
+      color:#5f6978;
+      line-height:1.56;
+      font-size:.95rem;
+    }
+
+    .section ul{
+      margin:8px 0 0 18px;
+      color:#5f6978;
+      line-height:1.55;
+      padding:0;
+    }
+
+    .section li{
+      margin-bottom:6px;
+    }
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(220px,1fr));
+      gap:14px;
+    }
+
+    .notice{
+      background:#eef2ff;
+      border:1px solid #dbe3ff;
+      color:#4c5ea7;
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:.93rem;
+      font-weight:700;
+      line-height:1.5;
+    }
+
+    footer{
+      background:var(--dark);
+      color:#fff;
+      text-align:center;
+      padding:16px 12px;
+      font-weight:600;
+      letter-spacing:.2px;
+      margin-top:16px;
+    }
+
+    @media (max-width:1180px){
+      .grid{grid-template-columns:repeat(3, minmax(250px, 1fr))}
+    }
+
+    @media (max-width:900px){
+      .grid{grid-template-columns:repeat(2, minmax(250px, 1fr))}
+      .mini-grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:620px){
+      .grid{grid-template-columns:1fr}
+      header h1{font-size:1.6rem}
+      .modal-head h2{font-size:1.15rem}
+      .body > p{min-height:auto}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>
+    Paso a paso del proyecto
+    <span>IA, pensamiento computacional y construcción del mural</span>
+  </h1>
+</header>
+
+<section class="intro">
+  <div class="intro-box">
+    Este recurso organiza el proceso en 12 pasos separados: primero la problemática, luego la solución, después la preparación del modelo, la lógica, el paso a paso operativo y finalmente la construcción del mural. Cada tarjeta se abre en grande con la explicación detallada.
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="grid">
+
+    <article class="card" onclick="openModal('m1')">
+      <div class="hero hero1"><div class="step-no">1</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Contextualizar la problemática</span>
+          <span class="title-sub">Qué situación del aula se quiere resolver</span>
+        </h3>
+        <p>Definir una necesidad real del aula infantil, explicar por qué es importante y relacionarla con el aprendizaje de los niños pequeños.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m2')">
+      <div class="hero hero2"><div class="step-no">2</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Definir la solución</span>
+          <span class="title-sub">Qué se propone hacer y con qué propósito</span>
+        </h3>
+        <p>Precisar cómo la actividad, el juego y la tecnología ayudarán a responder a la problemática elegida.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m3')">
+      <div class="hero hero3"><div class="step-no">3</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Elegir las categorías</span>
+          <span class="title-sub">Qué va a reconocer la IA</span>
+        </h3>
+        <p>Reducir el problema a categorías claras, simples y apropiadas para niños pequeños y para un primer modelo.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m4')">
+      <div class="hero hero4"><div class="step-no">4</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Recolectar los datos</span>
+          <span class="title-sub">Cuántos, cuáles y cómo reunirlos</span>
+        </h3>
+        <p>Definir qué materiales e imágenes se usarán para entrenar el modelo y cómo se organizarán antes de subirlos.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m5')">
+      <div class="hero hero5"><div class="step-no">5</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Entrenamiento del modelo</span>
+          <span class="title-sub">Registro, carga y entrenamiento</span>
+        </h3>
+        <p>Entrar a Teachable Machine, crear el proyecto, cargar imágenes, entender si requiere o no cuenta y cómo guardar el avance.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m6')">
+      <div class="hero hero6"><div class="step-no">6</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Probar el modelo</span>
+          <span class="title-sub">Validar si reconoce correctamente</span>
+        </h3>
+        <p>Usar cámara o imágenes de prueba para verificar si el modelo responde bien y detectar errores o confusiones.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m7')">
+      <div class="hero hero7"><div class="step-no">7</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Aplicar los pilares</span>
+          <span class="title-sub">Cómo entra el pensamiento computacional</span>
+        </h3>
+        <p>Mostrar de forma explícita la descomposición, el reconocimiento de patrones, la abstracción y los algoritmos.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m8')">
+      <div class="hero hero8"><div class="step-no">8</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Construir la lógica</span>
+          <span class="title-sub">Qué hacer con el resultado de la IA</span>
+        </h3>
+        <p>Definir reglas claras a partir de lo que detecta el modelo y convertir el reconocimiento en una decisión útil.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m9')">
+      <div class="hero hero9"><div class="step-no">9</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Hacer el diagrama</span>
+          <span class="title-sub">Representar el proceso visualmente</span>
+        </h3>
+        <p>Organizar el flujo de decisión con símbolos, preguntas y acciones para mostrar cómo funciona la solución.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m10')">
+      <div class="hero hero10"><div class="step-no">10</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Llevarlo a PSeInt</span>
+          <span class="title-sub">Simular la decisión paso a paso</span>
+        </h3>
+        <p>Convertir el diagrama en pseudocódigo y mostrar que la lógica puede ejecutarse como una secuencia ordenada.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m11')">
+      <div class="hero hero11"><div class="step-no">11</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Diseñar la actividad infantil</span>
+          <span class="title-sub">Cómo viven la experiencia los niños</span>
+        </h3>
+        <p>Precisar el juego, la interacción, la retroalimentación y el sentido pedagógico de la propuesta en el aula.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+    <article class="card" onclick="openModal('m12')">
+      <div class="hero hero12"><div class="step-no">12</div></div>
+      <div class="body">
+        <h3>
+          <span class="title-es">Construcción del mural</span>
+          <span class="title-sub">Qué debe llevar y cómo presentarlo</span>
+        </h3>
+        <p>Definir la estructura del mural, la cantidad de evidencias, la presentación visual de datos, lógica, diagrama, código y prueba.</p>
+        <div class="tag-wrap"><span class="tag">Ver explicación</span></div>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<div class="modal" id="m1">
+  <div class="modal-box">
+    <div class="modal-head hero1">
+      <button class="close-btn" onclick="closeModal('m1')">×</button>
+      <h2>Paso 1. Contextualizar la problemática</h2>
+      <p>Primero se debe presentar una situación real del aula infantil. No se empieza por la herramienta, sino por una necesidad concreta del contexto educativo.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Qué debe hacer el grupo</h4>
+          <p>Escribir una problemática observable en niños pequeños. Debe ser clara, cercana al aula y posible de convertir en una actividad lúdica. Ejemplo: los niños confunden plástico y papel, no reconocen emociones básicas, no diferencian formas o colores, o presentan dificultad para seguir una secuencia sencilla.</p>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Qué debe explicar</h4>
+            <ul>
+              <li>Qué está pasando.</li>
+              <li>Por qué es importante resolverlo.</li>
+              <li>Qué edad o nivel de niños se tiene en cuenta.</li>
+              <li>Qué aprendizaje se espera favorecer.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Qué no debe hacer</h4>
+            <ul>
+              <li>Elegir un problema muy abstracto.</li>
+              <li>Proponer algo que no se entienda en niños pequeños.</li>
+              <li>Arrancar directamente con IA o con código.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="notice">La lógica correcta es: primero el aula, después la necesidad, luego la solución.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m2">
+  <div class="modal-box">
+    <div class="modal-head hero2">
+      <button class="close-btn" onclick="closeModal('m2')">×</button>
+      <h2>Paso 2. Definir la solución</h2>
+      <p>Una vez identificada la problemática, se plantea cómo se responderá a ella usando juego, retroalimentación inmediata y apoyo tecnológico.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Qué debe definir</h4>
+          <p>Se debe redactar una solución concreta. Ejemplo: diseñar una experiencia donde el niño muestre o identifique un objeto y el sistema apoye la clasificación para que el niño aprenda de forma visual y participativa.</p>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Elementos mínimos de la solución</h4>
+            <ul>
+              <li>Qué hará el niño.</li>
+              <li>Qué hará el sistema o modelo.</li>
+              <li>Qué hará el docente.</li>
+              <li>Qué aprendizaje se fortalecerá.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Relación con el juego</h4>
+            <p>La solución debe plantearse como una experiencia lúdica, no como una prueba técnica. El niño participa, observa, recibe respuesta y corrige.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m3">
+  <div class="modal-box">
+    <div class="modal-head hero3">
+      <button class="close-btn" onclick="closeModal('m3')">×</button>
+      <h2>Paso 3. Elegir las categorías</h2>
+      <p>Aquí se decide exactamente qué reconocerá la IA. Se recomienda trabajar solo con dos o máximo tres categorías para que el modelo sea manejable y la actividad sea comprensible.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Cómo elegirlas</h4>
+          <p>Las categorías deben derivarse directamente de la problemática. Si el problema es clasificación de residuos, las categorías pueden ser plástico y papel. Si el problema es emociones, podrían ser feliz y triste. Si el problema es colores, podría trabajarse con rojo y azul.</p>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Criterios</h4>
+            <ul>
+              <li>Que sean visibles y distinguibles.</li>
+              <li>Que tengan sentido en niños pequeños.</li>
+              <li>Que puedan mostrarse con ejemplos reales.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Relación con abstracción</h4>
+            <p>Este paso muestra el pilar de abstracción, porque se reduce el problema solo a lo esencial para poder trabajar una clasificación simple.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m4">
+  <div class="modal-box">
+    <div class="modal-head hero4">
+      <button class="close-btn" onclick="closeModal('m4')">×</button>
+      <h2>Paso 4. Recolectar los datos</h2>
+      <p>Antes de entrenar el modelo, se deben reunir las imágenes o muestras que alimentarán la herramienta.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Cuántos datos se recomiendan</h4>
+          <p>Para un ejercicio de aula, se recomienda mínimo 10 imágenes por categoría y, si es posible, entre 15 y 20 para lograr un resultado más estable. Las imágenes deben variar en ángulo, iluminación y forma del objeto, sin perder claridad.</p>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Cómo reunirlos</h4>
+            <ul>
+              <li>Tomar fotos con celular.</li>
+              <li>Buscar imágenes propias y organizarlas en carpetas.</li>
+              <li>Separar cada categoría por carpeta antes de subirlas.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Ejemplo de organización</h4>
+            <ul>
+              <li>Carpeta 1: plástico.</li>
+              <li>Carpeta 2: papel.</li>
+              <li>Nombrar los archivos o al menos mantenerlos ordenados.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="notice">No basta con decir “datos”; aquí deben verse las imágenes o muestras que realmente se usaron para entrenar el modelo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m5">
+  <div class="modal-box">
+    <div class="modal-head hero5">
+      <button class="close-btn" onclick="closeModal('m5')">×</button>
+      <h2>Paso 5. Entrenamiento del modelo</h2>
+      <p>En este paso se usa Teachable Machine para crear el modelo de reconocimiento.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Ruta básica</h4>
+          <ul>
+            <li>Entrar a Teachable Machine.</li>
+            <li>Seleccionar Get Started.</li>
+            <li>Elegir Image Project.</li>
+            <li>Seleccionar Standard Image Model.</li>
+          </ul>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>¿Hay que registrarse?</h4>
+            <p>Para crear y entrenar un modelo básico no siempre es obligatorio iniciar sesión. Sin embargo, si se quiere guardar, compartir o administrar mejor el trabajo, conviene usar una cuenta de Google.</p>
+          </div>
+          <div class="section">
+            <h4>¿Qué significa trabajar desde Drive?</h4>
+            <p>Si el usuario está con cuenta Google, puede apoyarse en Drive para guardar materiales, organizar carpetas o conservar evidencias. No es obligatorio para entrenar, pero sí útil para orden y respaldo.</p>
+          </div>
+        </div>
+        <div class="section">
+          <h4>Qué debe hacer en la plataforma</h4>
+          <p>Cambiar el nombre de las clases por las categorías elegidas, cargar las imágenes correspondientes en cada una y pulsar entrenar cuando las clases tengan suficientes ejemplos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m6">
+  <div class="modal-box">
+    <div class="modal-head hero6">
+      <button class="close-btn" onclick="closeModal('m6')">×</button>
+      <h2>Paso 6. Probar el modelo</h2>
+      <p>Después del entrenamiento, se valida si el modelo realmente reconoce lo esperado.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Cómo se prueba</h4>
+          <ul>
+            <li>Activar la cámara desde la herramienta.</li>
+            <li>Mostrar objetos reales frente a la cámara.</li>
+            <li>Observar la categoría detectada y el porcentaje de confianza.</li>
+          </ul>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Qué debe registrar</h4>
+            <ul>
+              <li>Casos en los que acierta.</li>
+              <li>Casos en los que falla.</li>
+              <li>Nivel de confianza mostrado.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Qué debe concluir</h4>
+            <p>La IA reconoce, pero todavía no decide qué hacer. Esta prueba sirve para ver si el reconocimiento es suficientemente claro para pasar luego a la lógica.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m7">
+  <div class="modal-box">
+    <div class="modal-head hero7">
+      <button class="close-btn" onclick="closeModal('m7')">×</button>
+      <h2>Paso 7. Aplicar los pilares del pensamiento computacional</h2>
+      <p>En este momento ya se debe mostrar explícitamente cómo intervienen los cuatro pilares.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Descomposición</h4>
+            <p>Dividir el problema en partes: reconocer objeto, identificar categoría, decidir acción y dar respuesta.</p>
+          </div>
+          <div class="section">
+            <h4>Reconocimiento de patrones</h4>
+            <p>Observar qué rasgos se repiten en las imágenes o materiales de cada categoría.</p>
+          </div>
+          <div class="section">
+            <h4>Abstracción</h4>
+            <p>Quitar detalles innecesarios y dejar solo la característica clave para la clasificación.</p>
+          </div>
+          <div class="section">
+            <h4>Algoritmos</h4>
+            <p>Definir instrucciones ordenadas a partir del resultado de la IA.</p>
+          </div>
+        </div>
+        <div class="notice">Aquí no basta con nombrar los pilares; deben mostrarse aplicados al proyecto elegido.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m8">
+  <div class="modal-box">
+    <div class="modal-head hero8">
+      <button class="close-btn" onclick="closeModal('m8')">×</button>
+      <h2>Paso 8. Construir la lógica</h2>
+      <p>El resultado de la IA se convierte en una entrada para la toma de decisiones.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Cómo se hace</h4>
+          <p>Se toma el objeto detectado y el porcentaje de confianza. A partir de eso se formulan reglas. Ejemplo: si detecta plástico y la confianza es mayor a 80, indicar contenedor azul; si detecta papel y la confianza es mayor a 80, indicar contenedor verde; si la confianza es baja, pedir repetir.</p>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Qué debe verse</h4>
+            <ul>
+              <li>Reglas escritas con claridad.</li>
+              <li>Condiciones simples.</li>
+              <li>Relación entre reconocer y actuar.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Cómo se puede presentar</h4>
+            <p>Puede presentarse como lista de reglas, tabla de decisiones o frases condicionales del tipo “si... entonces...”.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m9">
+  <div class="modal-box">
+    <div class="modal-head hero9">
+      <button class="close-btn" onclick="closeModal('m9')">×</button>
+      <h2>Paso 9. Hacer el diagrama de flujo</h2>
+      <p>El diagrama organiza visualmente la lógica y permite mostrar el proceso de principio a fin.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Estructura básica</h4>
+          <ul>
+            <li>Inicio.</li>
+            <li>Entrada del dato o lectura del objeto.</li>
+            <li>Decisión sobre confianza.</li>
+            <li>Decisión sobre categoría.</li>
+            <li>Acción o salida.</li>
+            <li>Fin.</li>
+          </ul>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Qué debe aclarar</h4>
+            <p>El diagrama no es la IA. El diagrama representa la lógica que responde a lo detectado por la IA.</p>
+          </div>
+          <div class="section">
+            <h4>Cómo presentarlo</h4>
+            <p>Puede hacerse a mano con buen orden, en digital, o en tamaño ampliado para la exposición del mural.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m10">
+  <div class="modal-box">
+    <div class="modal-head hero10">
+      <button class="close-btn" onclick="closeModal('m10')">×</button>
+      <h2>Paso 10. Llevarlo a PSeInt</h2>
+      <p>En PSeInt se simula la secuencia de decisiones para mostrar que la lógica también puede expresarse como pseudocódigo.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Qué debe hacer</h4>
+          <p>Tomar el diagrama y convertirlo en instrucciones. Se leen variables como objeto y confianza, y luego se usan condicionales para decidir la acción.</p>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Qué debe mostrarse</h4>
+            <ul>
+              <li>Código claro y ordenado.</li>
+              <li>Pruebas con datos de ejemplo.</li>
+              <li>Salida o respuesta del sistema.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Qué debe aclararse</h4>
+            <p>No se está conectando PSeInt con la IA real; se está simulando la lógica para evidenciar el proceso de pensamiento computacional.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m11">
+  <div class="modal-box">
+    <div class="modal-head hero11">
+      <button class="close-btn" onclick="closeModal('m11')">×</button>
+      <h2>Paso 11. Diseñar la actividad infantil</h2>
+      <p>El proyecto debe aterrizarse a una experiencia para niños pequeños, no quedarse en herramienta y código.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Qué debe explicar</h4>
+          <p>Cómo participa el niño, qué observa, qué hace, qué recibe y qué aprende. Ejemplo: el niño toma un objeto, lo muestra, escucha o ve la respuesta y corrige la clasificación.</p>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Qué elementos lúdicos puede incluir</h4>
+            <ul>
+              <li>Juego de clasificación.</li>
+              <li>Colores visibles para cada acción.</li>
+              <li>Retroalimentación inmediata.</li>
+              <li>Participación guiada por el docente.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Qué aprendizaje debe evidenciar</h4>
+            <p>Formación de hábito, comprensión simple, participación activa y uso de tecnología como apoyo al aprendizaje significativo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="m12">
+  <div class="modal-box">
+    <div class="modal-head hero12">
+      <button class="close-btn" onclick="closeModal('m12')">×</button>
+      <h2>Paso 12. Construcción del mural</h2>
+      <p>El mural es la evidencia visual y expositiva del proyecto. Debe mostrar el proceso completo, no solo decorar.</p>
+    </div>
+    <div class="modal-body">
+      <div class="sections">
+        <div class="section">
+          <h4>Cómo organizarlo</h4>
+          <p>Se recomienda dividirlo en cuatro secciones grandes y visibles: problemática y solución, datos del entrenamiento, lógica y diagrama, y simulación o demostración final.</p>
+        </div>
+        <div class="mini-grid">
+          <div class="section">
+            <h4>Sección 1. Problema y solución</h4>
+            <ul>
+              <li>Problemática redactada.</li>
+              <li>Población o contexto.</li>
+              <li>Solución propuesta.</li>
+              <li>Explicación breve del propósito pedagógico.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Sección 2. Datos</h4>
+            <ul>
+              <li>Ejemplos de imágenes usadas.</li>
+              <li>Cantidad por categoría.</li>
+              <li>Cómo se recolectaron.</li>
+              <li>Qué categorías se definieron.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Sección 3. Lógica y diagrama</h4>
+            <ul>
+              <li>Reglas de decisión.</li>
+              <li>Condiciones.</li>
+              <li>Diagrama de flujo ampliado.</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Sección 4. Código y prueba</h4>
+            <ul>
+              <li>Fragmento de PSeInt.</li>
+              <li>Capturas de prueba del modelo.</li>
+              <li>Resultado esperado.</li>
+              <li>Aplicación en el aula infantil.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <h4>Qué debe evitar</h4>
+          <p>No llenar el mural de texto innecesario ni dejarlo solo en imágenes sueltas. Debe mostrar qué problema había, cómo se pensó la solución, cómo se entrenó el modelo y cómo esa solución se convierte en una experiencia de aprendizaje.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Aprendiendo con @LaProfeVivy
+</footer>
+
+<script>
+  function openModal(id){
+    document.getElementById(id).classList.add('show');
+    document.body.style.overflow='hidden';
+  }
+
+  function closeModal(id){
+    document.getElementById(id).classList.remove('show');
+    document.body.style.overflow='auto';
+  }
+
+  document.querySelectorAll('.modal').forEach(modal=>{
+    modal.addEventListener('click', function(e){
+      if(e.target === modal){
+        modal.classList.remove('show');
+        document.body.style.overflow='auto';
+      }
+    });
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      document.querySelectorAll('.modal.show').forEach(modal=>modal.classList.remove('show'));
+      document.body.style.overflow='auto';
+    }
+  });
+</script>
+
+</body>
+</html>
