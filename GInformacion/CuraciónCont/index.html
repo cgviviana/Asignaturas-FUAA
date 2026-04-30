@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curación de información para investigación</title>
+
+  <style>
+    :root{
+      --bg:#d9e0e6;
+      --text:#3f3f46;
+      --muted:#6b7280;
+      --white:#ffffff;
+      --line:#e4e7ef;
+      --shadow:0 10px 24px rgba(0,0,0,.18);
+      --dark:#2b2b2b;
+
+      --c1:linear-gradient(135deg,#ff8a00,#ff2d00);
+      --c2:linear-gradient(135deg,#d500f9,#7c00ff);
+      --c3:linear-gradient(135deg,#9aa8ff,#4736a9);
+      --c4:linear-gradient(135deg,#33d17a,#16a085);
+      --c5:linear-gradient(135deg,#e5007d,#9c1458);
+      --c6:linear-gradient(135deg,#00bcd4,#1565c0);
+      --head:linear-gradient(90deg,#6177dd 0%, #7e57c2 100%);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    header{
+      background:var(--head);
+      color:#fff;
+      text-align:center;
+      padding:34px 20px 28px;
+      box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
+
+    header h1{
+      margin:0;
+      font-size:2rem;
+      font-weight:800;
+      line-height:1.2;
+    }
+
+    header h1 span{
+      display:block;
+      margin-top:6px;
+      font-size:.52em;
+      font-weight:500;
+      color:rgba(255,255,255,.86);
+    }
+
+    .wrap{
+      max-width:1380px;
+      margin:0 auto;
+      padding:28px 16px 48px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(300px, 380px));
+      gap:22px;
+      justify-content:center;
+    }
+
+    .card{
+      background:#f5f5f5;
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      width:100%;
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+
+    .card:hover{
+      transform:translateY(-4px);
+      box-shadow:0 14px 28px rgba(0,0,0,.22);
+    }
+
+    .hero{
+      height:160px;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:58px;
+      font-weight:700;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-4px;
+      bottom:-2px;
+      width:80%;
+      height:56%;
+      background:#f5f5f5;
+      border-top-left-radius:180px 90px;
+    }
+
+    .icon{
+      position:relative;
+      z-index:2;
+      filter:drop-shadow(0 3px 4px rgba(0,0,0,.15));
+    }
+
+    .hero1{background:var(--c1)}
+    .hero2{background:var(--c2)}
+    .hero3{background:var(--c3)}
+    .hero4{background:var(--c4)}
+    .hero5{background:var(--c5)}
+    .hero6{background:var(--c6)}
+
+    .body{
+      padding:14px 18px 18px;
+      position:relative;
+      z-index:2;
+      margin-top:-6px;
+    }
+
+    .body h3{
+      margin:4px 0 8px;
+      text-align:center;
+      line-height:1.28;
+      min-height:60px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:4px;
+    }
+
+    .title-es{
+      display:block;
+      font-size:.98rem;
+      font-weight:800;
+      text-transform:uppercase;
+      color:#555;
+    }
+
+    .title-en{
+      display:block;
+      font-size:.72rem;
+      font-weight:500;
+      color:#9aa3af;
+    }
+
+    .body > p{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:.94rem;
+      line-height:1.5;
+      min-height:44px;
+      text-align:center;
+    }
+
+    .btn-row{
+      display:flex;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .main-btn,.audio-btn,.mini-btn{
+      border:none;
+      cursor:pointer;
+      color:#fff;
+      font-weight:800;
+      transition:.18s ease;
+    }
+
+    .main-btn{
+      flex:1;
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:.92rem;
+    }
+
+    .audio-btn{
+      width:58px;
+      border-radius:14px;
+      font-size:1rem;
+    }
+
+    .mini-btn{
+      border-radius:999px;
+      padding:10px 15px;
+      font-size:.88rem;
+      margin-top:4px;
+    }
+
+    .main-btn:hover,.audio-btn:hover,.mini-btn:hover{
+      filter:brightness(.96);
+      transform:translateY(-1px);
+    }
+
+    .btn1{background:var(--c1)}
+    .btn2{background:var(--c2)}
+    .btn3{background:var(--c3)}
+    .btn4{background:var(--c4)}
+    .btn5{background:var(--c5)}
+    .btn6{background:var(--c6)}
+    .btn-gray{background:#657089}
+
+    .panel{
+      display:none;
+      background:#fff;
+      border-radius:16px;
+      border:1px solid var(--line);
+      padding:14px;
+      animation:fadeIn .22s ease;
+    }
+
+    .card.open .panel{
+      display:block;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:.5; transform:translateY(6px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    .mini-card{
+      background:#fafbff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      margin-bottom:10px;
+    }
+
+    .mini-card h4{
+      margin:0 0 6px;
+      font-size:.94rem;
+      color:#455063;
+    }
+
+    .mini-card p, .mini-card li{
+      margin:0;
+      color:#616a79;
+      font-size:.91rem;
+      line-height:1.45;
+    }
+
+    .mini-card ul{
+      margin:0;
+      padding-left:18px;
+    }
+
+    .formula{
+      background:#f3f5fa;
+      border:1px dashed #b8c0d8;
+      border-radius:12px;
+      padding:10px;
+      font-family:Consolas, monospace;
+      font-size:.86rem;
+      color:#2f3b52;
+      overflow-x:auto;
+      white-space:nowrap;
+    }
+
+    .question{
+      font-size:.94rem;
+      font-weight:800;
+      color:#435065;
+      margin:12px 0 10px;
+    }
+
+    .options{
+      display:grid;
+      gap:9px;
+    }
+
+    .option-btn{
+      border:none;
+      background:#f3f5fa;
+      color:#394454;
+      padding:11px 12px;
+      border-radius:12px;
+      text-align:left;
+      cursor:pointer;
+      font-size:.9rem;
+      font-weight:600;
+      transition:.18s ease;
+    }
+
+    .option-btn:hover{
+      background:#e9eeff;
+      transform:translateY(-1px);
+    }
+
+    .feedback{
+      margin-top:10px;
+      padding:11px 12px;
+      border-radius:12px;
+      display:none;
+      font-size:.88rem;
+      line-height:1.45;
+      font-weight:600;
+    }
+
+    .feedback.ok{
+      display:block;
+      background:#e9f8ef;
+      color:#21603a;
+    }
+
+    .feedback.bad{
+      display:block;
+      background:#fff1f1;
+      color:#9a2f2f;
+    }
+
+    select{
+      width:100%;
+      border:1px solid #d8deea;
+      border-radius:14px;
+      padding:11px 12px;
+      font-family:inherit;
+      font-size:.9rem;
+      outline:none;
+      background:#fff;
+      margin-bottom:10px;
+    }
+
+    .tag{
+      display:inline-block;
+      background:#eef2ff;
+      color:#4c5ea7;
+      border:1px solid #dbe3ff;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:.78rem;
+      font-weight:800;
+      margin:3px 3px 6px 0;
+    }
+
+    footer{
+      background:var(--dark);
+      color:#fff;
+      text-align:center;
+      padding:16px 12px;
+      font-weight:600;
+      letter-spacing:.2px;
+      margin-top:32px;
+    }
+
+    @media (max-width:1250px){
+      .grid{grid-template-columns:repeat(2, minmax(300px, 380px))}
+    }
+
+    @media (max-width:820px){
+      .grid{grid-template-columns:minmax(280px, 380px)}
+      header h1{font-size:1.55rem}
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>
+    Curación de información para investigación
+    <span>Ruta didáctica en 6 temas</span>
+  </h1>
+</header>
+
+<main class="wrap">
+  <section class="grid">
+
+    <article class="card" id="card1">
+      <div class="hero hero1"><div class="icon">🔎</div></div>
+      <div class="body">
+        <h3><span class="title-es">1. Delimitación del problema</span><span class="title-en">Observar, enfocar y preguntar</span></h3>
+        <p>Parte del contexto real para reconocer qué se quiere investigar.</p>
+        <div class="btn-row">
+          <button class="main-btn btn1" onclick="toggleCard('card1')">Ver tema</button>
+          <button class="audio-btn btn1" onclick="speakText('La investigación inicia observando el entorno, identificando una necesidad y delimitando contexto, población, tiempo y espacio.')">🔊</button>
+        </div>
+        <div class="panel">
+          <div class="mini-card"><h4>Resumen</h4><p>Este tema guía la observación del entorno, la identificación de una situación problemática y la formulación de una pregunta investigable.</p></div>
+          <div class="mini-card"><h4>Pasos clave</h4><ul><li>Observar una situación real.</li><li>Identificar necesidad o problema.</li><li>Definir contexto, población, tiempo y espacio.</li><li>Formular la pregunta problema.</li><li>Redactar una justificación inicial.</li></ul></div>
+          <div class="question">Ejercicio: ¿cuál elemento delimita mejor una investigación?</div>
+          <div class="options">
+            <button class="option-btn" onclick="check('f1', true, 'Correcto. Contexto, población, tiempo y espacio ayudan a delimitar el problema.')">Contexto, población, tiempo y espacio.</button>
+            <button class="option-btn" onclick="check('f1', false, 'No. Un tema general todavía no es una delimitación investigativa.')">Un tema amplio sin población definida.</button>
+            <button class="option-btn" onclick="check('f1', false, 'No. La opinión personal no delimita científicamente el problema.')">Una opinión personal sobre el tema.</button>
+          </div>
+          <div id="f1" class="feedback"></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="card2">
+      <div class="hero hero2"><div class="icon">🧭</div></div>
+      <div class="body">
+        <h3><span class="title-es">2. Palabras clave y tesauros</span><span class="title-en">Vocabulario académico</span></h3>
+        <p>Convierte el tema en términos útiles para buscar información.</p>
+        <div class="btn-row">
+          <button class="main-btn btn2" onclick="toggleCard('card2')">Ver tema</button>
+          <button class="audio-btn btn2" onclick="speakText('Los tesauros ayudan a encontrar términos académicos, sinónimos y conceptos relacionados para mejorar la búsqueda.')">🔊</button>
+        </div>
+        <div class="panel">
+          <div class="mini-card"><h4>Resumen</h4><p>Las palabras clave permiten iniciar la búsqueda. Los tesauros ayudan a encontrar términos aceptados, sinónimos, términos amplios y específicos.</p></div>
+          <div class="mini-card"><h4>Ejemplos de tesauros</h4><span class="tag">UNESCO</span><span class="tag">ERIC</span><span class="tag">MeSH</span><span class="tag">DeCS</span></div>
+          <div class="mini-card"><h4>Cómo armar términos</h4><ul><li>Concepto principal: educación superior.</li><li>Sinónimos: universidad, enseñanza universitaria.</li><li>Términos relacionados: docencia, aprendizaje, innovación.</li><li>Términos en inglés: higher education, university teaching.</li></ul></div>
+          <div class="question">Ejercicio: selecciona el uso correcto de un tesauro.</div>
+          <select id="q2"><option value="">Selecciona una opción</option><option value="mal">Sirve para copiar textos completos.</option><option value="bien">Sirve para encontrar términos académicos relacionados.</option><option value="mal">Sirve para reemplazar la lectura de artículos.</option></select>
+          <button class="mini-btn btn2" onclick="checkSelect('q2','f2','bien','Correcto. El tesauro ayuda a mejorar las palabras clave de búsqueda.')">Comprobar</button>
+          <div id="f2" class="feedback"></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="card3">
+      <div class="hero hero3"><div class="icon">🧩</div></div>
+      <div class="body">
+        <h3><span class="title-es">3. Estrategias de búsqueda</span><span class="title-en">Booleanos, ecuaciones y campos</span></h3>
+        <p>Construye búsquedas académicas precisas y controladas.</p>
+        <div class="btn-row">
+          <button class="main-btn btn3" onclick="toggleCard('card3')">Ver tema</button>
+          <button class="audio-btn btn3" onclick="speakText('Las ecuaciones de búsqueda combinan palabras clave, operadores booleanos y campos como título, resumen y palabras clave.')">🔊</button>
+        </div>
+        <div class="panel">
+          <div class="mini-card"><h4>Resumen</h4><p>Una ecuación de búsqueda combina conceptos, sinónimos, operadores booleanos y campos para recuperar documentos pertinentes.</p></div>
+          <div class="mini-card"><h4>Operadores clave</h4><ul><li><b>AND:</b> reduce resultados porque exige que aparezcan los conceptos unidos.</li><li><b>OR:</b> amplía resultados porque incluye sinónimos o términos equivalentes.</li><li><b>NOT:</b> excluye términos no deseados.</li><li><b>" "</b>: busca una frase exacta.</li><li><b>*</b>: permite variaciones de una palabra, según la base de datos.</li></ul></div>
+          <div class="mini-card"><h4>Campos de búsqueda académica</h4><ul><li><b>TITLE:</b> busca solo en el título del documento. Da mayor precisión.</li><li><b>ABS:</b> busca en el resumen o abstract.</li><li><b>KEY:</b> busca en las palabras clave.</li><li><b>TITLE-ABS-KEY:</b> busca en título, resumen y palabras clave. Es común en Scopus.</li></ul></div>
+          <div class="mini-card"><h4>Ejemplo de ecuación en Scopus</h4><div class="formula">TITLE-ABS-KEY("artificial intelligence" AND "higher education" AND "teaching practice")</div></div>
+          <div class="mini-card"><h4>Ejemplo con sinónimos</h4><div class="formula">TITLE-ABS-KEY(("artificial intelligence" OR "generative AI") AND ("higher education" OR university) AND teaching)</div></div>
+          <div class="mini-card"><h4>Cómo construir una ecuación</h4><ul><li>Define el concepto principal.</li><li>Agrega sinónimos con <b>OR</b>.</li><li>Relaciona conceptos diferentes con <b>AND</b>.</li><li>Usa comillas para frases exactas.</li><li>Aplica filtros: año, idioma, área y tipo de documento.</li></ul></div>
+          <div class="question">Ejercicio: ¿cuál ecuación está mejor construida para Scopus?</div>
+          <div class="options">
+            <button class="option-btn" onclick="check('f3', false, 'Demasiado general. No usa campos, comillas ni operadores.')">inteligencia artificial educacion</button>
+            <button class="option-btn" onclick="check('f3', true, 'Correcto. Usa campo académico, comillas y AND.')">TITLE-ABS-KEY("inteligencia artificial" AND "educación superior")</button>
+            <button class="option-btn" onclick="check('f3', false, 'Incorrecto. OR sin estructura amplía demasiado.')">inteligencia artificial OR educación OR enseñanza</button>
+          </div>
+          <div id="f3" class="feedback"></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="card4">
+      <div class="hero hero4"><div class="icon">📚</div></div>
+      <div class="body">
+        <h3><span class="title-es">4. Fuentes académicas y cribado</span><span class="title-en">Buscar, validar y seleccionar</span></h3>
+        <p>Diferencia fuentes confiables y selecciona información relevante.</p>
+        <div class="btn-row">
+          <button class="main-btn btn4" onclick="toggleCard('card4')">Ver tema</button>
+          <button class="audio-btn btn4" onclick="speakText('El cribado permite revisar títulos, resúmenes y palabras clave para seleccionar fuentes pertinentes y confiables.')">🔊</button>
+        </div>
+        <div class="panel">
+          <div class="mini-card"><h4>Resumen</h4><p>Este tema aborda las fuentes académicas válidas, las bases de datos y el cribado inicial de documentos.</p></div>
+          <div class="mini-card"><h4>Fuentes y bases útiles</h4><span class="tag">Scopus</span><span class="tag">Web of Science</span><span class="tag">Google Scholar</span><span class="tag">PubMed</span><span class="tag">Scielo</span><span class="tag">Redalyc</span></div>
+          <div class="mini-card"><h4>Diferencia clave</h4><ul><li><b>Google Scholar:</b> buscador académico amplio, útil para rastreo inicial.</li><li><b>Scopus / Web of Science:</b> bases con filtros, métricas, indexación y mayor control.</li><li><b>Scielo / Redalyc:</b> portales académicos con fuerte presencia latinoamericana.</li><li><b>PubMed:</b> base especializada en salud y ciencias biomédicas.</li></ul></div>
+          <div class="mini-card"><h4>Criterios de cribado</h4><ul><li>Revisar título, resumen y palabras clave.</li><li>Valorar actualidad, autoría, citas e indexación.</li><li>Confirmar relación con la pregunta problema.</li><li>Excluir fuentes no confiables o poco pertinentes.</li></ul></div>
+          <div class="question">Ejercicio: ¿qué revisarías primero para decidir si un artículo sirve?</div>
+          <select id="q4"><option value="">Selecciona una opción</option><option value="bien">Título, resumen y palabras clave.</option><option value="mal">Solo el color del PDF.</option><option value="mal">Solo si aparece en redes sociales.</option></select>
+          <button class="mini-btn btn4" onclick="checkSelect('q4','f4','bien','Correcto. Ese es el primer filtro de pertinencia.')">Comprobar</button>
+          <div id="f4" class="feedback"></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="card5">
+      <div class="hero hero5"><div class="icon">🗂️</div></div>
+      <div class="body">
+        <h3><span class="title-es">5. Organización de información</span><span class="title-en">Bitácora y matriz</span></h3>
+        <p>Registra lo encontrado para analizarlo sin perder información.</p>
+        <div class="btn-row">
+          <button class="main-btn btn5" onclick="toggleCard('card5')">Ver tema</button>
+          <button class="audio-btn btn5" onclick="speakText('La bitácora permite registrar fuentes, ideas clave, aportes y limitaciones de cada documento consultado.')">🔊</button>
+        </div>
+        <div class="panel">
+          <div class="mini-card"><h4>Resumen</h4><p>La bitácora o matriz de análisis permite ordenar la información recolectada durante la búsqueda académica.</p></div>
+          <div class="mini-card"><h4>Campos recomendados</h4><ul><li>Referencia o enlace.</li><li>Base de datos o fuente.</li><li>Idea clave.</li><li>Aporte al problema.</li><li>Limitaciones.</li><li>Decisión: incluir, revisar o descartar.</li></ul></div>
+          <div class="mini-card"><h4>Ejemplo de registro</h4><p>Autor/año + objetivo + hallazgo principal + relación con la pregunta problema + observación crítica.</p></div>
+          <div class="question">Ejercicio: completa la idea.</div>
+          <select id="q5"><option value="">Una bitácora sirve para...</option><option value="mal">guardar información sin revisar.</option><option value="bien">organizar fuentes, ideas clave y aportes.</option><option value="mal">evitar citar los documentos.</option></select>
+          <button class="mini-btn btn5" onclick="checkSelect('q5','f5','bien','Correcto. La bitácora ayuda a organizar y analizar la información recolectada.')">Comprobar</button>
+          <div id="f5" class="feedback"></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="card6">
+      <div class="hero hero6"><div class="icon">✍️</div></div>
+      <div class="body">
+        <h3><span class="title-es">6. Gestores, citación y ética</span><span class="title-en">Referenciar sin plagiar</span></h3>
+        <p>Usa la información con rigor académico y respeto por la autoría.</p>
+        <div class="btn-row">
+          <button class="main-btn btn6" onclick="toggleCard('card6')">Ver tema</button>
+          <button class="audio-btn btn6" onclick="speakText('Los gestores de referencia ayudan a guardar documentos, organizar citas y crear referencias en normas académicas.')">🔊</button>
+        </div>
+        <div class="panel">
+          <div class="mini-card"><h4>Resumen</h4><p>Este tema integra el uso de gestores de referencia, normas de citación y principios éticos para evitar plagio.</p></div>
+          <div class="mini-card"><h4>Herramientas</h4><span class="tag">Mendeley</span><span class="tag">Zotero</span><span class="tag">EndNote</span><span class="tag">APA</span></div>
+          <div class="mini-card"><h4>Ideas clave</h4><ul><li>Organizar PDF y referencias.</li><li>Insertar citas y referencias.</li><li>Diferenciar paráfrasis y cita textual.</li><li>Reconocer autoría y derechos de autor.</li><li>Evitar plagio por copia, mala paráfrasis o ausencia de cita.</li></ul></div>
+          <div class="question">Ejercicio: ¿cuál práctica es ética?</div>
+          <div class="options">
+            <button class="option-btn" onclick="check('f6', false, 'No. Copiar sin citar es plagio.')">Copiar un párrafo sin citar.</button>
+            <button class="option-btn" onclick="check('f6', true, 'Correcto. Parafrasear exige conservar la idea y citar la fuente.')">Parafrasear una idea y citar la fuente.</button>
+            <button class="option-btn" onclick="check('f6', false, 'No. Cambiar algunas palabras no elimina la necesidad de citar.')">Cambiar pocas palabras y no citar.</button>
+          </div>
+          <div id="f6" class="feedback"></div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<footer>
+  Aprendiendo con @LaProfeVivy
+</footer>
+
+<script>
+  function toggleCard(cardId){
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+      if(card.id === cardId){
+        card.classList.toggle('open');
+      } else {
+        card.classList.remove('open');
+      }
+    });
+  }
+
+  function check(feedbackId, isCorrect, message){
+    const fb = document.getElementById(feedbackId);
+    if(isCorrect){
+      fb.className = "feedback ok";
+      fb.textContent = message;
+    }else{
+      fb.className = "feedback bad";
+      fb.textContent = message;
+    }
+  }
+
+  function checkSelect(selectId, feedbackId, correctValue, okMessage){
+    const value = document.getElementById(selectId).value;
+    const fb = document.getElementById(feedbackId);
+
+    if(value === ""){
+      fb.className = "feedback bad";
+      fb.textContent = "Selecciona una opción antes de comprobar.";
+      return;
+    }
+
+    if(value === correctValue){
+      fb.className = "feedback ok";
+      fb.textContent = okMessage;
+    }else{
+      fb.className = "feedback bad";
+      fb.textContent = "Revisa el resumen del tema e inténtalo de nuevo.";
+    }
+  }
+
+  function speakText(text){
+    if(!("speechSynthesis" in window)){
+      alert("Audio no soportado en este navegador.");
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "es-CO";
+    utterance.rate = 0.95;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+  }
+</script>
+
+</body>
+</html>
