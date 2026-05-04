@@ -1,1 +1,91 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Information Curation Glossary</title>
+<style>
+:root{--dark:#263547;--border:#d9deea;--green:#2da44e;--red:#d1242f}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#dfe7ef;color:var(--dark)}
+.header{background:linear-gradient(90deg,#6279de,#7b55cf);color:#fff;text-align:center;padding:18px 16px 24px}.header h1{margin:0 0 8px;font-size:30px}.header p{margin:0;font-size:15px}
+.register{max-width:952px;margin:26px auto 18px;background:#fff;border-radius:22px;box-shadow:0 2px 10px #0002;padding:24px}.register h2{margin:0 0 10px;color:#263547}.register p{margin:0 0 16px;color:#536171;font-weight:700}.formrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-weight:800;margin-bottom:6px;color:#263547}.field input{width:100%;border:1px solid var(--border);border-radius:14px;padding:13px 14px;font-size:15px}.startbtn,.restart{margin-top:14px;border:0;border-radius:22px;padding:12px 18px;font-weight:800;color:#fff;background:linear-gradient(90deg,#5f79e1,#7c54cf);cursor:pointer}.regmsg{font-weight:800;color:#d1242f;margin-top:10px}
+.top{max-width:952px;margin:26px auto 18px;display:none;justify-content:space-between;gap:12px;padding:0 12px}.pill{background:#fff;border-radius:18px;padding:12px 16px;font-weight:700;box-shadow:0 2px 10px #0002}
+.card{max-width:952px;margin:0 auto 28px;background:#fff;border-radius:22px;box-shadow:0 2px 10px #0002;display:none;grid-template-columns:45% 55%;overflow:hidden;min-height:486px}.left{background:linear-gradient(135deg,#5f79e1,#7d55cf);color:#fff;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px}.num{position:absolute;top:14px;left:14px;border:1px solid #ffffff99;background:#ffffff25;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700}.term-small{font-weight:700;margin-bottom:14px}.term{font-size:34px;font-weight:900;line-height:1.12;text-transform:uppercase}
+.right{padding:28px 24px}.right h2{font-size:16px;margin:0 0 16px}.option{width:100%;text-align:left;border:1px solid var(--border);background:#f7f8fc;border-radius:14px;padding:14px 15px;margin:10px 0;font-weight:700;color:#243247;cursor:pointer;line-height:1.35}.option:hover{background:#eef2ff}.option.correct{border-color:var(--green);background:#eaf8ef}.option.wrong{border-color:var(--red);background:#fff0f0}.word{color:#4f46e5;border-bottom:1px dotted #4f46e5;cursor:pointer}.feedback{font-weight:800;margin-top:12px;min-height:24px}.feedback.ok{color:var(--green)}.feedback.bad{color:var(--red)}
+.modal{position:fixed;inset:0;background:#0006;display:none;align-items:center;justify-content:center;z-index:100;padding:16px}.modal.show{display:flex}.modal-box{width:min(420px,100%);background:#fff;border-radius:20px;box-shadow:0 18px 40px #0004;overflow:hidden}.modal-head{background:linear-gradient(90deg,#6279de,#7b55cf);color:#fff;padding:16px 18px;font-weight:900}.modal-body{padding:18px;color:#263547;line-height:1.5}.modal-word{font-size:20px;font-weight:900;color:#4f46e5;margin-bottom:8px}.close{border:0;border-radius:18px;padding:10px 16px;background:linear-gradient(90deg,#6279de,#7b55cf);color:#fff;font-weight:800;cursor:pointer;margin-top:12px}
+.final{max-width:952px;margin:0 auto 28px;background:#fff;border-radius:22px;box-shadow:0 2px 10px #0002;padding:28px;text-align:center;display:none}.final h2{margin:0 0 10px}.final p{margin:8px 0;color:#536171;font-weight:700}.footer{text-align:center;margin:18px;color:#536171;font-weight:700}
+@media(max-width:760px){.card{grid-template-columns:1fr}.top{flex-direction:column}.left{min-height:260px}.term{font-size:28px}.formrow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="header"><h1>Information Curation Glossary</h1><p>Read the term. Choose the correct meaning.</p></header>
+
+<section class="register" id="registerBox">
+  <h2>Registro de ingreso</h2>
+  <p>Escribe tus datos para iniciar el glosario.</p>
+  <div class="formrow">
+    <div class="field"><label for="studentName">Name</label><input id="studentName" type="text" placeholder="Write your name"></div>
+    <div class="field"><label for="studentNrc">NRC</label><input id="studentNrc" type="text" placeholder="Write your NRC"></div>
+  </div>
+  <button class="startbtn" onclick="startGame()">Start activity</button>
+  <div class="regmsg" id="regMsg"></div>
+</section>
+
+<section class="top" id="topBar"><div class="pill" id="counter">Card 1 / 20</div><div class="pill">Score: <span id="score">0</span></div></section>
+
+<main class="card" id="gameCard"><section class="left"><div class="num" id="num">1</div><div><div class="term-small">This term means:</div><div class="term" id="term">TERM</div></div></section><section class="right"><h2>Choose the correct meaning:</h2><div id="options"></div><div class="feedback" id="feedback"></div></section></main>
+
+<section class="final" id="finalBox">
+  <h2 id="finalTitle">🎉 Great job!</h2>
+  <p id="finalMessage">You completed the glossary.</p>
+  <p><b>Name:</b> <span id="finalName"></span></p>
+  <p><b>NRC:</b> <span id="finalNrc"></span></p>
+  <p><b>Score:</b> <span id="finalScore">0</span> / 1000</p>
+  <p><b>Date and time:</b> <span id="finalDate"></span></p>
+  <button class="restart" onclick="resetToRegister()">Play again</button>
+</section>
+
+<div class="modal" id="wordModal"><div class="modal-box"><div class="modal-head">Easy word</div><div class="modal-body"><div class="modal-word" id="modalWord"></div><div id="modalMeaning"></div><button class="close" onclick="closeModal()">Close</button></div></div></div>
+<div class="footer">Aprendiendo con @LaProfeVivy</div>
+
+<script>
+const cards=[
+{term:"RESEARCH PROBLEM",answer:"situation or need that guides the study",options:["situation or need that guides the study","software to organize sources","place with scientific sources","words that connect search terms"]},
+{term:"KEYWORDS",answer:"main words used to recover information",options:["main words used to recover information","a table to compare sources","using information without credit","the group included in the study"]},
+{term:"THESAURUS",answer:"controlled vocabulary with related terms",options:["controlled vocabulary with related terms","complete source information","tool to narrow results","question that guides the study"]},
+{term:"SEARCH EQUATION",answer:"structured combination of keywords and operators",options:["structured combination of keywords and operators","reliable text for research","place or situation of the study","journal included in a database"]},
+{term:"BOOLEAN OPERATORS",answer:"connectors such as AND, OR and NOT",options:["connectors such as AND, OR and NOT","important words used to search","table to organize sources","tool for citations"]},
+{term:"SEARCH FIELDS",answer:"places where you search: TITLE, ABS or KEY",options:["places where you search: TITLE, ABS or KEY","words with opposite meaning","ideas written without credit","the final part of a paper"]},
+{term:"ACADEMIC DATABASE",answer:"platform with organized scientific publications",options:["platform with organized scientific publications","personal opinion about a topic","copy of an author's words","a list of grades"]},
+{term:"ACADEMIC SEARCH ENGINE",answer:"tool that searches academic information",options:["tool that searches academic information","registered journal in official databases","table used to compare documents","rewritten idea in your own words"]},
+{term:"ACADEMIC SOURCE",answer:"reliable document for research",options:["reliable document for research","random social media post","audio file for class","color used in a chart"]},
+{term:"INDEXING",answer:"inclusion of a journal in recognized databases",options:["inclusion of a journal in recognized databases","short title of a document","wrong use of information","button to play audio"]},
+{term:"RESEARCH LOG",answer:"organized record of sources and ideas",options:["organized record of sources and ideas","academic word list","source credit inside the text","place where the study happens"]},
+{term:"ANALYSIS MATRIX",answer:"table to compare information from sources",options:["table to compare information from sources","tool to find synonyms","the main situation to study","search only in the title"]},
+{term:"REFERENCE MANAGER",answer:"software to organize sources and citations",options:["software to organize sources and citations","unwanted search result","group studied in research","public website with ads"]},
+{term:"CITATION",answer:"recognition of a source inside a text",options:["recognition of a source inside a text","copying information without credit","search formula with operators","a platform with scientific publications"]},
+{term:"PARAPHRASE",answer:"explain an idea in your own words",options:["explain an idea in your own words","exclude a term from results","search in the abstract","complete list of students"]},
+{term:"PLAGIARISM",answer:"use information without recognizing authorship",options:["use information without recognizing authorship","give credit to the author","select useful sources","organize academic references"]},
+{term:"SCREENING",answer:"initial selection of useful sources",options:["initial selection of useful sources","controlled vocabulary with related terms","academic search platform","final score of the activity"]},
+{term:"CONTENT CURATION",answer:"search, filter, evaluate and organize relevant information",options:["search, filter, evaluate and organize relevant information","copy information without reading","exclude every source from the study","write only personal opinions"]},
+{term:"CONTEXT",answer:"place or situation where the study occurs",options:["place or situation where the study occurs","software used to cite sources","words that connect search terms","table to compare sources"]},
+{term:"POPULATION",answer:"group studied in the research",options:["group studied in the research","name of an academic article","tool to find related words","database filter for year"]}
+];
+const easyWords={situation:"case / condition",need:"problem / necessity",guides:"directs / helps",study:"research",main:"most important",recover:"find",information:"data / content",controlled:"organized",vocabulary:"word list",related:"similar / connected",terms:"words",structured:"organized",combination:"mix / union",keywords:"main search words",operators:"AND / OR / NOT",connectors:"linking words",places:"areas / parts",search:"look for",platform:"online place / system",organized:"ordered",scientific:"research-based",publications:"articles / documents",tool:"help / instrument",academic:"university / research",reliable:"trustworthy / credible",document:"text / file",research:"study",inclusion:"being added",journal:"academic magazine",recognized:"accepted / official",databases:"research platforms",record:"written register",sources:"information texts",ideas:"thoughts / concepts",analysis:"study / examination",matrix:"table",compare:"see differences",software:"computer tool",citations:"source credits",recognition:"credit",source:"where information comes from",text:"written work",explain:"make clear",own:"your words",words:"terms",authorship:"author credit",initial:"first",selection:"choice",useful:"helpful",filter:"select",evaluate:"check value",relevant:"important / useful",context:"place / situation",occurs:"happens",population:"group / people",group:"people",credit:"recognition",without:"no / not with"};
+let deck=[],index=0,score=0,answered=false,studentName="",studentNrc="";
+const term=document.getElementById("term"),options=document.getElementById("options"),counter=document.getElementById("counter"),num=document.getElementById("num"),feedback=document.getElementById("feedback"),scoreEl=document.getElementById("score");
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function startGame(){const name=document.getElementById("studentName").value.trim();const nrc=document.getElementById("studentNrc").value.trim();const msg=document.getElementById("regMsg");if(!name||!nrc){msg.textContent="Please write your name and NRC.";return}studentName=name;studentNrc=nrc;msg.textContent="";deck=shuffle([...cards]);index=0;score=0;scoreEl.textContent=score;document.getElementById("registerBox").style.display="none";document.getElementById("topBar").style.display="flex";document.getElementById("gameCard").style.display="grid";document.getElementById("finalBox").style.display="none";render()}
+function render(){const c=deck[index];answered=false;counter.textContent=`Card ${index+1} / ${deck.length}`;num.textContent=index+1;term.textContent=c.term;feedback.textContent="";feedback.className="feedback";options.innerHTML="";shuffle([...c.options]).forEach(op=>{const b=document.createElement("button");b.className="option";b.innerHTML=makeClickable(op);b.onclick=(event)=>{if(event.target.classList.contains("word")){event.stopPropagation();openWord(event.target.dataset.word);return}choose(b,op,c)};options.appendChild(b)})}
+function makeClickable(sentence){return sentence.split(" ").map(raw=>{const clean=raw.toLowerCase().replace(/[^a-z]/g,"");if(easyWords[clean]){return raw.replace(new RegExp(clean,"i"),`<span class="word" data-word="${clean}">${raw.match(new RegExp(clean,"i"))[0]}</span>`)}return raw}).join(" ")}
+function choose(btn,selected,card){if(answered)return;if(selected===card.answer){answered=true;score+=50;scoreEl.textContent=score;btn.classList.add("correct");feedback.textContent="Correct. +50 points.";feedback.className="feedback ok";speakCorrect(card,()=>{index++;if(index>=deck.length){finish()}else{render()}})}else{score=Math.max(0,score-10);scoreEl.textContent=score;btn.classList.add("wrong");feedback.textContent="Try again. -10 points.";feedback.className="feedback bad"}}
+function speakCorrect(card,done){if(!("speechSynthesis" in window)){setTimeout(done,900);return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(`${card.term}. ${card.answer}. Correct.`);u.lang="en-US";u.rate=.85;u.onend=done;u.onerror=done;speechSynthesis.speak(u)}
+function openWord(word){document.getElementById("modalWord").textContent=word;document.getElementById("modalMeaning").textContent=easyWords[word]||"simple meaning";document.getElementById("wordModal").classList.add("show")}
+function closeModal(){document.getElementById("wordModal").classList.remove("show")}
+document.getElementById("wordModal").addEventListener("click",e=>{if(e.target.id==="wordModal")closeModal()});
+function finish(){document.getElementById("gameCard").style.display="none";document.getElementById("topBar").style.display="none";document.getElementById("finalBox").style.display="block";document.getElementById("finalName").textContent=studentName;document.getElementById("finalNrc").textContent=studentNrc;document.getElementById("finalScore").textContent=score;document.getElementById("finalDate").textContent=new Date().toLocaleString();if(score>=780){document.getElementById("finalTitle").textContent="🎉 Congratulations!";document.getElementById("finalMessage").textContent="Excellent work. You reached a supreme learning level in this glossary."}else{document.getElementById("finalTitle").textContent="Good effort";document.getElementById("finalMessage").textContent="You completed the activity. Repeat it to strengthen your vocabulary and reach the supreme learning level."}}
+function resetToRegister(){document.getElementById("finalBox").style.display="none";document.getElementById("registerBox").style.display="block";document.getElementById("studentName").value=studentName;document.getElementById("studentNrc").value=studentNrc}
+</script>
+</body>
+</html>
