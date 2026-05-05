@@ -1,0 +1,1541 @@
+Put your HTML text here
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Estructuras en PSeInt</title>
+
+<style>
+    body {
+        font-family: sans-serif;
+        background: #eef2f3;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .master-card {
+        background: white;
+        width: 1050px;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        text-align: center;
+        border-bottom: 2px solid #6c5ce7;
+        padding-bottom: 10px;
+        margin-top: 0;
+    }
+
+    .intro {
+        text-align: center;
+        line-height: 1.5;
+        color: #374151;
+        margin-bottom: 20px;
+    }
+
+    .contenedor {
+        display: grid;
+        grid-template-columns: 365px 1fr;
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .decision-box {
+        background: #f9f9f9;
+        border: 2px dashed #6c5ce7;
+        padding: 20px;
+        border-radius: 10px;
+        max-height: 690px;
+        overflow-y: auto;
+    }
+
+    .nivel {
+        margin-bottom: 18px;
+    }
+
+    .nivel h2 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        color: #4c1d95;
+        border-bottom: 1px solid #ddd6fe;
+        padding-bottom: 7px;
+    }
+
+    .nivel.oculto {
+        display: none;
+    }
+
+    .btn-choice {
+        background: #6c5ce7;
+        color: white;
+        border: none;
+        padding: 12px;
+        margin: 7px 0;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        font-size: 14.5px;
+        line-height: 1.35;
+    }
+
+    .btn-choice:hover {
+        background: #a29bfe;
+    }
+
+    .btn-choice.activo {
+        background: #4f46e5;
+        outline: 3px solid #c4b5fd;
+    }
+
+    .btn-choice.resuelto {
+        background: #16a34a;
+    }
+
+    #resultado {
+        padding: 20px;
+        border-radius: 10px;
+        min-height: 580px;
+        background: #f8fafc;
+        border: 2px solid #e5e7eb;
+    }
+
+    .reto-card {
+        background: rgba(255,255,255,0.75);
+        padding: 18px;
+        border-radius: 12px;
+        font-size: 17px;
+        line-height: 1.5;
+        margin-top: 10px;
+    }
+
+    .visual {
+        display: none;
+        grid-template-columns: 1fr 130px;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .imagen {
+        background: rgba(255,255,255,0.75);
+        padding: 18px;
+        border-radius: 12px;
+        font-size: 62px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .pistas {
+        margin-top: 14px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        padding: 14px;
+        border-radius: 12px;
+        display: none;
+    }
+
+    .pistas h3 {
+        margin: 0 0 10px 0;
+        color: #4c1d95;
+        font-size: 16px;
+    }
+
+    .pista-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        background: #f8fafc;
+        padding: 9px;
+        border-radius: 8px;
+        margin: 7px 0;
+        cursor: pointer;
+        border: 1px solid #e5e7eb;
+        line-height: 1.35;
+    }
+
+    .pista-item:hover {
+        background: #ede9fe;
+    }
+
+    .pista-item input {
+        width: auto;
+        margin-top: 2px;
+        cursor: pointer;
+    }
+
+    .pista-ayuda {
+        background: #eff6ff;
+        border-left: 4px solid #2563eb;
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 10px;
+        color: #1e3a8a;
+        font-weight: bold;
+        display: none;
+    }
+
+    .selector {
+        margin-top: 18px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        padding: 14px;
+        border-radius: 12px;
+        display: none;
+    }
+
+    .selector label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #374151;
+    }
+
+    select {
+        padding: 10px;
+        border-radius: 8px;
+        border: 2px solid #6c5ce7;
+        width: 100%;
+        font-size: 15px;
+        background: white;
+    }
+
+    .feedback {
+        display: none;
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+
+    .ok { background: #d1fae5; border: 2px solid #10b981; color: #065f46; }
+    .error { background: #fee2e2; border: 2px solid #ef4444; color: #991b1b; }
+
+    .botones {
+        margin-top: 18px;
+        display: none;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-panel {
+        border: none;
+        padding: 11px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+    }
+
+    .btn-explicacion { background: #16a34a; }
+    .btn-ejecucion { background: #2563eb; }
+    .btn-codigo { background: #7c3aed; }
+    .btn-ejecutar { background: #f97316; margin-top: 10px; }
+
+    #panel {
+        margin-top: 15px;
+        background: rgba(255,255,255,0.8);
+        padding: 15px;
+        border-radius: 10px;
+        font-family: Consolas, monospace;
+        white-space: pre-line;
+        line-height: 1.5;
+        overflow-x: auto;
+        min-height: 150px;
+        border: 1px solid #e5e7eb;
+        display: none;
+    }
+
+    input {
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #999;
+        margin: 6px 0;
+        width: 180px;
+    }
+
+    .salida {
+        color: #064e3b;
+        font-weight: bold;
+        margin-top: 12px;
+        border-left: 4px solid #10b981;
+        padding-left: 10px;
+        min-height: 24px;
+    }
+
+    .reservada {
+        color: #2563eb;
+        font-weight: bold;
+    }
+
+
+    .carita {
+        font-size: 26px;
+        vertical-align: middle;
+        margin-right: 6px;
+    }
+
+    .nota-nivel {
+        background: #ede9fe;
+        color: #4c1d95;
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        display: none;
+    }
+
+    footer {
+        margin-top: 25px;
+        text-align: center;
+        color: #475569;
+        font-size: 14px;
+        border-top: 1px solid #e5e7eb;
+        padding-top: 15px;
+    }
+
+    footer strong {
+        color: #2563eb;
+    }
+
+    @media (max-width: 850px) {
+        .contenedor {
+            grid-template-columns: 1fr;
+        }
+
+        .visual {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="master-card">
+
+    <h1>🧩 Retos de estructuras de control en PSeInt</h1>
+
+    <p class="intro">
+        Analiza cada reto.
+    </p>
+
+    <div class="contenedor">
+
+        <div class="decision-box">
+
+            <div class="nota-nivel" id="avisoNivel"></div>
+
+            <div class="nivel" id="nivelBasico">
+                <h2>🟢 Nivel básico</h2>
+                <button class="btn-choice" data-id="b3" onclick="mostrarReto('b3', this)">Escáner mientras haya documentos</button>
+                <button class="btn-choice" data-id="b5" onclick="mostrarReto('b5', this)">Elegir tipo de servicio</button>
+                <button class="btn-choice" data-id="b1" onclick="mostrarReto('b1', this)">Decidir si aprueba o no</button>
+                <button class="btn-choice" data-id="b2" onclick="mostrarReto('b2', this)">Números del 1 al 100</button>
+                <button class="btn-choice" data-id="b4" onclick="mostrarReto('b4', this)">Pedir dato hasta que sea válido</button>
+            </div>
+
+            <div class="nivel oculto" id="nivelIntermedio">
+                <h2>🟡 Nivel intermedio</h2>
+                <button class="btn-choice" data-id="i1" onclick="mostrarReto('i1', this)">Carrito hasta finalizar</button>
+                <button class="btn-choice" data-id="i2" onclick="mostrarReto('i2', this)">Promedio de 30 estudiantes</button>
+                <button class="btn-choice" data-id="i3" onclick="mostrarReto('i3', this)">Sensor de temperatura</button>
+                <button class="btn-choice" data-id="i4" onclick="mostrarReto('i4', this)">Clasificar tipo de envío</button>
+                <button class="btn-choice" data-id="i5" onclick="mostrarReto('i5', this)">Revisar cupos disponibles</button>
+            </div>
+
+            <div class="nivel oculto" id="nivelAvanzado">
+                <h2>🔴 Nivel avanzado</h2>
+                <button class="btn-choice" data-id="a1" onclick="mostrarReto('a1', this)">Inventario hasta agotar stock</button>
+                <button class="btn-choice" data-id="a2" onclick="mostrarReto('a2', this)">Reporte semanal fijo</button>
+                <button class="btn-choice" data-id="a3" onclick="mostrarReto('a3', this)">Clasificación de desempeño</button>
+                <button class="btn-choice" data-id="a4" onclick="mostrarReto('a4', this)">Ruta de atención hospitalaria</button>
+                <button class="btn-choice" data-id="a5" onclick="mostrarReto('a5', this)">Encuesta hasta respuesta válida</button>
+            </div>
+
+        </div>
+
+        <div id="resultado">
+            <h2 id="res-titulo"></h2>
+
+            <div class="visual" id="visual">
+                <div class="reto-card" id="res-reto"></div>
+                <div class="imagen" id="res-imagen"></div>
+            </div>
+
+            <div class="pistas" id="pistas">
+                <h3 id="tituloPistas">Pistas</h3>
+
+                <label class="pista-item">
+                    <input type="checkbox" name="pista" value="Si" onchange="usarPista(this)">
+                    <span>¿El caso pide tomar una decisión: sí o no?</span>
+                </label>
+
+                <label class="pista-item">
+                    <input type="checkbox" name="pista" value="Segun" onchange="usarPista(this)">
+                    <span>¿El caso pide elegir entre varias opciones de un menú?</span>
+                </label>
+
+                <label class="pista-item">
+                    <input type="checkbox" name="pista" value="Para" onchange="usarPista(this)">
+                    <span>¿El caso repite una cantidad exacta de veces?</span>
+                </label>
+
+                <label class="pista-item">
+                    <input type="checkbox" name="pista" value="Mientras" onchange="usarPista(this)">
+                    <span>¿El caso repite mientras algo se cumple o hasta que algo cambie?</span>
+                </label>
+
+                <label class="pista-item">
+                    <input type="checkbox" name="pista" value="Repetir" onchange="usarPista(this)">
+                    <span>¿El caso debe hacer algo al menos una vez y después revisar?</span>
+                </label>
+
+                <div class="pista-ayuda" id="pistaAyuda"></div>
+            </div>
+
+            <div class="selector" id="selector">
+                <label for="estructuraSelect">Estructura de control</label>
+                <select id="estructuraSelect" onchange="validar()">
+                    <option value="">Seleccionar...</option>
+                    <option value="Si">Si-Entonces</option>
+                    <option value="Segun">Según</option>
+                    <option value="Para">Para</option>
+                    <option value="Mientras">Mientras</option>
+                    <option value="Repetir">Repetir</option>
+                </select>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="botones" id="botones">
+                <button class="btn-panel btn-explicacion" onclick="verExplicacion()">Explicación</button>
+                <button class="btn-panel btn-ejecucion" onclick="verEjecucion()">Ejecución</button>
+                <button class="btn-panel btn-codigo" onclick="verCodigo()">Código completo</button>
+            </div>
+
+            <div id="panel"></div>
+        </div>
+
+    </div>
+
+    <footer>
+        Aprendiendo con <strong>@laProfeVivy</strong>
+    </footer>
+
+</div>
+
+<script>
+let retoActual = null;
+let botonActual = null;
+let totalCarrito = 0;
+let resueltos = {
+    basico: new Set(),
+    intermedio: new Set(),
+    avanzado: new Set()
+};
+
+const retos = {
+    b1: {
+        nivel: "basico",
+        titulo: "✅ Decidir si aprueba o no",
+        imagen: "✅",
+        correcta: "Si",
+        reto: "Un programa debe leer una nota y decir si el estudiante aprueba o no aprueba.",
+        acierto: "Correcto. El caso pide tomar una decisión con una condición.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Si</span>.
+
+Idea dato:
+Se usa cuando el programa debe escoger entre caminos según una condición.
+
+Ejemplo distinto:
+Un cine revisa la edad. Si la persona tiene 18 años o más, puede entrar; si no, no puede entrar.
+
+Pista mental:
+Si puedes decir "si pasa esto, hago A; si no, hago B", estás usando <span class="reservada">Si</span>.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> AprobarONo
+    <span class="reservada">Definir</span> nota <span class="reservada">Como</span> Real
+
+    <span class="reservada">Escribir</span> "Ingrese la nota:"
+    <span class="reservada">Leer</span> nota
+
+    <span class="reservada">Si</span> nota >= 3.0 <span class="reservada">Entonces</span>
+        <span class="reservada">Escribir</span> "Aprueba"
+    <span class="reservada">Sino</span>
+        <span class="reservada">Escribir</span> "No aprueba"
+    <span class="reservada">FinSi</span>
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    b2: {
+        nivel: "basico",
+        titulo: "🔢 Números del 1 al 100",
+        imagen: "🔢",
+        correcta: "Para",
+        reto: "Un programa debe mostrar automáticamente los números del 1 al 100.",
+        acierto: "Correcto. La repetición tiene inicio y final conocidos.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Para</span>.
+
+Idea dato:
+Se usa cuando ya sabes cuántas veces se debe repetir algo.
+
+Ejemplo distinto:
+Una profesora debe revisar exactamente 20 trabajos. Como ya conoce la cantidad, puede usar un ciclo <span class="reservada">Para</span>.
+
+Pista mental:
+Si sabes el inicio y el final de la repetición, piensa en <span class="reservada">Para</span>.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> NumerosDelUnoAlCien
+    <span class="reservada">Definir</span> i <span class="reservada">Como</span> Entero
+
+    <span class="reservada">Para</span> i <- 1 <span class="reservada">Hasta</span> 100 <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> i
+    <span class="reservada">FinPara</span>
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    b3: {
+        nivel: "basico",
+        titulo: "📄 Escáner mientras haya documentos",
+        imagen: "📄",
+        correcta: "Mientras",
+        reto: "Una oficina debe escanear documentos mientras todavía haya hojas pendientes.",
+        acierto: "Correcto. El caso repite mientras una condición se cumple.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Mientras</span>.
+
+Idea dato:
+Se usa cuando algo se repite solo mientras una condición siga siendo verdadera.
+
+Ejemplo distinto:
+Una impresora sigue trabajando mientras todavía tenga páginas en la cola de impresión.
+
+Pista mental:
+Si la repetición depende de que algo siga ocurriendo, piensa en <span class="reservada">Mientras</span>.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> EscanearDocumentos
+    <span class="reservada">Definir</span> documentos <span class="reservada">Como</span> Entero
+
+    documentos <- 5
+
+    <span class="reservada">Mientras</span> documentos > 0 <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Escaneando documento. Faltan: ", documentos
+        documentos <- documentos - 1
+    <span class="reservada">FinMientras</span>
+
+    <span class="reservada">Escribir</span> "Escaneo terminado"
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    b4: {
+        nivel: "basico",
+        titulo: "📝 Pedir dato hasta que sea válido",
+        imagen: "📝",
+        correcta: "Repetir",
+        reto: "Un formulario debe pedir una respuesta hasta que el usuario escriba sí o no.",
+        acierto: "Correcto. Primero se pide el dato y después se valida.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Repetir</span>.
+
+Idea dato:
+Se usa cuando primero debes hacer la acción y después revisar si estuvo bien.
+
+Ejemplo distinto:
+Un juego pide escribir un nombre de usuario. Primero lo pide; después revisa si no está vacío.
+
+Pista mental:
+Si el programa debe intentarlo al menos una vez, piensa en <span class="reservada">Repetir</span>.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> RespuestaValida
+    <span class="reservada">Definir</span> respuesta <span class="reservada">Como</span> Cadena
+
+    <span class="reservada">Repetir</span>
+        <span class="reservada">Escribir</span> "Responda si o no:"
+        <span class="reservada">Leer</span> respuesta
+    <span class="reservada">Hasta Que</span> respuesta = "si" O respuesta = "no"
+
+    <span class="reservada">Escribir</span> "Respuesta aceptada"
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    b5: {
+        nivel: "basico",
+        titulo: "🏢 Elegir tipo de servicio",
+        imagen: "🏢",
+        correcta: "Segun",
+        reto: "Una oficina permite elegir entre tres servicios: certificados, pagos o soporte.",
+        acierto: "Correcto. El caso pide elegir entre varias opciones.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Segun</span>.
+
+Idea dato:
+Se usa cuando una misma variable puede tomar varias opciones definidas.
+
+Ejemplo distinto:
+Una app muestra: 1. Perfil, 2. Configuración, 3. Cerrar sesión. Según el número elegido, ejecuta una acción.
+
+Pista mental:
+Si parece un menú de opciones, piensa en <span class="reservada">Segun</span>.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> TipoServicio
+    <span class="reservada">Definir</span> opcion <span class="reservada">Como</span> Entero
+
+    <span class="reservada">Escribir</span> "1. Certificados"
+    <span class="reservada">Escribir</span> "2. Pagos"
+    <span class="reservada">Escribir</span> "3. Soporte"
+    <span class="reservada">Leer</span> opcion
+
+    <span class="reservada">Segun</span> opcion <span class="reservada">Hacer</span>
+        1:
+            <span class="reservada">Escribir</span> "Servicio de certificados"
+        2:
+            <span class="reservada">Escribir</span> "Servicio de pagos"
+        3:
+            <span class="reservada">Escribir</span> "Servicio de soporte"
+        <span class="reservada">De Otro Modo</span>:
+            <span class="reservada">Escribir</span> "Opción no válida"
+    <span class="reservada">FinSegun</span>
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    i1: {
+        nivel: "intermedio",
+        titulo: "🛒 Carrito hasta finalizar",
+        imagen: "🛒",
+        correcta: "Mientras",
+        reto: "Un carrito de compras debe sumar productos mientras el usuario no escriba la palabra finalizar.",
+        acierto: "Correcto. La repetición depende de una condición que puede cambiar.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Mientras</span>.
+
+¿Por qué?
+Porque no se conoce cuántos productos ingresará el usuario.
+
+El ciclo continúa mientras la respuesta sea diferente de "finalizar". Cuando el usuario escribe esa palabra, la condición deja de cumplirse y el ciclo termina.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> CarritoCompras
+    <span class="reservada">Definir</span> precio, total <span class="reservada">Como</span> Real
+    <span class="reservada">Definir</span> respuesta <span class="reservada">Como</span> Cadena
+
+    total <- 0
+    respuesta <- "continuar"
+
+    <span class="reservada">Mientras</span> respuesta <> "finalizar" <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Ingrese el precio:"
+        <span class="reservada">Leer</span> precio
+        total <- total + precio
+
+        <span class="reservada">Escribir</span> "Escriba finalizar o continuar:"
+        <span class="reservada">Leer</span> respuesta
+    <span class="reservada">FinMientras</span>
+
+    <span class="reservada">Escribir</span> "Total: ", total
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    i2: {
+        nivel: "intermedio",
+        titulo: "📊 Promedio de 30 estudiantes",
+        imagen: "📊",
+        correcta: "Para",
+        reto: "Un profesor necesita calcular el promedio de exactamente 30 estudiantes.",
+        acierto: "Correcto. La cantidad de datos está definida desde el inicio.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Para</span>.
+
+¿Por qué?
+Porque el número de estudiantes no cambia: son exactamente 30.
+
+El ciclo permite leer una nota por estudiante, acumularlas y calcular el promedio al final.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> PromedioTreintaEstudiantes
+    <span class="reservada">Definir</span> i <span class="reservada">Como</span> Entero
+    <span class="reservada">Definir</span> nota, suma, promedio <span class="reservada">Como</span> Real
+
+    suma <- 0
+
+    <span class="reservada">Para</span> i <- 1 <span class="reservada">Hasta</span> 30 <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Ingrese la nota ", i
+        <span class="reservada">Leer</span> nota
+        suma <- suma + nota
+    <span class="reservada">FinPara</span>
+
+    promedio <- suma / 30
+    <span class="reservada">Escribir</span> "Promedio: ", promedio
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    i3: {
+        nivel: "intermedio",
+        titulo: "🌡️ Sensor de temperatura",
+        imagen: "🌡️",
+        correcta: "Mientras",
+        reto: "Un sensor debe seguir midiendo temperatura mientras el valor no supere los 40 grados.",
+        acierto: "Correcto. Se repite mientras la temperatura se mantenga dentro del rango.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Mientras</span>.
+
+¿Por qué?
+Porque la medición continúa solo si la temperatura cumple la condición.
+
+La condición se revisa antes de repetir. Si la temperatura supera 40, el ciclo se detiene.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> SensorTemperatura
+    <span class="reservada">Definir</span> temperatura <span class="reservada">Como</span> Real
+
+    <span class="reservada">Escribir</span> "Ingrese temperatura:"
+    <span class="reservada">Leer</span> temperatura
+
+    <span class="reservada">Mientras</span> temperatura <= 40 <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Temperatura normal"
+        <span class="reservada">Escribir</span> "Ingrese nueva temperatura:"
+        <span class="reservada">Leer</span> temperatura
+    <span class="reservada">FinMientras</span>
+
+    <span class="reservada">Escribir</span> "Alerta de temperatura"
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    i4: {
+        nivel: "intermedio",
+        titulo: "📦 Clasificar tipo de envío",
+        imagen: "📦",
+        correcta: "Segun",
+        reto: "Una tienda permite elegir el tipo de envío: estándar, rápido, contraentrega o recoger en tienda.",
+        acierto: "Correcto. Es una selección entre opciones definidas.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Segun</span>.
+
+¿Por qué?
+Porque el usuario elige una opción concreta y cada opción activa una acción diferente.
+
+Cuando el problema funciona como una lista de alternativas, <span class="reservada">Segun</span> organiza mejor la solución.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> TipoEnvio
+    <span class="reservada">Definir</span> opcion <span class="reservada">Como</span> Entero
+
+    <span class="reservada">Escribir</span> "1. Envío estándar"
+    <span class="reservada">Escribir</span> "2. Envío rápido"
+    <span class="reservada">Escribir</span> "3. Contraentrega"
+    <span class="reservada">Escribir</span> "4. Recoger en tienda"
+    <span class="reservada">Leer</span> opcion
+
+    <span class="reservada">Segun</span> opcion <span class="reservada">Hacer</span>
+        1:
+            <span class="reservada">Escribir</span> "Envío estándar seleccionado"
+        2:
+            <span class="reservada">Escribir</span> "Envío rápido seleccionado"
+        3:
+            <span class="reservada">Escribir</span> "Pago contraentrega seleccionado"
+        4:
+            <span class="reservada">Escribir</span> "Recoger en tienda"
+        <span class="reservada">De Otro Modo</span>:
+            <span class="reservada">Escribir</span> "Opción no válida"
+    <span class="reservada">FinSegun</span>
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    i5: {
+        nivel: "intermedio",
+        titulo: "🎟️ Revisar cupos disponibles",
+        imagen: "🎟️",
+        correcta: "Mientras",
+        reto: "Un sistema registra inscripciones mientras todavía existan cupos disponibles y la persona quiera continuar.",
+        acierto: "Correcto. El ciclo depende de condiciones que se revisan antes de repetir.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Mientras</span>.
+
+¿Por qué?
+Porque antes de registrar otra inscripción se debe comprobar si aún hay cupos y si se desea continuar.
+
+El ciclo termina cuando se acaban los cupos o cuando ya no se quieren registrar más personas.
+
+Ejemplo distinto:
+Una biblioteca presta libros mientras haya ejemplares disponibles y usuarios en espera.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> RegistroConCupos
+    <span class="reservada">Definir</span> cupos <span class="reservada">Como</span> Entero
+    <span class="reservada">Definir</span> continuar <span class="reservada">Como</span> Cadena
+
+    cupos <- 3
+    continuar <- "si"
+
+    <span class="reservada">Mientras</span> cupos > 0 Y continuar = "si" <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Inscripción registrada"
+        cupos <- cupos - 1
+
+        <span class="reservada">Escribir</span> "¿Registrar otra persona? si/no"
+        <span class="reservada">Leer</span> continuar
+    <span class="reservada">FinMientras</span>
+
+    <span class="reservada">Escribir</span> "Proceso finalizado. Cupos restantes: ", cupos
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    a1: {
+        nivel: "avanzado",
+        titulo: "📦 Inventario hasta agotar stock",
+        imagen: "📦",
+        correcta: "Mientras",
+        reto: "Una tienda debe registrar ventas mientras exista inventario disponible. Cada venta reduce el stock.",
+        acierto: "Correcto. La repetición depende de que el stock siga siendo mayor que cero.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Mientras</span>.
+
+¿Por qué?
+Porque el programa debe continuar solo mientras exista stock.
+
+Cada venta modifica la condición, ya que reduce la cantidad disponible. Cuando el stock llega a cero, el ciclo termina.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> VentasConStock
+    <span class="reservada">Definir</span> stock, venta <span class="reservada">Como</span> Entero
+
+    stock <- 10
+
+    <span class="reservada">Mientras</span> stock > 0 <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Stock actual: ", stock
+        <span class="reservada">Escribir</span> "Cantidad vendida:"
+        <span class="reservada">Leer</span> venta
+        stock <- stock - venta
+    <span class="reservada">FinMientras</span>
+
+    <span class="reservada">Escribir</span> "Inventario agotado"
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    a2: {
+        nivel: "avanzado",
+        titulo: "📅 Reporte semanal fijo",
+        imagen: "📅",
+        correcta: "Para",
+        reto: "Una empresa necesita generar un reporte para cada uno de los 7 días de la semana.",
+        acierto: "Correcto. Son exactamente 7 repeticiones.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Para</span>.
+
+¿Por qué?
+Porque el número de repeticiones es fijo: siete días.
+
+El contador representa cada día que se procesa y el ciclo termina al completar el séptimo reporte.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> ReporteSemanal
+    <span class="reservada">Definir</span> dia <span class="reservada">Como</span> Entero
+
+    <span class="reservada">Para</span> dia <- 1 <span class="reservada">Hasta</span> 7 <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Generando reporte del día ", dia
+    <span class="reservada">FinPara</span>
+
+    <span class="reservada">Escribir</span> "Reportes generados"
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    a3: {
+        nivel: "avanzado",
+        titulo: "📈 Clasificación de desempeño",
+        imagen: "📈",
+        correcta: "Si",
+        reto: "Un sistema debe leer un puntaje y clasificarlo como bajo, medio o alto según rangos definidos.",
+        acierto: "Correcto. Se evalúan condiciones por rangos.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Si</span>.
+
+¿Por qué?
+Aunque hay más de dos resultados, la decisión depende de rangos: menor que 60, entre 60 y 89, o mayor o igual a 90.
+
+No es un menú porque el usuario no elige una opción; el programa clasifica según el valor numérico.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> ClasificarDesempeno
+    <span class="reservada">Definir</span> puntaje <span class="reservada">Como</span> Entero
+
+    <span class="reservada">Escribir</span> "Ingrese el puntaje:"
+    <span class="reservada">Leer</span> puntaje
+
+    <span class="reservada">Si</span> puntaje < 60 <span class="reservada">Entonces</span>
+        <span class="reservada">Escribir</span> "Desempeño bajo"
+    <span class="reservada">Sino</span>
+        <span class="reservada">Si</span> puntaje < 90 <span class="reservada">Entonces</span>
+            <span class="reservada">Escribir</span> "Desempeño medio"
+        <span class="reservada">Sino</span>
+            <span class="reservada">Escribir</span> "Desempeño alto"
+        <span class="reservada">FinSi</span>
+    <span class="reservada">FinSi</span>
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    a4: {
+        nivel: "avanzado",
+        titulo: "🏥 Ruta de atención hospitalaria",
+        imagen: "🏥",
+        correcta: "Segun",
+        reto: "Un sistema hospitalario clasifica el ingreso por código: 1 urgencias, 2 consulta externa, 3 laboratorio, 4 farmacia.",
+        acierto: "Correcto. Es una selección de alternativas definidas.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Segun</span>.
+
+¿Por qué?
+Porque el código ingresado representa una ruta específica de atención.
+
+Cada número tiene una acción asociada. <span class="reservada">Segun</span> permite organizar esas rutas de forma clara.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> RutaHospitalaria
+    <span class="reservada">Definir</span> codigo <span class="reservada">Como</span> Entero
+
+    <span class="reservada">Escribir</span> "Ingrese código de atención:"
+    <span class="reservada">Leer</span> codigo
+
+    <span class="reservada">Segun</span> codigo <span class="reservada">Hacer</span>
+        1:
+            <span class="reservada">Escribir</span> "Dirigir a urgencias"
+        2:
+            <span class="reservada">Escribir</span> "Dirigir a consulta externa"
+        3:
+            <span class="reservada">Escribir</span> "Dirigir a laboratorio"
+        4:
+            <span class="reservada">Escribir</span> "Dirigir a farmacia"
+        <span class="reservada">De Otro Modo</span>:
+            <span class="reservada">Escribir</span> "Código no registrado"
+    <span class="reservada">FinSegun</span>
+<span class="reservada">FinAlgoritmo</span>`
+    },
+
+    a5: {
+        nivel: "avanzado",
+        titulo: "📝 Encuesta hasta respuesta válida",
+        imagen: "📝",
+        correcta: "Repetir",
+        reto: "Una encuesta debe pedir una respuesta hasta que el usuario escriba sí o no.",
+        acierto: "Correcto. Primero se solicita el dato y luego se valida.",
+        explicacion:
+`La estructura adecuada es <span class="reservada">Repetir</span>.
+
+¿Por qué?
+Porque el programa necesita pedir una respuesta antes de saber si es válida.
+
+Después de leerla, revisa si corresponde a "si" o "no". Si no corresponde, vuelve a preguntar.`,
+        codigo:
+`<span class="reservada">Algoritmo</span> RespuestaEncuesta
+    <span class="reservada">Definir</span> respuesta <span class="reservada">Como</span> Cadena
+
+    <span class="reservada">Repetir</span>
+        <span class="reservada">Escribir</span> "Responda si o no:"
+        <span class="reservada">Leer</span> respuesta
+    <span class="reservada">Hasta Que</span> respuesta = "si" O respuesta = "no"
+
+    <span class="reservada">Escribir</span> "Respuesta registrada"
+<span class="reservada">FinAlgoritmo</span>`
+    }
+};
+
+function mostrarReto(id, boton) {
+    retoActual = retos[id];
+    botonActual = boton;
+
+    document.querySelectorAll(".btn-choice").forEach(btn => btn.classList.remove("activo"));
+    boton.classList.add("activo");
+
+    document.getElementById("visual").style.display = "grid";
+    document.getElementById("res-titulo").innerHTML = retoActual.titulo;
+    document.getElementById("res-reto").innerHTML = retoActual.reto;
+    document.getElementById("res-imagen").innerHTML = retoActual.imagen;
+    prepararPistas();
+    document.getElementById("selector").style.display = "block";
+    document.getElementById("estructuraSelect").value = "";
+    document.getElementById("botones").style.display = "none";
+    document.getElementById("feedback").style.display = "none";
+    document.getElementById("panel").style.display = "none";
+    document.getElementById("panel").innerHTML = "";
+}
+
+function prepararPistas() {
+    const pistas = document.getElementById("pistas");
+    const ayuda = document.getElementById("pistaAyuda");
+    const titulo = document.getElementById("tituloPistas");
+
+    document.querySelectorAll('input[name="pista"]').forEach(chk => {
+        chk.checked = false;
+        chk.disabled = false;
+    });
+
+    ayuda.style.display = "none";
+    ayuda.innerHTML = "";
+
+    if (retoActual.nivel === "basico") {
+        pistas.style.display = "block";
+        titulo.innerHTML = "Marca la pista que describe el caso";
+    } else if (retoActual.nivel === "intermedio") {
+        pistas.style.display = "block";
+        titulo.innerHTML = "Usa las pistas y luego selecciona la estructura";
+    } else {
+        pistas.style.display = "none";
+    }
+}
+
+function usarPista(check) {
+    document.querySelectorAll('input[name="pista"]').forEach(chk => {
+        if (chk !== check) chk.checked = false;
+    });
+
+    const ayuda = document.getElementById("pistaAyuda");
+
+    if (!check.checked) {
+        ayuda.style.display = "none";
+        ayuda.innerHTML = "";
+        return;
+    }
+
+    if (retoActual.nivel === "basico") {
+        document.getElementById("estructuraSelect").value = check.value;
+        validar();
+        ayuda.style.display = "block";
+        ayuda.innerHTML = "En este nivel la pista completa la estructura para que observes la relación.";
+    } else if (retoActual.nivel === "intermedio") {
+        ayuda.style.display = "block";
+        ayuda.innerHTML = "La pista señala una posible estructura. Ahora debes seleccionarla en el desplegable.";
+    }
+}
+
+function validar() {
+    const opcion = document.getElementById("estructuraSelect").value;
+    const feedback = document.getElementById("feedback");
+
+    if (opcion === "") {
+        feedback.style.display = "none";
+        document.getElementById("botones").style.display = "none";
+        return;
+    }
+
+    feedback.style.display = "block";
+
+    if (opcion === retoActual.correcta) {
+        feedback.className = "feedback ok";
+        feedback.innerHTML = "😊 " + retoActual.acierto;
+        document.getElementById("botones").style.display = "flex";
+        marcarResuelto();
+    } else {
+        feedback.className = "feedback error";
+        feedback.innerHTML = "😟 No corresponde. Revisa si el caso necesita decidir, repetir con contador, repetir por condición, validar después de pedir un dato o elegir entre opciones.";
+        document.getElementById("botones").style.display = "none";
+        document.getElementById("panel").style.display = "none";
+        document.getElementById("panel").innerHTML = "";
+    }
+}
+
+function marcarResuelto() {
+    const id = botonActual.getAttribute("data-id");
+    const nivel = retoActual.nivel;
+    resueltos[nivel].add(id);
+    botonActual.classList.add("resuelto");
+
+    if (resueltos.basico.size === 5) {
+        document.getElementById("nivelIntermedio").classList.remove("oculto");
+        mostrarAviso("Nivel intermedio disponible.");
+    }
+
+    if (resueltos.intermedio.size === 5) {
+        document.getElementById("nivelAvanzado").classList.remove("oculto");
+        mostrarAviso("Nivel avanzado disponible.");
+    }
+}
+
+function mostrarAviso(texto) {
+    const aviso = document.getElementById("avisoNivel");
+    aviso.innerHTML = texto;
+    aviso.style.display = "block";
+
+    setTimeout(() => {
+        aviso.style.display = "none";
+    }, 2500);
+}
+
+function verExplicacion() {
+    const panel = document.getElementById("panel");
+    panel.style.display = "block";
+    panel.innerHTML = retoActual.explicacion;
+}
+
+function verCodigo() {
+    const panel = document.getElementById("panel");
+    panel.style.display = "block";
+    panel.innerHTML = retoActual.codigo;
+}
+
+function verEjecucion() {
+    const titulo = retoActual.titulo;
+    const panel = document.getElementById("panel");
+    panel.style.display = "block";
+
+    if (titulo.includes("aprueba")) {
+        panel.innerHTML =
+`Ingrese la nota:
+<input type="number" id="inputNota" placeholder="Ej: 3.5" step="0.1">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarNota()">Validar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Escáner")) {
+        panel.innerHTML =
+`<button class="btn-panel btn-ejecutar" onclick="ejecutarEscanerBasico()">Iniciar escáner</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Pedir dato")) {
+        panel.innerHTML =
+`Respuesta:
+<input type="text" id="inputRespuestaBasica" placeholder="si o no">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarRespuestaBasica()">Validar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("tipo de servicio")) {
+        panel.innerHTML =
+`Seleccione servicio:
+<select id="opcionServicio">
+    <option value="1">1. Certificados</option>
+    <option value="2">2. Pagos</option>
+    <option value="3">3. Soporte</option>
+    <option value="4">4. Otra opción</option>
+</select>
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarServicioBasico()">Elegir</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("positivo")) {
+        panel.innerHTML =
+`Ingrese un número:
+<input type="number" id="inputNumeroClasificar" placeholder="Ej: -5">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarClasificarNumero()">Clasificar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Números")) {
+        panel.innerHTML =
+`<button class="btn-panel btn-ejecutar" onclick="ejecutarNumeros()">Ejecutar conteo</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Par")) {
+        panel.innerHTML =
+`Ingresa un número:
+<input type="number" id="inputNumero" placeholder="Ej: 8">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarParImpar()">Verificar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Calcular edades")) {
+        panel.innerHTML =
+`Simulación con 5 edades:
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarEdades()">Registrar edades</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Mayoría")) {
+        panel.innerHTML =
+`Ingrese la edad:
+<input type="number" id="inputEdad" placeholder="Ej: 18">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarEdad()">Validar edad</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Carrito")) {
+        totalCarrito = 0;
+        panel.innerHTML =
+`Precio del producto:
+<input type="number" id="inputPrecio" placeholder="Ej: 2500">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="agregarProducto()">Agregar producto</button>
+<button class="btn-panel btn-ejecutar" onclick="finalizarCarrito()">Finalizar</button>
+<div id="salida" class="salida">Total actual: 0</div>`;
+    }
+
+    else if (titulo.includes("Promedio")) {
+        panel.innerHTML =
+`<button class="btn-panel btn-ejecutar" onclick="ejecutarPromedio()">Ejecutar promedio</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Sensor")) {
+        panel.innerHTML =
+`<button class="btn-panel btn-ejecutar" onclick="ejecutarSensor()">Iniciar medición</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("envío")) {
+        panel.innerHTML =
+`Seleccione tipo de envío:
+<select id="opcionEnvio">
+    <option value="1">1. Estándar</option>
+    <option value="2">2. Rápido</option>
+    <option value="3">3. Contraentrega</option>
+    <option value="4">4. Recoger en tienda</option>
+</select>
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarEnvio()">Aplicar opción</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("cupos")) {
+        panel.innerHTML =
+`Cupos disponibles:
+<input type="number" id="inputCupos" placeholder="Ej: 3">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarCupos()">Simular registro</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Inventario")) {
+        panel.innerHTML =
+`<button class="btn-panel btn-ejecutar" onclick="ejecutarInventario()">Ejecutar ventas</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Reporte")) {
+        panel.innerHTML =
+`<button class="btn-panel btn-ejecutar" onclick="ejecutarReporte()">Generar reportes</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Clasificación")) {
+        panel.innerHTML =
+`Ingrese puntaje:
+<input type="number" id="inputPuntaje" placeholder="Ej: 85">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarDesempeno()">Clasificar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("hospitalaria")) {
+        panel.innerHTML =
+`Código de atención:
+<select id="opcionHospital">
+    <option value="1">1. Urgencias</option>
+    <option value="2">2. Consulta externa</option>
+    <option value="3">3. Laboratorio</option>
+    <option value="4">4. Farmacia</option>
+</select>
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarHospital()">Enviar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (titulo.includes("Encuesta")) {
+        panel.innerHTML =
+`Respuesta:
+<input type="text" id="inputEncuesta" placeholder="si o no">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarEncuesta()">Validar respuesta</button>
+<div id="salida" class="salida"></div>`;
+    }
+}
+
+
+function ejecutarNota() {
+    const nota = Number(document.getElementById("inputNota").value);
+    const salida = document.getElementById("salida");
+
+    if (Number.isNaN(nota)) {
+        salida.innerHTML = "> Ingresa una nota válida.";
+    } else if (nota >= 3.0) {
+        salida.innerHTML = "> Aprueba.";
+    } else {
+        salida.innerHTML = "> No aprueba.";
+    }
+}
+
+function ejecutarEscanerBasico() {
+    const salida = document.getElementById("salida");
+    let documentos = 5;
+    salida.innerHTML = "";
+
+    const intervalo = setInterval(() => {
+        if (documentos > 0) {
+            salida.innerHTML += "> Documento escaneado. Faltan: " + documentos + "<br>";
+            documentos--;
+        } else {
+            salida.innerHTML += "> Escaneo terminado.";
+            clearInterval(intervalo);
+        }
+    }, 550);
+}
+
+function ejecutarRespuestaBasica() {
+    const r = document.getElementById("inputRespuestaBasica").value.toLowerCase();
+    const salida = document.getElementById("salida");
+
+    if (r === "si" || r === "no") {
+        salida.innerHTML = "> Respuesta aceptada.";
+    } else {
+        salida.innerHTML = "> Respuesta no válida. Debe escribir si o no.";
+    }
+}
+
+function ejecutarServicioBasico() {
+    const op = document.getElementById("opcionServicio").value;
+    const salida = document.getElementById("salida");
+
+    if (op === "1") salida.innerHTML = "> Servicio de certificados.";
+    else if (op === "2") salida.innerHTML = "> Servicio de pagos.";
+    else if (op === "3") salida.innerHTML = "> Servicio de soporte.";
+    else salida.innerHTML = "> Opción no válida.";
+}
+
+function ejecutarClasificarNumero() {
+    const n = Number(document.getElementById("inputNumeroClasificar").value);
+    const salida = document.getElementById("salida");
+
+    if (Number.isNaN(n)) {
+        salida.innerHTML = "> Ingresa un número válido.";
+    } else if (n > 0) {
+        salida.innerHTML = "> El número es positivo.";
+    } else if (n < 0) {
+        salida.innerHTML = "> El número es negativo.";
+    } else {
+        salida.innerHTML = "> El número es cero.";
+    }
+}
+
+function ejecutarNumeros() {
+    const salida = document.getElementById("salida");
+    salida.innerHTML = "";
+    let i = 1;
+    const intervalo = setInterval(() => {
+        salida.innerHTML += i + " ";
+        i++;
+        if (i > 100) {
+            salida.innerHTML += "<br>> Conteo terminado.";
+            clearInterval(intervalo);
+        }
+    }, 35);
+}
+
+function ejecutarParImpar() {
+    const numero = Number(document.getElementById("inputNumero").value);
+    const salida = document.getElementById("salida");
+    if (Number.isNaN(numero)) {
+        salida.innerHTML = "> Ingresa un número válido.";
+        return;
+    }
+    salida.innerHTML = numero % 2 === 0 ? "> El número es par." : "> El número es impar.";
+}
+
+function ejecutarEdades() {
+    const salida = document.getElementById("salida");
+    const edades = [18, 22, 31, 45, 16];
+    let i = 0;
+    salida.innerHTML = "";
+
+    const intervalo = setInterval(() => {
+        salida.innerHTML += "> Persona " + (i + 1) + ": " + edades[i] + " años<br>";
+        i++;
+
+        if (i === edades.length) {
+            salida.innerHTML += "> Registro simulado terminado.";
+            clearInterval(intervalo);
+        }
+    }, 500);
+}
+
+function ejecutarEdad() {
+    const edad = Number(document.getElementById("inputEdad").value);
+    const salida = document.getElementById("salida");
+    if (Number.isNaN(edad)) {
+        salida.innerHTML = "> Ingresa una edad válida.";
+        return;
+    }
+    salida.innerHTML = edad >= 18 ? "> Es mayor de edad." : "> Es menor de edad.";
+}
+
+function agregarProducto() {
+    const precio = Number(document.getElementById("inputPrecio").value);
+    const salida = document.getElementById("salida");
+    if (Number.isNaN(precio) || precio <= 0) {
+        salida.innerHTML = "> Ingresa un precio válido.";
+        return;
+    }
+    totalCarrito += precio;
+    salida.innerHTML = "> Producto agregado. Total actual: " + totalCarrito;
+}
+
+function finalizarCarrito() {
+    document.getElementById("salida").innerHTML = "> Total final a pagar: " + totalCarrito;
+}
+
+function ejecutarPromedio() {
+    const salida = document.getElementById("salida");
+    const notas = [4.0, 3.5, 5.0, 4.2, 3.8];
+    let suma = 0;
+    let i = 0;
+    salida.innerHTML = "";
+    const intervalo = setInterval(() => {
+        suma += notas[i];
+        salida.innerHTML += "> Nota " + (i + 1) + ": " + notas[i] + "<br>";
+        i++;
+        if (i === notas.length) {
+            salida.innerHTML += "> Promedio simulado: " + (suma / notas.length).toFixed(2);
+            clearInterval(intervalo);
+        }
+    }, 600);
+}
+
+function ejecutarSensor() {
+    const salida = document.getElementById("salida");
+    const mediciones = [30, 32, 35, 38, 41];
+    let i = 0;
+    salida.innerHTML = "";
+    const intervalo = setInterval(() => {
+        if (mediciones[i] <= 40) {
+            salida.innerHTML += "> Temperatura normal: " + mediciones[i] + "°C<br>";
+        } else {
+            salida.innerHTML += "> Alerta: temperatura alta (" + mediciones[i] + "°C).";
+            clearInterval(intervalo);
+        }
+        i++;
+    }, 650);
+}
+
+function ejecutarEnvio() {
+    const op = document.getElementById("opcionEnvio").value;
+    const salida = document.getElementById("salida");
+    if (op === "1") salida.innerHTML = "> Envío estándar seleccionado.";
+    else if (op === "2") salida.innerHTML = "> Envío rápido seleccionado.";
+    else if (op === "3") salida.innerHTML = "> Pago contraentrega seleccionado.";
+    else salida.innerHTML = "> Recoger en tienda.";
+}
+
+function ejecutarCupos() {
+    const salida = document.getElementById("salida");
+    let cupos = Number(document.getElementById("inputCupos").value);
+
+    if (Number.isNaN(cupos) || cupos <= 0) {
+        salida.innerHTML = "> Ingresa una cantidad válida de cupos.";
+        return;
+    }
+
+    salida.innerHTML = "";
+
+    const intervalo = setInterval(() => {
+        if (cupos > 0) {
+            salida.innerHTML += "> Inscripción registrada. Cupos antes del registro: " + cupos + "<br>";
+            cupos--;
+        } else {
+            salida.innerHTML += "> No quedan cupos disponibles.";
+            clearInterval(intervalo);
+        }
+    }, 650);
+}
+
+function ejecutarInventario() {
+    const salida = document.getElementById("salida");
+    let stock = 10;
+    salida.innerHTML = "";
+    const intervalo = setInterval(() => {
+        if (stock > 0) {
+            salida.innerHTML += "> Venta realizada. Stock antes de vender: " + stock + "<br>";
+            stock -= 2;
+        } else {
+            salida.innerHTML += "> Inventario agotado.";
+            clearInterval(intervalo);
+        }
+    }, 600);
+}
+
+function ejecutarReporte() {
+    const salida = document.getElementById("salida");
+    let dia = 1;
+    salida.innerHTML = "";
+    const intervalo = setInterval(() => {
+        salida.innerHTML += "> Reporte generado para día " + dia + "<br>";
+        dia++;
+        if (dia > 7) {
+            salida.innerHTML += "> Semana completada.";
+            clearInterval(intervalo);
+        }
+    }, 500);
+}
+
+function ejecutarDesempeno() {
+    const puntaje = Number(document.getElementById("inputPuntaje").value);
+    const salida = document.getElementById("salida");
+    if (Number.isNaN(puntaje)) {
+        salida.innerHTML = "> Ingresa un puntaje válido.";
+        return;
+    }
+    if (puntaje < 60) salida.innerHTML = "> Desempeño bajo.";
+    else if (puntaje < 90) salida.innerHTML = "> Desempeño medio.";
+    else salida.innerHTML = "> Desempeño alto.";
+}
+
+function ejecutarHospital() {
+    const op = document.getElementById("opcionHospital").value;
+    const salida = document.getElementById("salida");
+    if (op === "1") salida.innerHTML = "> Dirigir a urgencias.";
+    else if (op === "2") salida.innerHTML = "> Dirigir a consulta externa.";
+    else if (op === "3") salida.innerHTML = "> Dirigir a laboratorio.";
+    else salida.innerHTML = "> Dirigir a farmacia.";
+}
+
+function ejecutarEncuesta() {
+    const r = document.getElementById("inputEncuesta").value.toLowerCase();
+    const salida = document.getElementById("salida");
+    if (r === "si" || r === "no") salida.innerHTML = "> Respuesta registrada.";
+    else salida.innerHTML = "> Respuesta no válida. Escribe si o no.";
+}
+
+function mezclarBotones(nivelId) {
+    const nivel = document.getElementById(nivelId);
+    if (!nivel) return;
+
+    const botones = Array.from(nivel.querySelectorAll(".btn-choice"));
+    for (let i = botones.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [botones[i], botones[j]] = [botones[j], botones[i]];
+    }
+
+    botones.forEach(btn => nivel.appendChild(btn));
+}
+
+mezclarBotones("nivelBasico");
+mezclarBotones("nivelIntermedio");
+mezclarBotones("nivelAvanzado");
+
+function mezclarPistas() {
+    const cont = document.getElementById("pistas");
+    if (!cont) return;
+
+    const titulo = document.getElementById("tituloPistas");
+    const ayuda = document.getElementById("pistaAyuda");
+    const items = Array.from(cont.querySelectorAll(".pista-item"));
+
+    for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+    }
+
+    cont.innerHTML = "";
+    cont.appendChild(titulo);
+    items.forEach(item => cont.appendChild(item));
+    cont.appendChild(ayuda);
+}
+
+mezclarPistas();
+
+
+</script>
+
+</body>
+</html>
