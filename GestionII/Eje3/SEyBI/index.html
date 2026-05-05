@@ -1,1 +1,542 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Síntesis Estratégica y Business Intelligence</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#bfd0de;color:#111}
+.header{margin:20px;background:#174b17;color:white;padding:18px 24px;font-size:24px;font-weight:700}
+.layout{display:grid;grid-template-columns:310px 1fr;gap:22px;margin:0 20px 20px}
+.menu{background:#c9d6e0;border:1px solid #e4eef6;padding:16px;min-height:720px}
+.menu-title{background:#101010;color:white;padding:18px;text-align:center;font-weight:700;margin-bottom:14px}
+.menu button{width:100%;border:0;background:#e8edf2;color:#222;text-align:left;padding:14px 18px;margin:6px 0;font-size:16.5px;font-weight:600;cursor:pointer}
+.menu button.active{background:#101010;color:white;border-left:6px solid #69d64f}
+.content{background:#d2dbe3;border:1px solid #e4eef6;min-height:720px}
+.page{display:none}
+.page.active{display:block}
+.page-title{background:#101010;color:white;padding:24px;font-size:30px;font-weight:800;border-bottom:3px solid #16bfe6}
+.page-body{padding:22px}
+.block{border:2px solid #16bfe6;background:#d7d9dc;margin-bottom:16px}
+.block-title{background:#101010;color:white;padding:16px 20px;font-size:22px;font-weight:800}
+.block-body{padding:20px;font-size:19px;line-height:1.45}
+.idea{background:#eef8eb;border-left:5px solid #69d64f;padding:16px;margin-top:16px}
+.note{background:#fff9df;border-left:5px solid #d69b28;padding:14px;margin-top:14px}
+.warn{background:#ffecec;border-left:5px solid #d64f4f;padding:14px;margin-top:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.card{background:#eef0f2;padding:18px;border:1px solid #c3ccd3}
+.card b{font-size:20px}
+.tabs{margin-top:8px}
+.tab-buttons button{border:1px solid #777;background:#eee;padding:10px 16px;margin:0 6px 10px 0;cursor:pointer;font-size:16px}
+.tab-buttons button.active{background:#101010;color:white}
+.tab-panel{display:none;background:#eef0f2;padding:18px;font-size:18px;border:1px solid #c3ccd3}
+.tab-panel.active{display:block}
+table{width:100%;border-collapse:collapse;background:white;font-size:17px}
+th{background:#174b17;color:white;text-align:left}
+th,td{border:1px solid #b8c2ca;padding:11px;vertical-align:top}
+textarea{width:100%;min-height:95px;font-size:17px;padding:10px;margin-top:8px}
+select,input{font-size:16px;padding:8px;margin:4px 0;width:100%;max-width:540px}
+.footer{background:#101010;color:#c8ffc0;text-align:center;padding:18px;font-size:18px;font-weight:700}
+.btn{border:0;background:#174b17;color:white;padding:10px 14px;margin:6px 4px 6px 0;cursor:pointer;font-size:16px;border-radius:4px}
+.result{background:white;border:2px solid #174b17;padding:15px;margin-top:12px;font-size:18px;min-height:60px}
+.choice{display:block;background:#eef0f2;border:1px solid #87939c;padding:12px;margin:8px 0;cursor:pointer;font-size:17px;text-align:left;width:100%}
+.choice:hover{background:#dce7ef}
+.kpi-preview{background:white;border-left:7px solid #16bfe6;padding:16px;margin-top:12px}
+.kpi-name{font-size:23px;font-weight:900}
+.kpi-value{font-size:34px;font-weight:900;margin:6px 0}
+.kpi-text{font-size:17px}
+.dashboard{background:#f4f7f9;border:3px solid #101010;border-radius:8px;padding:16px;margin-top:12px;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.dash-header{background:#174b17;color:white;padding:14px 18px;border-radius:6px;margin-bottom:14px;display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:800}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:white;border-left:6px solid #16bfe6;padding:12px;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,.12)}
+.kpi .label{font-size:14px;color:#555;font-weight:700}
+.kpi .value{font-size:25px;font-weight:900;margin-top:4px}
+.kpi .trend{font-size:13px;color:#174b17;margin-top:4px}
+.dash-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.chart-box{background:white;border-radius:6px;padding:14px;box-shadow:0 2px 5px rgba(0,0,0,.12)}
+.chart-title{font-weight:800;margin-bottom:10px}
+.bar-row{display:grid;grid-template-columns:105px 1fr 75px;align-items:center;gap:8px;margin:9px 0;font-size:15px}
+.bar-track{background:#e7edf2;height:18px;border-radius:8px;overflow:hidden}
+.bar-fill{height:100%;background:#174b17;border-radius:8px}
+.pie{width:180px;height:180px;border-radius:50%;background:conic-gradient(#174b17 0 42%, #16bfe6 42% 70%, #d69b28 70% 86%, #555 86% 100%);margin:10px auto}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:14px}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;background:#174b17}
+.dot.b{background:#16bfe6}.dot.c{background:#d69b28}.dot.d{background:#555}
+.process{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.step{background:#eef0f2;border-top:5px solid #16bfe6;padding:14px;min-height:120px}
+.step-number{background:#101010;color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:8px}
+@media(max-width:1000px){
+ .layout{grid-template-columns:1fr}
+ .grid2,.grid3,.dash-grid,.kpis,.process{grid-template-columns:1fr}
+ .menu{min-height:auto}
+}
+</style>
+</head>
+<body>
+<div class="header">Síntesis Estratégica y Business Intelligence</div>
+
+<div class="layout">
+<aside class="menu">
+<div class="menu-title">Temas</div>
+<button class="nav active" onclick="showPage('p1',this)">1. Conceptos principales</button>
+<button class="nav" onclick="showPage('p2',this)">2. De datos a decisiones</button>
+<button class="nav" onclick="showPage('p3',this)">3. Business Intelligence</button>
+<button class="nav" onclick="showPage('p4',this)">4. KPI: qué son</button>
+<button class="nav" onclick="showPage('p5',this)">5. Para qué sirven los KPI</button>
+<button class="nav" onclick="showPage('p6',this)">6. Cómo se construyen</button>
+<button class="nav" onclick="showPage('p7',this)">7. Cómo elegirlos</button>
+<button class="nav" onclick="showPage('p8',this)">8. Dashboard BI</button>
+<button class="nav" onclick="showPage('p9',this)">9. Simulación KPI</button>
+<button class="nav" onclick="showPage('p10',this)">10. Casos de empresas</button>
+<button class="nav" onclick="showPage('p11',this)">11. Simulación BI</button>
+<button class="nav" onclick="showPage('p12',this)">12. Síntesis estratégica</button>
+</aside>
+
+<main class="content">
+
+<section id="p1" class="page active">
+<div class="page-title">Conceptos principales</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Síntesis estratégica</div><div class="block-body">
+La síntesis estratégica es la capacidad de reunir información importante, entenderla y convertirla en una decisión clara.
+<br><br>
+No consiste en copiar datos ni llenar tablas. Consiste en responder: <b>¿qué significa esta información para la empresa?</b>
+<div class="idea"><b>Ejemplo simple:</b> si una tienda ve que un producto se vende mucho y además el mercado lo está buscando, puede decidir comprar más unidades o hacer una campaña.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Business Intelligence</div><div class="block-body">
+Business Intelligence, o BI, es el uso de datos organizados para analizar el comportamiento de una empresa y apoyar decisiones.
+<br><br>
+BI usa tablas, gráficos, indicadores y dashboards para mostrar de forma rápida lo que está ocurriendo.
+</div></div>
+
+<div class="block"><div class="block-title">KPI</div><div class="block-body">
+Un KPI es un indicador clave. Sirve para medir algo importante del negocio.
+<br><br>
+Si los datos fueran muchas señales en una carretera, el KPI sería el aviso más importante para saber si se debe avanzar, frenar o cambiar de camino.
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p2" class="page">
+<div class="page-title">De datos a decisiones</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Escalera de análisis</div><div class="block-body">
+<table>
+<tr><th>Nivel</th><th>Qué significa</th><th>Ejemplo en perfumería</th></tr>
+<tr><td>Dato</td><td>Registro individual sin explicación.</td><td>Una venta de $420.000.</td></tr>
+<tr><td>Información</td><td>Dato ordenado y comparado.</td><td>Dior tuvo el mayor ingreso del mes.</td></tr>
+<tr><td>Indicador</td><td>Medida que resume un comportamiento.</td><td>Ingreso total por marca.</td></tr>
+<tr><td>KPI</td><td>Indicador clave para decidir.</td><td>Marca líder para priorizar inventario.</td></tr>
+<tr><td>Decisión</td><td>Acción sustentada en el análisis.</td><td>Fortalecer inventario de Dior y revisar precios externos.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">La idea didáctica</div><div class="block-body">
+Un niño puede contar cuántos dulces tiene. Un adolescente puede comparar cuál sabor se vende más. Una empresa necesita ir más allá: debe decidir qué comprar, qué promocionar, qué cambiar y qué dejar de hacer.
+<div class="note">BI permite pasar de contar datos a tomar decisiones.</div>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p3" class="page">
+<div class="page-title">Business Intelligence</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Qué hace BI</div><div class="block-body">
+<div class="grid2">
+<div class="card"><b>Organiza</b><br><br>Convierte una base de datos en tablas, filtros e indicadores.</div>
+<div class="card"><b>Compara</b><br><br>Permite ver diferencias entre marcas, productos, meses o formas de pago.</div>
+<div class="card"><b>Detecta</b><br><br>Encuentra fortalezas, problemas, cambios o patrones.</div>
+<div class="card"><b>Decide</b><br><br>Ayuda a recomendar acciones empresariales con evidencia.</div>
+</div>
+</div></div>
+
+<div class="block"><div class="block-title">Qué NO es BI</div><div class="block-body">
+<table>
+<tr><th>No es...</th><th>Porque...</th></tr>
+<tr><td>Poner gráficos al azar.</td><td>Un gráfico debe responder una pregunta.</td></tr>
+<tr><td>Decir “este vendió más” sin explicación.</td><td>Falta interpretar qué significa para el negocio.</td></tr>
+<tr><td>Hacer un tablero lleno de colores.</td><td>El dashboard debe ser claro, no decorativo.</td></tr>
+<tr><td>Inventar conclusiones.</td><td>La decisión debe salir de datos internos y evidencia externa.</td></tr>
+</table>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p4" class="page">
+<div class="page-title">KPI: qué son</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Definición completa</div><div class="block-body">
+KPI significa <b>Key Performance Indicator</b>, es decir, <b>indicador clave de desempeño</b>.
+<br><br>
+Un KPI es una medida que muestra si algo importante para la empresa está funcionando bien, regular o mal.
+<div class="idea"><b>Explicación fácil:</b> un KPI es como el tablero de un carro. No muestra cada tornillo del motor, pero sí muestra velocidad, gasolina y temperatura. Esos datos ayudan a conducir mejor.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Dato, indicador y KPI</div><div class="block-body">
+<table>
+<tr><th>Elemento</th><th>Qué es</th><th>Ejemplo</th><th>¿Sirve para decidir?</th></tr>
+<tr><td>Dato</td><td>Un registro suelto.</td><td>Venta de $250.000.</td><td>Solo no alcanza.</td></tr>
+<tr><td>Indicador</td><td>Un cálculo o resumen.</td><td>Total vendido por marca.</td><td>Puede ayudar.</td></tr>
+<tr><td>KPI</td><td>Indicador clave conectado con una decisión.</td><td>Marca con mayor ingreso para decidir inventario.</td><td>Sí, si responde una pregunta importante.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Ejemplos de KPI en una perfumería</div><div class="block-body">
+<table>
+<tr><th>KPI</th><th>Qué mide</th><th>Pregunta que responde</th></tr>
+<tr><td>Ingreso total</td><td>Cuánto dinero generó la empresa.</td><td>¿Cuánto vendimos?</td></tr>
+<tr><td>Ticket promedio</td><td>Cuánto gasta en promedio un cliente.</td><td>¿El cliente compra barato, medio o premium?</td></tr>
+<tr><td>Marca líder</td><td>Qué marca aporta más ingreso o unidades.</td><td>¿Qué marca conviene priorizar?</td></tr>
+<tr><td>Producto más vendido</td><td>Qué producto rota más.</td><td>¿Qué producto puede promocionarse?</td></tr>
+<tr><td>Precio por ml</td><td>Valor proporcional del producto.</td><td>¿Cómo comparar justamente con competidores?</td></tr>
+</table>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p5" class="page">
+<div class="page-title">Para qué sirven los KPI</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Funciones de los KPI</div><div class="block-body">
+<div class="grid3">
+<div class="card"><b>Medir</b><br><br>Permiten saber cuánto se vendió, cuánto se ganó o qué producto tuvo más salida.</div>
+<div class="card"><b>Comparar</b><br><br>Ayudan a comparar marcas, productos, meses, clientes o canales.</div>
+<div class="card"><b>Detectar</b><br><br>Muestran problemas, oportunidades o cambios importantes.</div>
+<div class="card"><b>Priorizar</b><br><br>Ayudan a elegir qué atender primero.</div>
+<div class="card"><b>Decidir</b><br><br>Convierten el análisis en acciones.</div>
+<div class="card"><b>Comunicar</b><br><br>Resumen resultados para que otros entiendan rápido.</div>
+</div>
+</div></div>
+
+<div class="block"><div class="block-title">Ejemplo fácil</div><div class="block-body">
+Si en una tienda hay 40 productos, no todos pueden recibir la misma atención. Los KPI ayudan a responder:
+<br><br>
+<table>
+<tr><th>Situación</th><th>KPI útil</th><th>Decisión</th></tr>
+<tr><td>No sé qué producto comprar más.</td><td>Producto más vendido.</td><td>Aumentar inventario.</td></tr>
+<tr><td>No sé si vendo caro o barato.</td><td>Ticket promedio.</td><td>Diseñar combos adecuados.</td></tr>
+<tr><td>No sé qué marca promocionar.</td><td>Ingreso por marca.</td><td>Priorizar campaña.</td></tr>
+<tr><td>No sé si el precio compite.</td><td>Precio por ml.</td><td>Comparar con marketplace.</td></tr>
+</table>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p6" class="page">
+<div class="page-title">Cómo se construyen</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Ruta para construir un KPI</div><div class="block-body">
+<div class="process">
+<div class="step"><div class="step-number">1</div><b>Pregunta</b><br><br>¿Qué necesito saber para decidir?</div>
+<div class="step"><div class="step-number">2</div><b>Datos</b><br><br>¿Qué columnas necesito?</div>
+<div class="step"><div class="step-number">3</div><b>Cálculo</b><br><br>¿Sumo, cuento, promedio o comparo?</div>
+<div class="step"><div class="step-number">4</div><b>Lectura</b><br><br>¿El resultado es alto, bajo, estable o preocupante?</div>
+<div class="step"><div class="step-number">5</div><b>Acción</b><br><br>¿Qué recomienda el KPI?</div>
+</div>
+</div></div>
+
+<div class="block"><div class="block-title">Ejemplo construido paso a paso</div><div class="block-body">
+<table>
+<tr><th>Paso</th><th>Aplicación</th></tr>
+<tr><td>Pregunta</td><td>¿Qué marca debe priorizar la empresa?</td></tr>
+<tr><td>Datos necesarios</td><td>Marca e ingreso total.</td></tr>
+<tr><td>Cálculo</td><td>Sumar ingresos por marca en tabla dinámica.</td></tr>
+<tr><td>KPI</td><td>Marca con mayor ingreso.</td></tr>
+<tr><td>Resultado</td><td>Dior = $6.800.000.</td></tr>
+<tr><td>Interpretación</td><td>Dior aporta más valor económico que las demás marcas.</td></tr>
+<tr><td>Decisión</td><td>Fortalecer inventario, revisar margen y comparar precios externos.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Estructura correcta de un KPI</div><div class="block-body">
+<table>
+<tr><th>Parte</th><th>Qué debe decir</th><th>Ejemplo</th></tr>
+<tr><td>Nombre</td><td>Qué mide.</td><td>Ticket promedio.</td></tr>
+<tr><td>Fórmula o forma de cálculo</td><td>Cómo se obtiene.</td><td>Ingreso total / número de ventas.</td></tr>
+<tr><td>Resultado</td><td>Valor obtenido.</td><td>$377.000.</td></tr>
+<tr><td>Interpretación</td><td>Qué significa.</td><td>El cliente realiza compras de valor medio-alto.</td></tr>
+<tr><td>Decisión</td><td>Qué se recomienda.</td><td>Crear combos cercanos o superiores a ese valor.</td></tr>
+</table>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p7" class="page">
+<div class="page-title">Cómo elegirlos</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Criterios para elegir un buen KPI</div><div class="block-body">
+Un KPI se elige por utilidad, no por gusto. Debe ayudar a resolver una pregunta de negocio.
+<br><br>
+<table>
+<tr><th>Criterio</th><th>Pregunta de revisión</th><th>Ejemplo</th></tr>
+<tr><td>Relevancia</td><td>¿Sirve para una decisión importante?</td><td>Ingreso por marca sí sirve para inventario.</td></tr>
+<tr><td>Claridad</td><td>¿Se entiende fácil?</td><td>Ticket promedio es claro.</td></tr>
+<tr><td>Medición</td><td>¿Se puede calcular con los datos?</td><td>Si tengo ingreso y número de ventas.</td></tr>
+<tr><td>Comparación</td><td>¿Permite comparar?</td><td>Marcas, productos o meses.</td></tr>
+<tr><td>Acción</td><td>¿Permite recomendar algo?</td><td>Comprar más, promocionar, ajustar precio.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Qué KPI sirve según la pregunta</div><div class="block-body">
+<table>
+<tr><th>Pregunta</th><th>KPI recomendado</th><th>Por qué sirve</th></tr>
+<tr><td>¿Qué producto debo promocionar?</td><td>Producto más vendido o margen por producto.</td><td>Identifica productos con potencial comercial.</td></tr>
+<tr><td>¿Qué marca debo priorizar?</td><td>Ingreso por marca.</td><td>Permite ver cuál aporta más al negocio.</td></tr>
+<tr><td>¿El cliente compra productos premium?</td><td>Ticket promedio.</td><td>Muestra el valor promedio de compra.</td></tr>
+<tr><td>¿Estoy compitiendo bien en precio?</td><td>Precio por ml frente a competidores.</td><td>Hace comparable el precio entre tamaños distintos.</td></tr>
+<tr><td>¿Qué canal funciona mejor?</td><td>Ventas por canal.</td><td>Permite orientar esfuerzos comerciales.</td></tr>
+</table>
+<div class="warn"><b>No es buen KPI:</b> un dato que no se interpreta, no se compara o no ayuda a tomar una decisión.</div>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p8" class="page">
+<div class="page-title">Dashboard BI</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Ejemplo visual de dashboard</div><div class="block-body">
+Un dashboard es un panel visual que reúne KPI, gráficos y filtros para leer rápido el comportamiento de la empresa.
+<div class="dashboard">
+<div class="dash-header">
+<div>Dashboard comercial - Perfumería</div>
+<div>Periodo: Marzo - Abril</div>
+</div>
+<div class="kpis">
+<div class="kpi"><div class="label">Ingreso total</div><div class="value">$18.5M</div><div class="trend">Resultado general</div></div>
+<div class="kpi"><div class="label">Ticket promedio</div><div class="value">$377K</div><div class="trend">Compra media</div></div>
+<div class="kpi"><div class="label">Marca líder</div><div class="value">Dior</div><div class="trend">Mayor ingreso</div></div>
+<div class="kpi"><div class="label">Pago dominante</div><div class="value">Tarjeta</div><div class="trend">Compras altas</div></div>
+</div>
+<div class="dash-grid">
+<div class="chart-box">
+<div class="chart-title">Ingresos por marca</div>
+<div class="bar-row"><span>Dior</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><b>$6.8M</b></div>
+<div class="bar-row"><span>Chanel</span><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div><b>$5.7M</b></div>
+<div class="bar-row"><span>Carolina H.</span><div class="bar-track"><div class="bar-fill" style="width:54%"></div></div><b>$3.9M</b></div>
+<div class="bar-row"><span>YSL</span><div class="bar-track"><div class="bar-fill" style="width:32%"></div></div><b>$2.1M</b></div>
+</div>
+<div class="chart-box">
+<div class="chart-title">Forma de pago</div>
+<div class="pie"></div>
+<div class="legend">
+<div><span class="dot"></span>Tarjeta</div>
+<div><span class="dot b"></span>Efectivo</div>
+<div><span class="dot c"></span>Transferencia</div>
+<div><span class="dot d"></span>Débito</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+
+<div class="block"><div class="block-title">Lectura del dashboard</div><div class="block-body">
+<table>
+<tr><th>Elemento</th><th>Qué muestra</th><th>Cómo se interpreta</th></tr>
+<tr><td>KPI de ingreso total</td><td>Resultado general de ventas.</td><td>Permite medir tamaño del negocio.</td></tr>
+<tr><td>KPI de ticket promedio</td><td>Valor medio por compra.</td><td>Permite entender el tipo de cliente.</td></tr>
+<tr><td>Barras por marca</td><td>Comparación entre marcas.</td><td>Permite priorizar inventario o campañas.</td></tr>
+<tr><td>Gráfico de forma de pago</td><td>Preferencia de pago.</td><td>Permite mejorar experiencia de compra.</td></tr>
+</table>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p9" class="page">
+<div class="page-title">Simulación KPI</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Construye un KPI según la necesidad</div><div class="block-body">
+Selecciona una necesidad de negocio y observa qué KPI se recomienda.
+<br><br>
+<select id="objetivoKpi">
+<option value="inventario">Necesito decidir qué marca comprar más</option>
+<option value="promo">Necesito elegir un producto para promoción</option>
+<option value="pago">Necesito mejorar la experiencia de pago</option>
+<option value="premium">Necesito saber si el cliente compra productos premium</option>
+<option value="competencia">Necesito comparar con competidores</option>
+</select>
+<br>
+<button class="btn" onclick="crearKPI()">Generar ejemplo</button>
+<div id="kpiResultado" class="kpi-preview">
+<div class="kpi-name">KPI sugerido</div>
+<div class="kpi-value">---</div>
+<div class="kpi-text">Selecciona una necesidad y pulsa generar.</div>
+</div>
+</div></div>
+
+<div class="block"><div class="block-title">Aprendizaje de la simulación</div><div class="block-body">
+<div class="idea">El KPI nace de una pregunta. Si no hay pregunta, el indicador queda suelto y no ayuda a decidir.</div>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p10" class="page">
+<div class="page-title">Casos de empresas</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Análisis de casos empresariales</div><div class="block-body">
+<div class="tabs"><div class="tab-buttons">
+<button onclick="showTab('caso','caso1',this)">Netflix</button>
+<button onclick="showTab('caso','caso2',this)">Zara</button>
+<button onclick="showTab('caso','caso3',this)">Starbucks</button>
+<button onclick="showTab('caso','caso4',this)">Amazon</button>
+<button onclick="showTab('caso','caso5',this)">Perfumería</button>
+</div>
+
+<div id="caso1" class="tab-panel caso">
+<b>Situación:</b> Netflix necesita saber qué contenidos ven sus usuarios, cuándo abandonan una serie y qué géneros prefieren.<br><br>
+<b>Uso de BI:</b> analiza datos de visualización, tiempo de reproducción, búsquedas y preferencias.<br><br>
+<b>KPI posibles:</b> horas vistas, tasa de finalización, contenido más visto, abandono por episodio.<br><br>
+<b>Decisión:</b> recomendar contenidos, renovar series o invertir en géneros con mayor consumo.
+</div>
+
+<div id="caso2" class="tab-panel caso">
+<b>Situación:</b> Zara necesita responder rápido a cambios de moda y preferencias del cliente.<br><br>
+<b>Uso de BI:</b> revisa ventas por tienda, productos con alta rotación y señales del mercado.<br><br>
+<b>KPI posibles:</b> rotación de inventario, ventas por tienda, productos agotados, prendas con baja salida.<br><br>
+<b>Decisión:</b> ajustar producción, mover inventario o reforzar diseños con alta demanda.
+</div>
+
+<div id="caso3" class="tab-panel caso">
+<b>Situación:</b> Starbucks analiza qué productos se venden más según zona, horario y temporada.<br><br>
+<b>Uso de BI:</b> cruza ventas, ubicación, clima, horarios y preferencias de consumo.<br><br>
+<b>KPI posibles:</b> ticket promedio, producto más vendido por horario, ventas por tienda, frecuencia de compra.<br><br>
+<b>Decisión:</b> lanzar promociones por horario, ajustar menú o reforzar productos estacionales.
+</div>
+
+<div id="caso4" class="tab-panel caso">
+<b>Situación:</b> Amazon necesita recomendar productos y optimizar inventario.<br><br>
+<b>Uso de BI:</b> analiza compras, búsquedas, reseñas, clics y tiempos de entrega.<br><br>
+<b>KPI posibles:</b> tasa de conversión, productos más buscados, calificación promedio, tiempo de entrega.<br><br>
+<b>Decisión:</b> recomendar productos, ajustar stock y mejorar logística.
+</div>
+
+<div id="caso5" class="tab-panel caso">
+<b>Situación:</b> una perfumería identifica en Excel que Dior genera más ingresos, pero Chanel vende más unidades.<br><br>
+<b>Uso de BI:</b> diferencia entre valor económico y volumen de ventas.<br><br>
+<b>KPI posibles:</b> ingreso por marca, unidades vendidas, ticket promedio, precio por ml.<br><br>
+<b>Decisión:</b> manejar Dior como línea premium y Chanel como línea para campañas de volumen.
+</div>
+</div>
+</div></div>
+
+<div class="block"><div class="block-title">Qué se aprende de los casos</div><div class="block-body">
+<table>
+<tr><th>Empresa</th><th>Qué analiza</th><th>Tipo de decisión</th></tr>
+<tr><td>Netflix</td><td>Consumo de contenidos.</td><td>Recomendación e inversión en producción.</td></tr>
+<tr><td>Zara</td><td>Rotación y demanda de prendas.</td><td>Inventario, diseño y producción.</td></tr>
+<tr><td>Starbucks</td><td>Ventas por horario, zona y producto.</td><td>Promociones y menú.</td></tr>
+<tr><td>Amazon</td><td>Compras, búsquedas y entregas.</td><td>Stock, recomendación y logística.</td></tr>
+<tr><td>Perfumería</td><td>Marca, producto, forma de pago y precio.</td><td>Campañas, inventario y comparación competitiva.</td></tr>
+</table>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p11" class="page">
+<div class="page-title">Simulación BI</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Decidir con datos</div><div class="block-body">
+<b>Caso:</b> El dashboard muestra que Dior genera el mayor ingreso, Chanel vende más unidades y en marketplace Dior mantiene precios altos.
+<br><br>
+<button class="choice" onclick="responderDecision(1)">Comprar solo Dior porque tiene mayor ingreso.</button>
+<button class="choice" onclick="responderDecision(2)">Retirar Chanel porque Dior genera más dinero.</button>
+<button class="choice" onclick="responderDecision(3)">Usar Dior como línea premium y Chanel como producto de volumen o campaña.</button>
+<button class="choice" onclick="responderDecision(4)">Ignorar el marketplace y decidir solo con Excel.</button>
+<div id="decisionResultado" class="result">Selecciona una decisión.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Por qué esa decisión es mejor</div><div class="block-body">
+BI permite entender que dos productos pueden servir para estrategias diferentes:
+<table>
+<tr><th>Marca</th><th>Lectura BI</th><th>Decisión</th></tr>
+<tr><td>Dior</td><td>Mayor ingreso y precio alto.</td><td>Línea premium, cuidar margen e inventario.</td></tr>
+<tr><td>Chanel</td><td>Mayor volumen de unidades.</td><td>Campañas, combos o estrategias de rotación.</td></tr>
+</table>
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p12" class="page">
+<div class="page-title">Síntesis estratégica</div>
+<div class="page-body">
+<div class="block"><div class="block-title">Cómo redactarla</div><div class="block-body">
+La síntesis estratégica debe unir cinco elementos:
+<table>
+<tr><th>Elemento</th><th>Pregunta</th><th>Ejemplo</th></tr>
+<tr><td>Hallazgo interno</td><td>¿Qué mostró Excel?</td><td>Dior concentra el mayor ingreso.</td></tr>
+<tr><td>KPI</td><td>¿Qué indicador lo respalda?</td><td>Ingreso total por marca.</td></tr>
+<tr><td>Evidencia externa</td><td>¿Qué mostró VT/IC?</td><td>Marketplace confirma precios altos.</td></tr>
+<tr><td>Interpretación</td><td>¿Qué significa?</td><td>Dior tiene posicionamiento premium.</td></tr>
+<tr><td>Decisión</td><td>¿Qué se recomienda?</td><td>Fortalecer inventario y campaña premium.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Modelo de redacción</div><div class="block-body">
+<div class="note">
+En el análisis interno se observa que <b>[hallazgo]</b>. El KPI <b>[nombre del KPI]</b> muestra <b>[resultado]</b>. Al revisar el entorno mediante <b>[fuente externa]</b>, se identifica que <b>[evidencia]</b>. Esto significa que <b>[interpretación]</b>. Por tanto, se recomienda <b>[decisión]</b>.
+</div>
+</div></div>
+
+<div class="block"><div class="block-title">Ejemplo completo</div><div class="block-body">
+En el análisis interno se observa que Dior concentra el mayor ingreso total dentro de la base de ventas. El KPI ingreso total por marca muestra que Dior supera a las demás marcas en valor vendido. Al revisar el entorno mediante marketplace, se identifica que mantiene precios altos y presencia comercial. Esto significa que puede tratarse como una línea premium. Por tanto, se recomienda fortalecer inventario, revisar margen y crear una campaña dirigida a clientes con mayor ticket promedio.
+</div></div>
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function showPage(id,btn){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');
+ closeAllTabs();
+}
+function showTab(group,id,btn){
+ document.querySelectorAll('.'+group).forEach(t=>t.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');
+}
+function closeAllTabs(){
+ document.querySelectorAll('.tab-panel').forEach(t=>t.classList.remove('active'));
+ document.querySelectorAll('.tab-buttons button').forEach(b=>b.classList.remove('active'));
+}
+function crearKPI(){
+ const v=document.getElementById('objetivoKpi').value;
+ const box=document.getElementById('kpiResultado');
+ let html='';
+ if(v==='inventario'){
+  html='<div class="kpi-name">KPI: Ingreso total por marca</div><div class="kpi-value">Dior = $6.8M</div><div class="kpi-text"><b>Cómo se construye:</b> se suman los ingresos por cada marca.<br><b>Para qué sirve:</b> decidir qué marca priorizar.<br><b>Decisión:</b> fortalecer inventario y comparar precios externos.</div>';
+ }
+ if(v==='promo'){
+  html='<div class="kpi-name">KPI: Producto más vendido</div><div class="kpi-value">42 unidades</div><div class="kpi-text"><b>Cómo se construye:</b> se cuentan o suman unidades por producto.<br><b>Para qué sirve:</b> elegir productos con alta salida.<br><b>Decisión:</b> crear promoción, combo o campaña.</div>';
+ }
+ if(v==='pago'){
+  html='<div class="kpi-name">KPI: Forma de pago dominante</div><div class="kpi-value">Tarjeta crédito</div><div class="kpi-text"><b>Cómo se construye:</b> se cuentan ventas por forma de pago.<br><b>Para qué sirve:</b> entender cómo compra el cliente.<br><b>Decisión:</b> ofrecer beneficios por pago digital.</div>';
+ }
+ if(v==='premium'){
+  html='<div class="kpi-name">KPI: Ticket promedio</div><div class="kpi-value">$377K</div><div class="kpi-text"><b>Cómo se construye:</b> ingreso total dividido entre número de ventas.<br><b>Para qué sirve:</b> saber cuánto gasta en promedio un cliente.<br><b>Decisión:</b> diseñar combos premium cercanos a ese valor.</div>';
+ }
+ if(v==='competencia'){
+  html='<div class="kpi-name">KPI: Precio por ml</div><div class="kpi-value">$8.500/ml</div><div class="kpi-text"><b>Cómo se construye:</b> precio total dividido entre mililitros del producto.<br><b>Para qué sirve:</b> comparar productos de tamaños diferentes.<br><b>Decisión:</b> ajustar precio o justificar valor frente a competidores.</div>';
+ }
+ box.innerHTML=html;
+}
+function responderDecision(n){
+ const r=document.getElementById('decisionResultado');
+ if(n===3){
+  r.innerHTML='<b>Correcto.</b> La decisión usa BI porque diferencia ingreso, volumen y evidencia externa. No todos los productos cumplen la misma función estratégica.';
+  r.style.borderColor='#174b17';
+ }else{
+  r.innerHTML='<b>Revisa de nuevo.</b> Esa opción usa una sola parte del análisis. BI exige cruzar indicadores internos con evidencia externa antes de decidir.';
+  r.style.borderColor='#d64f4f';
+ }
+}
+</script>
+</body>
+</html>
