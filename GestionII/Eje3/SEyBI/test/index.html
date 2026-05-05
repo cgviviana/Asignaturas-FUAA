@@ -1,1 +1,651 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Clasificación de conceptos empresariales</title>
+
+<style>
+:root{
+    --fondo:#eef2f7;
+    --card:#ffffff;
+    --texto:#1f2937;
+    --muted:#64748b;
+    --azul:#2563eb;
+    --azul-suave:#eaf2ff;
+    --lila:#6d5bd0;
+    --lila-suave:#f1efff;
+    --verde:#16a34a;
+    --verde-suave:#e9f8ee;
+    --rojo:#dc2626;
+    --rojo-suave:#fdecec;
+    --gris:#f8fafc;
+    --linea:#e5e7eb;
+}
+*{box-sizing:border-box}
+body{
+    margin:0;
+    padding:20px;
+    background:var(--fondo);
+    font-family:Arial, Helvetica, sans-serif;
+    color:var(--texto);
+    display:flex;
+    justify-content:center;
+}
+.master-card{
+    width:1120px;
+    background:var(--card);
+    border-radius:20px;
+    padding:28px;
+    box-shadow:0 10px 30px rgba(15,23,42,.10);
+}
+h1{
+    text-align:center;
+    margin:0 0 18px 0;
+    padding-bottom:14px;
+    border-bottom:2px solid var(--linea);
+    color:#172033;
+}
+.registro{
+    max-width:620px;
+    margin:24px auto;
+    background:var(--gris);
+    padding:24px;
+    border-radius:16px;
+}
+.registro h2{margin-top:0;color:#172033}
+label{display:block;font-weight:bold;margin-top:12px}
+input{
+    width:100%;
+    padding:12px;
+    margin-top:7px;
+    border-radius:10px;
+    border:1px solid #cbd5e1;
+    font-size:16px;
+    background:white;
+}
+.btn{
+    background:var(--azul);
+    color:white;
+    border:none;
+    padding:12px 18px;
+    border-radius:10px;
+    font-weight:bold;
+    margin-top:16px;
+    cursor:pointer;
+}
+.btn:hover{filter:brightness(.96)}
+.btn:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
+}
+.layout{
+    display:grid;
+    grid-template-columns:320px 1fr;
+    gap:22px;
+}
+.menu{
+    background:var(--gris);
+    padding:18px;
+    border-radius:16px;
+}
+.menu h2{margin:0 0 12px 0;color:#172033}
+.nivel-titulo{
+    padding:10px 12px;
+    border-radius:12px;
+    background:var(--lila-suave);
+    color:#3b315f;
+    font-weight:bold;
+    margin-bottom:12px;
+}
+.reto-btn{
+    width:100%;
+    text-align:left;
+    padding:12px;
+    margin:8px 0;
+    border:1px solid var(--linea);
+    border-radius:12px;
+    background:white;
+    color:var(--texto);
+    cursor:pointer;
+    font-weight:bold;
+    font-size:15px;
+}
+.reto-btn:hover{background:#f1f5f9}
+.reto-btn.activo{background:var(--azul-suave);border-color:#93c5fd}
+.reto-btn.respondido{background:var(--verde-suave);border-color:#86efac}
+.area{
+    background:var(--gris);
+    padding:22px;
+    border-radius:16px;
+    min-height:560px;
+}
+.caso-card{
+    display:grid;
+    grid-template-columns:1fr 120px;
+    gap:16px;
+    align-items:center;
+    background:white;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:16px;
+}
+.texto{font-size:18px;line-height:1.5}
+.icono{
+    font-size:54px;
+    text-align:center;
+    background:var(--azul-suave);
+    padding:16px;
+    border-radius:14px;
+}
+.opciones{
+    background:white;
+    padding:16px;
+    border-radius:14px;
+}
+.opcion{
+    display:block;
+    width:100%;
+    padding:13px;
+    margin:8px 0;
+    border:1px solid var(--linea);
+    border-radius:10px;
+    background:white;
+    color:var(--texto);
+    font-weight:bold;
+    text-align:left;
+    cursor:pointer;
+    font-size:16px;
+}
+.opcion:hover{background:#f1f5f9}
+.feedback{
+    margin-top:14px;
+    padding:13px;
+    border-radius:12px;
+    font-weight:bold;
+    line-height:1.45;
+    display:none;
+}
+.ok{background:var(--verde-suave);color:#166534}
+.error{background:var(--rojo-suave);color:#991b1b}
+.panel{
+    margin-top:15px;
+    background:white;
+    padding:16px;
+    border-radius:14px;
+    min-height:120px;
+    line-height:1.55;
+}
+.nota{
+    background:var(--azul-suave);
+    padding:13px 15px;
+    border-radius:12px;
+}
+.scorebox{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin:12px 0 18px 0;
+}
+.score{
+    background:white;
+    padding:14px;
+    border-radius:14px;
+    border:1px solid var(--linea);
+}
+.score b{font-size:20px;color:#172033}
+.bloque-nivel{
+    margin-top:14px;
+    padding:14px;
+    background:white;
+    border-radius:14px;
+    border:1px solid var(--linea);
+}
+.final{
+    background:var(--gris);
+    padding:24px;
+    border-radius:16px;
+}
+.cert{
+    background:white;
+    border-radius:16px;
+    padding:24px;
+    text-align:center;
+    border:1px solid var(--linea);
+}
+.cert h2{color:#172033}
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:18px;
+    background:white;
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid var(--linea);
+}
+th{
+    background:#e2e8f0;
+    color:#172033;
+    text-align:left;
+    padding:12px;
+}
+td{
+    padding:11px;
+    border-bottom:1px solid var(--linea);
+    vertical-align:top;
+}
+.estado{
+    display:inline-block;
+    padding:9px 15px;
+    border-radius:30px;
+    margin-top:8px;
+    font-weight:bold;
+}
+.bien{background:var(--verde-suave);color:#166534}
+.rep{background:var(--rojo-suave);color:#991b1b}
+footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    margin-top:26px;
+    padding-top:16px;
+}
+footer strong{color:var(--azul)}
+@media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    .caso-card{grid-template-columns:1fr}
+    .scorebox{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="master-card">
+
+<h1>Clasificación de conceptos empresariales</h1>
+
+<section id="registro" class="registro">
+    <h2>Registro de ingreso</h2>
+    <label>Nombre completo</label>
+    <input id="nombre" type="text" placeholder="Escribe tu nombre completo">
+    <label>NRC</label>
+    <input id="nrc" type="text" placeholder="Escribe el NRC">
+    <button class="btn" onclick="iniciar()">Iniciar</button>
+    <div id="errorRegistro" class="feedback error"></div>
+</section>
+
+<section id="actividad" style="display:none">
+    <div class="scorebox">
+        <div class="score">Estudiante<br><b id="nombreVista">---</b></div>
+        <div class="score">NRC<br><b id="nrcVista">---</b></div>
+        <div class="score">Nivel actual<br><b id="nivelVista">Básico</b></div>
+        <div class="score">Puntaje<br><b id="puntajeVista">0.0 / 5.0</b></div>
+    </div>
+
+    <div class="layout">
+        <div class="menu">
+            <h2 id="menuNivel">Nivel básico</h2>
+            <div id="listaRetos"></div>
+            <button class="btn" id="btnAvanzar" onclick="avanzarNivel()" disabled>Continuar al siguiente nivel</button>
+            <button class="btn" id="btnFinalizar" onclick="finalizar()" style="display:none">Finalizar</button>
+        </div>
+
+        <div class="area">
+            <h2 id="titulo">Selecciona una actividad</h2>
+            <div class="caso-card">
+                <div class="texto" id="descripcion">Elige una actividad de la izquierda.</div>
+                <div class="icono" id="icono">📊</div>
+            </div>
+
+            <div id="zonaOpciones" class="opciones" style="display:none"></div>
+            <div id="feedback" class="feedback"></div>
+            <div id="panel" class="panel"></div>
+        </div>
+    </div>
+</section>
+
+<section id="final" style="display:none">
+    <div class="final">
+        <div class="cert">
+            <h2>Resultado de la actividad</h2>
+            <p><b>Nombre:</b> <span id="finalNombre"></span></p>
+            <p><b>NRC:</b> <span id="finalNrc"></span></p>
+            <p><b>Puntaje:</b> <span id="finalPuntaje"></span> / 5.0</p>
+            <p><b>Fecha y hora:</b> <span id="finalFecha"></span></p>
+            <p><span id="finalEstado" class="estado"></span></p>
+        </div>
+        <div id="tablaResumen"></div>
+        <button class="btn" onclick="reiniciarActividad()">Reiniciar actividad</button>
+    </div>
+</section>
+
+<footer>Aprendiendo con <strong>@laProfeVivy</strong></footer>
+
+</div>
+
+<script>
+let estudiante="";
+let nrc="";
+let actual=null;
+let puntaje=0;
+let nivelActual=0;
+
+const niveles=[
+{
+nombre:"Básico",
+actividades:[
+{
+t:"Concepto 1", i:"🧾",
+d:"Registro suelto de una venta, una fecha, una marca o un valor.",
+r:"Dato",
+op:["KPI","Dato","Dashboard","Información","Indicador"],
+ok:"Correcto. Es dato porque es un registro individual, sin análisis todavía.",
+bad:"Revisa: se habla de un registro suelto, no de algo organizado, medido o decidido."
+},
+{
+t:"Concepto 2", i:"📋",
+d:"Datos organizados para que ya se puedan leer, comparar o entender mejor.",
+r:"Información",
+op:["Dashboard","Indicador","Información","KPI","Dato"],
+ok:"Correcto. Es información porque los datos ya están organizados.",
+bad:"Revisa: no es un dato suelto; ya hay organización para entender mejor."
+},
+{
+t:"Concepto 3", i:"📈",
+d:"Medida que resume un resultado, como total vendido, promedio o cantidad.",
+r:"Indicador",
+op:["Información","Business Intelligence","Indicador","Dato","KPI"],
+ok:"Correcto. Es indicador porque mide un resultado.",
+bad:"Revisa: la frase habla de medir un resultado, pero no necesariamente de algo clave para decidir."
+},
+{
+t:"Concepto 4", i:"🎯",
+d:"Medida clave que muestra si algo importante del negocio va bien, regular o mal.",
+r:"KPI",
+op:["Dashboard","Indicador","KPI","Síntesis estratégica","Información"],
+ok:"Correcto. Es KPI porque es una medida clave conectada con desempeño y decisión.",
+bad:"Revisa: aquí no es cualquier medida; es una medida clave para evaluar y decidir."
+},
+{
+t:"Concepto 5", i:"🖥️",
+d:"Panel visual que reúne indicadores, gráficos y filtros para leer rápido el comportamiento de una empresa.",
+r:"Dashboard",
+op:["Dato","Business Intelligence","KPI","Dashboard","Indicador"],
+ok:"Correcto. Es dashboard porque es el panel visual.",
+bad:"Revisa: la frase habla de una pantalla o panel visual."
+}
+]
+},
+{
+nombre:"Intermedio",
+actividades:[
+{
+t:"Caso comercial 1", i:"💵",
+d:"Se registró una venta de $300.000 el lunes.",
+r:"Dato",
+op:["Información","Dato","KPI","Indicador","Dashboard"],
+ok:"Correcto. Es dato porque es un registro puntual.",
+bad:"Revisa: es una venta individual. Todavía no está organizada ni interpretada."
+},
+{
+t:"Caso comercial 2", i:"📊",
+d:"La tabla muestra ventas agrupadas por marca durante abril.",
+r:"Información",
+op:["KPI","Business Intelligence","Información","Dashboard","Dato"],
+ok:"Correcto. Es información porque los datos están agrupados por marca.",
+bad:"Revisa: ya no es un dato suelto; está organizado para leerlo mejor."
+},
+{
+t:"Caso comercial 3", i:"🧮",
+d:"Ingreso total del mes: $18.500.000.",
+r:"Indicador",
+op:["Síntesis estratégica","Indicador","Dato","KPI","Dashboard"],
+ok:"Correcto. Es indicador porque mide un resultado general.",
+bad:"Revisa: mide un resultado, pero la frase no dice que sea clave para decidir una acción."
+},
+{
+t:"Caso comercial 4", i:"🚦",
+d:"Cumplimiento de meta de ventas: 92%. Este resultado se usa para evaluar el desempeño comercial.",
+r:"KPI",
+op:["Información","Dashboard","KPI","Dato","Indicador"],
+ok:"Correcto. Es KPI porque mide una meta clave y permite evaluar desempeño.",
+bad:"Revisa: hay una medición frente a una meta clave para evaluar desempeño."
+},
+{
+t:"Caso comercial 5", i:"🌐",
+d:"La empresa cruza ventas internas con datos externos del mercado para encontrar oportunidades.",
+r:"Business Intelligence",
+op:["KPI","Dashboard","Business Intelligence","Información","Síntesis estratégica"],
+ok:"Correcto. Es Business Intelligence porque se analiza información de varias fuentes para decidir mejor.",
+bad:"Revisa: se habla de cruzar y analizar información; no es una sola medida ni una pantalla."
+}
+]
+},
+{
+nombre:"Avanzado",
+actividades:[
+{
+t:"Situación empresarial 1", i:"🧠",
+d:"Aunque Chanel vende más unidades, Dior genera mayor ingreso; por tanto, Dior debe manejarse como línea premium.",
+r:"Síntesis estratégica",
+op:["KPI","Información","Síntesis estratégica","Indicador","Business Intelligence"],
+ok:"Correcto. Es síntesis estratégica porque interpreta hallazgos y propone una decisión.",
+bad:"Revisa: hay comparación, interpretación y recomendación."
+},
+{
+t:"Situación empresarial 2", i:"🏆",
+d:"Marca con mayor ingreso: Dior.",
+r:"KPI",
+op:["Dashboard","Indicador","Business Intelligence","KPI","Dato"],
+ok:"Correcto. Es KPI porque identifica una medida clave para orientar inventario o campaña.",
+bad:"Revisa: se presenta una medida clave que puede guiar una decisión."
+},
+{
+t:"Situación empresarial 3", i:"🖥️",
+d:"Pantalla donde el gerente ve tarjetas de resultados, gráficos por marca y filtros por fecha.",
+r:"Dashboard",
+op:["Información","Dato","Dashboard","Síntesis estratégica","Indicador"],
+ok:"Correcto. Es dashboard porque describe un panel visual.",
+bad:"Revisa: el foco está en la pantalla con gráficos, tarjetas y filtros."
+},
+{
+t:"Situación empresarial 4", i:"🔍",
+d:"Se analizan patrones de compra para saber qué productos tienen mayor salida y qué clientes compran más.",
+r:"Business Intelligence",
+op:["Indicador","Dashboard","Información","Business Intelligence","KPI"],
+ok:"Correcto. Es Business Intelligence porque se analizan patrones para entender el negocio.",
+bad:"Revisa: se habla de análisis amplio de patrones, no de una medida aislada."
+},
+{
+t:"Situación empresarial 5", i:"🚀",
+d:"A partir del análisis, la empresa decide fortalecer pagos digitales con beneficios para compras premium.",
+r:"Síntesis estratégica",
+op:["Dato","KPI","Dashboard","Indicador","Síntesis estratégica"],
+ok:"Correcto. Es síntesis estratégica porque parte del análisis y termina en una decisión.",
+bad:"Revisa: la frase ya plantea una acción tomada a partir del análisis."
+}
+]
+}
+];
+
+const respuestas=[];
+
+function iniciar(){
+    estudiante=document.getElementById("nombre").value.trim();
+    nrc=document.getElementById("nrc").value.trim();
+    const error=document.getElementById("errorRegistro");
+    if(estudiante===""||nrc===""){
+        error.style.display="block";
+        error.innerHTML="Debes escribir nombre completo y NRC.";
+        return;
+    }
+    document.getElementById("registro").style.display="none";
+    document.getElementById("actividad").style.display="block";
+    document.getElementById("nombreVista").innerHTML=estudiante;
+    document.getElementById("nrcVista").innerHTML=nrc;
+    cargarNivel();
+}
+
+function getGlobalIndex(localIndex){
+    let total=0;
+    for(let i=0;i<nivelActual;i++){
+        total+=niveles[i].actividades.length;
+    }
+    return total+localIndex;
+}
+
+function cargarNivel(){
+    actual=null;
+    const nivel=niveles[nivelActual];
+    document.getElementById("nivelVista").innerHTML=nivel.nombre;
+    document.getElementById("menuNivel").innerHTML="Nivel "+nivel.nombre.toLowerCase();
+    document.getElementById("titulo").innerHTML="Selecciona una actividad";
+    document.getElementById("descripcion").innerHTML="Elige una actividad de la izquierda.";
+    document.getElementById("icono").innerHTML="📊";
+    document.getElementById("zonaOpciones").style.display="none";
+    document.getElementById("feedback").style.display="none";
+    document.getElementById("panel").innerHTML="";
+    document.getElementById("btnAvanzar").disabled=true;
+    document.getElementById("btnAvanzar").style.display=nivelActual===niveles.length-1?"none":"inline-block";
+    document.getElementById("btnFinalizar").style.display=nivelActual===niveles.length-1?"inline-block":"none";
+
+    const lista=document.getElementById("listaRetos");
+    lista.innerHTML="";
+    nivel.actividades.forEach((a,idx)=>{
+        const g=getGlobalIndex(idx);
+        const cls=respuestas[g]?"respondido":"";
+        lista.innerHTML+=`<button id="btn${idx}" class="reto-btn ${cls}" onclick="cargar(${idx},this)">${a.t}</button>`;
+    });
+}
+
+function nivelCompleto(){
+    const acts=niveles[nivelActual].actividades;
+    for(let i=0;i<acts.length;i++){
+        if(!respuestas[getGlobalIndex(i)]) return false;
+    }
+    return true;
+}
+
+function cargar(idx,btn){
+    actual=idx;
+    document.querySelectorAll(".reto-btn").forEach(b=>b.classList.remove("activo"));
+    btn.classList.add("activo");
+    const a=niveles[nivelActual].actividades[idx];
+    const g=getGlobalIndex(idx);
+
+    document.getElementById("titulo").innerHTML=a.t;
+    document.getElementById("descripcion").innerHTML=a.d;
+    document.getElementById("icono").innerHTML=a.i;
+    document.getElementById("feedback").style.display="none";
+    document.getElementById("zonaOpciones").style.display="block";
+
+    let opcionesHTML="";
+    a.op.forEach(op=>{
+        opcionesHTML+=`<button class="opcion" onclick="validar('${op}')">${op}</button>`;
+    });
+    document.getElementById("zonaOpciones").innerHTML=opcionesHTML;
+
+    if(respuestas[g]){
+        document.getElementById("panel").innerHTML=
+        `<div class="nota"><b>Este ejercicio ya fue respondido.</b><br>
+        Tu respuesta: <b>${respuestas[g].resp}</b><br>
+        ${respuestas[g].acierto ? a.ok : a.bad}</div>`;
+    }else{
+        document.getElementById("panel").innerHTML="";
+    }
+}
+
+function validar(resp){
+    if(actual===null){return}
+    const g=getGlobalIndex(actual);
+    const f=document.getElementById("feedback");
+    f.style.display="block";
+
+    if(respuestas[g]){
+        f.className="feedback error";
+        f.innerHTML="Este ejercicio ya fue respondido.";
+        return;
+    }
+
+    const a=niveles[nivelActual].actividades[actual];
+    const acierto=resp===a.r;
+
+    if(acierto){
+        puntaje+=5/15;
+        f.className="feedback ok";
+        f.innerHTML="✔ Correcto.";
+        document.getElementById("panel").innerHTML=`<div class="nota">${a.ok}</div>`;
+    }else{
+        f.className="feedback error";
+        f.innerHTML="✘ Revisa la idea.";
+        document.getElementById("panel").innerHTML=`<div class="nota">${a.bad}</div>`;
+    }
+
+    respuestas[g]={nivel:niveles[nivelActual].nombre, actividad:a.t, resp:resp, acierto:acierto, correcta:a.r};
+    document.getElementById("puntajeVista").innerHTML=Math.min(puntaje,5).toFixed(1)+" / 5.0";
+    document.getElementById("btn"+actual).classList.add("respondido");
+
+    if(nivelCompleto()){
+        document.getElementById("btnAvanzar").disabled=false;
+    }
+}
+
+function avanzarNivel(){
+    if(!nivelCompleto()) return;
+    nivelActual++;
+    cargarNivel();
+}
+
+function finalizar(){
+    const totalActividades=niveles.reduce((s,n)=>s+n.actividades.length,0);
+    if(respuestas.filter(Boolean).length<totalActividades){
+        document.getElementById("panel").innerHTML=`<div class="nota">Faltan ejercicios por responder.</div>`;
+        return;
+    }
+
+    const fecha=new Date().toLocaleString("es-CO",{
+        year:"numeric",month:"2-digit",day:"2-digit",
+        hour:"2-digit",minute:"2-digit",second:"2-digit"
+    });
+
+    document.getElementById("actividad").style.display="none";
+    document.getElementById("final").style.display="block";
+    document.getElementById("finalNombre").innerHTML=estudiante;
+    document.getElementById("finalNrc").innerHTML=nrc;
+    document.getElementById("finalPuntaje").innerHTML=Math.min(puntaje,5).toFixed(1);
+    document.getElementById("finalFecha").innerHTML=fecha;
+
+    const e=document.getElementById("finalEstado");
+    if(puntaje>=4){
+        e.className="estado bien";
+        e.innerHTML="Buen dominio de los conceptos";
+    }else{
+        e.className="estado rep";
+        e.innerHTML="Conviene repasar la diferencia entre los conceptos";
+    }
+
+    let tabla="<table><tr><th>Nivel</th><th>Actividad</th><th>Respuesta</th><th>Correcta</th><th>Resultado</th></tr>";
+    respuestas.forEach(r=>{
+        tabla+=`<tr><td>${r.nivel}</td><td>${r.actividad}</td><td>${r.resp}</td><td>${r.correcta}</td><td>${r.acierto?"Correcto":"Incorrecto"}</td></tr>`;
+    });
+    tabla+="</table>";
+    document.getElementById("tablaResumen").innerHTML=tabla;
+}
+function reiniciarActividad(){
+    actual=null;
+    puntaje=0;
+    nivelActual=0;
+    respuestas.length=0;
+
+    document.getElementById("final").style.display="none";
+    document.getElementById("actividad").style.display="block";
+    document.getElementById("puntajeVista").innerHTML="0.0 / 5.0";
+    document.getElementById("nivelVista").innerHTML="Básico";
+    document.getElementById("feedback").style.display="none";
+    document.getElementById("panel").innerHTML="";
+    cargarNivel();
+}
+
+</script>
+</body>
+</html>
