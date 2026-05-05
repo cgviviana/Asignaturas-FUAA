@@ -1,0 +1,546 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>¿Cuál uso? - Detector</title>
+
+<style>
+    body {
+        font-family: sans-serif;
+        background: #eef2f3;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .master-card {
+        background: white;
+        width: 1000px;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        text-align: center;
+        border-bottom: 2px solid #6c5ce7;
+        padding-bottom: 10px;
+    }
+
+    .contenedor {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .decision-box {
+        background: #f9f9f9;
+        border: 2px dashed #6c5ce7;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .btn-choice {
+        background: #6c5ce7;
+        color: white;
+        border: none;
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        font-size: 15px;
+    }
+
+    .btn-choice:hover {
+        background: #a29bfe;
+    }
+
+    #resultado {
+        padding: 20px;
+        border-radius: 10px;
+        display: none;
+        min-height: 430px;
+    }
+
+    .si { background: #d1fae5; border: 2px solid #10b981; }
+    .switch { background: #ede9fe; border: 2px solid #8b5cf6; }
+    .para { background: #dbeafe; border: 2px solid #3b82f6; }
+    .mientras { background: #fef3c7; border: 2px solid #f59e0b; }
+    .repetir { background: #ffe4e6; border: 2px solid #fb7185; }
+
+    .visual {
+        display: grid;
+        grid-template-columns: 1fr 160px;
+        gap: 15px;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .ejemplo {
+        background: rgba(255,255,255,0.6);
+        padding: 18px;
+        border-radius: 12px;
+        font-size: 17px;
+        line-height: 1.5;
+    }
+
+    .imagen {
+        background: rgba(255,255,255,0.6);
+        padding: 20px;
+        border-radius: 12px;
+        font-size: 80px;
+        text-align: center;
+    }
+
+    .botones {
+        margin-top: 18px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-panel {
+        border: none;
+        padding: 11px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+    }
+
+    .btn-explicacion { background: #16a34a; }
+    .btn-ejecucion { background: #2563eb; }
+    .btn-codigo { background: #7c3aed; }
+    .btn-ejecutar { background: #f97316; margin-top: 10px; }
+
+    #panel {
+        margin-top: 15px;
+        background: rgba(255,255,255,0.7);
+        padding: 15px;
+        border-radius: 10px;
+        font-family: Consolas, monospace;
+        white-space: pre-line;
+        line-height: 1.5;
+        overflow-x: auto;
+        min-height: 110px;
+    }
+
+    input, select {
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #999;
+        margin: 6px 0;
+        width: 180px;
+    }
+
+    .salida {
+        color: #064e3b;
+        font-weight: bold;
+        margin-top: 12px;
+        border-left: 4px solid #10b981;
+        padding-left: 10px;
+        min-height: 24px;
+    }
+
+    .reservada {
+        color: #2563eb;
+        font-weight: bold;
+    }
+
+
+    .footer-vivy {
+        margin-top: 28px;
+        padding-top: 16px;
+        border-top: 1px solid #cbd5e1;
+        text-align: center;
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.2px;
+    }
+
+    @media (max-width: 800px) {
+        .contenedor {
+            grid-template-columns: 1fr;
+        }
+
+        .visual {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="master-card">
+
+    <h1>🤔 ¿Qué instrucción debo usar?</h1>
+
+    <div class="contenedor">
+
+        <div class="decision-box">
+
+            <button class="btn-choice" onclick="mostrar('si')">
+                Tomar una decisión: sí o no
+            </button>
+
+            <button class="btn-choice" onclick="mostrar('switch')">
+                Elegir entre varias opciones de un menú
+            </button>
+
+            <button class="btn-choice" onclick="mostrar('para')">
+                Repetir una cantidad exacta de veces
+            </button>
+
+            <button class="btn-choice" onclick="mostrar('mientras')">
+                Repetir hasta que algo cambie
+            </button>
+
+            <button class="btn-choice" onclick="mostrar('repetir')">
+                Hacer algo al menos una vez
+            </button>
+
+        </div>
+
+        <div id="resultado">
+            <h2 id="res-titulo"></h2>
+
+            <div class="visual">
+                <div class="ejemplo" id="res-ejemplo"></div>
+                <div class="imagen" id="res-imagen"></div>
+            </div>
+
+            <div class="botones">
+                <button class="btn-panel btn-explicacion" onclick="verExplicacion()">Explicación</button>
+                <button class="btn-panel btn-ejecucion" onclick="verEjecucion()">Ejecución</button>
+                <button class="btn-panel btn-codigo" onclick="verCodigo()">Código completo</button>
+            </div>
+
+            <div id="panel"></div>
+        </div>
+
+    </div>
+
+
+    <footer class="footer-vivy">
+        Aprendiendo con @laProfeVivy
+    </footer>
+
+</div>
+
+<script>
+let tipoActual = "";
+let explicacionActual = "";
+let codigoActual = "";
+
+function mostrar(tipo) {
+    const res = document.getElementById('resultado');
+    const titulo = document.getElementById('res-titulo');
+    const ejemplo = document.getElementById('res-ejemplo');
+    const imagen = document.getElementById('res-imagen');
+    const panel = document.getElementById('panel');
+
+    tipoActual = tipo;
+    res.style.display = 'block';
+    res.className = tipo;
+    panel.innerHTML = "";
+
+    if (tipo === 'si') {
+        titulo.innerHTML = "🚦 Usa SI";
+        ejemplo.innerHTML = "Ejemplo: Si llueve, llevo paraguas. Si no llueve, no lo llevo.";
+        imagen.innerHTML = "☔";
+
+        explicacionActual =
+`<span class="reservada">SI</span> sirve para decidir entre dos caminos.
+
+Estructura:
+<span class="reservada">Si</span> condición <span class="reservada">Entonces</span>
+    Acción si se cumple
+<span class="reservada">SiNo</span>
+    Acción si no se cumple
+<span class="reservada">FinSi</span>`;
+
+        codigoActual =
+`<span class="reservada">Algoritmo</span> LlevarParaguas
+    <span class="reservada">Definir</span> llueve <span class="reservada">Como</span> Cadena
+
+    <span class="reservada">Escribir</span> "¿Está lloviendo? si/no"
+    <span class="reservada">Leer</span> llueve
+
+    <span class="reservada">Si</span> llueve = "si" <span class="reservada">Entonces</span>
+        <span class="reservada">Escribir</span> "Llevar paraguas"
+    <span class="reservada">Sino</span>
+        <span class="reservada">Escribir</span> "No llevar paraguas"
+    <span class="reservada">FinSi</span>
+<span class="reservada">FinAlgoritmo</span>`;
+    }
+
+    else if (tipo === 'switch') {
+        titulo.innerHTML = "🍨 Usa SEGÚN";
+        ejemplo.innerHTML = "Ejemplo: En una heladería hay varias opciones. Puedes elegir helado, pastel o gelatina.";
+        imagen.innerHTML = "🍦";
+
+        explicacionActual =
+`<span class="reservada">SEGÚN</span> sirve para elegir una opción de un menú.
+
+Estructura:
+<span class="reservada">Segun</span> opción <span class="reservada">Hacer</span>
+    1:
+        Acción de la opción 1
+    2:
+        Acción de la opción 2
+    3:
+        Acción de la opción 3
+    <span class="reservada">De Otro Modo</span>:
+        Acción si la opción no existe
+<span class="reservada">FinSegun</span>`;
+
+        codigoActual =
+`<span class="reservada">Algoritmo</span> MenuPostres
+    <span class="reservada">Definir</span> opcion <span class="reservada">Como</span> Entero
+
+    <span class="reservada">Escribir</span> "Elige un postre:"
+    <span class="reservada">Escribir</span> "1. Helado"
+    <span class="reservada">Escribir</span> "2. Pastel"
+    <span class="reservada">Escribir</span> "3. Gelatina"
+    <span class="reservada">Leer</span> opcion
+
+    <span class="reservada">Segun</span> opcion <span class="reservada">Hacer</span>
+        1:
+            <span class="reservada">Escribir</span> "Elegiste helado"
+        2:
+            <span class="reservada">Escribir</span> "Elegiste pastel"
+        3:
+            <span class="reservada">Escribir</span> "Elegiste gelatina"
+        <span class="reservada">De Otro Modo</span>:
+            <span class="reservada">Escribir</span> "Opción no válida"
+    <span class="reservada">FinSegun</span>
+<span class="reservada">FinAlgoritmo</span>`;
+    }
+
+    else if (tipo === 'para') {
+        titulo.innerHTML = "🔢 Usa PARA";
+        ejemplo.innerHTML = "Ejemplo: Dar 5 saltos. Ya sabes desde el inicio cuántas veces vas a repetir.";
+        imagen.innerHTML = "🤸";
+
+        explicacionActual =
+`<span class="reservada">PARA</span> sirve cuando sabes cuántas veces vas a repetir.
+
+Estructura:
+<span class="reservada">Para</span> variable <- inicio <span class="reservada">Hasta</span> final <span class="reservada">Hacer</span>
+    Acción que se repite
+<span class="reservada">FinPara</span>`;
+
+        codigoActual =
+`<span class="reservada">Algoritmo</span> CincoSaltos
+    <span class="reservada">Definir</span> i <span class="reservada">Como</span> Entero
+
+    <span class="reservada">Para</span> i <- 1 <span class="reservada">Hasta</span> 5 <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Salto ", i
+    <span class="reservada">FinPara</span>
+<span class="reservada">FinAlgoritmo</span>`;
+    }
+
+    else if (tipo === 'mientras') {
+        titulo.innerHTML = "🔄 Usa MIENTRAS";
+        ejemplo.innerHTML = "Ejemplo: Mientras el robot tenga batería, sigue limpiando.";
+        imagen.innerHTML = "🤖";
+
+        explicacionActual =
+`<span class="reservada">MIENTRAS</span> sirve cuando no sabes cuántas veces se repetirá.
+
+Primero revisa la condición.
+Si la condición se cumple, repite.
+Cuando la condición deja de cumplirse, se detiene.
+
+Estructura:
+<span class="reservada">Mientras</span> condición <span class="reservada">Hacer</span>
+    Acción que se repite
+<span class="reservada">FinMientras</span>`;
+
+        codigoActual =
+`<span class="reservada">Algoritmo</span> RobotLimpieza
+    <span class="reservada">Definir</span> bateria <span class="reservada">Como</span> Entero
+
+    bateria <- 100
+
+    <span class="reservada">Mientras</span> bateria > 0 <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Robot limpiando. Batería: ", bateria
+        bateria <- bateria - 20
+    <span class="reservada">FinMientras</span>
+
+    <span class="reservada">Escribir</span> "Batería agotada. El robot se detiene."
+<span class="reservada">FinAlgoritmo</span>`;
+    }
+
+    else if (tipo === 'repetir') {
+        titulo.innerHTML = "🔁 Usa REPETIR";
+        ejemplo.innerHTML = "Ejemplo: Escribes una clave al menos una vez. Si está mal, vuelves a intentarlo.";
+        imagen.innerHTML = "🔑";
+
+        explicacionActual =
+`<span class="reservada">REPETIR</span> sirve cuando primero haces la acción y después revisas.
+
+Estructura:
+<span class="reservada">Repetir</span>
+    Acción que se realiza
+<span class="reservada">Hasta Que</span> condición`;
+
+        codigoActual =
+`<span class="reservada">Algoritmo</span> ValidarClave
+    <span class="reservada">Definir</span> clave <span class="reservada">Como</span> Cadena
+
+    <span class="reservada">Repetir</span>
+        <span class="reservada">Escribir</span> "Ingrese la clave:"
+        <span class="reservada">Leer</span> clave
+
+        <span class="reservada">Si</span> clave <> "1234" <span class="reservada">Entonces</span>
+            <span class="reservada">Escribir</span> "Clave incorrecta"
+        <span class="reservada">FinSi</span>
+    <span class="reservada">Hasta Que</span> clave = "1234"
+
+    <span class="reservada">Escribir</span> "Clave correcta"
+<span class="reservada">FinAlgoritmo</span>`;
+    }
+}
+
+function verExplicacion() {
+    document.getElementById("panel").innerHTML = explicacionActual;
+}
+
+function verCodigo() {
+    document.getElementById("panel").innerHTML = codigoActual;
+}
+
+function verEjecucion() {
+    const panel = document.getElementById("panel");
+
+    if (tipoActual === "si") {
+        panel.innerHTML =
+`¿Está lloviendo? (si/no):
+<input type="text" id="inputLlueve" placeholder="escribe si o no">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarSi()">¡Ejecutar decisión!</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (tipoActual === "switch") {
+        panel.innerHTML =
+`Elige un postre:
+<select id="opcionPostre">
+    <option value="1">1. Helado</option>
+    <option value="2">2. Pastel</option>
+    <option value="3">3. Gelatina</option>
+    <option value="4">4. Otro número</option>
+</select>
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarSwitch()">¡Elegir postre!</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (tipoActual === "para") {
+        panel.innerHTML =
+`Este ciclo dará 5 saltos.
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarPara()">¡Dar 5 saltos!</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (tipoActual === "mientras") {
+        panel.innerHTML =
+`El robot limpiará mientras tenga batería.
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarMientras()">¡Encender robot!</button>
+<div id="salida" class="salida">Presiona el botón para iniciar...</div>`;
+    }
+
+    else if (tipoActual === "repetir") {
+        panel.innerHTML =
+`Escribe la clave:
+<input type="text" id="inputClave" placeholder="intenta con 1111 o 1234">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarRepetir()">¡Probar clave!</button>
+<div id="salida" class="salida"></div>`;
+    }
+}
+
+function ejecutarSi() {
+    const respuesta = document.getElementById("inputLlueve").value.toLowerCase();
+    const salida = document.getElementById("salida");
+
+    if (respuesta === "si") {
+        salida.innerHTML = "> Llevar paraguas ☔";
+    } else if (respuesta === "no") {
+        salida.innerHTML = "> No llevar paraguas ☀️";
+    } else {
+        salida.innerHTML = "> Error: escribe si o no";
+    }
+}
+
+function ejecutarSwitch() {
+    const opcion = document.getElementById("opcionPostre").value;
+    const salida = document.getElementById("salida");
+
+    if (opcion === "1") {
+        salida.innerHTML = "> Elegiste helado 🍦";
+    } else if (opcion === "2") {
+        salida.innerHTML = "> Elegiste pastel 🍰";
+    } else if (opcion === "3") {
+        salida.innerHTML = "> Elegiste gelatina 🍮";
+    } else {
+        salida.innerHTML = "> Opción no válida";
+    }
+}
+
+function ejecutarPara() {
+    const salida = document.getElementById("salida");
+    salida.innerHTML = "";
+    let i = 1;
+
+    const intervalo = setInterval(() => {
+        salida.innerHTML += "> Salto número " + i + " 👟<br>";
+        i++;
+
+        if (i > 5) {
+            salida.innerHTML += "> El ciclo terminó.";
+            clearInterval(intervalo);
+        }
+    }, 500);
+}
+
+function ejecutarMientras() {
+    const salida = document.getElementById("salida");
+    let bateria = 100;
+    salida.innerHTML = "";
+
+    const intervalo = setInterval(() => {
+        salida.innerHTML += "> Robot limpiando... 🧹 Batería: " + bateria + "%<br>";
+        bateria -= 20;
+
+        if (bateria < 0) {
+            salida.innerHTML += "> ¡Batería agotada! El ciclo terminó.";
+            clearInterval(intervalo);
+        }
+    }, 600);
+}
+
+function ejecutarRepetir() {
+    const clave = document.getElementById("inputClave").value;
+    const salida = document.getElementById("salida");
+
+    if (clave === "1234") {
+        salida.innerHTML = "> Clave correcta 🔑";
+    } else {
+        salida.innerHTML = "> Clave incorrecta. Intenta otra vez.";
+    }
+}
+</script>
+
+</body>
+</html>
