@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sistemas de Información</title>
+
+<style>
+:root{
+  --bg:#f7f8fb;
+  --card:#ffffff;
+  --ink:#050505;
+  --muted:#505766;
+  --line:#dfe5ef;
+  --cyan:#42d9ff;
+  --violet:#6d35ff;
+  --green:#12b981;
+  --orange:#f5b82e;
+  --red:#ef4444;
+  --shadow:0 26px 70px rgba(17,17,17,.10);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 10% 12%,rgba(109,53,255,.13),transparent 28%),
+    radial-gradient(circle at 88% 20%,rgba(66,217,255,.18),transparent 27%),
+    linear-gradient(135deg,#ffffff,#f3f6fb);
+  overflow:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(66,217,255,.18) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(66,217,255,.18) 1px,transparent 1px);
+  background-size:42px 42px;
+  pointer-events:none;
+  z-index:-2;
+}
+
+header{
+  position:fixed;
+  top:0;left:0;right:0;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 26px;
+  background:rgba(255,255,255,.78);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(16px);
+  z-index:20;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:900;
+  letter-spacing:.2px;
+  text-transform:uppercase;
+}
+
+.logo{
+  width:38px;
+  height:38px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#050505,var(--violet));
+  display:grid;
+  place-items:center;
+  box-shadow:0 10px 24px rgba(66,217,255,.40);
+}
+
+.logo svg{width:23px;height:23px}
+.counter{font-weight:800;color:#111}
+
+.deck{
+  width:100vw;
+  height:100vh;
+  display:flex;
+  transition:transform .75s cubic-bezier(.22,1,.36,1);
+}
+
+.deck::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,rgba(66,217,255,.28),transparent 35%);
+  opacity:0;
+  z-index:18;
+}
+
+.deck.changing::after{animation:slideGlow .65s ease both}
+
+@keyframes slideGlow{
+  0%{opacity:0;filter:blur(18px)}
+  35%{opacity:1;filter:blur(4px)}
+  100%{opacity:0;filter:blur(18px)}
+}
+
+.slide{
+  min-width:100vw;
+  height:100vh;
+  padding:94px clamp(22px,4vw,64px) 70px;
+  display:grid;
+  place-items:center;
+  position:relative;
+}
+
+.inner{
+  width:min(1080px,100%);
+  display:grid;
+  gap:24px;
+  animation:fadeUp .8s ease both;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(22px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1.02fr .98fr;
+  gap:24px;
+  align-items:stretch;
+}
+
+.kicker{
+  display:inline-flex;
+  width:max-content;
+  padding:8px 13px;
+  border-radius:99px;
+  background:#f7f3ff;
+  color:var(--violet);
+  border:1px solid rgba(109,53,255,.22);
+  font-size:.78rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+}
+
+h1,h2,h3,p{margin:0}
+
+h1{
+  font-size:clamp(2rem,4.8vw,4.2rem);
+  line-height:.95;
+  letter-spacing:-.06em;
+}
+
+h2{
+  font-size:clamp(1.7rem,3.2vw,3rem);
+  line-height:1;
+  letter-spacing:-.05em;
+}
+
+h3{
+  font-size:1.08rem;
+  letter-spacing:-.02em;
+}
+
+.lead{
+  font-size:clamp(.95rem,1.05vw,1.08rem);
+  line-height:1.72;
+  color:#425066;
+  max-width:920px;
+}
+
+.panel{
+  background:rgba(255,255,255,.92);
+  border:1px solid var(--line);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  overflow:hidden;
+}
+
+.story{
+  padding:22px;
+  display:grid;
+  gap:17px;
+}
+
+.story p{
+  color:#46556c;
+  line-height:1.62;
+}
+
+.facts{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.fact{
+  background:#f8fbff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+}
+
+.fact span{
+  display:block;
+  font-size:.72rem;
+  text-transform:uppercase;
+  font-weight:900;
+  color:var(--violet);
+  letter-spacing:.35px;
+  margin-bottom:5px;
+}
+
+.impact{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.pill{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+}
+
+.pill b{display:block;margin-bottom:5px}
+.pill small{color:var(--muted);line-height:1.45}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 14px 34px rgba(15,23,42,.06);
+  position:relative;
+  overflow:hidden;
+  transition:.25s;
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:4px;
+  background:linear-gradient(90deg,var(--violet),var(--cyan));
+}
+
+.card:hover{transform:translateY(-6px)}
+.card p{color:var(--muted);line-height:1.48;font-size:.94rem;margin-top:7px}
+
+.visual{
+  min-height:360px;
+  display:grid;
+  place-items:center;
+  padding:22px;
+  position:relative;
+}
+
+.visual::before{
+  content:"";
+  position:absolute;
+  inset:26px;
+  border-radius:24px;
+  background:radial-gradient(circle at 50% 42%,rgba(66,217,255,.18),transparent 45%);
+  opacity:.75;
+  transition:transform .35s ease;
+  pointer-events:none;
+}
+
+.visual::after{
+  content:"";
+  position:absolute;
+  inset:18px;
+  border:1px dashed rgba(66,217,255,.40);
+  border-radius:26px;
+  pointer-events:none;
+}
+
+.visual:hover::before{transform:scale(1.06)}
+.visual svg{width:min(460px,100%);height:auto;transition:transform .18s ease;z-index:2}
+
+.orbit{animation:orbit 8s linear infinite;transform-origin:center}
+.pulse{animation:pulse 2.3s ease-in-out infinite}
+.float{animation:float 4s ease-in-out infinite}
+.gear{animation:spin 9s linear infinite;transform-origin:center}
+.dash{stroke-dasharray:8 8;animation:dash 12s linear infinite}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{opacity:.42;transform:scale(.96)}}
+@keyframes float{50%{transform:translateY(-10px)}}
+@keyframes dash{to{stroke-dashoffset:-160}}
+@keyframes orbit{to{transform:rotate(360deg)}}
+
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+th,td{
+  padding:14px 16px;
+  text-align:left;
+  vertical-align:top;
+  border-bottom:1px solid var(--line);
+  line-height:1.42;
+}
+
+th{
+  background:linear-gradient(135deg,#f1f6ff,#eaf9ff);
+  color:#17345f;
+  font-size:.82rem;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+}
+
+tr:last-child td{border-bottom:0}
+
+.inputbox{
+  width:100%;
+  min-height:54px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  font-family:inherit;
+  resize:vertical;
+  outline:none;
+}
+
+.inputbox:focus{
+  border-color:var(--violet);
+  box-shadow:0 0 0 4px rgba(109,53,255,.12);
+}
+
+.check{
+  display:grid;
+  gap:10px;
+  font-size:1rem;
+  color:#3d4b63;
+}
+
+.feedback{
+  padding:14px;
+  border-radius:16px;
+  background:#f8fbff;
+  border:1px solid var(--line);
+  color:#334155;
+  font-weight:700;
+}
+
+.action{
+  background:linear-gradient(135deg,#111,var(--violet));
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  padding:12px 16px;
+  font-weight:900;
+  cursor:pointer;
+  width:max-content;
+}
+
+.action:hover{filter:brightness(1.08)}
+
+.controls{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  display:flex;
+  gap:10px;
+  z-index:25;
+}
+
+.btn{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  font-size:1.3rem;
+  font-weight:900;
+  box-shadow:0 12px 28px rgba(15,23,42,.09);
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn:hover{transform:translateY(-3px);color:var(--violet)}
+
+.dots{
+  position:fixed;
+  left:50%;
+  bottom:30px;
+  transform:translateX(-50%);
+  display:flex;
+  gap:7px;
+  z-index:25;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:99px;
+  background:#b7c5d8;
+  transition:.25s;
+  border:none;
+  cursor:pointer;
+}
+
+.dot.active{width:28px;background:var(--violet)}
+
+footer{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  text-align:center;
+  padding:9px 16px;
+  background:rgba(255,255,255,.74);
+  border-top:1px solid var(--line);
+  backdrop-filter:blur(16px);
+  color:#46556c;
+  font-weight:800;
+  z-index:20;
+}
+
+@media(max-width:900px){
+  body{overflow:auto}
+  .deck{display:block;height:auto;transform:none!important}
+  .slide{height:auto;min-height:100vh}
+  .grid2,.cards,.impact,.facts{grid-template-columns:1fr}
+  .controls,.dots,.counter{display:none}
+  header{height:auto;min-height:62px}
+  .visual{min-height:300px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M5 13h5l-2 7 11-12h-6l2-5L5 13Z" fill="white"/>
+      </svg>
+    </div>
+    <span>Sistemas de Información</span>
+  </div>
+  <div class="counter"><span id="now">1</span>/<span id="total">5</span></div>
+</header>
+
+<main class="deck" id="deck">
+
+<!-- SLIDE 1 -->
+<section class="slide">
+  <div class="inner grid2">
+    <div class="story panel">
+      <span class="kicker">Concepto central</span>
+      <h2>¿Qué es un sistema de información?</h2>
+      <p>
+        Es un conjunto organizado de personas, datos, procesos y tecnología que permite registrar, procesar, consultar y usar información para tomar decisiones.
+      </p>
+      <p>
+        No es solo una aplicación: también incluye quién registra los datos, cómo se organizan, qué información se produce y para qué se utiliza.
+      </p>
+      <div class="facts">
+        <div class="fact"><span>Registra</span><strong>Captura datos del entorno.</strong></div>
+        <div class="fact"><span>Organiza</span><strong>Ordena la información.</strong></div>
+        <div class="fact"><span>Procesa</span><strong>Transforma datos en resultados.</strong></div>
+        <div class="fact"><span>Decide</span><strong>Apoya acciones concretas.</strong></div>
+      </div>
+    </div>
+
+    <div class="panel visual">
+      <svg viewBox="0 0 520 420">
+        <rect x="90" y="90" width="340" height="240" rx="28" fill="#fff" stroke="#6d35ff" stroke-width="5"/>
+        <path d="M145 150h230M145 190h160M145 230h210" stroke="#42d9ff" stroke-width="9" stroke-linecap="round"/>
+        <circle class="pulse" cx="385" cy="275" r="42" fill="#ecfdf5" stroke="#12b981" stroke-width="5"/>
+        <path d="M365 275l16 16 34-42" fill="none" stroke="#12b981" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2 -->
+<section class="slide">
+  <div class="inner grid2">
+    <div class="story panel">
+      <span class="kicker">Elementos principales</span>
+      <h2>¿Qué lo compone?</h2>
+      <p>
+        Un sistema de información funciona cuando sus elementos trabajan juntos. Si falta uno, la información se pierde, se desordena o no sirve para decidir.
+      </p>
+      <div class="facts">
+        <div class="fact"><span>Datos</span><strong>Información que se registra.</strong></div>
+        <div class="fact"><span>Procesos</span><strong>Acciones para organizar y analizar.</strong></div>
+        <div class="fact"><span>Personas</span><strong>Usuarios que registran, consultan o deciden.</strong></div>
+        <div class="fact"><span>Tecnología</span><strong>Herramientas digitales o físicas de apoyo.</strong></div>
+      </div>
+    </div>
+
+    <div class="panel visual">
+      <svg viewBox="0 0 520 420">
+        <circle cx="260" cy="210" r="145" fill="none" stroke="#cfe0ff" stroke-width="16"/>
+        <circle class="orbit" cx="260" cy="210" r="120" fill="none" stroke="#6d35ff" stroke-width="4" stroke-dasharray="16 12"/>
+        <rect x="195" y="150" width="130" height="115" rx="22" fill="#fff" stroke="#42d9ff" stroke-width="5"/>
+        <circle cx="150" cy="125" r="32" fill="#fff" stroke="#6d35ff" stroke-width="5"/>
+        <circle cx="370" cy="125" r="32" fill="#fff" stroke="#12b981" stroke-width="5"/>
+        <circle cx="150" cy="300" r="32" fill="#fff" stroke="#f5b82e" stroke-width="5"/>
+        <circle cx="370" cy="300" r="32" fill="#fff" stroke="#42d9ff" stroke-width="5"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3 -->
+<section class="slide">
+  <div class="inner grid2">
+    <div class="story panel">
+      <span class="kicker">Necesidad</span>
+      <h2>¿Por qué se necesitan?</h2>
+      <p>
+        Se necesitan cuando hay datos dispersos, procesos lentos, errores repetidos o decisiones que se toman sin información clara.
+      </p>
+      <div class="facts">
+        <div class="fact"><span>Orden</span><strong>Evitan información perdida o duplicada.</strong></div>
+        <div class="fact"><span>Control</span><strong>Permiten hacer seguimiento.</strong></div>
+        <div class="fact"><span>Evidencia</span><strong>Apoyan decisiones con datos.</strong></div>
+        <div class="fact"><span>Tiempo</span><strong>Reducen tareas manuales repetitivas.</strong></div>
+      </div>
+    </div>
+
+    <div class="panel visual">
+      <svg viewBox="0 0 520 420">
+        <rect x="70" y="95" width="120" height="95" rx="22" fill="#fff" stroke="#6d35ff" stroke-width="5"/>
+        <rect x="200" y="160" width="120" height="95" rx="22" fill="#fff" stroke="#42d9ff" stroke-width="5"/>
+        <rect x="330" y="230" width="120" height="95" rx="22" fill="#fff" stroke="#12b981" stroke-width="5"/>
+        <path d="M190 145c45 8 55 22 65 48M320 210c40 8 55 25 66 55" fill="none" stroke="#42d9ff" stroke-width="8" stroke-linecap="round"/>
+        <path d="M102 135h55M230 200h60M360 270h60" stroke="#cfe0ff" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4 -->
+<section class="slide">
+  <div class="inner grid2">
+    <div class="story panel">
+      <span class="kicker">Entorno</span>
+      <h2>¿Dónde los encontramos?</h2>
+      <p>
+        Están presentes en espacios cotidianos donde se registran datos para prestar un servicio, controlar un proceso o tomar decisiones.
+      </p>
+      <div class="impact">
+        <div class="pill"><b>Universidad</b><small>Notas, horarios, asistencia y matrícula.</small></div>
+        <div class="pill"><b>Hospital</b><small>Citas, historias clínicas y medicamentos.</small></div>
+        <div class="pill"><b>Empresa</b><small>Ventas, inventarios, clientes y pagos.</small></div>
+      </div>
+    </div>
+
+    <div class="panel visual">
+      <svg viewBox="0 0 520 420">
+        <rect x="70" y="90" width="380" height="240" rx="28" fill="#fff" stroke="#6d35ff" stroke-width="5"/>
+        <circle cx="150" cy="160" r="30" fill="#eefcff" stroke="#42d9ff" stroke-width="5"/>
+        <circle cx="260" cy="160" r="30" fill="#f5f3ff" stroke="#6d35ff" stroke-width="5"/>
+        <circle cx="370" cy="160" r="30" fill="#ecfdf5" stroke="#12b981" stroke-width="5"/>
+        <path d="M180 160h50M290 160h50" stroke="#42d9ff" stroke-width="8" stroke-linecap="round"/>
+        <path d="M120 250h250" stroke="#42d9ff" stroke-width="10" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5 -->
+<section class="slide">
+  <div class="inner grid2">
+    <div class="story panel">
+      <span class="kicker">Ejemplos reales</span>
+      <h2>Sistemas que usamos a diario</h2>
+      <p>
+        Estos ejemplos permiten visualizar cómo un sistema registra datos, los procesa y entrega información útil al usuario.
+      </p>
+      <div class="facts">
+        <div class="fact">
+          <span>Google Classroom</span>
+          <strong><a href="https://classroom.google.com" target="_blank">classroom.google.com</a></strong>
+          <p>Registra tareas, estudiantes y calificaciones. Procesa entregas y genera información académica útil para docentes y estudiantes.</p>
+        </div>
+
+        <div class="fact">
+          <span>SIIGO</span>
+          <strong><a href="https://www.siigo.com" target="_blank">siigo.com</a></strong>
+          <p>Registra ventas, pagos y facturas. Procesa información contable y genera reportes financieros para empresas.</p>
+        </div>
+
+        <div class="fact">
+          <span>Rappi</span>
+          <strong><a href="https://www.rappi.com.co" target="_blank">rappi.com.co</a></strong>
+          <p>Registra pedidos y ubicaciones. Procesa tiempos y estados de entrega para mostrar seguimiento en tiempo real.</p>
+        </div>
+
+        <div class="fact">
+          <span>Nequi</span>
+          <strong><a href="https://www.nequi.com.co" target="_blank">nequi.com.co</a></strong>
+          <p>Registra movimientos financieros. Procesa transferencias y muestra saldos, pagos y transacciones al usuario.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel visual">
+      <svg viewBox="0 0 520 420">
+        <rect x="110" y="80" width="300" height="260" rx="28" fill="#fff" stroke="#6d35ff" stroke-width="5"/>
+        <rect x="145" y="125" width="90" height="70" rx="18" fill="#f8fbff" stroke="#42d9ff" stroke-width="5"/>
+        <rect x="285" y="125" width="90" height="70" rx="18" fill="#f8fbff" stroke="#12b981" stroke-width="5"/>
+        <rect x="145" y="230" width="90" height="70" rx="18" fill="#f8fbff" stroke="#f5b82e" stroke-width="5"/>
+        <rect x="285" y="230" width="90" height="70" rx="18" fill="#f8fbff" stroke="#6d35ff" stroke-width="5"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6 -->
+<section class="slide">
+  <div class="inner grid2">
+    <div class="story panel">
+      <span class="kicker">Reconocimiento</span>
+      <h2>¿Cómo reconocerlos?</h2>
+      <p>
+        Un sistema de información se reconoce porque existe una entrada de datos, un proceso de organización y una salida que permite consultar, reportar o decidir.
+      </p>
+      <div class="facts">
+        <div class="fact"><span>Entrada</span><strong>Se registran datos.</strong></div>
+        <div class="fact"><span>Proceso</span><strong>La información se organiza.</strong></div>
+        <div class="fact"><span>Salida</span><strong>Se generan resultados o reportes.</strong></div>
+        <div class="fact"><span>Decisión</span><strong>La información permite actuar.</strong></div>
+      </div>
+    </div>
+
+    <div class="panel visual">
+      <svg viewBox="0 0 520 420">
+        <rect x="60" y="170" width="110" height="90" rx="22" fill="#fff" stroke="#6d35ff" stroke-width="5"/>
+        <rect x="205" y="125" width="110" height="170" rx="22" fill="#fff" stroke="#42d9ff" stroke-width="5"/>
+        <rect x="350" y="170" width="110" height="90" rx="22" fill="#fff" stroke="#12b981" stroke-width="5"/>
+        <path d="M170 210h35M315 210h35" stroke="#6d35ff" stroke-width="10" stroke-linecap="round"/>
+        <path d="M90 212h50M232 170h55M232 210h55M232 250h55M380 212h50" stroke="#cfe0ff" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="controls">
+  <button class="btn" onclick="prev()">‹</button>
+  <button class="btn" onclick="next()">›</button>
+</div>
+
+<div class="dots" id="dots"></div>
+<footer>Aprendiendo con @LaProfeVivy</footer>
+
+<script>
+const deck=document.getElementById('deck');
+const slides=[...document.querySelectorAll('.slide')];
+const now=document.getElementById('now');
+const total=document.getElementById('total');
+const dots=document.getElementById('dots');
+let index=0;
+
+total.textContent=slides.length;
+
+slides.forEach((_,i)=>{
+  const d=document.createElement('button');
+  d.className='dot';
+  d.setAttribute('aria-label','Ir a diapositiva '+(i+1));
+  d.onclick=()=>go(i);
+  dots.appendChild(d);
+});
+
+function render(){
+  deck.style.transform=`translateX(${-index*100}vw)`;
+  now.textContent=index+1;
+  [...dots.children].forEach((d,i)=>d.classList.toggle('active',i===index));
+}
+
+function go(i){
+  const nextIndex=Math.max(0,Math.min(slides.length-1,i));
+  if(nextIndex===index) return;
+  index=nextIndex;
+  deck.classList.remove('changing');
+  void deck.offsetWidth;
+  deck.classList.add('changing');
+  render();
+  setTimeout(()=>deck.classList.remove('changing'),700);
+}
+
+function next(){go(index+1)}
+function prev(){go(index-1)}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')next();
+  if(e.key==='ArrowLeft')prev();
+});
+
+let startX=0;
+document.addEventListener('touchstart',e=>{startX=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{
+  const endX=e.changedTouches[0].clientX;
+  if(startX-endX>60)next();
+  if(endX-startX>60)prev();
+},{passive:true});
+
+const visuals=document.querySelectorAll('.visual');
+visuals.forEach(v=>{
+  v.addEventListener('mousemove',e=>{
+    const rect=v.getBoundingClientRect();
+    const x=(e.clientX-rect.left)/rect.width-0.5;
+    const y=(e.clientY-rect.top)/rect.height-0.5;
+    const svg=v.querySelector('svg');
+    if(svg){svg.style.transform=`translate(${x*34}px,${y*26}px) scale(1.06) rotate(${x*2}deg)`}
+  });
+  v.addEventListener('mouseleave',()=>{
+    const svg=v.querySelector('svg');
+    if(svg){svg.style.transform='translate(0,0) scale(1)'}
+  });
+});
+
+function validarActividad(){
+  const problema=document.getElementById('problema').value.trim();
+  const patron=document.getElementById('patron').value.trim();
+  const revolucion=document.getElementById('revolucion').value.trim();
+  const sistema=document.getElementById('sistema').value.trim();
+  const feedback=document.getElementById('feedback');
+
+  if(!problema || !patron || !revolucion || !sistema){
+    feedback.innerHTML='⚠️ Falta información. Completa problemática, patrón, revolución y sistema de información.';
+    feedback.style.borderColor='#ef4444';
+    feedback.style.background='#fff5f5';
+    return;
+  }
+
+  if(problema.length<20 || patron.length<15 || revolucion.length<15 || sistema.length<20){
+    feedback.innerHTML='⚠️ La respuesta está muy corta. Describe con más claridad la problemática y su relación con datos, tecnología y sistema.';
+    feedback.style.borderColor='#f5b82e';
+    feedback.style.background='#fff9e8';
+    return;
+  }
+
+  feedback.innerHTML='✅ Bien. La problemática está conectada con patrones, revolución industrial y necesidad de un sistema de información.';
+  feedback.style.borderColor='#12b981';
+  feedback.style.background='#ecfdf5';
+}
+
+render();
+</script>
+
+</body>
+</html>
