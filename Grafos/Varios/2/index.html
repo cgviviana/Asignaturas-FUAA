@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grafos y Teoría de Grafos</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --primary:#2563eb;
+      --secondary:#7c3aed;
+      --accent:#14b8a6;
+      --dark:#1e293b;
+      --muted:#64748b;
+      --soft:#e0f2fe;
+      --warning:#fef3c7;
+      --success:#dcfce7;
+      --danger:#fee2e2;
+      --radius:22px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      font-family: "Segoe UI", Arial, sans-serif;
+      background:linear-gradient(135deg,#eef2ff,#f8fafc);
+      color:var(--dark);
+      line-height:1.6;
+    }
+
+    header{
+      background:linear-gradient(135deg,var(--primary),var(--secondary));
+      color:white;
+      padding:45px 20px;
+      text-align:center;
+      border-bottom-left-radius:40px;
+      border-bottom-right-radius:40px;
+      box-shadow:0 10px 30px rgba(37,99,235,.25);
+    }
+
+    header h1{
+      font-size:clamp(2rem,5vw,3.4rem);
+      margin-bottom:12px;
+    }
+
+    header p{
+      max-width:900px;
+      margin:auto;
+      font-size:1.15rem;
+      opacity:.95;
+    }
+
+    .container{
+      max-width:1150px;
+      margin:30px auto;
+      padding:0 18px;
+    }
+
+    .menu{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:14px;
+      margin-bottom:28px;
+    }
+
+    .menu button{
+      border:none;
+      padding:16px;
+      background:white;
+      border-radius:18px;
+      cursor:pointer;
+      font-weight:700;
+      color:var(--dark);
+      box-shadow:0 8px 20px rgba(15,23,42,.08);
+      transition:.25s;
+    }
+
+    .menu button:hover,
+    .menu button.active{
+      background:var(--primary);
+      color:white;
+      transform:translateY(-3px);
+    }
+
+    section{
+      display:none;
+      animation:fade .35s ease;
+    }
+
+    section.active{
+      display:block;
+    }
+
+    @keyframes fade{
+      from{opacity:0; transform:translateY(10px);}
+      to{opacity:1; transform:translateY(0);}
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:26px;
+      margin-bottom:22px;
+      box-shadow:0 10px 25px rgba(15,23,42,.08);
+    }
+
+    .card h2{
+      color:var(--primary);
+      margin-bottom:14px;
+      font-size:1.8rem;
+    }
+
+    .card h3{
+      color:var(--secondary);
+      margin:18px 0 10px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .mini-card{
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .mini-card strong{
+      color:var(--primary);
+    }
+
+    .example{
+      background:var(--soft);
+      border-left:6px solid var(--primary);
+      padding:18px;
+      border-radius:14px;
+      margin:18px 0;
+    }
+
+    .warning{
+      background:var(--warning);
+      border-left:6px solid #f59e0b;
+      padding:18px;
+      border-radius:14px;
+      margin:18px 0;
+    }
+
+    .success{
+      background:var(--success);
+      border-left:6px solid #22c55e;
+      padding:18px;
+      border-radius:14px;
+      margin:18px 0;
+    }
+
+    .graph-box{
+      background:#f8fafc;
+      border-radius:22px;
+      padding:20px;
+      margin-top:18px;
+      overflow:auto;
+      text-align:center;
+      border:1px solid #e2e8f0;
+    }
+
+    svg{
+      max-width:100%;
+      height:auto;
+    }
+
+    .node{
+      fill:#2563eb;
+      stroke:white;
+      stroke-width:4;
+    }
+
+    .node2{
+      fill:#14b8a6;
+      stroke:white;
+      stroke-width:4;
+    }
+
+    .edge{
+      stroke:#94a3b8;
+      stroke-width:4;
+    }
+
+    .label{
+      fill:white;
+      font-weight:bold;
+      font-size:18px;
+      text-anchor:middle;
+      dominant-baseline:middle;
+    }
+
+    .edge-label{
+      fill:#475569;
+      font-weight:bold;
+      font-size:14px;
+    }
+
+    .accordion{
+      margin-top:14px;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid #e2e8f0;
+    }
+
+    .accordion button{
+      width:100%;
+      background:#f1f5f9;
+      color:var(--dark);
+      border:none;
+      padding:16px;
+      text-align:left;
+      font-weight:800;
+      cursor:pointer;
+      font-size:1rem;
+    }
+
+    .accordion-content{
+      display:none;
+      padding:18px;
+      background:white;
+    }
+
+    .accordion-content.show{
+      display:block;
+    }
+
+    .activity{
+      background:#f8fafc;
+      border-radius:20px;
+      padding:20px;
+      border:1px solid #e2e8f0;
+      margin-top:15px;
+    }
+
+    .activity button{
+      background:var(--accent);
+      color:white;
+      border:none;
+      padding:12px 18px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:700;
+      margin-top:12px;
+    }
+
+    .activity button:hover{
+      filter:brightness(.95);
+    }
+
+    select{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid #cbd5e1;
+      margin-top:10px;
+      font-size:1rem;
+    }
+
+    .feedback{
+      margin-top:12px;
+      font-weight:700;
+    }
+
+    .tag{
+      display:inline-block;
+      background:#eef2ff;
+      color:#3730a3;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:.85rem;
+      font-weight:700;
+      margin:4px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:16px;
+      overflow:hidden;
+      border-radius:16px;
+    }
+
+    th,td{
+      padding:14px;
+      border:1px solid #e2e8f0;
+      text-align:left;
+    }
+
+    th{
+      background:#eff6ff;
+      color:#1d4ed8;
+    }
+
+    footer{
+      text-align:center;
+      padding:28px;
+      color:#64748b;
+      font-weight:600;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Grafos y Teoría de Grafos</h1>
+  <p>
+    Un recurso didáctico para entender cómo se conectan las cosas:
+    personas, caminos, computadores, aplicaciones, datos, redes y decisiones.
+  </p>
+</header>
+
+<main class="container">
+
+  <nav class="menu">
+    <button class="active" onclick="showSection('inicio', this)">Inicio</button>
+    <button onclick="showSection('conceptos', this)">Conceptos</button>
+    <button onclick="showSection('tipos', this)">Tipos de grafos</button>
+    <button onclick="showSection('vida', this)">Vida real</button>
+    <button onclick="showSection('ingenieria', this)">Ingeniería</button>
+    <button onclick="showSection('algoritmos', this)">Algoritmos</button>
+    <button onclick="showSection('actividad', this)">Actividad</button>
+  </nav>
+
+  <section id="inicio" class="active">
+    <div class="card">
+      <h2>¿Qué es un grafo?</h2>
+      <p>
+        Un <strong>grafo</strong> es una forma de representar cosas que están conectadas.
+        Sirve para mostrar relaciones, caminos, rutas, amistades, redes, procesos,
+        sistemas y decisiones.
+      </p>
+
+      <div class="example">
+        Imagina que tienes varios lugares: casa, colegio, parque y tienda.
+        Si puedes ir de un lugar a otro por un camino, ese camino es una conexión.
+        El dibujo completo de lugares y caminos es un grafo.
+      </div>
+
+      <div class="graph-box">
+        <svg width="620" height="300" viewBox="0 0 620 300">
+          <line class="edge" x1="110" y1="150" x2="260" y2="70"/>
+          <line class="edge" x1="260" y1="70" x2="430" y2="150"/>
+          <line class="edge" x1="110" y1="150" x2="260" y2="230"/>
+          <line class="edge" x1="260" y1="230" x2="430" y2="150"/>
+          <line class="edge" x1="430" y1="150" x2="540" y2="150"/>
+
+          <circle class="node" cx="110" cy="150" r="42"/>
+          <text class="label" x="110" y="150">Casa</text>
+
+          <circle class="node2" cx="260" cy="70" r="42"/>
+          <text class="label" x="260" y="70">Cole</text>
+
+          <circle class="node2" cx="260" cy="230" r="42"/>
+          <text class="label" x="260" y="230">Parque</text>
+
+          <circle class="node" cx="430" cy="150" r="42"/>
+          <text class="label" x="430" y="150">Tienda</text>
+
+          <circle class="node2" cx="540" cy="150" r="42"/>
+          <text class="label" x="540" y="150">Bus</text>
+        </svg>
+      </div>
+
+      <div class="success">
+        La idea central es sencilla: <strong>un grafo muestra elementos y conexiones.</strong>
+        Por eso es tan útil en tecnología, transporte, videojuegos, redes sociales,
+        inteligencia artificial y sistemas de información.
+      </div>
+    </div>
+  </section>
+
+  <section id="conceptos">
+    <div class="card">
+      <h2>Conceptos principales</h2>
+
+      <div class="grid">
+        <div class="mini-card">
+          <h3>Nodo o vértice</h3>
+          <p>
+            Es cada punto del grafo. Puede representar una persona, ciudad,
+            computador, archivo, usuario, pantalla de una app o página web.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>Arista o conexión</h3>
+          <p>
+            Es la línea que une dos nodos. Representa una relación, camino,
+            comunicación, dependencia o enlace.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>Peso</h3>
+          <p>
+            Es un valor asignado a una conexión. Puede representar distancia,
+            tiempo, costo, dificultad o riesgo.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>Camino</h3>
+          <p>
+            Es una secuencia de conexiones que permite ir desde un nodo hasta otro.
+          </p>
+        </div>
+      </div>
+
+      <div class="example">
+        Si cada nodo fuera una estación de TransMilenio y cada arista fuera una ruta,
+        el peso podría ser el tiempo de viaje entre estaciones.
+      </div>
+
+      <table>
+        <tr>
+          <th>Concepto</th>
+          <th>Explicación sencilla</th>
+          <th>Ejemplo</th>
+        </tr>
+        <tr>
+          <td>Nodo</td>
+          <td>Elemento del sistema</td>
+          <td>Un usuario</td>
+        </tr>
+        <tr>
+          <td>Arista</td>
+          <td>Relación entre dos elementos</td>
+          <td>Un mensaje enviado</td>
+        </tr>
+        <tr>
+          <td>Peso</td>
+          <td>Valor de una conexión</td>
+          <td>5 minutos de viaje</td>
+        </tr>
+        <tr>
+          <td>Camino</td>
+          <td>Ruta entre nodos</td>
+          <td>Casa → Colegio → Biblioteca</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="tipos">
+    <div class="card">
+      <h2>Tipos de grafos</h2>
+
+      <div class="accordion">
+        <button onclick="toggleAcc(this)">1. Grafo no dirigido</button>
+        <div class="accordion-content">
+          <p>
+            Las conexiones no tienen una dirección obligatoria.
+            Si A está conectado con B, también se puede ir de B a A.
+          </p>
+          <div class="example">
+            Ejemplo: dos amigos. Si Ana es amiga de Luis, Luis también es amigo de Ana.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button onclick="toggleAcc(this)">2. Grafo dirigido</button>
+        <div class="accordion-content">
+          <p>
+            Las conexiones tienen dirección. Una flecha indica hacia dónde va la relación.
+          </p>
+          <div class="example">
+            Ejemplo: seguir a alguien en una red social. Tú puedes seguir a una persona,
+            pero esa persona no necesariamente te sigue a ti.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button onclick="toggleAcc(this)">3. Grafo ponderado</button>
+        <div class="accordion-content">
+          <p>
+            Cada conexión tiene un peso o valor.
+          </p>
+          <div class="example">
+            Ejemplo: una ruta donde cada camino tiene un tiempo diferente:
+            5 minutos, 10 minutos o 20 minutos.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button onclick="toggleAcc(this)">4. Grafo cíclico</button>
+        <div class="accordion-content">
+          <p>
+            Tiene un camino que puede regresar al punto de inicio.
+          </p>
+          <div class="example">
+            Ejemplo: una ruta circular de bus que vuelve a la estación inicial.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button onclick="toggleAcc(this)">5. Árbol</button>
+        <div class="accordion-content">
+          <p>
+            Es un tipo especial de grafo donde no hay ciclos.
+            Se usa mucho para organizar información por niveles.
+          </p>
+          <div class="example">
+            Ejemplo: carpetas de un computador, árbol genealógico o menú de una página web.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vida">
+    <div class="card">
+      <h2>Aplicaciones en la vida real</h2>
+      <p>
+        Los grafos están presentes en muchas situaciones cotidianas, aunque no siempre
+        los veamos con ese nombre.
+      </p>
+
+      <div class="grid">
+        <div class="mini-card">
+          <h3>Mapas y rutas</h3>
+          <p>
+            Las ciudades, calles y caminos pueden representarse como grafos.
+            Las aplicaciones de mapas usan grafos para encontrar rutas rápidas.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>Redes sociales</h3>
+          <p>
+            Cada persona es un nodo. Las amistades, seguidores o mensajes son conexiones.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>Internet</h3>
+          <p>
+            Las páginas web, servidores y enlaces forman una gran red de conexiones.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>Videojuegos</h3>
+          <p>
+            Los personajes usan grafos para encontrar caminos, moverse por mapas
+            y tomar decisiones.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>Recomendaciones</h3>
+          <p>
+            Plataformas como tiendas, música o videos relacionan usuarios,
+            gustos y productos mediante grafos.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>Organización escolar</h3>
+          <p>
+            Se pueden analizar estudiantes, cursos, docentes, horarios y aulas
+            como elementos conectados.
+          </p>
+        </div>
+      </div>
+
+      <div class="warning">
+        Un grafo no solo sirve para dibujar conexiones. También permite responder preguntas:
+        ¿cuál es el camino más corto?, ¿qué nodo es más importante?,
+        ¿qué conexión puede fallar?, ¿cómo se mueve la información?
+      </div>
+    </div>
+  </section>
+
+  <section id="ingenieria">
+    <div class="card">
+      <h2>Aplicaciones en ingeniería de sistemas y software</h2>
+
+      <p>
+        En ingeniería de sistemas y software, los grafos ayudan a analizar,
+        diseñar y optimizar sistemas complejos. Cuando un sistema tiene muchas partes
+        conectadas, un grafo permite verlo con más claridad.
+      </p>
+
+      <div class="grid">
+        <div class="mini-card">
+          <h3>1. Arquitectura de software</h3>
+          <p>
+            Los módulos, servicios o componentes pueden representarse como nodos.
+            Las conexiones muestran dependencias o comunicación entre ellos.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>2. Bases de datos</h3>
+          <p>
+            Algunas bases de datos usan grafos para guardar relaciones complejas,
+            por ejemplo usuarios, productos, compras y recomendaciones.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>3. Redes de computadores</h3>
+          <p>
+            Los computadores, routers y servidores son nodos. Los cables o conexiones
+            inalámbricas son aristas.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>4. Pruebas de software</h3>
+          <p>
+            Las pantallas o estados de una aplicación pueden formar un grafo.
+            Así se revisa si el usuario puede llegar correctamente a cada función.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>5. Inteligencia artificial</h3>
+          <p>
+            Los grafos permiten representar conocimiento, relaciones,
+            rutas de decisión y conexiones entre datos.
+          </p>
+        </div>
+
+        <div class="mini-card">
+          <h3>6. Seguridad informática</h3>
+          <p>
+            Se pueden analizar rutas de ataque, permisos, accesos y vulnerabilidades
+            como conexiones dentro de un sistema.
+          </p>
+        </div>
+      </div>
+
+      <div class="example">
+        Ejemplo en software: una aplicación tiene pantalla de inicio, registro,
+        inicio de sesión, perfil, configuración y reportes. Cada pantalla es un nodo.
+        Cada botón que permite pasar de una pantalla a otra es una arista.
+      </div>
+
+      <div class="graph-box">
+        <svg width="700" height="360" viewBox="0 0 700 360">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8" />
+            </marker>
+          </defs>
+
+          <line class="edge" x1="120" y1="170" x2="285" y2="80" marker-end="url(#arrow)"/>
+          <line class="edge" x1="120" y1="170" x2="285" y2="260" marker-end="url(#arrow)"/>
+          <line class="edge" x1="285" y1="80" x2="500" y2="120" marker-end="url(#arrow)"/>
+          <line class="edge" x1="285" y1="260" x2="500" y2="220" marker-end="url(#arrow)"/>
+          <line class="edge" x1="500" y1="120" x2="500" y2="220" marker-end="url(#arrow)"/>
+
+          <circle class="node" cx="120" cy="170" r="50"/>
+          <text class="label" x="120" y="170">Inicio</text>
+
+          <circle class="node2" cx="285" cy="80" r="50"/>
+          <text class="label" x="285" y="80">Registro</text>
+
+          <circle class="node2" cx="285" cy="260" r="50"/>
+          <text class="label" x="285" y="260">Login</text>
+
+          <circle class="node" cx="500" cy="120" r="50"/>
+          <text class="label" x="500" y="120">Perfil</text>
+
+          <circle class="node" cx="500" cy="220" r="50"/>
+          <text class="label" x="500" y="220">Reportes</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section id="algoritmos">
+    <div class="card">
+      <h2>Algoritmos importantes en grafos</h2>
+
+      <p>
+        Un algoritmo es una serie de pasos para resolver un problema.
+        En teoría de grafos existen algoritmos que ayudan a buscar rutas,
+        recorrer conexiones y encontrar soluciones eficientes.
+      </p>
+
+      <div class="accordion">
+        <button onclick="toggleAcc(this)">Búsqueda en anchura — BFS</button>
+        <div class="accordion-content">
+          <p>
+            Revisa primero los nodos más cercanos al punto de inicio.
+            Es útil cuando se quiere encontrar el camino con menor número de pasos.
+          </p>
+          <div class="example">
+            Como cuando preguntas: “¿cuál amigo de mis amigos conoce a esta persona?”
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button onclick="toggleAcc(this)">Búsqueda en profundidad — DFS</button>
+        <div class="accordion-content">
+          <p>
+            Explora un camino hasta el fondo antes de regresar y probar otro.
+          </p>
+          <div class="example">
+            Como entrar a una carpeta, luego a otra, luego a otra, hasta llegar al final.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button onclick="toggleAcc(this)">Dijkstra</button>
+        <div class="accordion-content">
+          <p>
+            Sirve para encontrar la ruta más corta cuando las conexiones tienen pesos.
+          </p>
+          <div class="example">
+            Una app de mapas puede usar una idea parecida para calcular el camino
+            más rápido según tiempo, distancia o tráfico.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button onclick="toggleAcc(this)">Árbol de expansión mínima</button>
+        <div class="accordion-content">
+          <p>
+            Busca conectar todos los nodos usando el menor costo posible.
+          </p>
+          <div class="example">
+            Puede usarse para diseñar una red de cables conectando varios edificios
+            sin gastar más de lo necesario.
+          </div>
+        </div>
+      </div>
+
+      <div class="success">
+        Estos algoritmos permiten que los sistemas no solo almacenen conexiones,
+        sino que también tomen decisiones inteligentes.
+      </div>
+    </div>
+  </section>
+
+  <section id="actividad">
+    <div class="card">
+      <h2>Actividad interactiva</h2>
+      <p>
+        Lee cada situación y selecciona qué parte del grafo representa.
+      </p>
+
+      <div class="activity">
+        <h3>Pregunta 1</h3>
+        <p>En una red social, cada persona registrada sería:</p>
+        <select id="q1">
+          <option value="">Selecciona una respuesta</option>
+          <option value="arista">Una arista</option>
+          <option value="nodo">Un nodo</option>
+          <option value="peso">Un peso</option>
+        </select>
+        <button onclick="checkAnswer('q1','nodo','f1')">Validar</button>
+        <div id="f1" class="feedback"></div>
+      </div>
+
+      <div class="activity">
+        <h3>Pregunta 2</h3>
+        <p>En una aplicación de mapas, el tiempo entre dos lugares puede ser:</p>
+        <select id="q2">
+          <option value="">Selecciona una respuesta</option>
+          <option value="peso">Un peso</option>
+          <option value="nodo">Un nodo</option>
+          <option value="ciclo">Un ciclo</option>
+        </select>
+        <button onclick="checkAnswer('q2','peso','f2')">Validar</button>
+        <div id="f2" class="feedback"></div>
+      </div>
+
+      <div class="activity">
+        <h3>Pregunta 3</h3>
+        <p>En una app, pasar de la pantalla de inicio a la pantalla de registro sería:</p>
+        <select id="q3">
+          <option value="">Selecciona una respuesta</option>
+          <option value="arista">Una arista</option>
+          <option value="peso">Un peso</option>
+          <option value="aislado">Un nodo aislado</option>
+        </select>
+        <button onclick="checkAnswer('q3','arista','f3')">Validar</button>
+        <div id="f3" class="feedback"></div>
+      </div>
+
+      <div class="activity">
+        <h3>Reto final</h3>
+        <p>
+          Piensa en una situación de tu colegio, casa o barrio que pueda representarse
+          con grafos. Ejemplo: rutas, amistades, préstamos de libros, turnos,
+          transporte, juegos o conexión a internet.
+        </p>
+        <textarea id="reto" rows="5" style="width:100%;padding:14px;border-radius:14px;border:1px solid #cbd5e1;margin-top:10px;" placeholder="Escribe tu idea aquí..."></textarea>
+        <button onclick="saveIdea()">Guardar idea</button>
+        <div id="ideaFeedback" class="feedback"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Síntesis del aprendizaje</h2>
+      <p>
+        Un grafo permite representar un sistema como un conjunto de elementos conectados.
+        En la vida real ayuda a entender rutas, redes, relaciones y decisiones.
+        En ingeniería de sistemas y software ayuda a diseñar aplicaciones,
+        analizar redes, organizar datos, probar sistemas y optimizar procesos.
+      </p>
+
+      <div>
+        <span class="tag">Nodos</span>
+        <span class="tag">Aristas</span>
+        <span class="tag">Pesos</span>
+        <span class="tag">Rutas</span>
+        <span class="tag">Redes</span>
+        <span class="tag">Software</span>
+        <span class="tag">Sistemas</span>
+        <span class="tag">Algoritmos</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Aprendiendo con @LaProfeVivy — Recurso didáctico de Ingeniería de Sistemas
+</footer>
+
+<script>
+  function showSection(id, btn){
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function toggleAcc(button){
+    const content = button.nextElementSibling;
+    content.classList.toggle('show');
+  }
+
+  function checkAnswer(selectId, correct, feedbackId){
+    const value = document.getElementById(selectId).value;
+    const feedback = document.getElementById(feedbackId);
+
+    if(value === ""){
+      feedback.style.color = "#b45309";
+      feedback.textContent = "Selecciona una opción antes de validar.";
+      return;
+    }
+
+    if(value === correct){
+      feedback.style.color = "#15803d";
+      feedback.textContent = "Correcto. Identificaste bien el concepto dentro del grafo.";
+    } else {
+      feedback.style.color = "#b91c1c";
+      feedback.textContent = "Revisa nuevamente. Piensa si se trata de un elemento, una conexión o un valor.";
+    }
+  }
+
+  function saveIdea(){
+    const idea = document.getElementById("reto").value.trim();
+    const feedback = document.getElementById("ideaFeedback");
+
+    if(idea.length < 20){
+      feedback.style.color = "#b45309";
+      feedback.textContent = "Escribe una idea más completa. Menciona los nodos y las conexiones.";
+      return;
+    }
+
+    feedback.style.color = "#15803d";
+    feedback.textContent = "Idea guardada en pantalla. Buen trabajo: ya estás pensando como diseñador de sistemas.";
+  }
+</script>
+
+</body>
+</html>
