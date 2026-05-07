@@ -1,0 +1,847 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teoría de Grafos Visual e Interactiva</title>
+<style>
+:root{
+  --azul:#2563eb;
+  --morado:#7c3aed;
+  --verde:#14b8a6;
+  --fondo:#f5f7fb;
+  --texto:#1e293b;
+  --gris:#64748b;
+  --card:#ffffff;
+  --borde:#e2e8f0;
+  --amarillo:#fef3c7;
+  --rojo:#fee2e2;
+  --ok:#dcfce7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Segoe UI,Arial,sans-serif;
+  background:linear-gradient(135deg,#eef2ff,#f8fafc);
+  color:var(--texto);
+  line-height:1.6;
+}
+header{
+  background:linear-gradient(135deg,var(--azul),var(--morado));
+  color:white;
+  padding:38px 18px;
+  text-align:center;
+  border-bottom-left-radius:36px;
+  border-bottom-right-radius:36px;
+}
+header h1{font-size:clamp(2rem,5vw,3.2rem);margin-bottom:10px}
+header p{max-width:900px;margin:auto;font-size:1.08rem}
+main{max-width:1180px;margin:26px auto;padding:0 16px}
+.menu{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+  margin-bottom:22px;
+}
+.menu button{
+  border:0;
+  background:white;
+  color:var(--texto);
+  padding:14px;
+  border-radius:16px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(15,23,42,.08);
+}
+.menu button.active,.menu button:hover{
+  background:var(--azul);
+  color:white;
+}
+section{display:none}
+section.active{display:block}
+.card{
+  background:var(--card);
+  border-radius:24px;
+  padding:24px;
+  margin-bottom:20px;
+  box-shadow:0 12px 28px rgba(15,23,42,.08);
+}
+h2{color:var(--azul);margin-bottom:12px;font-size:1.7rem}
+h3{color:var(--morado);margin:16px 0 8px}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:16px;
+}
+.box{
+  background:#f8fafc;
+  border:1px solid var(--borde);
+  border-radius:18px;
+  padding:17px;
+}
+.idea{
+  background:#e0f2fe;
+  border-left:6px solid var(--azul);
+  padding:16px;
+  border-radius:14px;
+  margin:16px 0;
+}
+.alerta{
+  background:var(--amarillo);
+  border-left:6px solid #f59e0b;
+  padding:16px;
+  border-radius:14px;
+  margin:16px 0;
+}
+.ok{
+  background:var(--ok);
+  border-left:6px solid #22c55e;
+  padding:16px;
+  border-radius:14px;
+  margin:16px 0;
+}
+.graph-area{
+  background:#f8fafc;
+  border:1px solid var(--borde);
+  border-radius:24px;
+  padding:18px;
+  margin-top:16px;
+  overflow:auto;
+}
+svg{
+  width:100%;
+  max-width:850px;
+  display:block;
+  margin:auto;
+}
+.edge{
+  stroke:#94a3b8;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+.edge.active{
+  stroke:#f97316;
+  stroke-width:7;
+}
+.node{
+  fill:#2563eb;
+  stroke:white;
+  stroke-width:5;
+  transition:.3s;
+}
+.node.active{
+  fill:#f97316;
+  filter:drop-shadow(0 0 8px rgba(249,115,22,.7));
+}
+.node.done{
+  fill:#16a34a;
+}
+.label{
+  fill:white;
+  font-size:18px;
+  font-weight:900;
+  text-anchor:middle;
+  dominant-baseline:middle;
+}
+.weight{
+  fill:#475569;
+  font-size:15px;
+  font-weight:900;
+}
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:15px;
+}
+.controls button{
+  border:0;
+  background:var(--azul);
+  color:white;
+  padding:12px 16px;
+  border-radius:14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.controls button.secondary{background:var(--verde)}
+.controls button.dark{background:#334155}
+.controls button.purple{background:var(--morado)}
+.controls button:hover{filter:brightness(.96)}
+.panel{
+  margin-top:14px;
+  background:white;
+  border:1px solid var(--borde);
+  padding:15px;
+  border-radius:16px;
+}
+.code{
+  background:#0f172a;
+  color:#e2e8f0;
+  padding:16px;
+  border-radius:18px;
+  overflow:auto;
+  font-family:Consolas,monospace;
+  margin-top:12px;
+}
+.badge{
+  display:inline-block;
+  background:#eef2ff;
+  color:#3730a3;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:.86rem;
+  margin:3px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:14px;
+}
+th,td{
+  border:1px solid var(--borde);
+  padding:12px;
+  text-align:left;
+}
+th{
+  background:#eff6ff;
+  color:#1d4ed8;
+}
+.quiz{
+  background:#f8fafc;
+  border:1px solid var(--borde);
+  border-radius:18px;
+  padding:18px;
+  margin-top:14px;
+}
+select,textarea{
+  width:100%;
+  padding:12px;
+  border-radius:13px;
+  border:1px solid #cbd5e1;
+  margin-top:8px;
+  font-size:1rem;
+}
+.feedback{font-weight:800;margin-top:10px}
+footer{
+  text-align:center;
+  color:var(--gris);
+  padding:28px;
+  font-weight:700;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Teoría de Grafos Visual e Interactiva</h1>
+  <p>
+    Aprende qué es un grafo, cómo se mueve de punto a punto, qué significa recorrerlo
+    y por qué es importante en ingeniería de sistemas y software.
+  </p>
+</header>
+
+<main>
+
+<nav class="menu">
+  <button class="active" onclick="showSection('inicio',this)">Inicio</button>
+  <button onclick="showSection('base',this)">Conceptos</button>
+  <button onclick="showSection('movimiento',this)">Punto a punto</button>
+  <button onclick="showSection('recorridos',this)">BFS y DFS</button>
+  <button onclick="showSection('pesos',this)">Pesos y rutas</button>
+  <button onclick="showSection('sistemas',this)">Sistemas</button>
+  <button onclick="showSection('actividad',this)">Actividad</button>
+</nav>
+
+<section id="inicio" class="active">
+  <div class="card">
+    <h2>1. La idea central</h2>
+    <p>
+      La teoría de grafos estudia cómo se conectan las cosas.
+      Un grafo permite representar relaciones, rutas, redes, pantallas,
+      computadores, usuarios, procesos y decisiones.
+    </p>
+
+    <div class="idea">
+      <strong>Traducción sencilla:</strong><br>
+      Si hay elementos y conexiones entre ellos, se puede representar con un grafo.
+    </div>
+
+    <div class="grid">
+      <div class="box">
+        <h3>En la vida real</h3>
+        <p>Personas, ciudades, calles, estaciones, rutas, amistades y mensajes.</p>
+      </div>
+      <div class="box">
+        <h3>En sistemas</h3>
+        <p>Pantallas, módulos, servidores, routers, bases de datos y usuarios.</p>
+      </div>
+      <div class="box">
+        <h3>En software</h3>
+        <p>Flujos de navegación, dependencias, rutas de ejecución y pruebas.</p>
+      </div>
+    </div>
+
+    <div class="ok">
+      Lo importante no es memorizar símbolos. Primero hay que entender:
+      <strong>qué representa cada punto y qué representa cada conexión.</strong>
+    </div>
+  </div>
+</section>
+
+<section id="base">
+  <div class="card">
+    <h2>2. Conceptos básicos</h2>
+
+    <table>
+      <tr>
+        <th>Nombre técnico</th>
+        <th>Forma visual</th>
+        <th>Significado</th>
+        <th>Ejemplo</th>
+      </tr>
+      <tr>
+        <td>Nodo o vértice</td>
+        <td>Punto</td>
+        <td>Elemento del sistema</td>
+        <td>Persona, ciudad, pantalla, servidor</td>
+      </tr>
+      <tr>
+        <td>Arista</td>
+        <td>Línea</td>
+        <td>Conexión entre nodos</td>
+        <td>Amistad, carretera, cable, botón</td>
+      </tr>
+      <tr>
+        <td>Camino</td>
+        <td>Ruta</td>
+        <td>Secuencia de nodos conectados</td>
+        <td>Casa → Universidad → Biblioteca</td>
+      </tr>
+      <tr>
+        <td>Peso</td>
+        <td>Número sobre la línea</td>
+        <td>Valor de una conexión</td>
+        <td>Distancia, tiempo, costo</td>
+      </tr>
+      <tr>
+        <td>Ciclo</td>
+        <td>Ruta que vuelve al inicio</td>
+        <td>Regreso al punto inicial</td>
+        <td>A → B → C → A</td>
+      </tr>
+    </table>
+
+    <div class="alerta">
+      La notación universitaria suele decir <strong>G = (V, E)</strong>.
+      Eso solo significa: <strong>un grafo está formado por vértices y aristas.</strong>
+    </div>
+
+    <div class="code">
+G = (V, E)
+
+G = grafo
+V = vértices o nodos
+E = aristas o conexiones
+
+Traducción:
+Un grafo es un conjunto de puntos conectados por líneas.
+    </div>
+  </div>
+</section>
+
+<section id="movimiento">
+  <div class="card">
+    <h2>3. Cómo se mueve un recorrido de punto a punto</h2>
+    <p>
+      En un grafo, moverse significa pasar de un nodo a otro usando conexiones.
+      El recorrido no puede “saltar” libremente: solo puede avanzar si existe una arista.
+    </p>
+
+    <div class="graph-area">
+      <svg viewBox="0 0 850 420">
+        <line id="eAB" class="edge" x1="130" y1="210" x2="300" y2="100"/>
+        <line id="eAC" class="edge" x1="130" y1="210" x2="300" y2="320"/>
+        <line id="eBD" class="edge" x1="300" y1="100" x2="520" y2="110"/>
+        <line id="eCD" class="edge" x1="300" y1="320" x2="520" y2="110"/>
+        <line id="eCE" class="edge" x1="300" y1="320" x2="520" y2="320"/>
+        <line id="eDE" class="edge" x1="520" y1="110" x2="520" y2="320"/>
+        <line id="eDF" class="edge" x1="520" y1="110" x2="720" y2="210"/>
+        <line id="eEF" class="edge" x1="520" y1="320" x2="720" y2="210"/>
+
+        <circle id="nA" class="node" cx="130" cy="210" r="44"/>
+        <text class="label" x="130" y="210">A</text>
+
+        <circle id="nB" class="node" cx="300" cy="100" r="44"/>
+        <text class="label" x="300" y="100">B</text>
+
+        <circle id="nC" class="node" cx="300" cy="320" r="44"/>
+        <text class="label" x="300" y="320">C</text>
+
+        <circle id="nD" class="node" cx="520" cy="110" r="44"/>
+        <text class="label" x="520" y="110">D</text>
+
+        <circle id="nE" class="node" cx="520" cy="320" r="44"/>
+        <text class="label" x="520" y="320">E</text>
+
+        <circle id="nF" class="node" cx="720" cy="210" r="44"/>
+        <text class="label" x="720" y="210">F</text>
+      </svg>
+    </div>
+
+    <div class="controls">
+      <button onclick="playPath(['A','B','D','F'],['AB','BD','DF'],'expMov')">Ruta A → B → D → F</button>
+      <button class="secondary" onclick="playPath(['A','C','E','F'],['AC','CE','EF'],'expMov')">Ruta A → C → E → F</button>
+      <button class="purple" onclick="playPath(['A','C','D','E','F'],['AC','CD','DE','EF'],'expMov')">Ruta A → C → D → E → F</button>
+      <button class="dark" onclick="resetGraph()">Reiniciar</button>
+    </div>
+
+    <div id="expMov" class="panel">
+      Selecciona una ruta para ver cómo el recorrido avanza nodo por nodo.
+    </div>
+
+    <div class="idea">
+      Este ejemplo sirve para entender que un camino es una secuencia válida de conexiones.
+      Si no hay línea entre dos nodos, no se puede pasar directamente.
+    </div>
+  </div>
+</section>
+
+<section id="recorridos">
+  <div class="card">
+    <h2>4. Recorridos BFS y DFS</h2>
+    <p>
+      Los recorridos son formas de visitar nodos. En ingeniería se usan para buscar datos,
+      explorar redes, recorrer carpetas, analizar rutas y probar sistemas.
+    </p>
+
+    <div class="grid">
+      <div class="box">
+        <h3>BFS — Búsqueda en anchura</h3>
+        <p>
+          Recorre primero los nodos más cercanos. Avanza por niveles.
+        </p>
+        <p><strong>Imagen mental:</strong> primero mis amigos, luego amigos de mis amigos.</p>
+      </div>
+
+      <div class="box">
+        <h3>DFS — Búsqueda en profundidad</h3>
+        <p>
+          Toma un camino y lo sigue hasta el fondo. Luego regresa y prueba otro.
+        </p>
+        <p><strong>Imagen mental:</strong> entrar carpeta por carpeta hasta el final.</p>
+      </div>
+    </div>
+
+    <div class="graph-area">
+      <svg viewBox="0 0 850 420">
+        <line id="rAB" class="edge" x1="130" y1="210" x2="300" y2="100"/>
+        <line id="rAC" class="edge" x1="130" y1="210" x2="300" y2="320"/>
+        <line id="rBD" class="edge" x1="300" y1="100" x2="520" y2="110"/>
+        <line id="rBE" class="edge" x1="300" y1="100" x2="520" y2="210"/>
+        <line id="rCF" class="edge" x1="300" y1="320" x2="520" y2="320"/>
+        <line id="rEG" class="edge" x1="520" y1="210" x2="720" y2="210"/>
+
+        <circle id="rnA" class="node" cx="130" cy="210" r="44"/><text class="label" x="130" y="210">A</text>
+        <circle id="rnB" class="node" cx="300" cy="100" r="44"/><text class="label" x="300" y="100">B</text>
+        <circle id="rnC" class="node" cx="300" cy="320" r="44"/><text class="label" x="300" y="320">C</text>
+        <circle id="rnD" class="node" cx="520" cy="110" r="44"/><text class="label" x="520" y="110">D</text>
+        <circle id="rnE" class="node" cx="520" cy="210" r="44"/><text class="label" x="520" y="210">E</text>
+        <circle id="rnF" class="node" cx="520" cy="320" r="44"/><text class="label" x="520" y="320">F</text>
+        <circle id="rnG" class="node" cx="720" cy="210" r="44"/><text class="label" x="720" y="210">G</text>
+      </svg>
+    </div>
+
+    <div class="controls">
+      <button onclick="playTraversal('BFS')">Ver BFS</button>
+      <button class="secondary" onclick="playTraversal('DFS')">Ver DFS</button>
+      <button class="dark" onclick="resetTraversal()">Reiniciar</button>
+    </div>
+
+    <div id="expRec" class="panel">
+      Elige BFS o DFS para comparar cómo cambia el orden de visita.
+    </div>
+  </div>
+</section>
+
+<section id="pesos">
+  <div class="card">
+    <h2>5. Grafos con pesos y rutas más convenientes</h2>
+    <p>
+      En un grafo ponderado, las conexiones tienen valores. Esos valores pueden ser
+      distancia, tiempo, dinero, esfuerzo o riesgo.
+    </p>
+
+    <div class="graph-area">
+      <svg viewBox="0 0 850 420">
+        <line id="pAB" class="edge" x1="130" y1="210" x2="310" y2="100"/>
+        <text class="weight" x="205" y="135">4</text>
+
+        <line id="pAC" class="edge" x1="130" y1="210" x2="310" y2="320"/>
+        <text class="weight" x="205" y="295">2</text>
+
+        <line id="pBD" class="edge" x1="310" y1="100" x2="520" y2="130"/>
+        <text class="weight" x="410" y="95">5</text>
+
+        <line id="pCD" class="edge" x1="310" y1="320" x2="520" y2="130"/>
+        <text class="weight" x="420" y="245">1</text>
+
+        <line id="pCE" class="edge" x1="310" y1="320" x2="520" y2="320"/>
+        <text class="weight" x="410" y="350">7</text>
+
+        <line id="pDF" class="edge" x1="520" y1="130" x2="720" y2="210"/>
+        <text class="weight" x="630" y="145">3</text>
+
+        <line id="pEF" class="edge" x1="520" y1="320" x2="720" y2="210"/>
+        <text class="weight" x="630" y="300">2</text>
+
+        <circle id="pnA" class="node" cx="130" cy="210" r="44"/><text class="label" x="130" y="210">A</text>
+        <circle id="pnB" class="node" cx="310" cy="100" r="44"/><text class="label" x="310" y="100">B</text>
+        <circle id="pnC" class="node" cx="310" cy="320" r="44"/><text class="label" x="310" y="320">C</text>
+        <circle id="pnD" class="node" cx="520" cy="130" r="44"/><text class="label" x="520" y="130">D</text>
+        <circle id="pnE" class="node" cx="520" cy="320" r="44"/><text class="label" x="520" y="320">E</text>
+        <circle id="pnF" class="node" cx="720" cy="210" r="44"/><text class="label" x="720" y="210">F</text>
+      </svg>
+    </div>
+
+    <div class="controls">
+      <button onclick="playWeighted('rapida')">Ruta más conveniente</button>
+      <button class="secondary" onclick="playWeighted('larga')">Ruta más costosa</button>
+      <button class="dark" onclick="resetWeighted()">Reiniciar</button>
+    </div>
+
+    <div id="expPeso" class="panel">
+      En este grafo, los números son pesos. Una ruta no se evalúa solo por cantidad de nodos,
+      sino por la suma de sus valores.
+    </div>
+
+    <div class="ok">
+      Ruta A → C → D → F = 2 + 1 + 3 = 6.  
+      Esa es mejor que A → B → D → F = 4 + 5 + 3 = 12.
+    </div>
+  </div>
+</section>
+
+<section id="sistemas">
+  <div class="card">
+    <h2>6. Aplicación en ingeniería de sistemas y software</h2>
+
+    <div class="grid">
+      <div class="box">
+        <h3>Flujo de una app</h3>
+        <p>
+          Las pantallas son nodos. Los botones o enlaces son aristas.
+        </p>
+        <span class="badge">UX</span>
+        <span class="badge">Navegación</span>
+      </div>
+
+      <div class="box">
+        <h3>Red de computadores</h3>
+        <p>
+          Computadores, routers y servidores son nodos. Las conexiones son aristas.
+        </p>
+        <span class="badge">Redes</span>
+        <span class="badge">Internet</span>
+      </div>
+
+      <div class="box">
+        <h3>Dependencias de software</h3>
+        <p>
+          Los módulos son nodos. Si un módulo necesita otro, existe una arista.
+        </p>
+        <span class="badge">Arquitectura</span>
+        <span class="badge">Módulos</span>
+      </div>
+
+      <div class="box">
+        <h3>Bases de datos grafo</h3>
+        <p>
+          Permiten consultar relaciones complejas entre usuarios, productos y eventos.
+        </p>
+        <span class="badge">Neo4j</span>
+        <span class="badge">Datos</span>
+      </div>
+
+      <div class="box">
+        <h3>IA y conocimiento</h3>
+        <p>
+          Los conceptos se conectan entre sí para formar redes de significado.
+        </p>
+        <span class="badge">IA</span>
+        <span class="badge">Conocimiento</span>
+      </div>
+
+      <div class="box">
+        <h3>Ciberseguridad</h3>
+        <p>
+          Se analizan rutas de ataque, permisos, accesos y puntos débiles.
+        </p>
+        <span class="badge">Seguridad</span>
+        <span class="badge">Riesgo</span>
+      </div>
+    </div>
+
+    <div class="idea">
+      En sistemas, un grafo sirve para modelar estructuras complejas.
+      No es solo un dibujo: es una forma de analizar cómo funciona un sistema.
+    </div>
+  </div>
+</section>
+
+<section id="actividad">
+  <div class="card">
+    <h2>7. Validación rápida</h2>
+
+    <div class="quiz">
+      <h3>Pregunta 1</h3>
+      <p>En una red social, una persona representa:</p>
+      <select id="q1">
+        <option value="">Selecciona</option>
+        <option value="arista">Arista</option>
+        <option value="nodo">Nodo</option>
+        <option value="peso">Peso</option>
+      </select>
+      <div class="controls"><button onclick="check('q1','nodo','f1')">Validar</button></div>
+      <div id="f1" class="feedback"></div>
+    </div>
+
+    <div class="quiz">
+      <h3>Pregunta 2</h3>
+      <p>En Google Maps, el tiempo entre dos lugares puede ser:</p>
+      <select id="q2">
+        <option value="">Selecciona</option>
+        <option value="peso">Peso</option>
+        <option value="nodo">Nodo</option>
+        <option value="ciclo">Ciclo</option>
+      </select>
+      <div class="controls"><button onclick="check('q2','peso','f2')">Validar</button></div>
+      <div id="f2" class="feedback"></div>
+    </div>
+
+    <div class="quiz">
+      <h3>Pregunta 3</h3>
+      <p>En una app, pasar de Login a Dashboard mediante un botón es:</p>
+      <select id="q3">
+        <option value="">Selecciona</option>
+        <option value="arista">Arista</option>
+        <option value="peso">Peso</option>
+        <option value="aislado">Nodo aislado</option>
+      </select>
+      <div class="controls"><button onclick="check('q3','arista','f3')">Validar</button></div>
+      <div id="f3" class="feedback"></div>
+    </div>
+
+    <div class="quiz">
+      <h3>Reto aplicado</h3>
+      <p>
+        Escribe un ejemplo de grafo en ingeniería de sistemas.
+        Debe incluir nodos, aristas y qué representa el grafo.
+      </p>
+      <textarea id="reto" rows="5" placeholder="Ejemplo: En una app de asistencia, los nodos son pantallas y las aristas son botones..."></textarea>
+      <div class="controls"><button onclick="validateReto()">Revisar idea</button></div>
+      <div id="fReto" class="feedback"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Aprendiendo con @LaProfeVivy — Recurso interactivo de teoría de grafos
+</footer>
+
+<script>
+let timers=[];
+
+function showSection(id,btn){
+  clearTimers();
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function clearTimers(){
+  timers.forEach(t=>clearTimeout(t));
+  timers=[];
+}
+
+function resetGraph(){
+  clearTimers();
+  document.querySelectorAll('#movimiento .node').forEach(n=>{
+    n.classList.remove('active','done');
+  });
+  document.querySelectorAll('#movimiento .edge').forEach(e=>{
+    e.classList.remove('active');
+  });
+  document.getElementById('expMov').innerHTML =
+  "Selecciona una ruta para ver cómo el recorrido avanza nodo por nodo.";
+}
+
+function playPath(nodes,edges,panel){
+  resetGraph();
+  const exp=document.getElementById(panel);
+  exp.innerHTML="Inicia el recorrido en el nodo <strong>"+nodes[0]+"</strong>.";
+
+  nodes.forEach((n,i)=>{
+    timers.push(setTimeout(()=>{
+      const node=document.getElementById('n'+n);
+      node.classList.add('active');
+      if(i>0){
+        document.getElementById('e'+edges[i-1]).classList.add('active');
+        document.getElementById('n'+nodes[i-1]).classList.remove('active');
+        document.getElementById('n'+nodes[i-1]).classList.add('done');
+      }
+      exp.innerHTML =
+        "Paso "+(i+1)+": el recorrido está en el nodo <strong>"+n+"</strong>.";
+      if(i===nodes.length-1){
+        exp.innerHTML += "<br><br><strong>Conclusión:</strong> la ruta completa fue " + nodes.join(" → ") + ".";
+      }
+    },i*900));
+  });
+}
+
+function resetTraversal(){
+  clearTimers();
+  document.querySelectorAll('#recorridos .node').forEach(n=>{
+    n.classList.remove('active','done');
+  });
+  document.querySelectorAll('#recorridos .edge').forEach(e=>{
+    e.classList.remove('active');
+  });
+  document.getElementById('expRec').innerHTML =
+  "Elige BFS o DFS para comparar cómo cambia el orden de visita.";
+}
+
+function playTraversal(type){
+  resetTraversal();
+
+  let order=[];
+  let text="";
+  if(type==="BFS"){
+    order=["A","B","C","D","E","F","G"];
+    text="<strong>BFS:</strong> visita por niveles. Primero A, luego sus vecinos B y C, después D, E, F y finalmente G.";
+  }else{
+    order=["A","B","D","E","G","C","F"];
+    text="<strong>DFS:</strong> toma un camino profundo: A → B → D, luego regresa y continúa.";
+  }
+
+  const exp=document.getElementById('expRec');
+  exp.innerHTML=text;
+
+  order.forEach((n,i)=>{
+    timers.push(setTimeout(()=>{
+      const node=document.getElementById('rn'+n);
+      node.classList.add('active');
+      if(i>0){
+        const prev=document.getElementById('rn'+order[i-1]);
+        prev.classList.remove('active');
+        prev.classList.add('done');
+      }
+      exp.innerHTML = text + "<br><br>Paso "+(i+1)+": visitando nodo <strong>"+n+"</strong>.";
+      if(i===order.length-1){
+        exp.innerHTML += "<br><br><strong>Orden completo:</strong> " + order.join(" → ");
+      }
+    },i*850));
+  });
+}
+
+function resetWeighted(){
+  clearTimers();
+  document.querySelectorAll('#pesos .node').forEach(n=>{
+    n.classList.remove('active','done');
+  });
+  document.querySelectorAll('#pesos .edge').forEach(e=>{
+    e.classList.remove('active');
+  });
+  document.getElementById('expPeso').innerHTML =
+  "En este grafo, los números son pesos. Una ruta no se evalúa solo por cantidad de nodos, sino por la suma de sus valores.";
+}
+
+function playWeighted(tipo){
+  resetWeighted();
+
+  let nodes,edges,total,msg;
+  if(tipo==="rapida"){
+    nodes=["A","C","D","F"];
+    edges=["AC","CD","DF"];
+    total=6;
+    msg="Esta ruta es más conveniente porque suma menos peso: 2 + 1 + 3 = 6.";
+  }else{
+    nodes=["A","B","D","F"];
+    edges=["AB","BD","DF"];
+    total=12;
+    msg="Esta ruta es más costosa porque suma más peso: 4 + 5 + 3 = 12.";
+  }
+
+  const exp=document.getElementById('expPeso');
+
+  nodes.forEach((n,i)=>{
+    timers.push(setTimeout(()=>{
+      document.getElementById('pn'+n).classList.add('active');
+
+      if(i>0){
+        document.getElementById('p'+edges[i-1]).classList.add('active');
+        document.getElementById('pn'+nodes[i-1]).classList.remove('active');
+        document.getElementById('pn'+nodes[i-1]).classList.add('done');
+      }
+
+      exp.innerHTML =
+        "Paso "+(i+1)+": nodo actual <strong>"+n+"</strong>.";
+
+      if(i===nodes.length-1){
+        exp.innerHTML =
+        "<strong>Ruta:</strong> "+nodes.join(" → ")+"<br>"+
+        "<strong>Peso total:</strong> "+total+"<br><br>"+msg;
+      }
+    },i*900));
+  });
+}
+
+function check(id,correct,feedback){
+  const value=document.getElementById(id).value;
+  const fb=document.getElementById(feedback);
+
+  if(value===""){
+    fb.style.color="#b45309";
+    fb.textContent="Selecciona una opción antes de validar.";
+    return;
+  }
+
+  if(value===correct){
+    fb.style.color="#15803d";
+    fb.textContent="Correcto. La relación con el grafo está bien identificada.";
+  }else{
+    fb.style.color="#b91c1c";
+    fb.textContent="No todavía. Revisa si estás hablando de un elemento, una conexión o un valor.";
+  }
+}
+
+function validateReto(){
+  const txt=document.getElementById('reto').value.toLowerCase().trim();
+  const fb=document.getElementById('fReto');
+
+  if(txt.length<40){
+    fb.style.color="#b45309";
+    fb.textContent="Escribe un ejemplo más completo.";
+    return;
+  }
+
+  const tieneNodo=txt.includes("nodo") || txt.includes("pantalla") || txt.includes("usuario") || txt.includes("servidor") || txt.includes("módulo") || txt.includes("modulo");
+  const tieneArista=txt.includes("arista") || txt.includes("conexión") || txt.includes("conexion") || txt.includes("botón") || txt.includes("boton") || txt.includes("enlace");
+  const tieneSistema=txt.includes("sistema") || txt.includes("app") || txt.includes("software") || txt.includes("red") || txt.includes("base de datos");
+
+  if(tieneNodo && tieneArista && tieneSistema){
+    fb.style.color="#15803d";
+    fb.textContent="Muy bien. Tu ejemplo ya reconoce elementos, conexiones y contexto de sistemas.";
+  }else{
+    fb.style.color="#b45309";
+    fb.textContent="La idea va bien, pero asegúrate de mencionar nodos, aristas y el sistema donde se aplica.";
+  }
+}
+</script>
+
+</body>
+</html>
