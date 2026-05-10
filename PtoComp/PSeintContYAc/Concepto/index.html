@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contador y Acumulador en PSeInt</title>
+
+<style>
+    body {
+        font-family: sans-serif;
+        background: #eef2f3;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        margin: 0;
+    }
+
+    .master-card {
+        background: white;
+        width: 1000px;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        text-align: center;
+        border-bottom: 2px solid #6c5ce7;
+        padding-bottom: 10px;
+        margin-top: 0;
+    }
+
+    .contenedor {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .decision-box {
+        background: #f9f9f9;
+        border: 2px dashed #6c5ce7;
+        padding: 20px;
+        border-radius: 10px;
+        min-height: 430px;
+    }
+
+    .btn-choice {
+        background: #6c5ce7;
+        color: white;
+        border: none;
+        padding: 14px;
+        margin: 9px 0;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .btn-choice:hover, .btn-choice.activo {
+        background: #4f46e5;
+    }
+
+    #resultado {
+        padding: 20px;
+        border-radius: 10px;
+        min-height: 430px;
+        border: 2px solid #6c5ce7;
+        background: #f8f7ff;
+    }
+
+    .panel-contador {
+        background: #dbeafe !important;
+        border-color: #2563eb !important;
+    }
+
+    .panel-acumulador {
+        background: #d1fae5 !important;
+        border-color: #10b981 !important;
+    }
+
+    .panel-diferencia {
+        background: #ede9fe !important;
+        border-color: #8b5cf6 !important;
+    }
+
+    .titulo-panel {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 28px;
+        margin: 5px 0 20px;
+    }
+
+    .visual {
+        display: grid;
+        grid-template-columns: 1fr 160px;
+        gap: 15px;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .ejemplo {
+        background: rgba(255,255,255,0.7);
+        padding: 18px;
+        border-radius: 12px;
+        font-size: 17px;
+        line-height: 1.5;
+    }
+
+    .imagen {
+        background: rgba(255,255,255,0.7);
+        padding: 20px;
+        border-radius: 12px;
+        font-size: 70px;
+        text-align: center;
+    }
+
+    .botones {
+        margin-top: 18px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-panel {
+        border: none;
+        padding: 11px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+    }
+
+    .btn-explicacion { background: #16a34a; }
+    .btn-ejecucion { background: #2563eb; }
+    .btn-codigo { background: #7c3aed; }
+    .btn-ejecutar { background: #f97316; margin-top: 10px; }
+
+    #panel {
+        margin-top: 15px;
+        background: rgba(255,255,255,0.75);
+        padding: 15px;
+        border-radius: 10px;
+        font-family: Consolas, monospace;
+        white-space: pre-line;
+        line-height: 1.5;
+        overflow-x: auto;
+        min-height: 130px;
+        font-size: 15px;
+    }
+
+    input {
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #999;
+        margin: 6px 0;
+        width: 180px;
+    }
+
+    .salida {
+        color: #064e3b;
+        font-weight: bold;
+        margin-top: 12px;
+        border-left: 4px solid #10b981;
+        padding-left: 10px;
+        min-height: 24px;
+    }
+
+    .reservada {
+        color: #2563eb;
+        font-weight: bold;
+    }
+
+    .verde {
+        color: #15803d;
+        font-weight: bold;
+    }
+
+    .morado {
+        color: #7c3aed;
+        font-weight: bold;
+    }
+
+    .footer-vivy {
+        margin-top: 28px;
+        padding-top: 16px;
+        border-top: 1px solid #cbd5e1;
+        text-align: center;
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.2px;
+    }
+
+    @media (max-width: 800px) {
+        .contenedor { grid-template-columns: 1fr; }
+        .visual { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+
+<body>
+<div class="master-card">
+
+    <h1>🤔 ¿Contador o acumulador?</h1>
+
+    <div class="contenedor">
+
+        <div class="decision-box">
+            <button class="btn-choice activo" onclick="mostrar('contador', this)">🔢 Contador</button>
+            <button class="btn-choice" onclick="mostrar('acumulador', this)">💰 Acumulador</button>
+            <button class="btn-choice" onclick="mostrar('diferencia', this)">⚖️ Diferencia</button>
+            <button class="btn-choice" onclick="mostrar('videojuego', this)">🎮 Videojuego</button>
+        </div>
+
+        <div id="resultado"></div>
+
+    </div>
+
+    <footer class="footer-vivy">
+        Aprendiendo con @laProfeVivy
+    </footer>
+
+</div>
+
+<script>
+let temaActual = "contador";
+let explicacionActual = "";
+let codigoActual = "";
+
+function activarBoton(boton) {
+    document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('activo'));
+    if (boton) boton.classList.add('activo');
+}
+
+function mostrar(tipo, boton) {
+    activarBoton(boton);
+    temaActual = tipo;
+
+    const res = document.getElementById('resultado');
+    res.className = '';
+    res.innerHTML = '';
+
+    if (tipo === 'contador') {
+        res.classList.add('panel-contador');
+        res.innerHTML = `
+            <h2 class="titulo-panel">🔢 Contador</h2>
+
+            <div class="visual">
+                <div class="ejemplo">
+                    Ejemplo: En un salón, cada vez que un estudiante responde una pregunta, se cuenta 1 participación.
+                </div>
+                <div class="imagen">🙋‍♂️</div>
+            </div>
+
+            <div class="botones">
+                <button class="btn-panel btn-explicacion" onclick="verExplicacion()">Explicación</button>
+                <button class="btn-panel btn-ejecucion" onclick="verEjecucion()">Ejecución</button>
+                <button class="btn-panel btn-codigo" onclick="verCodigo()">Código completo</button>
+            </div>
+
+            <div id="panel"></div>
+        `;
+
+        explicacionActual = `<span class="reservada">CONTADOR</span> sirve para contar cuántas veces ocurre algo.
+
+Funciona de forma sencilla:
+contador = contador + 1
+
+Cada vez que pasa algo, suma solo 1.
+
+Ejemplos:
+- contar estudiantes
+- contar intentos
+- contar productos
+- contar respuestas correctas`;
+
+        codigoActual = `<span class="reservada">Algoritmo</span> ContarParticipaciones
+    <span class="reservada">Definir</span> i, estudiantes, contador <span class="reservada">Como</span> Entero
+
+    contador <- 0
+
+    <span class="reservada">Escribir</span> "¿Cuántos estudiantes participaron?"
+    <span class="reservada">Leer</span> estudiantes
+
+    <span class="reservada">Para</span> i <- 1 <span class="reservada">Hasta</span> estudiantes <span class="reservada">Hacer</span>
+        contador <- contador + 1
+    <span class="reservada">FinPara</span>
+
+    <span class="reservada">Escribir</span> "Participaciones contadas: ", contador
+<span class="reservada">FinAlgoritmo</span>`;
+    }
+
+    else if (tipo === 'acumulador') {
+        res.classList.add('panel-acumulador');
+        res.innerHTML = `
+            <h2 class="titulo-panel">💰 Acumulador</h2>
+
+            <div class="visual">
+                <div class="ejemplo">
+                    Ejemplo: En una tienda, cada producto tiene un precio diferente. El programa suma todos los precios para saber el total.
+                </div>
+                <div class="imagen">🛒</div>
+            </div>
+
+            <div class="botones">
+                <button class="btn-panel btn-explicacion" onclick="verExplicacion()">Explicación</button>
+                <button class="btn-panel btn-ejecucion" onclick="verEjecucion()">Ejecución</button>
+                <button class="btn-panel btn-codigo" onclick="verCodigo()">Código completo</button>
+            </div>
+
+            <div id="panel"></div>
+        `;
+
+        explicacionActual = `<span class="verde">ACUMULADOR</span> sirve para sumar valores y guardar un total.
+
+Funciona así:
+total = total + valor
+
+No siempre suma 1.
+Suma el número que llegue.
+
+Ejemplos:
+- sumar precios
+- sumar notas
+- sumar puntos
+- sumar minutos de retardo`;
+
+        codigoActual = `<span class="reservada">Algoritmo</span> AcumularCompras
+    <span class="reservada">Definir</span> i, cantidad <span class="reservada">Como</span> Entero
+    <span class="reservada">Definir</span> precio, total <span class="reservada">Como</span> Real
+
+    total <- 0
+
+    <span class="reservada">Escribir</span> "¿Cuántos productos va a comprar?"
+    <span class="reservada">Leer</span> cantidad
+
+    <span class="reservada">Para</span> i <- 1 <span class="reservada">Hasta</span> cantidad <span class="reservada">Hacer</span>
+        <span class="reservada">Escribir</span> "Ingrese el precio del producto"
+        <span class="reservada">Leer</span> precio
+        total <- total + precio
+    <span class="reservada">FinPara</span>
+
+    <span class="reservada">Escribir</span> "Total a pagar: ", total
+<span class="reservada">FinAlgoritmo</span>`;
+    }
+
+    else if (tipo === 'diferencia') {
+        res.class {
+    document.getElementById('panel').innerHTML = explicacionActual;
+}
+
+function verCodigo() {
+    document.getElementById('panel').innerHTML = codigoActual;
+}
+
+function verEjecucion() {
+    const panel = document.getElementById('panel');
+
+    if (temaActual === 'contador') {
+        panel.innerHTML = `Cantidad de estudiantes que participaron:
+<input type="number" id="inputContador" placeholder="ejemplo: 5">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarContador()">¡Ejecutar contador!</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (temaActual === 'acumulador') {
+        panel.innerHTML = `Precios de productos separados por coma:
+<input type="text" id="inputAcumulador" placeholder="2000,5000,3500">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarAcumulador()">¡Ejecutar acumulador!</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (temaActual === 'diferencia') {
+        panel.innerHTML = `Valores separados por coma:
+<input type="text" id="inputDiferencia" placeholder="2000,5000,3500">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarDiferencia()">¡Comparar!</button>
+<div id="salida" class="salida"></div>`;
+    }
+}
+
+function ejecutarContador() {
+    const cantidad = Number(document.getElementById('inputContador').value);
+    const salida = document.getElementById('salida');
+
+    if (!cantidad || cantidad <= 0) {
+        salida.innerHTML = '> Escribe una cantidad válida.';
+        return;
+    }
+
+    salida.innerHTML = '';
+    for (let i = 1; i <= cantidad; i++) {
+        salida.innerHTML += '> Participación contada: ' + i + '<br>';
+    }
+    salida.innerHTML += '> Resultado final del contador: ' + cantidad;
+}
+
+function ejecutarAcumulador() {
+    const texto = document.getElementById('inputAcumulador').value;
+    const valores = texto.split(',').map(v => Number(v.trim())).filter(v => !isNaN(v));
+    const salida = document.getElementById('salida');
+
+    if (valores.length === 0) {
+        salida.innerHTML = '> Escribe valores válidos separados por coma.';
+        return;
+    }
+
+    let total = 0;
+    salida.innerHTML = '';
+    valores.forEach(v => {
+        total += v;
+        salida.innerHTML += '> Se suma ' + v + '. Total ahora: ' + total + '<br>';
+    });
+    salida.innerHTML += '> Resultado final del acumulador: ' + total;
+}
+
+function ejecutarDiferencia() {
+    const texto = document.getElementById('inputDiferencia').value;
+    const valores = texto.split(',').map(v => Number(v.trim())).filter(v => !isNaN(v));
+    const salida = document.getElementById('salida');
+
+    if (valores.length === 0) {
+        salida.innerHTML = '> Escribe valores válidos separados por coma.';
+        return;
+    }
+
+    let contador = 0;
+    let total = 0;
+    salida.innerHTML = '';
+
+    valores.forEach(v => {
+        contador += 1;
+        total += v;
+        salida.innerHTML += '> Valor: ' + v + ' | contador: ' + contador + ' | acumulador: ' + total + '<br>';
+    });
+
+    salida.innerHTML += '> Contador dice cuántos valores hay: ' + contador + '<br>';
+    salida.innerHTML += '> Acumulador dice cuánto suman: ' + total;
+}
+
+mostrar('contador', document.querySelector('.btn-choice'));
+</script>
+</body>
+</html>
