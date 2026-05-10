@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Fases de análisis y tratamiento de información - Perfumería</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#bfd0de;color:#111}
+.header{margin:20px;background:#174b17;color:white;padding:18px 24px;font-size:24px;font-weight:700}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:22px;margin:0 20px 20px}
+.menu{background:#c9d6e0;border:1px solid #e4eef6;padding:16px;min-height:680px}
+.menu-title{background:#101010;color:white;padding:18px;text-align:center;font-weight:700;margin-bottom:14px}
+.menu button{width:100%;border:0;background:#e8edf2;color:#222;text-align:left;padding:14px 18px;margin:6px 0;font-size:17px;font-weight:600;cursor:pointer}
+.menu button.active{background:#101010;color:white;border-left:6px solid #69d64f}
+.content{background:#d2dbe3;border:1px solid #e4eef6;min-height:680px}
+.page{display:none}
+.page.active{display:block}
+.page-title{background:#101010;color:white;padding:24px;font-size:30px;font-weight:800;border-bottom:3px solid #16bfe6}
+.page-body{padding:22px}
+.block{border:2px solid #16bfe6;background:#d7d9dc;margin-bottom:16px}
+.block-title{background:#101010;color:white;padding:16px 20px;font-size:22px;font-weight:800}
+.block-body{padding:20px;font-size:19px;line-height:1.45}
+.idea{background:#eef8eb;border-left:5px solid #69d64f;padding:16px;margin-top:16px}
+.note{background:#fff9df;border-left:5px solid #d69b28;padding:14px;margin-top:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.card{background:#eef0f2;padding:18px;border:1px solid #c3ccd3}
+.card b{font-size:20px}
+table{width:100%;border-collapse:collapse;background:white;font-size:17px}
+th{background:#174b17;color:white;text-align:left}
+th,td{border:1px solid #b8c2ca;padding:11px;vertical-align:top}
+.footer{background:#101010;color:#c8ffc0;text-align:center;padding:18px;font-size:18px;font-weight:700}
+.tag{display:inline-block;background:#101010;color:white;border-radius:14px;padding:4px 9px;font-size:13px;margin:2px}
+
+/* Dashboard visual */
+.dashboard{background:#f4f7f9;border:3px solid #101010;border-radius:8px;padding:16px;margin-top:12px;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.dash-header{background:#174b17;color:white;padding:14px 18px;border-radius:6px;margin-bottom:14px;display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:800}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:white;border-left:6px solid #16bfe6;padding:12px;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,.12)}
+.kpi .label{font-size:14px;color:#555;font-weight:700}
+.kpi .value{font-size:25px;font-weight:900;margin-top:4px}
+.kpi .trend{font-size:13px;color:#174b17;margin-top:4px}
+.dash-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.chart-box{background:white;border-radius:6px;padding:14px;box-shadow:0 2px 5px rgba(0,0,0,.12)}
+.chart-title{font-weight:800;margin-bottom:10px}
+.bar-row{display:grid;grid-template-columns:105px 1fr 75px;align-items:center;gap:8px;margin:9px 0;font-size:15px}
+.bar-track{background:#e7edf2;height:18px;border-radius:8px;overflow:hidden}
+.bar-fill{height:100%;background:#174b17;border-radius:8px}
+.pie{width:180px;height:180px;border-radius:50%;background:conic-gradient(#174b17 0 42%, #16bfe6 42% 70%, #d69b28 70% 86%, #555 86% 100%);margin:10px auto}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:14px}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;background:#174b17}
+.dot.b{background:#16bfe6}.dot.c{background:#d69b28}.dot.d{background:#555}
+.choice{display:block;background:#eef0f2;border:1px solid #87939c;padding:12px;margin:8px 0;cursor:pointer;font-size:17px;text-align:left;width:100%}
+.choice:hover{background:#dce7ef}
+.result{background:white;border:2px solid #174b17;padding:15px;margin-top:12px;font-size:18px;min-height:60px}
+@media(max-width:1000px){
+ .layout{grid-template-columns:1fr}
+ .grid2,.grid3,.dash-grid,.kpis{grid-template-columns:1fr}
+ .menu{min-height:auto}
+}
+</style>
+</head>
+<body>
+<div class="header">Fases de análisis y tratamiento de información aplicadas a la perfumería</div>
+
+<div class="layout">
+<aside class="menu">
+<div class="menu-title">Contenido</div>
+<button class="nav active" onclick="showPage('p1',this)">1. Modelo de fases</button>
+<button class="nav" onclick="showPage('p2',this)">2. Percepción</button>
+<button class="nav" onclick="showPage('p3',this)">3. Creación del conocimiento</button>
+<button class="nav" onclick="showPage('p4',this)">4. Toma de decisiones</button>
+<button class="nav" onclick="showPage('p5',this)">5. Aplicación integrada</button>
+<button class="nav" onclick="showPage('p6',this)">6. Actividad de análisis</button>
+</aside>
+
+<main class="content">
+
+<section id="p1" class="page active">
+<div class="page-title">Modelo de fases</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Análisis y tratamiento de información</div><div class="block-body">
+El análisis de información en la perfumería se organiza en tres fases: <b>Percepción</b>, <b>Creación del conocimiento</b> y <b>Toma de decisiones</b>. Estas fases permiten pasar de la observación de datos a la construcción de conclusiones empresariales sustentadas.
+</div></div>
+
+<div class="block"><div class="block-title">Fases aplicadas al caso</div><div class="block-body">
+<table>
+<tr><th>Fase</th><th>Propósito</th><th>Aplicación en la perfumería</th></tr>
+<tr><td><b>Percepción</b></td><td>Identificar necesidades, validar información, leer datos, describir hechos y reconocer relaciones iniciales.</td><td>Revisar la base de ventas, limpiar datos, usar funciones de Excel, construir tablas dinámicas y detectar primeros patrones.</td></tr>
+<tr><td><b>Creación del conocimiento</b></td><td>Usar información relevante para encontrar relaciones y generar comprensión nueva.</td><td>Construir KPI, gráficos y dashboard para interpretar el comportamiento de marcas, productos, clientes y formas de pago.</td></tr>
+<tr><td><b>Toma de decisiones</b></td><td>Evaluar alternativas, seleccionar una acción y proponer seguimiento.</td><td>Recomendar estrategias sobre inventario, promociones, línea premium, pagos digitales o productos de baja rotación.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Relación con Excel, KPI y dashboard</div><div class="block-body">
+<table>
+<tr><th>Elemento</th><th>Fase</th><th>Sentido dentro del análisis</th></tr>
+<tr><td>Base de datos de ventas</td><td>Percepción</td><td>Fuente interna para observar la realidad de la perfumería.</td></tr>
+<tr><td>Limpieza de datos</td><td>Percepción</td><td>Asegura que los registros sean confiables.</td></tr>
+<tr><td>VT: búsqueda de tendencias</td><td>Percepción</td><td>Permite observar señales externas sobre marcas, aromas, precios o preferencias.</td></tr>
+<tr><td>IC: revisión de competidores</td><td>Percepción</td><td>Permite reconocer cómo se comporta la competencia en precios, promociones y posicionamiento.</td></tr>
+<tr><td>Funciones: SUMA, PROMEDIO, CONTAR, SI</td><td>Percepción</td><td>Permiten calcular y preparar resultados iniciales.</td></tr>
+<tr><td>Tablas dinámicas</td><td>Percepción</td><td>Organizan ventas por marca, producto, fecha o forma de pago.</td></tr>
+<tr><td>KPI</td><td>Creación del conocimiento</td><td>Seleccionan las medidas clave que explican el desempeño del negocio.</td></tr>
+<tr><td>Gráficos</td><td>Creación del conocimiento</td><td>Permiten comparar y visualizar relaciones.</td></tr>
+<tr><td>Dashboard</td><td>Creación del conocimiento</td><td>Integra KPI, gráficos y filtros para interpretar el negocio.</td></tr>
+<tr><td>VT e IC</td><td>Creación del conocimiento</td><td>Relacionan los hallazgos internos con tendencias externas y comportamiento competitivo.</td></tr>
+<tr><td>Simulación de escenarios</td><td>Creación del conocimiento</td><td>Compara alternativas antes de decidir.</td></tr>
+<tr><td>Síntesis estratégica</td><td>Toma de decisiones</td><td>Formula una recomendación sustentada en datos internos, VT e IC.</td></tr>
+</table>
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p2" class="page">
+<div class="page-title">Percepción</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Sentido de la fase</div><div class="block-body">
+La percepción corresponde al reconocimiento inicial de la información. En esta fase se identifican los datos disponibles, se valida su calidad, se organizan los registros y se describen los primeros hallazgos.
+<div class="idea"><b>En la perfumería:</b> esta fase permite saber qué datos existen, qué tan confiables son y qué primeras señales aparecen en las ventas.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Procesos de percepción en Excel</div><div class="block-body">
+<table>
+<tr><th>Proceso</th><th>Aplicación en la perfumería</th><th>Resultado</th></tr>
+<tr><td>Validación de datos</td><td>Revisar si las fechas, precios, marcas, productos y formas de pago están completos.</td><td>Base lista para análisis.</td></tr>
+<tr><td>Limpieza de datos</td><td>Unificar marcas escritas de varias formas: DIOR, Dior, dior.</td><td>Evita resultados duplicados o incorrectos.</td></tr>
+<tr><td>Clasificación</td><td>Separar producto, marca, categoría, forma de pago y fecha.</td><td>Datos ordenados por campos.</td></tr>
+<tr><td>SUMA</td><td>Calcular ingresos totales por marca o por producto.</td><td>Total vendido.</td></tr>
+<tr><td>PROMEDIO</td><td>Calcular precio promedio o ticket promedio.</td><td>Valor medio de compra.</td></tr>
+<tr><td>CONTAR / CONTAR.SI</td><td>Contar ventas por marca, producto o forma de pago.</td><td>Frecuencia de ventas.</td></tr>
+<tr><td>SI</td><td>Clasificar compras como altas, medias o bajas.</td><td>Segmentación inicial.</td></tr>
+<tr><td>Tablas dinámicas</td><td>Resumir ventas por marca, producto, mes o forma de pago.</td><td>Información organizada para análisis.</td></tr>
+<tr><td>Vigilancia tecnológica</td><td>Buscar tendencias de aromas, consumo, tecnología, canales digitales o preferencias del mercado.</td><td>Señales externas para contrastar con los datos internos.</td></tr>
+<tr><td>Inteligencia competitiva</td><td>Revisar competidores, precios, promociones, reseñas y presencia digital.</td><td>Información externa para entender el entorno competitivo.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">VT e IC en la fase de percepción</div><div class="block-body">
+<table>
+<tr><th>Proceso</th><th>Aplicación en perfumería</th><th>Ejemplo</th></tr>
+<tr><td>Vigilancia tecnológica</td><td>Observar cambios y tendencias del sector.</td><td>Buscar si están creciendo las búsquedas de perfumes dulces, árabes, recargables o sostenibles.</td></tr>
+<tr><td>Inteligencia competitiva</td><td>Observar cómo actúan otras perfumerías o marketplaces.</td><td>Comparar precios de Dior, Chanel o Carolina Herrera en tiendas externas.</td></tr>
+<tr><td>Validación de fuentes</td><td>Revisar que la información externa tenga soporte.</td><td>Google Trends, marketplaces, páginas oficiales, redes verificables o noticias del sector.</td></tr>
+<tr><td>Registro de hallazgos</td><td>Organizar lo encontrado para compararlo con Excel.</td><td>Marca externa más visible, precio promedio externo, promoción frecuente, tendencia de búsqueda.</td></tr>
+</table>
+<div class="note">En esta fase VT e IC ayudan a ampliar la percepción: ya no se mira solo la base de ventas, también se observa el entorno.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Ejemplo aplicado</div><div class="block-body">
+<table>
+<tr><th>Pregunta inicial</th><th>Herramienta</th><th>Hallazgo posible</th></tr>
+<tr><td>¿Qué marca genera más ingresos?</td><td>Tabla dinámica con suma de ingresos por marca.</td><td>Dior concentra el mayor ingreso.</td></tr>
+<tr><td>¿Qué producto tiene más ventas?</td><td>Tabla dinámica con conteo o suma de unidades.</td><td>Una fragancia específica tiene mayor rotación.</td></tr>
+<tr><td>¿Qué forma de pago predomina?</td><td>CONTAR.SI o tabla dinámica por forma de pago.</td><td>Tarjeta crédito es la forma de pago más frecuente.</td></tr>
+<tr><td>¿Cuánto gasta en promedio un cliente?</td><td>PROMEDIO o ingreso total dividido entre número de ventas.</td><td>Ticket promedio de $377.000.</td></tr>
+</table>
+<div class="note">La percepción no termina en una decisión. Termina en hallazgos organizados que permiten avanzar a la interpretación.</div>
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p3" class="page">
+<div class="page-title">Creación del conocimiento</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Sentido de la fase</div><div class="block-body">
+La creación del conocimiento ocurre cuando los hallazgos internos y externos dejan de ser resultados aislados y empiezan a explicar el comportamiento de la perfumería. Aquí se relacionan datos de Excel, KPI, gráficos, dashboard, VT, IC y escenarios.
+<div class="idea"><b>En esta fase se ubica el dashboard</b>, porque permite integrar KPI, gráficos y filtros para comprender el negocio.</div>
+</div></div>
+
+<div class="block"><div class="block-title">De indicador a KPI</div><div class="block-body">
+<table>
+<tr><th>Resultado inicial</th><th>Interpretación</th><th>KPI asociado</th></tr>
+<tr><td>Dior genera mayor ingreso.</td><td>Puede tener comportamiento de marca premium.</td><td>Marca líder por ingreso.</td></tr>
+<tr><td>Chanel vende más unidades.</td><td>Puede funcionar como producto de rotación.</td><td>Producto o marca con mayor volumen.</td></tr>
+<tr><td>Tarjeta crédito domina compras altas.</td><td>Los clientes pueden preferir medios digitales en compras premium.</td><td>Forma de pago dominante.</td></tr>
+<tr><td>Ticket promedio alto.</td><td>Existe oportunidad para combos de mayor valor.</td><td>Ticket promedio.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Relación entre análisis interno, VT e IC</div><div class="block-body">
+<table>
+<tr><th>Hallazgo interno en Excel</th><th>Hallazgo externo VT/IC</th><th>Conocimiento construido</th></tr>
+<tr><td>Dior genera mayor ingreso.</td><td>En marketplaces mantiene precios altos y buena presencia.</td><td>Dior puede interpretarse como línea premium.</td></tr>
+<tr><td>Chanel vende más unidades.</td><td>Competidores la usan con promociones y combos.</td><td>Chanel puede funcionar como línea de rotación.</td></tr>
+<tr><td>Tarjeta domina compras altas.</td><td>Tiendas online promueven pagos digitales y cuotas.</td><td>Hay oportunidad para beneficios por pago digital.</td></tr>
+<tr><td>Fragancias dulces tienen buena salida.</td><td>En tendencias y redes aparecen búsquedas sobre aromas dulces o árabes.</td><td>Se puede probar una campaña por familia olfativa.</td></tr>
+</table>
+<div class="idea"><b>La creación del conocimiento ocurre cuando se cruzan dos lecturas:</b> lo que pasa dentro de la perfumería y lo que está pasando afuera en el mercado.</div>
+</div></div>
+
+<div class="block"><div class="block-title">KPI, gráficos y dashboard</div><div class="block-body">
+<table>
+<tr><th>Elemento</th><th>Uso en la perfumería</th><th>Conocimiento que genera</th></tr>
+<tr><td>KPI de ingreso total</td><td>Mide cuánto vendió la perfumería.</td><td>Permite dimensionar el resultado comercial.</td></tr>
+<tr><td>KPI de ticket promedio</td><td>Mide el valor promedio por compra.</td><td>Ayuda a comprender el nivel de gasto del cliente.</td></tr>
+<tr><td>KPI de marca líder</td><td>Identifica la marca de mayor aporte.</td><td>Ayuda a priorizar inventario o campaña.</td></tr>
+<tr><td>Gráfico de ingresos por marca</td><td>Compara marcas.</td><td>Permite ver concentración de ingresos.</td></tr>
+<tr><td>Gráfico por forma de pago</td><td>Visualiza cómo pagan los clientes.</td><td>Permite detectar oportunidades de pago digital.</td></tr>
+<tr><td>Dashboard</td><td>Integra KPI, gráficos y filtros.</td><td>Facilita una lectura estratégica de la perfumería.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Dashboard de la perfumería</div><div class="block-body">
+<div class="dashboard">
+<div class="dash-header">
+<div>Dashboard comercial - Perfumería</div>
+<div>Creación del conocimiento</div>
+</div>
+<div class="kpis">
+<div class="kpi"><div class="label">Ingreso total</div><div class="value">$18.5M</div><div class="trend">Resultado general</div></div>
+<div class="kpi"><div class="label">Ticket promedio</div><div class="value">$377K</div><div class="trend">Nivel de compra</div></div>
+<div class="kpi"><div class="label">Marca líder</div><div class="value">Dior</div><div class="trend">Mayor ingreso</div></div>
+<div class="kpi"><div class="label">Pago dominante</div><div class="value">Tarjeta</div><div class="trend">Compras altas</div></div>
+</div>
+<div class="dash-grid">
+<div class="chart-box">
+<div class="chart-title">Ingresos por marca</div>
+<div class="bar-row"><span>Dior</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><b>$6.8M</b></div>
+<div class="bar-row"><span>Chanel</span><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div><b>$5.7M</b></div>
+<div class="bar-row"><span>Carolina H.</span><div class="bar-track"><div class="bar-fill" style="width:54%"></div></div><b>$3.9M</b></div>
+<div class="bar-row"><span>YSL</span><div class="bar-track"><div class="bar-fill" style="width:32%"></div></div><b>$2.1M</b></div>
+</div>
+<div class="chart-box">
+<div class="chart-title">Forma de pago</div>
+<div class="pie"></div>
+<div class="legend">
+<div><span class="dot"></span>Tarjeta</div>
+<div><span class="dot b"></span>Efectivo</div>
+<div><span class="dot c"></span>Transferencia</div>
+<div><span class="dot d"></span>Débito</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+
+<div class="block"><div class="block-title">Simulación de escenarios</div><div class="block-body">
+<table>
+<tr><th>Escenario</th><th>Variable que cambia</th><th>Qué permite analizar</th></tr>
+<tr><td>Escenario actual</td><td>Se mantienen los datos reales.</td><td>Sirve como base de comparación.</td></tr>
+<tr><td>Escenario promoción</td><td>Se aplica descuento o combo a una marca de alta rotación.</td><td>Permite ver si suben unidades sin afectar demasiado el ingreso.</td></tr>
+<tr><td>Escenario premium</td><td>Se fortalece una marca de alto ingreso como Dior.</td><td>Permite evaluar si conviene priorizar inventario premium.</td></tr>
+<tr><td>Escenario pago digital</td><td>Se ofrece beneficio por tarjeta.</td><td>Permite analizar si aumenta el ticket promedio o la frecuencia de compra.</td></tr>
+</table>
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p4" class="page">
+<div class="page-title">Toma de decisiones</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Sentido de la fase</div><div class="block-body">
+La toma de decisiones corresponde a la selección de una acción empresarial sustentada en la información analizada. En la perfumería, esta fase toma los hallazgos y el conocimiento construido para proponer una estrategia.
+</div></div>
+
+<div class="block"><div class="block-title">Decisiones sustentadas</div><div class="block-body">
+<table>
+<tr><th>Hallazgo de percepción</th><th>Conocimiento construido con Excel + VT/IC</th><th>Decisión empresarial</th></tr>
+<tr><td>Dior genera mayor ingreso.</td><td>Dior se comporta como marca premium y el entorno confirma precios altos.</td><td>Fortalecer inventario Dior y campaña dirigida a clientes de mayor ticket.</td></tr>
+<tr><td>Chanel tiene alta rotación.</td><td>Chanel puede funcionar para volumen y la competencia la usa en promociones.</td><td>Diseñar combos o campañas de rotación.</td></tr>
+<tr><td>Tarjeta domina compras altas.</td><td>Hay relación entre pago digital, compra premium y estrategias externas de financiación.</td><td>Crear beneficio por pago con tarjeta.</td></tr>
+<tr><td>Un producto tiene baja venta.</td><td>Si tampoco aparece fuerte en tendencias externas, puede representar inventario inmovilizado.</td><td>Revisar precio, promoción o retiro progresivo.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Síntesis estratégica</div><div class="block-body">
+La síntesis estratégica debe conectar las tres fases:
+<table>
+<tr><th>Parte</th><th>Contenido</th><th>Ejemplo</th></tr>
+<tr><td>Percepción</td><td>Hallazgo obtenido desde Excel y hallazgo externo desde VT/IC.</td><td>Dior concentra el mayor ingreso y en marketplaces mantiene precios altos.</td></tr>
+<tr><td>Creación del conocimiento</td><td>Interpretación desde KPI, gráficos, dashboard, VT e IC.</td><td>Dior se comporta como línea premium.</td></tr>
+<tr><td>Toma de decisiones</td><td>Acción recomendada.</td><td>Fortalecer inventario y campaña premium.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Ejemplo redactado</div><div class="block-body">
+En la fase de percepción se identificó que Dior concentra el mayor ingreso dentro de la base de ventas. En la fase de creación del conocimiento, el KPI de marca líder y el dashboard muestran que Dior tiene un comportamiento premium frente a otras marcas. En la fase de toma de decisiones se recomienda fortalecer su inventario, revisar margen y diseñar una campaña dirigida a clientes con mayor ticket promedio.
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p5" class="page">
+<div class="page-title">Aplicación integrada</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Caso: Dior, Chanel y forma de pago</div><div class="block-body">
+<table>
+<tr><th>Fase</th><th>Aplicación</th><th>Resultado</th></tr>
+<tr><td>Percepción</td><td>Se limpia la base, se calculan ingresos, promedios y frecuencias, se elaboran tablas dinámicas y se registran hallazgos externos de VT/IC.</td><td>Dior genera más ingreso; Chanel vende más unidades; tarjeta es la forma de pago más frecuente; el entorno muestra precios y promociones de competidores.</td></tr>
+<tr><td>Creación del conocimiento</td><td>Se seleccionan KPI, se crean gráficos, se diseña dashboard, se relaciona Excel con VT/IC y se comparan escenarios.</td><td>Dior se interpreta como línea premium; Chanel como línea de rotación; tarjeta como oportunidad para compras digitales.</td></tr>
+<tr><td>Toma de decisiones</td><td>Se formula una recomendación empresarial sustentada.</td><td>Fortalecer Dior, usar Chanel en campañas y crear beneficios para pago con tarjeta.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Relación con Business Intelligence</div><div class="block-body">
+Business Intelligence se evidencia cuando la perfumería no solo calcula resultados, sino que los cruza con señales externas de VT e IC para comprender patrones, comparar escenarios y orientar decisiones. En este caso, BI se concreta en la relación entre Excel, KPI, dashboard, vigilancia tecnológica, inteligencia competitiva, simulación y síntesis estratégica.
+</div></div>
+
+<div class="block"><div class="block-title">Texto modelo</div><div class="block-body">
+El análisis de la perfumería evidencia que Dior concentra el mayor ingreso, mientras Chanel presenta mayor volumen de unidades vendidas. Al contrastar estos hallazgos con VT e IC, se observa que Dior mantiene posicionamiento alto en precios externos y que Chanel aparece con mayor posibilidad de promoción en el mercado. A partir de los KPI de marca líder, ticket promedio y forma de pago dominante, visualizados en el dashboard, se interpreta que Dior puede manejarse como línea premium y Chanel como línea de rotación. Como decisión empresarial, se recomienda fortalecer inventario de Dior, diseñar campañas de volumen para Chanel y probar beneficios asociados al pago con tarjeta.
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p6" class="page">
+<div class="page-title">Actividad de análisis</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Clasificación por fase</div><div class="block-body">
+<button class="choice" onclick="responder(1)">Normalizar nombres de marcas, revisar fechas y corregir datos vacíos.</button>
+<button class="choice" onclick="responder(2)">Usar SUMA, PROMEDIO y CONTAR.SI para obtener resultados iniciales.</button>
+<button class="choice" onclick="responder(7)">Buscar en Google Trends si crece el interés por perfumes dulces o marcas premium.</button>
+<button class="choice" onclick="responder(8)">Comparar precios de Dior y Chanel en marketplaces o tiendas competidoras.</button>
+<button class="choice" onclick="responder(3)">Construir KPI de ingreso total, ticket promedio y marca líder.</button>
+<button class="choice" onclick="responder(4)">Diseñar un dashboard con gráficos y filtros por marca, fecha y forma de pago.</button>
+<button class="choice" onclick="responder(5)">Comparar un escenario actual con un escenario de promoción.</button>
+<button class="choice" onclick="responder(6)">Recomendar fortalecer Dior como línea premium.</button>
+<div id="respuesta" class="result">Selecciona una acción.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Cierre conceptual</div><div class="block-body">
+<table>
+<tr><th>Fase</th><th>Se reconoce por...</th><th>Ejemplo en perfumería</th></tr>
+<tr><td>Percepción</td><td>Preparación, validación, organización y primeros cálculos.</td><td>Limpieza, funciones, tablas dinámicas e indicadores iniciales.</td></tr>
+<tr><td>Creación del conocimiento</td><td>Interpretación, relaciones, KPI, gráficos, dashboard y escenarios.</td><td>Dashboard que muestra ingreso total, ticket promedio, marca líder y forma de pago.</td></tr>
+<tr><td>Toma de decisiones</td><td>Selección de alternativa y recomendación sustentada.</td><td>Fortalecer Dior, promocionar Chanel o impulsar pagos con tarjeta.</td></tr>
+</table>
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function showPage(id,btn){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');
+}
+function responder(n){
+ const r=document.getElementById('respuesta');
+ if(n===1){r.innerHTML='<b>Percepción.</b> Corresponde a validación, limpieza y preparación de la base.';}
+ if(n===2){r.innerHTML='<b>Percepción.</b> Son cálculos iniciales para organizar resultados.';}
+ if(n===3){r.innerHTML='<b>Creación del conocimiento.</b> Los KPI permiten interpretar medidas clave del negocio.';}
+ if(n===4){r.innerHTML='<b>Creación del conocimiento.</b> El dashboard integra KPI, gráficos y filtros para comprender la perfumería.';}
+ if(n===5){r.innerHTML='<b>Creación del conocimiento.</b> La simulación permite comparar escenarios antes de decidir.';}
+ if(n===6){r.innerHTML='<b>Toma de decisiones.</b> Ya se formula una acción empresarial sustentada.';}
+ if(n===7){r.innerHTML='<b>Percepción.</b> Es vigilancia tecnológica porque observa señales externas del mercado.';}
+ if(n===8){r.innerHTML='<b>Percepción.</b> Es inteligencia competitiva porque observa precios y acciones de competidores.';}
+}
+</script>
+</body>
+</html>
