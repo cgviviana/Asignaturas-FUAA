@@ -1,0 +1,948 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pensamiento Computacional e IA</title>
+
+<style>
+    body {
+        font-family: sans-serif;
+        background: #eef2f3;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        margin: 0;
+    }
+
+    .master-card {
+        background: white;
+        width: 1080px;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        text-align: center;
+        border-bottom: 2px solid #6c5ce7;
+        padding-bottom: 10px;
+        margin-top: 0;
+        color: #1f2937;
+    }
+
+    .intro {
+        background: #f8f7ff;
+        border: 2px solid #6c5ce7;
+        border-radius: 14px;
+        padding: 16px 18px;
+        line-height: 1.5;
+        color: #374151;
+        margin-bottom: 18px;
+    }
+
+    .contenedor {
+        display: grid;
+        grid-template-columns: 310px 1fr;
+        gap: 25px;
+        margin-top: 20px;
+    }
+
+    .decision-box {
+        background: #f9f9f9;
+        border: 2px dashed #6c5ce7;
+        padding: 20px;
+        border-radius: 10px;
+        min-height: 520px;
+    }
+
+    .btn-choice {
+        background: #6c5ce7;
+        color: white;
+        border: none;
+        padding: 14px;
+        margin: 8px 0;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        font-size: 15px;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    .btn-choice:hover,
+    .btn-choice.activo {
+        background: #4f46e5;
+        transform: translateX(3px);
+    }
+
+    #resultado {
+        padding: 20px;
+        border-radius: 10px;
+        min-height: 520px;
+        border: 2px solid #6c5ce7;
+        background: #f8f7ff;
+    }
+
+    .panel-pensamiento {
+        background: #dbeafe !important;
+        border-color: #2563eb !important;
+    }
+
+    .panel-pilares {
+        background: #ede9fe !important;
+        border-color: #8b5cf6 !important;
+    }
+
+    .panel-visual {
+        background: #fef3c7 !important;
+        border-color: #f59e0b !important;
+    }
+
+    .panel-mixta {
+        background: #d1fae5 !important;
+        border-color: #10b981 !important;
+    }
+
+    .panel-codigo {
+        background: #e0f2fe !important;
+        border-color: #0284c7 !important;
+    }
+
+    .panel-soluciones {
+        background: #fee2e2 !important;
+        border-color: #ef4444 !important;
+    }
+
+    .panel-ia {
+        background: #f3e8ff !important;
+        border-color: #9333ea !important;
+    }
+
+    .panel-futuro {
+        background: #ecfccb !important;
+        border-color: #65a30d !important;
+    }
+
+    .titulo-panel {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 27px;
+        margin: 5px 0 20px;
+        color: #111827;
+    }
+
+    .visual {
+        display: grid;
+        grid-template-columns: 1fr 160px;
+        gap: 15px;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .ejemplo {
+        background: rgba(255,255,255,0.75);
+        padding: 18px;
+        border-radius: 12px;
+        font-size: 17px;
+        line-height: 1.5;
+        color: #374151;
+    }
+
+    .imagen {
+        background: rgba(255,255,255,0.75);
+        padding: 20px;
+        border-radius: 12px;
+        font-size: 66px;
+        text-align: center;
+    }
+
+    .botones {
+        margin-top: 18px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-panel {
+        border: none;
+        padding: 11px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    .btn-panel:hover {
+        transform: translateY(-2px);
+        filter: brightness(0.95);
+    }
+
+    .btn-explicacion { background: #16a34a; }
+    .btn-ejecucion { background: #2563eb; }
+    .btn-codigo { background: #7c3aed; }
+    .btn-ejecutar { background: #f97316; margin-top: 10px; }
+    .btn-limpiar { background: #64748b; margin-top: 10px; }
+
+    #panel {
+        margin-top: 15px;
+        background: rgba(255,255,255,0.78);
+        padding: 15px;
+        border-radius: 10px;
+        font-family: Consolas, monospace;
+        white-space: pre-line;
+        line-height: 1.5;
+        overflow-x: auto;
+        min-height: 170px;
+        font-size: 15px;
+        color: #1f2937;
+    }
+
+    input, select {
+        padding: 9px;
+        border-radius: 6px;
+        border: 1px solid #999;
+        margin: 6px 0;
+        width: 230px;
+        max-width: 100%;
+        font-size: 14px;
+    }
+
+    .salida {
+        color: #064e3b;
+        font-weight: bold;
+        margin-top: 12px;
+        border-left: 4px solid #10b981;
+        padding-left: 10px;
+        min-height: 24px;
+        white-space: normal;
+    }
+
+    .reservada {
+        color: #2563eb;
+        font-weight: bold;
+    }
+
+    .verde {
+        color: #15803d;
+        font-weight: bold;
+    }
+
+    .morado {
+        color: #7c3aed;
+        font-weight: bold;
+    }
+
+    .naranja {
+        color: #ea580c;
+        font-weight: bold;
+    }
+
+    .rojo {
+        color: #dc2626;
+        font-weight: bold;
+    }
+
+    .mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 10px;
+    }
+
+    .mini-card {
+        background: rgba(255,255,255,0.72);
+        border-radius: 10px;
+        padding: 12px;
+        color: #374151;
+        border-left: 5px solid #6c5ce7;
+        line-height: 1.45;
+    }
+
+    .mini-card strong {
+        display: block;
+        color: #111827;
+        margin-bottom: 5px;
+    }
+
+    .bloques {
+        display: grid;
+        gap: 8px;
+    }
+
+    .bloque {
+        padding: 10px 12px;
+        border-radius: 9px;
+        color: white;
+        font-weight: bold;
+        background: #6c5ce7;
+    }
+
+    .bloque:nth-child(2) { background: #2563eb; }
+    .bloque:nth-child(3) { background: #16a34a; }
+    .bloque:nth-child(4) { background: #f97316; }
+
+    .robot-box {
+        display: grid;
+        grid-template-columns: 1fr 210px;
+        gap: 14px;
+        align-items: center;
+    }
+
+    .escenario {
+        background: #eef2ff;
+        border: 2px solid #6366f1;
+        border-radius: 12px;
+        height: 130px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .robot {
+        position: absolute;
+        left: 12px;
+        top: 35px;
+        font-size: 48px;
+        transition: 0.7s;
+    }
+
+    .meta {
+        position: absolute;
+        right: 12px;
+        top: 35px;
+        font-size: 48px;
+    }
+
+    .footer-vivy {
+        margin-top: 28px;
+        padding-top: 16px;
+        border-top: 1px solid #cbd5e1;
+        text-align: center;
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.2px;
+    }
+
+    @media (max-width: 850px) {
+        .contenedor { grid-template-columns: 1fr; }
+        .visual { grid-template-columns: 1fr; }
+        .robot-box { grid-template-columns: 1fr; }
+        .mini-grid { grid-template-columns: 1fr; }
+        .master-card { width: 100%; padding: 20px; }
+    }
+</style>
+</head>
+
+<body>
+<div class="master-card">
+
+    <h1>🤔 Pensamiento computacional</h1>
+
+    <div class="intro">
+        Desde observar un problema, dividirlo en partes, reconocer patrones, construir pasos ordenados y apoyarse en herramientas (programación o IA) en la búsqueda de las soluciones.
+    </div>
+
+    <div class="contenedor">
+
+        <div class="decision-box">
+            <button class="btn-choice activo" onclick="mostrar('pensamiento', this)">🧠 Pensamiento computacional</button>
+            <button class="btn-choice" onclick="mostrar('pilares', this)">🧩 Pilares fundamentales</button>
+            <button class="btn-choice" onclick="mostrar('visual', this)">🧱 Programación visual</button>
+            <button class="btn-choice" onclick="mostrar('mixta', this)">🔁 Herramientas mixtas</button>
+            <button class="btn-choice" onclick="mostrar('codigo', this)">💻 Programación con código</button>
+            <button class="btn-choice" onclick="mostrar('soluciones', this)">🚀 Soluciones innovadoras</button>
+            <button class="btn-choice" onclick="mostrar('ia', this)">🤖 IA para resolver algoritmos</button>
+            <button class="btn-choice" onclick="mostrar('futuro', this)">🌎 Futuro con IA</button>
+        </div>
+
+        <div id="resultado"></div>
+
+    </div>
+
+    <footer class="footer-vivy">
+        Aprendiendo con @laProfeVivy
+    </footer>
+
+</div>
+
+<script>
+let temaActual = "pensamiento";
+let explicacionActual = "";
+let codigoActual = "";
+let ejecucionActual = "";
+
+function activarBoton(boton) {
+    document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('activo'));
+    if (boton) boton.classList.add('activo');
+}
+
+function basePanel(res, clase, titulo, ejemplo, imagen) {
+    res.className = '';
+    res.classList.add(clase);
+    res.innerHTML = `
+        <h2 class="titulo-panel">${titulo}</h2>
+
+        <div class="visual">
+            <div class="ejemplo">${ejemplo}</div>
+            <div class="imagen">${imagen}</div>
+        </div>
+
+        <div class="botones">
+            <button class="btn-panel btn-explicacion" onclick="verExplicacion()">Explicación</button>
+            <button class="btn-panel btn-ejecucion" onclick="verEjecucion()">Ejecución</button>
+            
+        </div>
+
+        <div id="panel"></div>
+    `;
+}
+
+function mostrar(tipo, boton) {
+    activarBoton(boton);
+    temaActual = tipo;
+
+    const res = document.getElementById('resultado');
+
+    if (tipo === 'pensamiento') {
+        basePanel(
+            res,
+            'panel-pensamiento',
+            '🧠 Pensamiento computacional',
+            'Ejemplo: si un colegio tiene congestión al registrar la llegada de estudiantes, antes de crear una app se debe entender el problema, identificar datos, pensar reglas y definir una solución.',
+            '🧠'
+        );
+
+        explicacionActual = `<span class="reservada">PENSAMIENTO COMPUTACIONAL</span> es una forma de resolver problemas con orden.
+
+No es solo programar.
+Es pensar así:
+
+1. ¿Cuál es el problema?
+2. ¿Qué partes tiene?
+3. ¿Qué datos se repiten?
+4. ¿Qué es realmente importante?
+5. ¿Qué pasos permiten resolverlo?
+
+Ejemplo:
+Problema: muchos estudiantes llegan tarde.
+Solución pensada: registrar hora, comparar horario y generar alerta.`;
+
+        codigoActual = `<span class="reservada">Algoritmo</span> AnalizarProblema
+    <span class="reservada">Escribir</span> "Observar la situación"
+    <span class="reservada">Escribir</span> "Dividir el problema en partes"
+    <span class="reservada">Escribir</span> "Reconocer datos importantes"
+    <span class="reservada">Escribir</span> "Definir pasos de solución"
+    <span class="reservada">Escribir</span> "Probar si funciona"
+<span class="reservada">FinAlgoritmo</span>`;
+
+        ejecucionActual = 'pensamiento';
+    }
+
+    else if (tipo === 'pilares') {
+        basePanel(
+            res,
+            'panel-pilares',
+            '🧩 Pilares fundamentales',
+            'Ejemplo: para crear un videojuego no se hace todo de una vez. Se separa en personaje, puntos, vidas, obstáculos, reglas y final.',
+            '🧩'
+        );
+
+        explicacionActual = `<span class="morado">PILARES DEL PENSAMIENTO COMPUTACIONAL</span>
+
+1. <span class="reservada">Descomposición:</span> dividir el problema.
+2. <span class="reservada">Patrones:</span> encontrar lo que se repite.
+3. <span class="reservada">Abstracción:</span> quedarse con lo importante.
+4. <span class="reservada">Algoritmos:</span> crear pasos ordenados.
+
+Ejemplo:
+Un basurero inteligente necesita:
+- identificar residuo
+- clasificar material
+- elegir color de caneca
+- mostrar recomendación`;
+
+        codigoActual = `<span class="reservada">Algoritmo</span> PilaresBasurero
+    <span class="reservada">Escribir</span> "Descomposición: separar tipos de residuos"
+    <span class="reservada">Escribir</span> "Patrones: detectar residuos repetidos"
+    <span class="reservada">Escribir</span> "Abstracción: usar solo el material relevante"
+    <span class="reservada">Escribir</span> "Algoritmo: decidir la caneca correcta"
+<span class="reservada">FinAlgoritmo</span>`;
+
+        ejecucionActual = 'pilares';
+    }
+
+    else if (tipo === 'visual') {
+        basePanel(
+            res,
+            'panel-visual',
+            '🧱 Programación visual',
+            'Ejemplo: Scratch, Blockly y App Inventor permiten programar arrastrando bloques. Así se aprende la lógica antes de escribir código complejo.',
+            '🧱'
+        );
+
+        explicacionActual = `<span class="naranja">PROGRAMACIÓN VISUAL</span> usa bloques para construir instrucciones.
+
+Herramientas:
+- <span class="reservada">Scratch:</span> juegos, historias y animaciones.
+- <span class="reservada">Blockly:</span> bloques para aprender secuencias, condiciones y ciclos.
+- <span class="reservada">App Inventor:</span> creación de apps móviles con pantallas y bloques.
+
+Sirve para entender:
+- eventos
+- decisiones
+- ciclos
+- variables
+- acciones`;
+
+        codigoActual = `<span class="reservada">Bloques tipo Scratch</span>
+
+AL PRESIONAR BANDERA VERDE
+    mover 10 pasos
+    si toca el borde entonces
+        rebotar
+    fin si
+    cambiar puntos por 1`;
+
+        ejecucionActual = 'visual';
+    }
+
+    else if (tipo === 'mixta') {
+        basePanel(
+            res,
+            'panel-mixta',
+            '🔁 Herramientas mixtas: bloques ↔ código',
+            'Ejemplo: mBlock permite trabajar con bloques y luego observar cómo esa lógica se parece al código que controla un robot, sensor o placa Arduino.',
+            '🔁'
+        );
+
+        explicacionActual = `<span class="verde">HERRAMIENTAS MIXTAS</span> conectan dos mundos:
+
+1. Bloques visuales.
+2. Código escrito.
+
+Ejemplo:
+En mBlock se puede crear una instrucción con bloques:
+"encender LED, esperar, apagar LED"
+
+Y luego relacionarla con código:
+digitalWrite(led, HIGH)
+delay(1000)
+digitalWrite(led, LOW)
+
+Esto ayuda a pasar de lo visual a lo textual.`;
+
+        codigoActual = `<span class="reservada">Algoritmo</span> BloquesACodigo
+    <span class="reservada">Escribir</span> "Bloque: encender LED"
+    <span class="reservada">Escribir</span> "Código: digitalWrite(led, HIGH)"
+    <span class="reservada">Escribir</span> "Bloque: esperar 1 segundo"
+    <span class="reservada">Escribir</span> "Código: delay(1000)"
+<span class="reservada">FinAlgoritmo</span>`;
+
+        ejecucionActual = 'mixta';
+    }
+
+    else if (tipo === 'codigo') {
+        basePanel(
+            res,
+            'panel-codigo',
+            '💻 Programación con código',
+            'Ejemplo: Python, Arduino y Python con Kivy permiten escribir instrucciones directamente para crear algoritmos, controlar dispositivos o construir aplicaciones.',
+            '💻'
+        );
+
+        explicacionActual = `<span class="reservada">PROGRAMACIÓN CON CÓDIGO</span> significa escribir instrucciones usando un lenguaje.
+
+Antes de llegar al código escrito, se pueden usar dos apoyos muy importantes:
+
+- <span class="morado">Diagrama de flujo:</span> representa visualmente el camino de la solución. Muestra inicio, entradas, procesos, decisiones, salidas y final.
+- <span class="morado">PSeInt:</span> permite escribir el algoritmo en pseudocódigo, con una forma parecida al lenguaje humano, antes de pasarlo a un lenguaje real.
+
+Después de entender la lógica, se puede avanzar a herramientas como:
+
+- <span class="reservada">Python:</span> algoritmos, datos, IA y automatización.
+- <span class="reservada">Arduino:</span> sensores, luces, motores y prototipos físicos.
+- <span class="reservada">Python con Kivy:</span> interfaces y aplicaciones.
+
+Ruta recomendada:
+Problema → diagrama de flujo → PSeInt → lenguaje de programación.`;
+
+        codigoActual = `<span class="reservada">Diagrama de flujo</span>
+Inicio
+ ↓
+Leer nota
+ ↓
+¿nota >= 3.0?
+ ├── Sí → Escribir "Aprueba"
+ └── No → Escribir "No aprueba"
+ ↓
+Fin
+
+<span class="reservada">PSeInt</span>
+
+<span class="reservada">Algoritmo</span> ClasificarNota
+    <span class="reservada">Definir</span> nota <span class="reservada">Como</span> Real
+
+    <span class="reservada">Escribir</span> "Ingrese la nota"
+    <span class="reservada">Leer</span> nota
+
+    <span class="reservada">Si</span> nota >= 3.0 <span class="reservada">Entonces</span>
+        <span class="reservada">Escribir</span> "Aprueba"
+    <span class="reservada">Sino</span>
+        <span class="reservada">Escribir</span> "No aprueba"
+    <span class="reservada">FinSi</span>
+<span class="reservada">FinAlgoritmo</span>`;
+
+        ejecucionActual = 'codigo';
+    }
+
+    else if (tipo === 'soluciones') {
+        basePanel(
+            res,
+            'panel-soluciones',
+            '🚀 Desarrollo de soluciones innovadoras',
+            'Ejemplo: una solución innovadora puede ser un basurero inteligente, una app de retardos, un sistema de inventario o una alerta automática.',
+            '🚀'
+        );
+
+        explicacionActual = `<span class="rojo">SOLUCIÓN INNOVADORA</span> no es solo usar tecnología.
+
+Debe resolver una necesidad real.
+
+Ruta:
+1. Observar una problemática.
+2. Identificar usuarios afectados.
+3. Definir datos necesarios.
+4. Crear reglas de decisión.
+5. Probar la solución.
+
+Ejemplo:
+Basurero inteligente:
+- Entrada: tipo de residuo.
+- Proceso: clasificar material.
+- Salida: color de caneca.`;
+
+        codigoActual = `<span class="reservada">Algoritmo</span> BasureroInteligente
+    <span class="reservada">Definir</span> residuo <span class="reservada">Como</span> Caracter
+
+    <span class="reservada">Escribir</span> "Ingrese residuo: botella, cáscara, hoja o frasco"
+    <span class="reservada">Leer</span> residuo
+
+    <span class="reservada">Si</span> residuo = "cáscara" <span class="reservada">Entonces</span>
+        <span class="reservada">Escribir</span> "Caneca verde: orgánico"
+    <span class="reservada">Sino</span>
+        <span class="reservada">Si</span> residuo = "botella" <span class="reservada">Entonces</span>
+            <span class="reservada">Escribir</span> "Caneca amarilla: plástico"
+        <span class="reservada">Sino</span>
+            <span class="reservada">Si</span> residuo = "hoja" <span class="reservada">Entonces</span>
+                <span class="reservada">Escribir</span> "Caneca azul: papel"
+            <span class="reservada">Sino</span>
+                <span class="reservada">Escribir</span> "Caneca blanca: vidrio"
+            <span class="reservada">FinSi</span>
+        <span class="reservada">FinSi</span>
+    <span class="reservada">FinSi</span>
+<span class="reservada">FinAlgoritmo</span>`;
+
+        ejecucionActual = 'soluciones';
+    }
+
+    else if (tipo === 'ia') {
+        basePanel(
+            res,
+            'panel-ia',
+            '🤖 IA para resolver algoritmos',
+            'Ejemplo: un modelo de lenguaje puede ayudar a convertir una idea en pasos, pseudocódigo o código; pero la persona debe revisar si la solución tiene sentido.',
+            '🤖'
+        );
+
+        explicacionActual = `<span class="morado">IA Y MODELOS DE LENGUAJE</span>
+
+La IA puede ayudar a:
+- proponer pasos
+- crear pseudocódigo
+- corregir errores
+- explicar código
+- transformar bloques en código
+
+Pero no se debe copiar sin revisar.
+
+Un buen prompt debe decir:
+1. Contexto del problema.
+2. Datos de entrada.
+3. Reglas de decisión.
+4. Salida esperada.
+5. Lenguaje o formato solicitado.`;
+
+        codigoActual = `<span class="reservada">Prompt recomendado</span>
+
+Actúa como tutor de programación.
+Crea un algoritmo en PSeInt para clasificar residuos.
+Debe usar decisiones Si/Sino.
+Entradas: tipo de residuo.
+Salidas: color de caneca.
+Explica cada parte con comentarios.`;
+
+        ejecucionActual = 'ia';
+    }
+
+    else if (tipo === 'futuro') {
+        basePanel(
+            res,
+            'panel-futuro',
+            '🌎 Futuro del pensamiento computacional y la IA',
+            'Ejemplo: ciudades inteligentes, salud con IA, agricultura inteligente, educación adaptativa y robots necesitan personas capaces de analizar problemas.',
+            '🌎'
+        );
+
+        explicacionActual = `<span class="verde">FUTURO DEL PENSAMIENTO COMPUTACIONAL</span>
+
+El futuro no será solo saber usar herramientas.
+Será saber formular problemas y tomar decisiones con criterio.
+
+Áreas:
+- ciudades inteligentes
+- salud digital
+- agricultura con sensores
+- educación personalizada
+- automatización
+- asistentes de IA
+
+Mensaje clave:
+La IA ayuda, pero el pensamiento humano organiza, valida y decide.`;
+
+        codigoActual = `<span class="reservada">Algoritmo</span> FuturoConIA
+    <span class="reservada">Escribir</span> "Observar problema real"
+    <span class="reservada">Escribir</span> "Usar datos de forma responsable"
+    <span class="reservada">Escribir</span> "Apoyarse en IA"
+    <span class="reservada">Escribir</span> "Validar la solución con criterio humano"
+<span class="reservada">FinAlgoritmo</span>`;
+
+        ejecucionActual = 'futuro';
+    }
+
+    verExplicacion();
+}
+
+function verExplicacion() {
+    document.getElementById('panel').innerHTML = explicacionActual;
+}
+
+function verCodigo() {
+    document.getElementById('panel').innerHTML = codigoActual;
+}
+
+function verEjecucion() {
+    const panel = document.getElementById('panel');
+
+    if (ejecucionActual === 'pensamiento') {
+        panel.innerHTML = `
+Problema: registro lento de llegada de estudiantes.
+
+<button class="btn-panel btn-ejecutar" onclick="ejecutarPensamiento()">Ejecutar análisis</button>
+<button class="btn-panel btn-limpiar" onclick="verEjecucion()">Reiniciar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (ejecucionActual === 'pilares') {
+        panel.innerHTML = `
+Selecciona una situación:
+<select id="situacionPilar">
+    <option value="videojuego">Crear un videojuego</option>
+    <option value="basurero">Clasificar residuos</option>
+    <option value="retardos">Controlar retardos</option>
+</select>
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarPilares()">Analizar pilares</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (ejecucionActual === 'visual') {
+        panel.innerHTML = `
+<div class="robot-box">
+    <div class="bloques">
+        <div class="bloque">Al presionar iniciar</div>
+        <div class="bloque">Mover robot</div>
+        <div class="bloque">Si llega a la meta</div>
+        <div class="bloque">Mostrar mensaje</div>
+    </div>
+    <div class="escenario">
+        <div id="robot" class="robot">🤖</div>
+        <div class="meta">🏁</div>
+    </div>
+</div>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarRobot()">Ejecutar bloques</button>
+<button class="btn-panel btn-limpiar" onclick="verEjecucion()">Reiniciar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (ejecucionActual === 'mixta') {
+        panel.innerHTML = `
+<div class="mini-grid">
+    <div class="mini-card"><strong>Bloque</strong>Encender LED</div>
+    <div class="mini-card"><strong>Código</strong>digitalWrite(led, HIGH)</div>
+    <div class="mini-card"><strong>Bloque</strong>Esperar 1 segundo</div>
+    <div class="mini-card"><strong>Código</strong>delay(1000)</div>
+</div>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarMixta()">Comparar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (ejecucionActual === 'codigo') {
+        panel.innerHTML = `
+<div class="mini-grid">
+    <div class="mini-card"><strong>1. Diagrama de flujo</strong>Primero muestra visualmente qué camino sigue la solución.</div>
+    <div class="mini-card"><strong>2. PSeInt</strong>Después permite escribir la lógica en pseudocódigo antes del lenguaje real.</div>
+    <div class="mini-card"><strong>3. Código</strong>Luego esa lógica puede pasarse a Python, Arduino o Kivy.</div>
+    <div class="mini-card"><strong>4. Prueba</strong>Finalmente se ejecuta con datos para revisar si funciona.</div>
+</div>
+<br>
+Ingrese una nota:
+<input type="number" id="nota" step="0.1" placeholder="Ejemplo: 3.8">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarCodigo()">Evaluar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (ejecucionActual === 'soluciones') {
+        panel.innerHTML = `
+Seleccione un residuo:
+<select id="residuo">
+    <option value="cascara">Cáscara de fruta</option>
+    <option value="botella">Botella plástica</option>
+    <option value="hoja">Hoja de papel</option>
+    <option value="frasco">Frasco de vidrio</option>
+</select>
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarBasurero()">Clasificar</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (ejecucionActual === 'ia') {
+        panel.innerHTML = `
+Escribe una idea de problema:
+<input type="text" id="problemaIA" placeholder="Ejemplo: clasificar basura">
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarIA()">Generar prompt</button>
+<div id="salida" class="salida"></div>`;
+    }
+
+    else if (ejecucionActual === 'futuro') {
+        panel.innerHTML = `
+Selecciona un campo:
+<select id="campoFuturo">
+    <option value="salud">Salud</option>
+    <option value="ciudad">Ciudad inteligente</option>
+    <option value="educacion">Educación</option>
+    <option value="agricultura">Agricultura</option>
+</select>
+<br>
+<button class="btn-panel btn-ejecutar" onclick="ejecutarFuturo()">Ver aplicación</button>
+<div id="salida" class="salida"></div>`;
+    }
+}
+
+function ejecutarPensamiento() {
+    document.getElementById('salida').innerHTML =
+        '> 1. Observar: hay filas en la entrada.<br>' +
+        '> 2. Datos: estudiante, hora, curso y jornada.<br>' +
+        '> 3. Regla: si llega después de la hora oficial, hay retardo.<br>' +
+        '> 4. Salida: registro y alerta para coordinación.';
+}
+
+function ejecutarPilares() {
+    const valor = document.getElementById('situacionPilar').value;
+    const salida = document.getElementById('salida');
+
+    if (valor === 'videojuego') {
+        salida.innerHTML = '> Descomposición: personaje, puntos, vidas y obstáculos.<br>> Patrones: acciones que se repiten.<br>> Abstracción: reglas principales.<br>> Algoritmo: pasos para jugar.';
+    } else if (valor === 'basurero') {
+        salida.innerHTML = '> Descomposición: residuo, material y caneca.<br>> Patrones: residuos similares.<br>> Abstracción: importa el material, no la marca.<br>> Algoritmo: decidir color de caneca.';
+    } else {
+        salida.innerHTML = '> Descomposición: estudiante, hora y curso.<br>> Patrones: días con más retardos.<br>> Abstracción: hora de llegada y hora oficial.<br>> Algoritmo: comparar y reportar.';
+    }
+}
+
+function ejecutarRobot() {
+    const robot = document.getElementById('robot');
+    robot.style.left = '135px';
+    document.getElementById('salida').innerHTML = '> El robot siguió los bloques y llegó a la meta.';
+}
+
+function ejecutarMixta() {
+    document.getElementById('salida').innerHTML =
+        '> La idea visual se traduce en una instrucción escrita.<br>' +
+        '> Bloque: encender LED.<br>' +
+        '> Código equivalente: digitalWrite(led, HIGH).';
+}
+
+function ejecutarCodigo() {
+    const nota = Number(document.getElementById('nota').value);
+    const salida = document.getElementById('salida');
+
+    if (isNaN(nota) || nota < 0 || nota > 5) {
+        salida.innerHTML = '> Ingresa una nota válida entre 0 y 5.';
+        return;
+    }
+
+    if (nota >= 3) {
+        salida.innerHTML =
+            '> Diagrama de flujo: la decisión toma el camino SÍ.<br>' +
+            '> PSeInt: se cumple la condición nota >= 3.0.<br>' +
+            '> Nota: ' + nota + '<br>' +
+            '> Resultado: aprueba.';
+    } else {
+        salida.innerHTML =
+            '> Diagrama de flujo: la decisión toma el camino NO.<br>' +
+            '> PSeInt: no se cumple la condición nota >= 3.0.<br>' +
+            '> Nota: ' + nota + '<br>' +
+            '> Resultado: no aprueba.';
+    }
+}
+
+function ejecutarBasurero() {
+    const residuo = document.getElementById('residuo').value;
+    const salida = document.getElementById('salida');
+
+    if (residuo === 'cascara') salida.innerHTML = '> Caneca verde: residuo orgánico.';
+    if (residuo === 'botella') salida.innerHTML = '> Caneca amarilla: plástico.';
+    if (residuo === 'hoja') salida.innerHTML = '> Caneca azul: papel.';
+    if (residuo === 'frasco') salida.innerHTML = '> Caneca blanca: vidrio.';
+}
+
+function ejecutarIA() {
+    const problema = document.getElementById('problemaIA').value.trim();
+    const salida = document.getElementById('salida');
+
+    if (!problema) {
+        salida.innerHTML = '> Escribe una idea de problema.';
+        return;
+    }
+
+    salida.innerHTML =
+        '> Prompt sugerido:<br><br>' +
+        'Actúa como tutor de pensamiento computacional. Ayúdame a resolver el problema: "' + problema + '". ' +
+        'Identifica entradas, proceso, decisiones, salidas y escribe un algoritmo en PSeInt con comentarios.';
+}
+
+function ejecutarFuturo() {
+    const campo = document.getElementById('campoFuturo').value;
+    const salida = document.getElementById('salida');
+
+    const textos = {
+        salud: '> Salud: IA para apoyar diagnóstico, seguimiento e inventario de medicamentos.',
+        ciudad: '> Ciudad inteligente: sensores y algoritmos para movilidad, energía y seguridad.',
+        educacion: '> Educación: recursos que se adaptan al avance del estudiante.',
+        agricultura: '> Agricultura: sensores para humedad, clima y estado del cultivo.'
+    };
+
+    salida.innerHTML = textos[campo];
+}
+
+mostrar('pensamiento', document.querySelector('.btn-choice'));
+</script>
+</body>
+</html>
