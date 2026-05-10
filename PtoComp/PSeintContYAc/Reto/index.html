@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retos - Contador y Acumulador</title>
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#eef2f3;
+    display:flex;
+    justify-content:center;
+    padding:20px;
+}
+.master-card{
+    background:white;
+    width:1050px;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+h1{
+    text-align:center;
+    border-bottom:2px solid #6c5ce7;
+    padding-bottom:10px;
+    margin-top:0;
+}
+.intro{
+    text-align:center;
+    color:#374151;
+    line-height:1.5;
+}
+.contenedor{
+    display:grid;
+    grid-template-columns:365px 1fr;
+    gap:25px;
+    margin-top:20px;
+}
+.decision-box{
+    background:#f9f9f9;
+    border:2px dashed #6c5ce7;
+    padding:20px;
+    border-radius:10px;
+    max-height:690px;
+    overflow-y:auto;
+}
+.nivel{margin-bottom:18px;}
+.nivel h2{
+    margin:0 0 10px 0;
+    font-size:18px;
+    color:#4c1d95;
+    border-bottom:1px solid #ddd6fe;
+    padding-bottom:7px;
+}
+.nivel.oculto{display:none;}
+.btn-choice{
+    background:#6c5ce7;
+    color:white;
+    border:none;
+    padding:12px;
+    margin:7px 0;
+    border-radius:8px;
+    cursor:pointer;
+    width:100%;
+    text-align:left;
+    font-size:14.5px;
+    line-height:1.35;
+    font-weight:bold;
+}
+.btn-choice:hover{background:#a29bfe;}
+.btn-choice.activo{
+    background:#4f46e5;
+    outline:3px solid #c4b5fd;
+}
+.btn-choice.resuelto{background:#16a34a;}
+#resultado{
+    padding:20px;
+    border-radius:10px;
+    min-height:580px;
+    background:#f8fafc;
+    border:2px solid #e5e7eb;
+}
+.reto-card{
+    background:rgba(255,255,255,0.78);
+    padding:18px;
+    border-radius:12px;
+    font-size:17px;
+    line-height:1.5;
+    margin-top:10px;
+}
+.visual{
+    display:none;
+    grid-template-columns:1fr 130px;
+    gap:12px;
+    align-items:stretch;
+}
+.imagen{
+    background:rgba(255,255,255,0.78);
+    padding:18px;
+    border-radius:12px;
+    font-size:62px;
+    text-align:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.pistas{
+    margin-top:14px;
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    padding:14px;
+    border-radius:12px;
+    display:none;
+}
+.pistas h3{
+    margin:0 0 10px 0;
+    color:#4c1d95;
+    font-size:16px;
+}
+.pista-item{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    background:#f8fafc;
+    padding:9px;
+    border-radius:8px;
+    margin:7px 0;
+    cursor:pointer;
+    border:1px solid #e5e7eb;
+    line-height:1.35;
+}
+.pista-item:hover{background:#ede9fe;}
+.pista-item input{
+    width:auto;
+    margin-top:2px;
+    cursor:pointer;
+}
+.pista-ayuda{
+    background:#eff6ff;
+    border-left:4px solid #2563eb;
+    padding:10px;
+    border-radius:8px;
+    margin-top:10px;
+    color:#1e3a8a;
+    font-weight:bold;
+    display:none;
+}
+.selector{
+    margin-top:18px;
+    background:white;
+    border:1px solid #e5e7eb;
+    padding:14px;
+    border-radius:12px;
+    display:none;
+}
+.selector label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:8px;
+    color:#374151;
+}
+select{
+    padding:10px;
+    border-radius:8px;
+    border:2px solid #6c5ce7;
+    width:100%;
+    font-size:15px;
+    background:white;
+}
+.feedback{
+    display:none;
+    margin-top:14px;
+    padding:12px;
+    border-radius:10px;
+    font-weight:bold;
+}
+.ok{background:#d1fae5;border:2px solid #10b981;color:#065f46;}
+.error{background:#fee2e2;border:2px solid #ef4444;color:#991b1b;}
+.botones{
+    margin-top:18px;
+    display:none;
+    gap:10px;
+    flex-wrap:wrap;
+}
+.btn-panel{
+    border:none;
+    padding:11px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    color:white;
+    font-weight:bold;
+}
+.btn-explicacion{background:#16a34a;}
+.btn-ejecucion{background:#2563eb;}
+.btn-codigo{background:#7c3aed;}
+.btn-ejecutar{background:#f97316;margin-top:10px;}
+#panel{
+    margin-top:15px;
+    background:rgba(255,255,255,0.82);
+    padding:15px;
+    border-radius:10px;
+    font-family:Consolas, monospace;
+    white-space:pre-line;
+    line-height:1.5;
+    overflow-x:auto;
+    min-height:150px;
+    border:1px solid #e5e7eb;
+    display:none;
+}
+input{
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #999;
+    margin:6px 0;
+    width:180px;
+}
+.salida{
+    color:#064e3b;
+    font-weight:bold;
+    margin-top:12px;
+    border-left:4px solid #10b981;
+    padding-left:10px;
+    min-height:24px;
+}
+.reservada{color:#2563eb;font-weight:bold;}
+.nota-nivel{
+    background:#ede9fe;
+    color:#4c1d95;
+    padding:10px;
+    border-radius:10px;
+    font-weight:bold;
+    margin-bottom:12px;
+    display:none;
+}
+footer{
+    margin-top:25px;
+    text-align:center;
+    color:#475569;
+    font-size:14px;
+    border-top:1px solid #e5e7eb;
+    padding-top:15px;
+}
+footer strong{color:#2563eb;}
+@media(max-width:850px){
+    .contenedor{grid-template-columns:1fr;}
+    .visual{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="master-card">
+<h1>🎯 Retos de contador y acumulador en PSeInt</h1>
+<p class="intro">Analiza cada reto. Primero identifica si el caso necesita contador, acumulador o ambos. Luego revisa la explicación, la ejecución y el código.</p>
+
+<div class="contenedor">
+<div class="decision-box">
+<div class="nota-nivel" id="avisoNivel"></div>
+
+<div class="nivel" id="nivelBasico">
+<h2>🟢 Nivel básico</h2>
+<button class="btn-choice" data-id="b1" onclick="mostrarReto('b1',this)">Contar estudiantes que participaron</button>
+<button class="btn-choice" data-id="b2" onclick="mostrarReto('b2',this)">Sumar monedas recogidas</button>
+<button class="btn-choice" data-id="b3" onclick="mostrarReto('b3',this)">Contar intentos fallidos</button>
+<button class="btn-choice" data-id="b4" onclick="mostrarReto('b4',this)">Sumar notas para promedio</button>
+<button class="btn-choice" data-id="b5" onclick="mostrarReto('b5',this)">Restar vidas en un juego</button>
+</div>
+
+<div class="nivel oculto" id="nivelIntermedio">
+<h2>🟡 Nivel intermedio</h2>
+<button class="btn-choice" data-id="i1" onclick="mostrarReto('i1',this)">Tienda con productos vendidos y total</button>
+<button class="btn-choice" data-id="i2" onclick="mostrarReto('i2',this)">Juego con puntos y aciertos</button>
+<button class="btn-choice" data-id="i3" onclick="mostrarReto('i3',this)">Retardos y minutos acumulados</button>
+<button class="btn-choice" data-id="i4" onclick="mostrarReto('i4',this)">Encuesta con respuestas válidas</button>
+<button class="btn-choice" data-id="i5" onclick="mostrarReto('i5',this)">Caja registradora hasta finalizar</button>
+</div>
+
+<div class="nivel oculto" id="nivelAvanzado">
+<h2>🔴 Nivel avanzado</h2>
+<button class="btn-choice" data-id="a1" onclick="mostrarReto('a1',this)">Videojuego de sumas y restas</button>
+<button class="btn-choice" data-id="a2" onclick="mostrarReto('a2',this)">Inventario con ventas y stock</button>
+<button class="btn-choice" data-id="a3" onclick="mostrarReto('a3',this)">Promedio y aprobados del curso</button>
+<button class="btn-choice" data-id="a4" onclick="mostrarReto('a4',this)">Sistema de puntos, errores y vidas</button>
+<button class="btn-choice" data-id="a5" onclick="mostrarReto('a5',this)">Reporte final de torneo</button>
+</div>
+</div>
+
+<div id="resultado">
+<h2 id="res-titulo">Selecciona un reto</h2>
+<div class="visual" id="visual">
+<div class="reto-card" id="res-reto"></div>
+<div class="imagen" id="res-imagen"></div>
+</div>
+
+<div class="pistas" id="pistas">
+<h3 id="tituloPistas">Pistas</h3>
+<label class="pista-item"><input type="checkbox" name="pista" value="Contador" onchange="usarPista(this)"><span>¿El caso necesita contar cuántas veces ocurre algo?</span></label>
+<label class="pista-item"><input type="checkbox" name="pista" value="Acumulador" onchange="usarPista(this)"><span>¿El caso necesita sumar valores para guardar un total?</span></label>
+<label class="pista-item"><input type="checkbox" name="pista" value="Ambos" onchange="usarPista(this)"><span>¿El caso necesita contar y también sumar o restar un total?</span></label>
+<div class="pista-ayuda" id="pistaAyuda"></div>
+</div>
+
+<div class="selector" id="selector">
+<label for="estructuraSelect">¿Qué necesita el reto?</label>
+<select id="estructuraSelect" onchange="validar()">
+<option value="">Seleccionar...</option>
+<option value="Contador">Contador</option>
+<option value="Acumulador">Acumulador</option>
+<option value="Ambos">Ambos</option>
+</select>
+</div>
+
+<div class="feedback" id="feedback"></div>
+
+<div class="botones" id="botones">
+<button class="btn-panel btn-explicacion" onclick="verExplicacion()">Explicación</button>
+<button class="btn-panel btn-ejecucion" onclick="verEjecucion()">Ejecución</button>
+<button class="btn-panel btn-codigo" onclick="verCodigo()">Código completo</button>
+</div>
+
+<div id="panel"></div>
+</div>
+</div>
+
+<footer>Aprendiendo con <strong>@laProfeVivy</strong></footer>
+</div>
+
+<script>
+let retoActual = null;
+let botonActual = null;
+let totalCarrito = 0;
+let puntos = 0;
+let vidas = 3;
+let aciertos = 0;
+let correcta = 0;
+let resueltos = {basico:new Set(), intermedio:new Set(), avanzado:new Set()};
+
+const retos = {
+b1:{nivel:'basico',titulo:'🙋 Contar estudiantes que participaron',imagen:'🙋',correcta:'Contador',reto:'En clase, cada vez que un estudiante participa, el programa debe contar una participación.',acierto:'Correcto. Se cuenta una participación cada vez que ocurre.',explicacion:`Se usa <span class="reservada">contador</span> porque aumenta de 1 en 1.
+
+participaciones <- participaciones + 1`,codigo:`Algoritmo ContarParticipaciones
+    Definir i, cantidad, participaciones Como Entero
+    participaciones <- 0
+
+    Escribir "¿Cuántos estudiantes participaron?"
+    Leer cantidad
+
+    Para i <- 1 Hasta cantidad Hacer
+        participaciones <- participaciones + 1
+    FinPara
+
+    Escribir "Participaciones: ", participaciones
+FinAlgoritmo`},
+
+b2:{nivel:'basico',titulo:'🪙 Sumar monedas recogidas',imagen:'🪙',correcta:'Acumulador',reto:'En un juego, el jugador recoge monedas de diferentes valores. El programa debe sumar el total.',acierto:'Correcto. Se suman valores para guardar un total.',explicacion:`Se usa <span class="reservada">acumulador</span> porque guarda una suma.
+
+total <- total + moneda`,codigo:`Algoritmo SumarMonedas
+    Definir i, moneda, total Como Entero
+    total <- 0
+
+    Para i <- 1 Hasta 3 Hacer
+        Escribir "Ingrese valor de moneda"
+        Leer moneda
+        total <- total + moneda
+    FinPara
+
+    Escribir "Total de monedas: ", total
+FinAlgoritmo`},
+
+b3:{nivel:'basico',titulo:'🔐 Contar intentos fallidos',imagen:'🔐',correcta:'Contador',reto:'Un usuario escribe mal la clave. El programa debe contar cuántos intentos fallidos lleva.',acierto:'Correcto. Cada intento fallido aumenta en 1.',explicacion:`Es un contador porque cuenta errores.
+
+intentos <- intentos + 1`,codigo:`Algoritmo IntentosFallidos
+    Definir intentos Como Entero
+    Definir clave Como Cadena
+    intentos <- 0
+
+    Escribir "Ingrese clave"
+    Leer clave
+
+    Si clave <> "1234" Entonces
+        intentos <- intentos + 1
+    FinSi
+
+    Escribir "Intentos fallidos: ", intentos
+FinAlgoritmo`},
+
+b4:{nivel:'basico',titulo:'📚 Sumar notas para promedio',imagen:'📚',correcta:'Acumulador',reto:'Un profesor necesita sumar varias notas para después calcular el promedio.',acierto:'Correcto. Las notas se acumulan en una suma.',explicacion:`Se usa acumulador porque cada nota se suma.
+
+suma <- suma + nota`,codigo:`Algoritmo SumarNotas
+    Definir i Como Entero
+    Definir nota, suma, promedio Como Real
+    suma <- 0
+
+    Para i <- 1 Hasta 3 Hacer
+        Escribir "Ingrese nota"
+        Leer nota
+        suma <- suma + nota
+    FinPara
+
+    promedio <- suma / 3
+    Escribir "Promedio: ", promedio
+FinAlgoritmo`},
+
+b5:{nivel:'basico',titulo:'❤️ Restar vidas en un juego',imagen:'❤️',correcta:'Contador',reto:'Un jugador inicia con 3 vidas. Cada vez que falla, pierde una vida.',acierto:'Correcto. Es un contador descendente porque baja de 1 en 1.',explicacion:`Las vidas funcionan como contador descendente.
+
+vidas <- vidas - 1`,codigo:`Algoritmo RestarVidas
+    Definir vidas Como Entero
+    vidas <- 3
+
+    Escribir "El jugador falló"
+    vidas <- vidas - 1
+
+    Escribir "Vidas restantes: ", vidas
+FinAlgoritmo`},
+
+i1:{nivel:'intermedio',titulo:'🛒 Tienda con productos vendidos y total',imagen:'🛒',correcta:'Ambos',reto:'Una tienda necesita saber cuántos productos vendió y cuánto dinero recibió en total.',acierto:'Correcto. Cuenta productos y acumula dinero.',explicacion:`Necesita ambos:
+
+contador: productos <- productos + 1
+acumulador: total <- total + precio`,codigo:`Algoritmo TiendaProductos
+    Definir productos, i Como Entero
+    Definir precio, total Como Real
+    productos <- 0
+    total <- 0
+
+    Para i <- 1 Hasta 3 Hacer
+        Escribir "Ingrese precio"
+        Leer precio
+        productos <- productos + 1
+        total <- total + precio
+    FinPara
+
+    Escribir "Productos vendidos: ", productos
+    Escribir "Total vendido: ", total
+FinAlgoritmo`},
+
+i2:{nivel:'intermedio',titulo:'🎮 Juego con puntos y aciertos',imagen:'🎮',correcta:'Ambos',reto:'En un juego, si el jugador responde bien, suma 10 puntos y cuenta un acierto.',acierto:'Correcto. Puntos acumula y aciertos cuenta.',explicacion:`Puntos: acumulador.
+Aciertos: contador.
+
+puntos <- puntos + 10
+aciertos <- aciertos + 1`,codigo:`Algoritmo JuegoPuntosAciertos
+    Definir puntos, aciertos, respuesta Como Entero
+    puntos <- 0
+    aciertos <- 0
+
+    Escribir "¿Cuánto es 4 + 5?"
+    Leer respuesta
+
+    Si respuesta = 9 Entonces
+        puntos <- puntos + 10
+        aciertos <- aciertos + 1
+    FinSi
+
+    Escribir "Puntos: ", puntos
+    Escribir "Aciertos: ", aciertos
+FinAlgoritmo`},
+
+i3:{nivel:'intermedio',titulo:'⏰ Retardos y minutos acumulados',imagen:'⏰',correcta:'Ambos',reto:'Un colegio necesita contar estudiantes tarde y sumar los minutos de retardo.',acierto:'Correcto. Cuenta estudiantes y acumula minutos.',explicacion:`Contador: estudiantes tarde.
+Acumulador: minutos totales.
+
+retardos <- retardos + 1
+minutosTotal <- minutosTotal + minutos`,codigo:`Algoritmo Retardos
+    Definir i, retardos, minutos Como Entero
+    Definir minutosTotal Como Entero
+    retardos <- 0
+    minutosTotal <- 0
+
+    Para i <- 1 Hasta 3 Hacer
+        Escribir "Minutos de retardo"
+        Leer minutos
+        Si minutos > 0 Entonces
+            retardos <- retardos + 1
+            minutosTotal <- minutosTotal + minutos
+        FinSi
+    FinPara
+
+    Escribir "Estudiantes tarde: ", retardos
+    Escribir "Minutos acumulados: ", minutosTotal
+FinAlgoritmo`},
+
+i4:{nivel:'intermedio',titulo:'📝 Encuesta con respuestas válidas',imagen:'📝',correcta:'Contador',reto:'Una encuesta debe contar cuántas respuestas válidas se registran.',acierto:'Correcto. Se cuentan respuestas válidas.',explicacion:`Se usa contador porque se cuenta cada respuesta válida.
+
+validas <- validas + 1`,codigo:`Algoritmo RespuestasValidas
+    Definir i, validas Como Entero
+    Definir respuesta Como Cadena
+    validas <- 0
+
+    Para i <- 1 Hasta 3 Hacer
+        Escribir "Responda si o no"
+        Leer respuesta
+        Si respuesta = "si" O respuesta = "no" Entonces
+            validas <- validas + 1
+        FinSi
+    FinPara
+
+    Escribir "Respuestas válidas: ", validas
+FinAlgoritmo`},
+
+i5:{nivel:'intermedio',titulo:'💵 Caja registradora hasta finalizar',imagen:'💵',correcta:'Acumulador',reto:'Una caja debe sumar precios hasta que el usuario decida finalizar la compra.',acierto:'Correcto. Se acumulan precios.',explicacion:`Se usa acumulador porque se suma el total a pagar.
+
+total <- total + precio`,codigo:`Algoritmo CajaRegistradora
+    Definir precio, total Como Real
+    Definir continuar Como Cadena
+    total <- 0
+    continuar <- "si"
+
+    Mientras continuar = "si" Hacer
+        Escribir "Ingrese precio"
+        Leer precio
+        total <- total + precio
+        Escribir "¿Desea continuar? si/no"
+        Leer continuar
+    FinMientras
+
+    Escribir "Total a pagar: ", total
+FinAlgoritmo`},
+
+a1:{nivel:'avanzado',titulo:'🎮 Videojuego de sumas y restas',imagen:'🕹️',correcta:'Ambos',reto:'El jugador responde sumas y restas. Si acierta, gana puntos y aciertos; si falla, pierde vidas.',acierto:'Correcto. Usa contador, acumulador y contador descendente.',explicacion:`Puntos: acumulador.
+Aciertos: contador.
+Vidas: contador descendente.`,codigo:`Algoritmo JuegoSumasRestas
+    Definir puntos, vidas, aciertos, respuesta Como Entero
+    Definir n1, n2, resultado, operacion Como Entero
+
+    puntos <- 0
+    vidas <- 3
+    aciertos <- 0
+
+    Mientras vidas > 0 Hacer
+        n1 <- Aleatorio(1,9)
+        n2 <- Aleatorio(1,9)
+        operacion <- Aleatorio(1,2)
+
+        Si operacion = 1 Entonces
+            resultado <- n1 + n2
+            Escribir "¿Cuánto es ", n1, " + ", n2, "?"
+        SiNo
+            resultado <- n1 - n2
+            Escribir "¿Cuánto es ", n1, " - ", n2, "?"
+        FinSi
+
+        Leer respuesta
+
+        Si respuesta = resultado Entonces
+            puntos <- puntos + 10
+            aciertos <- aciertos + 1
+        SiNo
+            vidas <- vidas - 1
+        FinSi
+
+        Escribir "Puntos: ", puntos
+        Escribir "Aciertos: ", aciertos
+        Escribir "Vidas: ", vidas
+    FinMientras
+
+    Escribir "Juego terminado"
+FinAlgoritmo`},
+
+a2:{nivel:'avanzado',titulo:'📦 Inventario con ventas y stock',imagen:'📦',correcta:'Ambos',reto:'Una tienda registra cuántas ventas hizo, cuánto dinero recibió y cuánto stock queda.',acierto:'Correcto. Usa contador, acumulador y resta de stock.',explicacion:`Ventas: contador.
+Total vendido: acumulador.
+Stock: contador descendente.`,codigo:`Algoritmo InventarioVentas
+    Definir stock, ventas, unidades Como Entero
+    Definir precio, total Como Real
+    stock <- 10
+    ventas <- 0
+    total <- 0
+
+    Mientras stock > 0 Hacer
+        Escribir "Unidades vendidas"
+        Leer unidades
+        Escribir "Precio"
+        Leer precio
+
+        ventas <- ventas + 1
+        total <- total + precio
+        stock <- stock - unidades
+    FinMientras
+
+    Escribir "Ventas: ", ventas
+    Escribir "Total vendido: ", total
+    Escribir "Stock final: ", stock
+FinAlgoritmo`},
+
+a3:{nivel:'avanzado',titulo:'📊 Promedio y aprobados del curso',imagen:'📊',correcta:'Ambos',reto:'Un profesor necesita sumar notas para el promedio y contar cuántos estudiantes aprobaron.',acierto:'Correcto. Suma notas y cuenta aprobados.',explicacion:`SumaNotas es acumulador.
+Aprobados es contador.`,codigo:`Algoritmo PromedioYAprobados
+    Definir i, aprobados Como Entero
+    Definir nota, suma, promedio Como Real
+    suma <- 0
+    aprobados <- 0
+
+    Para i <- 1 Hasta 5 Hacer
+        Escribir "Ingrese nota"
+        Leer nota
+        suma <- suma + nota
+        Si nota >= 3.0 Entonces
+            aprobados <- aprobados + 1
+        FinSi
+    FinPara
+
+    promedio <- suma / 5
+    Escribir "Promedio: ", promedio
+    Escribir "Aprobados: ", aprobados
+FinAlgoritmo`},
+
+a4:{nivel:'avanzado',titulo:'⚡ Sistema de puntos, errores y vidas',imagen:'⚡',correcta:'Ambos',reto:'Un juego suma puntos, cuenta errores y descuenta vidas cuando el jugador falla.',acierto:'Correcto. Mezcla acumulador y contadores.',explicacion:`Puntos acumula.
+Errores cuenta.
+Vidas baja de 1 en 1.`,codigo:`Algoritmo PuntosErroresVidas
+    Definir puntos, errores, vidas Como Entero
+    puntos <- 0
+    errores <- 0
+    vidas <- 3
+
+    puntos <- puntos + 50
+    errores <- errores + 1
+    vidas <- vidas - 1
+
+    Escribir "Puntos: ", puntos
+    Escribir "Errores: ", errores
+    Escribir "Vidas: ", vidas
+FinAlgoritmo`},
+
+a5:{nivel:'avanzado',titulo:'🏆 Reporte final de torneo',imagen:'🏆',correcta:'Ambos',reto:'Al final de un torneo se requiere sumar puntos de jugadores y contar cuántos superaron 100 puntos.',acierto:'Correcto. Suma puntos y cuenta jugadores destacados.',explicacion:`TotalPuntos: acumulador.
+Destacados: contador.`,codigo:`Algoritmo ReporteTorneo
+    Definir i, puntos, totalPuntos, destacados Como Entero
+    totalPuntos <- 0
+    destacados <- 0
+
+    Para i <- 1 Hasta 5 Hacer
+        Escribir "Puntos del jugador"
+        Leer puntos
+        totalPuntos <- totalPuntos + puntos
+        Si puntos >= 100 Entonces
+            destacados <- destacados + 1
+        FinSi
+    FinPara
+
+    Escribir "Puntos totales: ", totalPuntos
+    Escribir "Jugadores destacados: ", destacados
+FinAlgoritmo`}
+};
+
+function mostrarReto(id, boton){
+    retoActual = retos[id];
+    botonActual = boton;
+    document.querySelectorAll('.btn-choice').forEach(btn => btn.classList.remove('activo'));
+    boton.classList.add('activo');
+    document.getElementById('visual').style.display = 'grid';
+    document.getElementById('res-titulo').innerHTML = retoActual.titulo;
+    document.getElementById('res-reto').innerHTML = retoActual.reto;
+    document.getElementById('res-imagen').innerHTML = retoActual.imagen;
+    prepararPistas();
+    document.getElementById('selector').style.display = 'block';
+    document.getElementById('estructuraSelect').value = '';
+    document.getElementById('botones').style.display = 'none';
+    document.getElementById('feedback').style.display = 'none';
+    document.getElementById('panel').style.display = 'none';
+    document.getElementById('panel').innerHTML = '';
+}
+
+function prepararPistas(){
+    const pistas = document.getElementById('pistas');
+    const ayuda = document.getElementById('pistaAyuda');
+    const titulo = document.getElementById('tituloPistas');
+    document.querySelectorAll('input[name="pista"]').forEach(chk => {chk.checked=false; chk.disabled=false;});
+    ayuda.style.display = 'none';
+    ayuda.innerHTML = '';
+    if(retoActual.nivel === 'basico'){
+        pistas.style.display = 'block';
+        titulo.innerHTML = 'Marca la pista que describe el caso';
+    }else if(retoActual.nivel === 'intermedio'){
+        pistas.style.display = 'block';
+        titulo.innerHTML = 'Usa las pistas y luego selecciona la respuesta';
+    }else{
+        pistas.style.display = 'none';
+    }
+}
+
+function usarPista(check){
+    document.querySelectorAll('input[name="pista"]').forEach(chk => {if(chk !== check) chk.checked = false;});
+    const ayuda = document.getElementById('pistaAyuda');
+    if(!check.checked){ayuda.style.display='none'; ayuda.innerHTML=''; return;}
+    if(retoActual.nivel === 'basico'){
+        document.getElementById('estructuraSelect').value = check.value;
+        validar();
+        ayuda.style.display = 'block';
+        ayuda.innerHTML = 'En nivel básico la pista completa la respuesta para observar la relación.';
+    }else{
+        ayuda.style.display = 'block';
+        ayuda.innerHTML = 'La pista te orienta. Ahora selecciona la respuesta en el desplegable.';
+    }
+}
+
+function validar(){
+    const opcion = document.getElementById('estructuraSelect').value;
+    const feedback = document.getElementById('feedback');
+    if(opcion === ''){feedback.style.display='none'; document.getElementById('botones').style.display='none'; return;}
+    feedback.style.display = 'block';
+    if(opcion === retoActual.correcta){
+        feedback.className = 'feedback ok';
+        feedback.innerHTML = '😊 ' + retoActual.acierto;
+        document.getElementById('botones').style.display = 'flex';
+        marcarResuelto();
+    }else{
+        feedback.className = 'feedback error';
+        feedback.innerHTML = '😟 Revisa: contador cuenta veces, acumulador suma valores y ambos se usan cuando el caso pide las dos cosas.';
+        document.getElementById('botones').style.display = 'none';
+        document.getElementById('panel').style.display = 'none';
+    }
+}
+
+function marcarResuelto(){
+    const id = botonActual.getAttribute('data-id');
+    const nivel = retoActual.nivel;
+    resueltos[nivel].add(id);
+    botonActual.classList.add('resuelto');
+    if(resueltos.basico.size === 5){
+        document.getElementById('nivelIntermedio').classList.remove('oculto');
+        mostrarAviso('Nivel intermedio disponible.');
+    }
+    if(resueltos.intermedio.size === 5){
+        document.getElementById('nivelAvanzado').classList.remove('oculto');
+        mostrarAviso('Nivel avanzado disponible.');
+    }
+}
+
+function mostrarAviso(texto){
+    const aviso = document.getElementById('avisoNivel');
+    aviso.innerHTML = texto;
+    aviso.style.display = 'block';
+    setTimeout(()=>{aviso.style.display='none';},2500);
+}
+
+function verExplicacion(){
+    const panel = document.getElementById('panel');
+    panel.style.display = 'block';
+    panel.innerHTML = retoActual.explicacion;
+}
+
+function verCodigo(){
+    const panel = document.getElementById('panel');
+    panel.style.display = 'block';
+    panel.innerHTML = retoActual.codigo;
+}
+
+function verEjecucion(){
+    const panel = document.getElementById('panel');
+    panel.style.display = 'block';
+    const t = retoActual.titulo;
+
+    if(t.includes('Videojuego de sumas')){reiniciarJuego(); return;}
+    if(t.includes('monedas')){
+        panel.innerHTML = `Monedas separadas por coma:
+<input type="text" id="monedas" placeholder="10,20,50">
+<br><button class="btn-panel btn-ejecutar" onclick="ejecutarMonedas()">Ejecutar</button><div id="salida" class="salida"></div>`;
+    }else if(t.includes('vidas')){
+        panel.innerHTML = `<button class="btn-panel btn-ejecutar" onclick="ejecutarVidas()">Restar vida</button><div id="salida" class="salida">Vidas iniciales: 3</div>`;
+    }else if(t.includes('Tienda') || t.includes('Caja')){
+        totalCarrito = 0;
+        panel.innerHTML = `Precio del producto:
+<input type="number" id="precio" placeholder="2500">
+<br><button class="btn-panel btn-ejecutar" onclick="agregarProducto()">Agregar</button><div id="salida" class="salida">Total actual: 0</div>`;
+    }else{
+        panel.innerHTML = `<button class="btn-panel btn-ejecutar" onclick="ejecutarGenerico()">Ejecutar ejemplo</button><div id="salida" class="salida"></div>`;
+    }
+}
+
+function ejecutarGenerico(){
+    const salida = document.getElementById('salida');
+    salida.innerHTML = '> Se aplica la lógica del reto: contador suma/resta de 1 en 1 y acumulador guarda el total.';
+}
+function ejecutarMonedas(){
+    const valores = document.getElementById('monedas').value.split(',').map(v=>Number(v.trim())).filter(v=>!isNaN(v));
+    let total = 0;
+    let texto = '';
+    valores.forEach(v=>{total += v; texto += '> Se suma ' + v + '. Total: ' + total + '<br>';});
+    document.getElementById('salida').innerHTML = texto || '> Escribe monedas válidas.';
+}
+let vidasDemo = 3;
+function ejecutarVidas(){
+    vidasDemo--;
+    document.getElementById('salida').innerHTML = vidasDemo >= 0 ? '> vidas <- vidas - 1. Vidas restantes: ' + vidasDemo : '> Sin vidas.';
+}
+function agregarProducto(){
+    const precio = Number(document.getElementById('precio').value);
+    if(isNaN(precio) || precio <= 0){document.getElementById('salida').innerHTML='> Ingresa un precio válido.'; return;}
+    totalCarrito += precio;
+    document.getElementById('salida').innerHTML = '> total <- total + precio. Total actual: ' + totalCarrito;
+}
+
+function reiniciarJuego(){
+    puntos = 0; vidas = 3; aciertos = 0; nuevaPregunta();
+}
+function nuevaPregunta(){
+    const panel = document.getElementById('panel');
+    const a = Math.floor(Math.random()*9)+1;
+    const b = Math.floor(Math.random()*9)+1;
+    const op = Math.random() > 0.5 ? '+' : '-';
+    correcta = op === '+' ? a + b : a - b;
+    const opciones = [correcta, correcta + 1, correcta - 1].sort(()=>Math.random()-.5);
+    panel.style.display = 'block';
+    panel.innerHTML = `<div class="reto-card">
+Puntos: ${puntos} | Vidas: ${vidas} | Aciertos: ${aciertos}
+
+¿Cuánto es ${a} ${op} ${b}?
+
+${opciones.map(o=>`<button class="btn-panel btn-ejecucion" onclick="responderJuego(${o})">${o}</button>`).join(' ')}
+<div id="salida" class="salida"></div></div>`;
+}
+function responderJuego(valor){
+    const salida = document.getElementById('salida');
+    if(valor === correcta){
+        puntos += 10;
+        aciertos += 1;
+        salida.innerHTML = '> Correcto: puntos <- puntos + 10 y aciertos <- aciertos + 1';
+    }else{
+        vidas -= 1;
+        salida.innerHTML = '> Incorrecto: vidas <- vidas - 1';
+    }
+    if(vidas <= 0){
+        setTimeout(()=>{document.getElementById('panel').innerHTML = `<div class="reto-card">Juego terminado.
+Puntos finales: ${puntos}
+Aciertos: ${aciertos}
+<br><button class="btn-panel btn-ejecutar" onclick="reiniciarJuego()">Reiniciar</button></div>`;},900);
+    }else{
+        setTimeout(nuevaPregunta,900);
+    }
+}
+
+function mezclarBotones(nivelId){
+    const nivel = document.getElementById(nivelId);
+    if(!nivel) return;
+    const h = nivel.querySelector('h2');
+    const botones = Array.from(nivel.querySelectorAll('.btn-choice'));
+    for(let i=botones.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [botones[i],botones[j]]=[botones[j],botones[i]];}
+    nivel.innerHTML = '';
+    nivel.appendChild(h);
+    botones.forEach(btn=>nivel.appendChild(btn));
+}
+mezclarBotones('nivelBasico');
+mezclarBotones('nivelIntermedio');
+mezclarBotones('nivelAvanzado');
+</script>
+</body>
+</html>
