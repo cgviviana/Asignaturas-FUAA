@@ -1,1 +1,853 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagramando el pensamiento</title>
 
+<style>
+:root{
+  --paper:#f7f1e6;
+  --ink:#18313d;
+  --muted:#53616b;
+  --line:#d8cab5;
+  --blue:#1488c9;
+  --cyan:#52c7e8;
+  --orange:#ff6848;
+  --navy:#20265b;
+  --shadow:0 24px 58px rgba(24,49,61,.15);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  color:var(--ink);
+  background:
+    linear-gradient(rgba(24,49,61,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(24,49,61,.055) 1px,transparent 1px),
+    radial-gradient(circle at 100% 100%,rgba(82,199,232,.14),transparent 34%),
+    var(--paper);
+  background-size:34px 34px,34px 34px,100% 100%,100% 100%;
+}
+
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:64px;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 26px;
+  background:rgba(247,241,230,.86);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(14px);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.28px;
+}
+
+.logo{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--ink),var(--blue));
+  display:grid;
+  place-items:center;
+  color:white;
+}
+
+.counter{
+  font-weight:900;
+  color:var(--navy);
+}
+
+.deck{
+  width:100vw;
+  height:100vh;
+  display:flex;
+  transition:transform .75s cubic-bezier(.22,1,.36,1);
+}
+
+.slide{
+  min-width:100vw;
+  height:100vh;
+  padding:92px clamp(18px,3.5vw,58px) 72px;
+  display:grid;
+  place-items:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.inner{
+  width:min(1180px,100%);
+  height:min(650px,calc(100vh - 166px));
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+  align-items:stretch;
+  position:relative;
+  z-index:2;
+}
+
+.inner.one{
+  grid-template-columns:1fr;
+}
+
+.panel{
+  background:rgba(255,250,240,.94);
+  border:1px solid var(--line);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+  padding:24px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+.panel.dark{
+  background:linear-gradient(135deg,#17313e,#20265b);
+  color:white;
+}
+
+.panel.dark p,
+.panel.dark small{
+  color:rgba(255,255,255,.86);
+}
+
+.kicker{
+  display:inline-flex;
+  width:max-content;
+  padding:8px 12px;
+  border-radius:99px;
+  background:#e7f7ff;
+  color:#0c74a7;
+  border:1px solid #beeaff;
+  font-size:.76rem;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+  margin-bottom:12px;
+}
+
+h1,h2,h3,p{margin:0}
+
+h1{
+  font-size:clamp(1.9rem,4.3vw,4rem);
+  line-height:.92;
+  letter-spacing:-.06em;
+  margin-bottom:14px;
+}
+
+h2{
+  font-size:clamp(1.55rem,3.1vw,2.9rem);
+  line-height:.97;
+  letter-spacing:-.052em;
+  margin-bottom:14px;
+}
+
+h3{
+  font-size:1.08rem;
+  margin-bottom:7px;
+}
+
+p{
+  color:var(--muted);
+  line-height:1.52;
+  margin-bottom:9px;
+  font-size:.96rem;
+}
+
+b,strong{color:var(--ink)}
+.dark b,.dark strong{color:#fff}
+
+.visual{
+  display:grid;
+  place-items:center;
+}
+
+.visual svg{
+  width:min(470px,96%);
+  height:auto;
+  max-height:470px;
+  filter:drop-shadow(0 18px 22px rgba(24,49,61,.12));
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+
+.box{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+}
+
+.dark .box{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.18);
+}
+
+.box b{
+  display:block;
+  margin-bottom:4px;
+  font-size:.96rem;
+}
+
+.box small{
+  display:block;
+  color:var(--muted);
+  line-height:1.42;
+  font-size:.86rem;
+}
+
+.flow{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+  margin-top:12px;
+}
+
+.step{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  position:relative;
+}
+
+.step::after{
+  content:"→";
+  position:absolute;
+  right:-13px;
+  top:35%;
+  font-size:1.35rem;
+  font-weight:950;
+  color:var(--orange);
+}
+
+.step:last-child::after{display:none}
+
+.step b{
+  display:block;
+  margin-bottom:3px;
+  font-size:.94rem;
+}
+
+.step small{
+  display:block;
+  line-height:1.38;
+  font-size:.82rem;
+  color:var(--muted);
+}
+
+.infoBtn{
+  width:30px;
+  height:30px;
+  border:1px solid #beeaff;
+  background:#e7f7ff;
+  color:#0c74a7;
+  border-radius:50%;
+  padding:0;
+  font-size:.92rem;
+  font-weight:950;
+  cursor:pointer;
+  display:inline-grid;
+  place-items:center;
+}
+
+.infoBtns{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+
+.callout{
+  border-left:6px solid var(--orange);
+  padding-left:14px;
+  margin-top:10px;
+}
+
+.diagram{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:12px;
+}
+
+.symbolCard{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:12px;
+  text-align:center;
+  min-height:150px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:8px;
+}
+
+.symbolCard svg{
+  width:100px;
+  height:75px;
+  margin:auto;
+}
+
+.symbolCard small{
+  color:var(--muted);
+  line-height:1.35;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(24,49,61,.46);
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+}
+
+.modal.show{display:flex}
+
+.modalBox{
+  width:min(650px,94vw);
+  background:#fffaf0;
+  border:1px solid var(--line);
+  border-radius:24px;
+  box-shadow:0 28px 80px rgba(0,0,0,.28);
+  padding:24px;
+}
+
+.modalBox p{
+  font-size:1rem;
+  line-height:1.6;
+}
+
+.closeModal{
+  margin-top:14px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(135deg,var(--ink),var(--blue));
+  color:#fff;
+  font-weight:900;
+  padding:10px 14px;
+  cursor:pointer;
+}
+
+.controls{
+  position:fixed;
+  right:24px;
+  bottom:25px;
+  display:flex;
+  gap:10px;
+  z-index:60;
+}
+
+.btn{
+  width:48px;
+  height:48px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 12px 28px rgba(24,49,61,.12);
+  cursor:pointer;
+  font-size:1.3rem;
+  font-weight:950;
+  color:var(--ink);
+}
+
+.dots{
+  position:fixed;
+  left:50%;
+  bottom:35px;
+  transform:translateX(-50%);
+  display:flex;
+  gap:7px;
+  z-index:60;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:99px;
+  background:#b9aa95;
+  border:0;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.dot.active{
+  width:30px;
+  background:var(--orange);
+}
+
+footer{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  text-align:center;
+  padding:9px;
+  background:rgba(247,241,230,.9);
+  border-top:1px solid var(--line);
+  font-weight:900;
+  color:#52616b;
+  z-index:55;
+}
+
+@media(max-width:900px){
+  body{overflow:auto}
+  .deck{display:block;height:auto;transform:none!important}
+  .slide{height:auto;min-height:100vh}
+  .inner,.inner.one{height:auto;grid-template-columns:1fr}
+  .grid2,.grid3,.flow,.diagram{grid-template-columns:1fr}
+  .controls,.dots,.counter{display:none}
+  .step::after{display:none}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">DFD</div>
+    <span>Escuela Rural Las Lomitas</span>
+  </div>
+  <div class="counter"><span id="now">1</span>/<span id="total"></span></div>
+</header>
+
+<main class="deck" id="deck">
+
+<section class="slide">
+  <div class="inner">
+    <div class="panel">
+      <span class="kicker"></span>
+      <h1>Diagmando el proceso</h1>
+      
+      <p>El diagrama de flujo permitirá representar, paso a paso, cómo un sistema puede registrar datos, revisarlos, clasificarlos y generar alertas o reportes útiles.</p>
+      <div class="callout">
+        <p>El DFD permite  pasar de una problemática real a una solución lógica que pueda convertirse en la solución , en nuestro caso el sistema de información.</p>
+      </div>
+    </div>
+
+    <div class="panel visual">
+      <svg viewBox="0 0 520 420">
+        <rect x="100" y="80" width="320" height="220" rx="24" fill="#fff" stroke="#18313d" stroke-width="5"/>
+        <path d="M135 300V150l125-70 125 70v150" fill="#fffaf0" stroke="#18313d" stroke-width="5"/>
+        <rect x="215" y="220" width="90" height="80" fill="#52c7e8" stroke="#18313d" stroke-width="5"/>
+        <rect x="150" y="170" width="45" height="45" fill="#ff6848" stroke="#18313d" stroke-width="4"/>
+        <rect x="325" y="170" width="45" height="45" fill="#ff6848" stroke="#18313d" stroke-width="4"/>
+        <path d="M100 315h320" stroke="#18313d" stroke-width="6"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="panel dark">
+      <span class="kicker">Retomando</span>
+      <h2>Pensamiento computacional </h2>
+      <p>El pensamiento computacional ayuda a mirar un problema con lógica: dividirlo, reconocer lo que se repite, seleccionar los datos importantes y organizar una secuencia de pasos para resolverlo.</p>
+
+      <div class="grid2">
+        <div class="box"><b>Descomponer</b><small>Separar la situación en partes manejables.</small></div>
+        <div class="box"><b>Reconocer patrones</b><small>Identificar repeticiones o casos frecuentes.</small></div>
+        <div class="box"><b>Abstraer</b><small>Quedarse con los datos necesarios.</small></div>
+        <div class="box"><b>Diseñar pasos</b><small>Definir el recorrido de la solución.</small></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="kicker">Conexión</span>
+      <h2>¿Cómo ayuda el diagrama de flujo?</h2>
+      <p>El diagrama de flujo convierte la solución pensada en una representación visual. Permite ver qué datos entran, qué se revisa, qué decisiones se toman y qué resultado se obtiene.</p>
+
+      <div class="flow">
+        <div class="step"><b>Situación</b><small>Datos dispersos.</small></div>
+        <div class="step"><b>Análisis</b><small>Datos necesarios.</small></div>
+        <div class="step"><b>Flujo</b><small>Pasos ordenados.</small></div>
+        <div class="step"><b>Sistema</b><small>Reporte o alerta.</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner one">
+    <div class="panel">
+      <span class="kicker">Símbolos</span>
+      <h2>Elementos básicos para representar la solución</h2>
+      <p>Para construir el flujo del proceso se usarán símbolos sencillos.</p>
+
+      <div class="diagram">
+        <div class="symbolCard">
+          <svg viewBox="0 0 200 120">
+            <rect x="20" y="30" width="160" height="60" rx="30" fill="#fff4dd" stroke="#555" stroke-width="4"/>
+          </svg>
+          <b>Inicio / Fin</b>
+          <small>Marca el comienzo o la finalización del registro.</small>
+        </div>
+
+        <div class="symbolCard">
+          <svg viewBox="0 0 200 120">
+            <polygon points="45,25 180,25 155,95 20,95" fill="#fff4dd" stroke="#555" stroke-width="4"/>
+          </svg>
+          <b>Entrada / Salida</b>
+          <small>Permite ingresar datos o mostrar información.</small>
+        </div>
+
+        <div class="symbolCard">
+          <svg viewBox="0 0 200 120">
+            <rect x="30" y="25" width="140" height="70" fill="#fff4dd" stroke="#555" stroke-width="4"/>
+          </svg>
+          <b>Proceso</b>
+          <small>Representa una acción: calcular, clasificar o guardar.</small>
+        </div>
+
+        <div class="symbolCard">
+          <svg viewBox="0 0 200 160">
+            <polygon points="100,25 165,80 100,135 35,80" fill="#fff4dd" stroke="#555" stroke-width="4"/>
+          </svg>
+          <b>Decisión</b>
+          <small>Hace una pregunta y divide el camino.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="panel">
+      <span class="kicker">Situación problema</span>
+      <h2>Escuela Rural Las Lomitas</h2>
+      <p>La escuela necesita organizar información que normalmente puede quedar dispersa en cuadernos, mensajes, planillas o conversaciones con las familias.</p>
+      <p>El sistema de información ayudaría a registrar datos escolares, familiares, académicos y administrativos para hacer seguimiento de manera más clara.</p>
+
+      <div class="grid2">
+        <div class="box"><b>Estudiante</b><small>Nombre, grado, vereda y jornada.</small></div>
+        <div class="box"><b>Acudiente</b><small>Nombre, teléfono y parentesco.</small></div>
+        <div class="box"><b>Asistencia</b><small>Fecha, hora de llegada y estado.</small></div>
+        <div class="box"><b>Seguimiento</b><small>Estado académico y novedades.</small></div>
+      </div>
+    </div>
+
+    <div class="panel dark">
+      <span class="kicker">Dato clave</span>
+      <h2>Estado de cartera</h2>
+      <p>Para el seguimiento administrativo, el campo puede llamarse <b>estado de cartera</b> o <b>estado de pago</b>.</p>
+      <div class="grid2">
+        <div class="box"><b>Al día</b><small>No presenta valores pendientes.</small></div>
+        <div class="box"><b>Pendiente</b><small>Tiene un pago por revisar.</small></div>
+        <div class="box"><b>En mora</b><small>Presenta retraso en el pago.</small></div>
+        <div class="box"><b>Acuerdo de pago</b><small>Existe compromiso registrado.</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner one">
+    <div class="panel">
+      <span class="kicker">Datos del sistema</span>
+      <h2>Qué información debería registrar</h2>
+      <p>Antes de dibujar el flujo, se deben definir los datos que entran al sistema. Estos datos permiten tomar decisiones y generar reportes.</p>
+
+      <div class="grid3">
+        <div class="box"><b>Identificación</b><small>Nombre del estudiante, grado, vereda, jornada.</small></div>
+        <div class="box"><b>Contacto familiar</b><small>Acudiente, teléfono, parentesco, canal de contacto.</small></div>
+        <div class="box"><b>Asistencia</b><small>Fecha, hora de llegada, puntualidad, ausencias.</small></div>
+        <div class="box"><b>Estado académico</b><small>Desempeño, asignaturas con dificultad, observaciones.</small></div>
+        <div class="box"><b>Estado de cartera</b><small>Al día, pendiente, en mora o acuerdo de pago.</small></div>
+        <div class="box"><b>Condiciones de acceso</b><small>Conectividad, dispositivo, transporte y necesidad principal.</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="panel">
+      <span class="kicker">Datos cualitativos</span>
+      <h2>Datos que describen una situación</h2>
+      <p>Los datos cualitativos no son números. Describen características, condiciones o estados del estudiante y su contexto.</p>
+
+      <div class="grid2">
+        <div class="box"><b>Vereda</b><small>Lugar de procedencia del estudiante.</small></div>
+        <div class="box"><b>Motivo de ausencia</b><small>Salud, transporte, familiar, clima u otro.</small></div>
+        <div class="box"><b>Estado académico</b><small>Alto, básico, bajo o en seguimiento.</small></div>
+        <div class="box"><b>Necesidad principal</b><small>Conectividad, transporte, apoyo académico o familiar.</small></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="kicker">Datos cuantitativos</span>
+      <h2>Datos que permiten contar o calcular</h2>
+      <p>Los datos cuantitativos son numéricos. Sirven para medir, comparar y activar alertas cuando se supera un límite.</p>
+
+      <div class="grid2">
+        <div class="box"><b>Hora de llegada</b><small>Permite calcular retardos.</small></div>
+        <div class="box"><b>Número de ausencias</b><small>Permite detectar reincidencia.</small></div>
+        <div class="box"><b>Promedio académico</b><small>Permite priorizar acompañamiento.</small></div>
+        <div class="box"><b>Días en mora</b><small>Permite revisar estado de cartera.</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner one">
+    <div class="panel">
+      <span class="kicker">Recorrido lógico</span>
+      <h2>Cómo se vería el proceso en el sistema</h2>
+      <p>El flujo muestra cómo la información pasa de datos sueltos a información útil para docentes, coordinación o administración.</p>
+
+      <div class="flow">
+        <div class="step"><b>Abrir registro</b><small>Se accede al formulario del estudiante.</small></div>
+        <div class="step"><b>Ingresar datos</b><small>Estudiante, acudiente, grado y vereda.</small></div>
+        <div class="step"><b>Registrar asistencia</b><small>Fecha, hora de llegada y estado.</small></div>
+        <div class="step"><b>Registrar seguimiento</b><small>Académico, conectividad y cartera.</small></div>
+      </div>
+
+      <div class="flow">
+        <div class="step"><b>Validar datos</b><small>Revisar si falta información.</small></div>
+        <div class="step"><b>Clasificar caso</b><small>Académico, asistencia, contacto o cartera.</small></div>
+        <div class="step"><b>Revisar alerta</b><small>Determinar si requiere atención.</small></div>
+        <div class="step"><b>Generar reporte</b><small>Mostrar resumen para decisión.</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="panel">
+      <span class="kicker">Preguntas del flujo</span>
+      <h2>Decisiones que debe tomar el sistema</h2>
+      <p>Las decisiones son puntos donde el sistema necesita preguntar algo para seguir una ruta u otra.</p>
+
+      <div class="grid2">
+        <div class="box"><b>¿Los datos están completos?</b><small>Si falta información, se devuelve al registro.</small></div>
+        <div class="box"><b>¿Llegó tarde?</b><small>Si la hora supera el límite, se marca retardo.</small></div>
+        <div class="box"><b>¿Tiene bajo desempeño?</b><small>Si requiere apoyo, se genera seguimiento académico.</small></div>
+        <div class="box"><b>¿Tiene cartera pendiente?</b><small>Si está en mora, se genera alerta administrativa.</small></div>
+      </div>
+    </div>
+
+    <div class="panel visual">
+      <svg viewBox="0 0 520 420">
+        <polygon points="260,60 365,140 260,220 155,140" fill="#fffaf0" stroke="#18313d" stroke-width="5"/>
+        <polygon points="260,240 365,320 260,400 155,320" fill="#52c7e8" stroke="#18313d" stroke-width="5"/>
+        <path d="M260 220v20M365 140h70M155 140H85M365 320h70M155 320H85" stroke="#18313d" stroke-width="6" fill="none"/>
+        <text x="238" y="146" font-size="22" font-weight="900" fill="#18313d">?</text>
+        <text x="238" y="326" font-size="22" font-weight="900" fill="#18313d">?</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner one">
+    <div class="panel">
+      <span class="kicker">Diagrama propuesto</span>
+      <h2>Sistema de información para Las Lomitas</h2>
+
+      <div class="flow">
+        <div class="step"><b>Abrir sistema</b><small>Acceder al registro escolar.</small></div>
+        <div class="step"><b>Datos del estudiante</b><small>Nombre, grado, vereda.</small></div>
+        <div class="step"><b>Contacto familiar</b><small>Acudiente, teléfono, parentesco.</small></div>
+        <div class="step"><b>Hora de llegada</b><small>Registrar asistencia diaria.</small></div>
+      </div>
+
+      <div class="flow">
+        <div class="step"><b>Estado académico</b><small>Registrar desempeño y dificultades.</small></div>
+        <div class="step"><b>Estado de cartera</b><small>Al día, pendiente, mora o acuerdo.</small></div>
+        <div class="step"><b>Validar</b><small>¿La información está completa?</small></div>
+        <div class="step"><b>Clasificar</b><small>Asistencia, académico, cartera o contacto.</small></div>
+      </div>
+
+      <div class="flow">
+        <div class="step"><b>Evaluar alerta</b><small>¿Requiere seguimiento?</small></div>
+        <div class="step"><b>Notificar</b><small>Docente, coordinación o acudiente.</small></div>
+        <div class="step"><b>Reporte</b><small>Resumen por estudiante o grupo.</small></div>
+        <div class="step"><b>Guardar</b><small>Actualizar historial.</small></div>
+      </div>
+
+      <div class="infoBtns">
+        <button class="infoBtn" data-detail="Si el estudiante llega tarde varias veces, el sistema puede generar una alerta de asistencia y sugerir contacto con el acudiente.">i</button>
+        <button class="infoBtn" data-detail="Si el estado académico es bajo y además hay problemas de conectividad, el sistema puede clasificar el caso como prioridad de acompañamiento.">i</button>
+        <button class="infoBtn" data-detail="Si el estado de cartera aparece en mora, el sistema puede generar un reporte administrativo sin mezclarlo con el seguimiento académico.">i</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="panel">
+      <span class="kicker">Tecnologías 4.0</span>
+      <h2>Cómo podría mejorar el sistema</h2>
+      <p>El sistema puede empezar con una tabla o formulario digital, pero podría fortalecerse con tecnologías de la Revolución 4.0.</p>
+
+      <div class="grid2">
+        <div class="box"><b>Formulario digital</b><small>Permite registrar datos en campo o en la escuela.</small></div>
+        <div class="box"><b>Nube</b><small>Guarda la información y permite consultarla después.</small></div>
+        <div class="box"><b>Analítica de datos</b><small>Identifica patrones de asistencia, desempeño o cartera.</small></div>
+        <div class="box"><b>IA</b><small>Puede sugerir casos prioritarios de seguimiento.</small></div>
+      </div>
+    </div>
+
+    <div class="panel dark">
+      <span class="kicker">Uso responsable</span>
+      <h2>Cuidado con la información</h2>
+      <p>Los datos de estudiantes y familias deben usarse con responsabilidad. No se registran para señalar o exponer a nadie, sino para acompañar, priorizar apoyos y tomar mejores decisiones.</p>
+      <div class="callout">
+        <p><b>Importante:</b> solo recoger datos necesarios, protegerlos y usarlos con un propósito claro.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="inner">
+    <div class="panel dark">
+      <span class="kicker">Desarrollo</span>
+      <h2>Construcción del diagrama</h2>
+      <p>Representar el flujo del sistema usando los símbolos adecuados.</p>
+
+      <div class="grid2">
+        <div class="box"><b>Entradas</b><small>Datos del estudiante, acudiente, asistencia, estado académico y cartera.</small></div>
+        <div class="box"><b>Procesos</b><small>Validar, clasificar, calcular retardos y organizar historial.</small></div>
+        <div class="box"><b>Decisiones</b><small>Datos completos, retardo, bajo desempeño, cartera pendiente.</small></div>
+        <div class="box"><b>Salidas</b><small>Reporte, alerta, recomendación o notificación.</small></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="kicker">Producto </span>
+      <h2>Entrega</h2>
+      <p>Presentar un diagrama de flujo básico que muestre cómo el sistema de información recoge datos, los revisa, los organiza y genera una salida útil.</p>
+
+      <div class="flow">
+        <div class="step"><b>Datos</b><small>Qué se registra.</small></div>
+        <div class="step"><b>Lógica</b><small>Qué se valida.</small></div>
+        <div class="step"><b>Decisión</b><small>Qué alerta se activa.</small></div>
+        <div class="step"><b>Resultado</b><small>Qué reporte se entrega.</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <h3>Más detalle</h3>
+    <p id="modalText"></p>
+    <button class="closeModal" onclick="closeModal()">Cerrar</button>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn" onclick="prev()">‹</button>
+  <button class="btn" onclick="next()">›</button>
+</div>
+
+<div class="dots" id="dots"></div>
+
+<footer>Aprendiendo con @LaProfeVivy</footer>
+
+<script>
+const deck=document.getElementById('deck');
+const slides=[...document.querySelectorAll('.slide')];
+const dots=document.getElementById('dots');
+const now=document.getElementById('now');
+const total=document.getElementById('total');
+
+let idx=0;
+total.textContent=slides.length;
+
+slides.forEach((_,i)=>{
+  const b=document.createElement('button');
+  b.className='dot';
+  b.onclick=()=>go(i);
+  dots.appendChild(b);
+});
+
+function render(){
+  deck.style.transform=`translateX(${-idx*100}vw)`;
+  now.textContent=idx+1;
+  [...dots.children].forEach((d,i)=>d.classList.toggle('active',i===idx));
+}
+
+function go(i){
+  idx=Math.max(0,Math.min(slides.length-1,i));
+  render();
+}
+
+function next(){go(idx+1)}
+function prev(){go(idx-1)}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')next();
+  if(e.key==='ArrowLeft')prev();
+});
+
+let block=false;
+
+document.addEventListener('wheel',e=>{
+  if(block||Math.abs(e.deltaY)<30)return;
+  block=true;
+  e.deltaY>0?next():prev();
+  setTimeout(()=>block=false,650);
+},{passive:true});
+
+function openModal(text){
+  document.getElementById('modalText').innerHTML=text;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+}
+
+document.addEventListener('click',e=>{
+  if(e.target.classList && e.target.classList.contains('infoBtn')){
+    openModal(e.target.dataset.detail || 'Sin detalle disponible.');
+  }
+  if(e.target.id==='modal')closeModal();
+});
+
+render();
+</script>
+
+</body>
+</html>
