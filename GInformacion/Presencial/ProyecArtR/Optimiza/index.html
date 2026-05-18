@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optimizando el documento académico</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0e27;color:#2c3e50;overflow:hidden;height:100vh}
+.presentation-wrapper{height:100vh;display:flex;align-items:center;justify-content:center;padding:40px}
+.slide{background:#fff;width:100%;max-width:1400px;height:85vh;box-shadow:0 20px 60px rgba(0,0,0,.5);display:none;flex-direction:column}
+.slide.active{display:flex;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+.slide-header{background:linear-gradient(135deg,#2c3e50 0%,#34495e 100%);padding:34px 56px;color:#fff;border-bottom:4px solid #e74c3c;flex-shrink:0}
+.slide-number{font-size:13px;font-weight:300;letter-spacing:2px;opacity:.85;margin-bottom:8px;text-transform:uppercase}
+.slide-title{font-family:'Libre Baskerville',serif;font-size:40px;font-weight:700;line-height:1.2}
+.slide-content{flex:1;padding:40px 56px;overflow-y:auto;min-height:0}
+.slide-footer{padding:18px 56px;border-top:1px solid #ecf0f1;display:flex;justify-content:space-between;align-items:center;background:#fafafa;gap:16px;flex-shrink:0;position:relative}
+.footer-brand{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;color:#95a5a6;font-weight:600;letter-spacing:.5px}
+.footer-brand strong{color:#667eea;font-weight:800}
+.progress-indicator{font-size:13px;color:#95a5a6;font-weight:600;white-space:nowrap}
+.btn{padding:12px 26px;border:none;border-radius:4px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s ease;text-transform:uppercase;letter-spacing:.5px}
+.btn-nav{background:transparent;color:#7f8c8d;border:2px solid #bdc3c7}
+.btn-nav:hover{background:#ecf0f1;border-color:#95a5a6}
+.btn-primary{background:#e74c3c;color:#fff;border:2px solid #e74c3c}
+.btn-primary:hover{background:#c0392b;border-color:#c0392b;transform:translateY(-2px);box-shadow:0 4px 12px rgba(231,76,60,.28)}
+.btn-secondary{background:transparent;color:#3498db;border:2px solid #3498db}
+.btn-secondary:hover{background:#3498db;color:#fff}
+h2{font-family:'Libre Baskerville',serif;font-size:30px;color:#2c3e50;margin-bottom:18px;padding-bottom:10px;border-bottom:3px solid #e74c3c;display:inline-block}
+h3{font-family:'Libre Baskerville',serif;font-size:20px;color:#34495e;margin:22px 0 12px}
+p{font-size:16.5px;line-height:1.7;color:#2c3e50;margin-bottom:14px}
+.info-card{background:#ecf9ff;border-left:5px solid #3498db;padding:18px 20px;margin:18px 0}
+.info-card-title{font-weight:800;font-size:16.5px;color:#2980b9;margin-bottom:10px}
+.warning-card{background:#fff4e6;border-left:5px solid #f39c12;padding:18px 20px;margin:18px 0}
+.warning-card-title{font-weight:800;font-size:16.5px;color:#e67e22;margin-bottom:10px}
+.success-card{background:#e8f8f5;border-left:5px solid #27ae60;padding:18px 20px;margin:18px 0}
+.success-card-title{font-weight:800;font-size:16.5px;color:#27ae60;margin-bottom:10px}
+.content-list{list-style:none;padding:0}
+.content-list li{padding:8px 0 8px 26px;position:relative;font-size:16.5px;line-height:1.6;color:#2c3e50}
+.content-list li::before{content:"▸";position:absolute;left:0;color:#e74c3c;font-size:18px;font-weight:800}
+.two-columns{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0;align-items:start}
+.three-columns{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:16px 0;align-items:stretch}
+.panel{background:#f8f9fa;border:1px solid #ecf0f1;border-radius:4px;padding:16px 18px}
+.data-table{width:100%;border-collapse:collapse;border:1px solid #dfe6e9;margin:16px 0}
+.data-table th{background:#34495e;color:#fff;padding:12px;text-align:left;font-weight:800;font-size:13.5px}
+.data-table td{padding:10px 12px;border-bottom:1px solid #ecf0f1;vertical-align:top;font-size:14.5px;color:#2c3e50}
+.data-table tbody tr:nth-child(even){background:#f8f9fa}
+textarea,input{width:100%;padding:10px;border:2px solid #dfe6e9;border-radius:4px;font-family:'Inter',sans-serif;font-size:14px;background:#fff;color:#2c3e50;line-height:1.35}
+textarea{min-height:86px;resize:vertical}
+.check-row{display:grid;grid-template-columns:1.6fr 70px 70px;gap:8px;align-items:center;border-bottom:1px solid #ecf0f1;padding:10px 0}
+.check-head{font-weight:800;background:#34495e;color:#fff;padding:10px;border-radius:4px}
+.badge{display:inline-block;background:#ecf9ff;border:1px solid #3498db;color:#2980b9;padding:6px 10px;border-radius:20px;font-size:13px;font-weight:800;margin:4px}
+.resource-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.resource-row a{text-decoration:none;color:#2c3e50;background:#fff;border:2px solid #dfe6e9;padding:10px 12px;border-radius:4px;font-weight:800;font-size:13px;transition:all .15s ease}
+.resource-row a:hover{border-color:#3498db;background:#ecf9ff;transform:translateY(-1px)}
+.code-box{background:#f8f9fa;border:1px solid #dfe6e9;border-left:5px solid #3498db;border-radius:4px;padding:14px 16px;font-family:'Courier New',monospace;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;margin:14px 0}
+@media(max-width:1100px){.three-columns,.two-columns{grid-template-columns:1fr}.slide-title{font-size:34px}}
+@media(max-width:768px){.presentation-wrapper{padding:0}.slide{height:100vh}.slide-header,.slide-footer{padding:20px}.slide-content{padding:20px}.slide-title{font-size:26px}.footer-brand{display:none}.check-row{grid-template-columns:1fr}}
+@media print{body{overflow:visible;height:auto;background:#fff}.presentation-wrapper{display:block;height:auto;padding:0}.slide{display:flex!important;height:auto;box-shadow:none;page-break-after:always}.slide-footer{display:none}}
+</style>
+</head>
+<body>
+<div class="presentation-wrapper">
+
+<section class="slide active">
+<header class="slide-header"><div class="slide-number">Actividad interactiva</div><h1 class="slide-title">Optimiza el documento académico</h1></header>
+<div class="slide-content">
+<div class="info-card"><div class="info-card-title">Propósito</div><p>Orientar la revisión del artículo académico en español mediante corrección de escritura, análisis de coherencia y mejora de fluidez entre párrafos.</p></div>
+<div class="three-columns">
+<div class="panel"><h3>Momento 1</h3><p>Corrección de ortografía, gramática, puntuación, concordancia y redacción básica.</p><span class="badge">LanguageTool</span></div>
+<div class="panel"><h3>Momento 2</h3><p>Revisión de coherencia total.</p><span class="badge">Checklist</span></div>
+<div class="panel"><h3>Momento 3</h3><p>Mejora de fluidez, claridad y conexión entre párrafos.</p><span class="badge">DeepL Write</span></div>
+</div>
+<div class="warning-card"><div class="warning-card-title">Condición general</div><p>Antes de usar cada herramienta, el grupo debe revisar el límite de texto permitido en la versión disponible y trabajar por secciones cuando sea necesario.</p></div>
+</div>
+<footer class="slide-footer"><div class="progress-indicator">1 de 7</div><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><button class="btn btn-primary" onclick="nextSlide()">COMENZAR →</button></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Momento 1</div><h1 class="slide-title">Corrección de escritura con LanguageTool</h1></header>
+<div class="slide-content">
+<h2>Revisión inicial del texto</h2>
+<p>En este momento se revisan aspectos formales de escritura. La herramienta ayuda a detectar errores, pero cada sugerencia debe ser validada por el grupo.</p>
+<div class="two-columns">
+<div class="panel"><h3>Aspectos a revisar</h3><ul class="content-list"><li>Ortografía y tildes.</li><li>Gramática.</li><li>Puntuación.</li><li>Concordancia.</li><li>Repetición de palabras.</li><li>Frases extensas o poco claras.</li><li>Redacción básica.</li></ul></div>
+<div class="panel"><h3>Acceso</h3><p>Ingresar a LanguageTool y seleccionar español si la herramienta no lo detecta automáticamente.</p><div class="resource-row"><a href="https://languagetool.org/es" target="_blank" rel="noopener">Abrir LanguageTool</a></div><div class="warning-card"><div class="warning-card-title">Antes de iniciar</div><p>Verificar el límite de texto permitido. Si el documento supera ese límite, revisar por secciones o temas.</p></div></div>
+</div>
+<h3>Paso a paso</h3>
+<table class="data-table"><thead><tr><th>Paso</th><th>Acción</th></tr></thead><tbody>
+<tr><td>1</td><td>Abrir LanguageTool en el navegador.</td></tr>
+<tr><td>2</td><td>Confirmar que la revisión esté configurada en español.</td></tr>
+<tr><td>3</td><td>Revisar el límite de texto permitido por la herramienta.</td></tr>
+<tr><td>4</td><td>Copiar la sección del texto que se va a revisar.</td></tr>
+<tr><td>5</td><td>Leer cada sugerencia antes de aceptarla.</td></tr>
+<tr><td>6</td><td>Aplicar únicamente los cambios que mejoren el texto sin alterar el sentido original.</td></tr>
+</tbody></table>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">2 de 7</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Momento 1</div><h1 class="slide-title">Aplicación de correcciones</h1></header>
+<div class="slide-content">
+<h2>Validación de sugerencias</h2>
+<p>El grupo debe decidir si cada sugerencia mejora realmente el documento. No se trata de aceptar cambios de forma automática.</p>
+<table class="data-table"><thead><tr><th>Tipo de sugerencia</th><th>Pregunta de validación</th><th>Decisión esperada</th></tr></thead><tbody>
+<tr><td>Ortografía</td><td>¿La palabra está escrita correctamente según el contexto?</td><td>Corregir si hay error evidente.</td></tr>
+<tr><td>Gramática</td><td>¿La sugerencia mejora la concordancia o estructura de la oración?</td><td>Aceptar solo si conserva el sentido.</td></tr>
+<tr><td>Puntuación</td><td>¿La coma, punto o signo mejora la comprensión?</td><td>Ajustar si la frase queda más clara.</td></tr>
+<tr><td>Redacción</td><td>¿La frase queda más académica, clara y precisa?</td><td>Aplicar si no cambia la idea original.</td></tr>
+</tbody></table>
+<div class="success-card"><div class="success-card-title">Resultado esperado</div><p>Una versión del artículo con menos errores formales y mejor claridad de escritura.</p></div>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">3 de 7</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Momento 2</div><h1 class="slide-title">Coherencia total del artículo</h1></header>
+<div class="slide-content">
+<h2>Revisión global</h2>
+<p>Cuando el artículo es trabajado por varios autores, de manera adecuada y personal se percibiran diferentes tonos de la escritura personal de cada uno por lo que se debe revisar que el documento tenga unidad, continuidad y una voz académica común.</p>
+<div class="two-columns">
+<div class="panel"><h3>Se revisa</h3><ul class="content-list"><li>Unidad de estilo.</li><li>Conexión entre párrafos.</li><li>Relación entre introducción, desarrollo y conclusiones.</li><li>Integración de autores citados.</li><li>Continuidad del problema y del objetivo proceso y conclusiones.</li><li>Ausencia de repeticiones innecesarias.</li></ul></div>
+<div class="panel"><h3>Se evita</h3><ul class="content-list"><li>Fragmentos que parecen pegados.</li><li>Cambios bruscos de tono.</li><li>Citas aisladas sin análisis.</li><li>Conclusiones desconectadas del desarrollo.</li><li>Párrafos que no aportan al tema central.</li></ul></div>
+</div>
+<div class="info-card"><div class="info-card-title">Lectura recomendada</div><p>Leer el artículo completo una vez después de la corrección formal. Esta lectura permite detectar problemas que una herramienta automática no siempre identifica.</p></div>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">4 de 7</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Momento 2</div><h1 class="slide-title">Checklist de coherencia</h1></header>
+<div class="slide-content">
+<h2>Verificación del documento</h2>
+<p>Marquen cada criterio después de leer el artículo completo.</p>
+<div class="check-row"><div class="check-head">Criterio</div><div class="check-head">Sí</div><div class="check-head">No</div></div>
+<div id="checks"></div>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">5 de 7</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Momento 3</div><h1 class="slide-title">Mejora de fluidez con DeepL Write</h1></header>
+<div class="slide-content">
+<h2>Revisión de claridad y conexión entre párrafos</h2>
+<p>DeepL Write se usa para mejorar la fluidez, claridad y naturalidad de frases o párrafos que ya fueron revisados formalmente.</p>
+<div class="two-columns">
+<div class="panel"><h3>Acceso</h3><p>Ingresar a DeepL Write y seleccionar español cuando sea necesario.</p><div class="resource-row"><a href="https://www.deepl.com/write" target="_blank" rel="noopener">Abrir DeepL Write</a></div><div class="warning-card"><div class="warning-card-title">Antes de usarlo</div><p>Revisar el límite de texto permitido en la versión disponible. Trabajar con párrafos o secciones si el texto excede ese límite.</p></div></div>
+<div class="panel"><h3>Uso recomendado</h3><ul class="content-list"><li>Mejorar párrafos con poca fluidez.</li><li>Revisar frases que suenan forzadas.</li><li>Fortalecer conexiones entre ideas.</li><li>Comparar la versión sugerida con el texto original.</li><li>Conservar el sentido académico del artículo.</li></ul></div>
+</div>
+<h3>Paso a paso</h3>
+<table class="data-table"><thead><tr><th>Paso</th><th>Acción</th></tr></thead><tbody>
+<tr><td>1</td><td>Abrir DeepL Write.</td></tr>
+<tr><td>2</td><td>Revisar el límite de texto permitido.</td></tr>
+<tr><td>3</td><td>Ingresar el párrafo o sección que requiere mayor fluidez.</td></tr>
+<tr><td>4</td><td>Comparar la sugerencia con la versión original.</td></tr>
+<tr><td>5</td><td>Aplicar solo los cambios que mejoren claridad, coherencia y estilo académico.</td></tr>
+</tbody></table>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">6 de 7</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Cierre</div><h1 class="slide-title">Producto final</h1></header>
+<div class="slide-content">
+<h2>Entrega</h2>
+<div class="success-card"><div class="success-card-title">El grupo realiza</div><ul class="content-list"><li>Artículo corregido para siguiente fase.</li><li>Checklist de coherencia .</li></ul></div>
+<h3>Reflexión breve</h3>
+<div class="code-box">1. ¿Qué aspectos de escritura mejoraron después de la revisión?
+2. ¿Qué ajustes ayudaron a que el artículo se leyera como un solo documento?
+3. ¿Qué cambios fortalecieron la claridad y la coherencia entre párrafos?
+4. ¿Qué sugerencias de las herramientas no se aceptaron y por qué?</div>
+<div class="success-card"><div class="success-card-title">Observación</div><p>El artículo debe leerse como un texto académico claro, coherente y humanizado, aunque haya sido construido por varios integrantes.</p></div>
+
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div class="progress-indicator">7 de 7</div></footer>
+</section>
+
+</div>
+<script>
+let currentSlide=0;
+function showSlide(i){const slides=document.querySelectorAll('.slide');slides.forEach((s,idx)=>s.classList.toggle('active',idx===i));currentSlide=i}
+function nextSlide(){const slides=document.querySelectorAll('.slide');if(currentSlide<slides.length-1)showSlide(currentSlide+1)}
+function prevSlide(){if(currentSlide>0)showSlide(currentSlide-1)}
+const criterios=[
+'El artículo se lee como un solo texto y no como fragmentos aislados.',
+'El estilo de escritura es uniforme en todas las secciones.',
+'Las ideas conectan entre párrafos.',
+'La introducción, el desarrollo y las conclusiones mantienen relación entre sí.',
+'Los autores citados están integrados al análisis.',
+'Las citas no aparecen como una lista de opiniones sueltas.',
+'El objetivo del artículo se mantiene durante el documento.',
+'Las conclusiones responden al desarrollo del artículo y cierran objetivo.',
+'No hay repeticiones innecesarias.',
+'El lenguaje es académico, claro y natural.'
+];
+const cont=document.getElementById('checks');
+criterios.forEach(c=>{
+ const row=document.createElement('div');
+ row.className='check-row';
+ row.innerHTML=`<div>${c}</div><div><input type="checkbox" aria-label="Sí"></div><div><input type="checkbox" aria-label="No"></div>`;
+ cont.appendChild(row);
+});
+</script>
+</body>
+</html>
