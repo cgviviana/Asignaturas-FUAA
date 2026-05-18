@@ -1,1 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preliminares</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0e27;color:#2c3e50;overflow:hidden;height:100vh}
+.presentation-wrapper{height:100vh;display:flex;align-items:center;justify-content:center;padding:40px}
+.slide{background:#fff;width:100%;max-width:1400px;height:85vh;box-shadow:0 20px 60px rgba(0,0,0,.5);display:none;flex-direction:column}
+.slide.active{display:flex;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+.slide-header{background:linear-gradient(135deg,#2c3e50 0%,#34495e 100%);padding:34px 56px;color:#fff;border-bottom:4px solid #e74c3c;flex-shrink:0}
+.slide-number{font-size:13px;font-weight:300;letter-spacing:2px;opacity:.85;margin-bottom:8px;text-transform:uppercase}
+.slide-title{font-family:'Libre Baskerville',serif;font-size:40px;font-weight:700;line-height:1.2}
+.slide-content{flex:1;padding:40px 56px;overflow-y:auto;min-height:0}
+.slide-footer{padding:18px 56px;border-top:1px solid #ecf0f1;display:flex;justify-content:space-between;align-items:center;background:#fafafa;gap:16px;flex-shrink:0;position:relative}
+.footer-brand{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;color:#95a5a6;font-weight:600;letter-spacing:.5px}
+.footer-brand strong{color:#667eea;font-weight:800}
+.progress-indicator{font-size:13px;color:#95a5a6;font-weight:600;white-space:nowrap}
+.btn{padding:12px 26px;border:none;border-radius:4px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s ease;text-transform:uppercase;letter-spacing:.5px}
+.btn-nav{background:transparent;color:#7f8c8d;border:2px solid #bdc3c7}
+.btn-primary{background:#e74c3c;color:#fff;border:2px solid #e74c3c}
+.btn-secondary{background:transparent;color:#3498db;border:2px solid #3498db}
+h2{font-family:'Libre Baskerville',serif;font-size:30px;color:#2c3e50;margin-bottom:18px;padding-bottom:10px;border-bottom:3px solid #e74c3c;display:inline-block}
+h3{font-family:'Libre Baskerville',serif;font-size:20px;color:#34495e;margin:22px 0 12px}
+p{font-size:16.5px;line-height:1.7;color:#2c3e50;margin-bottom:14px}
+.info-card{background:#ecf9ff;border-left:5px solid #3498db;padding:18px 20px;margin:18px 0}
+.info-card-title{font-weight:800;font-size:16.5px;color:#2980b9;margin-bottom:10px}
+.warning-card{background:#fff4e6;border-left:5px solid #f39c12;padding:18px 20px;margin:18px 0}
+.warning-card-title{font-weight:800;font-size:16.5px;color:#e67e22;margin-bottom:10px}
+.success-card{background:#e8f8f5;border-left:5px solid #27ae60;padding:18px 20px;margin:18px 0}
+.success-card-title{font-weight:800;font-size:16.5px;color:#27ae60;margin-bottom:10px}
+.content-list{list-style:none;padding:0}
+.content-list li{padding:8px 0 8px 26px;position:relative;font-size:16.5px;line-height:1.6;color:#2c3e50}
+.content-list li::before{content:"▸";position:absolute;left:0;color:#e74c3c;font-size:18px;font-weight:800}
+.two-columns{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0;align-items:start}
+.panel{background:#f8f9fa;border:1px solid #ecf0f1;border-radius:4px;padding:16px 18px}
+.data-table{width:100%;border-collapse:collapse;border:1px solid #dfe6e9;margin:16px 0}
+.data-table th{background:#34495e;color:#fff;padding:12px;text-align:left;font-weight:800;font-size:13.5px}
+.data-table td{padding:10px 12px;border-bottom:1px solid #ecf0f1;vertical-align:top;font-size:14.5px;color:#2c3e50}
+textarea,input{width:100%;padding:10px;border:2px solid #dfe6e9;border-radius:4px;font-family:'Inter',sans-serif;font-size:14px;background:#fff;color:#2c3e50;line-height:1.35}
+textarea{min-height:86px;resize:vertical}
+.badge{display:inline-block;background:#ecf9ff;border:1px solid #3498db;color:#2980b9;padding:6px 10px;border-radius:20px;font-size:13px;font-weight:800;margin:4px}
+.check-row{display:grid;grid-template-columns:1.6fr 70px 70px;gap:8px;align-items:center;border-bottom:1px solid #ecf0f1;padding:10px 0}
+.check-head{font-weight:800;background:#34495e;color:#fff;padding:10px;border-radius:4px}
+.counter{font-size:13px;font-weight:800;color:#7f8c8d;text-align:right;margin-top:6px}
+.counter.ok{color:#27ae60}
+.counter.low{color:#e67e22}
+.counter.high{color:#c0392b}
+.code-box{background:#f8f9fa;border:1px solid #dfe6e9;border-left:5px solid #3498db;border-radius:4px;padding:14px 16px;font-family:'Courier New',monospace;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;margin:14px 0}
+.resource-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.resource-row a{text-decoration:none;color:#2c3e50;background:#fff;border:2px solid #dfe6e9;padding:10px 12px;border-radius:4px;font-weight:800;font-size:13px}
+.format-preview{border:1px solid #dfe6e9;padding:20px;background:#fff;margin-top:12px}
+.center-bold{text-align:center;font-weight:800}
+.justified{ text-align:justify; line-height:2; }
+@media(max-width:1100px){.two-columns{grid-template-columns:1fr}.slide-title{font-size:34px}}
+@media(max-width:768px){.presentation-wrapper{padding:0}.slide{height:100vh}.slide-header,.slide-footer{padding:20px}.slide-content{padding:20px}.slide-title{font-size:26px}.footer-brand{display:none}.check-row{grid-template-columns:1fr}}
+@media print{body{overflow:visible;height:auto;background:#fff}.presentation-wrapper{display:block;height:auto;padding:0}.slide{display:flex!important;height:auto;box-shadow:none;page-break-after:always}.slide-footer{display:none}}
+</style>
+</head>
+<body>
+<div class="presentation-wrapper">
 
+<section class="slide active">
+<header class="slide-header"><div class="slide-number">Actividad interactiva</div><h1 class="slide-title">Preliminares del documento académico</h1></header>
+<div class="slide-content">
+<div class="info-card"><div class="info-card-title">Propósito</div><p>Construir las secciones preliminares del documento cuidando la normativa que permite identificar el texto.</p></div>
+<div class="two-columns">
+<div class="panel"><h3>Fase 1</h3><p>Construcción de secciones preliminares: título, subtítulo, resumen y palabras clave.</p><span class="badge">Versión normativa</span></div>
+<div class="panel"><h3>Fase 2</h3><p>Traducción controlada al inglés: title, subtitle, abstract y keywords.</p><span class="badge">Versión académica en inglés</span></div>
+</div>
+<div class="warning-card"><div class="warning-card-title">Punto de partida</div><p>Esta actividad se realiza después de tener el artículo construído y revisado.</p></div>
+</div>
+<footer class="slide-footer"><div class="progress-indicator">1 de 10</div><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><button class="btn btn-primary" onclick="nextSlide()">COMENZAR →</button></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Fase 1</div><h1 class="slide-title">Especificaciones de presentación</h1></header>
+<div class="slide-content">
+<h2>Normativa  fase 1</h2>
+<table class="data-table">
+<thead><tr><th>Elemento</th><th>Especificación</th><th>Recomendación</th></tr></thead>
+<tbody>
+<tr><td>Título</td><td>Máximo 15 palabras.</td><td>Debe reflejar el proceso desarrollado en el artículo.</td></tr>
+<tr><td>Subtítulo</td><td>Centrado y en negrilla.</td><td>Debe hacer más llamativa y precisa la versión del título.</td></tr>
+<tr><td>Resumen</td><td>150 a 180 palabras.</td><td>Un solo párrafo, justificado y a doble espacio.</td></tr>
+<tr><td>Resumen</td><td>Redactado en pasado.</td><td>Debe presentar lo que se hizo, se revisó, se identificó y se concluyó.</td></tr>
+<tr><td>Palabras clave</td><td>Entre 4 y 6 términos.</td><td>Validar términos con tesauros o vocabularios académicos.</td></tr>
+</tbody>
+</table>
+<div class="format-preview">
+<p class="center-bold">Título del artículo</p>
+<p class="center-bold">Subtítulo </p>
+<p class="center-bold">Resumen</p>
+<p><strong>Palabras clave:</strong> </p>
+</div>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">2 de 10</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Fase 1</div><h1 class="slide-title">Perfilación del título y subtítulo</h1></header>
+<div class="slide-content">
+<h2>Título: </h2>
+<p>Debe reflejar el proceso realizado en el artículo: revisión, análisis, caracterización, comparación, identificación o sistematización.</p>
+<div class="two-columns">
+<div class="panel"><h3>Fórmula sugerida</h3><div class="code-box">Proceso + tema central + contexto o población</div><p>Ejemplo: Revisión sobre competencias docentes para la integración ética de la inteligencia artificial</p></div>
+<div class="panel"><h3>Subtítulo</h3><p>El subtítulo complementa el título, lo hace más llamativo y delimita mejor el enfoque. Debe ir centrado y en negrilla.</p></div>
+</div>
+<table class="data-table">
+<thead><tr><th>Elemento</th><th>Redacción</th></tr></thead>
+<tbody>
+<tr><td>Título</td><td><textarea id="titulo" placeholder="Escriba el título final"></textarea><div class="counter" id="tituloCount">0 palabras</div><button class="btn btn-secondary" onclick="contarTitulo()">CONTAR PALABRAS</button></td></tr>
+<tr><td>Subtítulo</td><td><textarea placeholder="Escriba el subtítulo centrado y en negrilla en el documento final"></textarea></td></tr>
+</tbody>
+</table>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">3 de 10</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Fase 1</div><h1 class="slide-title">Objetivo del resumen</h1></header>
+<div class="slide-content">
+<h2>Redacción del objetivo</h2>
+<p>El objetivo dentro del resumen debe estar redactado con una estructura clara.</p>
+<div class="success-card"><div class="success-card-title">Fórmula obligatoria</div><p><strong>Verbo en infinitivo + sujeto u objeto sobre el que se hace el estudio + complemento.</strong></p></div>
+<table class="data-table">
+<thead><tr><th>Parte</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td>Verbo en infinitivo</td><td>Analizar, identificar, caracterizar, describir, comparar, revisar.</td></tr>
+<tr><td>Sujeto u objeto de estudio</td><td>las competencias docentes, las estrategias pedagógicas, las tendencias investigativas.</td></tr>
+<tr><td>Complemento</td><td>en el contexto de la educación superior, a partir de una revisión documental, en artículos publicados entre...</td></tr>
+</tbody>
+</table>
+<h3>Construcción del objetivo</h3>
+<textarea placeholder="Ejemplo: Analizar las competencias docentes para la integración ética de la inteligencia artificial en educación superior a partir de una revisión documental."></textarea>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">4 de 10</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Fase 1</div><h1 class="slide-title">Estructura del resumen</h1></header>
+<div class="slide-content">
+<h2>Resumen de 150 a 180 palabras</h2>
+<p>El resumen debe sintetizar el artículo en pasado y en un solo párrafo.</p>
+<table class="data-table">
+<thead><tr><th>Componente</th><th>Debe incluir</th></tr></thead>
+<tbody>
+<tr><td>Problemática</td><td>Situación que motivó la revisión.</td></tr>
+<tr><td>Objetivo</td><td>Redactado con la fórmula: verbo en infinitivo + objeto de estudio + complemento.</td></tr>
+<tr><td>Metodología</td><td>Bases de datos consultadas, palabras clave utilizadas, criterios de selección y número de documentos revisados.</td></tr>
+<tr><td>Resultados</td><td>Hallazgos principales de la revisión.</td></tr>
+<tr><td>Conclusión</td><td>Idea principal según el objetivo y aporte de la revisión.</td></tr>
+</tbody>
+</table>
+<div class="warning-card"><div class="warning-card-title">Cuidado de redacción</div><p>No incluir citas, opiniones personales ni explicaciones extensas. El resumen debe ser directo, académico y coherente.</p></div>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">5 de 10</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Fase 1</div><h1 class="slide-title">Plantilla para construir el resumen</h1></header>
+<div class="slide-content">
+<h2>Redacción por componentes</h2>
+<table class="data-table">
+<thead><tr><th>Componente</th><th>Redacción base</th></tr></thead>
+<tbody>
+<tr><td>Problemática</td><td><textarea placeholder="La revisión abordó la problemática de..."></textarea></td></tr>
+<tr><td>Objetivo</td><td><textarea placeholder="El objetivo fue analizar..."></textarea></td></tr>
+<tr><td>Metodología</td><td><textarea placeholder="Se realizó una revisión documental en bases de datos como..., usando palabras clave como..., con criterios de selección..., y se revisaron ... documentos."></textarea></td></tr>
+<tr><td>Resultados</td><td><textarea placeholder="Los resultados evidenciaron que..."></textarea></td></tr>
+<tr><td>Conclusión</td><td><textarea placeholder="Se concluyó que..."></textarea></td></tr>
+</tbody>
+</table>
+<h3>Resumen final</h3>
+<textarea id="resumen" oninput="contarResumen()" placeholder="Escriba o pegue aquí el resumen final completo en un solo párrafo, entre 150 y 180 palabras."></textarea>
+<div class="counter low" id="resumenCount">0 palabras — por debajo del rango requerido</div>
+<button class="btn btn-secondary" onclick="contarResumen()">CONTAR PALABRAS</button>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">6 de 10</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Fase 1</div><h1 class="slide-title">Palabras clave y tesauros</h1></header>
+<div class="slide-content">
+<h2>Selección de términos académicos</h2>
+<p>Las palabras clave deben representar los conceptos centrales del artículo y facilitar su búsqueda en bases académicas.</p>
+<div class="two-columns">
+<div class="panel"><h3>Criterios</h3><ul class="content-list"><li>Usar entre 4 y 6 palabras clave.</li><li>Evitar frases demasiado largas.</li><li>No repetir términos innecesarios del título.</li><li>Preferir conceptos académicos verificables.</li><li>Validar términos en tesauros o vocabularios especializados.</li></ul></div>
+<div class="panel"><h3>Tesauros sugeridos</h3><ul class="content-list"><li>UNESCO Thesaurus.</li><li>ERIC Thesaurus.</li><li>DeCS/MeSH si el tema es de salud.</li><li>Tesauros institucionales o disciplinares disponibles.</li></ul></div>
+</div>
+<div class="resource-row">
+<a href="https://vocabularies.unesco.org/browser/thesaurus/es/" target="_blank" rel="noopener">UNESCO Thesaurus</a>
+<a href="https://eric.ed.gov/?ti=all" target="_blank" rel="noopener">ERIC Thesaurus</a>
+<a href="https://decs.bvsalud.org/es/" target="_blank" rel="noopener">DeCS/MeSH</a>
+</div>
+<table class="data-table">
+<thead><tr><th>Palabra clave propuesta</th><th>Tesauro consultado</th><th>Término validado o ajustado</th></tr></thead>
+<tbody>
+<tr><td><input></td><td><input></td><td><input></td></tr>
+<tr><td><input></td><td><input></td><td><input></td></tr>
+<tr><td><input></td><td><input></td><td><input></td></tr>
+<tr><td><input></td><td><input></td><td><input></td></tr>
+<tr><td><input></td><td><input></td><td><input></td></tr>
+</tbody>
+</table>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">7 de 10</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Fase 1</div><h1 class="slide-title">Checklist antes de traducir</h1></header>
+<div class="slide-content">
+<h2>Verificación en español</h2>
+<div class="check-row"><div class="check-head">Criterio</div><div class="check-head">Sí</div><div class="check-head">No</div></div>
+<div id="checks"></div>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">8 de 10</span> <button class="btn btn-primary" onclick="nextSlide()">PASAR A INGLÉS →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Fase 2</div><h1 class="slide-title">Versión académica en inglés</h1></header>
+<div class="slide-content">
+<h2>Title, subtitle, abstract and keywords</h2>
+<p>La traducción se realiza cuando la versión en español ya cumple las condiciones de contenido y formato.</p>
+<div class="warning-card"><div class="warning-card-title">Revisión previa</div><p>Antes de usar una herramienta de traducción, revisar el límite de texto permitido y trabajar por bloques si es necesario.</p></div>
+
+<div class="info-card">
+<div class="info-card-title">Herramientas de apoyo para traducir y revisar</div>
+<p>Usen estas herramientas para pasar al inglés la versión que ya construyeron en español. La traducción debe conservar el sentido académico del texto original.</p>
+<div class="resource-row">
+<a href="https://www.deepl.com/translator" target="_blank" rel="noopener">DeepL Translator</a>
+<a href="https://translate.google.com/?sl=es&tl=en" target="_blank" rel="noopener">Google Translate</a>
+<a href="https://languagetool.org/" target="_blank" rel="noopener">LanguageTool</a>
+<a href="https://www.deepl.com/write" target="_blank" rel="noopener">DeepL Write</a>
+</div>
+</div>
+
+<table class="data-table">
+<thead><tr><th>Elemento</th><th>Versión en inglés</th></tr></thead>
+<tbody>
+<tr><td>Title</td><td><textarea placeholder="Write the final academic title in English."></textarea></td></tr>
+<tr><td>Subtitle</td><td><textarea placeholder="Write the subtitle in English."></textarea></td></tr>
+<tr><td>Abstract</td><td><textarea placeholder="Write the abstract in English, preserving the same structure and meaning."></textarea></td></tr>
+<tr><td>Keywords</td><td><textarea placeholder="Keyword 1; Keyword 2; Keyword 3; Keyword 4; Keyword 5"></textarea></td></tr>
+</tbody>
+</table>
+<div class="success-card"><div class="success-card-title">Control de calidad</div><p>La versión en inglés debe conservar el sentido del texto en español, no traducir de forma literal ni modificar los hallazgos del artículo.</p></div>
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div><span class="progress-indicator">9 de 10</span> <button class="btn btn-primary" onclick="nextSlide()">SIGUIENTE →</button></div></footer>
+</section>
+
+<section class="slide">
+<header class="slide-header"><div class="slide-number">Entrega</div><h1 class="slide-title">Producto final</h1></header>
+<div class="slide-content">
+<h2>Formato de entrega integrado al documento versión final</h2>
+<div class="success-card"><div class="success-card-title">El grupo entrega</div><ul class="content-list"><li>Título en español e inglés.</li><li>Subtítulo en español e inglés.</li><li>Resumen en español en español e inglés.</li><li>Palabras clave en español e inglés.</li><li>Fotografías del proceso del grupo en la carpeta.</li></ul></div>
+<div class="code-box">Título:
+[versión final en español]
+
+Subtítulo:
+[centrado y en negrilla en el documento final]
+
+Title:
+[final version in English]
+
+Subtitle:
+[final version in English]
+
+Resumen:
+[párrafo único de 150 a 180 palabras, justificado y a doble espacio]
+
+Abstract:
+[single paragraph in English]
+
+Palabras clave:
+[término 1; término 2; término 3; término 4; término 5]
+
+Keywords:
+[term 1; term 2; term 3; term 4; term 5]</div>
+
+</div>
+<footer class="slide-footer"><button class="btn btn-nav" onclick="prevSlide()">← ANTERIOR</button><div class="footer-brand">Aprendiendo con <strong>@LaProfeVivy</strong></div><div class="progress-indicator">10 de 10</div></footer>
+</section>
+
+</div>
+<script>
+let currentSlide=0;
+function showSlide(i){const slides=document.querySelectorAll('.slide');slides.forEach((s,idx)=>s.classList.toggle('active',idx===i));currentSlide=i}
+function nextSlide(){const slides=document.querySelectorAll('.slide');if(currentSlide<slides.length-1)showSlide(currentSlide+1)}
+function prevSlide(){if(currentSlide>0)showSlide(currentSlide-1)}
+function countWords(text){return text.trim()?text.trim().split(/\\s+/).length:0}
+function contarTitulo(){document.getElementById('tituloCount').textContent=countWords(document.getElementById('titulo').value)+' palabras'}
+function contarResumen(){
+  const total = countWords(document.getElementById('resumen').value);
+  const el = document.getElementById('resumenCount');
+  el.classList.remove('ok','low','high');
+  if(total < 150){
+    el.classList.add('low');
+    el.textContent = total + ' palabras — por debajo del rango requerido';
+  } else if(total <= 180){
+    el.classList.add('ok');
+    el.textContent = total + ' palabras — cumple el rango de 150 a 180';
+  } else {
+    el.classList.add('high');
+    el.textContent = total + ' palabras — supera el rango, deben afinar el resumen';
+  }
+}
+const criterios=[
+'El título tiene máximo 15 palabras.',
+'El título refleja el proceso desarrollado en el artículo.',
+'El subtítulo complementa el título y está previsto para ir centrado y en negrilla.',
+'El resumen tiene entre 150 y 180 palabras.',
+'El resumen está redactado en pasado.',
+'El objetivo usa la estructura: verbo en infinitivo + objeto de estudio + complemento.',
+'La metodología menciona bases de datos consultadas.',
+'La metodología menciona palabras clave usadas en la búsqueda.',
+'La metodología menciona criterios de selección.',
+'La metodología menciona el número de documentos revisados.',
+'Los resultados resumen los hallazgos principales.',
+'La conclusión presenta la idea principal según el objetivo y el aporte de la revisión.',
+'Las palabras clave fueron revisadas en tesauros o vocabularios académicos.'
+];
+const cont=document.getElementById('checks');
+criterios.forEach(c=>{
+ const row=document.createElement('div');
+ row.className='check-row';
+ row.innerHTML=`<div>${c}</div><div><input type="checkbox" aria-label="Sí"></div><div><input type="checkbox" aria-label="No"></div>`;
+ cont.appendChild(row);
+});
+</script>
+</body>
+</html>
