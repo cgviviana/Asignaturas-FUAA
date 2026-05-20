@@ -1,1 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Seguridad, Ética y Gestión del Conocimiento</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#bfd0de;color:#111}
+.header{margin:20px;background:#174b17;color:white;padding:18px 24px;font-size:24px;font-weight:700}
+.layout{display:grid;grid-template-columns:310px 1fr;gap:22px;margin:0 20px 20px}
+.menu{background:#c9d6e0;border:1px solid #e4eef6;padding:16px;min-height:720px}
+.menu-title{background:#101010;color:white;padding:18px;text-align:center;font-weight:700;margin-bottom:14px}
+.menu button{width:100%;border:0;background:#e8edf2;color:#222;text-align:left;padding:14px 18px;margin:6px 0;font-size:16.5px;font-weight:600;cursor:pointer}
+.menu button.active{background:#101010;color:white;border-left:6px solid #69d64f}
+.content{background:#d2dbe3;border:1px solid #e4eef6;min-height:720px}
+.page{display:none}
+.page.active{display:block}
+.page-title{background:#101010;color:white;padding:24px;font-size:30px;font-weight:800;border-bottom:3px solid #16bfe6}
+.page-body{padding:22px}
+.block{border:2px solid #16bfe6;background:#d7d9dc;margin-bottom:16px}
+.block-title{background:#101010;color:white;padding:16px 20px;font-size:22px;font-weight:800}
+.block-body{padding:20px;font-size:19px;line-height:1.45}
+.idea{background:#eef8eb;border-left:5px solid #69d64f;padding:16px;margin-top:16px}
+.note{background:#fff9df;border-left:5px solid #d69b28;padding:14px;margin-top:14px}
+.warn{background:#ffecec;border-left:5px solid #d64f4f;padding:14px;margin-top:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.card{background:#eef0f2;padding:18px;border:1px solid #c3ccd3}
+.card b{font-size:20px}
+.tabs{margin-top:8px}
+.tab-buttons button{border:1px solid #777;background:#eee;padding:10px 16px;margin:0 6px 10px 0;cursor:pointer;font-size:16px}
+.tab-buttons button.active{background:#101010;color:white}
+.tab-panel{display:none;background:#eef0f2;padding:18px;font-size:18px;border:1px solid #c3ccd3}
+.tab-panel.active{display:block}
+table{width:100%;border-collapse:collapse;background:white;font-size:17px}
+th{background:#174b17;color:white;text-align:left}
+th,td{border:1px solid #b8c2ca;padding:11px;vertical-align:top}
+textarea{width:100%;min-height:95px;font-size:17px;padding:10px;margin-top:8px}
+select,input{font-size:16px;padding:8px;margin:4px 0;width:100%;max-width:540px}
+.footer{background:#101010;color:#c8ffc0;text-align:center;padding:18px;font-size:18px;font-weight:700}
+.btn{border:0;background:#174b17;color:white;padding:10px 14px;margin:6px 4px 6px 0;cursor:pointer;font-size:16px;border-radius:4px}
+.result{background:white;border:2px solid #174b17;padding:15px;margin-top:12px;font-size:18px;min-height:60px}
+.choice{display:block;background:#eef0f2;border:1px solid #87939c;padding:12px;margin:8px 0;cursor:pointer;font-size:17px;text-align:left;width:100%}
+.choice:hover{background:#dce7ef}
+.kpi-preview{background:white;border-left:7px solid #16bfe6;padding:16px;margin-top:12px}
+.kpi-name{font-size:23px;font-weight:900}
+.kpi-value{font-size:34px;font-weight:900;margin:6px 0}
+.kpi-text{font-size:17px}
+.dashboard{background:#f4f7f9;border:3px solid #101010;border-radius:8px;padding:16px;margin-top:12px;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.dash-header{background:#174b17;color:white;padding:14px 18px;border-radius:6px;margin-bottom:14px;display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:800}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:white;border-left:6px solid #16bfe6;padding:12px;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,.12)}
+.kpi .label{font-size:14px;color:#555;font-weight:700}
+.kpi .value{font-size:25px;font-weight:900;margin-top:4px}
+.kpi .trend{font-size:13px;color:#174b17;margin-top:4px}
+.dash-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.chart-box{background:white;border-radius:6px;padding:14px;box-shadow:0 2px 5px rgba(0,0,0,.12)}
+.chart-title{font-weight:800;margin-bottom:10px}
+.bar-row{display:grid;grid-template-columns:125px 1fr 90px;align-items:center;gap:8px;margin:9px 0;font-size:15px}
+.bar-track{background:#e7edf2;height:18px;border-radius:8px;overflow:hidden}
+.bar-fill{height:100%;background:#174b17;border-radius:8px}
+.pie{width:180px;height:180px;border-radius:50%;background:conic-gradient(#174b17 0 42%, #16bfe6 42% 70%, #d69b28 70% 86%, #555 86% 100%);margin:10px auto}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:14px}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;background:#174b17}
+.dot.b{background:#16bfe6}.dot.c{background:#d69b28}.dot.d{background:#555}
+.process{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.step{background:#eef0f2;border-top:5px solid #16bfe6;padding:14px;min-height:120px}
+.step-number{background:#101010;color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:8px}
+@media(max-width:1000px){
+ .layout{grid-template-columns:1fr}
+ .grid2,.grid3,.dash-grid,.kpis,.process{grid-template-columns:1fr}
+ .menu{min-height:auto}
+}
+</style>
+</head>
+<body>
+<div class="header">Seguridad, Ética y Gestión del Conocimiento</div>
 
+<div class="layout">
+<aside class="menu">
+<div class="menu-title">Eje 4</div>
+<button class="nav active" onclick="showPage('p2',this)">1. Seguridad de la información</button>
+<button class="nav" onclick="showPage('p3',this)">2. Copias y versiones</button>
+<button class="nav" onclick="showPage('p4',this)">3. Ética en datos</button>
+<button class="nav" onclick="showPage('p5',this)">4. Gestión del conocimiento</button>
+<button class="nav" onclick="showPage('p6',this)">5. Uso responsable de IA</button>
+<button class="nav" onclick="showPage('p7',this)">6. Del dashboard a la decisión</button>
+<button class="nav" onclick="showPage('p8',this)">7. Simulación de riesgo</button>
+</aside>
+
+<main class="content">
+
+<section id="p2" class="page active">
+<div class="page-title">Seguridad de la información</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Qué significa</div><div class="block-body">
+La seguridad de la información consiste en proteger los datos para evitar pérdida, edición accidental, acceso no autorizado o decisiones basadas en archivos dañados.
+<div class="note">En el caso de la perfumería, el archivo de Excel contiene datos que sirven para tomar decisiones sobre marcas, productos, canales y estrategias comerciales.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Riesgos y acciones</div><div class="block-body">
+<table>
+<tr><th>Riesgo</th><th>Consecuencia</th><th>Acción recomendada</th></tr>
+<tr><td>Eliminar ventas por error.</td><td>Los KPI quedan incompletos.</td><td>Guardar una copia original sin modificar.</td></tr>
+<tr><td>Modificar fórmulas.</td><td>Los indicadores pueden quedar errados.</td><td>Proteger hojas o bloquear celdas con fórmulas.</td></tr>
+<tr><td>Compartir con permisos abiertos.</td><td>Cualquier persona puede editar o borrar información.</td><td>Definir permisos: lector, comentarista o editor.</td></tr>
+<tr><td>Trabajar en una versión vieja.</td><td>El dashboard no coincide con la base actual.</td><td>Usar nombres con fecha y versión.</td></tr>
+<tr><td>No tener respaldo.</td><td>Se puede perder el trabajo completo.</td><td>Guardar copia en Drive, OneDrive o plataforma institucional.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Instrucción para el estudiante</div><div class="block-body">
+Identifique dos riesgos de seguridad en el manejo del archivo de ventas de la perfumería y proponga una acción para evitar cada riesgo.
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p3" class="page">
+<div class="page-title">Copias de seguridad y control de versiones</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Por qué importa</div><div class="block-body">
+Una copia de seguridad permite recuperar el trabajo si el archivo se pierde, se daña o se modifica mal. El control de versiones ayuda a saber cuál archivo es el más reciente y cuál fue usado para entregar.
+</div></div>
+
+<div class="block"><div class="block-title">Estrategia recomendada</div><div class="block-body">
+<table>
+<tr><th>Versión</th><th>Uso</th><th>Nombre recomendado</th></tr>
+<tr><td>Original</td><td>Base sin editar.</td><td>Perfumeria_Base_Original.xlsx</td></tr>
+<tr><td>Trabajo</td><td>Fórmulas, KPI, tablas y gráficos.</td><td>Perfumeria_Analisis_V1.xlsx</td></tr>
+<tr><td>Final</td><td>Archivo listo para entrega.</td><td>Perfumeria_Dashboard_Final.xlsx</td></tr>
+<tr><td>Respaldo</td><td>Copia en nube o plataforma.</td><td>Carpeta del grupo / Drive / OneDrive.</td></tr>
+</table>
+<div class="warn"><b>No es recomendable:</b> trabajar todos sobre un archivo sin control, duplicar versiones sin nombre claro o reemplazar la base original.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Instrucción para el estudiante</div><div class="block-body">
+Proponga una estrategia básica de respaldo para evitar la pérdida del archivo, errores de edición o eliminación accidental.
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p4" class="page">
+<div class="page-title">Ética en el uso de datos</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Qué significa actuar con ética</div><div class="block-body">
+La ética en datos implica trabajar con información real, sin manipular resultados para que parezcan mejores. En el dashboard, los gráficos y KPI deben representar lo que muestran los datos, no lo que se quisiera mostrar.
+</div></div>
+
+<div class="block"><div class="block-title">Prácticas correctas e incorrectas</div><div class="block-body">
+<div class="grid2">
+<div class="card"><b>No se debe hacer</b><br><br>
+<ul>
+<li>Inventar registros de ventas.</li>
+<li>Borrar datos que no favorecen el análisis.</li>
+<li>Cambiar valores para mejorar resultados.</li>
+<li>Usar fuentes externas sin registrarlas.</li>
+<li>Copiar conclusiones sin revisar los datos.</li>
+</ul>
+</div>
+<div class="card"><b>Sí se debe hacer</b><br><br>
+<ul>
+<li>Usar datos verificables.</li>
+<li>Explicar de dónde salen los KPI.</li>
+<li>Conservar la base original.</li>
+<li>Registrar fuentes VT/IC.</li>
+<li>Validar lo que propone la IA.</li>
+</ul>
+</div>
+</div>
+<div class="idea"><b>Idea clave:</b> un dashboard no debe maquillar los datos. Debe ayudar a entenderlos para tomar mejores decisiones.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Instrucción para el estudiante</div><div class="block-body">
+Explique tres cuidados éticos que debe tener al analizar datos internos y fuentes externas de vigilancia tecnológica e inteligencia competitiva.
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p5" class="page">
+<div class="page-title">Gestión del conocimiento</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Documentar para que otro entienda</div><div class="block-body">
+Gestionar el conocimiento significa dejar claro qué se hizo, con qué datos, qué fórmulas se usaron, qué gráficos se eligieron y qué decisión se recomienda.
+</div></div>
+
+<div class="block"><div class="block-title">Qué debe documentarse</div><div class="block-body">
+<table>
+<tr><th>Hoja</th><th>Qué contiene</th><th>Qué debe explicarse</th></tr>
+<tr><td>BaseD</td><td>Base de ventas de la perfumería.</td><td>Columnas, registros y origen de los datos.</td></tr>
+<tr><td>Basico</td><td>Fórmulas iniciales.</td><td>Qué fórmula se usó y qué calcula.</td></tr>
+<tr><td>Formulas_KPI</td><td>Indicadores principales.</td><td>Qué KPI responde cada pregunta.</td></tr>
+<tr><td>TablasD</td><td>Tablas dinámicas o tablas resumen.</td><td>Campos usados, columnas e interpretación.</td></tr>
+<tr><td>Graficos</td><td>Visualizaciones.</td><td>Por qué se eligió cada gráfico.</td></tr>
+<tr><td>Dashboard</td><td>Resumen visual del análisis.</td><td>Qué decisiones permite tomar.</td></tr>
+<tr><td>Analisis</td><td>Lectura avanzada VT/IC.</td><td>Hallazgos, evidencia externa y decisión recomendada.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Instrucción para el estudiante</div><div class="block-body">
+Documente el proceso realizado en el archivo, explicando qué contiene cada hoja y cómo aporta al análisis empresarial.
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p6" class="page">
+<div class="page-title">Uso responsable de inteligencia artificial</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">La IA como apoyo</div><div class="block-body">
+La inteligencia artificial puede apoyar el análisis, pero no reemplaza la revisión humana. Puede ayudar a organizar ideas, sugerir conclusiones o explicar fórmulas, pero los datos deben verificarse.
+</div></div>
+
+<div class="block"><div class="block-title">Qué puede hacer y qué debe validarse</div><div class="block-body">
+<table>
+<tr><th>La IA puede apoyar en...</th><th>Pero el estudiante debe validar...</th></tr>
+<tr><td>Explicar fórmulas.</td><td>Que la fórmula corresponda a las columnas reales.</td></tr>
+<tr><td>Redactar conclusiones iniciales.</td><td>Que las conclusiones salgan del dashboard.</td></tr>
+<tr><td>Organizar hallazgos de VT/IC.</td><td>Que las fuentes existan y estén bien registradas.</td></tr>
+<tr><td>Sugerir riesgos y recomendaciones.</td><td>Que la recomendación sea coherente con los datos.</td></tr>
+<tr><td>Mejorar la presentación del análisis.</td><td>Que no invente cifras, marcas, precios o resultados.</td></tr>
+</table>
+<div class="note"><b>Regla práctica:</b> la IA propone, el estudiante verifica, ajusta y justifica.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Instrucción para el estudiante</div><div class="block-body">
+Describa cómo puede usarse la inteligencia artificial como apoyo en el análisis de información empresarial, indicando beneficios, riesgos y formas de validación.
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p7" class="page">
+<div class="page-title">Del dashboard a la decisión</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Cómo construir una recomendación responsable</div><div class="block-body">
+La recomendación final debe unir el hallazgo interno, el KPI, la evidencia externa y una acción concreta.
+<table>
+<tr><th>Elemento</th><th>Pregunta</th><th>Ejemplo</th></tr>
+<tr><td>Hallazgo interno</td><td>¿Qué mostró Excel?</td><td>Una marca concentra mayor ingreso.</td></tr>
+<tr><td>KPI</td><td>¿Qué indicador lo respalda?</td><td>Ingreso total por marca.</td></tr>
+<tr><td>Evidencia externa</td><td>¿Qué mostró VT/IC?</td><td>Google Trends o marketplace muestran interés.</td></tr>
+<tr><td>Interpretación</td><td>¿Qué significa?</td><td>Puede existir oportunidad comercial.</td></tr>
+<tr><td>Decisión</td><td>¿Qué se recomienda?</td><td>Fortalecer inventario o campaña.</td></tr>
+</table>
+</div></div>
+
+<div class="block"><div class="block-title">Modelo de redacción</div><div class="block-body">
+<div class="note">
+En el análisis interno se observa que <b>[hallazgo]</b>. El KPI <b>[nombre del KPI]</b> muestra <b>[resultado]</b>. Al revisar el entorno mediante <b>[fuente externa]</b>, se identifica que <b>[evidencia]</b>. Esto significa que <b>[interpretación]</b>. Por tanto, se recomienda <b>[decisión]</b>.
+</div>
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+<section id="p8" class="page">
+<div class="page-title">Simulación de riesgo</div>
+<div class="page-body">
+
+<div class="block"><div class="block-title">Elige una situación</div><div class="block-body">
+Selecciona un caso frecuente en el archivo de análisis y revisa la acción recomendada.
+<br><br>
+<select id="riesgo">
+<option value="">Selecciona un caso</option>
+<option value="formula">Se modificó una fórmula de KPI.</option>
+<option value="version">El grupo trabajó sobre versiones diferentes.</option>
+<option value="source">Se usó una fuente externa sin evidencia.</option>
+<option value="ai">La IA redactó una conclusión con datos no verificados.</option>
+<option value="permission">El archivo quedó abierto para edición pública.</option>
+</select>
+<br>
+<button class="btn" onclick="revisarRiesgo()">Ver acción recomendada</button>
+<div id="resultadoRiesgo" class="result">Selecciona un caso para ver la recomendación.</div>
+</div></div>
+
+<div class="block"><div class="block-title">Aprendizaje de la simulación</div><div class="block-body">
+<div class="idea">La seguridad, la ética y la gestión del conocimiento no son teoría aparte. Se aplican directamente cuando se trabaja con archivos, datos, fuentes, IA y decisiones empresariales.</div>
+</div></div>
+
+</div><div class="footer">Aprendiendo con @LaProfeVivy</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function showPage(id,btn){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');
+}
+function revisarRiesgo(){
+ const v=document.getElementById('riesgo').value;
+ const r=document.getElementById('resultadoRiesgo');
+ const acciones={
+  formula:'Acción: revisar la fórmula contra la hoja BaseD, restaurar desde una copia y proteger la hoja de KPI.',
+  version:'Acción: definir una versión final, nombrar archivos con fecha y evitar trabajar sobre copias sin control.',
+  source:'Acción: registrar enlace, fecha de consulta, herramienta usada y observación. Sin evidencia, no se usa como soporte.',
+  ai:'Acción: contrastar la conclusión con los KPI reales y eliminar cualquier cifra que no salga del archivo o de una fuente verificable.',
+  permission:'Acción: cambiar permisos a solo lectura, dejar editores definidos y guardar copia de respaldo.'
+ };
+ r.innerHTML=acciones[v] || 'Selecciona un caso para ver la recomendación.';
+}
+</script>
+</body>
+</html>
