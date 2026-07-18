@@ -1,0 +1,1152 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoritmo de Dijkstra — Distancias mínimas paso a paso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#7fb536;
+  --verde-oscuro:#527523;
+  --verde-suave:#eef5e2;
+  --magenta:#e6007e;
+  --magenta-suave:#fde6f2;
+  --naranja:#F59C2F;
+  --naranja-suave:#fdf0dd;
+  --azul:#2f79bd;
+  --azul-suave:#eaf4ff;
+  --negro:#000;
+  --gris:#606060;
+  --gris-claro:#e9e9e9;
+  --blanco:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Quicksand',system-ui,sans-serif;
+  background:var(--blanco);
+  color:var(--negro);
+}
+header{
+  max-width:1150px;
+  margin:0 auto;
+  padding:26px 24px 14px;
+}
+.institucion{
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--gris);
+  margin-bottom:4px;
+}
+h1{
+  font-weight:700;
+  font-size:clamp(24px,4vw,36px);
+  color:var(--verde);
+  line-height:1.15;
+}
+.subtitulo{
+  margin-top:8px;
+  color:var(--gris);
+  font-size:15px;
+  max-width:900px;
+  line-height:1.55;
+  font-weight:500;
+}
+.app{
+  max-width:1150px;
+  margin:0 auto;
+  padding:0 24px 16px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 380px;
+  gap:16px;
+  align-items:start;
+}
+.panel{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.tabla-zona{
+  max-width:1150px;
+  margin:0 auto;
+  padding:0 24px 28px;
+}
+@media(max-width:920px){
+  .app{grid-template-columns:1fr}
+}
+.lienzo-wrap{
+  background:var(--blanco);
+  border:2px solid var(--gris-claro);
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+}
+svg{
+  display:block;
+  width:100%;
+  height:auto;
+}
+.nota{
+  position:absolute;
+  left:12px;
+  bottom:10px;
+  font-size:12px;
+  color:var(--gris);
+  background:rgba(255,255,255,.94);
+  padding:5px 10px;
+  border-radius:10px;
+  pointer-events:none;
+  font-weight:600;
+}
+.tarjeta{
+  background:var(--blanco);
+  border:2px solid var(--gris-claro);
+  border-radius:14px;
+  padding:16px;
+}
+.panel{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.tarjeta h2{
+  font-size:16px;
+  font-weight:700;
+  color:var(--verde-oscuro);
+  margin-bottom:10px;
+}
+.selectores{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+@media(max-width:650px){
+  .selectores{grid-template-columns:1fr}
+}
+.selector label{
+  font-size:12.5px;
+  color:var(--gris);
+  display:block;
+  margin-bottom:4px;
+  font-weight:600;
+}
+select{
+  width:100%;
+  padding:8px;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:600;
+  border:2px solid var(--gris-claro);
+  border-radius:10px;
+  background:var(--blanco);
+}
+button{
+  font-family:inherit;
+  font-size:13.5px;
+  font-weight:700;
+  padding:9px 14px;
+  border-radius:20px;
+  border:2px solid var(--verde);
+  background:var(--verde);
+  color:#fff;
+  cursor:pointer;
+}
+button:hover:not(:disabled){
+  background:var(--verde-oscuro);
+  border-color:var(--verde-oscuro);
+}
+button:disabled{
+  opacity:.45;
+  cursor:default;
+}
+button.secundario{
+  background:var(--blanco);
+  color:var(--verde-oscuro);
+}
+button.secundario:hover:not(:disabled){
+  background:var(--verde-suave);
+}
+button.pista{
+  border-color:var(--azul);
+  background:var(--blanco);
+  color:var(--azul);
+}
+button.pista:hover:not(:disabled){
+  background:var(--azul-suave);
+  border-color:var(--azul);
+}
+.botonera{
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:7px;
+}
+.icono-btn{
+  width:38px;
+  min-width:38px;
+  height:38px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  line-height:1;
+}
+@media(max-width:520px){
+  .botonera{flex-wrap:wrap}
+}
+.pregunta{
+  background:var(--verde-suave);
+  border:2px solid var(--verde);
+  border-radius:12px;
+  padding:12px 13px;
+  margin-top:12px;
+}
+.pregunta .titulo-p{
+  font-weight:700;
+  font-size:15px;
+  color:var(--verde-oscuro);
+  margin-bottom:5px;
+}
+.pregunta .condicion{
+  font-size:13px;
+  color:var(--gris);
+  line-height:1.5;
+  font-weight:500;
+}
+.feedback,.pista-box,.resultado{
+  margin-top:10px;
+  border-radius:12px;
+  padding:11px 13px;
+  font-size:13.5px;
+  line-height:1.55;
+  font-weight:500;
+  display:none;
+}
+
+.feedback ul{
+  margin:8px 0 0 20px;
+  padding:0;
+}
+.feedback li{
+  margin-bottom:6px;
+}
+.feedback .resumen-paso{
+  margin-bottom:6px;
+}
+
+.feedback.bien{
+  display:block;
+  background:var(--verde-suave);
+  border:2px solid var(--verde);
+  color:var(--verde-oscuro);
+}
+.feedback.mal{
+  display:block;
+  background:var(--magenta-suave);
+  border:2px solid var(--magenta);
+  color:#8f004f;
+}
+.pista-box.visible{
+  display:block;
+  background:var(--azul-suave);
+  border:2px solid var(--azul);
+  color:#215b8f;
+}
+.resultado{
+  background:var(--naranja-suave);
+  border:2px solid var(--naranja);
+  font-weight:700;
+}
+.leyenda{
+  display:grid;
+  gap:7px;
+  margin-top:12px;
+  font-size:12.5px;
+  color:var(--gris);
+}
+.leyenda span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.muestra{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  display:inline-block;
+  border:2px solid var(--gris);
+}
+.muestra.disponible{border-color:var(--verde-oscuro);background:#fff}
+.muestra.visitado{border-color:var(--verde-oscuro);background:var(--verde)}
+.muestra.actual{border:4px solid var(--naranja);background:#fff}
+
+.tabla-titulo{
+  font-size:16px;
+  font-weight:700;
+  color:var(--verde-oscuro);
+  margin-bottom:8px;
+}
+.tabla-scroll{
+  overflow-x:auto;
+  border:2px solid var(--gris-claro);
+  border-radius:14px;
+}
+table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:900px;
+  font-size:13px;
+}
+th,td{
+  border:1px solid var(--gris-claro);
+  padding:7px 8px;
+  text-align:center;
+}
+th{
+  background:var(--verde);
+  color:#fff;
+  font-weight:700;
+  font-size:12.5px;
+}
+td.mono{
+  font-variant-numeric:tabular-nums;
+  font-weight:600;
+}
+td.acciones{
+  text-align:left;
+  font-size:12.5px;
+  color:var(--gris);
+  min-width:260px;
+}
+tr.actual td{background:#fbfdf7}
+td.confirmada{
+  background:var(--verde);
+  color:#fff;
+  font-weight:700;
+}
+td.cambio{
+  background:var(--naranja-suave);
+  color:#a05f00;
+  font-weight:700;
+}
+
+/* SVG */
+.ruta{stroke:#c7c7c7;stroke-width:2}
+.ruta.revisada{
+  stroke:var(--naranja);
+  stroke-width:3.5;
+  stroke-dasharray:7 5;
+}
+.ruta.arbol{stroke:var(--verde);stroke-width:4}
+.ruta.final{stroke:var(--verde);stroke-width:6}
+.peso-txt{
+  font-size:12.5px;
+  font-weight:700;
+  fill:var(--negro);
+  pointer-events:none;
+}
+.peso-caja{
+  fill:var(--blanco);
+  stroke:var(--gris-claro);
+  stroke-width:1.5;
+  pointer-events:none;
+}
+.punto{cursor:pointer}
+.punto circle{
+  fill:var(--blanco);
+  stroke:var(--gris);
+  stroke-width:2;
+  transition:.15s;
+}
+.punto.candidato:hover circle{
+  stroke:var(--naranja);
+  stroke-width:5;
+  transform-box:fill-box;
+  transform-origin:center;
+  transform:scale(1.08);
+}
+.punto.alcanzado circle{stroke:var(--verde-oscuro)}
+.punto.visitado{cursor:default}
+.punto.visitado circle{
+  fill:var(--verde);
+  stroke:var(--verde-oscuro);
+}
+.punto.visitado .letra{fill:#fff}
+.punto.actual circle{
+  stroke:var(--naranja);
+  stroke-width:5;
+}
+.letra{
+  font-size:16px;
+  font-weight:700;
+  fill:var(--negro);
+  text-anchor:middle;
+  dominant-baseline:central;
+  font-family:inherit;
+  pointer-events:none;
+}
+.distancia{
+  font-size:12px;
+  font-weight:700;
+  fill:var(--verde-oscuro);
+  text-anchor:middle;
+  font-family:inherit;
+  pointer-events:none;
+}
+.distancia.infinita{fill:#aaa}
+.etiqueta{
+  font-size:9.5px;
+  font-weight:700;
+  letter-spacing:.08em;
+  fill:#fff;
+  text-anchor:middle;
+  font-family:inherit;
+  pointer-events:none;
+}
+.etiqueta-caja{rx:8;fill:var(--verde-oscuro)}
+.etiqueta-caja.destino{fill:var(--magenta)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="institucion">Fundación Universitaria del Área Andina · Teoría de grafos</div>
+  <h1>Algoritmo de Dijkstra: camino mínimo paso a paso</h1>
+  <p class="subtitulo">
+    Selecciona un vértice de origen y uno de destino. En cada ronda,
+    haz clic en el vértice no visitado que tenga la menor distancia conocida.
+    El proceso termina cuando el vértice de destino queda seleccionado de forma definitiva.
+  </p>
+</header>
+
+<div class="app">
+  <div class="lienzo-wrap">
+    <svg id="svg" viewBox="0 0 720 420" role="img" aria-label="Grafo ponderado para aplicar el algoritmo de Dijkstra"></svg>
+    <div class="nota">Haz clic en el vértice no visitado con la menor distancia conocida</div>
+  </div>
+
+  <div class="panel">
+    <div class="tarjeta">
+      <h2>Aplicación del algoritmo</h2>
+
+      <div class="selectores">
+        <div class="selector">
+          <label for="selOrigen">Vértice de origen</label>
+          <select id="selOrigen"></select>
+        </div>
+        <div class="selector">
+          <label for="selDestino">Vértice de destino</label>
+          <select id="selDestino"></select>
+        </div>
+      </div>
+
+      <div class="pregunta" id="zonaPregunta">
+        <div class="titulo-p" id="preguntaTitulo"></div>
+        <div class="condicion" id="preguntaTexto"></div>
+      </div>
+
+      <div class="botonera" style="margin-top:12px">
+        <button class="pista icono-btn" id="btnPista" aria-label="Mostrar pista" title="Mostrar pista">?</button>
+        <button class="secundario icono-btn" id="btnVoz" aria-label="Reproducir explicación" title="Reproducir explicación">▶</button>
+        <button class="secundario icono-btn" id="btnDetenerVoz" aria-label="Detener reproducción" title="Detener reproducción">■</button>
+        <button class="secundario icono-btn" id="btnAnterior" aria-label="Deshacer paso" title="Deshacer paso">←</button>
+        <button class="secundario icono-btn" id="btnReiniciar" aria-label="Reiniciar actividad" title="Reiniciar actividad">↻</button>
+      </div>
+
+      <div class="pista-box" id="pistaBox"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="resultado" id="resultado"></div>
+
+      <div class="leyenda">
+        <span><i class="muestra disponible"></i> Vértice alcanzado y no visitado</span>
+        <span><i class="muestra visitado"></i> Vértice incorporado al conjunto de visitados</span>
+        <span><i class="muestra actual"></i> Último vértice seleccionado</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tabla-zona">
+  <div class="tabla-titulo">Tabla de distancias mínimas conocidas</div>
+  <div class="tabla-scroll">
+    <table id="tabla">
+      <thead id="thead"></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  const NODOS = {
+    A:{x:55,y:220},
+    B:{x:170,y:90},
+    C:{x:190,y:225},
+    D:{x:165,y:340},
+    E:{x:400,y:345},
+    F:{x:395,y:220},
+    G:{x:410,y:90},
+    Z:{x:620,y:220}
+  };
+
+  const ARISTAS = [
+    {a:'A',b:'B',peso:16},
+    {a:'A',b:'C',peso:10},
+    {a:'A',b:'D',peso:5},
+    {a:'B',b:'C',peso:2},
+    {a:'B',b:'F',peso:4},
+    {a:'B',b:'G',peso:6},
+    {a:'C',b:'D',peso:4},
+    {a:'C',b:'E',peso:10},
+    {a:'C',b:'F',peso:12},
+    {a:'D',b:'E',peso:15},
+    {a:'E',b:'F',peso:3},
+    {a:'E',b:'Z',peso:5},
+    {a:'F',b:'G',peso:8},
+    {a:'F',b:'Z',peso:16},
+    {a:'G',b:'Z',peso:7}
+  ];
+
+  const VERTICES = Object.keys(NODOS);
+
+  let origen = 'A';
+  let destino = 'Z';
+  let pasos = [];
+  let predecesores = {};
+  let indicePaso = 0;
+  let nivelPista = 0;
+
+  const svg = document.getElementById('svg');
+  const feedback = document.getElementById('feedback');
+  const pistaBox = document.getElementById('pistaBox');
+  const resultado = document.getElementById('resultado');
+
+  function mostrarDistancia(valor){
+    return valor === Infinity ? '∞' : valor;
+  }
+
+  function adyacentesDe(u){
+    return ARISTAS
+      .filter(arista => arista.a === u || arista.b === u)
+      .map(arista => ({
+        vertice: arista.a === u ? arista.b : arista.a,
+        peso: arista.peso,
+        arista
+      }));
+  }
+
+  function calcularPasos(){
+    const distancias = {};
+    const prev = {};
+    const visitados = new Set();
+
+    VERTICES.forEach(v => distancias[v] = Infinity);
+    distancias[origen] = 0;
+
+    pasos = [{
+      numero:0,
+      seleccionado:null,
+      distancias:{...distancias},
+      cambios:[],
+      revisadas:[],
+      explicacion:
+        '<div class="resumen-paso"><b>Inicialización.</b> Se asigna distancia 0 al vértice de origen ' + origen +
+        ' porque el recorrido comienza allí.</div>' +
+        '<ul><li>Los demás vértices se mantienen en ∞ porque todavía no se conoce un camino desde ' +
+        origen + ' hasta ellos.</li><li>El valor ∞ es provisional: cambiará cuando se encuentre una ruta para alcanzarlos.</li>' +
+        '<li>Si al finalizar algún vértice conserva ∞, significa que no es alcanzable desde el origen.</li></ul>',
+      detalle:origen + '=0; los demás vértices=∞ porque aún no se conoce un camino desde el origen.'
+    }];
+
+    for(let ronda=1; ronda<=VERTICES.length; ronda++){
+      let u = null;
+      let menor = Infinity;
+
+      VERTICES.forEach(v => {
+        if(!visitados.has(v) && distancias[v] < menor){
+          menor = distancias[v];
+          u = v;
+        }
+      });
+
+      if(u === null) break;
+
+      visitados.add(u);
+
+      const cambios = [];
+      const revisadas = [];
+      const operaciones = [];
+      const detalles = [];
+
+      adyacentesDe(u).forEach(info => {
+        const v = info.vertice;
+        const arista = info.arista;
+
+        if(!visitados.has(v)){
+          revisadas.push(arista);
+
+          const distanciaAnterior = distancias[v];
+          const distanciaAlternativa = distancias[u] + arista.peso;
+
+          if(distanciaAlternativa < distanciaAnterior){
+            distancias[v] = distanciaAlternativa;
+            prev[v] = u;
+            cambios.push(v);
+
+            operaciones.push(
+              '<b>Para ' + v + ':</b> ' + distancias[u] + ' + ' + arista.peso +
+              ' = ' + distanciaAlternativa +
+              (distanciaAnterior === Infinity
+                ? '; se reemplaza ∞ por ' + distanciaAlternativa
+                : '; se reemplaza ' + distanciaAnterior + ' por ' + distanciaAlternativa)
+            );
+
+            detalles.push(
+              v + '=' + distanciaAlternativa + ' mediante ' + u
+            );
+          } else {
+            operaciones.push(
+              '<b>Para ' + v + ':</b> ' + distancias[u] + ' + ' + arista.peso +
+              ' = ' + distanciaAlternativa +
+              '; no mejora la distancia conocida, por lo que se conserva ' + distanciaAnterior
+            );
+          }
+        }
+      });
+
+      const verticesEnInfinito = VERTICES.filter(v => distancias[v] === Infinity);
+
+      const explicacion =
+        '<div class="resumen-paso"><b>Se selecciona ' + u + '</b> porque es el vértice no visitado con la menor distancia conocida (' +
+        distancias[u] + '). Luego se incorpora al conjunto de visitados.</div>' +
+        '<div style="margin-bottom:6px">Las aristas revisadas en este paso son alternativas provisionales; no todas formarán parte del camino mínimo final.</div>' +
+        (operaciones.length
+          ? '<div><b>Actualización de vértices adyacentes:</b></div><ul>' +
+            operaciones.map(op => '<li>' + op + '.</li>').join('') +
+            '</ul>'
+          : '<div>No tiene vértices adyacentes pendientes de actualización.</div>') +
+        (verticesEnInfinito.length
+          ? '<div style="margin-top:8px"><b>¿Por qué continúan en ∞ ' +
+            verticesEnInfinito.join(', ') + '?</b></div><ul><li>Porque hasta este paso todavía no se ha encontrado un camino desde ' +
+            origen + ' para alcanzarlos.</li></ul>'
+          : '');
+
+      pasos.push({
+        numero:ronda,
+        seleccionado:u,
+        distancias:{...distancias},
+        cambios,
+        revisadas,
+        explicacion,
+        detalle:detalles.length
+          ? detalles.join('; ')
+          : 'No se modificaron distancias.'
+      });
+
+      if(u === destino){
+        break;
+      }
+    }
+
+    predecesores = prev;
+  }
+
+  function verticesCandidatos(){
+    const estado = pasos[indicePaso];
+    const visitados = new Set(
+      pasos.slice(1, indicePaso + 1).map(p => p.seleccionado)
+    );
+
+    return VERTICES.filter(v =>
+      !visitados.has(v) &&
+      estado.distancias[v] !== Infinity
+    );
+  }
+
+  function menorDistanciaActual(){
+    const estado = pasos[indicePaso];
+    const candidatos = verticesCandidatos();
+
+    return Math.min(...candidatos.map(v => estado.distancias[v]));
+  }
+
+  function respuestasCorrectas(){
+    const estado = pasos[indicePaso];
+    const menor = menorDistanciaActual();
+
+    return verticesCandidatos().filter(v =>
+      estado.distancias[v] === menor
+    );
+  }
+
+
+  function caminoFinal(){
+    const ultimo = pasos[pasos.length - 1];
+
+    if(ultimo.distancias[destino] === Infinity){
+      return null;
+    }
+
+    const camino = [destino];
+
+    while(camino[0] !== origen){
+      const anterior = predecesores[camino[0]];
+
+      if(anterior === undefined){
+        return null;
+      }
+
+      camino.unshift(anterior);
+    }
+
+    return camino;
+  }
+
+  function dibujar(){
+    const estado = pasos[indicePaso];
+    const visitados = pasos.slice(1, indicePaso + 1).map(p => p.seleccionado);
+    const visitadosSet = new Set(visitados);
+    const candidatosSet = new Set(verticesCandidatos());
+
+    const revisadas = new Set(
+      (estado.revisadas || []).flatMap(a => [a.a + a.b, a.b + a.a])
+    );
+
+    const arbol = new Set();
+
+    visitados.forEach(v => {
+      const p = predecesores[v];
+      if(p !== undefined){
+        arbol.add(p + v);
+        arbol.add(v + p);
+      }
+    });
+
+    const terminado = indicePaso === pasos.length - 1;
+    const camino = terminado ? caminoFinal() : null;
+    const caminoSet = new Set();
+
+    if(camino){
+      for(let i=0; i<camino.length-1; i++){
+        caminoSet.add(camino[i] + camino[i+1]);
+        caminoSet.add(camino[i+1] + camino[i]);
+      }
+    }
+
+    let contenido = '';
+
+    ARISTAS.forEach(arista => {
+      const p1 = NODOS[arista.a];
+      const p2 = NODOS[arista.b];
+
+      let clase = 'ruta';
+
+      if(caminoSet.has(arista.a + arista.b)){
+        clase += ' final';
+      } else if(arbol.has(arista.a + arista.b)){
+        clase += ' arbol';
+      } else if(revisadas.has(arista.a + arista.b)){
+        clase += ' revisada';
+      }
+
+      contenido +=
+        '<line class="' + clase + '" ' +
+        'x1="' + p1.x + '" y1="' + p1.y + '" ' +
+        'x2="' + p2.x + '" y2="' + p2.y + '"/>';
+    });
+
+    ARISTAS.forEach(arista => {
+      const p1 = NODOS[arista.a];
+      const p2 = NODOS[arista.b];
+      const mx = (p1.x + p2.x) / 2;
+      const my = (p1.y + p2.y) / 2;
+
+      contenido +=
+        '<g>' +
+          '<rect class="peso-caja" x="' + (mx-14) + '" y="' + (my-11) + '" width="28" height="20" rx="10"/>' +
+          '<text class="peso-txt" x="' + mx + '" y="' + (my+4) + '" text-anchor="middle">' +
+          arista.peso +
+          '</text>' +
+        '</g>';
+    });
+
+    VERTICES.forEach(v => {
+      const p = NODOS[v];
+      const distancia = estado.distancias[v];
+
+      let clase = 'punto';
+
+      if(visitadosSet.has(v)){
+        clase += ' visitado';
+      } else if(distancia !== Infinity){
+        clase += ' alcanzado';
+      }
+
+      if(candidatosSet.has(v)){
+        clase += ' candidato';
+      }
+
+      if(estado.seleccionado === v){
+        clase += ' actual';
+      }
+
+      contenido +=
+        '<g class="' + clase + '" data-vertice="' + v + '">' +
+          '<circle cx="' + p.x + '" cy="' + p.y + '" r="19"/>' +
+          '<text class="letra" x="' + p.x + '" y="' + p.y + '">' + v + '</text>' +
+          '<text class="distancia' + (distancia === Infinity ? ' infinita' : '') +
+          '" x="' + p.x + '" y="' + (p.y-27) + '">' +
+          mostrarDistancia(distancia) +
+          '</text>';
+
+      if(v === origen){
+        contenido +=
+          '<rect class="etiqueta-caja" x="' + (p.x-24) + '" y="' + (p.y+24) +
+          '" width="48" height="15"/>' +
+          '<text class="etiqueta" x="' + p.x + '" y="' + (p.y+35) + '">ORIGEN</text>';
+      }
+
+      if(v === destino){
+        contenido +=
+          '<rect class="etiqueta-caja destino" x="' + (p.x-24) + '" y="' + (p.y+24) +
+          '" width="48" height="15"/>' +
+          '<text class="etiqueta" x="' + p.x + '" y="' + (p.y+35) + '">DESTINO</text>';
+      }
+
+      contenido += '</g>';
+    });
+
+    svg.innerHTML = contenido;
+
+    svg.querySelectorAll('.punto.candidato').forEach(grupo => {
+      grupo.addEventListener('click', () =>
+        responderVertice(grupo.dataset.vertice)
+      );
+    });
+  }
+
+  function pintarTabla(){
+    document.getElementById('thead').innerHTML =
+      '<tr>' +
+        '<th rowspan="2">Paso</th>' +
+        '<th rowspan="2">Vértice seleccionado</th>' +
+        '<th colspan="' + VERTICES.length + '">Distancias conocidas desde ' + origen + '</th>' +
+        '<th rowspan="2">Actualizaciones</th>' +
+      '</tr>' +
+      '<tr>' + VERTICES.map(v => '<th>' + v.toLowerCase() + '</th>').join('') + '</tr>';
+
+    let html = '';
+
+    for(let i=0; i<=indicePaso; i++){
+      const paso = pasos[i];
+
+      html +=
+        '<tr' + (i === indicePaso ? ' class="actual"' : '') + '>' +
+          '<td class="mono">' + paso.numero + '</td>' +
+          '<td>' +
+            (paso.seleccionado
+              ? paso.seleccionado + ' (' + paso.distancias[paso.seleccionado] + ')'
+              : '–') +
+          '</td>';
+
+      VERTICES.forEach(v => {
+        let clase = 'mono';
+
+        if(paso.seleccionado === v){
+          clase += ' confirmada';
+        } else if(paso.cambios.includes(v)){
+          clase += ' cambio';
+        }
+
+        html +=
+          '<td class="' + clase + '">' +
+          mostrarDistancia(paso.distancias[v]) +
+          '</td>';
+      });
+
+      html +=
+          '<td class="acciones">' + paso.detalle + '</td>' +
+        '</tr>';
+    }
+
+    document.getElementById('tbody').innerHTML = html;
+  }
+
+  function pintarPregunta(){
+    const terminado = indicePaso === pasos.length - 1;
+
+    if(indicePaso === 0 && !feedback.classList.contains('bien') && !feedback.classList.contains('mal')){
+      feedback.className = 'feedback bien';
+      feedback.innerHTML = pasos[0].explicacion;
+    }
+
+    if(terminado){
+      document.getElementById('preguntaTitulo').textContent =
+        'Proceso finalizado';
+
+      document.getElementById('preguntaTexto').textContent =
+        'El vértice de destino fue seleccionado y su distancia mínima quedó determinada.';
+
+      document.getElementById('btnPista').disabled = true;
+      return;
+    }
+
+    document.getElementById('preguntaTitulo').textContent =
+      'Paso ' + pasos[indicePaso + 1].numero +
+      ': ¿qué vértice debe seleccionarse ahora?';
+
+    document.getElementById('preguntaTexto').innerHTML =
+      'Selecciona el vértice <strong>no visitado</strong> que tenga la ' +
+      '<strong>menor distancia conocida</strong>.';
+
+    document.getElementById('btnPista').disabled = false;
+  }
+
+  function responderVertice(vertice){
+    detenerVoz();
+    if(indicePaso >= pasos.length - 1) return;
+
+    const correctas = respuestasCorrectas();
+    const estado = pasos[indicePaso];
+
+    pistaBox.className = 'pista-box';
+    pistaBox.innerHTML = '';
+    nivelPista = 0;
+
+    if(correctas.includes(vertice)){
+      indicePaso++;
+
+      feedback.className = 'feedback bien';
+      feedback.innerHTML =
+        '<b>Respuesta correcta.</b>' +
+        pasos[indicePaso].explicacion;
+
+      render(false);
+    } else {
+      const distanciaElegida = estado.distancias[vertice];
+      const menor = menorDistanciaActual();
+
+      feedback.className = 'feedback mal';
+      feedback.innerHTML =
+        '<b>Respuesta incorrecta.</b> El vértice ' + vertice +
+        ' tiene una distancia conocida de ' + distanciaElegida +
+        ', pero existe otro vértice no visitado con una distancia menor: ' +
+        menor + '. Compara nuevamente las distancias y vuelve a intentarlo.';
+
+      dibujar();
+    }
+  }
+
+  function mostrarPista(){
+    if(indicePaso >= pasos.length - 1) return;
+
+    nivelPista++;
+
+    const estado = pasos[indicePaso];
+    const candidatos = verticesCandidatos();
+    const menor = menorDistanciaActual();
+    const correctas = respuestasCorrectas();
+
+    let texto = '';
+
+    if(nivelPista === 1){
+      texto =
+        '<b>Pista 1:</b> Observa la distancia acumulada que aparece sobre cada vértice, ' +
+        'no únicamente el peso de una arista.';
+    } else if(nivelPista === 2){
+      texto =
+        '<b>Pista 2:</b> Los vértices alcanzados y no visitados son: ' +
+        candidatos.map(v => v + ' (' + estado.distancias[v] + ')').join(', ') + '.';
+    } else {
+      texto =
+        '<b>Pista 3:</b> La menor distancia conocida es ' + menor + '. ' +
+        (correctas.length === 1
+          ? 'El vértice que cumple esta condición es ' + correctas[0] + '.'
+          : 'Los vértices empatados que cumplen esta condición son: ' +
+            correctas.join(', ') + '.');
+    }
+
+    pistaBox.className = 'pista-box visible';
+    pistaBox.innerHTML = texto;
+  }
+
+  function pintarResultado(){
+    if(indicePaso !== pasos.length - 1){
+      resultado.style.display = 'none';
+      return;
+    }
+
+    const camino = caminoFinal();
+    const distanciaFinal = pasos[indicePaso].distancias[destino];
+
+    resultado.style.display = 'block';
+
+    if(camino){
+      resultado.innerHTML =
+        '<b>Camino mínimo:</b> ' + camino.join(' → ') +
+        '<br><b>Distancia total:</b> ' + distanciaFinal;
+    } else {
+      resultado.innerHTML =
+        'No existe un camino desde ' + origen + ' hasta ' + destino + '.';
+    }
+  }
+
+  function render(limpiarMensajes = true){
+    if(limpiarMensajes){
+      feedback.className = 'feedback';
+      feedback.innerHTML = '';
+
+      pistaBox.className = 'pista-box';
+      pistaBox.innerHTML = '';
+
+      nivelPista = 0;
+    }
+
+    dibujar();
+    pintarTabla();
+    pintarPregunta();
+    pintarResultado();
+
+    document.getElementById('btnAnterior').disabled =
+      indicePaso === 0;
+  }
+
+  function reiniciar(){
+    detenerVoz();
+    calcularPasos();
+    indicePaso = 0;
+    nivelPista = 0;
+    render();
+  }
+
+
+  function textoVisibleParaVoz(){
+    const partes = [];
+
+    if(feedback.classList.contains('bien') || feedback.classList.contains('mal')){
+      partes.push(feedback.innerText);
+    } else if(pistaBox.classList.contains('visible')){
+      partes.push(pistaBox.innerText);
+    } else if(resultado.style.display === 'block'){
+      partes.push(resultado.innerText);
+    } else {
+      partes.push(document.getElementById('preguntaTitulo').innerText);
+      partes.push(document.getElementById('preguntaTexto').innerText);
+    }
+
+    return partes.join('. ').replace(/\s+/g, ' ').trim();
+  }
+
+  function seleccionarVozEspanol(){
+    const voces = window.speechSynthesis.getVoices();
+
+    return voces.find(v =>
+      /^es(-|_)/i.test(v.lang) &&
+      /female|mujer|paulina|helena|sabina|monica|soledad|elvira|dalia|google español/i.test(v.name)
+    ) || voces.find(v => /^es(-|_)/i.test(v.lang)) || null;
+  }
+
+  function reproducirExplicacion(){
+    if(!('speechSynthesis' in window)){
+      alert('Este navegador no admite lectura de voz.');
+      return;
+    }
+
+    const texto = textoVisibleParaVoz();
+
+    if(!texto){
+      alert('Todavía no hay una explicación para reproducir.');
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const mensaje = new SpeechSynthesisUtterance(texto);
+    mensaje.lang = 'es-CO';
+    mensaje.rate = 0.92;
+    mensaje.pitch = 1;
+    mensaje.volume = 1;
+
+    const voz = seleccionarVozEspanol();
+    if(voz) mensaje.voice = voz;
+
+    window.speechSynthesis.speak(mensaje);
+  }
+
+  function detenerVoz(){
+    if('speechSynthesis' in window){
+      window.speechSynthesis.cancel();
+    }
+  }
+
+  if('speechSynthesis' in window){
+    window.speechSynthesis.onvoiceschanged = seleccionarVozEspanol;
+  }
+
+  document.getElementById('btnVoz').addEventListener('click', reproducirExplicacion);
+  document.getElementById('btnDetenerVoz').addEventListener('click', detenerVoz);
+
+  document.getElementById('btnPista').addEventListener('click', mostrarPista);
+
+  document.getElementById('btnAnterior').addEventListener('click', () => {
+    detenerVoz();
+    if(indicePaso > 0){
+      indicePaso--;
+      render();
+    }
+  });
+
+  document.getElementById('btnReiniciar').addEventListener('click', reiniciar);
+
+  const selOrigen = document.getElementById('selOrigen');
+  const selDestino = document.getElementById('selDestino');
+
+  VERTICES.forEach(v => {
+    selOrigen.insertAdjacentHTML(
+      'beforeend',
+      '<option value="' + v + '">' + v + '</option>'
+    );
+
+    selDestino.insertAdjacentHTML(
+      'beforeend',
+      '<option value="' + v + '">' + v + '</option>'
+    );
+  });
+
+  selOrigen.value = origen;
+  selDestino.value = destino;
+
+  selOrigen.addEventListener('change', () => {
+    origen = selOrigen.value;
+
+    if(origen === destino){
+      destino = VERTICES.find(v => v !== origen);
+      selDestino.value = destino;
+    }
+
+    reiniciar();
+  });
+
+  selDestino.addEventListener('change', () => {
+    destino = selDestino.value;
+
+    if(destino === origen){
+      origen = VERTICES.find(v => v !== destino);
+      selOrigen.value = origen;
+    }
+
+    reiniciar();
+  });
+
+  reiniciar();
+
+})();
+</script>
+</body>
+</html>
