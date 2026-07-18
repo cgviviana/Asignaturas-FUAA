@@ -1,0 +1,1055 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Árbol de expansión mínima: Prim y Kruskal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#7fb536;
+  --verde-oscuro:#527523;
+  --verde-suave:#eef5e2;
+  --magenta:#e6007e;
+  --magenta-suave:#fde6f2;
+  --naranja:#F59C2F;
+  --naranja-suave:#fdf0dd;
+  --azul:#2f79bd;
+  --azul-suave:#eaf4ff;
+  --gris:#606060;
+  --gris-claro:#e9e9e9;
+  --negro:#000;
+  --blanco:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Quicksand',system-ui,sans-serif;
+  background:#fff;
+  color:#000;
+}
+header{
+  max-width:1180px;
+  margin:0 auto;
+  padding:26px 24px 14px;
+}
+.institucion{
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--gris);
+  margin-bottom:4px;
+}
+h1{
+  color:var(--verde);
+  font-size:clamp(24px,4vw,36px);
+  line-height:1.15;
+}
+.subtitulo{
+  margin-top:8px;
+  color:var(--gris);
+  font-size:15px;
+  line-height:1.55;
+  max-width:930px;
+  font-weight:500;
+}
+.app{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 24px 18px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 390px;
+  gap:16px;
+  align-items:start;
+}
+@media(max-width:940px){
+  .app{grid-template-columns:1fr}
+}
+.lienzo-wrap{
+  border:2px solid var(--gris-claro);
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+  background:#fff;
+}
+svg{display:block;width:100%;height:auto}
+.nota{
+  position:absolute;
+  left:12px;
+  bottom:10px;
+  background:rgba(255,255,255,.95);
+  padding:5px 10px;
+  border-radius:10px;
+  font-size:12px;
+  color:var(--gris);
+  font-weight:600;
+}
+.tarjeta{
+  background:#fff;
+  border:2px solid var(--gris-claro);
+  border-radius:14px;
+  padding:16px;
+}
+.tarjeta h2{
+  font-size:16px;
+  color:var(--verde-oscuro);
+  margin-bottom:10px;
+}
+.modos{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:12px;
+}
+.modo-btn{
+  border-radius:12px;
+  background:#fff;
+  color:var(--verde-oscuro);
+  border:2px solid var(--verde);
+}
+.modo-btn.activo{
+  background:var(--verde);
+  color:#fff;
+}
+.selector{
+  margin-bottom:10px;
+}
+.selector label{
+  display:block;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--gris);
+  margin-bottom:4px;
+}
+select{
+  width:100%;
+  padding:8px;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:600;
+  border:2px solid var(--gris-claro);
+  border-radius:10px;
+  background:#fff;
+}
+.pregunta{
+  background:var(--verde-suave);
+  border:2px solid var(--verde);
+  border-radius:12px;
+  padding:12px 13px;
+}
+.pregunta .titulo{
+  font-weight:700;
+  color:var(--verde-oscuro);
+  margin-bottom:5px;
+}
+.pregunta .texto{
+  color:var(--gris);
+  font-size:13px;
+  line-height:1.5;
+  font-weight:500;
+}
+.estado{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.dato{
+  border:2px solid var(--gris-claro);
+  border-radius:10px;
+  padding:9px 10px;
+  text-align:center;
+}
+.dato b{
+  display:block;
+  color:var(--verde-oscuro);
+  font-size:18px;
+}
+.dato span{
+  color:var(--gris);
+  font-size:12px;
+  font-weight:600;
+}
+.botonera{
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:6px;
+  margin-top:12px;
+}
+@media(max-width:560px){
+  .botonera{flex-wrap:wrap}
+}
+button{
+  font-family:inherit;
+  font-size:12px;
+  font-weight:700;
+  height:36px;
+  padding:0 10px;
+  border-radius:20px;
+  border:2px solid var(--verde);
+  background:var(--verde);
+  color:#fff;
+  cursor:pointer;
+}
+button:hover:not(:disabled){
+  background:var(--verde-oscuro);
+  border-color:var(--verde-oscuro);
+}
+button:disabled{
+  opacity:.45;
+  cursor:default;
+}
+button.secundario{
+  background:#fff;
+  color:var(--verde-oscuro);
+}
+button.pista{
+  background:#fff;
+  border-color:var(--azul);
+  color:var(--azul);
+}
+.icono-btn{
+  width:36px;
+  min-width:36px;
+  height:36px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+.feedback,.pista-box,.resultado{
+  margin-top:10px;
+  border-radius:12px;
+  padding:11px 13px;
+  font-size:13.5px;
+  line-height:1.55;
+  font-weight:500;
+  display:none;
+}
+.feedback.bien{
+  display:block;
+  background:var(--verde-suave);
+  border:2px solid var(--verde);
+  color:var(--verde-oscuro);
+}
+.feedback.mal{
+  display:block;
+  background:var(--magenta-suave);
+  border:2px solid var(--magenta);
+  color:#8f004f;
+}
+.pista-box.visible{
+  display:block;
+  background:var(--azul-suave);
+  border:2px solid var(--azul);
+  color:#215b8f;
+}
+.resultado.visible{
+  display:block;
+  background:var(--naranja-suave);
+  border:2px solid var(--naranja);
+}
+.tabla-zona{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 24px 40px;
+}
+.tabla-titulo{
+  font-size:16px;
+  font-weight:700;
+  color:var(--verde-oscuro);
+  margin-bottom:8px;
+}
+.tabla-scroll{
+  overflow-x:auto;
+  border:2px solid var(--gris-claro);
+  border-radius:14px;
+}
+table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:760px;
+  font-size:13px;
+}
+th,td{
+  border:1px solid var(--gris-claro);
+  padding:8px;
+  text-align:center;
+}
+th{
+  background:var(--verde);
+  color:#fff;
+}
+td.explicacion{
+  text-align:left;
+  color:var(--gris);
+}
+tr.actual td{background:#fbfdf7}
+
+/* SVG */
+.arista{
+  stroke:#bcbcbc;
+  stroke-width:3;
+  cursor:pointer;
+  transition:.15s;
+  pointer-events:stroke;
+}
+.arista:hover{
+  stroke:var(--naranja);
+  stroke-width:5;
+}
+.arista.seleccionada{
+  stroke:var(--verde);
+  stroke-width:5;
+}
+.arista.descartada{
+  stroke:var(--magenta);
+  stroke-width:3;
+  stroke-dasharray:7 5;
+}
+.peso-caja{
+  fill:#fff;
+  stroke:var(--gris-claro);
+  stroke-width:1.5;
+  pointer-events:none;
+}
+.peso{
+  fill:#000;
+  font-size:13px;
+  font-weight:700;
+  text-anchor:middle;
+  pointer-events:none;
+}
+.nodo circle{
+  fill:#fff;
+  stroke:var(--verde-oscuro);
+  stroke-width:2.5;
+}
+.nodo.incluido circle{
+  fill:var(--verde-suave);
+}
+.nodo text{
+  font-size:16px;
+  font-weight:700;
+  text-anchor:middle;
+  dominant-baseline:central;
+  font-family:inherit;
+}
+.etiqueta{
+  font-size:9.5px;
+  font-weight:700;
+  fill:#fff;
+  text-anchor:middle;
+}
+.etiqueta-caja{
+  fill:var(--verde-oscuro);
+  rx:8;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="institucion">Fundación Universitaria del Área Andina · Teoría de grafos</div>
+  <h1>Árbol de expansión mínima: Prim y Kruskal</h1>
+  <p class="subtitulo">
+    Construye un árbol de expansión mínima con dos estrategias distintas. Prim crece desde un vértice inicial;
+    Kruskal examina las aristas de menor peso y evita formar ciclos.
+  </p>
+</header>
+
+<div class="app">
+  <div class="lienzo-wrap">
+    <svg id="svg" viewBox="0 0 760 360" role="img" aria-label="Grafo ponderado para aplicar Prim y Kruskal"></svg>
+    <div class="nota">Haz clic sobre la arista que debe seleccionarse en el siguiente paso</div>
+  </div>
+
+  <div class="tarjeta">
+    <h2>Construcción guiada</h2>
+
+    <div class="modos">
+      <button class="modo-btn activo" id="btnPrim">Prim</button>
+      <button class="modo-btn" id="btnKruskal">Kruskal</button>
+    </div>
+
+    <div class="selector" id="zonaOrigen">
+      <label for="selOrigen">Vértice inicial de Prim</label>
+      <select id="selOrigen"></select>
+    </div>
+
+    <div class="pregunta">
+      <div class="titulo" id="preguntaTitulo"></div>
+      <div class="texto" id="preguntaTexto"></div>
+    </div>
+
+    <div class="estado">
+      <div class="dato">
+        <b id="numAristas">0</b>
+        <span>aristas seleccionadas</span>
+      </div>
+      <div class="dato">
+        <b id="pesoTotal">0</b>
+        <span>peso acumulado</span>
+      </div>
+    </div>
+
+    <div class="botonera">
+      <button class="pista" id="btnPista">Pista</button>
+      <button class="secundario icono-btn" id="btnVoz" aria-label="Reproducir explicación" title="Reproducir explicación">▶</button>
+      <button class="secundario icono-btn" id="btnDetener" aria-label="Detener reproducción" title="Detener reproducción">■</button>
+      <button class="secundario icono-btn" id="btnAnterior" aria-label="Deshacer paso" title="Deshacer paso">←</button>
+      <button class="secundario icono-btn" id="btnReiniciar" aria-label="Reiniciar actividad" title="Reiniciar actividad">↻</button>
+    </div>
+
+    <div class="pista-box" id="pistaBox"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="resultado" id="resultado"></div>
+  </div>
+</div>
+
+<div class="tabla-zona">
+  <div class="tabla-titulo">Ejecución paso a paso</div>
+  <div class="tabla-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Arista seleccionada</th>
+          <th>Peso</th>
+          <th>Peso acumulado</th>
+          <th>Explicación</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  const NODOS = {
+    A:{x:70,y:260},
+    B:{x:690,y:260},
+    D:{x:380,y:215},
+    C:{x:380,y:60},
+    E:{x:475,y:110},
+    F:{x:475,y:165}
+  };
+
+  const ARISTAS = [
+    {a:'A',b:'B',peso:4},
+    {a:'B',b:'D',peso:5},
+    {a:'A',b:'C',peso:7},
+    {a:'C',b:'E',peso:3},
+    {a:'E',b:'F',peso:1},
+    {a:'D',b:'F',peso:4},
+    {a:'B',b:'E',peso:2},
+    {a:'A',b:'E',peso:8},
+    {a:'B',b:'F',peso:6},
+    {a:'D',b:'E',peso:2}
+  ];
+
+  const VERTICES = Object.keys(NODOS);
+
+  let modo = 'prim';
+  let origen = 'A';
+  let seleccionadas = [];
+  let descartadas = new Set();
+  let historial = [];
+  let nivelPista = 0;
+
+  const svg = document.getElementById('svg');
+  const feedback = document.getElementById('feedback');
+  const pistaBox = document.getElementById('pistaBox');
+  const resultado = document.getElementById('resultado');
+
+  function claveArista(arista){
+    return [arista.a, arista.b].sort().join('-');
+  }
+
+  function aristaPorClave(clave){
+    return ARISTAS.find(a => claveArista(a) === clave);
+  }
+
+  function pesoAcumulado(){
+    return seleccionadas.reduce((s,k) => s + aristaPorClave(k).peso, 0);
+  }
+
+  function adyacenciaSeleccionada(){
+    const ady = {};
+    VERTICES.forEach(v => ady[v] = []);
+
+    seleccionadas.forEach(k => {
+      const a = aristaPorClave(k);
+      ady[a.a].push(a.b);
+      ady[a.b].push(a.a);
+    });
+
+    return ady;
+  }
+
+  function componentesSeleccionadas(extraClave=null){
+    const ady = {};
+    VERTICES.forEach(v => ady[v] = []);
+
+    const claves = extraClave ? [...seleccionadas, extraClave] : [...seleccionadas];
+
+    claves.forEach(k => {
+      const a = aristaPorClave(k);
+      ady[a.a].push(a.b);
+      ady[a.b].push(a.a);
+    });
+
+    const comp = {};
+    let id = 0;
+    const visitados = new Set();
+
+    VERTICES.forEach(inicio => {
+      if(visitados.has(inicio)) return;
+
+      id++;
+      const pila = [inicio];
+      visitados.add(inicio);
+      comp[inicio] = id;
+
+      while(pila.length){
+        const u = pila.pop();
+
+        ady[u].forEach(v => {
+          if(!visitados.has(v)){
+            visitados.add(v);
+            comp[v] = id;
+            pila.push(v);
+          }
+        });
+      }
+    });
+
+    return comp;
+  }
+
+  function formaCiclo(clave){
+    const arista = aristaPorClave(clave);
+    const comp = componentesSeleccionadas();
+
+    return comp[arista.a] === comp[arista.b];
+  }
+
+  function verticesIncluidosPrim(){
+    const incluidos = new Set([origen]);
+
+    seleccionadas.forEach(k => {
+      const a = aristaPorClave(k);
+      incluidos.add(a.a);
+      incluidos.add(a.b);
+    });
+
+    return incluidos;
+  }
+
+  function candidatasPrim(){
+    const incluidos = verticesIncluidosPrim();
+
+    return ARISTAS
+      .filter(a => {
+        const k = claveArista(a);
+        if(seleccionadas.includes(k)) return false;
+
+        const unoDentro = incluidos.has(a.a) !== incluidos.has(a.b);
+        return unoDentro;
+      })
+      .sort((x,y) => x.peso - y.peso || claveArista(x).localeCompare(claveArista(y)));
+  }
+
+  function candidatasKruskal(){
+    return ARISTAS
+      .filter(a => !seleccionadas.includes(claveArista(a)) && !descartadas.has(claveArista(a)))
+      .sort((x,y) => x.peso - y.peso || claveArista(x).localeCompare(claveArista(y)));
+  }
+
+  function respuestasCorrectas(){
+    const candidatas = modo === 'prim' ? candidatasPrim() : candidatasKruskal();
+
+    if(!candidatas.length) return [];
+
+    const menor = Math.min(...candidatas.map(a => a.peso));
+
+    return candidatas
+      .filter(a => a.peso === menor)
+      .filter(a => modo === 'prim' || !formaCiclo(claveArista(a)))
+      .map(claveArista);
+  }
+
+  function terminado(){
+    return seleccionadas.length === VERTICES.length - 1;
+  }
+
+  function dibujar(){
+    const incluidos = modo === 'prim'
+      ? verticesIncluidosPrim()
+      : new Set(seleccionadas.flatMap(k => {
+          const a = aristaPorClave(k);
+          return [a.a,a.b];
+        }));
+
+    let contenido = '';
+
+    ARISTAS.forEach((arista, i) => {
+      const p1 = NODOS[arista.a];
+      const p2 = NODOS[arista.b];
+      const k = claveArista(arista);
+
+      let clase = 'arista';
+
+      if(seleccionadas.includes(k)) clase += ' seleccionada';
+      if(descartadas.has(k)) clase += ' descartada';
+
+      contenido +=
+        '<line class="' + clase + '" data-i="' + i + '" ' +
+        'x1="' + p1.x + '" y1="' + p1.y + '" ' +
+        'x2="' + p2.x + '" y2="' + p2.y + '"/>';
+    });
+
+    ARISTAS.forEach(arista => {
+      const p1 = NODOS[arista.a];
+      const p2 = NODOS[arista.b];
+      const mx = (p1.x + p2.x) / 2;
+      const my = (p1.y + p2.y) / 2;
+
+      contenido +=
+        '<rect class="peso-caja" x="' + (mx-14) + '" y="' + (my-11) + '" width="28" height="20" rx="10"/>' +
+        '<text class="peso" x="' + mx + '" y="' + (my+4) + '">' + arista.peso + '</text>';
+    });
+
+    VERTICES.forEach(v => {
+      const p = NODOS[v];
+
+      contenido +=
+        '<g class="nodo' + (incluidos.has(v) ? ' incluido' : '') + '">' +
+          '<circle cx="' + p.x + '" cy="' + p.y + '" r="21"/>' +
+          '<text x="' + p.x + '" y="' + p.y + '">' + v + '</text>';
+
+      if(modo === 'prim' && v === origen){
+        contenido +=
+          '<rect class="etiqueta-caja" x="' + (p.x-23) + '" y="' + (p.y+26) + '" width="46" height="15"/>' +
+          '<text class="etiqueta" x="' + p.x + '" y="' + (p.y+37) + '">INICIO</text>';
+      }
+
+      contenido += '</g>';
+    });
+
+    svg.innerHTML = contenido;
+
+    svg.querySelectorAll('.arista').forEach(linea => {
+      linea.addEventListener('click', () => seleccionarArista(+linea.dataset.i));
+    });
+
+    document.getElementById('numAristas').textContent = seleccionadas.length;
+    document.getElementById('pesoTotal').textContent = pesoAcumulado();
+  }
+
+
+  function descripcionAristas(lista){
+    return lista.map(a => a.a + '–' + a.b + ' (' + a.peso + ')').join(', ');
+  }
+
+  function caminoExistenteEntre(inicio, fin){
+    const ady = adyacenciaSeleccionada();
+    const cola = [[inicio, [inicio]]];
+    const visitados = new Set([inicio]);
+
+    while(cola.length){
+      const [u, camino] = cola.shift();
+
+      if(u === fin) return camino;
+
+      for(const v of ady[u]){
+        if(!visitados.has(v)){
+          visitados.add(v);
+          cola.push([v, [...camino, v]]);
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function explicarErrorPrim(arista){
+    const incluidos = verticesIncluidosPrim();
+    const aDentro = incluidos.has(arista.a);
+    const bDentro = incluidos.has(arista.b);
+    const candidatas = candidatasPrim();
+    const menor = candidatas.length ? candidatas[0].peso : null;
+    const candidatasMinimas = candidatas.filter(a => a.peso === menor);
+
+    if(aDentro && bDentro){
+      return '<b>No se selecciona ' + arista.a + '–' + arista.b + '.</b> ' +
+        'Sus dos extremos ya pertenecen al árbol actual. Prim debe agregar un vértice nuevo en cada paso; esta arista no incorpora ninguno y podría formar un ciclo. ' +
+        'Las aristas válidas de menor peso en este momento son: ' + descripcionAristas(candidatasMinimas) + '.';
+    }
+
+    if(!aDentro && !bDentro){
+      return '<b>No se selecciona ' + arista.a + '–' + arista.b + '.</b> ' +
+        'Ninguno de sus extremos pertenece todavía al árbol iniciado en ' + origen + '. Prim solo puede escoger una arista que salga del árbol actual hacia un vértice nuevo. ' +
+        'Las opciones válidas de menor peso son: ' + descripcionAristas(candidatasMinimas) + '.';
+    }
+
+    if(arista.peso > menor){
+      return '<b>La arista ' + arista.a + '–' + arista.b + ' sí conecta el árbol con un vértice nuevo, pero todavía no debe elegirse.</b> ' +
+        'Su peso es ' + arista.peso + ' y existe una opción válida de menor peso: ' +
+        descripcionAristas(candidatasMinimas) + '. Prim siempre selecciona primero la arista de menor peso que cruza desde el árbol actual hacia un vértice no incluido.';
+    }
+
+    return '<b>Esa arista no corresponde al siguiente paso.</b> Revisa cuáles vértices ya están dentro del árbol y compara únicamente las aristas que salen hacia vértices nuevos.';
+  }
+
+  function explicarErrorKruskal(arista){
+    const k = claveArista(arista);
+
+    if(formaCiclo(k)){
+      const camino = caminoExistenteEntre(arista.a, arista.b);
+      const detalleCamino = camino ? camino.join(' → ') : 'un camino ya existente';
+
+      return '<b>No se selecciona ' + arista.a + '–' + arista.b + '.</b> ' +
+        'Sus extremos ya están conectados mediante ' + detalleCamino + '. Si se agrega esta arista, se cerraría un ciclo. ' +
+        'Kruskal la descarta y continúa con la siguiente arista de menor peso que no forme ciclo.';
+    }
+
+    const candidatas = candidatasKruskal();
+    const menor = candidatas.length ? candidatas[0].peso : null;
+    const validasMinimas = candidatas.filter(a => a.peso === menor && !formaCiclo(claveArista(a)));
+
+    if(arista.peso > menor){
+      return '<b>La arista ' + arista.a + '–' + arista.b + ' no se selecciona todavía.</b> ' +
+        'Su peso es ' + arista.peso + ', pero aún quedan aristas de menor peso por revisar: ' +
+        descripcionAristas(validasMinimas) + '. Kruskal procesa las aristas de menor a mayor peso.';
+    }
+
+    return '<b>Esa arista no corresponde al siguiente paso.</b> Debes elegir una arista de menor peso que no conecte dos vértices ya unidos por otro camino.';
+  }
+
+  function seleccionarArista(i){
+    detenerVoz();
+
+    if(terminado()) return;
+
+    const arista = ARISTAS[i];
+    const k = claveArista(arista);
+
+    if(seleccionadas.includes(k) || descartadas.has(k)) return;
+
+    const correctas = respuestasCorrectas();
+
+    if(modo === 'kruskal' && formaCiclo(k)){
+      descartadas.add(k);
+
+      feedback.className = 'feedback mal';
+      feedback.innerHTML =
+        '<b>La arista ' + arista.a + '–' + arista.b + ' no se selecciona.</b> ' +
+        'Aunque su peso es ' + arista.peso + ', uniría dos vértices que ya están conectados y formaría un ciclo. ' +
+        'Kruskal la descarta y continúa con la siguiente arista de menor peso.';
+
+      historial.push({
+        paso:historial.length+1,
+        arista:arista.a + '–' + arista.b,
+        peso:arista.peso,
+        acumulado:pesoAcumulado(),
+        explicacion:'Descartada porque formaría un ciclo.'
+      });
+
+      render(false);
+      return;
+    }
+
+    if(!correctas.includes(k)){
+      feedback.className = 'feedback mal';
+      feedback.innerHTML =
+        modo === 'prim'
+          ? explicarErrorPrim(arista)
+          : explicarErrorKruskal(arista);
+      return;
+    }
+
+    seleccionadas.push(k);
+
+    const explicacion = modo === 'prim'
+      ? 'Se selecciona porque uno de sus extremos ya pertenece al árbol y el otro todavía no; además, entre todas las aristas que pueden incorporar un vértice nuevo, tiene el menor peso disponible.'
+      : 'Se selecciona porque está entre las aristas de menor peso que aún no se han procesado y sus extremos pertenecen a componentes diferentes, por lo que no forma un ciclo.';
+
+    historial.push({
+      paso:historial.length+1,
+      arista:arista.a + '–' + arista.b,
+      peso:arista.peso,
+      acumulado:pesoAcumulado(),
+      explicacion
+    });
+
+    feedback.className = 'feedback bien';
+    feedback.innerHTML =
+      '<b>Correcto.</b> Se agrega la arista ' + arista.a + '–' + arista.b +
+      ' de peso ' + arista.peso + '. ' + explicacion;
+
+    render(false);
+  }
+
+  function pintarPregunta(){
+    if(terminado()){
+      document.getElementById('preguntaTitulo').textContent = 'Árbol de expansión mínima completado';
+      document.getElementById('preguntaTexto').textContent =
+        'Se seleccionaron 5 aristas, todos los vértices están conectados y no se formaron ciclos.';
+      return;
+    }
+
+    if(modo === 'prim'){
+      const incluidos = [...verticesIncluidosPrim()];
+      const candidatas = candidatasPrim();
+      const menor = candidatas.length ? candidatas[0].peso : '—';
+
+      document.getElementById('preguntaTitulo').textContent =
+        'Prim: selecciona la siguiente arista';
+
+      const opciones = candidatas
+        .filter(a => a.peso === menor)
+        .map(a => a.a + '–' + a.b + ' (' + a.peso + ')');
+
+      document.getElementById('preguntaTexto').innerHTML =
+        'Vértices que ya están en el árbol: <strong>' + incluidos.join(', ') + '</strong>.<br>' +
+        'La siguiente arista debe tener un extremo dentro de ese conjunto y el otro fuera. ' +
+        'La opción de menor peso es: <strong>' + opciones.join(' o ') + '</strong>.';
+    }else{
+      const candidatas = candidatasKruskal();
+      const menor = candidatas.length ? candidatas[0].peso : '—';
+
+      document.getElementById('preguntaTitulo').textContent =
+        'Kruskal: selecciona la siguiente arista';
+
+      document.getElementById('preguntaTexto').innerHTML =
+        'Kruskal revisa las aristas de menor a mayor peso. ' +
+        'El menor peso pendiente es <strong>' + menor + '</strong>. ' +
+        'Selecciona una arista de ese peso solo si sus extremos aún no están conectados por otro camino.';
+    }
+  }
+
+  function pintarTabla(){
+    const tbody = document.getElementById('tbody');
+
+    tbody.innerHTML = historial.map((h,i) =>
+      '<tr' + (i === historial.length-1 ? ' class="actual"' : '') + '>' +
+        '<td>' + h.paso + '</td>' +
+        '<td>' + h.arista + '</td>' +
+        '<td>' + h.peso + '</td>' +
+        '<td>' + h.acumulado + '</td>' +
+        '<td class="explicacion">' + h.explicacion + '</td>' +
+      '</tr>'
+    ).join('');
+  }
+
+  function pintarResultado(){
+    if(!terminado()){
+      resultado.className = 'resultado';
+      resultado.innerHTML = '';
+      return;
+    }
+
+    resultado.className = 'resultado visible';
+    resultado.innerHTML =
+      '<b>Árbol de expansión mínima obtenido con ' +
+      (modo === 'prim' ? 'Prim' : 'Kruskal') + '.</b><br>' +
+      'Aristas: ' +
+      seleccionadas.map(k => {
+        const a = aristaPorClave(k);
+        return a.a + '–' + a.b + ' (' + a.peso + ')';
+      }).join(', ') +
+      '<br><b>Peso total: ' + pesoAcumulado() + '</b>';
+  }
+
+  function mostrarPista(){
+    detenerVoz();
+    nivelPista++;
+
+    const correctas = respuestasCorrectas();
+    const aristas = correctas.map(k => {
+      const a = aristaPorClave(k);
+      return a.a + '–' + a.b + ' (' + a.peso + ')';
+    });
+
+    let texto = '';
+
+    if(modo === 'prim'){
+      const incluidos = [...verticesIncluidosPrim()];
+
+      if(nivelPista === 1){
+        texto =
+          '<b>Pista 1:</b> Los vértices que ya pertenecen al árbol son: ' +
+          incluidos.join(', ') + '. Una arista válida debe tener un extremo dentro de este conjunto y el otro fuera.';
+      }else if(nivelPista === 2){
+        texto =
+          '<b>Pista 2:</b> Descarta las aristas cuyos dos extremos ya estén dentro del árbol y también las que no toquen el árbol. Después compara los pesos de las restantes.';
+      }else{
+        texto =
+          '<b>Pista 3:</b> Puedes seleccionar: ' + aristas.join(' o ') + '.';
+      }
+    }else{
+      const candidatas = candidatasKruskal();
+
+      if(nivelPista === 1){
+        texto =
+          '<b>Pista 1:</b> Busca primero todas las aristas con el menor peso pendiente. No consideres todavía las de peso mayor.';
+      }else if(nivelPista === 2){
+        texto =
+          '<b>Pista 2:</b> Para cada arista de menor peso, pregunta: ¿sus extremos ya están conectados por las aristas verdes? Si la respuesta es sí, formaría un ciclo y debe descartarse.';
+      }else{
+        texto =
+          '<b>Pista 3:</b> Puedes seleccionar: ' + aristas.join(' o ') + '.';
+      }
+    }
+
+    pistaBox.className = 'pista-box visible';
+    pistaBox.innerHTML = texto;
+  }
+
+  function cambiarModo(nuevoModo){
+    detenerVoz();
+    modo = nuevoModo;
+
+    document.getElementById('btnPrim').classList.toggle('activo', modo === 'prim');
+    document.getElementById('btnKruskal').classList.toggle('activo', modo === 'kruskal');
+    document.getElementById('zonaOrigen').style.display = modo === 'prim' ? 'block' : 'none';
+
+    reiniciar();
+  }
+
+  function limpiarMensajes(){
+    feedback.className = 'feedback';
+    feedback.innerHTML = '';
+    pistaBox.className = 'pista-box';
+    pistaBox.innerHTML = '';
+    resultado.className = 'resultado';
+    resultado.innerHTML = '';
+    nivelPista = 0;
+  }
+
+  function reiniciar(){
+    detenerVoz();
+    seleccionadas = [];
+    descartadas = new Set();
+    historial = [];
+    limpiarMensajes();
+    render();
+  }
+
+  function deshacer(){
+    detenerVoz();
+
+    if(!historial.length) return;
+
+    const ultimo = historial.pop();
+    const arista = ARISTAS.find(a => (a.a + '–' + a.b) === ultimo.arista);
+
+    if(arista){
+      const k = claveArista(arista);
+
+      if(ultimo.explicacion.startsWith('Descartada')){
+        descartadas.delete(k);
+      }else{
+        seleccionadas = seleccionadas.filter(x => x !== k);
+      }
+    }
+
+    limpiarMensajes();
+    render();
+  }
+
+  function textoParaVoz(){
+    if(feedback.classList.contains('bien') || feedback.classList.contains('mal')){
+      return feedback.innerText;
+    }
+
+    if(pistaBox.classList.contains('visible')){
+      return pistaBox.innerText;
+    }
+
+    if(resultado.classList.contains('visible')){
+      return resultado.innerText;
+    }
+
+    return document.getElementById('preguntaTitulo').innerText + '. ' +
+           document.getElementById('preguntaTexto').innerText;
+  }
+
+  function seleccionarVozEspanol(){
+    const voces = window.speechSynthesis.getVoices();
+
+    return voces.find(v =>
+      /^es(-|_)/i.test(v.lang) &&
+      /female|mujer|paulina|helena|sabina|monica|soledad|elvira|dalia|google español/i.test(v.name)
+    ) || voces.find(v => /^es(-|_)/i.test(v.lang)) || null;
+  }
+
+  function reproducirVoz(){
+    if(!('speechSynthesis' in window)){
+      alert('Este navegador no admite lectura de voz.');
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const mensaje = new SpeechSynthesisUtterance(textoParaVoz());
+    mensaje.lang = 'es-CO';
+    mensaje.rate = 0.92;
+
+    const voz = seleccionarVozEspanol();
+    if(voz) mensaje.voice = voz;
+
+    window.speechSynthesis.speak(mensaje);
+  }
+
+  function detenerVoz(){
+    if('speechSynthesis' in window){
+      window.speechSynthesis.cancel();
+    }
+  }
+
+  function render(limpiar=true){
+    if(limpiar) limpiarMensajes();
+
+    dibujar();
+    pintarPregunta();
+    pintarTabla();
+    pintarResultado();
+
+    document.getElementById('btnAnterior').disabled = historial.length === 0;
+  }
+
+  const selOrigen = document.getElementById('selOrigen');
+
+  VERTICES.forEach(v => {
+    selOrigen.insertAdjacentHTML('beforeend','<option value="' + v + '">' + v + '</option>');
+  });
+
+  selOrigen.value = origen;
+
+  selOrigen.addEventListener('change', () => {
+    origen = selOrigen.value;
+    reiniciar();
+  });
+
+  document.getElementById('btnPrim').addEventListener('click', () => cambiarModo('prim'));
+  document.getElementById('btnKruskal').addEventListener('click', () => cambiarModo('kruskal'));
+  document.getElementById('btnPista').addEventListener('click', mostrarPista);
+  document.getElementById('btnVoz').addEventListener('click', reproducirVoz);
+  document.getElementById('btnDetener').addEventListener('click', detenerVoz);
+  document.getElementById('btnAnterior').addEventListener('click', deshacer);
+  document.getElementById('btnReiniciar').addEventListener('click', reiniciar);
+
+  render();
+
+})();
+</script>
+</body>
+</html>
