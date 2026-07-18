@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construcción de un árbol de expansión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#7fb536;
+  --verde-oscuro:#527523;
+  --verde-suave:#eef5e2;
+  --magenta:#e6007e;
+  --magenta-suave:#fde6f2;
+  --naranja:#F59C2F;
+  --naranja-suave:#fdf0dd;
+  --azul:#2f79bd;
+  --azul-suave:#eaf4ff;
+  --gris:#606060;
+  --gris-claro:#e9e9e9;
+  --negro:#000;
+  --blanco:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Quicksand',system-ui,sans-serif;
+  background:var(--blanco);
+  color:var(--negro);
+}
+header{
+  max-width:1150px;
+  margin:0 auto;
+  padding:26px 24px 14px;
+}
+.institucion{
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--gris);
+  margin-bottom:4px;
+}
+h1{
+  color:var(--verde);
+  font-size:clamp(24px,4vw,36px);
+  line-height:1.15;
+}
+.subtitulo{
+  margin-top:8px;
+  color:var(--gris);
+  font-size:15px;
+  line-height:1.55;
+  max-width:900px;
+  font-weight:500;
+}
+.app{
+  max-width:1150px;
+  margin:0 auto;
+  padding:0 24px 18px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 370px;
+  gap:16px;
+  align-items:start;
+}
+@media(max-width:920px){
+  .app{grid-template-columns:1fr}
+}
+.lienzo-wrap{
+  border:2px solid var(--gris-claro);
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+  background:var(--blanco);
+}
+svg{display:block;width:100%;height:auto}
+.nota{
+  position:absolute;
+  left:12px;
+  bottom:10px;
+  background:rgba(255,255,255,.95);
+  padding:5px 10px;
+  border-radius:10px;
+  font-size:12px;
+  color:var(--gris);
+  font-weight:600;
+}
+.tarjeta{
+  background:var(--blanco);
+  border:2px solid var(--gris-claro);
+  border-radius:14px;
+  padding:16px;
+}
+.tarjeta h2{
+  font-size:16px;
+  color:var(--verde-oscuro);
+  margin-bottom:10px;
+}
+.pregunta{
+  background:var(--verde-suave);
+  border:2px solid var(--verde);
+  border-radius:12px;
+  padding:12px 13px;
+}
+.pregunta .titulo{
+  font-weight:700;
+  color:var(--verde-oscuro);
+  margin-bottom:5px;
+}
+.pregunta .texto{
+  color:var(--gris);
+  font-size:13px;
+  line-height:1.5;
+  font-weight:500;
+}
+.estado{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.dato{
+  border:2px solid var(--gris-claro);
+  border-radius:10px;
+  padding:9px 10px;
+  text-align:center;
+}
+.dato b{
+  display:block;
+  color:var(--verde-oscuro);
+  font-size:18px;
+}
+.dato span{
+  color:var(--gris);
+  font-size:12px;
+  font-weight:600;
+}
+.botonera{
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  justify-content:flex-start;
+  gap:6px;
+  margin-top:12px;
+}
+.botonera button{
+  flex:0 0 auto;
+}
+@media(max-width:560px){
+  .botonera{flex-wrap:wrap}
+}
+button{
+  font-family:inherit;
+  font-size:12px;
+  font-weight:700;
+  height:36px;
+  padding:0 10px;
+  border-radius:20px;
+  border:2px solid var(--verde);
+  background:var(--verde);
+  color:#fff;
+  cursor:pointer;
+}
+button:hover:not(:disabled){
+  background:var(--verde-oscuro);
+  border-color:var(--verde-oscuro);
+}
+button.secundario{
+  background:#fff;
+  color:var(--verde-oscuro);
+}
+button.secundario:hover:not(:disabled){background:var(--verde-suave)}
+button.pista{
+  background:#fff;
+  border-color:var(--azul);
+  color:var(--azul);
+}
+button.pista:hover:not(:disabled){
+  background:var(--azul-suave);
+  border-color:var(--azul);
+}
+.icono-btn{
+  width:36px;
+  min-width:36px;
+  height:36px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+.feedback,.pista-box{
+  margin-top:10px;
+  border-radius:12px;
+  padding:11px 13px;
+  font-size:13.5px;
+  line-height:1.55;
+  font-weight:500;
+  display:none;
+}
+.feedback.bien{
+  display:block;
+  background:var(--verde-suave);
+  border:2px solid var(--verde);
+  color:var(--verde-oscuro);
+}
+.feedback.mal{
+  display:block;
+  background:var(--magenta-suave);
+  border:2px solid var(--magenta);
+  color:#8f004f;
+}
+.pista-box.visible{
+  display:block;
+  background:var(--azul-suave);
+  border:2px solid var(--azul);
+  color:#215b8f;
+}
+.criterios{
+  max-width:1150px;
+  margin:0 auto;
+  padding:0 24px 40px;
+}
+.criterios .tarjeta{
+  background:var(--verde-suave);
+  border-color:var(--verde);
+}
+.criterios ul{
+  margin-left:20px;
+  line-height:1.7;
+  font-size:14px;
+  font-weight:500;
+}
+
+/* SVG */
+.arista{
+  stroke:#bcbcbc;
+  stroke-width:3;
+  cursor:pointer;
+  transition:.15s;
+}
+.arista:hover{stroke:var(--naranja);stroke-width:5}
+.arista.seleccionada{
+  stroke:var(--verde);
+  stroke-width:5;
+}
+.arista.ciclo{
+  stroke:var(--magenta);
+  stroke-width:5;
+}
+.peso-caja{
+  fill:#fff;
+  stroke:var(--gris-claro);
+  stroke-width:1.5;
+  pointer-events:none;
+}
+.peso{
+  fill:#000;
+  font-size:13px;
+  font-weight:700;
+  text-anchor:middle;
+  pointer-events:none;
+}
+.nodo circle{
+  fill:#fff;
+  stroke:var(--verde-oscuro);
+  stroke-width:2.5;
+}
+.nodo.conectado circle{fill:var(--verde-suave)}
+.nodo text{
+  font-size:16px;
+  font-weight:700;
+  text-anchor:middle;
+  dominant-baseline:central;
+  font-family:inherit;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="institucion">Fundación Universitaria del Área Andina · Teoría de grafos</div>
+  <h1>Construcción de un árbol de expansión</h1>
+  <p class="subtitulo">
+    Parte de un grafo conexo y selecciona aristas hasta obtener un subgrafo que conserve todos los vértices,
+    permanezca conectado y no contenga ciclos. En este ejercicio no se busca todavía el peso mínimo.
+  </p>
+</header>
+
+<div class="app">
+  <div class="lienzo-wrap">
+    <svg id="svg" viewBox="0 0 760 430" role="img" aria-label="Grafo conexo para construir un árbol de expansión"></svg>
+    <div class="nota">Haz clic sobre una arista para seleccionarla o retirarla</div>
+  </div>
+
+  <div class="tarjeta">
+    <h2>Tu construcción</h2>
+
+    <div class="pregunta">
+      <div class="titulo">Construye un árbol de expansión</div>
+      <div class="texto">
+        Selecciona una arista para ir conectando los vértices. Cada nueva arista debe unir partes que todavía no estén conectadas entre sí. Evita cerrar recorridos, porque eso forma un ciclo. Cuando los 6 vértices estén conectados con 5 aristas, habrás construido un árbol de expansión.
+      </div>
+    </div>
+
+    <div class="estado">
+      <div class="dato">
+        <b id="numAristas">0</b>
+        <span>aristas seleccionadas</span>
+      </div>
+      <div class="dato">
+        <b id="numComponentes">6</b>
+        <span>componentes conexos</span>
+      </div>
+    </div>
+
+    <div class="botonera">
+      <button id="btnComprobar">Comprobar</button>
+      <button class="pista" id="btnPista">Pista</button>
+      <button class="secundario icono-btn" id="btnVoz" aria-label="Reproducir explicación" title="Reproducir explicación">▶</button>
+      <button class="secundario icono-btn" id="btnDetenerVoz" aria-label="Detener reproducción" title="Detener reproducción">■</button>
+      <button class="secundario icono-btn" id="btnReiniciar" aria-label="Reiniciar actividad" title="Reiniciar actividad">↻</button>
+    </div>
+
+    <div class="pista-box" id="pistaBox"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<div class="criterios">
+  <div class="tarjeta">
+    <h2>¿Cuándo es un árbol de expansión?</h2>
+    <ul>
+      <li>Conserva todos los vértices del grafo original.</li>
+      <li>Todos los vértices quedan conectados.</li>
+      <li>No contiene ciclos.</li>
+      <li>Si el grafo tiene 6 vértices, debe tener exactamente 5 aristas.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  const NODOS = {
+    A:{x:90,y:80},
+    B:{x:300,y:80},
+    D:{x:565,y:80},
+    C:{x:90,y:325},
+    E:{x:300,y:325},
+    F:{x:565,y:325}
+  };
+
+  const ARISTAS = [
+    {a:'A',b:'B',peso:4},
+    {a:'B',b:'D',peso:5},
+    {a:'A',b:'C',peso:7},
+    {a:'C',b:'E',peso:3},
+    {a:'E',b:'F',peso:1},
+    {a:'D',b:'F',peso:4},
+    {a:'B',b:'E',peso:2},
+    {a:'A',b:'E',peso:8},
+    {a:'B',b:'F',peso:6},
+    {a:'D',b:'E',peso:2}
+  ];
+
+  const VERTICES = Object.keys(NODOS);
+  const seleccionadas = new Set();
+  let nivelPista = 0;
+
+  const svg = document.getElementById('svg');
+  const feedback = document.getElementById('feedback');
+  const pistaBox = document.getElementById('pistaBox');
+
+  function clave(a,b){
+    return [a,b].sort().join('-');
+  }
+
+  function grafoSeleccionado(){
+    const ady = {};
+    VERTICES.forEach(v => ady[v] = []);
+
+    ARISTAS.forEach(arista => {
+      if(seleccionadas.has(clave(arista.a, arista.b))){
+        ady[arista.a].push(arista.b);
+        ady[arista.b].push(arista.a);
+      }
+    });
+
+    return ady;
+  }
+
+  function componentes(){
+    const ady = grafoSeleccionado();
+    const visitados = new Set();
+    let cantidad = 0;
+
+    VERTICES.forEach(inicio => {
+      if(visitados.has(inicio)) return;
+
+      cantidad++;
+      const pila = [inicio];
+      visitados.add(inicio);
+
+      while(pila.length){
+        const u = pila.pop();
+
+        ady[u].forEach(v => {
+          if(!visitados.has(v)){
+            visitados.add(v);
+            pila.push(v);
+          }
+        });
+      }
+    });
+
+    return cantidad;
+  }
+
+  function tieneCiclo(){
+    const ady = grafoSeleccionado();
+    const visitados = new Set();
+
+    function dfs(u, padre){
+      visitados.add(u);
+
+      for(const v of ady[u]){
+        if(!visitados.has(v)){
+          if(dfs(v,u)) return true;
+        }else if(v !== padre){
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    for(const v of VERTICES){
+      if(!visitados.has(v) && dfs(v,null)){
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function verticesConectados(){
+    const ady = grafoSeleccionado();
+    const conectados = new Set();
+
+    VERTICES.forEach(v => {
+      if(ady[v].length > 0) conectados.add(v);
+    });
+
+    return conectados;
+  }
+
+  function dibujar(){
+    const conectados = verticesConectados();
+    let contenido = '';
+
+    ARISTAS.forEach((arista, i) => {
+      const p1 = NODOS[arista.a];
+      const p2 = NODOS[arista.b];
+      const sel = seleccionadas.has(clave(arista.a, arista.b));
+
+      contenido +=
+        '<line class="arista' + (sel ? ' seleccionada' : '') + '" ' +
+        'data-i="' + i + '" ' +
+        'x1="' + p1.x + '" y1="' + p1.y + '" ' +
+        'x2="' + p2.x + '" y2="' + p2.y + '"/>';
+    });
+
+    ARISTAS.forEach(arista => {
+      const p1 = NODOS[arista.a];
+      const p2 = NODOS[arista.b];
+      const mx = (p1.x + p2.x) / 2;
+      const my = (p1.y + p2.y) / 2;
+
+      contenido +=
+        '<rect class="peso-caja" x="' + (mx-14) + '" y="' + (my-11) + '" width="28" height="20" rx="10"/>' +
+        '<text class="peso" x="' + mx + '" y="' + (my+4) + '">' + arista.peso + '</text>';
+    });
+
+    VERTICES.forEach(v => {
+      const p = NODOS[v];
+
+      contenido +=
+        '<g class="nodo' + (conectados.has(v) ? ' conectado' : '') + '">' +
+          '<circle cx="' + p.x + '" cy="' + p.y + '" r="21"/>' +
+          '<text x="' + p.x + '" y="' + p.y + '">' + v + '</text>' +
+        '</g>';
+    });
+
+    svg.innerHTML = contenido;
+
+    svg.querySelectorAll('.arista').forEach(linea => {
+      linea.addEventListener('click', () => alternarArista(+linea.dataset.i));
+    });
+
+    actualizarEstado();
+  }
+
+  function alternarArista(i){
+    detenerVoz();
+
+    const arista = ARISTAS[i];
+    const k = clave(arista.a, arista.b);
+
+    if(seleccionadas.has(k)){
+      seleccionadas.delete(k);
+      limpiarMensajes();
+      dibujar();
+      return;
+    }
+
+    seleccionadas.add(k);
+
+    if(tieneCiclo()){
+      seleccionadas.delete(k);
+
+      feedback.className = 'feedback mal';
+      feedback.innerHTML =
+        '<b>No se agrega la arista ' + arista.a + '–' + arista.b + '.</b> ' +
+        'Al seleccionarla se formaría un ciclo. Un árbol de expansión no puede contener ciclos.';
+    }else{
+      limpiarMensajes();
+    }
+
+    dibujar();
+  }
+
+  function actualizarEstado(){
+    document.getElementById('numAristas').textContent = seleccionadas.size;
+    document.getElementById('numComponentes').textContent = componentes();
+  }
+
+  function comprobar(){
+    detenerVoz();
+
+    const numAristas = seleccionadas.size;
+    const numComponentes = componentes();
+    const ciclo = tieneCiclo();
+
+    if(ciclo){
+      feedback.className = 'feedback mal';
+      feedback.innerHTML =
+        '<b>Todavía no es un árbol de expansión.</b> La selección contiene un ciclo.';
+      return;
+    }
+
+    if(numAristas < VERTICES.length - 1){
+      feedback.className = 'feedback mal';
+      feedback.innerHTML =
+        '<b>Todavía no está completo.</b> Has seleccionado ' + numAristas +
+        ' aristas. Para 6 vértices necesitas exactamente 5 aristas y todos deben quedar conectados.';
+      return;
+    }
+
+    if(numAristas > VERTICES.length - 1){
+      feedback.className = 'feedback mal';
+      feedback.innerHTML =
+        '<b>Hay demasiadas aristas.</b> Un árbol con 6 vértices debe tener exactamente 5 aristas.';
+      return;
+    }
+
+    if(numComponentes > 1){
+      feedback.className = 'feedback mal';
+      feedback.innerHTML =
+        '<b>El subgrafo todavía está desconectado.</b> Actualmente existen ' +
+        numComponentes + ' componentes. Debe quedar un solo componente conexo.';
+      return;
+    }
+
+    feedback.className = 'feedback bien';
+    feedback.innerHTML =
+      '<b>¡Correcto!</b> Has construido un árbol de expansión porque conserva los 6 vértices, ' +
+      'todos están conectados, no hay ciclos y seleccionaste exactamente 5 aristas. ' +
+      'En este punto todavía no se analiza si el peso total es mínimo.';
+  }
+
+  function mostrarPista(){
+    detenerVoz();
+    nivelPista++;
+
+    const numAristas = seleccionadas.size;
+    const numComponentes = componentes();
+    const ciclo = tieneCiclo();
+    const ady = grafoSeleccionado();
+
+    const aislados = VERTICES.filter(v => ady[v].length === 0);
+
+    let texto = '';
+
+    if(ciclo){
+      texto =
+        '<b>Pista:</b> Tu selección contiene un ciclo. Retira una arista de ese recorrido cerrado antes de continuar.';
+    }else if(numAristas === 0){
+      texto =
+        '<b>Pista 1:</b> Comienza seleccionando cualquier arista. Después elige otra que conecte un vértice nuevo o una parte todavía separada del grafo.';
+    }else if(aislados.length > 0){
+      texto =
+        '<b>Pista:</b> Todavía hay vértices sin conectar: ' + aislados.join(', ') +
+        '. Busca una arista que una uno de esos vértices con la estructura que ya construiste.';
+    }else if(numComponentes > 1){
+      texto =
+        '<b>Pista:</b> Tienes ' + numComponentes +
+        ' componentes separados. Selecciona una arista que una dos componentes distintos, no dos vértices que ya estén conectados por otro camino.';
+    }else if(numAristas < VERTICES.length - 1){
+      texto =
+        '<b>Pista:</b> Todos los vértices ya están dentro de la construcción, pero aún faltan ' +
+        ((VERTICES.length - 1) - numAristas) +
+        ' arista(s). Añade solo una arista que no forme ciclo.';
+    }else if(numAristas === VERTICES.length - 1 && numComponentes === 1){
+      texto =
+        '<b>Pista:</b> Ya tienes 6 vértices conectados y 5 aristas. Pulsa <b>Comprobar</b> para validar tu árbol de expansión.';
+    }else{
+      texto =
+        '<b>Pista:</b> Recuerda: 6 vértices conectados, 5 aristas y ningún ciclo.';
+    }
+
+    pistaBox.className = 'pista-box visible';
+    pistaBox.innerHTML = texto;
+  }
+
+  function limpiarMensajes(){
+    feedback.className = 'feedback';
+    feedback.innerHTML = '';
+    pistaBox.className = 'pista-box';
+    pistaBox.innerHTML = '';
+    nivelPista = 0;
+  }
+
+  function reiniciar(){
+    detenerVoz();
+    seleccionadas.clear();
+    limpiarMensajes();
+    dibujar();
+  }
+
+  function textoParaVoz(){
+    if(feedback.classList.contains('bien') || feedback.classList.contains('mal')){
+      return feedback.innerText;
+    }
+
+    if(pistaBox.classList.contains('visible')){
+      return pistaBox.innerText;
+    }
+
+    return 'Construye un árbol de expansión. Selecciona aristas para conectar los seis vértices. Cada nueva arista debe unir partes que todavía estén separadas. Evita cerrar recorridos porque eso forma ciclos. Debes terminar con cinco aristas.';
+  }
+
+  function seleccionarVozEspanol(){
+    const voces = window.speechSynthesis.getVoices();
+
+    return voces.find(v =>
+      /^es(-|_)/i.test(v.lang) &&
+      /female|mujer|paulina|helena|sabina|monica|soledad|elvira|dalia|google español/i.test(v.name)
+    ) || voces.find(v => /^es(-|_)/i.test(v.lang)) || null;
+  }
+
+  function reproducirVoz(){
+    if(!('speechSynthesis' in window)){
+      alert('Este navegador no admite lectura de voz.');
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const mensaje = new SpeechSynthesisUtterance(textoParaVoz());
+    mensaje.lang = 'es-CO';
+    mensaje.rate = 0.92;
+    mensaje.pitch = 1;
+    mensaje.volume = 1;
+
+    const voz = seleccionarVozEspanol();
+    if(voz) mensaje.voice = voz;
+
+    window.speechSynthesis.speak(mensaje);
+  }
+
+  function detenerVoz(){
+    if('speechSynthesis' in window){
+      window.speechSynthesis.cancel();
+    }
+  }
+
+  document.getElementById('btnComprobar').addEventListener('click', comprobar);
+  document.getElementById('btnPista').addEventListener('click', mostrarPista);
+  document.getElementById('btnVoz').addEventListener('click', reproducirVoz);
+  document.getElementById('btnDetenerVoz').addEventListener('click', detenerVoz);
+  document.getElementById('btnReiniciar').addEventListener('click', reiniciar);
+
+  dibujar();
+
+})();
+</script>
+</body>
+</html>
