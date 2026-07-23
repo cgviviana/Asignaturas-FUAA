@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Algoritmo de Ford–Fulkerson — ejecución paso a paso</title>
+<title>Ford–Fulkerson — demostración guiada</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -15,20 +15,20 @@
   --negro:#000; --gris:#606060; --gris-claro:#e9e9e9; --blanco:#fff;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Quicksand',system-ui,sans-serif;background:var(--blanco);color:var(--negro)}
+body{font-family:'Quicksand',system-ui,sans-serif;background:#fff;color:#000}
 header{max-width:1150px;margin:0 auto;padding:26px 24px 14px}
 .institucion{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gris);margin-bottom:4px}
 h1{font-weight:700;font-size:clamp(24px,4vw,36px);color:var(--verde);line-height:1.15}
-.subtitulo{margin-top:8px;color:var(--gris);font-size:15px;max-width:920px;line-height:1.55;font-weight:500}
-.app{max-width:1150px;margin:0 auto;padding:0 24px 16px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
-@media(max-width:920px){.app{grid-template-columns:1fr}}
+.subtitulo{margin-top:8px;color:var(--gris);font-size:15px;max-width:980px;line-height:1.55;font-weight:500}
+.app{max-width:1150px;margin:0 auto;padding:0 24px 16px;display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:16px;align-items:start}
+@media(max-width:940px){.app{grid-template-columns:1fr}}
 .lienzo-wrap,.tarjeta,.tabla-scroll{background:#fff;border:2px solid var(--gris-claro);border-radius:14px}
 .lienzo-wrap{overflow:hidden;position:relative}
 svg{display:block;width:100%;height:auto}
 .nota{position:absolute;left:12px;bottom:10px;font-size:12px;color:var(--gris);background:rgba(255,255,255,.95);padding:5px 10px;border-radius:10px;font-weight:600}
 .panel{display:flex;flex-direction:column;gap:14px}
 .tarjeta{padding:16px}.tarjeta h2,.tabla-titulo{font-size:16px;font-weight:700;color:var(--verde-oscuro);margin-bottom:10px}
-.botonera{display:flex;flex-wrap:nowrap;align-items:center;gap:7px}
+.botonera{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
 button{font-family:inherit;font-size:13.5px;font-weight:700;padding:9px 14px;border-radius:20px;border:2px solid var(--verde);background:var(--verde);color:#fff;cursor:pointer}
 button:hover:not(:disabled){background:var(--verde-oscuro);border-color:var(--verde-oscuro)}
 button:disabled{opacity:.45;cursor:default}
@@ -37,71 +37,73 @@ button.secundario:hover:not(:disabled){background:var(--verde-suave)}
 button.pista{border-color:var(--azul);background:#fff;color:var(--azul)}
 button.pista:hover:not(:disabled){background:var(--azul-suave)}
 .icono-btn{width:42px;min-width:42px;height:42px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+.explicacion{background:var(--verde-suave);border:2px solid var(--verde);border-radius:12px;padding:13px;font-size:13.5px;line-height:1.6;color:var(--verde-oscuro);font-weight:500}
+.explicacion b{color:var(--negro)}
+.regla{background:var(--azul-suave);border:2px solid var(--azul);border-radius:12px;padding:12px 13px;font-size:13px;line-height:1.55;color:#215b8f}
 .estado{display:grid;grid-template-columns:1fr auto;gap:8px 14px;font-size:14px;line-height:1.35}
 .estado b{color:var(--gris)}.estado span{font-weight:700;color:var(--azul)}
-.pregunta{background:var(--verde-suave);border:2px solid var(--verde);border-radius:12px;padding:12px 13px;margin-top:12px}
-.pregunta .titulo-p{font-weight:700;font-size:15px;color:var(--verde-oscuro);margin-bottom:5px}
-.pregunta .condicion{font-size:13px;color:var(--gris);line-height:1.5;font-weight:500}
-.pista-box{display:none;margin-top:10px;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;font-weight:500;background:var(--azul-suave);border:2px solid var(--azul);color:#215b8f}
-.pista-box.visible{display:block}
 .resultado{margin-top:10px;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;font-weight:700;background:var(--naranja-suave);border:2px solid var(--naranja)}
-.conceptos{font-size:13px;line-height:1.55;color:var(--gris)}.conceptos li{margin-left:18px;margin-bottom:6px}.conceptos b{color:var(--negro)}
 .tabla-zona{max-width:1150px;margin:0 auto;padding:0 24px 28px}.tabla-scroll{overflow-x:auto}
 table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px}th,td{border:1px solid var(--gris-claro);padding:8px;text-align:center}
 th{background:var(--verde);color:#fff;font-weight:700}tr.activa td{background:#fbfdf7}td.resaltada{background:var(--naranja-suave);font-weight:700;color:#a05f00}
 .ruta{stroke:#c7c7c7;stroke-width:3;fill:none;transition:.3s}.ruta.activa{stroke:var(--naranja);stroke-width:5}.ruta.usada{stroke:var(--verde);stroke-width:5}.ruta.saturada{stroke:var(--magenta);stroke-width:5}
 .nodo circle{fill:#fff;stroke:var(--gris);stroke-width:2}.nodo.fuente circle{fill:var(--verde-suave);stroke:var(--verde-oscuro)}.nodo.sumidero circle{fill:var(--magenta-suave);stroke:var(--magenta)}
-.letra{font-size:18px;font-weight:700;text-anchor:middle;dominant-baseline:central}.capacidad{font-size:13px;font-weight:700;fill:var(--negro)}.flujo{font-size:12px;font-weight:700;fill:var(--azul)}
+.letra{font-size:18px;font-weight:700;text-anchor:middle;dominant-baseline:central}.flujo{font-size:12px;font-weight:700;fill:var(--azul)}
 .etiqueta{font-size:10px;font-weight:700;letter-spacing:.06em;fill:#fff;text-anchor:middle}.etq-fondo{fill:var(--verde-oscuro)}.etq-fondo.t{fill:var(--magenta)}
 </style>
 </head>
 <body>
 <header>
   <div class="institucion">Fundación Universitaria del Área Andina · Teoría de grafos</div>
-  <h1>Algoritmo de Ford–Fulkerson: ejecución paso a paso</h1>
-  <p class="subtitulo">Observa cómo se seleccionan caminos aumentantes, se identifica el cuello de botella y se actualiza el flujo acumulado hasta alcanzar el flujo máximo.</p>
+  <h1>Algoritmo de Ford–Fulkerson</h1>
+  <p class="subtitulo">
+    El objetivo es descubrir la mayor cantidad total de flujo que puede enviarse desde la fuente <b>s</b>
+    hasta el sumidero <b>t</b>. Para lograrlo, el algoritmo usa uno o varios caminos disponibles,
+    envía por cada uno la cantidad permitida y continúa hasta que ya no exista una ruta completa con capacidad.
+  </p>
 </header>
 
 <div class="app">
   <div class="lienzo-wrap">
-    <svg id="svg" viewBox="0 0 720 420" role="img" aria-label="Red de flujo para aplicar Ford-Fulkerson"></svg>
-    <div class="nota">Los valores azules muestran flujo/capacidad</div>
+    <svg id="svg" viewBox="0 0 720 420"></svg>
+    <div class="nota">Los valores se leen como flujo/capacidad</div>
   </div>
 
   <div class="panel">
+ 
+    </div>
+
     <div class="tarjeta">
-      <h2>Control de la animación</h2>
-      <div class="botonera">
+      <h2>Criterio para elegir el camino</h2>
+      <div class="regla">
+        Ford–Fulkerson no exige escoger el camino con mayor capacidad ni el más corto.
+        Puede usarse <b>cualquier camino completo desde s hasta t</b> cuyas aristas tengan
+        capacidad residual positiva. En esta demostración se sigue un orden fijo para que
+        el procedimiento sea fácil de observar.
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h2 id="tituloPaso"></h2>
+      <div class="explicacion" id="explicacion"></div>
+      <div class="botonera" style="margin-top:12px">
         <button class="secundario icono-btn" id="anterior" title="Paso anterior">←</button>
-        <button class="icono-btn" id="siguiente" title="Siguiente paso">▶</button>
+        <button class="icono-btn" id="siguiente" title="Siguiente paso">→</button>
+        <button class="pista icono-btn" id="voz" title="Escuchar explicación">▶</button>
+        <button class="secundario icono-btn" id="detenerVoz" title="Detener voz">■</button>
         <button class="secundario icono-btn" id="reiniciar" title="Reiniciar">↻</button>
-        <button class="pista" id="pista">Pista</button>
       </div>
-      <div class="pregunta">
-        <div class="titulo-p" id="tituloPaso"></div>
-        <div class="condicion" id="descripcionPaso"></div>
-      </div>
-      <div class="pista-box" id="pistaBox"></div>
     </div>
 
     <div class="tarjeta">
       <h2>Estado actual</h2>
       <div class="estado">
         <b>Iteración</b><span id="iteracion">0</span>
-        <b>Camino aumentante</b><span id="camino">—</span>
+        <b>Camino observado</b><span id="camino">—</span>
         <b>Cuello de botella</b><span id="cuello">—</span>
         <b>Flujo acumulado</b><span id="acumulado">0</span>
       </div>
       <div class="resultado" id="resultado">Flujo inicial: 0 unidades.</div>
-    </div>
-
-    <div class="tarjeta">
-      <h2>Conceptos clave</h2>
-      <ul class="conceptos">
-        <li><b>Camino aumentante:</b> ruta con capacidad residual disponible.</li>
-        <li><b>Cuello de botella:</b> menor capacidad residual del camino.</li>
-        <li><b>Red residual:</b> capacidad que queda después de enviar flujo.</li>
-      </ul>
     </div>
   </div>
 </div>
@@ -126,68 +128,153 @@ th{background:var(--verde);color:#fff;font-weight:700}tr.activa td{background:#f
     {id:'At',a:'A',b:'t',cap:6},
     {id:'Bt',a:'B',b:'t',cap:10}
   ];
-  const pasos=[
-    {iter:0,camino:[],cuello:null,acum:0,flujos:{sA:0,sB:0,AB:0,At:0,Bt:0},titulo:'Red inicial',desc:'Todas las aristas comienzan con flujo 0. Pulsa avanzar para iniciar el algoritmo.',pista:'Busca primero un camino completo desde s hasta t con capacidad disponible.'},
-    {iter:1,camino:['sA','At'],cuello:6,acum:6,flujos:{sA:6,sB:0,AB:0,At:6,Bt:0},titulo:'Iteración 1',desc:'Se selecciona el camino s → A → t. Su menor capacidad es 6, por lo que se envían 6 unidades.',pista:'Compara las capacidades 8 y 6; la menor determina el aumento.'},
-    {iter:2,camino:['sB','Bt'],cuello:8,acum:14,flujos:{sA:6,sB:8,AB:0,At:6,Bt:8},titulo:'Iteración 2',desc:'Se selecciona el camino s → B → t. El cuello de botella es 8 y el flujo acumulado aumenta a 14.',pista:'La arista s → B limita este camino con capacidad 8.'},
-    {iter:3,camino:['sA','AB','Bt'],cuello:2,acum:16,flujos:{sA:8,sB:8,AB:2,At:6,Bt:10},titulo:'Iteración 3',desc:'Quedan 2 unidades disponibles por s → A, A → B y B → t. Se agregan y el flujo acumulado llega a 16.',pista:'Observa las capacidades residuales: 2, 2 y 2.'},
-    {iter:4,camino:[],cuello:null,acum:16,flujos:{sA:8,sB:8,AB:2,At:6,Bt:10},titulo:'Proceso finalizado',desc:'Ya no existe un camino aumentante desde s hasta t. El flujo máximo de la red es 16.',pista:'Todas las salidas de s están saturadas.'}
-  ];
-  let i=0;
-  const svg=document.getElementById('svg');
-  const tbody=document.getElementById('tbody');
-  const pistaBox=document.getElementById('pistaBox');
 
-  function flecha(x1,y1,x2,y2,clase,id){
+  const pasos=[
+    {
+      titulo:'Inicio: identifica qué hace válido un camino',
+      iter:0, camino:'—', cuello:'—', acum:0,
+      flujos:{sA:0,sB:0,AB:0,At:0,Bt:0}, activas:[],
+      texto:'Encuentra el mayor flujo total que la red puede transportar desde <b>s</b> hasta <b>t</b>. Para lograrlo, se prueban caminos completos con capacidad disponible. Lo enviado por cada camino se suma al flujo acumulado.'
+    },
+    {
+      titulo:'Iteración 1: camino superior',
+      iter:1, camino:'s → A → t', cuello:6, acum:0,
+      flujos:{sA:0,sB:0,AB:0,At:0,Bt:0}, activas:['sA','At'],
+      texto:'Se observa el camino <b>s → A → t</b>. Sus capacidades disponibles son 8 y 6. El cuello de botella es 6 porque es el menor valor del camino. Por esta ruta pueden enviarse 6 unidades.'
+    },
+    {
+      titulo:'Iteración 1: actualización',
+      iter:1, camino:'s → A → t', cuello:6, acum:6,
+      flujos:{sA:6,sB:0,AB:0,At:6,Bt:0}, activas:[],
+      texto:'Después de enviar 6 unidades, la arista A → t queda saturada: 6 de 6. En s → A todavía quedan 2 unidades disponibles. El flujo acumulado es 6.'
+    },
+    {
+      titulo:'Iteración 2: camino inferior',
+      iter:2, camino:'s → B → t', cuello:8, acum:6,
+      flujos:{sA:6,sB:0,AB:0,At:6,Bt:0}, activas:['sB','Bt'],
+      texto:'El camino superior ya no puede llegar a t porque A → t está saturada. Se usa <b>s → B → t</b>. Sus capacidades residuales son 8 y 10; por eso el cuello de botella es 8.'
+    },
+    {
+      titulo:'Iteración 2: actualización',
+      iter:2, camino:'s → B → t', cuello:8, acum:14,
+      flujos:{sA:6,sB:8,AB:0,At:6,Bt:8}, activas:[],
+      texto:'Se envían 8 unidades por el camino inferior. La arista s → B queda saturada y en B → t permanecen 2 unidades disponibles. El flujo acumulado aumenta a 14.'
+    },
+    {
+      titulo:'Iteración 3: ruta restante',
+      iter:3, camino:'s → A → B → t', cuello:2, acum:14,
+      flujos:{sA:6,sB:8,AB:0,At:6,Bt:8}, activas:['sA','AB','Bt'],
+      texto:'Todavía existe el camino <b>s → A → B → t</b>. En sus tres aristas quedan 2 unidades disponibles. Por eso el cuello de botella es 2.'
+    },
+    {
+      titulo:'Iteración 3: actualización',
+      iter:3, camino:'s → A → B → t', cuello:2, acum:16,
+      flujos:{sA:8,sB:8,AB:2,At:6,Bt:10}, activas:[],
+      texto:'Se agregan 2 unidades. Las dos aristas que salen de s quedan saturadas, por lo que ya no puede comenzar ningún nuevo camino aumentante. El flujo acumulado llega a 16.'
+    },
+    {
+      titulo:'Resultado final',
+      iter:4, camino:'No existen más caminos', cuello:'—', acum:16,
+      flujos:{sA:8,sB:8,AB:2,At:6,Bt:10}, activas:[],
+      texto:'El proceso termina porque no existe un camino completo desde s hasta t con capacidad residual positiva. El flujo máximo de la red es <b>16 unidades</b>.'
+    }
+  ];
+
+  let indice=0;
+  const svg=document.getElementById('svg');
+
+  function flecha(x1,y1,x2,y2,clase){
     const ang=Math.atan2(y2-y1,x2-x1), r=27;
     const sx=x1+Math.cos(ang)*r, sy=y1+Math.sin(ang)*r;
     const ex=x2-Math.cos(ang)*r, ey=y2-Math.sin(ang)*r;
-    return `<line id="${id}" class="${clase}" x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" marker-end="url(#arrow)"/>`;
+    return `<line class="${clase}" x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" marker-end="url(#arrow)"/>`;
   }
+
   function dibujar(){
-    const p=pasos[i];
-    const activas=new Set(p.camino);
+    const p=pasos[indice], activas=new Set(p.activas);
     let html=`<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="context-stroke"/></marker></defs>`;
+
     aristas.forEach(e=>{
       const a=nodos[e.a],b=nodos[e.b],f=p.flujos[e.id];
       let clase='ruta';
       if(activas.has(e.id)) clase+=' activa';
       else if(f===e.cap && f>0) clase+=' saturada';
       else if(f>0) clase+=' usada';
-      html+=flecha(a.x,a.y,b.x,b.y,clase,e.id);
+      html+=flecha(a.x,a.y,b.x,b.y,clase);
       const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
       const off=e.id==='AB'?22:(e.id==='At'?-18:e.id==='Bt'?18:0);
       html+=`<text class="flujo" x="${mx}" y="${my+off-8}" text-anchor="middle">${f}/${e.cap}</text>`;
     });
-    Object.entries(nodos).forEach(([k,pn])=>{
+
+    Object.entries(nodos).forEach(([k,n])=>{
       const cls=k==='s'?'nodo fuente':k==='t'?'nodo sumidero':'nodo';
-      html+=`<g class="${cls}"><circle cx="${pn.x}" cy="${pn.y}" r="27"/><text class="letra" x="${pn.x}" y="${pn.y}">${k}</text>`;
-      if(k==='s') html+=`<rect class="etq-fondo" x="${pn.x-28}" y="${pn.y+34}" width="56" height="18" rx="9"/><text class="etiqueta" x="${pn.x}" y="${pn.y+47}">FUENTE</text>`;
-      if(k==='t') html+=`<rect class="etq-fondo t" x="${pn.x-34}" y="${pn.y+34}" width="68" height="18" rx="9"/><text class="etiqueta" x="${pn.x}" y="${pn.y+47}">SUMIDERO</text>`;
+      html+=`<g class="${cls}"><circle cx="${n.x}" cy="${n.y}" r="27"/><text class="letra" x="${n.x}" y="${n.y}">${k}</text>`;
+      if(k==='s') html+=`<rect class="etq-fondo" x="${n.x-28}" y="${n.y+34}" width="56" height="18" rx="9"/><text class="etiqueta" x="${n.x}" y="${n.y+47}">FUENTE</text>`;
+      if(k==='t') html+=`<rect class="etq-fondo t" x="${n.x-34}" y="${n.y+34}" width="68" height="18" rx="9"/><text class="etiqueta" x="${n.x}" y="${n.y+47}">SUMIDERO</text>`;
       html+='</g>';
     });
     svg.innerHTML=html;
   }
+
   function tabla(){
-    tbody.innerHTML=pasos.slice(1).map((p,idx)=>`<tr class="${i===idx+1?'activa':''}"><td>${p.iter}</td><td>${p.camino.length?p.camino.map(id=>({sA:'s → A',sB:'s → B',AB:'A → B',At:'A → t',Bt:'B → t'}[id])).join(' → ').replace(/ → A → A/g,' → A').replace(/ → B → B/g,' → B'):'No existen más caminos aumentantes'}</td><td class="${i===idx+1?'resaltada':''}">${p.cuello??'—'}</td><td>${p.acum}${p.iter===4?' (flujo máximo)':''}</td></tr>`).join('');
+    const filas=[
+      ['1','s → A → t','6','6'],
+      ['2','s → B → t','8','14'],
+      ['3','s → A → B → t','2','16'],
+      ['4','No existen más caminos','—','16 (flujo máximo)']
+    ];
+    let completadas=0;
+    if(indice>=2) completadas=1;
+    if(indice>=4) completadas=2;
+    if(indice>=6) completadas=3;
+    if(indice>=7) completadas=4;
+
+    document.getElementById('tbody').innerHTML=filas.map((f,i)=>
+      `<tr class="${i===completadas && completadas<4?'activa':''}">
+        <td>${f[0]}</td>
+        <td>${i<completadas?f[1]:'—'}</td>
+        <td class="${i===completadas && completadas<4?'resaltada':''}">${i<completadas?f[2]:'—'}</td>
+        <td>${i<completadas?f[3]:'—'}</td>
+      </tr>`).join('');
   }
+
   function render(){
-    const p=pasos[i]; dibujar(); tabla();
+    const p=pasos[indice];
     document.getElementById('tituloPaso').textContent=p.titulo;
-    document.getElementById('descripcionPaso').textContent=p.desc;
+    document.getElementById('explicacion').innerHTML=p.texto;
     document.getElementById('iteracion').textContent=p.iter;
-    document.getElementById('camino').textContent=p.camino.length?({'sA':'s → A','sB':'s → B','AB':'A → B','At':'A → t','Bt':'B → t'}[p.camino[0]] + (p.camino.length>1?' → '+p.camino.slice(1).map(id=>({AB:'B',At:'t',Bt:'t'}[id]||'')).filter(Boolean).join(' → '):'')):'—';
-    document.getElementById('cuello').textContent=p.cuello??'—';
+    document.getElementById('camino').textContent=p.camino;
+    document.getElementById('cuello').textContent=p.cuello;
     document.getElementById('acumulado').textContent=p.acum;
-    document.getElementById('resultado').textContent=i===4?'Flujo máximo alcanzado: 16 unidades.':`Flujo acumulado actual: ${p.acum} unidades.`;
-    document.getElementById('anterior').disabled=i===0;
-    document.getElementById('siguiente').disabled=i===pasos.length-1;
-    pistaBox.className='pista-box'; pistaBox.textContent='';
+    document.getElementById('resultado').textContent=
+      indice===pasos.length-1?'Flujo máximo alcanzado: 16 unidades.':`Flujo acumulado actual: ${p.acum} unidades.`;
+    document.getElementById('anterior').disabled=indice===0;
+    document.getElementById('siguiente').disabled=indice===pasos.length-1;
+    dibujar(); tabla();
   }
-  document.getElementById('siguiente').onclick=()=>{if(i<pasos.length-1){i++;render()}};
-  document.getElementById('anterior').onclick=()=>{if(i>0){i--;render()}};
-  document.getElementById('reiniciar').onclick=()=>{i=0;render()};
-  document.getElementById('pista').onclick=()=>{pistaBox.textContent=pasos[i].pista;pistaBox.className='pista-box visible'};
+
+  function vozEspanol(){
+    const voces=window.speechSynthesis.getVoices();
+    return voces.find(v=>/^es(-|_)/i.test(v.lang) && /female|mujer|paulina|helena|sabina|monica|soledad|elvira|dalia|google español/i.test(v.name))
+      || voces.find(v=>/^es(-|_)/i.test(v.lang)) || null;
+  }
+  function hablar(){
+    if(!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const texto=document.getElementById('tituloPaso').innerText+'. '+document.getElementById('explicacion').innerText;
+    const u=new SpeechSynthesisUtterance(texto);
+    u.lang='es-CO';u.rate=.92;u.pitch=1;
+    const v=vozEspanol();if(v)u.voice=v;
+    window.speechSynthesis.speak(u);
+  }
+  function detener(){if('speechSynthesis' in window)window.speechSynthesis.cancel()}
+
+  document.getElementById('siguiente').addEventListener('click',()=>{detener();if(indice<pasos.length-1){indice++;render();}});
+  document.getElementById('anterior').addEventListener('click',()=>{detener();if(indice>0){indice--;render();}});
+  document.getElementById('reiniciar').addEventListener('click',()=>{detener();indice=0;render();});
+  document.getElementById('voz').addEventListener('click',hablar);
+  document.getElementById('detenerVoz').addEventListener('click',detener);
+  if('speechSynthesis' in window)window.speechSynthesis.onvoiceschanged=vozEspanol;
   render();
 })();
 </script>
