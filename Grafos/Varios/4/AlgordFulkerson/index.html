@@ -1,1 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoritmo de Ford–Fulkerson — ejecución paso a paso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#7fb536; --verde-oscuro:#527523; --verde-suave:#eef5e2;
+  --magenta:#e6007e; --magenta-suave:#fde6f2;
+  --naranja:#F59C2F; --naranja-suave:#fdf0dd;
+  --azul:#2f79bd; --azul-suave:#eaf4ff;
+  --negro:#000; --gris:#606060; --gris-claro:#e9e9e9; --blanco:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Quicksand',system-ui,sans-serif;background:var(--blanco);color:var(--negro)}
+header{max-width:1150px;margin:0 auto;padding:26px 24px 14px}
+.institucion{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gris);margin-bottom:4px}
+h1{font-weight:700;font-size:clamp(24px,4vw,36px);color:var(--verde);line-height:1.15}
+.subtitulo{margin-top:8px;color:var(--gris);font-size:15px;max-width:920px;line-height:1.55;font-weight:500}
+.app{max-width:1150px;margin:0 auto;padding:0 24px 16px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+@media(max-width:920px){.app{grid-template-columns:1fr}}
+.lienzo-wrap,.tarjeta,.tabla-scroll{background:#fff;border:2px solid var(--gris-claro);border-radius:14px}
+.lienzo-wrap{overflow:hidden;position:relative}
+svg{display:block;width:100%;height:auto}
+.nota{position:absolute;left:12px;bottom:10px;font-size:12px;color:var(--gris);background:rgba(255,255,255,.95);padding:5px 10px;border-radius:10px;font-weight:600}
+.panel{display:flex;flex-direction:column;gap:14px}
+.tarjeta{padding:16px}.tarjeta h2,.tabla-titulo{font-size:16px;font-weight:700;color:var(--verde-oscuro);margin-bottom:10px}
+.botonera{display:flex;flex-wrap:nowrap;align-items:center;gap:7px}
+button{font-family:inherit;font-size:13.5px;font-weight:700;padding:9px 14px;border-radius:20px;border:2px solid var(--verde);background:var(--verde);color:#fff;cursor:pointer}
+button:hover:not(:disabled){background:var(--verde-oscuro);border-color:var(--verde-oscuro)}
+button:disabled{opacity:.45;cursor:default}
+button.secundario{background:#fff;color:var(--verde-oscuro)}
+button.secundario:hover:not(:disabled){background:var(--verde-suave)}
+button.pista{border-color:var(--azul);background:#fff;color:var(--azul)}
+button.pista:hover:not(:disabled){background:var(--azul-suave)}
+.icono-btn{width:42px;min-width:42px;height:42px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+.estado{display:grid;grid-template-columns:1fr auto;gap:8px 14px;font-size:14px;line-height:1.35}
+.estado b{color:var(--gris)}.estado span{font-weight:700;color:var(--azul)}
+.pregunta{background:var(--verde-suave);border:2px solid var(--verde);border-radius:12px;padding:12px 13px;margin-top:12px}
+.pregunta .titulo-p{font-weight:700;font-size:15px;color:var(--verde-oscuro);margin-bottom:5px}
+.pregunta .condicion{font-size:13px;color:var(--gris);line-height:1.5;font-weight:500}
+.pista-box{display:none;margin-top:10px;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;font-weight:500;background:var(--azul-suave);border:2px solid var(--azul);color:#215b8f}
+.pista-box.visible{display:block}
+.resultado{margin-top:10px;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;font-weight:700;background:var(--naranja-suave);border:2px solid var(--naranja)}
+.conceptos{font-size:13px;line-height:1.55;color:var(--gris)}.conceptos li{margin-left:18px;margin-bottom:6px}.conceptos b{color:var(--negro)}
+.tabla-zona{max-width:1150px;margin:0 auto;padding:0 24px 28px}.tabla-scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px}th,td{border:1px solid var(--gris-claro);padding:8px;text-align:center}
+th{background:var(--verde);color:#fff;font-weight:700}tr.activa td{background:#fbfdf7}td.resaltada{background:var(--naranja-suave);font-weight:700;color:#a05f00}
+.ruta{stroke:#c7c7c7;stroke-width:3;fill:none;transition:.3s}.ruta.activa{stroke:var(--naranja);stroke-width:5}.ruta.usada{stroke:var(--verde);stroke-width:5}.ruta.saturada{stroke:var(--magenta);stroke-width:5}
+.nodo circle{fill:#fff;stroke:var(--gris);stroke-width:2}.nodo.fuente circle{fill:var(--verde-suave);stroke:var(--verde-oscuro)}.nodo.sumidero circle{fill:var(--magenta-suave);stroke:var(--magenta)}
+.letra{font-size:18px;font-weight:700;text-anchor:middle;dominant-baseline:central}.capacidad{font-size:13px;font-weight:700;fill:var(--negro)}.flujo{font-size:12px;font-weight:700;fill:var(--azul)}
+.etiqueta{font-size:10px;font-weight:700;letter-spacing:.06em;fill:#fff;text-anchor:middle}.etq-fondo{fill:var(--verde-oscuro)}.etq-fondo.t{fill:var(--magenta)}
+</style>
+</head>
+<body>
+<header>
+  <div class="institucion">Fundación Universitaria del Área Andina · Teoría de grafos</div>
+  <h1>Algoritmo de Ford–Fulkerson: ejecución paso a paso</h1>
+  <p class="subtitulo">Observa cómo se seleccionan caminos aumentantes, se identifica el cuello de botella y se actualiza el flujo acumulado hasta alcanzar el flujo máximo.</p>
+</header>
 
+<div class="app">
+  <div class="lienzo-wrap">
+    <svg id="svg" viewBox="0 0 720 420" role="img" aria-label="Red de flujo para aplicar Ford-Fulkerson"></svg>
+    <div class="nota">Los valores azules muestran flujo/capacidad</div>
+  </div>
+
+  <div class="panel">
+    <div class="tarjeta">
+      <h2>Control de la animación</h2>
+      <div class="botonera">
+        <button class="secundario icono-btn" id="anterior" title="Paso anterior">←</button>
+        <button class="icono-btn" id="siguiente" title="Siguiente paso">▶</button>
+        <button class="secundario icono-btn" id="reiniciar" title="Reiniciar">↻</button>
+        <button class="pista" id="pista">Pista</button>
+      </div>
+      <div class="pregunta">
+        <div class="titulo-p" id="tituloPaso"></div>
+        <div class="condicion" id="descripcionPaso"></div>
+      </div>
+      <div class="pista-box" id="pistaBox"></div>
+    </div>
+
+    <div class="tarjeta">
+      <h2>Estado actual</h2>
+      <div class="estado">
+        <b>Iteración</b><span id="iteracion">0</span>
+        <b>Camino aumentante</b><span id="camino">—</span>
+        <b>Cuello de botella</b><span id="cuello">—</span>
+        <b>Flujo acumulado</b><span id="acumulado">0</span>
+      </div>
+      <div class="resultado" id="resultado">Flujo inicial: 0 unidades.</div>
+    </div>
+
+    <div class="tarjeta">
+      <h2>Conceptos clave</h2>
+      <ul class="conceptos">
+        <li><b>Camino aumentante:</b> ruta con capacidad residual disponible.</li>
+        <li><b>Cuello de botella:</b> menor capacidad residual del camino.</li>
+        <li><b>Red residual:</b> capacidad que queda después de enviar flujo.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="tabla-zona">
+  <div class="tabla-titulo">Ejecución del algoritmo</div>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Iteración</th><th>Camino aumentante</th><th>Cuello de botella</th><th>Flujo acumulado</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function(){
+  const nodos={s:{x:90,y:210},A:{x:300,y:110},B:{x:300,y:310},t:{x:620,y:210}};
+  const aristas=[
+    {id:'sA',a:'s',b:'A',cap:8},
+    {id:'sB',a:'s',b:'B',cap:8},
+    {id:'AB',a:'A',b:'B',cap:2},
+    {id:'At',a:'A',b:'t',cap:6},
+    {id:'Bt',a:'B',b:'t',cap:10}
+  ];
+  const pasos=[
+    {iter:0,camino:[],cuello:null,acum:0,flujos:{sA:0,sB:0,AB:0,At:0,Bt:0},titulo:'Red inicial',desc:'Todas las aristas comienzan con flujo 0. Pulsa avanzar para iniciar el algoritmo.',pista:'Busca primero un camino completo desde s hasta t con capacidad disponible.'},
+    {iter:1,camino:['sA','At'],cuello:6,acum:6,flujos:{sA:6,sB:0,AB:0,At:6,Bt:0},titulo:'Iteración 1',desc:'Se selecciona el camino s → A → t. Su menor capacidad es 6, por lo que se envían 6 unidades.',pista:'Compara las capacidades 8 y 6; la menor determina el aumento.'},
+    {iter:2,camino:['sB','Bt'],cuello:8,acum:14,flujos:{sA:6,sB:8,AB:0,At:6,Bt:8},titulo:'Iteración 2',desc:'Se selecciona el camino s → B → t. El cuello de botella es 8 y el flujo acumulado aumenta a 14.',pista:'La arista s → B limita este camino con capacidad 8.'},
+    {iter:3,camino:['sA','AB','Bt'],cuello:2,acum:16,flujos:{sA:8,sB:8,AB:2,At:6,Bt:10},titulo:'Iteración 3',desc:'Quedan 2 unidades disponibles por s → A, A → B y B → t. Se agregan y el flujo acumulado llega a 16.',pista:'Observa las capacidades residuales: 2, 2 y 2.'},
+    {iter:4,camino:[],cuello:null,acum:16,flujos:{sA:8,sB:8,AB:2,At:6,Bt:10},titulo:'Proceso finalizado',desc:'Ya no existe un camino aumentante desde s hasta t. El flujo máximo de la red es 16.',pista:'Todas las salidas de s están saturadas.'}
+  ];
+  let i=0;
+  const svg=document.getElementById('svg');
+  const tbody=document.getElementById('tbody');
+  const pistaBox=document.getElementById('pistaBox');
+
+  function flecha(x1,y1,x2,y2,clase,id){
+    const ang=Math.atan2(y2-y1,x2-x1), r=27;
+    const sx=x1+Math.cos(ang)*r, sy=y1+Math.sin(ang)*r;
+    const ex=x2-Math.cos(ang)*r, ey=y2-Math.sin(ang)*r;
+    return `<line id="${id}" class="${clase}" x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" marker-end="url(#arrow)"/>`;
+  }
+  function dibujar(){
+    const p=pasos[i];
+    const activas=new Set(p.camino);
+    let html=`<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="context-stroke"/></marker></defs>`;
+    aristas.forEach(e=>{
+      const a=nodos[e.a],b=nodos[e.b],f=p.flujos[e.id];
+      let clase='ruta';
+      if(activas.has(e.id)) clase+=' activa';
+      else if(f===e.cap && f>0) clase+=' saturada';
+      else if(f>0) clase+=' usada';
+      html+=flecha(a.x,a.y,b.x,b.y,clase,e.id);
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+      const off=e.id==='AB'?22:(e.id==='At'?-18:e.id==='Bt'?18:0);
+      html+=`<text class="flujo" x="${mx}" y="${my+off-8}" text-anchor="middle">${f}/${e.cap}</text>`;
+    });
+    Object.entries(nodos).forEach(([k,pn])=>{
+      const cls=k==='s'?'nodo fuente':k==='t'?'nodo sumidero':'nodo';
+      html+=`<g class="${cls}"><circle cx="${pn.x}" cy="${pn.y}" r="27"/><text class="letra" x="${pn.x}" y="${pn.y}">${k}</text>`;
+      if(k==='s') html+=`<rect class="etq-fondo" x="${pn.x-28}" y="${pn.y+34}" width="56" height="18" rx="9"/><text class="etiqueta" x="${pn.x}" y="${pn.y+47}">FUENTE</text>`;
+      if(k==='t') html+=`<rect class="etq-fondo t" x="${pn.x-34}" y="${pn.y+34}" width="68" height="18" rx="9"/><text class="etiqueta" x="${pn.x}" y="${pn.y+47}">SUMIDERO</text>`;
+      html+='</g>';
+    });
+    svg.innerHTML=html;
+  }
+  function tabla(){
+    tbody.innerHTML=pasos.slice(1).map((p,idx)=>`<tr class="${i===idx+1?'activa':''}"><td>${p.iter}</td><td>${p.camino.length?p.camino.map(id=>({sA:'s → A',sB:'s → B',AB:'A → B',At:'A → t',Bt:'B → t'}[id])).join(' → ').replace(/ → A → A/g,' → A').replace(/ → B → B/g,' → B'):'No existen más caminos aumentantes'}</td><td class="${i===idx+1?'resaltada':''}">${p.cuello??'—'}</td><td>${p.acum}${p.iter===4?' (flujo máximo)':''}</td></tr>`).join('');
+  }
+  function render(){
+    const p=pasos[i]; dibujar(); tabla();
+    document.getElementById('tituloPaso').textContent=p.titulo;
+    document.getElementById('descripcionPaso').textContent=p.desc;
+    document.getElementById('iteracion').textContent=p.iter;
+    document.getElementById('camino').textContent=p.camino.length?({'sA':'s → A','sB':'s → B','AB':'A → B','At':'A → t','Bt':'B → t'}[p.camino[0]] + (p.camino.length>1?' → '+p.camino.slice(1).map(id=>({AB:'B',At:'t',Bt:'t'}[id]||'')).filter(Boolean).join(' → '):'')):'—';
+    document.getElementById('cuello').textContent=p.cuello??'—';
+    document.getElementById('acumulado').textContent=p.acum;
+    document.getElementById('resultado').textContent=i===4?'Flujo máximo alcanzado: 16 unidades.':`Flujo acumulado actual: ${p.acum} unidades.`;
+    document.getElementById('anterior').disabled=i===0;
+    document.getElementById('siguiente').disabled=i===pasos.length-1;
+    pistaBox.className='pista-box'; pistaBox.textContent='';
+  }
+  document.getElementById('siguiente').onclick=()=>{if(i<pasos.length-1){i++;render()}};
+  document.getElementById('anterior').onclick=()=>{if(i>0){i--;render()}};
+  document.getElementById('reiniciar').onclick=()=>{i=0;render()};
+  document.getElementById('pista').onclick=()=>{pistaBox.textContent=pasos[i].pista;pistaBox.className='pista-box visible'};
+  render();
+})();
+</script>
+</body>
+</html>
