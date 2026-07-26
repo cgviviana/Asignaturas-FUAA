@@ -1,1 +1,358 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teorema de Kuratowski — demostración guiada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#7fb536; --verde-oscuro:#527523; --verde-suave:#eef5e2;
+  --magenta:#e6007e; --magenta-suave:#fde6f2;
+  --naranja:#F59C2F; --naranja-suave:#fdf0dd;
+  --azul:#2f79bd; --azul-suave:#eaf4ff;
+  --negro:#000; --gris:#606060; --gris-claro:#e9e9e9; --blanco:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Quicksand',system-ui,sans-serif;background:#fff;color:#000}
+header{max-width:1150px;margin:0 auto;padding:26px 24px 14px}
+.institucion{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gris);margin-bottom:4px}
+h1{font-weight:700;font-size:clamp(24px,4vw,36px);color:var(--verde);line-height:1.15}
+.subtitulo{margin-top:8px;color:var(--gris);font-size:15px;max-width:980px;line-height:1.55;font-weight:500}
+.app{max-width:1150px;margin:0 auto;padding:0 24px 16px;display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:16px;align-items:start}
+@media(max-width:940px){.app{grid-template-columns:1fr}}
+.lienzo-wrap,.tarjeta,.tabla-scroll{background:#fff;border:2px solid var(--gris-claro);border-radius:14px}
+.lienzo-wrap{overflow:hidden;position:relative}
+svg{display:block;width:100%;height:auto}
+.nota{position:absolute;left:12px;bottom:10px;font-size:12px;color:var(--gris);background:rgba(255,255,255,.95);padding:5px 10px;border-radius:10px;font-weight:600}
+.panel{display:flex;flex-direction:column;gap:14px}
+.tarjeta{padding:16px}
+.tarjeta h2,.tabla-titulo{font-size:16px;font-weight:700;color:var(--verde-oscuro);margin-bottom:10px}
+.botonera{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+button{font-family:inherit;font-size:13.5px;font-weight:700;padding:9px 14px;border-radius:20px;border:2px solid var(--verde);background:var(--verde);color:#fff;cursor:pointer}
+button:hover:not(:disabled){background:var(--verde-oscuro);border-color:var(--verde-oscuro)}
+button:disabled{opacity:.45;cursor:default}
+button.secundario{background:#fff;color:var(--verde-oscuro)}
+button.secundario:hover:not(:disabled){background:var(--verde-suave)}
+button.pista{border-color:var(--azul);background:#fff;color:var(--azul)}
+button.pista:hover:not(:disabled){background:var(--azul-suave)}
+.icono-btn{width:42px;min-width:42px;height:42px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+.explicacion{background:var(--verde-suave);border:2px solid var(--verde);border-radius:12px;padding:13px;font-size:13.5px;line-height:1.6;color:var(--verde-oscuro);font-weight:500}
+.explicacion b{color:var(--negro)}
+.regla{background:var(--azul-suave);border:2px solid var(--azul);border-radius:12px;padding:12px 13px;font-size:13px;line-height:1.55;color:#215b8f}
+.estado{display:grid;grid-template-columns:1fr auto;gap:8px 14px;font-size:14px;line-height:1.35}
+.estado b{color:var(--gris)}
+.estado span{font-weight:700;color:var(--azul)}
+.resultado{margin-top:10px;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;font-weight:700;background:var(--naranja-suave);border:2px solid var(--naranja)}
+.tabla-zona{max-width:1150px;margin:0 auto;padding:0 24px 28px}
+.tabla-scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:13px}
+th,td{border:1px solid var(--gris-claro);padding:8px;text-align:center;vertical-align:middle}
+th{background:var(--verde);color:#fff;font-weight:700}
+tr.activa td{background:#fbfdf7}
+td.resaltada{background:var(--naranja-suave);font-weight:700;color:#a05f00}
+td.detalle{text-align:left;color:var(--gris);min-width:280px}
+
+.arista{stroke:#bfc4ca;stroke-width:3;fill:none;transition:.35s}
+.arista.activa{stroke:var(--naranja);stroke-width:5;stroke-dasharray:8 5}
+.arista.reconstruida{stroke:var(--verde);stroke-width:5}
+.arista.oculta{opacity:0}
+.nodo circle{fill:#fff;stroke:var(--gris);stroke-width:2.5;transition:.35s}
+.nodo.grupo1 circle{fill:var(--verde-suave);stroke:var(--verde-oscuro)}
+.nodo.grupo2 circle{fill:var(--azul-suave);stroke:var(--azul)}
+.nodo.intermedio circle{fill:var(--naranja-suave);stroke:var(--naranja)}
+.nodo.actual circle{stroke:var(--magenta);stroke-width:6}
+.nodo.oculto{opacity:0}
+.letra{font-size:18px;font-weight:700;text-anchor:middle;dominant-baseline:central;font-family:inherit}
+.etiqueta{font-size:11px;font-weight:700;fill:var(--gris);text-anchor:middle;font-family:inherit}
+</style>
+</head>
+<body>
+<header>
+  <div class="institucion">Fundación Universitaria del Área Andina · Teoría de grafos</div>
+  <h1>Teorema de Kuratowski: identificación de una subdivisión de K<sub>3,3</sub></h1>
+  <p class="subtitulo">
+    El objetivo es determinar si el grafo es planar. Para ello, se identifican los vértices
+    de grado 2 que subdividen aristas, se eliminan sin alterar la conexión original y se compara
+    la estructura resultante con los grafos K<sub>5</sub> y K<sub>3,3</sub>.
+  </p>
+</header>
+
+<div class="app">
+  <div class="lienzo-wrap">
+    <svg id="svg" viewBox="0 0 720 430" role="img" aria-label="Grafo con una subdivisión de K tres tres"></svg>
+    <div class="nota">Los vértices P y Q subdividen dos aristas de la estructura</div>
+  </div>
+
+  <div class="panel">
+    <div class="tarjeta">
+      <h2>Criterio de Kuratowski</h2>
+      <div class="regla">
+        Un grafo no es planar si contiene una subdivisión de <b>K<sub>5</sub></b> o de
+        <b>K<sub>3,3</sub></b>. El grado de un vértice corresponde a la cantidad de aristas
+        que llegan a él. Un vértice de grado 2 puede suprimirse cuando únicamente aparece
+        como punto intermedio de una conexión: se elimina y se unen directamente sus dos vecinos.
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h2 id="tituloPaso"></h2>
+      <div class="explicacion" id="explicacion"></div>
+      <div class="botonera" style="margin-top:12px">
+        <button class="secundario icono-btn" id="anterior" title="Paso anterior">←</button>
+        <button class="icono-btn" id="siguiente" title="Siguiente paso">→</button>
+        <button class="pista icono-btn" id="voz" title="Escuchar explicación">▶</button>
+        <button class="secundario icono-btn" id="detenerVoz" title="Detener voz">■</button>
+        <button class="secundario icono-btn" id="reiniciar" title="Reiniciar">↻</button>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h2>Estado actual</h2>
+      <div class="estado">
+        <b>Paso</b><span id="paso">0</span>
+        <b>Acción</b><span id="accion">—</span>
+        <b>Grados observados</b><span id="grados">—</span>
+        <b>Estructura observada</b><span id="estructura">—</span>
+        <b>Conclusión</b><span id="conclusion">—</span>
+      </div>
+      <div class="resultado" id="resultado">El análisis aún no ha comenzado.</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabla-zona">
+  <div class="tabla-titulo">Aplicación del Teorema de Kuratowski</div>
+  <div class="tabla-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Acción realizada</th>
+          <th>Estructura observada</th>
+          <th>Resultado</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function(){
+  const nodos={
+    A:{x:130,y:90,tipo:'grupo1'},
+    B:{x:130,y:215,tipo:'grupo1'},
+    C:{x:130,y:340,tipo:'grupo1'},
+    X:{x:590,y:90,tipo:'grupo2'},
+    Y:{x:590,y:215,tipo:'grupo2'},
+    Z:{x:590,y:340,tipo:'grupo2'},
+    P:{x:360,y:90,tipo:'intermedio'},
+    Q:{x:360,y:215,tipo:'intermedio'}
+  };
+
+  const base=[
+    {id:'AP',a:'A',b:'P'},
+    {id:'PX',a:'P',b:'X'},
+    {id:'AY',a:'A',b:'Y'},
+    {id:'AZ',a:'A',b:'Z'},
+    {id:'BX',a:'B',b:'X'},
+    {id:'BQ',a:'B',b:'Q'},
+    {id:'QY',a:'Q',b:'Y'},
+    {id:'BZ',a:'B',b:'Z'},
+    {id:'CX',a:'C',b:'X'},
+    {id:'CY',a:'C',b:'Y'},
+    {id:'CZ',a:'C',b:'Z'}
+  ];
+
+  const reconstruidas=[
+    {id:'AX',a:'A',b:'X'},
+    {id:'BY',a:'B',b:'Y'}
+  ];
+
+  const pasos=[
+    {
+      titulo:'Inicio: recuerda qué significa el grado de un vértice',
+      numero:0, accion:'Contar las aristas de cada vértice',
+      grados:'P = 2; Q = 2; los demás = 3',
+      estructura:'Posible subdivisión de K₃,₃', conclusion:'Pendiente',
+      ocultar:[], mostrarReconstruidas:[], activas:[], actuales:[],
+      texto:'El <b>grado</b> de un vértice es la cantidad de aristas que llegan a él. En este grafo, <b>P</b> está unido únicamente con A y X, por eso tiene grado 2. <b>Q</b> está unido únicamente con B y Y, por eso también tiene grado 2. En cambio, A, B, C, X, Y y Z tienen tres conexiones cada uno, por lo que su grado es 3.'
+    },
+    {
+      titulo:'Paso 1: identifica los vértices que subdividen aristas',
+      numero:1, accion:'Seleccionar P y Q',
+      grados:'P = 2 y Q = 2',
+      estructura:'Dos vértices intermedios', conclusion:'P y Q pueden suprimirse',
+      ocultar:[], mostrarReconstruidas:[], activas:['AP','PX','BQ','QY'], actuales:['P','Q'],
+      texto:'P y Q no representan puntos principales de la estructura. <b>P</b> solo divide la conexión entre A y X en los tramos A–P y P–X. De la misma forma, <b>Q</b> divide la conexión entre B y Y en los tramos B–Q y Q–Y. Por eso ambos son vértices de grado 2 asociados con subdivisiones.'
+    },
+    {
+      titulo:'Paso 2: suprime el vértice P',
+      numero:2, accion:'Eliminar P y unir A con X',
+      grados:'P tenía grado 2',
+      estructura:'Se recupera la conexión A–X', conclusion:'La estructura esencial se conserva',
+      ocultar:['P','AP','PX'], mostrarReconstruidas:['AX'], activas:['AX'], actuales:[],
+      texto:'Como P tenía exactamente dos vecinos, A y X, puede eliminarse y reemplazarse por la arista directa <b>A–X</b>. No se crea una conexión nueva: solamente se recupera la conexión original que P estaba subdividiendo.'
+    },
+    {
+      titulo:'Paso 3: suprime el vértice Q',
+      numero:3, accion:'Eliminar Q y unir B con Y',
+      grados:'Q tenía grado 2',
+      estructura:'Se recupera la conexión B–Y', conclusion:'Quedan seis vértices principales',
+      ocultar:['P','Q','AP','PX','BQ','QY'], mostrarReconstruidas:['AX','BY'], activas:['BY'], actuales:[],
+      texto:'Q también tenía exactamente dos vecinos, B y Y. Al eliminarlo, los tramos B–Q y Q–Y se sustituyen por la arista directa <b>B–Y</b>. Los otros vértices no se eliminan porque cada uno tiene grado 3 y forma parte de la estructura principal.'
+    },
+    {
+      titulo:'Paso 4: compara el grafo reducido con K₃,₃',
+      numero:4, accion:'Organizar los vértices en dos conjuntos',
+      grados:'Todos los vértices restantes tienen grado 3',
+      estructura:'{A, B, C} y {X, Y, Z}', conclusion:'La estructura es K₃,₃',
+      ocultar:['P','Q','AP','PX','BQ','QY'], mostrarReconstruidas:['AX','BY'],
+      activas:base.filter(e=>!['AP','PX','BQ','QY'].includes(e.id)).map(e=>e.id).concat(['AX','BY']),
+      actuales:[],
+      texto:'Después de suprimir P y Q, quedan los conjuntos <b>{A, B, C}</b> y <b>{X, Y, Z}</b>. Cada vértice del primer conjunto está conectado con los tres vértices del segundo, y no hay aristas entre vértices del mismo conjunto. Esta es exactamente la estructura de <b>K₃,₃</b>.'
+    },
+    {
+      titulo:'Resultado final',
+      numero:5, accion:'Aplicar el Teorema de Kuratowski',
+      grados:'Estructura reducida 3-regular',
+      estructura:'Subdivisión de K₃,₃', conclusion:'El grafo no es planar',
+      ocultar:['P','Q','AP','PX','BQ','QY'], mostrarReconstruidas:['AX','BY'], activas:[], actuales:[],
+      texto:'El grafo original puede reducirse a <b>K₃,₃</b> suprimiendo únicamente los vértices de grado 2 que subdividían aristas. Según el Teorema de Kuratowski, esto demuestra que el grafo <b>no es planar</b>.'
+    }
+  ];
+
+  const filas=[
+    ['1','Se identifican P y Q como vértices de grado 2.','Ambos subdividen aristas.','Pueden suprimirse.'],
+    ['2','Se elimina P y se unen A y X.','Se recupera la arista A–X.','La estructura esencial se conserva.'],
+    ['3','Se elimina Q y se unen B y Y.','Quedan dos grupos de tres vértices.','La estructura corresponde a K₃,₃.'],
+    ['4','Se compara el grafo reducido con los grafos de Kuratowski.','Se identifica K₃,₃.','El grafo original no es planar.']
+  ];
+
+  let indice=0;
+  const svg=document.getElementById('svg');
+
+  function linea(e,claseExtra=''){
+    const a=nodos[e.a],b=nodos[e.b];
+    return `<line class="arista ${claseExtra}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>`;
+  }
+
+  function dibujar(){
+    const p=pasos[indice];
+    const ocultar=new Set(p.ocultar||[]);
+    const activas=new Set(p.activas||[]);
+    const mostrarReconstruidas=new Set(p.mostrarReconstruidas||[]);
+    const actuales=new Set(p.actuales||[]);
+    let html='';
+
+    base.forEach(e=>{
+      let cls='';
+      if(ocultar.has(e.id)) cls+=' oculta';
+      if(activas.has(e.id)) cls+=' activa';
+      html+=linea(e,cls);
+    });
+
+    reconstruidas.forEach(e=>{
+      if(mostrarReconstruidas.has(e.id)){
+        let cls='reconstruida';
+        if(activas.has(e.id)) cls+=' activa';
+        html+=linea(e,cls);
+      }
+    });
+
+    Object.entries(nodos).forEach(([k,n])=>{
+      let cls=`nodo ${n.tipo}`;
+      if(ocultar.has(k)) cls+=' oculto';
+      if(actuales.has(k)) cls+=' actual';
+      html+=`<g class="${cls}">
+        <circle cx="${n.x}" cy="${n.y}" r="${n.tipo==='intermedio'?22:28}"/>
+        <text class="letra" x="${n.x}" y="${n.y}">${k}</text>
+        <text class="etiqueta" x="${n.x}" y="${n.y+38}">
+          ${n.tipo==='intermedio'?'grado 2':'grado 3'}
+        </text>
+      </g>`;
+    });
+
+    svg.innerHTML=html;
+  }
+
+  function tabla(){
+    const completadas=Math.min(Math.max(indice,0),4);
+    document.getElementById('tbody').innerHTML=filas.map((f,i)=>{
+      const visible=i<completadas;
+      const activa=i===completadas && completadas<4;
+      return `<tr class="${activa?'activa':''}">
+        <td>${f[0]}</td>
+        <td>${visible?f[1]:'—'}</td>
+        <td>${visible?f[2]:'—'}</td>
+        <td class="${activa?'resaltada':''}">${visible?f[3]:'—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function render(){
+    const p=pasos[indice];
+    document.getElementById('tituloPaso').textContent=p.titulo;
+    document.getElementById('explicacion').innerHTML=p.texto;
+    document.getElementById('paso').textContent=p.numero;
+    document.getElementById('accion').textContent=p.accion;
+    document.getElementById('grados').textContent=p.grados;
+    document.getElementById('estructura').textContent=p.estructura;
+    document.getElementById('conclusion').textContent=p.conclusion;
+    document.getElementById('resultado').textContent=
+      indice===pasos.length-1
+        ? 'Conclusión: el grafo no es planar porque contiene una subdivisión de K₃,₃.'
+        : 'El análisis de la estructura continúa.';
+    document.getElementById('anterior').disabled=indice===0;
+    document.getElementById('siguiente').disabled=indice===pasos.length-1;
+    dibujar();
+    tabla();
+  }
+
+  function vozEspanol(){
+    const voces=window.speechSynthesis.getVoices();
+    return voces.find(v=>/^es(-|_)/i.test(v.lang) &&
+      /female|mujer|paulina|helena|sabina|monica|soledad|elvira|dalia|google español/i.test(v.name))
+      || voces.find(v=>/^es(-|_)/i.test(v.lang)) || null;
+  }
+
+  function hablar(){
+    if(!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const texto=document.getElementById('tituloPaso').innerText+'. '+document.getElementById('explicacion').innerText;
+    const u=new SpeechSynthesisUtterance(texto);
+    u.lang='es-CO'; u.rate=.92; u.pitch=1;
+    const v=vozEspanol(); if(v) u.voice=v;
+    window.speechSynthesis.speak(u);
+  }
+
+  function detener(){
+    if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  }
+
+  document.getElementById('siguiente').addEventListener('click',()=>{
+    detener();
+    if(indice<pasos.length-1){indice++;render();}
+  });
+  document.getElementById('anterior').addEventListener('click',()=>{
+    detener();
+    if(indice>0){indice--;render();}
+  });
+  document.getElementById('reiniciar').addEventListener('click',()=>{
+    detener(); indice=0; render();
+  });
+  document.getElementById('voz').addEventListener('click',hablar);
+  document.getElementById('detenerVoz').addEventListener('click',detener);
+
+  if('speechSynthesis' in window){
+    window.speechSynthesis.onvoiceschanged=vozEspanol;
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
