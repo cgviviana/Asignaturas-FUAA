@@ -1,1 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoritmo voraz de coloración — demostración guiada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#7fb536; --verde-oscuro:#527523; --verde-suave:#eef5e2;
+  --magenta:#e6007e; --magenta-suave:#fde6f2;
+  --naranja:#F59C2F; --naranja-suave:#fdf0dd;
+  --azul:#2f79bd; --azul-suave:#eaf4ff;
+  --negro:#000; --gris:#606060; --gris-claro:#e9e9e9; --blanco:#fff;
+  --color1:#5b8c85; --color2:#3f5f8f; --color3:#9b5b5b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Quicksand',system-ui,sans-serif;background:#fff;color:#000}
+header{max-width:1150px;margin:0 auto;padding:26px 24px 14px}
+.institucion{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gris);margin-bottom:4px}
+h1{font-weight:700;font-size:clamp(24px,4vw,36px);color:var(--verde);line-height:1.15}
+.subtitulo{margin-top:8px;color:var(--gris);font-size:15px;max-width:980px;line-height:1.55;font-weight:500}
+.app{max-width:1150px;margin:0 auto;padding:0 24px 16px;display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:16px;align-items:start}
+@media(max-width:940px){.app{grid-template-columns:1fr}}
+.lienzo-wrap,.tarjeta,.tabla-scroll{background:#fff;border:2px solid var(--gris-claro);border-radius:14px}
+.lienzo-wrap{overflow:hidden;position:relative}
+svg{display:block;width:100%;height:auto}
+.nota{position:absolute;left:12px;bottom:10px;font-size:12px;color:var(--gris);background:rgba(255,255,255,.95);padding:5px 10px;border-radius:10px;font-weight:600}
+.panel{display:flex;flex-direction:column;gap:14px}
+.tarjeta{padding:16px}
+.tarjeta h2,.tabla-titulo{font-size:16px;font-weight:700;color:var(--verde-oscuro);margin-bottom:10px}
+.botonera{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+button{font-family:inherit;font-size:13.5px;font-weight:700;padding:9px 14px;border-radius:20px;border:2px solid var(--verde);background:var(--verde);color:#fff;cursor:pointer}
+button:hover:not(:disabled){background:var(--verde-oscuro);border-color:var(--verde-oscuro)}
+button:disabled{opacity:.45;cursor:default}
+button.secundario{background:#fff;color:var(--verde-oscuro)}
+button.secundario:hover:not(:disabled){background:var(--verde-suave)}
+button.pista{border-color:var(--azul);background:#fff;color:var(--azul)}
+button.pista:hover:not(:disabled){background:var(--azul-suave)}
+.icono-btn{width:42px;min-width:42px;height:42px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+.explicacion{background:var(--verde-suave);border:2px solid var(--verde);border-radius:12px;padding:13px;font-size:13.5px;line-height:1.6;color:var(--verde-oscuro);font-weight:500}
+.explicacion b{color:var(--negro)}
+.regla{background:var(--azul-suave);border:2px solid var(--azul);border-radius:12px;padding:12px 13px;font-size:13px;line-height:1.55;color:#215b8f}
+.estado{display:grid;grid-template-columns:1fr auto;gap:8px 14px;font-size:14px;line-height:1.35}
+.estado b{color:var(--gris)}
+.estado span{font-weight:700;color:var(--azul)}
+.resultado{margin-top:10px;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55;font-weight:700;background:var(--naranja-suave);border:2px solid var(--naranja)}
+.tabla-zona{max-width:1150px;margin:0 auto;padding:0 24px 28px}
+.tabla-scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:840px;font-size:13px}
+th,td{border:1px solid var(--gris-claro);padding:8px;text-align:center;vertical-align:middle}
+th{background:var(--verde);color:#fff;font-weight:700}
+tr.activa td{background:#fbfdf7}
+td.resaltada{background:var(--naranja-suave);font-weight:700;color:#a05f00}
+td.detalle{text-align:left;color:var(--gris);min-width:270px}
+.arista{stroke:#c7c7c7;stroke-width:3;transition:.3s}
+.arista.activa{stroke:var(--naranja);stroke-width:5;stroke-dasharray:8 5}
+.nodo circle{fill:#fff;stroke:var(--gris);stroke-width:2.5;transition:.3s}
+.nodo.actual circle{stroke:var(--naranja);stroke-width:6}
+.nodo.c1 circle{fill:var(--color1);stroke:#314d49}
+.nodo.c2 circle{fill:var(--color2);stroke:#243651}
+.nodo.c3 circle{fill:var(--color3);stroke:#5e3434}
+.nodo.coloreado .letra{fill:#fff}
+.letra{font-size:20px;font-weight:700;text-anchor:middle;dominant-baseline:central;font-family:inherit}
+.etiqueta-color{font-size:11px;font-weight:700;text-anchor:middle;font-family:inherit;fill:var(--gris)}
+.muestra{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:5px;border:1px solid #555}
+.m1{background:var(--color1)} .m2{background:var(--color2)} .m3{background:var(--color3)}
+</style>
+</head>
+<body>
+<header>
+  <div class="institucion">Fundación Universitaria del Área Andina · Teoría de grafos</div>
+  <h1>Algoritmo voraz de coloración</h1>
+  <p class="subtitulo">
+    Los vértices se recorren en el orden <b>A, B, C y D</b>. Para cada vértice se revisan
+    los colores 1, 2 y 3 en ese orden y se asigna el primero que no haya sido utilizado
+    por ninguno de sus vecinos ya coloreados.
+  </p>
+</header>
 
+<div class="app">
+  <div class="lienzo-wrap">
+    <svg id="svg" viewBox="0 0 720 420" role="img" aria-label="Grafo para aplicar el algoritmo voraz de coloración"></svg>
+    <div class="nota">El borde naranja identifica el vértice que se está evaluando</div>
+  </div>
+
+  <div class="panel">
+    <div class="tarjeta">
+      <h2>Criterio para asignar un color</h2>
+      <div class="regla">
+        Se revisan los colores en el orden <b>1, 2 y 3</b>. Un color está disponible
+        cuando no lo utiliza ningún vecino ya coloreado del vértice actual.
+        Se asigna el primer color que cumpla esta condición.
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h2 id="tituloPaso"></h2>
+      <div class="explicacion" id="explicacion"></div>
+      <div class="botonera" style="margin-top:12px">
+        <button class="secundario icono-btn" id="anterior" title="Paso anterior">←</button>
+        <button class="icono-btn" id="siguiente" title="Siguiente paso">→</button>
+        <button class="pista icono-btn" id="voz" title="Escuchar explicación">▶</button>
+        <button class="secundario icono-btn" id="detenerVoz" title="Detener voz">■</button>
+        <button class="secundario icono-btn" id="reiniciar" title="Reiniciar">↻</button>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h2>Estado actual</h2>
+      <div class="estado">
+        <b>Paso</b><span id="paso">0</span>
+        <b>Vértice actual</b><span id="vertice">—</span>
+        <b>Vecinos coloreados</b><span id="vecinos">—</span>
+        <b>Color asignado</b><span id="color">—</span>
+      </div>
+      <div class="resultado" id="resultado">El grafo aún no ha sido coloreado.</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabla-zona">
+  <div class="tabla-titulo">Ejecución del algoritmo</div>
+  <div class="tabla-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Paso</th>
+          <th>Vértice actual</th>
+          <th>Vecinos ya coloreados</th>
+          <th>Colores no disponibles</th>
+          <th>Color asignado</th>
+          <th>Justificación</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function(){
+  const nodos={
+    A:{x:130,y:105},
+    B:{x:345,y:80},
+    C:{x:255,y:285},
+    D:{x:520,y:285}
+  };
+
+  const aristas=[
+    {id:'AB',a:'A',b:'B'},
+    {id:'AC',a:'A',b:'C'},
+    {id:'BC',a:'B',b:'C'},
+    {id:'BD',a:'B',b:'D'},
+    {id:'CD',a:'C',b:'D'}
+  ];
+
+  const pasos=[
+    {
+      titulo:'Inicio: identifica la regla',
+      numero:0, vertice:'—', vecinos:'—', bloqueados:'—', color:'—',
+      colores:{A:0,B:0,C:0,D:0}, activas:[],
+      texto:'El recorrido seguirá el orden <b>A, B, C y D</b>. En cada paso se revisan los colores desde el 1 y se elige el primero que no esté usado por un vecino ya coloreado.'
+    },
+    {
+      titulo:'Paso 1: colorear el vértice A',
+      numero:1, vertice:'A', vecinos:'Ninguno', bloqueados:'Ninguno', color:'Color 1',
+      colores:{A:1,B:0,C:0,D:0}, activas:[],
+      texto:'A todavía no tiene vecinos coloreados. El color 1 está disponible y se asigna a A.'
+    },
+    {
+      titulo:'Paso 2: colorear el vértice B',
+      numero:2, vertice:'B', vecinos:'A: color 1', bloqueados:'Color 1', color:'Color 2',
+      colores:{A:1,B:2,C:0,D:0}, activas:['AB'],
+      texto:'B es adyacente a A. Como A ya usa el color 1, ese color no está disponible para B. El siguiente color disponible es el color 2.'
+    },
+    {
+      titulo:'Paso 3: colorear el vértice C',
+      numero:3, vertice:'C', vecinos:'A: color 1; B: color 2', bloqueados:'Colores 1 y 2', color:'Color 3',
+      colores:{A:1,B:2,C:3,D:0}, activas:['AC','BC'],
+      texto:'C es adyacente a A y B. El color 1 está usado por A y el color 2 por B. Por tanto, el primer color disponible es el color 3.'
+    },
+    {
+      titulo:'Paso 4: colorear el vértice D',
+      numero:4, vertice:'D', vecinos:'B: color 2; C: color 3', bloqueados:'Colores 2 y 3', color:'Color 1',
+      colores:{A:1,B:2,C:3,D:1}, activas:['BD','CD'],
+      texto:'D es adyacente a B y C, que usan los colores 2 y 3. El color 1 no está usado por ninguno de sus vecinos, por lo que puede reutilizarse.'
+    },
+    {
+      titulo:'Resultado final',
+      numero:5, vertice:'—', vecinos:'—', bloqueados:'—', color:'—',
+      colores:{A:1,B:2,C:3,D:1}, activas:[],
+      texto:'Todos los vértices quedaron coloreados sin que dos vértices adyacentes compartan color. La coloración obtenida es <b>A = 1, B = 2, C = 3 y D = 1</b>.'
+    }
+  ];
+
+  const filas=[
+    ['1','A','Ninguno','Ninguno','Color 1','No hay vecinos coloreados.'],
+    ['2','B','A: color 1','Color 1','Color 2','El color 1 ya está usado por A.'],
+    ['3','C','A: color 1; B: color 2','Colores 1 y 2','Color 3','Los colores 1 y 2 ya están usados.'],
+    ['4','D','B: color 2; C: color 3','Colores 2 y 3','Color 1','El color 1 no está usado por sus vecinos.']
+  ];
+
+  let indice=0;
+  const svg=document.getElementById('svg');
+
+  function claseColor(n){
+    return n===1?'c1':n===2?'c2':n===3?'c3':'';
+  }
+
+  function dibujar(){
+    const p=pasos[indice];
+    const activas=new Set(p.activas);
+    let html='';
+
+    aristas.forEach(e=>{
+      const a=nodos[e.a],b=nodos[e.b];
+      html+=`<line class="arista${activas.has(e.id)?' activa':''}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"/>`;
+    });
+
+    Object.entries(nodos).forEach(([k,n])=>{
+      const c=p.colores[k];
+      let cls='nodo';
+      if(c){cls+=' coloreado '+claseColor(c)}
+      if(p.vertice===k){cls+=' actual'}
+      html+=`<g class="${cls}">
+        <circle cx="${n.x}" cy="${n.y}" r="30"/>
+        <text class="letra" x="${n.x}" y="${n.y}">${k}</text>
+        <text class="etiqueta-color" x="${n.x}" y="${n.y+48}">${c?'Color '+c:''}</text>
+      </g>`;
+    });
+
+    svg.innerHTML=html;
+  }
+
+  function tabla(){
+    let completadas=Math.min(Math.max(indice,0),4);
+    document.getElementById('tbody').innerHTML=filas.map((f,i)=>{
+      const visible=i<completadas;
+      const activa=i===completadas && completadas<4;
+      return `<tr class="${activa?'activa':''}">
+        <td>${f[0]}</td>
+        <td>${visible?f[1]:'—'}</td>
+        <td>${visible?f[2]:'—'}</td>
+        <td>${visible?f[3]:'—'}</td>
+        <td class="${activa?'resaltada':''}">${visible?f[4]:'—'}</td>
+        <td class="detalle">${visible?f[5]:'—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function resultadoTexto(){
+    if(indice===0) return 'El grafo aún no ha sido coloreado.';
+    if(indice===pasos.length-1) return 'Coloración propia obtenida con tres colores.';
+    const p=pasos[indice];
+    return `${p.vertice} recibe ${p.color.toLowerCase()}.`;
+  }
+
+  function render(){
+    const p=pasos[indice];
+    document.getElementById('tituloPaso').textContent=p.titulo;
+    document.getElementById('explicacion').innerHTML=p.texto;
+    document.getElementById('paso').textContent=p.numero;
+    document.getElementById('vertice').textContent=p.vertice;
+    document.getElementById('vecinos').textContent=p.vecinos;
+    document.getElementById('color').textContent=p.color;
+    document.getElementById('resultado').textContent=resultadoTexto();
+    document.getElementById('anterior').disabled=indice===0;
+    document.getElementById('siguiente').disabled=indice===pasos.length-1;
+    dibujar();
+    tabla();
+  }
+
+  function vozEspanol(){
+    const voces=window.speechSynthesis.getVoices();
+    return voces.find(v=>/^es(-|_)/i.test(v.lang) &&
+      /female|mujer|paulina|helena|sabina|monica|soledad|elvira|dalia|google español/i.test(v.name))
+      || voces.find(v=>/^es(-|_)/i.test(v.lang)) || null;
+  }
+
+  function hablar(){
+    if(!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const texto=document.getElementById('tituloPaso').innerText+'. '+document.getElementById('explicacion').innerText;
+    const u=new SpeechSynthesisUtterance(texto);
+    u.lang='es-CO';
+    u.rate=.92;
+    u.pitch=1;
+    const v=vozEspanol();
+    if(v)u.voice=v;
+    window.speechSynthesis.speak(u);
+  }
+
+  function detener(){
+    if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  }
+
+  document.getElementById('siguiente').addEventListener('click',()=>{
+    detener();
+    if(indice<pasos.length-1){indice++;render();}
+  });
+  document.getElementById('anterior').addEventListener('click',()=>{
+    detener();
+    if(indice>0){indice--;render();}
+  });
+  document.getElementById('reiniciar').addEventListener('click',()=>{
+    detener();
+    indice=0;
+    render();
+  });
+  document.getElementById('voz').addEventListener('click',hablar);
+  document.getElementById('detenerVoz').addEventListener('click',detener);
+
+  if('speechSynthesis' in window){
+    window.speechSynthesis.onvoiceschanged=vozEspanol;
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
