@@ -1,1 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saber Conocer | Eje 1</title>
 
+  <style>
+    :root{
+      --verde:#86a91e;
+      --verde-oscuro:#5f7d14;
+      --verde-suave:#eef5dc;
+      --tinta:#26322b;
+      --gris:#667168;
+      --borde:#dce3d9;
+      --fondo:#f6f8f5;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--fondo);
+      color:var(--tinta);
+    }
+
+    .topbar{
+      background:#29352d;
+      color:#fff;
+      padding:10px 7%;
+      font-size:13px;
+    }
+
+    header{
+      background:#fff;
+      padding:16px 7%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid var(--borde);
+    }
+
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand img{width:116px;max-height:42px;object-fit:contain}
+
+    .brand span{
+      color:var(--gris);
+      border-left:1px solid var(--borde);
+      padding-left:14px;
+      font-size:14px;
+    }
+
+    .badge{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+      border:1px solid #cbdca6;
+      padding:8px 14px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .app{
+      width:min(1180px,90%);
+      min-height:650px;
+      margin:30px auto;
+      display:grid;
+      grid-template-columns:285px 1fr;
+      background:#fff;
+      border:1px solid var(--borde);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 12px 35px rgba(37,55,39,.08);
+    }
+
+    .sidebar{
+      padding:30px 20px;
+      background:#fbfcfa;
+      border-right:1px solid var(--borde);
+    }
+
+    .sidebar h1{
+      margin:0 0 8px;
+      color:var(--verde-oscuro);
+      font-size:20px;
+    }
+
+    .sidebar p{
+      margin:0 0 25px;
+      color:var(--gris);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .topic-button{
+      width:100%;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      text-align:left;
+      border:0;
+      border-radius:10px;
+      background:transparent;
+      color:#465047;
+      padding:13px 10px;
+      margin:5px 0;
+      cursor:pointer;
+      font-size:14px;
+      line-height:1.4;
+    }
+
+    .topic-button:hover{background:#f0f5e5}
+
+    .topic-button.active{
+      color:#fff;
+      background:var(--verde);
+      font-weight:bold;
+    }
+
+    .number{
+      min-width:28px;
+      height:28px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#e4ecd4;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .topic-button.active .number{
+      background:#fff;
+      color:var(--verde-oscuro);
+    }
+
+    .workspace{padding:42px 46px}
+
+    .eyebrow{
+      margin:0 0 10px;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      font-weight:bold;
+    }
+
+    h2{
+      margin:0;
+      font-size:30px;
+      line-height:1.18;
+    }
+
+    .intro{
+      max-width:760px;
+      margin:14px 0 28px;
+      color:var(--gris);
+      font-size:15px;
+      line-height:1.6;
+    }
+
+    .accordion{
+      margin-bottom:12px;
+      overflow:hidden;
+      border:1px solid var(--borde);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .accordion-trigger{
+      width:100%;
+      padding:17px 19px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border:0;
+      background:#fff;
+      color:var(--tinta);
+      text-align:left;
+      font-size:15px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .accordion-trigger:hover{background:#fafcf7}
+
+    .accordion.open .accordion-trigger{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+    }
+
+    .accordion-icon{
+      width:25px;
+      height:25px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#e5edd5;
+      color:var(--verde-oscuro);
+      flex-shrink:0;
+      font-size:19px;
+    }
+
+    .accordion.open .accordion-icon::after{content:"−"}
+    .accordion:not(.open) .accordion-icon::after{content:"+"}
+
+    .accordion-content{
+      display:grid;
+      grid-template-rows:0fr;
+      transition:grid-template-rows .28s ease;
+    }
+
+    .accordion.open .accordion-content{grid-template-rows:1fr}
+    .accordion-inner{overflow:hidden}
+
+    .accordion-body{
+      padding:21px;
+      color:#475149;
+      font-size:14px;
+      line-height:1.65;
+    }
+
+    .accordion-body p:first-child{margin-top:0}
+    .accordion-body p:last-child{margin-bottom:0}
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
+    .card{
+      padding:14px 16px;
+      border-left:4px solid var(--verde);
+      border-radius:0 8px 8px 0;
+      background:#f8faf5;
+    }
+
+    .card h4{
+      margin:0 0 6px;
+      color:var(--verde-oscuro);
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      font-size:12px;
+    }
+
+    .card p{margin:0}
+
+    .example{
+      padding:16px;
+      border:1px dashed #b9cc84;
+      border-radius:9px;
+      background:#f4f7ed;
+    }
+
+    .project{
+      padding:15px 17px;
+      border-left:4px solid #d7a527;
+      border-radius:0 8px 8px 0;
+      background:#fff9e8;
+    }
+
+    .code{
+      display:block;
+      margin-top:12px;
+      padding:14px;
+      border-radius:8px;
+      background:#26342c;
+      color:#eaf3d6;
+      white-space:pre-line;
+      font-family:Consolas, monospace;
+      font-size:13px;
+      line-height:1.65;
+    }
+
+    ul{margin:8px 0;padding-left:20px}
+    li{margin:5px 0}
+
+    @media(max-width:800px){
+      header{padding:14px 5%}
+      .brand span{display:none}
+      .app{width:94%;grid-template-columns:1fr}
+      .sidebar{border-right:0;border-bottom:1px solid var(--borde)}
+      .workspace{padding:29px 22px}
+      h2{font-size:25px}
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">SABER CONOCER · Material de apoyo</div>
+
+  <header>
+    <div class="brand">
+      <img src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x" alt="Areandina">
+      <span>Ambiente de aprendizaje</span>
+    </div>
+    <div class="badge">Eje 1</div>
+  </header>
+
+  <main class="app">
+    <aside class="sidebar">
+      <h1>Temáticas del eje</h1>
+      <p>Análisis y representación algorítmica de problemas.</p>
+
+      <button class="topic-button active" data-topic="datos">
+        <span class="number">1.1</span>
+        <span>Identificación de datos relevantes de un problema</span>
+      </button>
+
+      <button class="topic-button" data-topic="variables">
+        <span class="number">1.2</span>
+        <span>Definición y abstracción de variables</span>
+      </button>
+
+      <button class="topic-button" data-topic="algoritmos">
+        <span class="number">1.3</span>
+        <span>Estructura básica de un algoritmo</span>
+      </button>
+
+      <button class="topic-button" data-topic="diagramas">
+        <span class="number">1.4</span>
+        <span>Representación mediante diagramas de flujo</span>
+      </button>
+    </aside>
+
+    <section class="workspace">
+      <p class="eyebrow">Saber Conocer · Eje 1</p>
+      <h2 id="topicTitle"></h2>
+      <p class="intro" id="topicIntro"></p>
+      <div id="accordions"></div>
+    </section>
+  </main>
+
+  <script>
+    const topics = {
+      datos: {
+        title: "Identificación de datos relevantes de un problema",
+        intro: "El análisis comienza al reconocer qué información permite comprender una situación y encontrar patrones antes de proponer una solución.",
+        sections: [
+          {
+            title: "La situación de análisis",
+            body: `<div class="example">
+              <strong>Problemática:</strong> en un colegio, la coordinación nota que muchos estudiantes llegan tarde a la primera hora de clase. Durante una semana registran la hora de llegada y si cada estudiante ingresó a tiempo o tarde.
+              <br><br>
+              La intención es identificar patrones por curso, día de la semana o rango de minutos de atraso y, con base en esa información, proponer una solución.
+            </div>`
+          },
+          {
+            title: "¿Qué son datos relevantes?",
+            body: `<p>Son los datos que ayudan a responder una pregunta sobre la situación. Deben relacionarse directamente con el problema que se quiere comprender.</p>
+            <div class="grid">
+              <div class="card">
+                <h4>Datos relevantes</h4>
+                <p>Fecha, curso, hora programada de inicio, hora real de llegada, minutos de atraso, condición de asistencia y frecuencia de tardanzas.</p>
+              </div>
+              <div class="card">
+                <h4>Pregunta orientadora</h4>
+                <p>¿En qué cursos, días u horarios se presentan con mayor frecuencia las llegadas tarde?</p>
+              </div>
+            </div>`
+          },
+          {
+            title: "Conceptos para analizar la información",
+            body: `<ul>
+              <li><strong>Contexto:</strong> el lugar y las condiciones donde ocurre la situación.</li>
+              <li><strong>Actores:</strong> estudiantes, docentes y coordinación.</li>
+              <li><strong>Frecuencia:</strong> número de veces que se repite una llegada tarde.</li>
+              <li><strong>Patrón:</strong> comportamiento que se repite.</li>
+              <li><strong>Fuente de datos:</strong> registro diario de asistencia y hora de llegada.</li>
+            </ul>`
+          },
+          {
+            title: "Aplicación de los datos",
+            body: `<div class="project">
+              Con la información organizada, la coordinación podría consultar los registros por curso, día o rango de atraso. La solución digital se enfoca en facilitar el registro, la organización y la visualización de los datos.
+            </div>`
+          }
+        ]
+      },
+
+      variables: {
+        title: "Definición y abstracción de variables",
+        intro: "Las variables permiten representar los elementos del problema que cambian y seleccionar la información necesaria para analizarlo.",
+        sections: [
+          {
+            title: "Variables del caso",
+            body: `<p>Una variable es un dato cuyo valor puede cambiar. En la problemática de las llegadas tarde, cada registro contiene valores que permiten describir lo ocurrido.</p>
+            <div class="grid">
+              <div class="card">
+                <h4>Variables de entrada</h4>
+                <p>Fecha, curso, estudiante, hora programada y hora real de llegada.</p>
+              </div>
+              <div class="card">
+                <h4>Variables calculadas</h4>
+                <p>Minutos de retraso, cantidad de tardanzas por estudiante o total de tardanzas por curso.</p>
+              </div>
+            </div>`
+          },
+          {
+            title: "Tipos de elementos en el análisis",
+            body: `<ul>
+              <li><strong>Variable:</strong> puede cambiar, como la hora de llegada.</li>
+              <li><strong>Constante:</strong> conserva su valor, como la hora oficial de inicio de clase.</li>
+              <li><strong>Parámetro:</strong> establece una condición para el análisis.</li>
+              <li><strong>Estado:</strong> indica una condición: a tiempo o tarde.</li>
+              <li><strong>Contador:</strong> registra cuántas tardanzas tiene un estudiante o curso.</li>
+            </ul>`
+          },
+          {
+            title: "Abstracción de la situación",
+            body: `<p>Abstraer consiste en conservar los elementos necesarios y dejar fuera los detalles que no ayudan a responder la pregunta de análisis.</p>
+            <div class="example">
+              Para identificar patrones de tardanza, importa la hora de llegada, el curso y el día. No es necesario registrar información que no aporta al análisis.
+            </div>`
+          },
+          {
+            title: "Representación de variables",
+            body: `<span class="code">curso = "801"
+horaInicio = "06:30"
+horaLlegada = "06:42"
+minutosRetraso = 12
+estadoAsistencia = "Tarde"
+totalTardanzasCurso = 8</span>`
+          }
+        ]
+      },
+
+      algoritmos: {
+        title: "Estructura básica de un algoritmo",
+        intro: "Un algoritmo organiza una solución en pasos claros y ordenados para transformar datos de entrada en un resultado.",
+        sections: [
+          {
+            title: "¿Qué es un algoritmo?",
+            body: `<p>Es una secuencia finita de instrucciones ordenadas que permite realizar una tarea. En este caso, permite registrar y clasificar la llegada de cada estudiante a la primera hora.</p>`
+          },
+          {
+            title: "Elementos del algoritmo",
+            body: `<div class="grid">
+              <div class="card"><h4>Entrada</h4><p>Curso, estudiante, fecha, hora de inicio y hora real de llegada.</p></div>
+              <div class="card"><h4>Proceso</h4><p>Comparar las horas, calcular el retraso y clasificar la asistencia.</p></div>
+              <div class="card"><h4>Decisión</h4><p>¿La hora de llegada es posterior a la hora programada?</p></div>
+              <div class="card"><h4>Salida</h4><p>Registro actualizado con el estado: a tiempo o tarde.</p></div>
+            </div>`
+          },
+          {
+            title: "Algoritmo del registro de llegadas",
+            body: `<span class="code">1. Iniciar el registro.
+2. Solicitar fecha, curso, estudiante y hora de llegada.
+3. Consultar la hora programada de inicio.
+4. Comparar la hora de llegada con la hora programada.
+5. Si llegó después, calcular los minutos de retraso.
+6. Registrar el estado como “Tarde”.
+7. Si no, registrar el estado como “A tiempo”.
+8. Guardar la información.
+9. Finalizar.</span>`
+          },
+          {
+            title: "Resultado esperado",
+            body: `<div class="project">
+              El algoritmo permite que cada llegada se registre de la misma forma. Luego, los datos acumulados pueden analizarse para identificar patrones por curso, día o minutos de retraso.
+            </div>`
+          }
+        ]
+      },
+
+      diagramas: {
+        title: "Representación mediante diagramas de flujo",
+        intro: "El diagrama de flujo representa visualmente los pasos y decisiones del algoritmo de registro de llegadas.",
+        sections: [
+          {
+            title: "¿Qué es un diagrama de flujo?",
+            body: `<p>Es una representación gráfica de un algoritmo. Permite visualizar el orden de las acciones, las decisiones y los posibles resultados de un proceso.</p>`
+          },
+          {
+            title: "Símbolos principales",
+            body: `<ul>
+              <li><strong>Óvalo:</strong> representa el inicio o el final.</li>
+              <li><strong>Paralelogramo:</strong> representa la entrada o salida de información.</li>
+              <li><strong>Rectángulo:</strong> representa una acción o proceso.</li>
+              <li><strong>Rombo:</strong> representa una decisión.</li>
+              <li><strong>Flechas:</strong> muestran el orden del proceso.</li>
+            </ul>`
+          },
+          {
+            title: "Secuencia que representará el diagrama",
+            body: `<div class="example">
+              Inicio → registrar datos de llegada → comparar hora de llegada con hora programada → ¿llegó tarde? → sí: calcular minutos de retraso y registrar “Tarde” / no: registrar “A tiempo” → guardar registro → fin.
+            </div>`
+          },
+          {
+            title: "Utilidad en la solución digital",
+            body: `<div class="project">
+              El diagrama permite verificar que el registro de llegadas tenga una lógica clara antes de construir un formulario o una hoja de cálculo para organizar la información.
+            </div>`
+          }
+        ]
+      }
+    };
+
+    const title = document.getElementById("topicTitle");
+    const intro = document.getElementById("topicIntro");
+    const accordions = document.getElementById("accordions");
+    const buttons = document.querySelectorAll(".topic-button");
+
+    function renderTopic(key) {
+      const topic = topics[key];
+
+      title.textContent = topic.title;
+      intro.textContent = topic.intro;
+
+      accordions.innerHTML = topic.sections.map(section => `
+        <article class="accordion">
+          <button class="accordion-trigger" type="button">
+            <span>${section.title}</span>
+            <span class="accordion-icon"></span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-inner">
+              <div class="accordion-body">${section.body}</div>
+            </div>
+          </div>
+        </article>
+      `).join("");
+
+      document.querySelectorAll(".accordion-trigger").forEach(trigger => {
+        trigger.addEventListener("click", () => {
+          const selected = trigger.parentElement;
+          const wasOpen = selected.classList.contains("open");
+
+          document.querySelectorAll(".accordion").forEach(item => {
+            item.classList.remove("open");
+          });
+
+          if (!wasOpen) selected.classList.add("open");
+        });
+      });
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        buttons.forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        renderTopic(button.dataset.topic);
+      });
+    });
+
+    renderTopic("datos");
+  </script>
+</body>
+</html>
