@@ -1,1 +1,870 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de la Información | Ruta temática</title>
+  <style>
+    @font-face{
+      font-family:Brown;
+      src:local("BrownStd-Regular"),
+          url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Regular.woff2") format("woff2");
+      font-display:swap
+    }
+    @font-face{
+      font-family:Brown;
+      src:local("BrownStd-Bold"),
+          url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Bold.woff2") format("woff2");
+      font-weight:700;
+      font-display:swap
+    }
 
+    :root{
+      --verde:#7fb536;
+      --verde-oscuro:#668e2c;
+      --verde-suave:#f0f6e5;
+      --negro:#111111;
+      --gris-oscuro:#414141;
+      --gris:#666666;
+      --gris-claro:#e1e1e1;
+      --fondo:#f5f5f5;
+      --blanco:#ffffff;
+      --sombra:0 8px 22px rgba(0,0,0,.08);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Brown,Arial,sans-serif;
+      color:var(--gris-oscuro);
+      background:var(--fondo);
+    }
+
+    .topbar{
+      height:30px;
+      background:var(--gris-oscuro);
+    }
+
+    .topbar-inner,
+    .header-inner,
+    .wrap{
+      width:min(1180px,calc(100% - 48px));
+      margin:auto;
+    }
+
+    .topbar-inner{
+      height:100%;
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      color:#fff;
+      font-size:12px;
+    }
+
+    .site-header{
+      background:#fff;
+      border-bottom:1px solid #dedede;
+    }
+
+    .header-inner{
+      height:82px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+    }
+
+    .brand img{
+      display:block;
+      width:180px;
+      height:48px;
+      object-fit:contain;
+      object-position:left;
+    }
+
+    .section-name{
+      margin:0;
+      font-size:18px;
+      font-weight:700;
+      color:#4a4a4a;
+    }
+
+    .section-name span{
+      color:var(--verde-oscuro);
+    }
+
+    .wrap{
+      padding:30px 0 64px;
+    }
+
+    .main-header{
+      background:#fff;
+      border:1px solid var(--gris-claro);
+      border-bottom:4px solid var(--verde);
+      padding:22px 26px;
+      margin-bottom:18px;
+      box-shadow:var(--sombra);
+    }
+
+    .main-header .eyebrow{
+      margin:0 0 5px;
+      color:var(--verde-oscuro);
+      font-size:13px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+
+    .main-header h1{
+      margin:0;
+      color:var(--gris-oscuro);
+      font-size:30px;
+      line-height:1.1;
+      font-weight:700;
+    }
+
+    /* Estructura tipo eXeLearning */
+    .frame{
+      display:grid;
+      grid-template-columns:285px minmax(0,1fr);
+      gap:18px;
+      align-items:start;
+    }
+
+    .tabs-panel,
+    .content-panel{
+      background:#fff;
+      border:1px solid var(--gris-claro);
+      box-shadow:var(--sombra);
+    }
+
+    .tabs-panel{
+      padding:0 0 14px;
+      position:sticky;
+      top:16px;
+    }
+
+    .tabs-title{
+      background:var(--gris-oscuro);
+      color:#fff;
+      padding:15px 18px;
+      font-weight:700;
+      font-size:16px;
+    }
+
+    .tab-btn{
+      width:100%;
+      border:0;
+      border-bottom:1px solid #e6e6e6;
+      border-left:5px solid transparent;
+      background:#fff;
+      color:#505050;
+      padding:16px 17px;
+      text-align:left;
+      cursor:pointer;
+      font:700 15px/1.35 Brown,Arial,sans-serif;
+      transition:.18s ease;
+    }
+
+    .tab-btn:hover{
+      background:#f7f7f7;
+      color:var(--verde-oscuro);
+      border-left-color:#b9d58f;
+    }
+
+    .tab-btn.active{
+      background:var(--verde);
+      color:#fff;
+      border-left-color:var(--verde-oscuro);
+    }
+
+    .content-panel{
+      min-height:650px;
+      overflow:hidden;
+    }
+
+    .section{
+      display:none;
+    }
+
+    .section.active{
+      display:block;
+    }
+
+    .section-head{
+      background:var(--gris-oscuro);
+      color:#fff;
+      padding:18px 22px;
+      border-bottom:4px solid var(--verde);
+    }
+
+    .section-head .number{
+      color:#cfe7ad;
+      font-size:13px;
+      font-weight:700;
+      display:block;
+      margin-bottom:3px;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:25px;
+      line-height:1.15;
+    }
+
+    .section-body{
+      padding:22px;
+      background:#fff;
+    }
+
+    .lead-box{
+      border-left:5px solid var(--verde);
+      background:var(--verde-suave);
+      padding:14px 16px;
+      margin-bottom:18px;
+      line-height:1.55;
+      color:#4d4d4d;
+    }
+
+    .accordion{
+      display:grid;
+      gap:12px;
+    }
+
+    .acc-item{
+      border:1px solid #dcdcdc;
+      background:#fff;
+      overflow:hidden;
+    }
+
+    .acc-btn{
+      width:100%;
+      border:0;
+      background:#f4f4f4;
+      color:var(--gris-oscuro);
+      padding:15px 17px;
+      text-align:left;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      cursor:pointer;
+      font:700 15px/1.35 Brown,Arial,sans-serif;
+      border-left:5px solid var(--verde);
+    }
+
+    .acc-btn:hover,
+    .acc-item.open .acc-btn{
+      background:var(--gris-oscuro);
+      color:#fff;
+    }
+
+    .topic-code{
+      color:var(--verde-oscuro);
+      font-weight:700;
+      margin-right:7px;
+    }
+
+    .acc-item.open .topic-code{
+      color:#cfe7ad;
+    }
+
+    .plus{
+      width:28px;
+      height:28px;
+      flex:0 0 28px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#fff;
+      border:1px solid #cfcfcf;
+      color:var(--verde-oscuro);
+      font-size:18px;
+      line-height:1;
+      transition:.2s ease;
+    }
+
+    .acc-item.open .plus{
+      transform:rotate(45deg);
+      border-color:#fff;
+    }
+
+    .acc-content{
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .28s ease;
+      background:#fff;
+    }
+
+    .acc-inner{
+      padding:17px 20px 19px 24px;
+      line-height:1.55;
+      color:#555;
+    }
+
+    .acc-inner p{
+      margin:0;
+    }
+
+    .tag-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .tag{
+      display:inline-block;
+      padding:6px 10px;
+      border:1px solid #c9dca8;
+      background:#f7faef;
+      color:var(--verde-oscuro);
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .phase-block{margin:0 0 22px}
+    .phase-block:last-child{margin-bottom:0}
+    .phase-title{
+      margin:0 0 11px;padding:11px 14px;background:#f1f1f1;
+      border-left:5px solid var(--verde);color:var(--gris-oscuro);
+      font-size:15px;font-weight:700;line-height:1.35
+    }
+    .more-row{margin-top:14px;display:flex;justify-content:flex-end}
+    .more-btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-height:36px;padding:7px 14px;border:1px solid var(--verde);
+      border-radius:4px;background:var(--verde);color:#fff;
+      text-decoration:none;font-size:13px;font-weight:700;transition:.18s ease
+    }
+    .more-btn:hover{background:var(--verde-oscuro);border-color:var(--verde-oscuro)}
+    .sublist{margin:10px 0 0;padding-left:21px}
+    .sublist li{margin:7px 0}
+
+    .phase-content{
+      padding:18px 20px 20px;
+      display:grid;
+      gap:12px;
+    }
+
+    .subtopic-card{
+      border:1px solid #dedede;
+      border-left:4px solid var(--verde);
+      background:#fff;
+      padding:14px 15px;
+    }
+
+    .subtopic-title{
+      margin:0 0 7px;
+      color:var(--gris-oscuro);
+      font-size:15px;
+      line-height:1.35;
+      font-weight:700;
+    }
+
+    .subtopic-title .topic-code{
+      display:inline-block;
+      margin-right:6px;
+    }
+
+    .subtopic-card p{
+      margin:0;
+      line-height:1.55;
+      color:#555;
+    }
+
+    .subtopic-card .sublist{
+      margin-top:8px;
+    }
+
+    footer{
+      margin-top:18px;
+      background:var(--gris-oscuro);
+      color:#fff;
+      padding:15px 20px;
+      text-align:center;
+      font-size:13px;
+    }
+
+    footer strong{
+      color:#cfe7ad;
+    }
+
+    @media(max-width:900px){
+      .frame{grid-template-columns:1fr}
+      .tabs-panel{position:static}
+      .main-header h1{font-size:26px}
+    }
+
+    @media(max-width:700px){
+      .topbar-inner,
+      .header-inner,
+      .wrap{
+        width:calc(100% - 30px);
+      }
+
+      .header-inner{
+        height:72px;
+      }
+
+      .brand img{
+        width:145px;
+      }
+
+      .section-name{
+        font-size:15px;
+      }
+
+      .main-header{
+        padding:18px;
+      }
+
+      .section-head h2{
+        font-size:21px;
+      }
+
+      .section-body{
+        padding:15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">Facultad de Educación · Informática Educativa</div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#inicio" aria-label="Inicio">
+        <img
+          src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x"
+          alt="Areandina">
+      </a>
+      <p class="section-name">Gestión de la Información / <span>Ruta temática</span></p>
+    </div>
+  </header>
+
+  <div class="wrap" id="inicio">
+
+    <header class="main-header">
+      <p class="eyebrow">Contenido de aprendizaje</p>
+      <h1>Gestión de la Información</h1>
+    </header>
+
+    <div class="frame">
+
+      <aside class="tabs-panel" aria-label="Temas">
+        <div class="tabs-title">Temas</div>
+
+        <button class="tab-btn active" data-section="s1">
+          1. Gestión de la Información y Literatura
+        </button>
+
+        <button class="tab-btn" data-section="s2">
+          2. Organización y representación de la información
+        </button>
+
+        <button class="tab-btn" data-section="s3">
+          3. Producción y comunicación de la información
+        </button>
+      </aside>
+
+
+      <main class="content-panel">
+
+        <!-- TEMA 1 -->
+        <section id="s1" class="section active">
+          <div class="section-head">
+            <span class="number">Tema 1</span>
+            <h2>Gestión de la Información y Literatura</h2>
+          </div>
+
+          <div class="section-body">
+            <div class="lead-box">
+              Ruta para comprender la información, localizar literatura académica,
+              ampliar redes de conocimiento, curar fuentes con rigor e identificar vacíos académicos.
+            </div>
+
+            <div class="accordion">
+
+              <!-- FASE 1 -->
+              <article class="acc-item open">
+                <button class="acc-btn">
+                  <span><span class="topic-code">Fase 1</span>Fundamentos y Fuentes de Información</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content" style="max-height:2200px;">
+                  <div class="phase-content">
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">1.1</span>Sociedad de la información vs. Sociedad del conocimiento</h4>
+                      <p>Diferencia entre acumular datos y utilizarlos críticamente para comprender, interpretar y generar conocimiento.</p>
+                      
+                    </div>
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">1.2</span>Revolución de las TIC y su impacto</h4>
+                      <p>Cómo las tecnologías transformaron el acceso, almacenamiento, recuperación y circulación del saber científico.</p>
+                      <div class="more-row"><a class="more-btn" href="https://www.unesco.org/en/articles/steering-ai-and-advanced-icts-knowledge-societies" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">1.3</span>Fuentes de información según su nivel de elaboración</h4>
+                      <ul class="sublist">
+                        <li><strong>Fuentes primarias:</strong> artículos originales, patentes, tesis, actas de congresos y datos crudos.</li>
+                        <li><strong>Fuentes secundarias:</strong> artículos de revisión (<em>reviews</em>), libros de texto, metaanálisis y síntesis.</li>
+                        <li><strong>Fuentes terciarias:</strong> índices, directorios, enciclopedias y catálogos de bibliotecas.</li>
+                      </ul>
+                      <div class="more-row"><a class="more-btn" href="https://www.instagram.com/reel/DYx35R1hlv1/" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">1.4</span>Ámbitos y niveles de formalidad de la información</h4>
+                      <p>Clasificación de la información en académica, científica, institucional e informal según su propósito, contexto de producción, respaldo y nivel de formalidad.</p>
+                      <div class="tag-row">
+                        <span class="tag">Académica</span>
+                        <span class="tag">Científica</span>
+                        <span class="tag">Institucional</span>
+                        <span class="tag">Informal</span>
+                      </div>
+                      <div class="more-row"><a class="more-btn" href="https://www.unesco.org/en/tags/information-society" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                  </div>
+                </div>
+              </article>
+
+              <!-- FASE 2 -->
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">Fase 2</span>Búsqueda Especializada y Descubrimiento con IA</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="phase-content">
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">2.1</span>Canales y plataformas especializadas</h4>
+                      <p>Reconocimiento de interfaces: bases de datos universitarias, Google Académico y Scopus.</p>
+                      <div class="more-row"><a class="more-btn" href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">2.2</span>Vocabularios Controlados y Tesauros</h4>
+                      <p>Uso de tesauros oficiales para unificar los descriptores válidos empleados en la literatura científica.</p>
+                      <div class="tag-row">
+                        <span class="tag">DeCS</span>
+                        <span class="tag">ERIC</span>
+                        <span class="tag">IEEE</span>
+                        <span class="tag">UNESCO</span>
+                      </div>
+                      <div class="more-row"><a class="more-btn" href="https://decs.bvsalud.org/es/" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">2.3</span>Inteligencia Artificial para el descubrimiento de información</h4>
+                      <p>Uso de motores de búsqueda semántica con IA como <strong>Consensus</strong> o <strong>Elicit</strong> para localizar evidencia científica.</p>
+                      <div class="more-row"><a class="more-btn" href="https://consensus.app/search/" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">2.4</span>Búsqueda técnica clásica en bases de datos</h4>
+                      <p>Aplicación de filtros avanzados por años, países y otros criterios, además de descarga de PDF y metadatos.</p>
+                      <div class="more-row"><a class="more-btn" href="https://www.scopus.com/" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                  </div>
+                </div>
+              </article>
+
+              <!-- FASE 3 -->
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">Fase 3</span>Curación, Mapeo y Análisis Crítico de la Literatura</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="phase-content">
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">3.1</span>Redes de Conocimiento y Co-citación · Mapeo Visual</h4>
+                      <p>Uso de <strong>Connected Papers, Litmaps o ResearchRabbit</strong> para localizar artículos relacionados, ampliar la literatura y adicionar fuentes clave mediante mapas de nodos.</p>
+                      <div class="more-row"><a class="more-btn" href="https://www.researchrabbit.ai/" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">3.2</span>Curado, Co-curado de Contenido y Rigor Científico</h4>
+                      <ul class="sublist">
+                        <li><strong>Estándar de rigor científico:</strong> transparencia, replicabilidad y validez.</li>
+                        <li><strong>Criterios de inclusión y exclusión:</strong> reglas para decidir qué artículos se adicionan o se descartan.</li>
+                        <li><strong>Validación de alto impacto:</strong> revisión por pares, cuartiles Q1-Q4 y descarte de revistas depredadoras.</li>
+                        <li><strong>Co-curado de contenido:</strong> evaluación, etiquetado y validación colaborativa mediante matrices y carpetas compartidas.</li>
+                      </ul>
+                      <div class="more-row"><a class="more-btn" href="https://blog.doaj.org/2022/09/15/revised-principles-of-transparency-and-best-practice-released/" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">3.3</span>Identificación del Vacío Académico y Explicación del Error</h4>
+                      <ul class="sublist">
+                        <li><strong>Research Gap:</strong> identificación de aquello que la ciencia aún no ha respondido mediante limitaciones y futuras líneas de investigación.</li>
+                        <li><strong>Detección de errores y sesgos:</strong> apoyo de asistentes como ChatPDF o SciSpace para revisar debilidades metodológicas.</li>
+                        <li><strong>Redacción y argumentación del vacío:</strong> explicación de la limitación encontrada y justificación de la necesidad del nuevo proyecto.</li>
+                      </ul>
+                      <div class="tag-row">
+                        <span class="tag">Sin embargo...</span>
+                        <span class="tag">A pesar de que...</span>
+                        <span class="tag">El estudio omite...</span>
+                      </div>
+                      <div class="more-row"><a class="more-btn" href="https://scispace.com/search" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                    <div class="subtopic-card">
+                      <h4 class="subtopic-title"><span class="topic-code">3.4</span>Gestores bibliográficos</h4>
+                      <p>Uso de <strong>Mendeley</strong> o <strong>Zotero</strong> para almacenar la información co-curada y generar citas y referencias automáticas.</p>
+                      <div class="more-row"><a class="more-btn" href="https://www.zotero.org/" target="_blank" rel="noopener noreferrer">Saber más</a></div>
+                    </div>
+
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+
+        <!-- TEMA 2 -->
+        <section id="s2" class="section">
+          <div class="section-head">
+            <span class="number">Tema 2</span>
+            <h2>Organización y representación de la información</h2>
+          </div>
+
+          <div class="section-body">
+            <div class="lead-box">
+              Estructuración de datos e información para facilitar su comprensión, recuperación, análisis y representación.
+            </div>
+
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn">
+                  <span><span class="topic-code">2.1</span>Clasificación, categorización y jerarquización</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content" style="max-height:400px;">
+                  <div class="acc-inner">
+                    <p>Criterios para agrupar, ordenar y establecer niveles de importancia o relación entre contenidos.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">2.2</span>Organización de archivos y recursos digitales</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Estructuras de carpetas, nomenclatura, versiones, metadatos básicos y criterios de almacenamiento y recuperación.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">2.3</span>Tablas y matrices de información</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Organización estructurada mediante campos, variables, categorías, registros y matrices de comparación.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">2.4</span>Organizadores gráficos</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Mapas conceptuales, mapas mentales, diagramas, esquemas y otros recursos para representar relaciones.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">2.5</span>Representación visual de datos e información</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Selección de gráficos, esquemas e indicadores visuales de acuerdo con el tipo de información y el propósito comunicativo.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">2.6</span>Herramientas digitales para organización y representación</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Uso de aplicaciones digitales para estructurar, relacionar, sintetizar y visualizar información.</p>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+
+        <!-- TEMA 3 -->
+        <section id="s3" class="section">
+          <div class="section-head">
+            <span class="number">Tema 3</span>
+            <h2>Producción y comunicación de la información</h2>
+          </div>
+
+          <div class="section-body">
+            <div class="lead-box">
+              Transformación de la información organizada en productos claros, pertinentes, éticos y adecuados para diferentes audiencias.
+            </div>
+
+            <div class="accordion">
+
+              <article class="acc-item open">
+                <button class="acc-btn">
+                  <span><span class="topic-code">3.1</span>Transformación de información en contenidos digitales</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content" style="max-height:400px;">
+                  <div class="acc-inner">
+                    <p>Síntesis, adaptación, integración y construcción de nuevos contenidos a partir de información previamente seleccionada.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">3.2</span>Documentos, presentaciones e informes</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Estructuración de productos académicos y profesionales según propósito, formato y audiencia.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">3.3</span>Comunicación visual y diseño de información</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Jerarquía visual, legibilidad, organización, consistencia y selección de recursos gráficos para comunicar con claridad.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">3.4</span>Citación, referencias y uso ético de la información</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Reconocimiento de autoría, citación de fuentes, referencias, licencias, propiedad intelectual y prevención del plagio.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">3.5</span>Publicación y difusión en entornos digitales</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Canales, formatos y criterios para publicar, compartir y distribuir contenidos digitales.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn">
+                  <span><span class="topic-code">3.6</span>Comunicación según audiencia, propósito y medio</span>
+                  <span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Adecuación del lenguaje, nivel de detalle, formato y recurso comunicativo al contexto y al destinatario.</p>
+                  </div>
+                </div>
+              </article>
+
+            </div>
+          </div>
+        </section>
+
+        <footer>
+          <strong>Areandina</strong> · Gestión de la Información
+        </footer>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.section');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.section).classList.add('active');
+
+        document.querySelector('.content-panel').scrollIntoView({
+          behavior:'smooth',
+          block:'start'
+        });
+      });
+    });
+
+    document.querySelectorAll('.acc-item').forEach(item => {
+      const btn = item.querySelector('.acc-btn');
+      const content = item.querySelector('.acc-content');
+
+      btn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        item.classList.toggle('open');
+        content.style.maxHeight = isOpen ? null : content.scrollHeight + 'px';
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('.acc-item.open .acc-content').forEach(content => {
+        content.style.maxHeight = content.scrollHeight + 'px';
+      });
+    });
+  </script>
+
+</body>
+</html>
