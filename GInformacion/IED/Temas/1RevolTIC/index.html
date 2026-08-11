@@ -1,1 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revolución de las TIC y su impacto | Areandina</title>
 
+  <style>
+    @font-face{
+      font-family:Brown;
+      src:local("BrownStd-Regular"),
+          url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Regular.woff2") format("woff2");
+      font-display:swap
+    }
+    @font-face{
+      font-family:Brown;
+      src:local("BrownStd-Bold"),
+          url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Bold.woff2") format("woff2");
+      font-weight:700;
+      font-display:swap
+    }
+
+    :root{
+      --verde:#7fb536;
+      --verde-oscuro:#668e2c;
+      --verde-suave:#f0f6e5;
+      --gris-oscuro:#414141;
+      --gris:#666;
+      --gris-claro:#dedede;
+      --fondo:#f5f5f5;
+      --blanco:#fff;
+      --azul-suave:#eef6fa;
+      --sombra:0 8px 22px rgba(0,0,0,.08);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:var(--fondo);
+      color:var(--gris-oscuro);
+      font:16px/1.5 Brown,Arial,sans-serif;
+    }
+
+    .topbar{
+      height:30px;
+      background:var(--gris-oscuro);
+    }
+
+    .topbar-inner,.header-inner,.wrap{
+      width:min(1180px,calc(100% - 48px));
+      margin:auto;
+    }
+
+    .topbar-inner{
+      height:100%;
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      color:#fff;
+      font-size:12px;
+    }
+
+    .site-header{
+      background:#fff;
+      border-bottom:1px solid #ddd;
+    }
+
+    .header-inner{
+      height:82px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+    }
+
+    .brand img{
+      display:block;
+      width:180px;
+      height:48px;
+      object-fit:contain;
+      object-position:left;
+    }
+
+    .section-name{
+      margin:0;
+      color:#4a4a4a;
+      font-size:18px;
+      font-weight:700;
+    }
+
+    .section-name span{color:var(--verde-oscuro)}
+
+    .wrap{padding:30px 0 60px}
+
+    .hero{
+      background:#fff;
+      border:1px solid var(--gris-claro);
+      border-bottom:4px solid var(--verde);
+      padding:24px 28px;
+      margin-bottom:18px;
+      box-shadow:var(--sombra);
+    }
+
+    .eyebrow{
+      margin:0 0 5px;
+      color:var(--verde-oscuro);
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:.45px;
+      text-transform:uppercase;
+    }
+
+    .hero h1{
+      margin:0;
+      font-size:30px;
+      line-height:1.1;
+      color:var(--gris-oscuro);
+    }
+
+    .hero p{
+      margin:10px 0 0;
+      color:#5a5a5a;
+      max-width:880px;
+    }
+
+    .frame{
+      display:grid;
+      grid-template-columns:270px minmax(0,1fr);
+      gap:18px;
+      align-items:start;
+    }
+
+    .menu,.content{
+      background:#fff;
+      border:1px solid var(--gris-claro);
+      box-shadow:var(--sombra);
+    }
+
+    .menu{
+      position:sticky;
+      top:16px;
+      overflow:hidden;
+    }
+
+    .menu-title{
+      background:var(--gris-oscuro);
+      color:#fff;
+      padding:15px 18px;
+      font-weight:700;
+    }
+
+    .nav-btn{
+      width:100%;
+      border:0;
+      border-bottom:1px solid #e6e6e6;
+      border-left:5px solid transparent;
+      background:#fff;
+      color:#4f4f4f;
+      text-align:left;
+      padding:15px 16px;
+      cursor:pointer;
+      font:700 14px/1.35 Brown,Arial,sans-serif;
+      transition:.18s ease;
+    }
+
+    .nav-btn:hover{
+      background:#f6f6f6;
+      color:var(--verde-oscuro);
+      border-left-color:#bfd89c;
+    }
+
+    .nav-btn.active{
+      background:var(--verde);
+      color:#fff;
+      border-left-color:var(--verde-oscuro);
+    }
+
+    .panel{display:none}
+    .panel.active{display:block}
+
+    .panel-head{
+      background:var(--gris-oscuro);
+      color:#fff;
+      padding:18px 22px;
+      border-bottom:4px solid var(--verde);
+    }
+
+    .panel-head span{
+      display:block;
+      color:#cfe7ad;
+      font-size:13px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      margin-bottom:3px;
+    }
+
+    .panel-head h2{
+      margin:0;
+      font-size:25px;
+      line-height:1.15;
+    }
+
+    .panel-body{padding:22px}
+
+    .lead{
+      margin:0 0 18px;
+      padding:15px 17px;
+      background:var(--verde-suave);
+      border-left:5px solid var(--verde);
+      color:#4d4d4d;
+    }
+
+    .concept-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin:16px 0;
+    }
+
+    .concept-card{
+      border:1px solid #ddd;
+      border-top:4px solid var(--verde);
+      padding:15px;
+      background:#fff;
+    }
+
+    .concept-card h3{
+      margin:0 0 7px;
+      font-size:16px;
+      color:var(--gris-oscuro);
+    }
+
+    .concept-card p{margin:0;color:#555;font-size:14px}
+
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin:18px 0;
+    }
+
+    .flow-card{
+      background:#f6f6f6;
+      border:1px solid #ddd;
+      padding:14px;
+      position:relative;
+    }
+
+    .flow-card b{
+      display:block;
+      color:var(--verde-oscuro);
+      margin-bottom:5px;
+    }
+
+    .flow-card:not(:last-child)::after{
+      content:"→";
+      position:absolute;
+      right:-10px;
+      top:50%;
+      transform:translateY(-50%);
+      width:20px;
+      height:20px;
+      display:grid;
+      place-items:center;
+      background:#fff;
+      color:var(--verde-oscuro);
+      font-weight:700;
+      z-index:2;
+    }
+
+    .table-wrap{
+      overflow-x:auto;
+      margin:16px 0 8px;
+      border:1px solid #d7d7d7;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+      background:#fff;
+      font-size:14px;
+    }
+
+    th,td{
+      padding:12px 13px;
+      border-bottom:1px solid #ddd;
+      border-right:1px solid #e5e5e5;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    th{
+      background:var(--gris-oscuro);
+      color:#fff;
+      font-weight:700;
+    }
+
+    th:first-child{width:22%}
+    th:nth-child(2),th:nth-child(3){width:39%}
+
+    tbody tr:nth-child(even){background:#fafafa}
+    tbody tr:last-child td{border-bottom:0}
+
+    .impact-list{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:15px;
+    }
+
+    .impact{
+      border:1px solid #ddd;
+      padding:15px;
+      background:#fff;
+    }
+
+    .impact h3{
+      margin:0 0 6px;
+      font-size:16px;
+      color:var(--verde-oscuro);
+    }
+
+    .impact p{margin:0;color:#555}
+
+    .warning{
+      margin-top:16px;
+      padding:15px 17px;
+      background:#fff8e8;
+      border-left:5px solid #d2a53b;
+    }
+
+    .source-box{
+      border:1px solid #ddd;
+      margin-top:12px;
+      padding:14px 15px;
+      background:#fbfbfb;
+    }
+
+    .source-box strong{
+      display:block;
+      margin-bottom:5px;
+      color:var(--gris-oscuro);
+    }
+
+    .source-box a{
+      color:var(--verde-oscuro);
+      font-weight:700;
+      text-decoration:none;
+    }
+
+    .source-box a:hover{text-decoration:underline}
+
+    .key-message{
+      margin-top:18px;
+      background:var(--gris-oscuro);
+      color:#fff;
+      padding:18px;
+      border-left:6px solid var(--verde);
+      font-size:17px;
+      font-weight:700;
+    }
+
+    footer{
+      margin-top:18px;
+      background:var(--gris-oscuro);
+      color:#fff;
+      padding:15px 20px;
+      text-align:center;
+      font-size:13px;
+      box-shadow:var(--sombra);
+    }
+
+    footer strong{color:#cfe7ad}
+
+    @media(max-width:900px){
+      .frame{grid-template-columns:1fr}
+      .menu{position:static}
+      .concept-grid,.flow{grid-template-columns:1fr 1fr}
+    }
+
+    @media(max-width:700px){
+      .topbar-inner,.header-inner,.wrap{width:calc(100% - 30px)}
+      .header-inner{height:72px}
+      .brand img{width:145px}
+      .section-name{font-size:15px}
+      .hero{padding:20px}
+      .hero h1{font-size:25px}
+      .concept-grid,.flow,.impact-list{grid-template-columns:1fr}
+      .flow-card:not(:last-child)::after{display:none}
+      .panel-body{padding:15px}
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">Facultad de Ingeniería y Ciencias Básicas</div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#inicio" aria-label="Inicio">
+        <img
+          src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x"
+          alt="Areandina">
+      </a>
+      <p class="section-name">Gestión de la Información / <span>Recurso de aprendizaje</span></p>
+    </div>
+  </header>
+
+  <main class="wrap" id="inicio">
+
+    <section class="hero">
+      <p class="eyebrow">Gestión de la Información y Literatura · 1.2</p>
+      <h1>Revolución de las TIC y su impacto</h1>
+      <p>
+        De la consulta física y localizada a la recuperación digital, inmediata y conectada del conocimiento científico.
+      </p>
+    </section>
+
+    <div class="frame">
+
+      <aside class="menu" aria-label="Secciones del recurso">
+        <div class="menu-title">Contenido</div>
+        <button class="nav-btn active" data-panel="p1">1. ¿Qué cambió?</button>
+        <button class="nav-btn" data-panel="p2">2. Antes vs. ahora</button>
+        <button class="nav-btn" data-panel="p3">3. Impacto en la ciencia</button>
+        <button class="nav-btn" data-panel="p4">4. Retos actuales</button>
+        <button class="nav-btn" data-panel="p5">5. Fuentes</button>
+      </aside>
+
+      <section class="content">
+
+        <article id="p1" class="panel active">
+          <div class="panel-head">
+            <span>Sección 1</span>
+            <h2>¿Qué cambió con las TIC?</h2>
+          </div>
+          <div class="panel-body">
+            <div class="lead">
+              Las Tecnologías de la Información y la Comunicación transformaron no solo el soporte de la información, sino también la forma de producirla, buscarla, compartirla, evaluarla y reutilizarla.
+            </div>
+
+            <div class="concept-grid">
+              <div class="concept-card">
+                <h3>Digitalización</h3>
+                <p>Conversión de contenidos analógicos a formatos digitales que pueden almacenarse, copiarse y procesarse electrónicamente.</p>
+              </div>
+              <div class="concept-card">
+                <h3>Digitalización de procesos</h3>
+                <p>Uso de tecnologías y datos digitales para modificar actividades existentes, como la consulta bibliográfica o la publicación científica.</p>
+              </div>
+              <div class="concept-card">
+                <h3>Transformación digital</h3>
+                <p>Cambio más amplio en la manera de trabajar, investigar y comunicar conocimiento gracias a la integración de tecnologías digitales.</p>
+              </div>
+            </div>
+
+            <div class="flow">
+              <div class="flow-card"><b>1. Soporte impreso</b>Libros, revistas, fichas y catálogos físicos.</div>
+              <div class="flow-card"><b>2. Bases de datos</b>Registros bibliográficos y búsqueda electrónica.</div>
+              <div class="flow-card"><b>3. Web y acceso abierto</b>Repositorios, revistas digitales y consulta remota.</div>
+              <div class="flow-card"><b>4. Búsqueda semántica e IA</b>Descubrimiento asistido, relaciones entre documentos y síntesis automatizada.</div>
+            </div>
+
+            <div class="key-message">
+              El cambio central no fue “tener más información”, sino poder recuperarla, relacionarla y compartirla a una escala antes imposible.
+            </div>
+          </div>
+        </article>
+
+
+        <article id="p2" class="panel">
+          <div class="panel-head">
+            <span>Sección 2</span>
+            <h2>Antes de las TIC vs. entorno digital</h2>
+          </div>
+          <div class="panel-body">
+            <div class="lead">
+              La comparación muestra cómo cambió el proceso de búsqueda y recuperación del conocimiento científico.
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Aspecto</th>
+                    <th>Antes del entorno digital</th>
+                    <th>Con las TIC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Acceso</strong></td>
+                    <td>Dependía de bibliotecas físicas, horarios, colecciones locales y disponibilidad del ejemplar.</td>
+                    <td>Consulta remota de catálogos, repositorios, bases de datos y publicaciones digitales desde múltiples lugares.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Búsqueda</strong></td>
+                    <td>Catálogos impresos, fichas bibliográficas, índices y revisión manual de referencias.</td>
+                    <td>Palabras clave, operadores booleanos, filtros, tesauros, búsqueda por campos y recuperación semántica.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Velocidad</strong></td>
+                    <td>Localizar y obtener una fuente podía tomar horas, días o incluso semanas.</td>
+                    <td>La identificación de documentos puede realizarse en segundos, aunque el acceso al texto completo puede seguir teniendo restricciones.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Actualización</strong></td>
+                    <td>La información llegaba mediante nuevas ediciones, números impresos o adquisiciones institucionales.</td>
+                    <td>Alertas, publicaciones en línea, preprints, bases actualizadas y servicios de seguimiento permiten conocer novedades con mayor rapidez.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Alcance</strong></td>
+                    <td>Predominaba la colección disponible en una institución o región.</td>
+                    <td>La búsqueda puede abarcar producción científica internacional y redes de colaboración global.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Organización</strong></td>
+                    <td>Fichas, carpetas, copias impresas y referencias elaboradas manualmente.</td>
+                    <td>Gestores bibliográficos, metadatos, etiquetas, colecciones digitales y sincronización en la nube.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Relación entre fuentes</strong></td>
+                    <td>Se seguían referencias de manera manual.</td>
+                    <td>Índices de citación, enlaces, DOI, redes de co-citación y herramientas de mapeo permiten descubrir conexiones entre documentos.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Colaboración</strong></td>
+                    <td>Intercambio principalmente presencial, postal o mediante copias físicas.</td>
+                    <td>Documentos compartidos, repositorios, plataformas colaborativas y comunicación científica en red.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+
+        <article id="p3" class="panel">
+          <div class="panel-head">
+            <span>Sección 3</span>
+            <h2>Impacto en la recuperación del conocimiento científico</h2>
+          </div>
+          <div class="panel-body">
+            <div class="lead">
+              La digitalización de la ciencia cambió la forma en que investigadores y estudiantes descubren, usan y comparten literatura, datos y otros productos científicos.
+            </div>
+
+            <div class="impact-list">
+              <div class="impact">
+                <h3>1. Acceso ampliado</h3>
+                <p>El acceso abierto y los repositorios digitales permiten consultar publicaciones, datos y otros resultados sin depender exclusivamente de colecciones físicas.</p>
+              </div>
+
+              <div class="impact">
+                <h3>2. Recuperación más precisa</h3>
+                <p>Metadatos, tesauros, operadores y filtros permiten delimitar mejor una búsqueda por tema, fecha, autor, país, tipo de documento o disciplina.</p>
+              </div>
+
+              <div class="impact">
+                <h3>3. Descubrimiento de relaciones</h3>
+                <p>Las citas, referencias enlazadas y redes de conocimiento facilitan localizar trabajos relacionados y seguir la evolución de un tema.</p>
+              </div>
+
+              <div class="impact">
+                <h3>4. Ciencia más colaborativa</h3>
+                <p>Las TIC facilitan compartir datos, publicaciones, software y resultados entre equipos distribuidos geográficamente.</p>
+              </div>
+
+              <div class="impact">
+                <h3>5. Reutilización de conocimiento</h3>
+                <p>Los formatos digitales permiten recuperar, combinar y analizar grandes volúmenes de publicaciones y datos para nuevas investigaciones.</p>
+              </div>
+
+              <div class="impact">
+                <h3>6. Nuevas formas de búsqueda</h3>
+                <p>La búsqueda semántica y las herramientas con IA pueden ayudar a identificar documentos relacionados por significado, no únicamente por coincidencia exacta de palabras.</p>
+              </div>
+            </div>
+
+            <div class="key-message">
+              Las TIC reducen barreras de tiempo y distancia, pero la rapidez de acceso no reemplaza la evaluación crítica de la fuente.
+            </div>
+          </div>
+        </article>
+
+
+        <article id="p4" class="panel">
+          <div class="panel-head">
+            <span>Sección 4</span>
+            <h2>Retos actuales</h2>
+          </div>
+          <div class="panel-body">
+            <div class="lead">
+              La revolución digital amplió el acceso al conocimiento, pero también creó nuevos problemas que exigen alfabetización informacional.
+            </div>
+
+            <div class="impact-list">
+              <div class="impact">
+                <h3>Sobrecarga de información</h3>
+                <p>Encontrar miles de resultados no significa encontrar evidencia pertinente. Es necesario formular búsquedas y aplicar criterios de selección.</p>
+              </div>
+
+              <div class="impact">
+                <h3>Confiabilidad desigual</h3>
+                <p>En la web conviven contenidos científicos, institucionales, comerciales, informales y desinformación; por eso la procedencia debe verificarse.</p>
+              </div>
+
+              <div class="impact">
+                <h3>Brecha de acceso</h3>
+                <p>La conectividad, las competencias digitales y los costos de algunas bases o publicaciones todavía generan desigualdad en el acceso.</p>
+              </div>
+
+              <div class="impact">
+                <h3>Dependencia de algoritmos</h3>
+                <p>Los motores de búsqueda y sistemas de recomendación priorizan resultados mediante algoritmos; lo primero que aparece no necesariamente es lo más sólido.</p>
+              </div>
+
+              <div class="impact">
+                <h3>Uso responsable de IA</h3>
+                <p>Las herramientas con IA pueden apoyar el descubrimiento y la lectura, pero sus respuestas deben contrastarse con las publicaciones originales.</p>
+              </div>
+
+              <div class="impact">
+                <h3>Propiedad intelectual</h3>
+                <p>La facilidad para copiar y compartir exige respetar autoría, licencias, citación y condiciones de uso de los materiales.</p>
+              </div>
+            </div>
+
+            <div class="warning">
+              <strong>Para recordar:</strong> la competencia informacional actual no consiste en “buscar rápido”, sino en localizar, verificar, relacionar y utilizar información con criterio.
+            </div>
+          </div>
+        </article>
+
+
+        <article id="p5" class="panel">
+          <div class="panel-head">
+            <span>Sección 5</span>
+            <h2>Fuentes base del recurso</h2>
+          </div>
+          <div class="panel-body">
+            <div class="lead">
+              El contenido se apoya principalmente en documentos institucionales sobre transformación digital de la ciencia y acceso abierto.
+            </div>
+
+            <div class="source-box">
+              <strong>UNESCO · Open Access to Scientific Information</strong>
+              <p>Presenta el acceso abierto como un mecanismo para ampliar la disponibilidad y circulación de información científica.</p>
+              <a href="https://www.unesco.org/en/open-access-scientific-information" target="_blank" rel="noopener noreferrer">Consultar fuente</a>
+            </div>
+
+            <div class="source-box">
+              <strong>UNESCO · Recommendation on Open Science</strong>
+              <p>Define el conocimiento científico abierto e incluye publicaciones, datos de investigación, metadatos, recursos educativos, software y código fuente.</p>
+              <a href="https://unesdoc.unesco.org/ark:/48223/pf0000379949" target="_blank" rel="noopener noreferrer">Consultar fuente</a>
+            </div>
+
+            <div class="source-box">
+              <strong>OECD · The Digitalisation of Science, Technology and Innovation</strong>
+              <p>Analiza cómo las tecnologías digitales están cambiando la forma en que la ciencia trabaja, colabora, publica y utiliza datos.</p>
+              <a href="https://www.oecd.org/en/publications/the-digitalisation-of-science-technology-and-innovation_b9e4a2c0-en.html" target="_blank" rel="noopener noreferrer">Consultar fuente</a>
+            </div>
+
+            <div class="source-box">
+              <strong>OECD · Open Science: Enabling Discovery in the Digital Age</strong>
+              <p>Explica cómo el acceso a publicaciones, datos, algoritmos, software y flujos de trabajo puede acelerar la investigación y la innovación.</p>
+              <a href="https://www.oecd.org/en/publications/open-science-enabling-discovery-in-the-digital-age_81a9dcf0-en.html" target="_blank" rel="noopener noreferrer">Consultar fuente</a>
+            </div>
+          </div>
+        </article>
+
+      </section>
+    </div>
+
+    <footer>Aprendiendo con <strong>@LaProfeVivy</strong></footer>
+  </main>
+
+  <script>
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const panels = document.querySelectorAll('.panel');
+
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        navBtns.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.panel).classList.add('active');
+
+        document.querySelector('.content').scrollIntoView({
+          behavior:'smooth',
+          block:'start'
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
