@@ -1,1 +1,582 @@
 
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Construcción de objetivos | Proyectos de diseño digital</title>
+  <style>
+    :root{
+      --verde:#365f0c;
+      --tinta:#273126;
+      --muted:#687264;
+      --fondo:#f4f6f2;
+      --campo:#fafbf9;
+      --borde:#c6cec2;
+      --suave:#eef1ed;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--fondo);color:var(--tinta);font-family:Arial,Helvetica,sans-serif}
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    :focus-visible{outline:3px solid var(--verde);outline-offset:2px}
+    .barra{height:66px;background:#fff;box-shadow:0 3px 15px rgba(42,59,35,.07)}
+    .barra-interior{width:min(1080px,calc(100% - 32px));height:100%;margin:auto;display:flex;align-items:center;justify-content:space-between}
+    .marca{display:flex;align-items:center;gap:10px}
+    .marca-icono{width:37px;height:37px;display:grid;place-items:center;border-radius:10px;background:var(--verde);color:#fff;font-size:20px;font-weight:900}
+    .marca strong,.marca small{display:block}
+    .marca strong{font-size:15px}
+    .marca small{margin-top:2px;color:var(--muted);font-size:11px}
+    .boton-limpiar{border:0;border-radius:8px;background:#e8ebe6;padding:9px 13px;color:var(--verde);font-size:12px;font-weight:700}
+    .pagina{width:min(1080px,calc(100% - 32px));margin:26px auto 36px;padding:18px;display:grid;gap:18px;border:2px solid var(--verde);border-radius:15px;background:var(--suave)}
+    .panel-temas{padding:20px;border-radius:13px;background:var(--verde);color:#fff}
+    .cabecera-panel{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:16px}
+    .cabecera-panel small{font-size:10px;font-weight:850;letter-spacing:.12em;color:#dbe8d2}
+    .cabecera-panel h1{margin:4px 0 0;font-size:21px}
+    .cabecera-panel>span{font-size:11px;color:#dbe4d5}
+    .botones-tema{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .botones-tema button{height:42px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;border-radius:8px;background:rgba(255,255,255,.14);color:#fff;font-size:13px;font-weight:800;text-align:left}
+    .botones-tema button:hover,.botones-tema button.activo{background:#fff;color:var(--verde)}
+    .botones-tema b{width:21px;height:21px;flex:none;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.2);font-size:11px}
+    .botones-tema button.activo b{background:#ecefeb}
+    .contenido-tema{margin-top:13px;padding:16px 18px;border-radius:9px;background:#fff;color:var(--tinta)}
+    .contenido-tema strong{font-size:15px}
+    .contenido-tema p{margin:7px 0 0;color:#505b4c;font-size:13px;line-height:1.55}
+    .contenido-tema ul{margin:8px 0 0;padding-left:18px;color:#505b4c;font-size:13px;line-height:1.6}
+    .contenido-tema li{margin-bottom:3px}
+    .mal{color:#8d4a44;font-weight:700}
+    .bien{color:var(--verde);font-weight:700}
+    .formula{margin:11px 0;display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+    .formula span{padding:8px 11px;border-radius:7px;background:#ecefeb;color:var(--verde);font-size:12px;font-weight:800}
+    .formula span:first-child{background:var(--verde);color:#fff}
+    .formula i{color:#9aa693;font-style:normal;font-weight:900}
+    .formula em{padding:8px 11px;border-radius:7px;background:#f4f6f2;color:#7d8878;font-size:12px;font-style:normal;font-weight:700}
+    .ejemplo-item{margin-top:9px;padding:11px 13px;border-radius:8px;background:#f3f6f1}
+    .ejemplo-item strong{display:block;color:var(--verde);font-size:11px;letter-spacing:.04em}
+    .ejemplo-item p{margin:3px 0 0;font-size:12.5px;line-height:1.5;color:#40503a}
+    .seccion,.resultado-final,.resumen-general{padding:23px 25px;border:1px solid var(--borde);border-radius:11px;background:#fff;box-shadow:0 4px 12px rgba(43,59,36,.05)}
+    .cabecera-seccion{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .numero{width:34px;height:34px;display:grid;place-items:center;flex:none;border-radius:9px;background:var(--verde);color:#fff;font-size:14px;font-weight:900}
+    .cabecera-seccion h2,.cabecera-seccion p{margin:0}
+    .cabecera-seccion h2{font-size:20px}
+    .cabecera-seccion p{margin-top:3px;color:var(--muted);font-size:12px}
+    .contador{margin-left:auto;flex:none;padding:6px 10px;border-radius:999px;background:#edf0ec;color:var(--verde);font-size:12px;font-weight:800}
+    .etapa-actual{margin-bottom:18px;padding:13px 15px;border-left:4px solid var(--verde);border-radius:8px;background:#f0f4ec}
+    .etapa-actual strong{display:block;color:var(--verde);font-size:13px}
+    .etapa-actual p{margin:4px 0 0;color:#505b4c;font-size:12px;line-height:1.5}
+    .nota-arbol{margin-bottom:18px;padding:13px 15px;border-left:4px solid var(--verde);border-radius:8px;background:#f0f4ec;color:#505b4c;font-size:12px;line-height:1.5}
+    .nota-arbol b{color:var(--verde)}
+    .campos{display:grid;grid-template-columns:1fr 1fr;gap:15px 18px}
+    label{position:relative}
+    label.ancho{grid-column:1/-1}
+    label>.etiqueta{display:flex;align-items:center;gap:6px;margin:0 0 7px;color:#455240;font-size:12px;font-weight:800}
+    input,select{width:100%;height:43px;padding:0 12px;border:1px solid #d6ddd3;border-radius:7px;background:var(--campo);outline:none;color:var(--tinta);font-size:13px}
+    label.ancho select{max-width:330px}
+    input::placeholder{color:#9ba49a}
+    input:focus,select:focus{border-color:var(--verde);box-shadow:0 0 0 3px rgba(54,95,12,.12)}
+    .ayuda{position:relative;display:inline-flex}
+    .ayuda>button{width:18px;height:18px;padding:0;display:grid;place-items:center;border:0;border-radius:50%;background:#e6e9e4;color:var(--verde);font-size:10px;font-style:italic;font-weight:900}
+    .ayuda>span{display:none;position:absolute;z-index:10;left:24px;top:-7px;width:230px;padding:9px 10px;border-radius:8px;background:#2d3a29;color:#fff;font-size:11px;font-weight:500;line-height:1.45;box-shadow:0 7px 18px rgba(24,34,21,.2)}
+    .ayuda:hover>span,.ayuda:focus-within>span{display:block}
+    .resultado-vivo{margin-top:17px;padding:14px 16px;border-radius:8px;background:#f0f2ef}
+    .resultado-vivo small{color:var(--verde);font-size:9px;font-weight:900;letter-spacing:.1em}
+    .resultado-vivo p{margin:5px 0 0;color:#40503a;font-size:13px;line-height:1.55}
+    .accion{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .accion>span{color:var(--muted);font-size:11px}
+    .boton-principal{border:0;border-radius:8px;background:var(--verde);padding:10px 15px;color:#fff;font-size:12px;font-weight:850}
+    .boton-principal:disabled{cursor:not-allowed;opacity:.38}
+    .resumen-general{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .resumen-general small{color:var(--verde);font-size:10px;font-weight:900;letter-spacing:.1em}
+    .resumen-general p{margin:5px 0 0;font-size:13px;line-height:1.55}
+    .resumen-general button{flex:none;border:0;border-radius:7px;background:#e8ebe6;padding:9px 12px;color:var(--verde);font-size:11px;font-weight:800}
+    .lista-guardados{margin:18px 0 0;padding:0;display:grid;gap:8px;list-style:none}
+    .lista-guardados li{padding:11px 12px;display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:10px;border-radius:8px;background:#f3f6f1}
+    .lista-guardados li>span{width:24px;height:24px;display:grid;place-items:center;border-radius:6px;background:var(--verde);color:#fff;font-size:11px;font-weight:850}
+    .lista-guardados small{display:block;color:var(--verde);font-size:9px;font-weight:900;letter-spacing:.08em}
+    .lista-guardados p{margin:3px 0 0;font-size:12px;line-height:1.5}
+    .lista-guardados button{border:0;background:transparent;color:#9c5d56;font-size:18px;line-height:1}
+    .resultado-final{background:#f0f2ef}
+    .cabecera-final{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .cabecera-final small{color:var(--verde);font-size:9px;font-weight:900;letter-spacing:.12em}
+    .cabecera-final h2{margin:4px 0 0;font-size:21px}
+    .contenido-final{margin-top:17px;display:grid;gap:10px}
+    .contenido-final>div{padding:13px 15px;border-radius:8px;background:#fff}
+    .contenido-final strong{color:var(--verde);font-size:11px}
+    .contenido-final p{margin:5px 0 0;font-size:13px;line-height:1.55}
+    .contenido-final>small{color:#6d7868;font-size:11px}
+    footer{width:min(1080px,calc(100% - 32px));margin:auto;padding:0 0 22px;display:flex;justify-content:space-between;color:#717b6d;font-size:11px}
+    footer strong{color:var(--verde)}
+    [hidden]{display:none!important}
+    @media(max-width:860px){
+      .botones-tema{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:720px){
+      .cabecera-panel{align-items:flex-start;flex-direction:column}
+      .botones-tema,.campos{grid-template-columns:1fr}
+      label.ancho{grid-column:auto}
+      label.ancho select{max-width:none}
+      .accion,.cabecera-final,.resumen-general{align-items:stretch;flex-direction:column}
+      .accion button,.cabecera-final button,.resumen-general button{width:100%}
+      .ayuda>span{left:auto;right:0}
+      .seccion,.resultado-final{padding:20px 16px}
+      .cabecera-seccion{flex-wrap:wrap}
+      .contador{margin-left:0}
+    }
+    @media(max-width:440px){
+      .pagina{width:calc(100% - 20px)}
+      .marca strong{font-size:13px}
+      .marca small{display:none}
+      .boton-limpiar{font-size:10px;padding:8px}
+      .cabecera-panel h1{font-size:18px}
+      footer{width:calc(100% - 20px);flex-direction:column;gap:5px}
+    }
+  </style>
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-interior">
+      <div class="marca">
+        <span class="marca-icono">a</span>
+        <div><strong>Construcción de objetivos</strong><small>Proyectos de diseño digital</small></div>
+      </div>
+      <button id="limpiar" class="boton-limpiar" type="button">Limpiar formulario</button>
+    </div>
+  </header>
+
+  <main class="pagina">
+    <section class="panel-temas">
+      <div class="cabecera-panel">
+        <div><small>ANTES DE COMENZAR</small><h1>Orientaciones para formular los objetivos</h1></div>
+        <span>Seleccione un tema para consultar la información</span>
+      </div>
+      <div class="botones-tema">
+        <button type="button" data-tema="normas"><span>Normas de formulación</span><b>i</b></button>
+        <button type="button" data-tema="criterios"><span>Criterios</span><b>i</b></button>
+        <button type="button" data-tema="estructura"><span>Estructura</span><b>i</b></button>
+        <button type="button" data-tema="ejemplo"><span>Ejemplo de clase</span><b>i</b></button>
+      </div>
+      <div id="contenidoTema" class="contenido-tema" hidden></div>
+    </section>
+
+    <section id="seccionGeneral" class="seccion">
+      <div class="cabecera-seccion">
+        <span class="numero">1</span>
+        <div><h2>Objetivo general</h2><p>Describa la aplicación móvil que se va a construir. Escriba solo el contenido: el simulador agrega los conectores.</p></div>
+      </div>
+      <div class="nota-arbol">Esto viene del árbol de problemas. Lo que se construye es el <b>medio</b> que resuelve la causa: aquí, el registro de asistencia. El <b>para qué</b> es la situación deseada que escribió en el árbol: la puntualidad. Un solo producto, no uno por cada cosa.</div>
+      <div class="campos">
+        <label>
+          <span class="etiqueta">Verbo en infinitivo * <span class="ayuda"><button type="button" aria-label="Ver información">i</button><span>El objetivo general expresa la construcción del producto completo. Por eso solo aparecen verbos de creación.</span></span></span>
+          <select id="verboGeneral"><option value="">Seleccione un verbo</option><option>Desarrollar</option><option>Diseñar</option><option>Implementar</option><option>Construir</option></select>
+        </label>
+        <label>
+          <span class="etiqueta">¿Qué se realizará? * <span class="ayuda"><button type="button" aria-label="Ver información">i</button><span>Nombre la aplicación móvil y su función principal. Una sola función: la necesidad central del proyecto.</span></span></span>
+          <input id="producto" placeholder="Ej.: una aplicación móvil para el registro de la asistencia y la hora de llegada">
+        </label>
+        <label>
+          <span class="etiqueta">¿Para quién? * <span class="ayuda"><button type="button" aria-label="Ver información">i</button><span>Escriba los roles que usarán la aplicación, cada uno con permisos distintos. El simulador antepone «dirigida a».</span></span></span>
+          <input id="usuarios" placeholder="Ej.: estudiantes, docentes y directivos según los permisos de cada rol">
+        </label>
+        <label>
+          <span class="etiqueta">¿Para qué? * <span class="ayuda"><button type="button" aria-label="Ver información">i</button><span>Escriba solo la necesidad que se resuelve. El simulador antepone «para».</span></span></span>
+          <input id="finalidad" placeholder="Ej.: lograr llegadas puntuales a la primera hora">
+        </label>
+        <label class="ancho">
+          <span class="etiqueta">¿En qué contexto? * <span class="ayuda"><button type="button" aria-label="Ver información">i</button><span>Escriba la institución o el entorno donde se implementará. El simulador antepone «en».</span></span></span>
+          <input id="contexto" placeholder="Ej.: el Colegio San Martín de Bogotá">
+        </label>
+      </div>
+      <div class="resultado-vivo"><small>OBJETIVO GENERAL EN CONSTRUCCIÓN</small><p id="textoGeneralVivo">El objetivo aparecerá aquí mientras completa los datos.</p></div>
+      <div class="accion"><span id="estadoGeneral">Complete los cinco campos para continuar.</span><button id="guardarGeneral" class="boton-principal" type="button" disabled>Guardar objetivo general</button></div>
+    </section>
+
+    <section id="resumenGeneral" class="resumen-general" hidden>
+      <div><small>OBJETIVO GENERAL GUARDADO</small><p id="textoGeneralGuardado"></p></div>
+      <button id="editarGeneral" type="button">Editar objetivo general</button>
+    </section>
+
+    <section id="seccionEspecificos" class="seccion" hidden>
+      <div class="cabecera-seccion">
+        <span class="numero">2</span>
+        <div><h2>Objetivos específicos</h2><p>Tres resultados parciales que, sumados, alcanzan el objetivo general.</p></div>
+        <b id="contador" class="contador">0 de 3</b>
+      </div>
+      <div id="formularioEspecifico">
+        <div id="etapaActual" class="etapa-actual"></div>
+        <div class="campos">
+          <label class="ancho">
+            <span class="etiqueta">Verbo en infinitivo * <span class="ayuda"><button type="button" aria-label="Ver información">i</button><span>Los verbos corresponden a la etapa en curso. No se repite el verbo del objetivo general ni el de un objetivo ya agregado.</span></span></span>
+            <select id="verboEspecifico"><option value="">Seleccione un verbo</option></select>
+          </label>
+          <label class="ancho">
+            <span class="etiqueta">¿Qué resultado parcial se obtendrá? * <span class="ayuda"><button type="button" aria-label="Ver información">i</button><span>Escriba un resultado que quede terminado al final de la etapa, no una actividad que se ejecuta.</span></span></span>
+            <input id="resultadoParcial" placeholder="">
+          </label>
+          <label>
+            <span class="etiqueta">¿Cómo aporta al objetivo general? * <span class="ayuda"><button type="button" aria-label="Ver información">i</button><span>Escriba solo el aporte. El simulador antepone «para».</span></span></span>
+            <input id="aporte" placeholder="">
+          </label>
+          <label>
+            <span class="etiqueta">¿Cómo se verificará? * <span class="ayuda"><button type="button" aria-label="Ver información">i</button><span>Escriba solo la evidencia que otra persona podría revisar. El simulador antepone «mediante».</span></span></span>
+            <input id="evidencia" placeholder="">
+          </label>
+        </div>
+        <div id="resultadoEspecificoVivo" class="resultado-vivo" hidden><small>OBJETIVO ESPECÍFICO EN CONSTRUCCIÓN</small><p id="textoEspecificoVivo"></p></div>
+        <div class="accion"><span id="estadoEspecifico">Complete los cuatro campos de la etapa.</span><button id="agregarEspecifico" class="boton-principal" type="button" disabled>Agregar objetivo específico</button></div>
+      </div>
+      <ol id="listaEspecificos" class="lista-guardados"></ol>
+    </section>
+
+    <section id="resultadoFinal" class="resultado-final" hidden>
+      <div class="cabecera-final">
+        <div><small>RESULTADO FINAL</small><h2>Objetivos del proyecto</h2></div>
+        <button id="copiar" class="boton-principal" type="button" disabled>Copiar objetivos</button>
+      </div>
+      <div id="contenidoFinal" class="contenido-final"></div>
+    </section>
+  </main>
+
+  <footer><strong>Aprendiendo con @LaProfeVivy</strong><span>Facultad de Ingeniería y Ciencias Básicas</span></footer>
+
+  <script>
+    const ETAPAS = [
+      {
+        nombre:'Diagnóstico',
+        foco:'Describa cómo se registra hoy la asistencia y cómo se controla la hora de llegada, y qué necesita cada rol. Todavía no se diseña nada.',
+        verbos:['Caracterizar','Identificar','Diagnosticar','Determinar'],
+        ejemplo:{
+          resultado:'el proceso actual de registro de asistencia y de control de la hora de llegada',
+          aporte:'definir las funciones y los permisos de estudiantes, docentes y directivos',
+          evidencia:'revisión de las planillas de asistencia y entrevistas a coordinación'
+        }
+      },
+      {
+        nombre:'Diseño y desarrollo',
+        foco:'Construya los módulos que corresponden a cada rol: quien registra su asistencia, quien justifica los retardos y quien consulta los reportes.',
+        verbos:['Diseñar','Desarrollar','Construir','Implementar'],
+        ejemplo:{
+          resultado:'los módulos de registro de asistencia, justificación de retardos y reportes de reincidencia',
+          aporte:'responder a los permisos definidos para cada rol en el diagnóstico',
+          evidencia:'un prototipo funcional instalado en dispositivos móviles'
+        }
+      },
+      {
+        nombre:'Validación',
+        foco:'Compruebe con los tres roles que la aplicación cumple el propósito del objetivo general.',
+        verbos:['Validar','Evaluar','Verificar','Medir'],
+        ejemplo:{
+          resultado:'el funcionamiento de la aplicación con estudiantes, docentes y directivos',
+          aporte:'comprobar que la asistencia queda registrada con su hora y que los retardos se atienden a tiempo',
+          evidencia:'pruebas de usabilidad y contraste con el registro manual'
+        }
+      }
+    ];
+
+    const EJEMPLO_CLASE = {
+      roles:'<ul><li><b>Estudiante:</b> registra su asistencia desde el celular y queda la hora de llegada.</li><li><b>Docente:</b> confirma el registro del grupo y justifica los retardos.</li><li><b>Directivo o coordinador:</b> consulta los reportes de asistencia y de retardos reincidentes.</li></ul>',
+      general:'Desarrollar una aplicación móvil para el registro de la asistencia y la hora de llegada, dirigida a estudiantes, docentes y directivos según los permisos de cada rol, para lograr llegadas puntuales a la primera hora, en el Colegio San Martín de Bogotá.',
+      especificos:[
+        'Caracterizar el proceso actual de registro de asistencia y de control de la hora de llegada, para definir las funciones y los permisos de estudiantes, docentes y directivos, mediante la revisión de las planillas de asistencia y entrevistas a coordinación.',
+        'Diseñar los módulos de registro de asistencia, justificación de retardos y reportes de reincidencia, para responder a los permisos definidos para cada rol en el diagnóstico, mediante un prototipo funcional instalado en dispositivos móviles.',
+        'Validar el funcionamiento de la aplicación con estudiantes, docentes y directivos, para comprobar que la asistencia queda registrada con su hora y que los retardos se atienden a tiempo, mediante pruebas de usabilidad y contraste con el registro manual.'
+      ]
+    };
+
+    const temas = {
+      normas:'<strong>Normas de formulación</strong>'
+        +'<ul>'
+        +'<li>Formule <b>un objetivo general</b> y <b>tres objetivos específicos</b>.</li>'
+        +'<li>Cada objetivo comienza con <b>un solo verbo en infinitivo</b>.</li>'
+        +'<li>Los específicos se derivan del general y siguen esta secuencia obligatoria: <b>diagnóstico → diseño y desarrollo → validación</b>. Uno por etapa.</li>'
+        +'<li>Cada específico expresa un <b>resultado parcial</b>, no una actividad. «Aplicar una encuesta» es una actividad; «Caracterizar las necesidades» es un resultado.</li>'
+        +'<li>No repita el verbo del objetivo general en los específicos.</li>'
+        +'<li>Los tres específicos, sumados, deben alcanzar el general: ni más ni menos.</li>'
+        +'</ul>'
+        +'<p><b>Evite</b> verbos que no permiten comprobar un resultado: conocer, aprender, comprender, investigar o mejorar. Por eso el simulador solo ofrece verbos verificables.</p>',
+      criterios:'<strong>Criterios de calidad</strong>'
+        +'<ul>'
+        +'<li><b>Claro:</b> se entiende sin necesidad de explicarlo.</li>'
+        +'<li><b>Concreto:</b> nombra un producto o un resultado, no una intención.</li>'
+        +'<li><b>Alcanzable:</b> se puede lograr con el tiempo y los recursos del proyecto.</li>'
+        +'<li><b>Medible:</b> permite saber cuánto se logró.</li>'
+        +'<li><b>Verificable:</b> existe una evidencia que otra persona puede revisar. En este simulador, la evidencia se declara en cada objetivo específico.</li>'
+        +'</ul>'
+        +'<p><span class="mal">Así no:</span> Mejorar la puntualidad de los estudiantes del colegio.</p>'
+        +'<p><span class="bien">Así sí:</span> '+EJEMPLO_CLASE.general+'</p>',
+      estructura:'<strong>Estructura</strong>'
+        +'<p>Objetivo general:</p>'
+        +'<div class="formula"><span>Verbo</span><i>+</i><span>¿Qué se realizará?</span><i>+</i><em>dirigida a</em><span>¿Para quién?</span><i>+</i><em>para</em><span>¿Para qué?</span><i>+</i><em>en</em><span>¿En qué contexto?</span></div>'
+        +'<p>Objetivo específico:</p>'
+        +'<div class="formula"><span>Verbo de la etapa</span><i>+</i><span>Resultado parcial</span><i>+</i><em>para</em><span>Aporte al general</span><i>+</i><em>mediante</em><span>Evidencia</span></div>'
+        +'<p>Las palabras en gris son conectores fijos: los inserta el simulador. Usted escribe únicamente el contenido de cada campo.</p>',
+      ejemplo:'<strong>Ejemplo de clase: llegadas tardías</strong>'
+        +'<p>Caso trabajado en clase, el mismo del árbol de problemas. Es <b>una sola aplicación</b>: el registro de asistencia. Como guarda la hora, de ahí salen las llegadas tarde. Tres roles con permisos distintos:</p>'
+        +EJEMPLO_CLASE.roles
+        +'<p>Los tres roles deben aparecer en el objetivo general y sostenerse en los tres específicos. Use el ejemplo como modelo de redacción: cambie el producto, los roles y el contexto por los de su propio proyecto.</p>'
+        +'<div class="ejemplo-item"><strong>OBJETIVO GENERAL</strong><p>'+EJEMPLO_CLASE.general+'</p></div>'
+        +EJEMPLO_CLASE.especificos.map((texto,i)=>'<div class="ejemplo-item"><strong>OBJETIVO ESPECÍFICO '+(i+1)+' · '+ETAPAS[i].nombre.toUpperCase()+'</strong><p>'+texto+'</p></div>').join('')
+    };
+
+    let temaActivo = '';
+    let especificos = [];
+
+    const $ = id => document.getElementById(id);
+    const camposGeneral = ['producto','usuarios','finalidad','contexto'];
+    const camposEspecifico = ['resultadoParcial','aporte','evidencia'];
+    const DETERMINANTES = ['el','la','los','las','un','una','unos','unas','este','esta','estos','estas','su','sus','mi','mis','nuestro','nuestra','nuestros','nuestras'];
+
+    function limpiar(texto,conector){
+      let t = (texto||'').trim().replace(/\s+/g,' ').replace(/[.,;:\s]+$/,'');
+      if(!t) return '';
+      if(conector) t = t.replace(conector,'').trim();
+      if(!t) return '';
+      const primera = t.split(' ')[0].toLowerCase().replace(/[.,;:]/g,'');
+      if(DETERMINANTES.includes(primera)) t = t.charAt(0).toLowerCase() + t.slice(1);
+      return t;
+    }
+
+    const CONECTOR_USUARIOS = /^dirigid[oa]s?\s+a\s+/i;
+    const CONECTOR_PARA = /^(para|con el fin de|con el propósito de)\s+/i;
+    const CONECTOR_EN = /^(en|dentro de)\s+/i;
+    const CONECTOR_MEDIANTE = /^(mediante|a través de|por medio de)\s+/i;
+
+    function partesGeneral(){
+      return {
+        verbo:$('verboGeneral').value,
+        producto:limpiar($('producto').value),
+        usuarios:limpiar($('usuarios').value,CONECTOR_USUARIOS),
+        finalidad:limpiar($('finalidad').value,CONECTOR_PARA),
+        contexto:limpiar($('contexto').value,CONECTOR_EN)
+      };
+    }
+    function textoGeneral(){
+      const p = partesGeneral();
+      if(!p.verbo || !p.producto) return '';
+      const partes = [p.producto];
+      if(p.usuarios) partes.push('dirigida a ' + p.usuarios);
+      if(p.finalidad) partes.push('para ' + p.finalidad);
+      if(p.contexto) partes.push('en ' + p.contexto);
+      return p.verbo + ' ' + partes.join(', ') + '.';
+    }
+    function generalCompleto(){
+      const p = partesGeneral();
+      return Boolean(p.verbo && p.producto && p.usuarios && p.finalidad && p.contexto);
+    }
+
+    function partesEspecifico(){
+      return {
+        verbo:$('verboEspecifico').value,
+        resultado:limpiar($('resultadoParcial').value),
+        aporte:limpiar($('aporte').value,CONECTOR_PARA),
+        evidencia:limpiar($('evidencia').value,CONECTOR_MEDIANTE)
+      };
+    }
+    function textoEspecifico(){
+      const p = partesEspecifico();
+      if(!p.verbo || !p.resultado) return '';
+      const partes = [p.resultado];
+      if(p.aporte) partes.push('para ' + p.aporte);
+      if(p.evidencia) partes.push('mediante ' + p.evidencia);
+      return p.verbo + ' ' + partes.join(', ') + '.';
+    }
+    function especificoCompleto(){
+      const p = partesEspecifico();
+      return Boolean(p.verbo && p.resultado && p.aporte && p.evidencia);
+    }
+
+    function actualizarGeneral(){
+      const texto = textoGeneral();
+      $('textoGeneralVivo').textContent = texto || 'El objetivo aparecerá aquí mientras completa los datos.';
+      const completo = generalCompleto();
+      $('guardarGeneral').disabled = !completo;
+      $('estadoGeneral').textContent = completo ? 'El objetivo general está completo.' : 'Complete los cinco campos para continuar.';
+    }
+
+    function verbosDeEtapa(indice){
+      const usados = [$('verboGeneral').value].concat(especificos.map(o=>o.verbo));
+      const disponibles = ETAPAS[indice].verbos.filter(v=>!usados.includes(v));
+      return disponibles.length ? disponibles : ETAPAS[indice].verbos;
+    }
+
+    function prepararEtapa(){
+      const indice = especificos.length;
+      const quedanEtapas = indice < ETAPAS.length;
+      $('formularioEspecifico').hidden = !quedanEtapas;
+      if(!quedanEtapas) return;
+      const etapa = ETAPAS[indice];
+      $('etapaActual').textContent = '';
+      const titulo = document.createElement('strong');
+      titulo.textContent = 'Etapa ' + (indice+1) + ' de 3 · ' + etapa.nombre;
+      const foco = document.createElement('p');
+      foco.textContent = etapa.foco;
+      $('etapaActual').append(titulo, foco);
+      $('verboEspecifico').innerHTML = '<option value="">Seleccione un verbo</option>' + verbosDeEtapa(indice).map(v=>'<option>'+v+'</option>').join('');
+      $('resultadoParcial').placeholder = 'Ej.: ' + etapa.ejemplo.resultado;
+      $('aporte').placeholder = 'Ej.: ' + etapa.ejemplo.aporte;
+      $('evidencia').placeholder = 'Ej.: ' + etapa.ejemplo.evidencia;
+      camposEspecifico.forEach(id=>$(id).value='');
+      actualizarEspecifico();
+    }
+
+    function actualizarEspecifico(){
+      const texto = textoEspecifico();
+      $('resultadoEspecificoVivo').hidden = !texto;
+      $('textoEspecificoVivo').textContent = texto;
+      const completo = especificoCompleto();
+      $('agregarEspecifico').disabled = !completo;
+      $('estadoEspecifico').textContent = completo ? 'El objetivo específico está listo para agregarse.' : 'Complete los cuatro campos de la etapa.';
+    }
+
+    function bloqueFinal(titulo,texto){
+      const div = document.createElement('div');
+      const s = document.createElement('strong');
+      s.textContent = titulo;
+      const p = document.createElement('p');
+      p.textContent = texto;
+      div.append(s,p);
+      return div;
+    }
+
+    function actualizarFinal(){
+      $('contador').textContent = especificos.length + ' de 3';
+
+      $('listaEspecificos').textContent = '';
+      especificos.forEach((item,i)=>{
+        const li = document.createElement('li');
+        const num = document.createElement('span');
+        num.textContent = i+1;
+        const cuerpo = document.createElement('div');
+        const etapa = document.createElement('small');
+        etapa.textContent = ETAPAS[i].nombre.toUpperCase();
+        const p = document.createElement('p');
+        p.textContent = item.texto;
+        cuerpo.append(etapa,p);
+        li.append(num,cuerpo);
+        if(i === especificos.length - 1){
+          const boton = document.createElement('button');
+          boton.type = 'button';
+          boton.id = 'eliminarUltimo';
+          boton.setAttribute('aria-label','Eliminar el último objetivo específico');
+          boton.title = 'Eliminar el último objetivo específico';
+          boton.textContent = '×';
+          li.append(boton);
+        }
+        $('listaEspecificos').append(li);
+      });
+
+      $('contenidoFinal').textContent = '';
+      $('contenidoFinal').append(bloqueFinal('Objetivo general', textoGeneral()));
+      especificos.forEach((item,i)=>{
+        $('contenidoFinal').append(bloqueFinal('Objetivo específico ' + (i+1) + ' · ' + ETAPAS[i].nombre, item.texto));
+      });
+      const faltan = 3 - especificos.length;
+      if(faltan > 0){
+        const aviso = document.createElement('small');
+        aviso.textContent = faltan === 1
+          ? 'Falta el objetivo específico de ' + ETAPAS[especificos.length].nombre.toLowerCase() + ' para habilitar la copia.'
+          : 'Faltan ' + faltan + ' objetivos específicos para habilitar la copia. Sigue la etapa de ' + ETAPAS[especificos.length].nombre.toLowerCase() + '.';
+        $('contenidoFinal').append(aviso);
+      }
+      $('copiar').disabled = especificos.length < 3;
+    }
+
+    function reiniciarTodo(){
+      temaActivo = '';
+      especificos = [];
+      document.querySelectorAll('[data-tema]').forEach(b=>b.classList.remove('activo'));
+      $('contenidoTema').hidden = true;
+      $('contenidoTema').innerHTML = '';
+      $('verboGeneral').value = '';
+      camposGeneral.forEach(id=>$(id).value='');
+      $('seccionGeneral').hidden = false;
+      $('resumenGeneral').hidden = true;
+      $('seccionEspecificos').hidden = true;
+      $('resultadoFinal').hidden = true;
+      prepararEtapa();
+      actualizarGeneral();
+      actualizarFinal();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    document.querySelectorAll('[data-tema]').forEach(boton=>boton.addEventListener('click',()=>{
+      const tema = boton.dataset.tema;
+      temaActivo = temaActivo === tema ? '' : tema;
+      document.querySelectorAll('[data-tema]').forEach(b=>b.classList.toggle('activo', b.dataset.tema === temaActivo));
+      $('contenidoTema').hidden = !temaActivo;
+      $('contenidoTema').innerHTML = temaActivo ? temas[temaActivo] : '';
+    }));
+
+    $('verboGeneral').addEventListener('change',actualizarGeneral);
+    camposGeneral.forEach(id=>$(id).addEventListener('input',actualizarGeneral));
+
+    $('guardarGeneral').addEventListener('click',()=>{
+      if(!generalCompleto()) return;
+      $('textoGeneralGuardado').textContent = textoGeneral();
+      $('seccionGeneral').hidden = true;
+      $('resumenGeneral').hidden = false;
+      $('seccionEspecificos').hidden = false;
+      $('resultadoFinal').hidden = false;
+      prepararEtapa();
+      actualizarFinal();
+      setTimeout(()=>$('seccionEspecificos').scrollIntoView({behavior:'smooth',block:'start'}),80);
+    });
+
+    $('editarGeneral').addEventListener('click',()=>{
+      $('seccionGeneral').hidden = false;
+      $('resumenGeneral').hidden = true;
+      $('seccionEspecificos').hidden = true;
+      $('resultadoFinal').hidden = true;
+      setTimeout(()=>$('seccionGeneral').scrollIntoView({behavior:'smooth',block:'start'}),50);
+    });
+
+    $('verboEspecifico').addEventListener('change',actualizarEspecifico);
+    camposEspecifico.forEach(id=>$(id).addEventListener('input',actualizarEspecifico));
+
+    $('agregarEspecifico').addEventListener('click',()=>{
+      if(!especificoCompleto() || especificos.length >= 3) return;
+      especificos.push({verbo:$('verboEspecifico').value, texto:textoEspecifico()});
+      prepararEtapa();
+      actualizarFinal();
+    });
+
+    $('listaEspecificos').addEventListener('click',evento=>{
+      if(evento.target.id !== 'eliminarUltimo') return;
+      especificos.pop();
+      prepararEtapa();
+      actualizarFinal();
+    });
+
+    $('copiar').addEventListener('click',async()=>{
+      if(especificos.length < 3) return;
+      const texto = ['OBJETIVO GENERAL\n' + textoGeneral()]
+        .concat(especificos.map((item,i)=>'OBJETIVO ESPECÍFICO ' + (i+1) + ' (' + ETAPAS[i].nombre + ')\n' + item.texto))
+        .join('\n\n');
+      try{
+        await navigator.clipboard.writeText(texto);
+      }catch{
+        const area = document.createElement('textarea');
+        area.value = texto;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+      }
+      $('copiar').textContent = 'Objetivos copiados ✓';
+      setTimeout(()=>$('copiar').textContent='Copiar objetivos',1800);
+    });
+
+    $('limpiar').addEventListener('click',()=>{
+      const hayDatos = generalCompleto() || especificos.length > 0 || camposGeneral.some(id=>$(id).value.trim());
+      if(hayDatos && !confirm('Se borrarán el objetivo general y los objetivos específicos agregados. ¿Desea continuar?')) return;
+      reiniciarTodo();
+    });
+
+    prepararEtapa();
+    actualizarGeneral();
+    actualizarEspecifico();
+    actualizarFinal();
+  </script>
+</body>
+</html>
+
