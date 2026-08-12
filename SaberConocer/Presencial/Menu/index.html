@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -73,14 +74,26 @@
     .tab-btn:hover{background:#f7f7f7;color:var(--verde-oscuro);border-left-color:#b9d58f}
     .tab-btn.active{background:var(--verde);color:#fff;border-left-color:var(--verde-oscuro)}
     .content-panel{min-height:650px;overflow:hidden}
-    .section{display:none}
-    .section.active{display:block}
-    .section-head{background:var(--gris-oscuro);color:#fff;padding:18px 22px;border-bottom:4px solid var(--verde)}
+    .section{display:block;border-bottom:12px solid var(--fondo)}
+    .section:last-of-type{border-bottom:0}
+    .section > .section-body{display:none}
+    .section.open > .section-body{display:block}
+    .section-head{
+      background:var(--gris-oscuro);color:#fff;padding:18px 22px;border-bottom:4px solid var(--verde);
+      display:flex;align-items:center;justify-content:space-between;gap:18px;cursor:pointer
+    }
+    .section-head:hover{background:#363636}
     .section-head .number{
       color:#cfe7ad;font-size:13px;font-weight:700;display:block;margin-bottom:3px;
       text-transform:uppercase;letter-spacing:.4px
     }
     .section-head h2{margin:0;font-size:25px;line-height:1.15}
+    .section-toggle{
+      flex:0 0 36px;width:36px;height:36px;display:grid;place-items:center;border-radius:50%;
+      background:#fff;color:var(--verde-oscuro);font-size:23px;font-weight:700;line-height:1;
+      transition:.2s ease
+    }
+    .section.open .section-toggle{transform:rotate(45deg)}
     .section-body{padding:22px;background:#fff}
     .lead-box{
       border-left:5px solid var(--verde);background:var(--verde-suave);padding:14px 16px;
@@ -103,9 +116,42 @@
       line-height:1;transition:.2s ease
     }
     .acc-item.open .plus{transform:rotate(45deg);border-color:#fff}
-    .acc-content{max-height:0;overflow:hidden;transition:max-height .28s ease;background:#fff}
+    .acc-content{display:none;overflow:hidden;background:#fff}
+    .acc-item.open > .acc-content{display:block}
     .acc-inner{padding:17px 20px 19px 24px;line-height:1.58;color:#555}
     .acc-inner p{margin:0}
+    .acc-inner h3{margin:0 0 9px;color:var(--gris-oscuro);font-size:17px;line-height:1.3}
+    .acc-inner p + p{margin-top:9px}
+    .detail-tabs{margin-top:12px;border:1px solid #dedede;background:#fff}
+    .detail-nav{display:flex;flex-wrap:wrap;background:#f1f1f1;border-bottom:1px solid #dedede}
+    .detail-btn{
+      flex:1 1 135px;border:0;border-right:1px solid #ddd;border-bottom:4px solid transparent;
+      background:#f1f1f1;color:#505050;padding:12px 10px;cursor:pointer;font-size:13px;
+      font-weight:700;line-height:1.25;transition:.18s ease
+    }
+    .detail-btn:hover{background:#e8e8e8;color:var(--verde-oscuro)}
+    .detail-btn.active{background:#fff;color:var(--verde-oscuro);border-bottom-color:var(--verde)}
+    .detail-btn.example-tab{color:#fff;background:var(--verde);border-bottom-color:var(--verde-oscuro)}
+    .detail-btn.example-tab.active{background:var(--verde-oscuro);color:#fff}
+    .detail-panel{display:none;padding:18px 19px;line-height:1.58}
+    .detail-panel.active{display:block}
+    .detail-panel h4{margin:0 0 8px;color:var(--gris-oscuro);font-size:16px}
+    .guide-questions{margin:10px 0 0;padding-left:21px}
+    .guide-questions li{margin:6px 0}
+    .applied-result{border-left:5px solid var(--verde);background:#f7faef;padding:13px 15px;margin-top:12px}
+    .subtopic-divider{margin-top:24px;padding-top:20px;border-top:2px solid #d9e5c6}
+    .subtopic-number{display:inline-block;margin-right:8px;color:var(--verde-oscuro)}
+    .example-stack{display:grid;gap:10px;margin-top:12px}
+    .example-item{border:1px solid #d9e5c6;border-left:4px solid var(--verde);background:#f9fcf4;padding:12px 14px}
+    .example-item h4{margin:0 0 6px;color:var(--verde-oscuro);font-size:14px}
+    .example-item p{margin:0}
+    .resource-row{margin-top:14px}
+    .resource-btn{
+      display:inline-flex;align-items:center;justify-content:center;min-height:38px;
+      padding:8px 14px;border:1px solid var(--verde);border-radius:4px;background:var(--verde);
+      color:#fff;text-decoration:none;font-size:13px;font-weight:700
+    }
+    .resource-btn.pending{background:#efefef;border-color:#d0d0d0;color:#777;cursor:not-allowed}
     .sublist{margin:10px 0 0;padding-left:21px}
     .sublist li{margin:7px 0}
     .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -131,12 +177,15 @@
       .main-header{padding:18px}
       .section-head h2{font-size:21px}
       .section-body{padding:15px}
+      .detail-nav{display:grid;grid-template-columns:1fr 1fr}
+      .detail-btn{border-bottom:1px solid #ddd;border-right:1px solid #ddd}
+      .detail-btn.active{border-bottom:4px solid var(--verde)}
     }
   </style>
 </head>
 <body>
   <div class="topbar">
-    <div class="topbar-inner">Facultad de Educación</div>
+    <div class="topbar-inner">Facultad de Ingeniería y Ciencias Básicas</div>
   </div>
 
   <header class="site-header">
@@ -156,23 +205,23 @@
 
     <div class="frame">
       <aside class="tabs-panel" aria-label="Temas de Saber Conocer">
-        <div class="tabs-title">Temas</div>
-        <button class="tab-btn active" type="button" data-section="s1" aria-selected="true">
-          1. Análisis de una problemática y sus necesidades
+        <div class="tabs-title">Cortes</div>
+        <button class="tab-btn" type="button" data-section="s1" aria-selected="false">
+          Corte 1. Análisis de una problemática y sus necesidades
         </button>
         <button class="tab-btn" type="button" data-section="s2" aria-selected="false">
-          2. Diseño lógico de la solución digital
+          Corte 2. Diseño lógico de la solución digital
         </button>
         <button class="tab-btn" type="button" data-section="s3" aria-selected="false">
-          3. Desarrollo y componentes de una solución informática
+          Corte 3. Desarrollo y componentes de una solución informática
         </button>
       </aside>
 
       <main class="content-panel">
-        <section id="s1" class="section active">
-          <div class="section-head">
-            <span class="number">Tema 1</span>
-            <h2>Análisis de una problemática y sus necesidades</h2>
+        <section id="s1" class="section">
+          <div class="section-head" role="button" tabindex="0" aria-expanded="false">
+            <div><span class="number">Corte 1</span><h2>Análisis de una problemática y sus necesidades</h2></div>
+            <span class="section-toggle" aria-hidden="true">+</span>
           </div>
           <div class="section-body">
             <div class="lead-box">
@@ -181,16 +230,127 @@
             <div class="accordion">
               <article class="acc-item">
                 <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">1.0</span>Elección de la problemática</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <h3>Situación seleccionada</h3>
+                    <p>En un colegio, la coordinación observa que varios estudiantes llegan tarde a la primera hora de clase. Esta situación interrumpe el inicio de las actividades, reduce el tiempo de aprendizaje y dificulta el seguimiento oportuno de la asistencia. Cuando las llegadas tarde se repiten sin un control claro, pueden normalizar el incumplimiento del horario, debilitar el respeto por las normas y los acuerdos institucionales, generar una percepción de indisciplina y restar credibilidad a los procesos de seguimiento del colegio. Antes de proponer una solución, es necesario comprender con precisión qué sucede, a quiénes afecta y qué factores pueden estar relacionados con la problemática.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
                   <span><span class="topic-code">1.1</span>Delimitación de la problemática</span><span class="plus">+</span>
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Definición clara del contexto, los usuarios involucrados, la necesidad identificada y el alcance de la problemática.</p>
-                    <ul class="sublist">
-                      <li><strong>Árbol del problema:</strong> organiza las causas en las raíces, el problema central en el tronco y los efectos en las ramas.</li>
-                      <li><strong>Delimitación:</strong> precisa dónde ocurre, a quién afecta y qué parte puede abordarse mediante una solución digital.</li>
-                    </ul>
-                    <div class="tag-row"><span class="tag">Contexto</span><span class="tag">Usuarios</span><span class="tag">Necesidad</span><span class="tag">Alcance</span></div>
+                    <h3><span class="subtopic-number">1.1.1</span>Caracterización de la problemática</h3>
+                    <p>Delimitar es establecer con precisión qué parte de la problemática se estudiará. Selecciona cada elemento para comprender cómo se construye.</p>
+                    <div class="detail-tabs">
+                      <div class="detail-nav" role="tablist" aria-label="Elementos de la delimitación">
+                        <button class="detail-btn active" type="button" data-detail="del-contexto">Contexto</button>
+                        <button class="detail-btn" type="button" data-detail="del-usuarios">Usuarios</button>
+                        <button class="detail-btn" type="button" data-detail="del-necesidad">Necesidad</button>
+                        <button class="detail-btn" type="button" data-detail="del-alcance">Alcance</button>
+                        <button class="detail-btn example-tab" type="button" data-detail="del-ejemplo">Aplicación al ejemplo</button>
+                      </div>
+                      <div id="del-contexto" class="detail-panel active">
+                        <h4>Contexto</h4>
+                        <p>Describe el entorno en el que ocurre la situación. Permite ubicar el problema y comprender las condiciones que lo rodean.</p>
+                        <ul class="guide-questions">
+                          <li>¿En qué lugar o institución ocurre?</li>
+                          <li>¿En qué momento o periodo se presenta?</li>
+                          <li>¿Qué condiciones del entorno son importantes?</li>
+                        </ul>
+                      </div>
+                      <div id="del-usuarios" class="detail-panel">
+                        <h4>Usuarios o población involucrada</h4>
+                        <p>Identifica a las personas que viven la situación, reciben sus consecuencias, aportan información o utilizarían la futura solución.</p>
+                        <ul class="guide-questions">
+                          <li>¿Quiénes son afectados directamente?</li>
+                          <li>¿Quiénes intervienen en el proceso?</li>
+                          <li>¿Quién tomaría decisiones con la información obtenida?</li>
+                        </ul>
+                      </div>
+                      <div id="del-necesidad" class="detail-panel">
+                        <h4>Necesidad</h4>
+                        <p>Expresa aquello que hace falta comprender, controlar o mejorar. Debe derivarse de la situación observada y no redactarse todavía como una aplicación o herramienta específica.</p>
+                        <ul class="guide-questions">
+                          <li>¿Qué dificultad requiere atención?</li>
+                          <li>¿Qué información hace falta conocer?</li>
+                          <li>¿Qué proceso necesita mejorar?</li>
+                        </ul>
+                      </div>
+                      <div id="del-alcance" class="detail-panel">
+                        <h4>Alcance</h4>
+                        <p>Define los límites del análisis para que el proyecto sea concreto y realizable. Puede establecer límites temporales, espaciales, poblacionales y temáticos.</p>
+                        <ul class="guide-questions">
+                          <li>¿Qué parte del problema se estudiará?</li>
+                          <li>¿Durante cuánto tiempo?</li>
+                          <li>¿Qué aspectos quedarán por fuera?</li>
+                        </ul>
+                      </div>
+                      <div id="del-ejemplo" class="detail-panel">
+                        <h4>Delimitación aplicada al caso de las llegadas tarde</h4>
+                        <div class="example-stack">
+                          <div class="example-item"><h4>Contexto</h4><p>Primera hora de clase de un colegio, durante una semana académica.</p></div>
+                          <div class="example-item"><h4>Usuarios</h4><p>Estudiantes que ingresan a primera hora y coordinación académica encargada del seguimiento.</p></div>
+                          <div class="example-item"><h4>Necesidad</h4><p>Comprender cuándo y en qué grupos se presentan con mayor frecuencia las llegadas tarde para orientar acciones de mejora.</p></div>
+                          <div class="example-item"><h4>Alcance</h4><p>Analizar las llegadas de la primera hora según día, curso y minutos de retraso. No se estudiará toda la asistencia escolar ni se determinarán sanciones.</p></div>
+                        </div>
+                        <div class="applied-result"><strong>Redacción completa:</strong> Durante una semana académica se analizarán las llegadas tarde de los estudiantes a la primera hora de clase de un colegio, considerando el día, el curso y los minutos de retraso, con el fin de identificar patrones que apoyen a la coordinación en la formulación de acciones de mejora.</div>
+                      </div>
+                    </div>
+
+                    <div class="subtopic-divider">
+                      <h3><span class="subtopic-number">1.1.2</span>Árbol del problema</h3>
+                      <p>El árbol permite ordenar la situación y comprobar la relación lógica entre sus causas y consecuencias. Selecciona cada elemento.</p>
+                      <div class="detail-tabs">
+                        <div class="detail-nav" role="tablist" aria-label="Elementos del árbol del problema">
+                          <button class="detail-btn active" type="button" data-detail="arb-central">Problema central</button>
+                          <button class="detail-btn" type="button" data-detail="arb-causas">Causas</button>
+                          <button class="detail-btn" type="button" data-detail="arb-efectos">Efectos</button>
+                          <button class="detail-btn" type="button" data-detail="arb-revision">Verificación</button>
+                          <button class="detail-btn example-tab" type="button" data-detail="arb-ejemplo">Aplicación al ejemplo</button>
+                        </div>
+                        <div id="arb-central" class="detail-panel active">
+                          <h4>Problema central — tronco</h4>
+                          <p>Es la situación negativa principal que se desea comprender. Debe ser concreta, observable y redactarse sin incluir todavía la solución.</p>
+                          <p><strong>Estructura sugerida:</strong> situación negativa + población afectada + contexto.</p>
+                        </div>
+                        <div id="arb-causas" class="detail-panel">
+                          <h4>Causas — raíces</h4>
+                          <p>Son las condiciones que originan o favorecen el problema central. Las causas directas se conectan con el problema y las indirectas explican el origen de esas causas.</p>
+                          <p>Deben formularse como factores que posteriormente puedan verificarse mediante observación o datos.</p>
+                        </div>
+                        <div id="arb-efectos" class="detail-panel">
+                          <h4>Efectos — ramas</h4>
+                          <p>Son las consecuencias producidas por el problema. Los efectos directos aparecen de manera inmediata y los indirectos pueden surgir como consecuencia de los primeros.</p>
+                        </div>
+                        <div id="arb-revision" class="detail-panel">
+                          <h4>Verificación de la lógica</h4>
+                          <p>El árbol debe poder leerse de abajo hacia arriba: <strong>las causas contribuyen al problema central y el problema genera los efectos</strong>.</p>
+                          <ul class="guide-questions">
+                            <li>¿Cada causa explica realmente el problema?</li>
+                            <li>¿Cada efecto es consecuencia del problema?</li>
+                            <li>¿Se evitó escribir soluciones dentro del árbol?</li>
+                          </ul>
+                        </div>
+                        <div id="arb-ejemplo" class="detail-panel">
+                          <h4>Árbol aplicado al caso de las llegadas tarde</h4>
+                          <div class="example-stack">
+                            <div class="example-item"><h4>Problema central</h4><p>Frecuentes llegadas tarde de estudiantes a la primera hora de clase.</p></div>
+                            <div class="example-item"><h4>Causas por verificar</h4><p>Dificultades de transporte, salida tardía del hogar, desconocimiento del horario o congestión en el ingreso al colegio.</p></div>
+                            <div class="example-item"><h4>Efectos observables</h4><p>Interrupciones al iniciar la clase, pérdida de tiempo de aprendizaje y dificultades en el seguimiento de la asistencia.</p></div>
+                          </div>
+                          <div class="resource-row">
+                            <a class="resource-btn" href="arbol.png" target="_blank" rel="noopener noreferrer">Abrir árbol del problema</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -201,7 +361,8 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Identificación de los datos necesarios para comprender la problemática y definición de variables que permitan representar sus elementos principales de forma simplificada.</p>
+                    <h3>Seleccionar y representar información</h3>
+                    <p>Se identifican únicamente los datos necesarios para comprender la problemática. Después se abstraen como variables con un nombre, un significado y un conjunto de valores posibles.</p>
                   </div>
                 </div>
               </article>
@@ -212,7 +373,8 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Construcción ordenada de una secuencia de pasos para resolver una parte de la problemática, considerando entradas, proceso y resultados esperados.</p>
+                    <h3>Entrada, proceso y salida</h3>
+                    <p>Un algoritmo es una secuencia finita y ordenada de pasos. Recibe datos de entrada, los procesa mediante reglas y genera una salida o resultado.</p>
                     <div class="tag-row"><span class="tag">Entrada</span><span class="tag">Proceso</span><span class="tag">Salida</span></div>
                   </div>
                 </div>
@@ -220,22 +382,24 @@
 
               <article class="acc-item">
                 <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">1.4</span>Diagramas de flujo</span><span class="plus">+</span>
+                  <span><span class="topic-code">1.4</span>Representación mediante diagramas de flujo</span><span class="plus">+</span>
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Representación gráfica del algoritmo mediante símbolos estandarizados, conectores y decisiones que muestran el orden lógico de la solución propuesta.</p>
+                    <h3>Representar la lógica</h3>
+                    <p>El diagrama de flujo utiliza símbolos estandarizados para representar el inicio y el fin, las entradas, los procesos, las decisiones y la dirección de los pasos de un algoritmo.</p>
                   </div>
                 </div>
               </article>
+
             </div>
           </div>
         </section>
 
         <section id="s2" class="section">
-          <div class="section-head">
-            <span class="number">Tema 2</span>
-            <h2>Diseño lógico de la solución digital</h2>
+          <div class="section-head" role="button" tabindex="0" aria-expanded="false">
+            <div><span class="number">Corte 2</span><h2>Diseño lógico de la solución digital</h2></div>
+            <span class="section-toggle" aria-hidden="true">+</span>
           </div>
           <div class="section-body">
             <div class="lead-box">
@@ -248,7 +412,8 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Búsqueda, selección y registro de datos procedentes de fuentes confiables, pertinentes y verificables relacionadas con la problemática.</p>
+                    <h3>Datos con respaldo</h3>
+                    <p>La información debe proceder de fuentes identificables, pertinentes y verificables. En una problemática institucional conviene priorizar registros oficiales, observaciones directas y documentos autorizados.</p>
                   </div>
                 </div>
               </article>
@@ -259,7 +424,8 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Clasificación, depuración y análisis básico de los datos con apoyo de hojas de cálculo u otras aplicaciones digitales.</p>
+                    <h3>Preparar los datos</h3>
+                    <p>Antes de analizar, los registros se organizan en filas y columnas, se corrigen inconsistencias, se eliminan duplicados y se establecen categorías comparables mediante una aplicación digital.</p>
                   </div>
                 </div>
               </article>
@@ -270,7 +436,8 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Selección y construcción de gráficos, tablas e indicadores visuales adecuados para comunicar patrones, comparaciones y tendencias.</p>
+                    <h3>Mostrar patrones</h3>
+                    <p>La visualización convierte los datos en gráficos comprensibles. El tipo de gráfico se selecciona según se requiera comparar categorías, observar cambios o mostrar proporciones.</p>
                   </div>
                 </div>
               </article>
@@ -281,7 +448,25 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Lectura crítica de los resultados obtenidos para formular conclusiones y sustentar, con evidencia, la necesidad y pertinencia de la solución digital.</p>
+                    <h3>De los datos a la decisión</h3>
+                    <p>Interpretar consiste en explicar qué significan los patrones encontrados, sin confundir coincidencias con causas ni formular conclusiones que los datos no respaldan.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">2.5</span>Aplicación al ejemplo: llegadas tarde</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <h3>Aplicación del análisis de datos</h3>
+                    <div class="example-stack">
+                      <div class="example-item"><h4>Recopilación</h4><p>Registro diario de la coordinación, contrastado con el horario oficial y los controles de ingreso.</p></div>
+                      <div class="example-item"><h4>Organización</h4><p>Una fila por llegada y columnas para fecha, curso, hora, estado y minutos de retraso.</p></div>
+                      <div class="example-item"><h4>Visualización</h4><p>Gráficos de barras para comparar tardanzas por curso, día y rango de minutos.</p></div>
+                      <div class="example-item"><h4>Interpretación</h4><p>Los patrones justifican una herramienta de registro y seguimiento, pero no demuestran por sí solos las causas de la tardanza.</p></div>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -290,9 +475,9 @@
         </section>
 
         <section id="s3" class="section">
-          <div class="section-head">
-            <span class="number">Tema 3</span>
-            <h2>Desarrollo y componentes de una solución informática</h2>
+          <div class="section-head" role="button" tabindex="0" aria-expanded="false">
+            <div><span class="number">Corte 3</span><h2>Desarrollo y componentes de una solución informática</h2></div>
+            <span class="section-toggle" aria-hidden="true">+</span>
           </div>
           <div class="section-body">
             <div class="lead-box">
@@ -305,7 +490,8 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Reconocimiento de los componentes básicos de una solución informática y de las etapas necesarias para convertir una necesidad en una aplicación digital.</p>
+                    <h3>Componentes de la solución</h3>
+                    <p>Una solución informática integra personas, datos, procesos, interfaz y tecnología. Sus componentes deben responder directamente a la necesidad delimitada.</p>
                   </div>
                 </div>
               </article>
@@ -316,8 +502,8 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Definición de lo que debe hacer la aplicación, las condiciones que debe cumplir y las necesidades de los usuarios que orientan su diseño.</p>
-                    <div class="tag-row"><span class="tag">Funcionales</span><span class="tag">No funcionales</span><span class="tag">Usuarios</span></div>
+                    <h3>Requisitos y requerimientos</h3>
+                    <p>Los requisitos funcionales indican lo que la aplicación debe hacer. Los no funcionales establecen condiciones de calidad, seguridad, facilidad de uso y rendimiento.</p>
                   </div>
                 </div>
               </article>
@@ -328,7 +514,8 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Construcción de una primera versión visual y navegable que represente la estructura, las pantallas, las funciones principales y la experiencia de uso de la solución.</p>
+                    <h3>Prototipo v1.0</h3>
+                    <p>Es una primera representación visual y navegable de la solución. Permite comprobar la estructura, las funciones y el recorrido del usuario antes de programar.</p>
                   </div>
                 </div>
               </article>
@@ -339,8 +526,25 @@
                 </button>
                 <div class="acc-content">
                   <div class="acc-inner">
-                    <p>Evaluación de la viabilidad y el impacto de la solución, incorporación de elementos innovadores y uso responsable de inteligencia artificial cuando aporte valor real al proyecto.</p>
-                    <div class="tag-row"><span class="tag">Sustentabilidad</span><span class="tag">Innovación</span><span class="tag">IA responsable</span></div>
+                    <h3>Valor y responsabilidad</h3>
+                    <p>La solución debe ser viable, útil y sostenible en el tiempo. La innovación y la IA se integran solo cuando mejoran el proceso y respetan la privacidad, la transparencia y la supervisión humana.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">3.5</span>Aplicación al ejemplo: llegadas tarde</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <h3>Aplicación del diseño de la solución</h3>
+                    <div class="example-stack">
+                      <div class="example-item"><h4>Componentes</h4><p>Formulario de registro, base de datos, reglas para calcular el retraso y tablero de seguimiento.</p></div>
+                      <div class="example-item"><h4>Requisitos</h4><p>Registrar la hora, clasificar la llegada, generar reportes, proteger los datos y funcionar en celular y computador.</p></div>
+                      <div class="example-item"><h4>Prototipo v1.0</h4><p>Pantallas para ingreso, registro, consulta de llegadas, filtros y visualización de resultados.</p></div>
+                      <div class="example-item"><h4>Sustentabilidad, innovación e IA</h4><p>La aplicación reduce papel y puede usar IA para detectar patrones, sin delegar decisiones disciplinarias ni vulnerar la privacidad.</p></div>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -357,21 +561,70 @@
     const tabBtns = document.querySelectorAll('.tab-btn');
     const sections = document.querySelectorAll('.section');
 
+    function closeAllCuts(){
+      tabBtns.forEach(item => {
+        item.classList.remove('active');
+        item.setAttribute('aria-selected', 'false');
+      });
+      sections.forEach(section => {
+        section.classList.remove('open');
+        section.querySelector('.section-head').setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    function toggleCut(section){
+      const willOpen = !section.classList.contains('open');
+      closeAllCuts();
+      if(willOpen){
+        section.classList.add('open');
+        section.querySelector('.section-head').setAttribute('aria-expanded', 'true');
+        const menuBtn = document.querySelector(`[data-section="${section.id}"]`);
+        menuBtn.classList.add('active');
+        menuBtn.setAttribute('aria-selected', 'true');
+      }
+    }
+
+    closeAllCuts();
+
     tabBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        tabBtns.forEach(item => {
-          item.classList.remove('active');
-          item.setAttribute('aria-selected', 'false');
-        });
-        sections.forEach(section => section.classList.remove('active'));
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-        document.getElementById(btn.dataset.section).classList.add('active');
-        document.querySelector('.content-panel').scrollIntoView({behavior:'smooth',block:'start'});
+        const section = document.getElementById(btn.dataset.section);
+        toggleCut(section);
+        section.scrollIntoView({behavior:'smooth',block:'start'});
       });
     });
 
-    document.querySelectorAll('.acc-item').forEach(item => {
+    sections.forEach(section => {
+      const head = section.querySelector('.section-head');
+      const activate = () => toggleCut(section);
+      head.addEventListener('click', activate);
+      head.addEventListener('keydown', event => {
+        if(event.key === 'Enter' || event.key === ' '){
+          event.preventDefault();
+          activate();
+        }
+      });
+    });
+
+    const accordionItems = document.querySelectorAll('.acc-item');
+
+    function closeAllAccordions(){
+      accordionItems.forEach(item => {
+        const btn = item.querySelector('.acc-btn');
+        const content = item.querySelector('.acc-content');
+        item.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        content.style.maxHeight = '0px';
+      });
+    }
+
+    closeAllAccordions();
+    window.addEventListener('pageshow', () => {
+      closeAllCuts();
+      closeAllAccordions();
+    });
+
+    accordionItems.forEach(item => {
       const btn = item.querySelector('.acc-btn');
       const content = item.querySelector('.acc-content');
       btn.addEventListener('click', () => {
@@ -382,11 +635,39 @@
       });
     });
 
+    document.querySelectorAll('.detail-tabs').forEach(group => {
+      const detailBtns = group.querySelectorAll('.detail-btn');
+      const detailPanels = group.querySelectorAll('.detail-panel');
+
+      detailBtns.forEach(detailBtn => {
+        detailBtn.setAttribute('aria-selected', String(detailBtn.classList.contains('active')));
+        detailBtn.addEventListener('click', () => {
+          detailBtns.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+          });
+          detailPanels.forEach(panel => panel.classList.remove('active'));
+
+          detailBtn.classList.add('active');
+          detailBtn.setAttribute('aria-selected', 'true');
+          document.getElementById(detailBtn.dataset.detail).classList.add('active');
+
+          const openContent = group.closest('.acc-content');
+          requestAnimationFrame(() => {
+            if (openContent.closest('.acc-item').classList.contains('open')) {
+              openContent.style.maxHeight = openContent.scrollHeight + 'px';
+            }
+          });
+        });
+      });
+    });
+
     window.addEventListener('resize', () => {
       document.querySelectorAll('.acc-item.open .acc-content').forEach(content => {
         content.style.maxHeight = content.scrollHeight + 'px';
       });
     });
+
   </script>
 </body>
 </html>
