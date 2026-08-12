@@ -1,0 +1,586 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saber Hacer | Propuesta de diseño</title>
+  <style>
+    :root{
+      --verde:#86a91e;
+      --verde-oscuro:#5f7d14;
+      --verde-suave:#eef5dc;
+      --tinta:#26322b;
+      --gris:#667168;
+      --borde:#dce3d9;
+      --fondo:#f6f8f5;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--fondo);
+      color:var(--tinta);
+    }
+
+    .topbar{
+      background:#29352d;
+      color:#fff;
+      padding:10px 7%;
+      font-size:13px;
+    }
+
+    header{
+      background:#fff;
+      padding:16px 7%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid var(--borde);
+    }
+
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand img{width:116px;max-height:42px;object-fit:contain}
+
+    .brand span{
+      color:var(--gris);
+      border-left:1px solid var(--borde);
+      padding-left:14px;
+      font-size:14px;
+    }
+
+    .badge{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+      border:1px solid #cbdca6;
+      padding:8px 14px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .app{
+      width:min(1180px,90%);
+      min-height:650px;
+      margin:30px auto;
+      display:grid;
+      grid-template-columns:285px 1fr;
+      background:#fff;
+      border:1px solid var(--borde);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 12px 35px rgba(37,55,39,.08);
+    }
+
+    .sidebar{
+      padding:30px 20px;
+      background:#fbfcfa;
+      border-right:1px solid var(--borde);
+    }
+
+    .sidebar h1{
+      margin:0 0 8px;
+      color:var(--verde-oscuro);
+      font-size:20px;
+    }
+
+    .sidebar p{
+      margin:0 0 25px;
+      color:var(--gris);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .topic-button{
+      width:100%;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      text-align:left;
+      border:0;
+      border-radius:10px;
+      background:transparent;
+      color:#465047;
+      padding:13px 10px;
+      margin:5px 0;
+      cursor:pointer;
+      font-size:14px;
+      line-height:1.4;
+    }
+
+    .topic-button:hover{background:#f0f5e5}
+
+    .topic-button.active{
+      color:#fff;
+      background:var(--verde);
+      font-weight:bold;
+    }
+
+    .number{
+      min-width:28px;
+      height:28px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#e4ecd4;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .topic-button.active .number{
+      background:#fff;
+      color:var(--verde-oscuro);
+    }
+
+    .workspace{padding:42px 46px}
+
+    .eyebrow{
+      margin:0 0 10px;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      font-weight:bold;
+    }
+
+    h2{
+      margin:0;
+      font-size:30px;
+      line-height:1.18;
+    }
+
+    .intro{
+      max-width:760px;
+      margin:14px 0 28px;
+      color:var(--gris);
+      font-size:15px;
+      line-height:1.6;
+    }
+
+    .accordion{
+      margin-bottom:12px;
+      overflow:hidden;
+      border:1px solid var(--borde);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .accordion-trigger{
+      width:100%;
+      padding:17px 19px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border:0;
+      background:#fff;
+      color:var(--tinta);
+      text-align:left;
+      font-size:15px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .accordion-trigger:hover{background:#fafcf7}
+
+    .accordion.open .accordion-trigger{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+    }
+
+    .accordion-icon{
+      width:25px;
+      height:25px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#e5edd5;
+      color:var(--verde-oscuro);
+      flex-shrink:0;
+      font-size:19px;
+    }
+
+    .accordion.open .accordion-icon::after{content:"−"}
+    .accordion:not(.open) .accordion-icon::after{content:"+"}
+
+    .accordion-content{
+      display:grid;
+      grid-template-rows:0fr;
+      transition:grid-template-rows .28s ease;
+    }
+
+    .accordion.open .accordion-content{grid-template-rows:1fr}
+    .accordion-inner{overflow:hidden}
+
+    .accordion-body{
+      padding:21px;
+      color:#475149;
+      font-size:14px;
+      line-height:1.65;
+    }
+
+    .accordion-body p:first-child{margin-top:0}
+    .accordion-body p:last-child{margin-bottom:0}
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
+    .card{
+      padding:14px 16px;
+      border-left:4px solid var(--verde);
+      border-radius:0 8px 8px 0;
+      background:#f8faf5;
+    }
+
+    .card h4{
+      margin:0 0 6px;
+      color:var(--verde-oscuro);
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      font-size:12px;
+    }
+
+    .card p{margin:0}
+
+    .card.alerta{border-left-color:#c07b74;background:#fdf5f4}
+    .card.alerta h4{color:#8d4a44}
+
+    .example{
+      padding:16px;
+      border:1px dashed #b9cc84;
+      border-radius:9px;
+      background:#f4f7ed;
+    }
+
+    .project{
+      padding:15px 17px;
+      border-left:4px solid #d7a527;
+      border-radius:0 8px 8px 0;
+      background:#fff9e8;
+    }
+
+    .code{
+      display:block;
+      margin-top:12px;
+      padding:14px;
+      border-radius:8px;
+      background:#26342c;
+      color:#eaf3d6;
+      white-space:pre-line;
+      font-family:Consolas, monospace;
+      font-size:13px;
+      line-height:1.65;
+    }
+
+    ul{margin:8px 0;padding-left:20px}
+    li{margin:5px 0}
+
+    @media(max-width:800px){
+      header{padding:14px 5%}
+      .brand span{display:none}
+      .app{width:94%;grid-template-columns:1fr}
+      .sidebar{border-right:0;border-bottom:1px solid var(--borde)}
+      .workspace{padding:29px 22px}
+      h2{font-size:25px}
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">SABER HACER </div>
+
+  <header>
+    <div class="brand">
+      <img src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x" alt="Areandina">
+      <span>Aprendiendo con @LaProfeVivy</span>
+    </div>
+    <div class="badge">Propuesta de diseño</div>
+  </header>
+
+  <main class="app">
+    <aside class="sidebar">
+      <h1>Ruta de la propuesta</h1>
+      <p>Del entorno observado a los objetivos del proyecto.</p>
+
+      <button class="topic-button active" data-topic="problematica">
+        <span class="number">1</span>
+        <span>Identificación de la problemática</span>
+      </button>
+
+      <button class="topic-button" data-topic="arbol">
+        <span class="number">2</span>
+        <span>Árbol de problemas</span>
+      </button>
+
+      <button class="topic-button" data-topic="objetivos">
+        <span class="number">3</span>
+        <span>Formulación de objetivos</span>
+      </button>
+    </aside>
+
+    <section class="workspace">
+      <p class="eyebrow">Saber Hacer · Propuesta de diseño</p>
+      <h2 id="topicTitle"></h2>
+      <p class="intro" id="topicIntro"></p>
+      <div id="accordions"></div>
+    </section>
+  </main>
+
+  <script>
+    const topics = {
+      problematica: {
+        title: "Identificación de la problemática",
+        intro: "Antes de proponer una solución hay que verificar que la situación observada se pueda trabajar. No toda dificultad del entorno sirve como problemática de un proyecto de software.",
+        sections: [
+          {
+            title: "La situación de análisis",
+            body: `<div class="example">
+              <strong>Problemática:</strong> en un colegio, la coordinación nota que muchos estudiantes llegan tarde a la primera hora de clase. Esto genera interrupciones al iniciar la clase, anotaciones disciplinarias y reclamos de los docentes.
+              <br><br>
+              La situación se observa en un entorno concreto, se repite y deja rastro en las planillas de asistencia. Esas tres condiciones son las que permiten trabajarla.
+            </div>`
+          },
+          {
+            title: "Los cinco filtros de viabilidad",
+            body: `<p>Una situación del entorno sirve como problemática cuando cumple los cinco filtros. Si falla uno, se replantea o se cambia por otra.</p>
+            <ul>
+              <li><strong>Se repite:</strong> ocurre con frecuencia; no fue un hecho aislado.</li>
+              <li><strong>Está al alcance:</strong> depende de personas u organizaciones a las que se puede llegar.</li>
+              <li><strong>Hay información:</strong> se registran, se consultan o se pierden datos.</li>
+              <li><strong>Se puede entrar:</strong> hay acceso al entorno para observar y preguntar.</li>
+              <li><strong>Cabe en el curso:</strong> alcanza en el tiempo y con los recursos disponibles.</li>
+            </ul>
+            <p>El tercer filtro es el que decide si el proyecto puede ser digital. Sin información de por medio no hay nada que un producto de software pueda cambiar.</p>`
+          },
+          {
+            title: "Qué sirve y qué no",
+            body: `<div class="grid">
+              <div class="card">
+                <h4>Sirve como problemática</h4>
+                <p>Las llegadas tarde a la primera hora: se repiten, las maneja el colegio, hay planillas de por medio y se puede observar el proceso.</p>
+              </div>
+              <div class="card alerta">
+                <h4>No sirve tal como está</h4>
+                <p>La granizada que rompió las tejas de dos salones: fue un hecho aislado y el clima no está al alcance de nadie.</p>
+              </div>
+            </div>
+            <p>Descartar con argumento también es parte del análisis. Y una situación descartada se puede replantear: la granizada no se evita, pero el reporte de daños que se lleva en papel y no llega a mantenimiento sí es un problema de información.</p>`
+          },
+          {
+            title: "Redacción de la situación problemática",
+            body: `<p>La situación se enuncia con tres elementos: dónde ocurre, qué ocurre y a quién afecta, más la evidencia que respalda la observación.</p>
+            <span class="code">En [entorno], [qué ocurre].
+Afecta a [quiénes].
+Se evidencia en [fuente de la observación].
+
+En el Colegio San Martín de Bogotá, un grupo recurrente de estudiantes llega tarde a la primera hora.
+Afecta a los estudiantes, los docentes y la coordinación.
+Se evidencia en las planillas de llegada y los reportes de coordinación.</span>`
+          }
+        ]
+      },
+
+      arbol: {
+        title: "Árbol de problemas",
+        intro: "El árbol ordena la situación antes de proponer cualquier solución: por qué ocurre, qué consecuencias trae y qué parte del problema está al alcance del proyecto.",
+        sections: [
+          {
+            title: "Cómo se lee el árbol",
+            body: `<p>El árbol se lee de abajo hacia arriba, uniendo cada casilla con la palabra “entonces”. Si la lectura se sostiene, el análisis es coherente.</p>
+            <ul>
+              <li><strong>Causa indirecta:</strong> la raíz, lo que está detrás.</li>
+              <li><strong>Causa directa:</strong> lo que provoca el problema de forma inmediata.</li>
+              <li><strong>Problema central:</strong> el tronco, el hecho que se observa.</li>
+              <li><strong>Efecto directo:</strong> lo que ocurre enseguida.</li>
+              <li><strong>Efecto indirecto:</strong> en qué termina afectando a la institución.</li>
+            </ul>
+            <p>Cada columna del árbol es una <strong>línea</strong>: una familia distinta de razones. Tres líneas bastan para un proyecto de aula.</p>`
+          },
+          {
+            title: "El problema central",
+            body: `<p>Se redacta como una frase nominal breve, que describa un hecho observable. No es una carencia ni una solución.</p>
+            <div class="grid">
+              <div class="card">
+                <h4>Así sí</h4>
+                <p>Llegadas tardías recurrentes a la primera hora en el colegio.</p>
+              </div>
+              <div class="card alerta">
+                <h4>Así no</h4>
+                <p>“Falta de control de asistencia” es una carencia. “No existe una aplicación móvil” es la solución. “El registro se lleva en planillas de papel” es una causa: va abajo, no en el tronco.</p>
+              </div>
+            </div>`
+          },
+          {
+            title: "Las tres líneas del caso",
+            body: `<div class="example">
+              <strong>Problema central:</strong> llegadas tardías recurrentes a la primera hora en el colegio.
+              <br><br>
+              <strong>Línea 1 · Transporte.</strong> Congestión vial o baja frecuencia del transporte → demoras en el trayecto → interrupción del inicio de la clase → menor aprovechamiento de la clase.
+              <br><br>
+              <strong>Línea 2 · Organización del tiempo.</strong> Desorganización de la rutina en el hogar → salida tardía del hogar → incumplimiento reiterado del horario → aumento de anotaciones disciplinarias.
+              <br><br>
+              <strong>Línea 3 · Seguimiento institucional.</strong> Registro manual y disperso de la asistencia → seguimiento tardío de las llegadas → casos reincidentes sin intervención oportuna → decisiones de coordinación sin soporte de información.
+            </div>`
+          },
+          {
+            title: "Elección de la línea viable",
+            body: `<p>No toda línea se puede intervenir. Se elige una y se sustenta la elección con tres criterios:</p>
+            <ul>
+              <li>Se interviene con un producto digital, no con una obra ni con una decisión externa.</li>
+              <li>Está bajo el control de la institución.</li>
+              <li>Deja datos que permiten comprobar el cambio.</li>
+            </ul>
+            <div class="project">
+              En el caso, transporte y organización del hogar no pasan la prueba: dependen del tráfico y de la rutina de cada familia. La línea viable es <strong>seguimiento institucional</strong>, porque el registro de la asistencia lo maneja el colegio y deja datos. Los objetivos salen de esa línea, no de las tres.
+            </div>`
+          },
+          {
+            title: "Del árbol de problemas al árbol de objetivos",
+            body: `<p>Cada elemento negativo se reescribe en positivo. El problema central se convierte en la situación deseada y las causas de la línea elegida se convierten en los medios.</p>
+            <span class="code">PROBLEMA CENTRAL
+Llegadas tardías recurrentes a la primera hora.
+→ SITUACIÓN DESEADA
+Llegadas puntuales a la primera hora.
+
+CAUSA DIRECTA
+Seguimiento tardío de las llegadas.
+→ MEDIO
+Seguimiento oportuno de las llegadas tardías.
+
+CAUSA INDIRECTA
+Registro manual y disperso de la asistencia.
+→ MEDIO
+Registro de asistencia automatizado y centralizado.</span>`
+          }
+        ]
+      },
+
+      objetivos: {
+        title: "Formulación de objetivos",
+        intro: "Los objetivos traducen los medios del árbol en el producto que se va a construir. El objetivo general nombra el producto; los específicos recorren las etapas para llegar a él.",
+        sections: [
+          {
+            title: "Del medio al producto",
+            body: `<p>Lo que se construye es el medio que resuelve la causa. Aquí, el medio es el registro de asistencia automatizado y el producto que lo hace posible es una aplicación móvil.</p>
+            <div class="project">
+              Es <strong>una sola aplicación</strong>: el registro de asistencia. Como guarda la hora de llegada, la información sobre las llegadas tarde sale de ese mismo registro. No se construye un producto por cada cosa.
+            </div>
+            <p>El propósito del objetivo no es la aplicación: es la situación deseada del árbol, la puntualidad. La aplicación es el medio; la puntualidad, el fin.</p>`
+          },
+          {
+            title: "Estructura del objetivo general",
+            body: `<p>Un solo verbo en infinitivo, de creación, más cuatro elementos.</p>
+            <span class="code">Verbo + ¿qué se realizará? + dirigida a ¿para quién? + para ¿para qué? + en ¿en qué contexto?
+
+Desarrollar una aplicación móvil para el registro de la asistencia y la hora de llegada,
+dirigida a estudiantes, docentes y directivos según los permisos de cada rol,
+para lograr llegadas puntuales a la primera hora,
+en el Colegio San Martín de Bogotá.</span>
+            <p>El “para qué” es, palabra por palabra, la situación deseada que se escribió en el árbol. Ahí se amarran los dos ejercicios.</p>`
+          },
+          {
+            title: "Los roles del producto",
+            body: `<p>Los roles salen de la línea elegida y deben sostenerse en todos los objetivos específicos.</p>
+            <div class="grid">
+              <div class="card"><h4>Estudiante</h4><p>Registra su asistencia desde el celular y queda la hora de llegada.</p></div>
+              <div class="card"><h4>Docente</h4><p>Confirma el registro del grupo y justifica los retardos.</p></div>
+              <div class="card"><h4>Directivo o coordinador</h4><p>Consulta los reportes de asistencia y de retardos reincidentes.</p></div>
+              <div class="card"><h4>Permisos</h4><p>Cada rol ve y modifica solo lo que le corresponde.</p></div>
+            </div>`
+          },
+          {
+            title: "Los tres objetivos específicos",
+            body: `<p>Son resultados parciales, no actividades, y siguen una secuencia obligatoria. Ninguno repite el verbo del objetivo general.</p>
+            <div class="grid">
+              <div class="card"><h4>1. Diagnóstico</h4><p>Describe cómo funciona hoy el proceso y qué necesita cada rol. Todavía no se diseña nada.</p></div>
+              <div class="card"><h4>2. Diseño y desarrollo</h4><p>Construye los módulos que responden a los requerimientos del diagnóstico.</p></div>
+              <div class="card"><h4>3. Validación</h4><p>Comprueba con usuarios reales que el producto cumple su propósito.</p></div>
+              <div class="card"><h4>Estructura de cada uno</h4><p>Verbo de la etapa + resultado parcial + para (aporte al general) + mediante (evidencia).</p></div>
+            </div>`
+          },
+          {
+            title: "Los objetivos del caso",
+            body: `<span class="code">OBJETIVO GENERAL
+Desarrollar una aplicación móvil para el registro de la asistencia y la hora de llegada, dirigida a estudiantes, docentes y directivos según los permisos de cada rol, para lograr llegadas puntuales a la primera hora, en el Colegio San Martín de Bogotá.
+
+OBJETIVO ESPECÍFICO 1 · DIAGNÓSTICO
+Caracterizar el proceso actual de registro de asistencia y de control de la hora de llegada, para definir las funciones y los permisos de estudiantes, docentes y directivos, mediante la revisión de las planillas de asistencia y entrevistas a coordinación.
+
+OBJETIVO ESPECÍFICO 2 · DISEÑO Y DESARROLLO
+Diseñar los módulos de registro de asistencia, justificación de retardos y reportes de reincidencia, para responder a los permisos definidos para cada rol en el diagnóstico, mediante un prototipo funcional instalado en dispositivos móviles.
+
+OBJETIVO ESPECÍFICO 3 · VALIDACIÓN
+Validar el funcionamiento de la aplicación con estudiantes, docentes y directivos, para comprobar que la asistencia queda registrada con su hora y que los retardos se atienden a tiempo, mediante pruebas de usabilidad y contraste con el registro manual.</span>`
+          },
+          {
+            title: "Criterios de calidad",
+            body: `<ul>
+              <li><strong>Claro:</strong> se entiende sin necesidad de explicarlo.</li>
+              <li><strong>Concreto:</strong> nombra un producto o un resultado, no una intención.</li>
+              <li><strong>Alcanzable:</strong> se puede lograr con el tiempo y los recursos del proyecto.</li>
+              <li><strong>Medible:</strong> permite saber cuánto se logró.</li>
+              <li><strong>Verificable:</strong> existe una evidencia que otra persona puede revisar.</li>
+            </ul>
+            <p>Evite los verbos que no permiten comprobar un resultado: conocer, aprender, comprender, investigar o mejorar.</p>`
+          }
+        ]
+      }
+    };
+
+    const title = document.getElementById("topicTitle");
+    const intro = document.getElementById("topicIntro");
+    const accordions = document.getElementById("accordions");
+    const buttons = document.querySelectorAll(".topic-button");
+
+    function renderTopic(key) {
+      const topic = topics[key];
+
+      title.textContent = topic.title;
+      intro.textContent = topic.intro;
+
+      accordions.innerHTML = topic.sections.map(section => `
+        <article class="accordion">
+          <button class="accordion-trigger" type="button">
+            <span>${section.title}</span>
+            <span class="accordion-icon"></span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-inner">
+              <div class="accordion-body">${section.body}</div>
+            </div>
+          </div>
+        </article>
+      `).join("");
+
+      document.querySelectorAll(".accordion-trigger").forEach(trigger => {
+        trigger.addEventListener("click", () => {
+          const selected = trigger.parentElement;
+          const wasOpen = selected.classList.contains("open");
+
+          document.querySelectorAll(".accordion").forEach(item => {
+            item.classList.remove("open");
+          });
+
+          if (!wasOpen) selected.classList.add("open");
+        });
+      });
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        buttons.forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        renderTopic(button.dataset.topic);
+      });
+    });
+
+    renderTopic("problematica");
+  </script>
+</body>
+</html>
