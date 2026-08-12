@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cinética enzimática: cálculo de Vmáx y Km paso a paso</title>
+  <style>
+    :root{--verde:#7fb536;--oscuro:#527523;--suave:#eef5e2;--magenta:#e6007e;--rosa:#fde6f2;--naranja:#f59c2f;--naranja-suave:#fdf0dd;--azul:#2f79bd;--azul-suave:#eaf4ff;--gris:#606060;--linea:#e5e5e5;--blanco:#fff}
+    *{box-sizing:border-box}
+    body{margin:0;background:#fff;color:#171717;font-family:'Brown','Trebuchet MS',Arial,sans-serif}
+    header{max-width:1150px;margin:auto;padding:26px 24px 14px}
+    .institucion{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gris);margin-bottom:4px}
+    h1{margin:0;color:var(--verde);font-size:clamp(25px,4vw,38px);line-height:1.15}
+    .subtitulo{max-width:940px;color:var(--gris);font-size:15px;line-height:1.55;margin:8px 0 0}
+    .app{max-width:1150px;margin:auto;padding:0 24px 16px;display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+    .espacio{display:flex;flex-direction:column;gap:12px}
+    .grafica{border:2px solid var(--linea);border-radius:14px;overflow:hidden;position:relative}
+    .grafica svg{display:block;width:100%;height:auto}
+    .nota{position:absolute;left:12px;bottom:10px;background:#fffffff0;color:var(--gris);font-size:12px;font-weight:700;padding:5px 10px;border-radius:10px}
+    .rejilla{stroke:#eef0ef}
+    .eje{stroke:#777;stroke-width:2}
+    .marca-eje{stroke:#999;stroke-width:1.5}
+    .curva{fill:none;stroke:var(--azul);stroke-width:4;stroke-linecap:round}
+    .recta{stroke:var(--verde);stroke-width:4;stroke-linecap:round}
+    .punto{fill:#fff;stroke:var(--magenta);stroke-width:3}
+    .rotulo{font-size:12px;font-weight:700;fill:#555}
+    .numero{font-size:10.5px;font-weight:700;fill:#8a8a8a}
+    .caja-eq{fill:var(--suave);stroke:var(--verde);stroke-width:1.5}
+    .texto-eq{fill:var(--oscuro);font-size:15px;font-weight:800}
+    .hito{fill:var(--naranja);stroke:#fff;stroke-width:2}
+    .hito-linea{stroke:var(--naranja);stroke-width:2;stroke-dasharray:5 4}
+    .hito-texto{font-size:11.5px;font-weight:800;fill:#985c00}
+    .formulas{border:2px solid var(--linea);border-radius:14px;padding:13px;display:grid;grid-template-columns:auto 1fr;gap:8px 14px;align-items:center;font-size:13px}
+    .formulas span{background:#f4f4f4;color:#777;border-radius:14px;padding:5px 9px;font-size:11px;font-weight:800;text-align:center}
+    .formulas span.activo{background:var(--suave);color:var(--oscuro)}
+    .fraccion{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle}
+    .fraccion b{border-bottom:1.5px solid #222}
+    .panel{border:2px solid var(--linea);border-radius:14px;padding:16px}
+    .panel h2{font-size:16px;color:var(--oscuro);margin:0 0 10px}
+    .contexto{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+    .contexto div{border:1px solid var(--linea);border-radius:10px;padding:8px 10px}
+    .contexto small{display:block;color:var(--gris);font-size:11px}
+    .contexto b{font-size:13px}
+    .pregunta{background:var(--suave);border:2px solid var(--verde);border-radius:12px;padding:12px 13px}
+    .pregunta.final{background:var(--naranja-suave);border-color:var(--naranja)}
+    .pregunta-titulo{font-size:15px;font-weight:800;color:var(--oscuro);margin-bottom:5px}
+    .condicion{font-size:13px;line-height:1.5;color:var(--gris)}
+    .opciones{display:grid;gap:7px;margin-top:10px}
+    .opciones button{font:700 13px inherit;padding:9px 12px;border:2px solid var(--verde);border-radius:20px;background:#fff;color:var(--oscuro);text-align:left;cursor:pointer}
+    .opciones button:hover{background:var(--suave);border-color:var(--oscuro)}
+    .botonera{display:flex;gap:7px;margin-top:12px}
+    .icono{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;padding:0;font-size:18px;font-weight:800;cursor:pointer;background:#fff}
+    .icono:disabled{opacity:.4;cursor:default}
+    .secundario{border:2px solid var(--verde);color:var(--oscuro)}
+    .pista-btn{border:2px solid var(--azul);color:var(--azul)}
+    button:focus-visible{outline:3px solid var(--magenta);outline-offset:2px}
+    .feedback,.pista,.resultado{margin-top:10px;border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.55}
+    .bien{background:var(--suave);border:2px solid var(--verde);color:var(--oscuro)}
+    .mal{background:var(--rosa);border:2px solid var(--magenta);color:#8f004f}
+    .pista{background:var(--azul-suave);border:2px solid var(--azul);color:#215b8f}
+    .resultado{background:var(--naranja-suave);border:2px solid var(--naranja);color:#764a0d;display:grid;gap:3px}
+    .leyenda{display:grid;gap:6px;margin-top:12px;font-size:12px;color:var(--gris)}
+    .leyenda span{display:flex;align-items:center;gap:7px}
+    .muestra{width:14px;height:14px;border-radius:50%}
+    .original{border:2px solid var(--gris)}
+    .transformado{border:2px solid var(--naranja);background:var(--naranja-suave)}
+    .confirmado{border:2px solid var(--oscuro);background:var(--verde)}
+    .zona{max-width:1150px;margin:auto;padding:0 24px 20px}
+    .titulo-tabla{font-size:16px;font-weight:800;color:var(--oscuro);margin:2px 0 8px}
+    .tabla-scroll{overflow:auto;border:2px solid var(--linea);border-radius:14px}
+    table{border-collapse:collapse;width:100%;min-width:760px;font-size:13px}
+    th,td{border:1px solid var(--linea);padding:8px;text-align:center}
+    th{background:var(--verde);color:#fff}
+    td{font-variant-numeric:tabular-nums;font-weight:600}
+    .cambio{background:var(--naranja-suave);color:#985c00;font-weight:800}
+    .espera{color:#aaa}
+    .registro{border:2px solid var(--linea);border-radius:14px;overflow:hidden}
+    .fila-reg{display:grid;grid-template-columns:45px 1fr;border-bottom:1px solid var(--linea)}
+    .fila-reg:last-child{border-bottom:0}
+    .fila-reg>strong{display:grid;place-items:center;background:var(--verde);color:#fff}
+    .fila-reg>span{padding:8px 12px;font-size:12.5px;color:var(--gris)}
+    .fila-reg span b{display:block;color:#171717;margin-bottom:2px}
+    .inicio>strong{background:#999}
+    footer{border-top:1px solid var(--linea);padding:22px;text-align:center;color:var(--gris);font-size:12px;font-weight:700}
+    @media(max-width:920px){.app{grid-template-columns:1fr}}
+    @media(max-width:560px){header,.app,.zona{padding-left:14px;padding-right:14px}.contexto{grid-template-columns:1fr}.formulas{grid-template-columns:1fr}.nota{position:static}.botonera{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="institucion">Fundación Universitaria del Área Andina · Bioquímica</div>
+    <h1>Cinética enzimática: cálculo de V<sub>máx</sub> y K<sub>m</sub> paso a paso</h1>
+    <p class="subtitulo">Analiza los datos de la hexoquinasa II. En cada paso, toma la decisión que permite continuar el cálculo; la tabla y la gráfica se actualizarán con tu avance.</p>
+  </header>
+
+  <div class="app">
+    <section class="espacio">
+      <div class="grafica"><svg id="grafica" viewBox="0 0 560 310" role="img" aria-label="Gráfica de los datos del ejercicio"></svg><div class="nota" id="notaGrafica"></div></div>
+      <div class="formulas">
+        <span id="etiquetaMM">Michaelis–Menten</span><strong>v₀ = <i class="fraccion"><b>V<sub>máx</sub> · [S]</b><em>K<sub>m</sub> + [S]</em></i></strong>
+        <span id="etiquetaLB">Lineweaver–Burk</span><strong>1/v₀ = (K<sub>m</sub>/V<sub>máx</sub>)(1/[S]) + 1/V<sub>máx</sub></strong>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h2>Aplicación del método</h2>
+      <div class="contexto"><div><small>Enzima</small><b>Hexoquinasa II</b></div><div><small>Sustrato</small><b>Glucosa</b></div></div>
+      <div class="pregunta" id="pregunta"><div class="pregunta-titulo" id="tituloPregunta"></div><div class="condicion" id="textoPregunta"></div></div>
+      <div class="opciones" id="opciones"></div>
+      <div class="botonera">
+        <button class="icono pista-btn" id="btnPista" title="Mostrar pista" aria-label="Mostrar pista">?</button>
+        <button class="icono secundario" id="btnVoz" title="Reproducir explicación" aria-label="Reproducir explicación en audio">▶</button>
+        <button class="icono secundario" id="btnDetener" title="Detener reproducción" aria-label="Detener la reproducción">■</button>
+        <button class="icono secundario" id="btnAnterior" title="Deshacer paso" aria-label="Deshacer el último paso">←</button>
+        <button class="icono secundario" id="btnReiniciar" title="Reiniciar actividad" aria-label="Reiniciar la actividad">↻</button>
+      </div>
+      <div id="mensajes" aria-live="polite"></div>
+      <div class="leyenda"><span><i class="muestra original"></i>Dato original</span><span><i class="muestra transformado"></i>Dato transformado</span><span><i class="muestra confirmado"></i>Resultado confirmado</span></div>
+    </aside>
+  </div>
+
+  <section class="zona"><div class="titulo-tabla">Tabla de cálculo y transformación de los datos</div><div class="tabla-scroll"><table><thead><tr><th rowspan="2">Ensayo</th><th colspan="2">Datos experimentales</th><th colspan="2">Dobles recíprocos</th></tr><tr><th>[S] (µM)</th><th>v₀ (mmol/min)</th><th>1/[S] (µM⁻¹)</th><th>1/v₀ (min/mmol)</th></tr></thead><tbody id="cuerpoTabla"></tbody></table></div></section>
+  <section class="zona"><div class="titulo-tabla">Registro del procedimiento</div><div class="registro" id="registro"></div></section>
+  <footer>Aprendiendo con @LaProfeVivy · Facultad de Ingeniería y Ciencias Básicas</footer>
+
+  <script>
+  (()=>{
+    const M=13.598,Bc=0.4926,VMAX=2.030,KM=27.60;
+    const datos=[
+      {s:7,v:0.411,rs:'0,1429',rv:'2,433'},{s:48,v:1.268,rs:'0,02083',rv:'0,789'},
+      {s:171,v:1.722,rs:'0,00585',rv:'0,581'},{s:335,v:1.85,rs:'0,00299',rv:'0,541'},
+      {s:547,v:1.983,rs:'0,00183',rv:'0,504'},{s:1016,v:2.031,rs:'0,00098',rv:'0,492'}
+    ];
+    function paso(t,q,i,o,c,e,d,p,err){return{t,q,i,o,c,e,d,p,err}}
+    const pasos=[
+      paso('Paso 1: ¿qué debemos encontrar?','Antes de calcular, identifica el objetivo del ejercicio.','Selecciona las dos constantes que describen el comportamiento de la enzima.',['Vₘáx y Kₘ','ΔG y Kₑq','pH y temperatura'],0,'El ejercicio busca la <b>velocidad máxima (Vₘáx)</b> y la <b>constante de Michaelis (Kₘ)</b> de la hexoquinasa II.','Se identifican como incógnitas Vₘáx y Kₘ.',['Lee las unidades de velocidad.','Busca dos parámetros de Michaelis–Menten.','Las incógnitas son Vₘáx y Kₘ.'],['','ΔG y Keq pertenecen a un análisis termodinámico.','El pH y la temperatura no son las incógnitas pedidas.']),
+      paso('Paso 2: ¿qué comportamiento muestran los datos?','Observa la tabla y la curva azul.','¿Qué ocurre con v₀ cuando aumenta mucho la glucosa?',['Se acerca a un valor límite','Aumenta siempre en la misma proporción','Disminuye hasta cero'],0,'La velocidad se aproxima a un límite. Esto indica <b>saturación enzimática</b> y permite estimar Vₘáx.','La curva se aproxima a una meseta: hay saturación.',['Compara los dos últimos ensayos.','La glucosa casi se duplica, pero v₀ cambia muy poco.','La velocidad se acerca a una meseta.'],['','Los últimos incrementos de velocidad son cada vez menores.','Las velocidades aumentan, no disminuyen.']),
+      paso('Paso 3: ¿cómo convertimos la curva en una recta?','Necesitamos aplicar una regresión lineal.','Selecciona la transformación apropiada.',['Calcular 1/[S] y 1/v₀','Multiplicar [S] × v₀','Restar [S] − v₀'],0,'Lineweaver–Burk usa los <b>dobles recíprocos</b> para transformar la curva en una recta.','Se elige calcular 1/[S] y 1/v₀.',['El método se llama gráfica de dobles recíprocos.','Debes transformar las dos variables.','Calcula 1/[S] y 1/v₀.'],['','Ese producto no linealiza Michaelis–Menten.','No se restan magnitudes con unidades diferentes.']),
+      paso('Paso 4: calcula el primer 1/[S]','En el primer ensayo, [S] = 7 µM.','¿Cuál es el resultado de 1 ÷ 7?',['0,1429 µM⁻¹','7 µM⁻¹','0,0700 µM⁻¹'],0,'1/[S] = 1/7 = <b>0,1429 µM⁻¹</b>. Este será el primer valor de X.','1/7 = 0,1429 µM⁻¹.',['Usa la tecla 1/x.','El resultado debe ser menor que 1.','1 ÷ 7 = 0,1429.'],['','Ese es el dato original, no su recíproco.','0,0700 no es 1 ÷ 7.']),
+      paso('Paso 5: calcula el primer 1/v₀','En el primer ensayo, v₀ = 0,411 mmol/min.','¿Cuál es el resultado de 1 ÷ 0,411?',['2,433 min/mmol','0,411 min/mmol','0,243 min/mmol'],0,'1/v₀ = 1/0,411 = <b>2,433 min/mmol</b>. Este será el primer valor de Y.','1/0,411 = 2,433 min/mmol.',['Divide 1 entre 0,411.','El resultado debe ser mayor que 1.','El resultado es 2,433.'],['','Ese es el dato original.','El recíproco de 0,411 debe ser mayor que 1.']),
+      paso('Paso 6: completa la transformación','Ya verificaste el primer ensayo.','¿Qué debes hacer con los cinco pares restantes?',['Calcular ambos recíprocos en cada fila','Copiar los valores originales','Transformar únicamente la concentración'],0,'Se repite el procedimiento en las seis filas. La tabla muestra ahora todos los <b>pares transformados</b>.','Se completa la tabla de dobles recíprocos.',['El procedimiento debe ser igual en todas las filas.','Cada fila necesita X y Y.','Calcula ambos recíprocos.'],['','La regresión necesita los valores transformados.','Debes transformar concentración y velocidad.']),
+      paso('Paso 7: define el eje X','Ahora debemos graficar los datos transformados.','¿Qué variable se coloca en el eje horizontal?',['1/[S]','1/v₀','Vₘáx'],0,'En Lineweaver–Burk, <b>X = 1/[S]</b>.','Se asigna X = 1/[S].',['Recuerda y = mx + b.','La concentración es la variable independiente.','X contiene 1/[S].'],['','1/v₀ corresponde al eje Y.','Vmáx todavía es desconocida.']),
+      paso('Paso 8: define el eje Y','Falta asignar la variable dependiente.','¿Qué variable se coloca en el eje vertical?',['1/v₀','[S]','Kₘ'],0,'En Lineweaver–Burk, <b>Y = 1/v₀</b>. Ya puede obtenerse la regresión.','Se asigna Y = 1/v₀.',['Es el recíproco de la velocidad.','La velocidad es la variable dependiente.','Y contiene 1/v₀.'],['','[S] es el dato original, no el eje Y transformado.','Km todavía no se conoce.']),
+      paso('Paso 9: interpreta la regresión','La calculadora entrega y = 13,598x + 0,4926.','¿Cuál es la pendiente m?',['13,598','0,4926','2,030'],0,'El coeficiente de x es la pendiente: <b>m = 13,598</b>, equivalente a Kₘ/Vₘáx.','La pendiente es m = 13,598.',['Compara con y = mx + b.','m multiplica a x.','m = 13,598.'],['','0,4926 es el intercepto.','2,030 será Vmáx.']),
+      paso('Paso 10: identifica el intercepto','Seguimos con y = 13,598x + 0,4926.','¿Cuál es b y qué representa?',['b = 0,4926 = 1/Vₘáx','b = 13,598 = Vₘáx','b = 2,030 = Kₘ'],0,'El término independiente es <b>b = 0,4926</b> y equivale a <b>1/Vₘáx</b>. En la gráfica es el punto donde la recta corta el eje vertical.','b = 0,4926 = 1/Vₘáx.',['b no multiplica a x.','En Lineweaver–Burk, b es 1/Vmáx.','b = 0,4926 = 1/Vmáx.'],['','13,598 es la pendiente.','2,030 no es el intercepto.']),
+      paso('Paso 11: calcula Vₘáx','Sabemos que 1/Vₘáx = 0,4926.','¿Qué operación despeja Vₘáx?',['Vₘáx = 1 ÷ 0,4926 = 2,030','Vₘáx = 1 × 0,4926','Vₘáx = 13,598 ÷ 0,4926'],0,'Se toma el recíproco: <b>Vₘáx = 2,030 mmol/min</b>.','Vₘáx = 1/b = 2,030 mmol/min.',['Debes dejar Vmáx sola.','Toma el recíproco.','Vmáx = 1 ÷ 0,4926.'],['','Debes invertir 0,4926.','Esa operación no despeja 1/Vmáx.']),
+      paso('Paso 12: calcula Kₘ','La pendiente cumple m = Kₘ/Vₘáx.','Con m = 13,598 y Vₘáx = 2,030, ¿cuál es Kₘ?',['Kₘ = 13,598 × 2,030 = 27,60 µM','Kₘ = 13,598 ÷ 2,030 = 6,70 µM','Kₘ = 0,4926 × 2,030 = 1 µM'],0,'Al despejar: <b>Kₘ = m × Vₘáx = 27,60 µM</b>. El análisis queda completo.','Kₘ = m·Vₘáx = 27,60 µM.',['Despeja Km en m = Km/Vmáx.','Vmáx pasa multiplicando.','Km = 13,598 × 2,030.'],['','Al despejar debes multiplicar.','Para Km se usa la pendiente, no el intercepto.'])
+    ];
+
+    const INICIO='<b>Inicialización.</b> Se presentan las concentraciones de glucosa y las velocidades iniciales medidas para la hexoquinasa II. Empezaremos identificando qué solicita el ejercicio.';
+    let indice=0,nivelPista=0,mensaje={tipo:'bien',html:INICIO},orden=barajarTodo();
+    const $=id=>document.getElementById(id);
+
+    function barajarTodo(){return pasos.map(p=>{const a=p.o.map((_,i)=>i);for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a})}
+
+    function responder(op){
+      detener();const p=pasos[indice];
+      if(op===p.c){mensaje={tipo:'bien',html:'<b>Respuesta correcta.</b> '+p.e};nivelPista=0;indice++}
+      else mensaje={tipo:'mal',html:'<b>Respuesta incorrecta.</b> '+p.err[op]+' Revisa los datos y vuelve a intentarlo.'};
+      render()
+    }
+    function pista(){if(indice>=pasos.length)return;nivelPista=Math.min(3,nivelPista+1);mensaje=null;render()}
+    function anterior(){detener();if(indice>0){indice--;nivelPista=0;mensaje=null;render()}}
+    function reiniciar(){detener();indice=0;nivelPista=0;orden=barajarTodo();mensaje={tipo:'bien',html:INICIO};render()}
+
+    let voces=[];
+    function cargarVoces(){voces=window.speechSynthesis?speechSynthesis.getVoices():[]}
+    if('speechSynthesis'in window){cargarVoces();speechSynthesis.addEventListener('voiceschanged',cargarVoces)}
+    function detener(){if('speechSynthesis'in window)speechSynthesis.cancel()}
+    function voz(){
+      if(!('speechSynthesis'in window))return;detener();
+      let texto;
+      if(indice>=pasos.length)texto='Proceso finalizado. Velocidad máxima: dos coma cero tres cero milimoles por minuto. Constante de Michaelis: veintisiete coma sesenta micromolar.';
+      else if(mensaje)texto=mensaje.html.replace(/<[^>]+>/g,' ');
+      else if(nivelPista)texto='Pista '+nivelPista+'. '+pasos[indice].p[nivelPista-1];
+      else texto=pasos[indice].t+'. '+pasos[indice].q+' '+pasos[indice].i;
+      const u=new SpeechSynthesisUtterance(texto.replace(/\s+/g,' ').trim());
+      u.lang='es-CO';u.rate=.92;
+      const v=voces.find(x=>/^es(-|_)/i.test(x.lang));if(v)u.voice=v;
+      speechSynthesis.speak(u)
+    }
+
+    const L=62,R=520,T=34,Bj=250;
+    const num=(v,d)=>v.toFixed(d).replace('.',',');
+
+    function grafica(){
+      const lineal=indice>=8;
+      const c=lineal
+        ?{xmax:.15,ymax:2.7,xt:[0,.05,.1,.15],dx:2,yt:[0,.5,1,1.5,2,2.5],dy:1,fx:'1/[S] (µM⁻¹)',fy:'1/v₀ (min/mmol)'}
+        :{xmax:1100,ymax:2.4,xt:[0,250,500,750,1000],dx:0,yt:[0,.5,1,1.5,2],dy:1,fx:'[Glucosa] (µM)',fy:'v₀ (mmol/min)'};
+      const X=v=>L+(v/c.xmax)*(R-L),Y=v=>Bj-(v/c.ymax)*(Bj-T);
+      let s='';
+      c.yt.forEach(t=>{const y=Y(t);s+=`<line x1="${L}" y1="${y.toFixed(1)}" x2="${R}" y2="${y.toFixed(1)}" class="rejilla"/><text x="${L-8}" y="${(y+4).toFixed(1)}" text-anchor="end" class="numero">${num(t,c.dy)}</text>`});
+      c.xt.forEach(t=>{const x=X(t);s+=`<line x1="${x.toFixed(1)}" y1="${Bj}" x2="${x.toFixed(1)}" y2="${Bj+5}" class="marca-eje"/><text x="${x.toFixed(1)}" y="${Bj+18}" text-anchor="middle" class="numero">${num(t,c.dx)}</text>`});
+      s+=`<line x1="${L}" y1="${Bj}" x2="${R}" y2="${Bj}" class="eje"/><line x1="${L}" y1="${Bj}" x2="${L}" y2="${T}" class="eje"/>`;
+      if(lineal){s+=`<line x1="${X(0).toFixed(1)}" y1="${Y(Bc).toFixed(1)}" x2="${X(.15).toFixed(1)}" y2="${Y(M*.15+Bc).toFixed(1)}" class="recta"/>`}
+      else{let d='';for(let x=0;x<=c.xmax;x+=15){d+=(x?'L':'M')+X(x).toFixed(1)+' '+Y(VMAX*x/(KM+x)).toFixed(1)+' '}s+=`<path d="${d.trim()}" class="curva"/>`}
+      datos.forEach(d=>{
+        const vx=lineal?parseFloat(d.rs.replace(',','.')):d.s,vy=lineal?parseFloat(d.rv.replace(',','.')):d.v;
+        s+=`<circle cx="${X(vx).toFixed(1)}" cy="${Y(vy).toFixed(1)}" r="5.5" class="punto"/>`
+      });
+      if(lineal&&indice>=10){
+        const y=Y(Bc);
+        s+=`<line x1="${L}" y1="${y.toFixed(1)}" x2="${(L+70).toFixed(1)}" y2="${y.toFixed(1)}" class="hito-linea"/><circle cx="${L}" cy="${y.toFixed(1)}" r="5" class="hito"/><text x="${L+14}" y="${(y+20).toFixed(1)}" class="hito-texto">b = 0,4926 = 1/Vmáx</text>`
+      }
+      s+=`<text x="${((L+R)/2).toFixed(0)}" y="292" text-anchor="middle" class="rotulo">${c.fx}</text><text x="16" y="150" transform="rotate(-90 16 150)" text-anchor="middle" class="rotulo">${c.fy}</text>`;
+      if(indice>=8)s+='<rect x="298" y="16" width="222" height="38" rx="10" class="caja-eq"/><text x="409" y="41" text-anchor="middle" class="texto-eq">y = 13,598x + 0,4926</text>';
+      $('grafica').innerHTML=s;
+      $('notaGrafica').textContent=lineal?'Datos transformados: la relación ahora es lineal':'Datos originales: la velocidad se aproxima a una meseta'
+    }
+
+    function tabla(){
+      $('cuerpoTabla').innerHTML=datos.map((d,i)=>{
+        const rs=indice>=6||(i===0&&indice>=4),rv=indice>=6||(i===0&&indice>=5);
+        return `<tr><td>${i+1}</td><td>${d.s}</td><td>${String(d.v).replace('.',',')}</td><td class="${rs?'cambio':'espera'}">${rs?d.rs:'—'}</td><td class="${rv?'cambio':'espera'}">${rv?d.rv:'—'}</td></tr>`
+      }).join('')
+    }
+
+    function registro(){
+      $('registro').innerHTML='<div class="fila-reg inicio"><strong>0</strong><span><b>Inicialización</b>Datos experimentales disponibles; Vmáx y Km aún son desconocidos.</span></div>'+
+        pasos.slice(0,indice).map((p,i)=>`<div class="fila-reg"><strong>${i+1}</strong><span><b>${p.t.replace(/^Paso \d+: /,'')}</b>${p.d}</span></div>`).join('')
+    }
+
+    function render(){
+      const final=indice>=pasos.length;
+      $('pregunta').className='pregunta'+(final?' final':'');
+      $('tituloPregunta').textContent=final?'Proceso finalizado':pasos[indice].t;
+      $('textoPregunta').innerHTML=final?'La regresión permitió determinar los dos parámetros cinéticos.':pasos[indice].q+'<br><strong>'+pasos[indice].i+'</strong>';
+      $('opciones').innerHTML=final?'':orden[indice].map(oi=>`<button data-op="${oi}">${pasos[indice].o[oi]}</button>`).join('');
+      document.querySelectorAll('[data-op]').forEach(b=>b.onclick=()=>responder(+b.dataset.op));
+      let m='';
+      if(mensaje)m=`<div class="feedback ${mensaje.tipo}">${mensaje.html}</div>`;
+      if(nivelPista&&!final)m+=`<div class="pista"><b>Pista ${nivelPista} de 3:</b> ${pasos[indice].p[nivelPista-1]}</div>`;
+      if(final)m+=`<div class="resultado"><b>Resultado final</b><span>Vmáx = 2,030 mmol/min</span><span>Km = 27,60 µM</span></div>`;
+      $('mensajes').innerHTML=m;
+      $('btnPista').disabled=final||nivelPista>=3;
+      $('btnAnterior').disabled=indice===0;
+      $('etiquetaMM').className='activo';
+      $('etiquetaLB').className=indice>=3?'activo':'';
+      grafica();tabla();registro()
+    }
+
+    $('btnPista').onclick=pista;$('btnVoz').onclick=voz;$('btnDetener').onclick=detener;$('btnAnterior').onclick=anterior;$('btnReiniciar').onclick=reiniciar;
+    render();
+  })();
+  </script>
+</body>
+</html>
