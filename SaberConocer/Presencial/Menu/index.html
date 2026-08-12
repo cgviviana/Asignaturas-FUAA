@@ -1,1 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saber Conocer | Ruta temática</title>
+  <style>
+    @font-face{
+      font-family:Brown;
+      src:local("BrownStd-Regular"),url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Regular.woff2") format("woff2");
+      font-display:swap
+    }
+    @font-face{
+      font-family:Brown;
+      src:local("BrownStd-Bold"),url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Bold.woff2") format("woff2");
+      font-weight:700;
+      font-display:swap
+    }
+    :root{
+      --verde:#7fb536;
+      --verde-oscuro:#668e2c;
+      --verde-suave:#f0f6e5;
+      --gris-oscuro:#414141;
+      --gris:#666;
+      --gris-claro:#e1e1e1;
+      --fondo:#f5f5f5;
+      --blanco:#fff;
+      --sombra:0 8px 22px rgba(0,0,0,.08)
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Brown,Arial,sans-serif;
+      color:var(--gris-oscuro);
+      background:var(--fondo)
+    }
+    button{font-family:inherit}
+    .topbar{height:30px;background:var(--gris-oscuro)}
+    .topbar-inner,.header-inner,.wrap{width:min(1180px,calc(100% - 48px));margin:auto}
+    .topbar-inner{
+      height:100%;display:flex;justify-content:flex-end;align-items:center;
+      color:#fff;font-size:12px
+    }
+    .site-header{background:#fff;border-bottom:1px solid #dedede}
+    .header-inner{
+      min-height:82px;display:flex;align-items:center;justify-content:space-between;
+      gap:20px;padding:10px 0
+    }
+    .brand img{display:block;width:180px;height:48px;object-fit:contain;object-position:left}
+    .section-name{margin:0;font-size:18px;font-weight:700;color:#4a4a4a;text-align:right}
+    .section-name span{color:var(--verde-oscuro)}
+    .wrap{padding:30px 0 64px}
+    .main-header{
+      background:#fff;border:1px solid var(--gris-claro);border-bottom:4px solid var(--verde);
+      padding:22px 26px;margin-bottom:18px;box-shadow:var(--sombra)
+    }
+    .eyebrow{
+      margin:0 0 5px;color:var(--verde-oscuro);font-size:13px;font-weight:700;
+      text-transform:uppercase;letter-spacing:.5px
+    }
+    .main-header h1{margin:0;color:var(--gris-oscuro);font-size:30px;line-height:1.1}
+    .frame{display:grid;grid-template-columns:285px minmax(0,1fr);gap:18px;align-items:start}
+    .tabs-panel,.content-panel{background:#fff;border:1px solid var(--gris-claro);box-shadow:var(--sombra)}
+    .tabs-panel{padding:0 0 14px;position:sticky;top:16px}
+    .tabs-title{background:var(--gris-oscuro);color:#fff;padding:15px 18px;font-weight:700;font-size:16px}
+    .tab-btn{
+      width:100%;border:0;border-bottom:1px solid #e6e6e6;border-left:5px solid transparent;
+      background:#fff;color:#505050;padding:16px 17px;text-align:left;cursor:pointer;
+      font-size:15px;font-weight:700;line-height:1.35;transition:.18s ease
+    }
+    .tab-btn:hover{background:#f7f7f7;color:var(--verde-oscuro);border-left-color:#b9d58f}
+    .tab-btn.active{background:var(--verde);color:#fff;border-left-color:var(--verde-oscuro)}
+    .content-panel{min-height:650px;overflow:hidden}
+    .section{display:none}
+    .section.active{display:block}
+    .section-head{background:var(--gris-oscuro);color:#fff;padding:18px 22px;border-bottom:4px solid var(--verde)}
+    .section-head .number{
+      color:#cfe7ad;font-size:13px;font-weight:700;display:block;margin-bottom:3px;
+      text-transform:uppercase;letter-spacing:.4px
+    }
+    .section-head h2{margin:0;font-size:25px;line-height:1.15}
+    .section-body{padding:22px;background:#fff}
+    .lead-box{
+      border-left:5px solid var(--verde);background:var(--verde-suave);padding:14px 16px;
+      margin-bottom:18px;line-height:1.55;color:#4d4d4d
+    }
+    .accordion{display:grid;gap:12px}
+    .acc-item{border:1px solid #dcdcdc;background:#fff;overflow:hidden}
+    .acc-btn{
+      width:100%;border:0;background:#f4f4f4;color:var(--gris-oscuro);padding:15px 17px;
+      text-align:left;display:flex;justify-content:space-between;align-items:center;gap:14px;
+      cursor:pointer;font-size:15px;font-weight:700;line-height:1.35;border-left:5px solid var(--verde)
+    }
+    .acc-btn:hover{background:#ebebeb;color:var(--verde-oscuro)}
+    .acc-item.open .acc-btn{background:var(--verde);color:#fff}
+    .topic-code{display:inline-block;margin-right:8px;color:var(--verde-oscuro)}
+    .acc-item.open .topic-code{color:#fff}
+    .plus{
+      flex:0 0 30px;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;
+      background:#fff;border:1px solid #cfcfcf;color:var(--verde-oscuro);font-size:18px;
+      line-height:1;transition:.2s ease
+    }
+    .acc-item.open .plus{transform:rotate(45deg);border-color:#fff}
+    .acc-content{max-height:0;overflow:hidden;transition:max-height .28s ease;background:#fff}
+    .acc-inner{padding:17px 20px 19px 24px;line-height:1.58;color:#555}
+    .acc-inner p{margin:0}
+    .sublist{margin:10px 0 0;padding-left:21px}
+    .sublist li{margin:7px 0}
+    .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .tag{
+      display:inline-block;padding:6px 10px;border:1px solid #c9dca8;background:#f7faef;
+      color:var(--verde-oscuro);font-size:13px;font-weight:700
+    }
+    footer{
+      margin-top:18px;background:var(--gris-oscuro);color:#fff;padding:15px 20px;
+      text-align:center;font-size:13px
+    }
+    footer strong{color:#cfe7ad}
+    @media(max-width:900px){
+      .frame{grid-template-columns:1fr}
+      .tabs-panel{position:static}
+      .main-header h1{font-size:26px}
+    }
+    @media(max-width:700px){
+      .topbar-inner,.header-inner,.wrap{width:calc(100% - 30px)}
+      .header-inner{min-height:72px}
+      .brand img{width:145px}
+      .section-name{font-size:15px}
+      .main-header{padding:18px}
+      .section-head h2{font-size:21px}
+      .section-body{padding:15px}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">Facultad de Educación</div>
+  </div>
 
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#inicio" aria-label="Ir al inicio">
+        <img src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x" alt="Areandina">
+      </a>
+      <p class="section-name">Saber Conocer / <span>Ruta temática</span></p>
+    </div>
+  </header>
+
+  <div class="wrap" id="inicio">
+    <header class="main-header">
+      <p class="eyebrow">Contenido de aprendizaje</p>
+      <h1>Saber Conocer</h1>
+    </header>
+
+    <div class="frame">
+      <aside class="tabs-panel" aria-label="Temas de Saber Conocer">
+        <div class="tabs-title">Temas</div>
+        <button class="tab-btn active" type="button" data-section="s1" aria-selected="true">
+          1. Análisis de una problemática y sus necesidades
+        </button>
+        <button class="tab-btn" type="button" data-section="s2" aria-selected="false">
+          2. Diseño lógico de la solución digital
+        </button>
+        <button class="tab-btn" type="button" data-section="s3" aria-selected="false">
+          3. Desarrollo y componentes de una solución informática
+        </button>
+      </aside>
+
+      <main class="content-panel">
+        <section id="s1" class="section active">
+          <div class="section-head">
+            <span class="number">Tema 1</span>
+            <h2>Análisis de una problemática y sus necesidades</h2>
+          </div>
+          <div class="section-body">
+            <div class="lead-box">
+              Comprensión de una situación del entorno para delimitar el problema, reconocer sus necesidades y representar de manera lógica una posible solución.
+            </div>
+            <div class="accordion">
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">1.1</span>Delimitación de la problemática</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Definición clara del contexto, los usuarios involucrados, la necesidad identificada y el alcance de la problemática.</p>
+                    <ul class="sublist">
+                      <li><strong>Árbol del problema:</strong> organiza las causas en las raíces, el problema central en el tronco y los efectos en las ramas.</li>
+                      <li><strong>Delimitación:</strong> precisa dónde ocurre, a quién afecta y qué parte puede abordarse mediante una solución digital.</li>
+                    </ul>
+                    <div class="tag-row"><span class="tag">Contexto</span><span class="tag">Usuarios</span><span class="tag">Necesidad</span><span class="tag">Alcance</span></div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">1.2</span>Datos relevantes y abstracción de variables</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Identificación de los datos necesarios para comprender la problemática y definición de variables que permitan representar sus elementos principales de forma simplificada.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">1.3</span>Estructura básica de un algoritmo</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Construcción ordenada de una secuencia de pasos para resolver una parte de la problemática, considerando entradas, proceso y resultados esperados.</p>
+                    <div class="tag-row"><span class="tag">Entrada</span><span class="tag">Proceso</span><span class="tag">Salida</span></div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">1.4</span>Diagramas de flujo</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Representación gráfica del algoritmo mediante símbolos estandarizados, conectores y decisiones que muestran el orden lógico de la solución propuesta.</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s2" class="section">
+          <div class="section-head">
+            <span class="number">Tema 2</span>
+            <h2>Diseño lógico de la solución digital</h2>
+          </div>
+          <div class="section-body">
+            <div class="lead-box">
+              Uso de información verificable y herramientas digitales para organizar, visualizar e interpretar datos que sustenten la solución propuesta.
+            </div>
+            <div class="accordion">
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">2.1</span>Recopilación de datos en fuentes verídicas</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Búsqueda, selección y registro de datos procedentes de fuentes confiables, pertinentes y verificables relacionadas con la problemática.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">2.2</span>Organización y análisis de datos mediante aplicaciones</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Clasificación, depuración y análisis básico de los datos con apoyo de hojas de cálculo u otras aplicaciones digitales.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">2.3</span>Visualización de datos de la problemática</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Selección y construcción de gráficos, tablas e indicadores visuales adecuados para comunicar patrones, comparaciones y tendencias.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">2.4</span>Interpretación de datos para justificar la solución</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Lectura crítica de los resultados obtenidos para formular conclusiones y sustentar, con evidencia, la necesidad y pertinencia de la solución digital.</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="s3" class="section">
+          <div class="section-head">
+            <span class="number">Tema 3</span>
+            <h2>Desarrollo y componentes de una solución informática</h2>
+          </div>
+          <div class="section-body">
+            <div class="lead-box">
+              Planeación y diseño inicial de una aplicación digital que responda a los requerimientos de la problemática e integre criterios de innovación y sustentabilidad.
+            </div>
+            <div class="accordion">
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">3.1</span>Introducción al desarrollo y componentes de una solución informática</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Reconocimiento de los componentes básicos de una solución informática y de las etapas necesarias para convertir una necesidad en una aplicación digital.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">3.2</span>Requisitos y requerimientos de la aplicación digital</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Definición de lo que debe hacer la aplicación, las condiciones que debe cumplir y las necesidades de los usuarios que orientan su diseño.</p>
+                    <div class="tag-row"><span class="tag">Funcionales</span><span class="tag">No funcionales</span><span class="tag">Usuarios</span></div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">3.3</span>Diseño del prototipo de la solución informática v1.0</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Construcción de una primera versión visual y navegable que represente la estructura, las pantallas, las funciones principales y la experiencia de uso de la solución.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="acc-item">
+                <button class="acc-btn" type="button" aria-expanded="false">
+                  <span><span class="topic-code">3.4</span>Sustentabilidad, innovación e integración de IA</span><span class="plus">+</span>
+                </button>
+                <div class="acc-content">
+                  <div class="acc-inner">
+                    <p>Evaluación de la viabilidad y el impacto de la solución, incorporación de elementos innovadores y uso responsable de inteligencia artificial cuando aporte valor real al proyecto.</p>
+                    <div class="tag-row"><span class="tag">Sustentabilidad</span><span class="tag">Innovación</span><span class="tag">IA responsable</span></div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <footer>Aprendiendo con <strong>@LaProfeVivy</strong></footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.section');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(item => {
+          item.classList.remove('active');
+          item.setAttribute('aria-selected', 'false');
+        });
+        sections.forEach(section => section.classList.remove('active'));
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        document.getElementById(btn.dataset.section).classList.add('active');
+        document.querySelector('.content-panel').scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+
+    document.querySelectorAll('.acc-item').forEach(item => {
+      const btn = item.querySelector('.acc-btn');
+      const content = item.querySelector('.acc-content');
+      btn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        item.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(!isOpen));
+        content.style.maxHeight = isOpen ? null : content.scrollHeight + 'px';
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('.acc-item.open .acc-content').forEach(content => {
+        content.style.maxHeight = content.scrollHeight + 'px';
+      });
+    });
+  </script>
+</body>
+</html>
