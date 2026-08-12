@@ -1,1 +1,441 @@
 
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Problemáticas viables | Proyectos de diseño digital</title>
+  <style>
+    :root{
+      --verde:#5f9e2f;
+      --verde-oscuro:#365f0c;
+      --tinta:#273126;
+      --muted:#687264;
+      --fondo:#f4f6f2;
+      --campo:#fafbf9;
+      --borde:#c6cec2;
+      --suave:#eef1ed;
+      --alerta:#8d4a44;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--fondo);color:var(--tinta);font-family:Arial,Helvetica,sans-serif}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    :focus-visible{outline:3px solid var(--verde-oscuro);outline-offset:2px}
+    .barra{height:66px;background:#fff;box-shadow:0 3px 15px rgba(42,59,35,.07)}
+    .barra-interior{width:min(880px,calc(100% - 32px));height:100%;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .marca{display:flex;align-items:center;gap:10px}
+    .marca-icono{width:37px;height:37px;display:grid;place-items:center;border-radius:10px;background:var(--verde-oscuro);color:#fff;font-size:20px;font-weight:900}
+    .marca strong,.marca small{display:block}
+    .marca strong{font-size:15px}
+    .marca small{margin-top:2px;color:var(--muted);font-size:11px}
+    .boton-barra{border:0;border-radius:8px;background:#e8ebe6;padding:9px 13px;color:var(--verde-oscuro);font-size:12px;font-weight:700}
+    .pagina{width:min(880px,calc(100% - 32px));margin:26px auto 36px;padding:18px;display:grid;gap:18px;border:2px solid var(--verde-oscuro);border-radius:15px;background:var(--suave)}
+    .panel-temas{padding:20px;border-radius:13px;background:var(--verde-oscuro);color:#fff}
+    .cabecera-panel{margin-bottom:16px}
+    .cabecera-panel small{font-size:10px;font-weight:850;letter-spacing:.12em;color:#dbe8d2}
+    .cabecera-panel h1{margin:4px 0 0;font-size:21px}
+    .botones-tema{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .botones-tema button{min-height:42px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;border-radius:8px;background:rgba(255,255,255,.14);color:#fff;font-size:13px;font-weight:800;text-align:left}
+    .botones-tema button:hover,.botones-tema button.activo{background:#fff;color:var(--verde-oscuro)}
+    .botones-tema b{width:21px;height:21px;flex:none;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.2);font-size:11px}
+    .botones-tema button.activo b{background:#ecefeb}
+    .contenido-tema{margin-top:13px;padding:16px 18px;border-radius:9px;background:#fff;color:var(--tinta)}
+    .contenido-tema strong{font-size:15px}
+    .contenido-tema p{margin:7px 0 0;color:#505b4c;font-size:13px;line-height:1.55}
+    .contenido-tema ul{margin:8px 0 0;padding-left:18px;color:#505b4c;font-size:13px;line-height:1.6}
+    .mal{color:var(--alerta);font-weight:700}
+    .bien{color:var(--verde-oscuro);font-weight:700}
+    .seccion{padding:22px 24px;border:1px solid var(--borde);border-radius:11px;background:#fff;box-shadow:0 4px 12px rgba(43,59,36,.05)}
+    .cabecera-seccion{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .numero{width:32px;height:32px;display:grid;place-items:center;flex:none;border-radius:9px;background:var(--verde-oscuro);color:#fff;font-size:14px;font-weight:900}
+    .cabecera-seccion h2,.cabecera-seccion p{margin:0}
+    .cabecera-seccion h2{font-size:19px}
+    .cabecera-seccion p{margin-top:3px;color:var(--muted);font-size:12px}
+    .nota{margin-bottom:16px;padding:12px 14px;border-left:4px solid var(--verde);border-radius:8px;background:#f0f4ec;color:#505b4c;font-size:12px;line-height:1.5}
+    .nota b{color:var(--verde-oscuro)}
+    .nota p{margin:6px 0 0}
+    .nota i{color:#7d8878;font-style:normal;font-size:11px}
+    label{display:block}
+    .etiqueta{display:block;margin:0 0 6px;color:#455240;font-size:12px;font-weight:800}
+    input[type=text]{width:100%;height:43px;padding:0 12px;border:1px solid #d6ddd3;border-radius:7px;background:var(--campo);outline:none;color:var(--tinta);font-size:13px}
+    input[type=text]::placeholder{color:#9ba49a}
+    input[type=text]:focus{border-color:var(--verde-oscuro);box-shadow:0 0 0 3px rgba(54,95,12,.12)}
+    .lista-situaciones{display:grid;gap:10px}
+    .fila-situacion{display:grid;grid-template-columns:26px 1fr;align-items:center;gap:10px}
+    .fila-situacion>span{width:26px;height:26px;display:grid;place-items:center;border-radius:7px;background:#e8ebe6;color:var(--verde-oscuro);font-size:11px;font-weight:850}
+    .selector{display:grid;gap:8px;margin-bottom:16px}
+    .opcion{display:flex;align-items:center;gap:9px;padding:11px 12px;border:1px solid #e0e6dc;border-radius:8px;background:#fbfcfa;color:#4a5747;font-size:12.5px;line-height:1.4;cursor:pointer}
+    .opcion.activa{border-color:var(--verde);background:#f0f7e8;color:var(--verde-oscuro);font-weight:700}
+    .opcion input{width:16px;height:16px;flex:none;accent-color:var(--verde-oscuro)}
+    .opcion.vacia{color:#a3ada0;font-style:italic;cursor:default}
+    .filtros{display:grid;gap:8px}
+    .filtro{display:grid;grid-template-columns:18px 1fr;align-items:start;gap:10px;padding:11px 12px;border:1px solid #e0e6dc;border-radius:8px;background:#fbfcfa;cursor:pointer}
+    .filtro.si{border-color:var(--verde);background:#f4f9ee}
+    .filtro input{width:17px;height:17px;margin-top:1px;accent-color:var(--verde-oscuro)}
+    .filtro b{display:block;color:var(--verde-oscuro);font-size:11px;letter-spacing:.05em}
+    .filtro span{display:block;margin-top:2px;color:#5b6857;font-size:11.5px;line-height:1.4}
+    .veredicto{margin-top:16px;padding:14px 15px;border-radius:9px;font-size:12.5px;line-height:1.5}
+    .veredicto b{display:block;margin-bottom:4px;font-size:13px}
+    .veredicto.espera{background:#f1f3ef;color:#8b968a}
+    .veredicto.viable{background:#e6ece0;color:var(--verde-oscuro)}
+    .veredicto.replantear{background:#fdf4e8;color:#8a6420}
+    .veredicto.descartar{background:#fbf1f0;color:var(--alerta)}
+    .campo{margin-top:14px}
+    .resultado{margin-top:16px;padding:15px 16px;border-radius:8px;background:#f0f2ef}
+    .resultado small{color:var(--verde-oscuro);font-size:9px;font-weight:900;letter-spacing:.1em}
+    .resultado p{margin:6px 0 0;color:#40503a;font-size:13.5px;font-weight:700;line-height:1.5}
+    .accion{margin-top:15px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .accion>span{color:var(--muted);font-size:11px}
+    .boton-principal{flex:none;border:0;border-radius:8px;background:var(--verde-oscuro);padding:10px 15px;color:#fff;font-size:12px;font-weight:850}
+    .boton-principal:disabled{cursor:not-allowed;opacity:.38}
+    footer{width:min(880px,calc(100% - 32px));margin:auto;padding:0 0 22px;display:flex;justify-content:space-between;color:#717b6d;font-size:11px}
+    footer strong{color:var(--verde-oscuro)}
+    [hidden]{display:none!important}
+    @media(max-width:640px){
+      .botones-tema{grid-template-columns:1fr}
+      .accion{align-items:stretch;flex-direction:column}
+      .accion button{width:100%}
+      .seccion{padding:18px 15px}
+      footer{flex-direction:column;gap:5px}
+    }
+  </style>
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-interior">
+      <div class="marca">
+        <span class="marca-icono">a</span>
+        <div><strong>Problemáticas viables</strong><small>Primer paso del proyecto</small></div>
+      </div>
+      <button id="limpiar" class="boton-barra" type="button">Limpiar</button>
+    </div>
+  </header>
+
+  <main class="pagina">
+    <section class="panel-temas">
+      <div class="cabecera-panel"><small>ANTES DE COMENZAR</small><h1>Qué sirve como problemática</h1></div>
+      <div class="botones-tema">
+        <button type="button" data-tema="que"><span>Qué buscamos</span><b>i</b></button>
+        <button type="button" data-tema="filtros"><span>Los filtros</span><b>i</b></button>
+        <button type="button" data-tema="ejemplo"><span>Ejemplo de clase</span><b>i</b></button>
+      </div>
+      <div id="contenidoTema" class="contenido-tema" hidden></div>
+    </section>
+
+    <section class="seccion">
+      <div class="cabecera-seccion">
+        <span class="numero">1</span>
+        <div><h2>Su entorno</h2><p>Un lugar al que pueda volver a preguntar.</p></div>
+      </div>
+      <div class="nota">
+        <b>Elija un entorno al que tenga acceso real.</b>
+        <p><span class="bien">Sí:</span> El Colegio San Martín de Bogotá.</p>
+        <p><span class="mal">No:</span> Los colegios de Colombia. <i>No puede entrar a observar.</i></p>
+      </div>
+      <label>
+        <span class="etiqueta">Entorno *</span>
+        <input type="text" id="entorno" placeholder="Ej.: el Colegio San Martín de Bogotá">
+      </label>
+    </section>
+
+    <section class="seccion">
+      <div class="cabecera-seccion">
+        <span class="numero">2</span>
+        <div><h2>Qué observó allí</h2><p>Tres situaciones distintas. Una frase cada una.</p></div>
+      </div>
+      <div class="lista-situaciones" id="listaSituaciones"></div>
+      <div class="accion"><span id="estado2">Escriba las tres situaciones.</span><button id="pasar" class="boton-principal" type="button" disabled>Pasarlas por los filtros</button></div>
+    </section>
+
+    <section id="seccion3" class="seccion" hidden>
+      <div class="cabecera-seccion">
+        <span class="numero">3</span>
+        <div><h2>Prueba de viabilidad</h2><p>Una situación a la vez. Marque solo lo que cumple.</p></div>
+      </div>
+      <div class="selector" id="selector"></div>
+      <div class="filtros" id="filtros"></div>
+      <div id="veredicto" class="veredicto espera">Elija una situación arriba.</div>
+      <div class="accion"><span id="estado3">Marque los filtros.</span><button id="continuar" class="boton-principal" type="button" disabled>Trabajar esta situación</button></div>
+    </section>
+
+    <section id="seccion4" class="seccion" hidden>
+      <div class="cabecera-seccion">
+        <span class="numero">4</span>
+        <div><h2>Situación problemática</h2><p>El punto de partida del árbol de problemas.</p></div>
+      </div>
+      <div id="notaFinal" class="nota"></div>
+      <label class="campo" id="campoReplanteo">
+        <span class="etiqueta">Replanteo: la parte de la información que sí está a su alcance *</span>
+        <input type="text" id="replanteo" placeholder="Ej.: el reporte de daños locativos se lleva en papel y no llega a mantenimiento">
+      </label>
+      <label class="campo">
+        <span class="etiqueta">¿A quién afecta? *</span>
+        <input type="text" id="afecta" placeholder="Ej.: los estudiantes, los docentes y la coordinación">
+      </label>
+      <label class="campo">
+        <span class="etiqueta">¿Cómo se dio cuenta? *</span>
+        <input type="text" id="evidencia" placeholder="Ej.: las planillas de llegada y los reportes de coordinación">
+      </label>
+      <div class="resultado"><small>SITUACIÓN PROBLEMÁTICA</small><p id="enunciado">Complete los campos.</p></div>
+      <div class="accion"><span id="estado4">Complete los campos.</span><button id="copiar" class="boton-principal" type="button" disabled>Copiar la situación</button></div>
+    </section>
+  </main>
+
+  <footer><strong>Aprendiendo con @LaProfeVivy</strong><span>Facultad de Ingeniería y Ciencias Básicas</span></footer>
+
+  <script>
+    const FILTROS = [
+      {clave:'recurrente',  titulo:'SE REPITE',        texto:'Ocurre seguido, no fue un hecho aislado.'},
+      {clave:'alcanzable',  titulo:'ESTÁ AL ALCANCE',  texto:'Depende de personas u organizaciones a las que puedo llegar.'},
+      {clave:'informacion', titulo:'HAY INFORMACIÓN',  texto:'Se registran, se consultan o se pierden datos.'},
+      {clave:'acceso',      titulo:'PUEDO ENTRAR',     texto:'Puedo observar y preguntarle a quien le pasa.'},
+      {clave:'tamano',      titulo:'CABE EN EL CURSO', texto:'Alcanza en el tiempo y con los recursos que tengo.'}
+    ];
+
+    const EJEMPLOS = [
+      'una granizada rompió las tejas de dos salones',
+      'un grupo recurrente de estudiantes llega tarde a la primera hora',
+      'la fila de la cafetería no alcanza a atender a todos en el descanso'
+    ];
+
+    const temas = {
+      que:'<strong>Qué buscamos</strong>'
+        +'<p>Una problemática sirve para este proyecto cuando <b>hay información de por medio</b>: datos que alguien registra a mano, que se pierden, que llegan tarde o que nadie consulta. Ahí es donde un producto digital cambia algo.</p>'
+        +'<p>Una granizada no sirve: el clima no se evita con software. Pero alrededor sí hay información: el reporte de daños, el inventario de arreglos pendientes, la programación de las reparaciones. <b>El hecho natural no se interviene; el manejo de su información sí.</b></p>',
+      filtros:'<strong>Los filtros</strong>'
+        +'<ul>'
+        +'<li><b>Se repite:</b> si pasó una sola vez, no hay patrón que estudiar.</li>'
+        +'<li><b>Está al alcance:</b> el tráfico, el clima y la naturaleza no dependen de usted.</li>'
+        +'<li><b>Hay información:</b> este decide si el proyecto es digital o no.</li>'
+        +'<li><b>Puedo entrar:</b> sin acceso no hay diagnóstico ni validación.</li>'
+        +'<li><b>Cabe en el curso:</b> si necesita dos años, reduzca el entorno.</li>'
+        +'</ul>'
+        +'<p>No se trata de que la idea sea buena, sino de que usted pueda trabajarla.</p>',
+      ejemplo:'<strong>Ejemplo de clase</strong>'
+        +'<p>Entorno: el Colegio San Martín de Bogotá.</p>'
+        +'<ul>'
+        +'<li><span class="mal">Descartar:</span> la granizada que rompió las tejas. Fue un hecho aislado y el clima no está al alcance de nadie.</li>'
+        +'<li><span class="bien">Viable:</span> las llegadas tarde a la primera hora. Se repite, la maneja el colegio, hay planillas de por medio y cabe en el semestre.</li>'
+        +'<li><span class="bien">Viable:</span> la congestión de la cafetería, aunque el diagnóstico exige medir tiempos.</li>'
+        +'</ul>'
+        +'<p>Se eligió la segunda. Con ella se arma el árbol de problemas.</p>'
+    };
+
+    const $ = id => document.getElementById(id);
+    const limpiar = t => (t||'').trim().replace(/\s+/g,' ').replace(/[.,;:\s]+$/,'');
+    const minuscula = t => t ? t.charAt(0).toLowerCase()+t.slice(1) : '';
+    const mayuscula = t => t ? t.charAt(0).toUpperCase()+t.slice(1) : '';
+    let temaActivo = '';
+    let elegida = -1;
+
+    function construirSituaciones(){
+      const lista = $('listaSituaciones');
+      lista.textContent = '';
+      for(let i=0;i<3;i++){
+        const fila = document.createElement('div');
+        fila.className = 'fila-situacion';
+        const numero = document.createElement('span');
+        numero.textContent = i+1;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = 'situacion' + i;
+        input.placeholder = 'Ej.: ' + EJEMPLOS[i];
+        input.setAttribute('aria-label','Situación ' + (i+1));
+        input.addEventListener('input',()=>{ actualizarPaso2(); if(!$('seccion3').hidden) construirSelector(); });
+        fila.append(numero,input);
+        lista.append(fila);
+      }
+    }
+
+    function actualizarPaso2(){
+      const entornoOk = Boolean(limpiar($('entorno').value));
+      const textos = [0,1,2].map(i=>limpiar($('situacion'+i).value));
+      const completas = textos.every(Boolean);
+      const repetidas = textos.filter(Boolean).map(t=>t.toLowerCase()).some((t,i,a)=>a.indexOf(t) !== i);
+      $('pasar').disabled = !(entornoOk && completas && !repetidas);
+      $('estado2') && ($('estado2').textContent = !entornoOk ? 'Complete primero el paso 1.'
+        : !completas ? 'Escriba las tres situaciones.'
+        : repetidas ? 'Hay dos situaciones iguales.'
+        : 'Listas para pasar por los filtros.');
+    }
+
+    function construirSelector(){
+      const selector = $('selector');
+      selector.textContent = '';
+      for(let i=0;i<3;i++){
+        const texto = limpiar($('situacion'+i).value);
+        const opcion = document.createElement('label');
+        opcion.className = 'opcion' + (i === elegida ? ' activa' : '') + (texto ? '' : ' vacia');
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'elegida';
+        radio.value = i;
+        radio.checked = i === elegida;
+        radio.disabled = !texto;
+        radio.addEventListener('change',()=>{
+          elegida = i;
+          FILTROS.forEach((f,n)=>{ $('f'+n).checked = false; });
+          construirSelector();
+          actualizarPaso3();
+        });
+        const etiqueta = document.createElement('span');
+        etiqueta.textContent = texto ? mayuscula(texto) : 'Situación ' + (i+1) + ' sin escribir';
+        opcion.append(radio,etiqueta);
+        selector.append(opcion);
+      }
+    }
+
+    function construirFiltros(){
+      const contenedor = $('filtros');
+      contenedor.textContent = '';
+      FILTROS.forEach((filtro,n)=>{
+        const fila = document.createElement('label');
+        fila.className = 'filtro';
+        fila.id = 'filtro' + n;
+        const casilla = document.createElement('input');
+        casilla.type = 'checkbox';
+        casilla.id = 'f' + n;
+        casilla.addEventListener('change',actualizarPaso3);
+        const cuerpo = document.createElement('div');
+        const titulo = document.createElement('b');
+        titulo.textContent = filtro.titulo;
+        const texto = document.createElement('span');
+        texto.textContent = filtro.texto;
+        cuerpo.append(titulo,texto);
+        fila.append(casilla,cuerpo);
+        contenedor.append(fila);
+      });
+    }
+
+    function calcularVeredicto(){
+      if(elegida < 0) return {tipo:'espera', titulo:'', texto:'Elija una situación arriba.'};
+      const m = {};
+      FILTROS.forEach((f,n)=>{ m[f.clave] = $('f'+n).checked; });
+      if(!m.informacion) return {tipo:'descartar', titulo:'No es un problema digital.', texto:'Sin información de por medio no hay nada que un producto digital pueda cambiar. Busque qué datos se registran o se pierden alrededor de esta situación.'};
+      if(!m.recurrente || !m.alcanzable) return {tipo:'replantear', titulo:'Así no se puede intervenir.', texto:'O no se repite, o no depende de nadie a quien usted pueda llegar. Replantéela hacia la parte del manejo de la información que sí esté a su alcance.'};
+      if(!m.acceso || !m.tamano) return {tipo:'replantear', titulo:'Sirve, pero le queda grande.', texto:'Reduzca el entorno o el alcance hasta que pueda observarla y trabajarla en el tiempo del curso.'};
+      return {tipo:'viable', titulo:'Situación viable.', texto:'Pasa los cinco filtros. Puede llevarla al árbol de problemas.'};
+    }
+
+    function actualizarPaso3(){
+      FILTROS.forEach((f,n)=>{ $('filtro'+n).classList.toggle('si', $('f'+n).checked); });
+      const veredicto = calcularVeredicto();
+      const caja = $('veredicto');
+      caja.className = 'veredicto ' + veredicto.tipo;
+      caja.textContent = '';
+      if(veredicto.titulo){
+        const titulo = document.createElement('b');
+        titulo.textContent = veredicto.titulo;
+        caja.append(titulo);
+      }
+      caja.append(document.createTextNode(veredicto.texto));
+      $('continuar').disabled = elegida < 0;
+      $('estado3').textContent = elegida < 0 ? 'Elija una situación.' : 'Marque solo los filtros que cumple.';
+      if(!$('seccion4').hidden) actualizarPaso4();
+    }
+
+    function textoEnunciado(){
+      const entorno = limpiar($('entorno').value).replace(/^en\s+/i,'');
+      const replanteo = $('campoReplanteo').hidden ? '' : limpiar($('replanteo').value);
+      const situacion = replanteo || limpiar($('situacion'+elegida).value);
+      const afecta = limpiar($('afecta').value);
+      const evidencia = limpiar($('evidencia').value).replace(/^(en|mediante)\s+/i,'');
+      if(!entorno || !situacion) return '';
+      let texto = 'En ' + minuscula(entorno) + ', ' + minuscula(situacion) + '.';
+      if(afecta) texto += ' Afecta a ' + minuscula(afecta) + '.';
+      if(evidencia) texto += ' Se evidencia en ' + minuscula(evidencia) + '.';
+      return texto;
+    }
+
+    function actualizarPaso4(){
+      const veredicto = calcularVeredicto();
+      const necesitaReplanteo = veredicto.tipo !== 'viable';
+      $('campoReplanteo').hidden = !necesitaReplanteo;
+
+      $('notaFinal').textContent = '';
+      const titulo = document.createElement('b');
+      titulo.textContent = veredicto.titulo;
+      const detalle = document.createElement('p');
+      detalle.textContent = necesitaReplanteo
+        ? 'Escriba la versión replanteada. Si no encuentra ninguna, vuelva al paso 3 y pruebe otra situación.'
+        : 'Complete los dos campos y llévela al árbol de problemas.';
+      $('notaFinal').append(titulo,detalle);
+
+      const texto = textoEnunciado();
+      $('enunciado').textContent = texto || 'Complete los campos.';
+      const replanteoOk = !necesitaReplanteo || Boolean(limpiar($('replanteo').value));
+      const completo = Boolean(texto) && Boolean(limpiar($('afecta').value)) && Boolean(limpiar($('evidencia').value)) && replanteoOk;
+      $('copiar').disabled = !completo;
+      $('estado4').textContent = !replanteoOk ? 'Escriba el replanteo.' : completo ? 'Lista para el árbol de problemas.' : 'Complete los campos.';
+    }
+
+    document.querySelectorAll('[data-tema]').forEach(boton=>boton.addEventListener('click',()=>{
+      const tema = boton.dataset.tema;
+      temaActivo = temaActivo === tema ? '' : tema;
+      document.querySelectorAll('[data-tema]').forEach(b=>b.classList.toggle('activo', b.dataset.tema === temaActivo));
+      $('contenidoTema').hidden = !temaActivo;
+      $('contenidoTema').innerHTML = temaActivo ? temas[temaActivo] : '';
+    }));
+
+    $('entorno').addEventListener('input',()=>{ actualizarPaso2(); if(!$('seccion4').hidden) actualizarPaso4(); });
+    ['replanteo','afecta','evidencia'].forEach(id=>$(id).addEventListener('input',actualizarPaso4));
+
+    $('pasar').addEventListener('click',()=>{
+      if($('pasar').disabled) return;
+      $('seccion3').hidden = false;
+      construirSelector();
+      actualizarPaso3();
+      setTimeout(()=>$('seccion3').scrollIntoView({behavior:'smooth',block:'start'}),80);
+    });
+
+    $('continuar').addEventListener('click',()=>{
+      if($('continuar').disabled) return;
+      $('seccion4').hidden = false;
+      actualizarPaso4();
+      setTimeout(()=>$('seccion4').scrollIntoView({behavior:'smooth',block:'start'}),80);
+    });
+
+    $('copiar').addEventListener('click',async()=>{
+      if($('copiar').disabled) return;
+      const texto = 'SITUACIÓN PROBLEMÁTICA\n' + textoEnunciado()
+        + '\n\nVEREDICTO\n' + calcularVeredicto().titulo;
+      try{
+        await navigator.clipboard.writeText(texto);
+      }catch{
+        const area = document.createElement('textarea');
+        area.value = texto;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+      }
+      $('copiar').textContent = 'Situación copiada ✓';
+      setTimeout(()=>$('copiar').textContent='Copiar la situación',1800);
+    });
+
+    $('limpiar').addEventListener('click',()=>{
+      if(limpiar($('entorno').value) && !confirm('Se borrará todo. ¿Desea continuar?')) return;
+      temaActivo = '';
+      elegida = -1;
+      document.querySelectorAll('[data-tema]').forEach(b=>b.classList.remove('activo'));
+      $('contenidoTema').hidden = true;
+      $('contenidoTema').innerHTML = '';
+      $('entorno').value = '';
+      ['replanteo','afecta','evidencia'].forEach(id=>$(id).value='');
+      construirSituaciones();
+      construirFiltros();
+      $('seccion3').hidden = true;
+      $('seccion4').hidden = true;
+      actualizarPaso2();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+
+    construirSituaciones();
+    construirFiltros();
+    actualizarPaso2();
+  </script>
+</body>
+</html>
+
