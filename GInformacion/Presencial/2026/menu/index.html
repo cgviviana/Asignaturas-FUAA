@@ -1,0 +1,521 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gestión de la Información e Informática (ED)</title>
+
+  <style>
+    @font-face{
+      font-family:Brown;
+      src:local("BrownStd-Regular"),url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Regular.woff2") format("woff2");
+      font-display:swap;
+    }
+    @font-face{
+      font-family:Brown;
+      src:local("BrownStd-Bold"),url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Bold.woff2") format("woff2");
+      font-weight:700;
+      font-display:swap;
+    }
+
+    :root{
+      --verde:#7fb536;
+      --verde-o:#668e2c;
+      --verde-s:#f0f6e5;
+      --gris-o:#414141;
+      --gris-c:#e1e1e1;
+      --fondo:#f5f5f5;
+      --sombra:0 8px 22px rgba(0,0,0,.08);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Brown,Arial,sans-serif;
+      color:var(--gris-o);
+      background:var(--fondo);
+    }
+    button{font:inherit}
+    .limit{width:min(1180px,calc(100% - 48px));margin:auto}
+    .topbar{height:30px;background:var(--gris-o)}
+    .topbar .limit{
+      height:100%;display:flex;justify-content:flex-end;align-items:center;
+      color:#fff;font-size:12px;
+    }
+    .site-header{background:#fff;border-bottom:1px solid #dedede}
+    .header-inner{
+      min-height:82px;display:flex;align-items:center;
+      justify-content:space-between;gap:20px;padding:10px 0;
+    }
+    .brand img{
+      display:block;width:180px;height:48px;
+      object-fit:contain;object-position:left;
+    }
+    .section-name{margin:0;font-size:18px;font-weight:700;text-align:right}
+    .section-name span{color:var(--verde-o)}
+    .wrap{padding:30px 0 64px}
+    .main-header{
+      background:#fff;border:1px solid var(--gris-c);
+      border-bottom:4px solid var(--verde);padding:22px 26px;
+      margin-bottom:18px;box-shadow:var(--sombra);
+    }
+    .eyebrow{
+      margin:0 0 5px;color:var(--verde-o);font-size:13px;
+      font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+    }
+    .main-header h1{margin:0;font-size:30px;line-height:1.1}
+    .intro{max-width:850px;margin:12px 0 0;color:#5d5d5d;line-height:1.55;font-size:15px}
+    .frame{display:grid;grid-template-columns:285px minmax(0,1fr);gap:18px;align-items:start}
+    .tabs,.content{background:#fff;border:1px solid var(--gris-c);box-shadow:var(--sombra)}
+    .tabs{padding-bottom:14px;position:sticky;top:16px}
+    .tabs-title{background:var(--gris-o);color:#fff;padding:15px 18px;font-weight:700}
+    .tab-btn{
+      width:100%;border:0;border-bottom:1px solid #e6e6e6;
+      border-left:5px solid transparent;background:#fff;color:#505050;
+      padding:15px 17px;text-align:left;cursor:pointer;
+      font-size:14px;font-weight:700;line-height:1.35;
+    }
+    .tab-btn:hover{background:#f7f7f7;color:var(--verde-o);border-left-color:#b9d58f}
+    .tab-btn.active{background:var(--verde);color:#fff;border-left-color:var(--verde-o)}
+    .content{min-height:640px;overflow:hidden}
+    .section{border-bottom:12px solid var(--fondo);scroll-margin-top:16px}
+    .section:last-of-type{border-bottom:0}
+    .section-head{
+      width:100%;border:0;background:var(--gris-o);color:#fff;
+      padding:18px 22px;border-bottom:4px solid var(--verde);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:18px;cursor:pointer;text-align:left;
+    }
+    .section-head:hover{background:#363636}
+    .section-head small{
+      color:#cfe7ad;font-size:13px;font-weight:700;
+      display:block;margin-bottom:3px;text-transform:uppercase;
+    }
+    .section-head strong{display:block;font-size:23px;line-height:1.18}
+    .round-plus{
+      flex:0 0 36px;width:36px;height:36px;display:grid;place-items:center;
+      border-radius:50%;background:#fff;color:var(--verde-o);
+      font-size:23px;font-weight:700;transition:.2s;
+    }
+    .round-plus.small{
+      width:30px;height:30px;flex-basis:30px;
+      font-size:18px;border:1px solid #cfcfcf;
+    }
+    .section.open>.section-head .round-plus,
+    .acc-item.open .round-plus{transform:rotate(45deg)}
+    .section-body{display:none;padding:22px}
+    .section.open>.section-body{display:block}
+    .lead{
+      border-left:5px solid var(--verde);background:var(--verde-s);
+      padding:14px 16px;margin-bottom:18px;line-height:1.55;
+    }
+    .accordion{display:grid;gap:12px}
+    .acc-item{border:1px solid #dcdcdc;overflow:hidden}
+    .acc-btn{
+      width:100%;border:0;background:#f4f4f4;color:var(--gris-o);
+      padding:14px 16px;text-align:left;display:flex;
+      justify-content:space-between;align-items:center;gap:14px;
+      cursor:pointer;font-size:15px;font-weight:700;line-height:1.35;
+      border-left:5px solid var(--verde);
+    }
+    .acc-btn:hover{background:#ebebeb;color:var(--verde-o)}
+    .acc-item.open .acc-btn{background:var(--verde);color:#fff}
+    .topic-code{display:inline-block;margin-right:8px;color:var(--verde-o)}
+    .acc-item.open .topic-code{color:#fff}
+    .acc-content{display:none;padding:17px 20px 19px 24px;line-height:1.58;color:#555}
+    .acc-item.open .acc-content{display:block}
+    .acc-content p{margin:0}
+    .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+    .tag{
+      padding:6px 10px;border:1px solid #c9dca8;
+      background:#f7faef;color:var(--verde-o);
+      font-size:13px;font-weight:700;
+    }
+    .tag-button{font-family:inherit;cursor:pointer}
+    .tag-button:hover{background:var(--verde);border-color:var(--verde);color:#fff}
+    .resource{margin-top:16px}
+    .resource-btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-height:40px;padding:8px 15px;border:1px solid var(--verde);
+      border-radius:4px;background:var(--verde);color:#fff;
+      font-size:13px;font-weight:700;text-decoration:none;cursor:pointer;
+    }
+    .resource-btn:hover{background:var(--verde-o);border-color:var(--verde-o)}
+    .resource-btn.pending{border-color:#d0d0d0;background:#efefef;color:#777}
+    footer{
+      margin-top:18px;background:var(--gris-o);color:#fff;
+      padding:15px 20px;text-align:center;font-size:13px;
+    }
+    footer strong{color:#cfe7ad}
+    .modal-backdrop{
+      position:fixed;inset:0;z-index:50;display:none;place-items:center;
+      padding:22px;background:rgba(28,28,28,.62);
+    }
+    .modal-backdrop.visible{display:grid}
+    .modal-card{
+      position:relative;width:min(520px,100%);border-top:5px solid var(--verde);
+      background:#fff;padding:28px 30px 30px;box-shadow:0 24px 70px rgba(0,0,0,.3);
+    }
+    .modal-card h2{margin:2px 42px 10px 0;color:var(--gris-o);font-size:25px}
+    .modal-card p:last-child{margin:0;color:#555;line-height:1.65}
+    .modal-kicker{
+      margin:0;color:var(--verde-o);font-size:12px;font-weight:700;
+      text-transform:uppercase;letter-spacing:.6px;
+    }
+    .modal-close{
+      position:absolute;top:15px;right:16px;width:34px;height:34px;
+      border:0;border-radius:50%;background:var(--gris-o);color:#fff;
+      font-size:23px;line-height:1;cursor:pointer;
+    }
+    .modal-close:hover{background:var(--verde-o)}
+    button:focus-visible,a:focus-visible{outline:3px solid #242424;outline-offset:3px}
+
+    @media(max-width:900px){
+      .frame{grid-template-columns:1fr}
+      .tabs{position:static}
+      .main-header h1{font-size:26px}
+    }
+    @media(max-width:700px){
+      .limit{width:calc(100% - 30px)}
+      .brand img{width:145px}
+      .section-name{font-size:15px}
+      .main-header{padding:18px}
+      .section-head strong{font-size:20px}
+      .section-body{padding:15px}
+    }
+    @media(max-width:480px){
+      .section-name{display:none}
+      .main-header h1{font-size:24px}
+      .section-head strong{font-size:18px}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="limit">Gestión de la Información e Informática · ED</div>
+  </div>
+
+  <header class="site-header">
+    <div class="limit header-inner">
+      <a class="brand" href="#inicio" aria-label="Ir al inicio">
+        <img
+          src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x"
+          alt="Areandina">
+      </a>
+      <p class="section-name">Gestión de la Información e Informática / <span>ED</span></p>
+    </div>
+  </header>
+
+  <div class="limit wrap" id="inicio">
+    <header class="main-header">
+      <p class="eyebrow">Contenido de aprendizaje</p>
+      <h1>Gestión de la Información e Informática</h1>
+      <p class="intro">
+        Explora los cortes del curso y abre cada tema para consultar su propósito y los contenidos asociados.
+      </p>
+    </header>
+
+    <div class="frame">
+      <aside class="tabs" aria-label="Cortes del curso">
+        <div class="tabs-title">Cortes</div>
+        <div id="menu"></div>
+      </aside>
+
+      <main class="content" id="contenido"></main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal" role="presentation">
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close" id="modal-close" type="button" aria-label="Cerrar">×</button>
+      <p class="modal-kicker">Tipo de información</p>
+      <h2 id="modal-title"></h2>
+      <p id="modal-text"></p>
+    </section>
+  </div>
+
+  <script>
+    const cortes = [
+      {
+        numero: 'Corte 1',
+        titulo: 'Búsqueda y curación de la información',
+        resumen: 'Comprensión del entorno informacional y desarrollo de criterios para localizar, comparar y seleccionar información pertinente y confiable.',
+        temas: [
+          {
+            codigo: '1.1',
+            titulo: 'Sociedad de la información vs. sociedad del conocimiento',
+            descripcion: 'Diferencia entre disponer de grandes cantidades de información y transformarla en conocimiento mediante su análisis, interpretación y uso responsable.',
+            etiquetas: ['Información','Conocimiento','Análisis crítico'],
+            actividad: true
+          },
+          {
+            codigo: '1.2',
+            titulo: 'Revolución de las TIC y su impacto en la gestión de la información',
+            descripcion: 'Reconocimiento de los cambios producidos por las tecnologías digitales en la creación, acceso, almacenamiento y circulación de la información.',
+            etiquetas: ['TIC','Transformación digital','Acceso']
+          },
+          {
+            codigo: '1.3',
+            titulo: 'Tipos de información: académica, científica, institucional e informal',
+            descripcion: 'Identificación de las características, finalidades y contextos de uso de distintos tipos de información.',
+            etiquetas: ['Tipos','Académica','Científica','Institucional','Informal'],
+            ventanas: true
+          },
+          {
+            codigo: '1.4',
+            titulo: 'Fuentes confiables vs. no confiables',
+            descripcion: 'Aplicación de criterios básicos de autoridad, actualidad, evidencia, propósito y transparencia para valorar una fuente.',
+            etiquetas: ['Autoridad','Actualidad','Evidencia','Propósito']
+          },
+          {
+            codigo: '1.5',
+            titulo: 'Canales y plataformas para búsqueda especializada',
+            descripcion: 'Exploración de buscadores, repositorios, bibliotecas digitales y portales especializados según la necesidad de información.',
+            etiquetas: ['Buscadores','Repositorios','Bibliotecas digitales']
+          },
+          {
+            codigo: '1.6',
+            titulo: 'Estrategias de búsqueda efectiva de información',
+            descripcion: 'Construcción de búsquedas mediante palabras clave, sinónimos, filtros y operadores para obtener resultados más precisos.',
+            etiquetas: ['Palabras clave','Operadores','Filtros']
+          },
+          {
+            codigo: '1.7',
+            titulo: 'Bases de datos: institucional, Google Académico y Scopus',
+            descripcion: 'Reconocimiento de las posibilidades de consulta y recuperación de información académica en diferentes bases de datos.',
+            etiquetas: ['Base institucional','Google Académico','Scopus']
+          }
+        ]
+      },
+      {
+        numero: 'Corte 2',
+        titulo: 'Organización y presentación de la información',
+        resumen: 'Organización ética y estructurada de la información mediante herramientas que facilitan su comprensión, representación y uso correcto.',
+        temas: [
+          {
+            codigo: '2.1',
+            titulo: 'Ética informacional',
+            descripcion: 'Reflexión sobre el acceso, uso, manejo y difusión responsable de la información en entornos académicos y digitales.',
+            etiquetas: ['Responsabilidad','Privacidad','Uso ético']
+          },
+          {
+            codigo: '2.2',
+            titulo: 'Derechos de autor y licencias de uso (Creative Commons)',
+            descripcion: 'Reconocimiento de la autoría, las condiciones de reutilización y las licencias que orientan el uso legal de contenidos.',
+            etiquetas: ['Derechos de autor','Licencias','Creative Commons']
+          },
+          {
+            codigo: '2.3',
+            titulo: 'Citación y referenciación (norma APA, última edición)',
+            descripcion: 'Aplicación de criterios de citación y construcción de referencias para atribuir correctamente las ideas y fuentes utilizadas.',
+            etiquetas: ['Citas','Referencias','APA']
+          },
+          {
+            codigo: '2.4',
+            titulo: 'Herramientas para organizar información',
+            descripcion: 'Uso de recursos digitales para clasificar, registrar, relacionar y recuperar información durante un proceso académico.',
+            etiquetas: ['Clasificación','Registro','Gestión']
+          },
+          {
+            codigo: '2.5',
+            titulo: 'Herramientas para representar la información',
+            descripcion: 'Selección de herramientas adecuadas para convertir información en esquemas, mapas, tablas y otras representaciones.',
+            etiquetas: ['Mapas','Esquemas','Tablas']
+          },
+          {
+            codigo: '2.6',
+            titulo: 'Representación visual para comunicar',
+            descripcion: 'Organización de datos, conceptos y relaciones en recursos visuales claros, legibles y coherentes con el propósito comunicativo.',
+            etiquetas: ['Jerarquía visual','Claridad','Comunicación']
+          },
+          {
+            codigo: '2.7',
+            titulo: 'Integración narrativa y curaduría visual',
+            descripcion: 'Articulación de textos y elementos visuales seleccionados para construir un mensaje coherente, pertinente y comprensible.',
+            etiquetas: ['Narrativa','Curaduría','Coherencia']
+          }
+        ]
+      },
+      {
+        numero: 'Corte 3',
+        titulo: 'Producción y comunicación de la información',
+        resumen: 'Producción de contenidos claros y fundamentados para comunicar información con intención, rigor y pertinencia en medios académicos y digitales.',
+        temas: [
+          {
+            codigo: '3.1',
+            titulo: 'Narración digital: comunicar con propósito',
+            descripcion: 'Construcción de mensajes digitales que articulan contenido, audiencia, medio y propósito comunicativo.',
+            etiquetas: ['Narración digital','Audiencia','Propósito']
+          },
+          {
+            codigo: '3.2',
+            titulo: 'Estrategias de redacción, argumentación y comunicación académica',
+            descripcion: 'Desarrollo de textos claros, cohesionados y sustentados que presentan una postura o explicación apoyada en información seleccionada.',
+            etiquetas: ['Redacción','Argumentación','Comunicación académica']
+          },
+          {
+            codigo: '3.3',
+            titulo: 'Estrategias de divulgación digital de información',
+            descripcion: 'Adaptación y publicación de contenidos en formatos y canales digitales acordes con la audiencia y el propósito del mensaje.',
+            etiquetas: ['Divulgación','Formatos digitales','Canales']
+          }
+        ]
+      }
+    ];
+
+    const explicaciones = {
+      'Tipos': 'La información puede clasificarse según su origen, propósito, forma de producción y nivel de validación. Reconocer el tipo permite elegirla y utilizarla de manera adecuada.',
+      'Académica': 'Se produce en contextos educativos para desarrollar y comunicar conocimiento. Incluye trabajos, ensayos, materiales formativos, libros y publicaciones universitarias.',
+      'Científica': 'Surge de procesos de investigación sistemáticos y presenta métodos, datos, resultados y conclusiones. Con frecuencia es evaluada por especialistas antes de publicarse.',
+      'Institucional': 'Es elaborada y publicada oficialmente por organizaciones públicas o privadas, como normas, informes, estadísticas, comunicados y documentos técnicos.',
+      'Informal': 'Circula en conversaciones, redes sociales, blogs personales o mensajes sin un proceso formal de validación. Puede orientar, pero debe verificarse antes de utilizarla como sustento.'
+    };
+
+    const actividadDocxBase64 = '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';
+    const menu = document.getElementById('menu');
+    const contenido = document.getElementById('contenido');
+
+    cortes.forEach((corte,index) => {
+      const id = `corte-${index + 1}`;
+      menu.insertAdjacentHTML('beforeend',
+        `<button class="tab-btn" data-id="${id}" type="button">${corte.numero}</button>`
+      );
+
+      const temas = corte.temas.map(tema => {
+        const etiquetas = tema.etiquetas.map(etiqueta => {
+          if(tema.ventanas){
+            return `<button class="tag tag-button type-button" type="button" data-type="${etiqueta}">${etiqueta}</button>`;
+          }
+          return `<span class="tag">${etiqueta}</span>`;
+        }).join('');
+
+        const botonActividad = tema.actividad
+          ? `<button class="resource-btn activity-download" type="button">Actividad ↗</button>`
+          : `<button class="resource-btn pending pending-activity" type="button">Actividad</button>`;
+
+        return `
+          <article class="acc-item">
+            <button class="acc-btn" type="button" aria-expanded="false">
+              <span><span class="topic-code">${tema.codigo}</span>${tema.titulo}</span>
+              <span class="round-plus small" aria-hidden="true">+</span>
+            </button>
+            <div class="acc-content">
+              <p>${tema.descripcion}</p>
+              <div class="tags">${etiquetas}</div>
+              <div class="resource">${botonActividad}</div>
+            </div>
+          </article>`;
+      }).join('');
+
+      contenido.insertAdjacentHTML('beforeend', `
+        <section class="section" id="${id}">
+          <button class="section-head" type="button" aria-expanded="false">
+            <span><small>${corte.numero}</small><strong>${corte.titulo}</strong></span>
+            <span class="round-plus" aria-hidden="true">+</span>
+          </button>
+          <div class="section-body">
+            <div class="lead">${corte.resumen}</div>
+            <div class="accordion">${temas}</div>
+          </div>
+        </section>`
+      );
+    });
+
+    contenido.insertAdjacentHTML('beforeend',
+      '<footer>Aprendiendo con <strong>@LaProfeVivy</strong></footer>'
+    );
+
+    function toggleSection(section){
+      const open = section.classList.contains('open');
+      document.querySelectorAll('.section').forEach(item => {
+        item.classList.remove('open');
+        item.querySelector('.section-head').setAttribute('aria-expanded','false');
+      });
+      document.querySelectorAll('.tab-btn').forEach(button => button.classList.remove('active'));
+
+      if(!open){
+        section.classList.add('open');
+        section.querySelector('.section-head').setAttribute('aria-expanded','true');
+        document.querySelector(`.tab-btn[data-id="${section.id}"]`).classList.add('active');
+      }
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(button => {
+      button.addEventListener('click',() => {
+        const section = document.getElementById(button.dataset.id);
+        toggleSection(section);
+        section.scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+
+    document.querySelectorAll('.section-head').forEach(button => {
+      button.addEventListener('click',() => toggleSection(button.closest('.section')));
+    });
+
+    document.querySelectorAll('.acc-btn').forEach(button => {
+      button.addEventListener('click',() => {
+        const item = button.closest('.acc-item');
+        const open = item.classList.toggle('open');
+        button.setAttribute('aria-expanded',String(open));
+      });
+    });
+
+    document.querySelectorAll('.pending-activity').forEach(button => {
+      button.addEventListener('click',() => alert('Este tema aún no tiene actividad'));
+    });
+
+    document.querySelectorAll('.activity-download').forEach(button => {
+      button.addEventListener('click',descargarActividad);
+    });
+
+    function descargarActividad(){
+      const binary = atob(actividadDocxBase64);
+      const bytes = new Uint8Array(binary.length);
+      for(let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+      const blob = new Blob([bytes],{
+        type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'IED-S2-TGrupo-Lluvia-de-ideas.docx';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url),1000);
+    }
+
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalText = document.getElementById('modal-text');
+
+    function abrirModal(tipo){
+      modalTitle.textContent = tipo;
+      modalText.textContent = explicaciones[tipo];
+      modal.classList.add('visible');
+      document.getElementById('modal-close').focus();
+    }
+
+    function cerrarModal(){
+      modal.classList.remove('visible');
+    }
+
+    document.querySelectorAll('.type-button').forEach(button => {
+      button.addEventListener('click',() => abrirModal(button.dataset.type));
+    });
+
+    document.getElementById('modal-close').addEventListener('click',cerrarModal);
+    modal.addEventListener('click',event => {
+      if(event.target === modal) cerrarModal();
+    });
+    document.addEventListener('keydown',event => {
+      if(event.key === 'Escape') cerrarModal();
+    });
+  </script>
+</body>
+</html>
