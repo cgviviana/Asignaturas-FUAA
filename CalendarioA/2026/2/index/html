@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendario Académico</title>
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f4f8f7;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .semana {
+      max-width: 500px;
+      padding: 10px 16px;
+      text-align: center;
+      font-size: 1.1em;
+      background: #e8f5e9;
+      border: 1px solid #006241;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .semana strong {
+      color: #00784a;
+      font-size: 1.1em;
+    }
+
+    .rango {
+      display: block;
+      margin-top: 10px;
+      color: #333;
+      font-size: 0.9em;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="semana" id="resultado"></div>
+
+  <script>
+    const TZ = "America/Bogota";
+
+    function hoyEnBogota() {
+      return new Date(
+        new Date().toLocaleString("en-US", {
+          timeZone: TZ
+        })
+      );
+    }
+
+    const inicio = new Date("2026-08-03T00:00:00-05:00");
+    const fin = new Date("2026-11-21T23:59:59-05:00");
+    const hoy = hoyEnBogota();
+
+    function formatearFecha(fecha) {
+      return fecha.toLocaleDateString("es-CO", {
+        timeZone: TZ,
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+    }
+
+    function determinarCorte(numSemana) {
+      if (numSemana <= 6) {
+        return "Primer corte";
+      }
+
+      if (numSemana <= 11) {
+        return "Segundo corte";
+      }
+
+      return "Corte final";
+    }
+
+    function calcularSemana() {
+      if (hoy < inicio) {
+        return "El periodo académico aún no ha iniciado.";
+      }
+
+      if (hoy > fin) {
+        return "El periodo académico ha finalizado.";
+      }
+
+      const unaSemana = 1000 * 60 * 60 * 24 * 7;
+      const diferencia = hoy - inicio;
+
+      const numSemana =
+        Math.floor(diferencia / unaSemana) + 1;
+
+      const corte = determinarCorte(numSemana);
+
+      const inicioSemana = new Date(inicio);
+
+      inicioSemana.setDate(
+        inicio.getDate() + (numSemana - 1) * 7
+      );
+
+      const finSemana = new Date(inicioSemana);
+
+      finSemana.setDate(
+        inicioSemana.getDate() + 6
+      );
+
+      const finSemanaAjustado =
+        finSemana > fin ? fin : finSemana;
+
+      return `
+        Estamos en la
+        <strong>Semana ${numSemana}</strong>
+        del <strong>${corte}</strong>
+
+        <span class="rango">
+          Del ${formatearFecha(inicioSemana)}
+          al ${formatearFecha(finSemanaAjustado)}
+        </span>
+      `;
+    }
+
+    document.getElementById("resultado").innerHTML =
+      calcularSemana();
+  </script>
+
+</body>
+</html>
