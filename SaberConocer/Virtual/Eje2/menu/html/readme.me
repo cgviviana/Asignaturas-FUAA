@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Saber Conocer | Eje 2</title>
+
+  <style>
+    :root{
+      --verde:#86a91e;
+      --verde-oscuro:#5f7d14;
+      --verde-suave:#eef5dc;
+      --tinta:#26322b;
+      --gris:#667168;
+      --borde:#dce3d9;
+      --fondo:#f6f8f5;
+      --amarillo:#d7a527;
+      --amarillo-suave:#fff9e8;
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--fondo);
+      color:var(--tinta);
+    }
+
+    .topbar{
+      height:30px;
+      background:#29352d;
+    }
+
+    header{
+      background:#fff;
+      padding:16px 7%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid var(--borde);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .brand img{
+      width:116px;
+      max-height:42px;
+      object-fit:contain;
+    }
+
+    .brand span{
+      color:var(--gris);
+      border-left:1px solid var(--borde);
+      padding-left:14px;
+      font-size:14px;
+    }
+
+    .badge{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+      border:1px solid #cbdca6;
+      padding:8px 14px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .app{
+      width:min(1180px,90%);
+      min-height:650px;
+      margin:32px auto;
+      display:grid;
+      grid-template-columns:305px 1fr;
+      background:#fff;
+      border:1px solid var(--borde);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 12px 35px rgba(37,55,39,.08);
+    }
+
+    /* =========================
+       MENÚ IZQUIERDO
+       ========================= */
+
+    .sidebar{
+      padding:30px 20px;
+      background:#fbfcfa;
+      border-right:1px solid var(--borde);
+    }
+
+    .sidebar h1{
+      margin:0 0 8px;
+      color:var(--verde-oscuro);
+      font-size:20px;
+    }
+
+    .sidebar-intro{
+      margin:0 0 26px;
+      color:var(--gris);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .topic-button{
+      width:100%;
+      display:flex;
+      gap:11px;
+      align-items:flex-start;
+      text-align:left;
+      border:0;
+      border-radius:11px;
+      background:transparent;
+      color:#465047;
+      padding:15px 11px;
+      margin:7px 0;
+      cursor:pointer;
+      font-size:14px;
+      line-height:1.4;
+      transition:.2s;
+    }
+
+    .topic-button:hover{
+      background:#f0f5e5;
+    }
+
+    .topic-button.active{
+      background:var(--verde);
+      color:#fff;
+      font-weight:bold;
+    }
+
+    .number{
+      min-width:34px;
+      height:34px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#e4ecd4;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      font-weight:bold;
+      flex-shrink:0;
+    }
+
+    .topic-button.active .number{
+      background:#fff;
+      color:var(--verde-oscuro);
+    }
+
+    .topic-text strong{
+      display:block;
+      margin-bottom:3px;
+      font-size:12px;
+      text-transform:uppercase;
+    }
+
+    .topic-text span{
+      display:block;
+    }
+
+    /* =========================
+       CONTENIDO
+       ========================= */
+
+    .workspace{
+      padding:42px 46px 48px;
+    }
+
+    .eyebrow{
+      margin:0 0 10px;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      font-weight:bold;
+    }
+
+    h2{
+      margin:0;
+      font-size:30px;
+      line-height:1.18;
+    }
+
+    .intro{
+      max-width:790px;
+      margin:14px 0 28px;
+      color:var(--gris);
+      font-size:15px;
+      line-height:1.65;
+    }
+
+    /* =========================
+       ACORDEONES
+       ========================= */
+
+    .accordion{
+      margin-bottom:12px;
+      overflow:hidden;
+      border:1px solid var(--borde);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .accordion-trigger{
+      width:100%;
+      padding:17px 19px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px;
+      border:0;
+      background:#fff;
+      color:var(--tinta);
+      text-align:left;
+      font-size:15px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .accordion-trigger:hover{
+      background:#fafcf7;
+    }
+
+    .accordion.open .accordion-trigger{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+    }
+
+    .accordion-icon{
+      width:27px;
+      height:27px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#e5edd5;
+      color:var(--verde-oscuro);
+      flex-shrink:0;
+      font-size:19px;
+    }
+
+    .accordion.open .accordion-icon::after{
+      content:"−";
+    }
+
+    .accordion:not(.open) .accordion-icon::after{
+      content:"+";
+    }
+
+    .accordion-content{
+      display:grid;
+      grid-template-rows:0fr;
+      transition:grid-template-rows .28s ease;
+    }
+
+    .accordion.open .accordion-content{
+      grid-template-rows:1fr;
+    }
+
+    .accordion-inner{
+      overflow:hidden;
+    }
+
+    .accordion-body{
+      padding:21px;
+      color:#475149;
+      font-size:14px;
+      line-height:1.65;
+    }
+
+    .accordion-body p:first-child{
+      margin-top:0;
+    }
+
+    /* =========================
+       TARJETAS
+       ========================= */
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+      margin-top:14px;
+    }
+
+    .card{
+      padding:14px 16px;
+      border-left:4px solid var(--verde);
+      border-radius:0 8px 8px 0;
+      background:#f8faf5;
+    }
+
+    .card h4{
+      margin:0 0 6px;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      text-transform:uppercase;
+    }
+
+    .card p{
+      margin:0;
+    }
+
+    .example{
+      margin-top:14px;
+      padding:16px;
+      border:1px dashed #b9cc84;
+      border-radius:9px;
+      background:#f4f7ed;
+    }
+
+    .project{
+      margin-top:14px;
+      padding:16px 17px;
+      border-left:4px solid var(--amarillo);
+      border-radius:0 8px 8px 0;
+      background:var(--amarillo-suave);
+    }
+
+    .project strong{
+      color:#86620a;
+    }
+
+    .code{
+      display:block;
+      margin-top:12px;
+      padding:14px;
+      border-radius:8px;
+      background:#26342c;
+      color:#eaf3d6;
+      white-space:pre-line;
+      font-family:Consolas, monospace;
+      font-size:13px;
+      line-height:1.7;
+    }
+
+    /* =========================
+       PASOS
+       ========================= */
+
+    .steps{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .step{
+      display:grid;
+      grid-template-columns:32px 1fr;
+      gap:11px;
+      align-items:start;
+      padding:12px 14px;
+      border:1px solid #e0e7da;
+      border-radius:8px;
+      background:#f8faf5;
+    }
+
+    .step-number{
+      width:29px;
+      height:29px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:var(--verde);
+      color:#fff;
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .step strong{
+      color:var(--verde-oscuro);
+    }
+
+    /* =========================
+       FLUJOS
+       ========================= */
+
+    .flow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-top:16px;
+    }
+
+    .flow-box{
+      padding:9px 12px;
+      background:#f4f7ed;
+      border:1px solid #cad8a8;
+      border-radius:7px;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .arrow{
+      color:var(--verde-oscuro);
+      font-weight:bold;
+    }
+
+    /* =========================
+       DASHBOARD
+       ========================= */
+
+    .dashboard{
+      margin-top:18px;
+      padding:18px;
+      border:1px solid var(--borde);
+      border-radius:12px;
+      background:#fafcf8;
+    }
+
+    .dashboard-title{
+      margin:0 0 15px;
+      color:var(--verde-oscuro);
+      font-size:15px;
+      font-weight:bold;
+    }
+
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-bottom:18px;
+    }
+
+    .kpi{
+      padding:13px;
+      background:#fff;
+      border:1px solid #dfe6da;
+      border-radius:9px;
+      text-align:center;
+    }
+
+    .kpi strong{
+      display:block;
+      color:var(--verde-oscuro);
+      font-size:22px;
+      margin-bottom:3px;
+    }
+
+    .kpi span{
+      font-size:12px;
+      color:var(--gris);
+    }
+
+    .charts{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
+    .mini-chart{
+      padding:14px;
+      border:1px solid #e0e6dc;
+      background:#fff;
+      border-radius:9px;
+    }
+
+    .mini-chart h4{
+      margin:0 0 13px;
+      font-size:13px;
+      color:#465047;
+    }
+
+    .bar-row{
+      display:grid;
+      grid-template-columns:55px 1fr 30px;
+      gap:8px;
+      align-items:center;
+      margin:9px 0;
+      font-size:12px;
+    }
+
+    .bar{
+      height:10px;
+      background:#e9efdf;
+      border-radius:10px;
+      overflow:hidden;
+    }
+
+    .bar span{
+      display:block;
+      height:100%;
+      background:var(--verde);
+      border-radius:10px;
+    }
+
+    .filter-box{
+      margin-top:15px;
+      padding:10px 12px;
+      border:1px dashed #c7d5aa;
+      background:#f4f7ed;
+      border-radius:7px;
+      font-size:12px;
+    }
+
+    /* =========================
+       ROLES APPSHEET
+       ========================= */
+
+    .roles{
+      display:grid;
+      gap:12px;
+      margin-top:15px;
+    }
+
+    .role{
+      padding:15px;
+      border:1px solid #e0e6dc;
+      border-radius:9px;
+      background:#fafcf8;
+    }
+
+    .role strong{
+      display:block;
+      color:var(--verde-oscuro);
+      margin-bottom:6px;
+    }
+
+    /* =========================
+       BOTONES
+       ========================= */
+
+    .resource-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-top:14px;
+      padding:9px 15px;
+      background:var(--verde);
+      border:1px solid var(--verde);
+      border-radius:6px;
+      color:#fff;
+      text-decoration:none;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .resource-btn:hover{
+      background:var(--verde-oscuro);
+      border-color:var(--verde-oscuro);
+    }
+
+    ul{
+      margin:8px 0;
+      padding-left:20px;
+    }
+
+    li{
+      margin:6px 0;
+    }
+
+    footer{
+      padding:4px 5% 28px;
+      text-align:center;
+      color:#7b837c;
+      font-size:12px;
+    }
+
+    @media(max-width:800px){
+
+      header{
+        padding:14px 5%;
+      }
+
+      .brand span{
+        display:none;
+      }
+
+      .app{
+        width:94%;
+        grid-template-columns:1fr;
+      }
+
+      .sidebar{
+        border-right:0;
+        border-bottom:1px solid var(--borde);
+      }
+
+      .workspace{
+        padding:29px 22px;
+      }
+
+      h2{
+        font-size:25px;
+      }
+
+      .grid,
+      .charts{
+        grid-template-columns:1fr;
+      }
+
+      .kpis{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <div class="topbar"></div>
+
+  <header>
+
+    <div class="brand">
+
+      <img
+        src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x"
+        alt="Areandina"
+      >
+
+      <span>Aprendiendo con @LaProfeVivy</span>
+
+    </div>
+
+    <div class="badge">Eje 2</div>
+
+  </header>
+
+
+  <main class="app">
+
+    <!-- =========================
+         NAVEGACIÓN IZQUIERDA
+         ========================= -->
+
+    <aside class="sidebar">
+
+      <h1>Temáticas del eje</h1>
+
+      <p class="sidebar-intro">
+        De los datos al funcionamiento de una solución.
+      </p>
+
+
+      <button
+        class="topic-button active"
+        data-topic="encuentro1"
+        type="button"
+      >
+
+        <span class="number">01</span>
+
+        <span class="topic-text">
+          <strong>Encuentro 1</strong>
+          <span>Datos y análisis para la solución</span>
+        </span>
+
+      </button>
+
+
+      <button
+        class="topic-button"
+        data-topic="encuentro2"
+        type="button"
+      >
+
+        <span class="number">02</span>
+
+        <span class="topic-text">
+          <strong>Encuentro 2</strong>
+          <span>Lógica y construcción de la solución</span>
+        </span>
+
+      </button>
+
+    </aside>
+
+
+    <!-- =========================
+         CONTENIDO
+         ========================= -->
+
+    <section class="workspace">
+
+      <p class="eyebrow" id="eyebrow"></p>
+
+      <h2 id="topicTitle"></h2>
+
+      <p class="intro" id="topicIntro"></p>
+
+      <div id="accordions"></div>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+    Aprendiendo con @LaProfeVivy · Saber Conocer
+  </footer>
+
+
+  <script>
+
+    const topics = {
+
+      /* =====================================================
+         ENCUENTRO 1
+         ===================================================== */
+
+      encuentro1: {
+
+        eyebrow:
+          "Saber Conocer · Eje 2 · Encuentro 1",
+
+        title:
+          "Datos y análisis para la solución",
+
+        intro:
+          "La solución propuesta necesita datos para funcionar. En este encuentro se identifica qué información necesita, se organiza en Google Sheets y se analiza de forma sencilla para entender mejor la problemática.",
+
+        sections: [
+
+          /* -----------------------------------------
+             DATOS
+             ----------------------------------------- */
+
+          {
+            title:
+              "¿Qué datos necesita mi solución?",
+
+            body: `
+
+              <p>
+                En el Eje 1 se definió el problema y los objetivos.
+                Ahora debemos pensar qué información necesita la
+                solución para poder funcionar.
+              </p>
+
+
+              <div class="example">
+
+                <strong>Ejemplo: control de asistencia.</strong><br><br>
+
+                La solución necesita saber:
+
+                <br><br>
+
+                estudiante · curso · fecha · hora de llegada ·
+                ubicación · estado de asistencia
+
+              </div>
+
+
+              <div class="project">
+
+                <strong>En tu propuesta:</strong>
+
+                identifica los datos que realmente necesita tu
+                solución. No agregues información que no tenga
+                utilidad para el proyecto.
+
+              </div>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             VARIABLES
+             ----------------------------------------- */
+
+          {
+            title:
+              "Organizar los datos en variables",
+
+            body: `
+
+              <p>
+                Cada dato puede convertirse en una variable.
+                Una variable es simplemente una información cuyo
+                valor puede cambiar.
+              </p>
+
+
+              <div class="grid">
+
+                <div class="card">
+
+                  <h4>Texto</h4>
+
+                  <p>
+                    Nombre, curso, categoría, observación o estado.
+                  </p>
+
+                </div>
+
+
+                <div class="card">
+
+                  <h4>Número</h4>
+
+                  <p>
+                    Cantidad, edad, tiempo, puntaje o frecuencia.
+                  </p>
+
+                </div>
+
+
+                <div class="card">
+
+                  <h4>Fecha y hora</h4>
+
+                  <p>
+                    Permite conocer cuándo ocurrió algo.
+                  </p>
+
+                </div>
+
+
+                <div class="card">
+
+                  <h4>Ubicación</h4>
+
+                  <p>
+                    Permite registrar dónde ocurrió una acción.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="example">
+
+                En el ejemplo de asistencia:
+
+                <span class="code">estudiante
+curso
+fecha
+horaLlegada
+ubicacion
+estadoAsistencia</span>
+
+              </div>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             GOOGLE SHEETS
+             ----------------------------------------- */
+
+          {
+            title:
+              "Crear la base de datos en Google Sheets",
+
+            body: `
+
+              <p>
+                Los datos se organizan en una hoja de cálculo.
+                Cada columna representa una variable y cada fila
+                representa un registro.
+              </p>
+
+
+              <span class="code">ID | Estudiante | Curso | Fecha | Hora llegada | Ubicación | Estado</span>
+
+
+              <div class="steps">
+
+                <div class="step">
+
+                  <span class="step-number">1</span>
+
+                  <div>
+                    <strong>Crear la hoja.</strong><br>
+                    Abrir Google Sheets y crear un archivo nuevo.
+                  </div>
+
+                </div>
+
+
+                <div class="step">
+
+                  <span class="step-number">2</span>
+
+                  <div>
+                    <strong>Crear las columnas.</strong><br>
+                    Cada columna corresponde a uno de los datos
+                    definidos para la solución.
+                  </div>
+
+                </div>
+
+
+                <div class="step">
+
+                  <span class="step-number">3</span>
+
+                  <div>
+                    <strong>Agregar algunos registros.</strong><br>
+                    Estos datos permitirán probar el análisis
+                    y posteriormente la aplicación.
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <a
+                class="resource-btn"
+                href="https://docs.google.com/spreadsheets/"
+                target="_blank"
+              >
+                Abrir Google Sheets
+              </a>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             ANÁLISIS
+             ----------------------------------------- */
+
+          {
+            title:
+              "Analizar los datos",
+
+            body: `
+
+              <p>
+                Analizar significa mirar los datos para encontrar
+                información útil sobre la problemática.
+              </p>
+
+              <p>
+                No todos los proyectos necesitan hacer los mismos
+                cálculos. Cada grupo analiza lo que sea importante
+                para su solución.
+              </p>
+
+
+              <div class="grid">
+
+                <div class="card">
+
+                  <h4>Filtrar</h4>
+
+                  <p>
+                    Ver solamente los datos que cumplen una condición.
+                  </p>
+
+                </div>
+
+
+                <div class="card">
+
+                  <h4>Contar</h4>
+
+                  <p>
+                    Saber cuántas veces ocurre algo.
+                  </p>
+
+                </div>
+
+
+                <div class="card">
+
+                  <h4>Comparar</h4>
+
+                  <p>
+                    Observar diferencias entre grupos o categorías.
+                  </p>
+
+                </div>
+
+
+                <div class="card">
+
+                  <h4>Calcular</h4>
+
+                  <p>
+                    Obtener porcentajes, promedios o totales cuando
+                    sean necesarios.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="example">
+
+                <strong>Ejemplo de asistencia:</strong><br><br>
+
+                Podemos preguntar:
+
+                <ul>
+                  <li>¿Cuántos estudiantes llegaron tarde?</li>
+                  <li>¿Qué curso tiene más tardanzas?</li>
+                  <li>¿Qué estudiantes llegan tarde con mayor frecuencia?</li>
+                  <li>¿Qué días presentan más retrasos?</li>
+                </ul>
+
+              </div>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             DASHBOARD
+             ----------------------------------------- */
+
+          {
+            title:
+              "Crear un panel básico de análisis",
+
+            body: `
+
+              <p>
+                Los datos más importantes pueden mostrarse en un
+                panel sencillo. No se necesita construir un dashboard
+                complejo.
+              </p>
+
+              <p>
+                La idea es poder entender rápidamente qué está
+                ocurriendo.
+              </p>
+
+
+              <div class="dashboard">
+
+                <p class="dashboard-title">
+                  Ejemplo · Seguimiento de asistencia
+                </p>
+
+
+                <div class="kpis">
+
+                  <div class="kpi">
+                    <strong>245</strong>
+                    <span>Registros</span>
+                  </div>
+
+                  <div class="kpi">
+                    <strong>38</strong>
+                    <span>Llegadas tarde</span>
+                  </div>
+
+                  <div class="kpi">
+                    <strong>15,5%</strong>
+                    <span>Porcentaje de tardanzas</span>
+                  </div>
+
+                </div>
+
+
+                <div class="charts">
+
+                  <div class="mini-chart">
+
+                    <h4>Tardanzas por curso</h4>
+
+                    <div class="bar-row">
+                      <span>801</span>
+                      <div class="bar">
+                        <span style="width:75%"></span>
+                      </div>
+                      <strong>15</strong>
+                    </div>
+
+                    <div class="bar-row">
+                      <span>802</span>
+                      <div class="bar">
+                        <span style="width:45%"></span>
+                      </div>
+                      <strong>9</strong>
+                    </div>
+
+                    <div class="bar-row">
+                      <span>901</span>
+                      <div class="bar">
+                        <span style="width:70%"></span>
+                      </div>
+                      <strong>14</strong>
+                    </div>
+
+                  </div>
+
+
+                  <div class="mini-chart">
+
+                    <h4>Tardanzas por día</h4>
+
+                    <div class="bar-row">
+                      <span>Lun</span>
+                      <div class="bar">
+                        <span style="width:80%"></span>
+                      </div>
+                      <strong>16</strong>
+                    </div>
+
+                    <div class="bar-row">
+                      <span>Mar</span>
+                      <div class="bar">
+                        <span style="width:40%"></span>
+                      </div>
+                      <strong>8</strong>
+                    </div>
+
+                    <div class="bar-row">
+                      <span>Mié</span>
+                      <div class="bar">
+                        <span style="width:65%"></span>
+                      </div>
+                      <strong>13</strong>
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <div class="filter-box">
+
+                  <strong>Filtro:</strong>
+                  curso, fecha u otra variable importante
+                  para el proyecto.
+
+                </div>
+
+              </div>
+
+
+              <div class="project">
+
+                <strong>En tu propuesta:</strong>
+
+                selecciona solamente dos o tres datos importantes
+                y uno o dos gráficos que ayuden a comprender la
+                problemática.
+
+              </div>
+
+            `
+          }
+
+        ]
+      },
+
+
+      /* =====================================================
+         ENCUENTRO 2
+         ===================================================== */
+
+      encuentro2: {
+
+        eyebrow:
+          "Saber Conocer · Eje 2 · Encuentro 2",
+
+        title:
+          "Lógica y construcción de la solución",
+
+        intro:
+          "Ahora que los datos están organizados, debemos definir qué hará la solución con ellos. Después conectaremos la hoja de Google Sheets con AppSheet para comenzar una primera versión funcional de la aplicación.",
+
+        sections: [
+
+          /* -----------------------------------------
+             FUNCIONAMIENTO
+             ----------------------------------------- */
+
+          {
+            title:
+              "¿Qué debe hacer la solución?",
+
+            body: `
+
+              <p>
+                Una aplicación recibe información, realiza acciones
+                y entrega un resultado.
+              </p>
+
+
+              <div class="flow">
+
+                <span class="flow-box">
+                  Recibe datos
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-box">
+                  Procesa
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-box">
+                  Decide
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-box">
+                  Guarda o muestra
+                </span>
+
+              </div>
+
+
+              <div class="example">
+
+                <strong>Ejemplo de asistencia:</strong><br><br>
+
+                El estudiante registra su llegada.<br>
+                La aplicación toma la fecha, la hora y la ubicación.<br>
+                Compara la hora con el horario establecido.<br>
+                Guarda si llegó a tiempo o tarde.
+
+              </div>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             ENTRADA PROCESO SALIDA
+             ----------------------------------------- */
+
+          {
+            title:
+              "Entrada, proceso, decisión y salida",
+
+            body: `
+
+              <div class="grid">
+
+                <div class="card">
+
+                  <h4>Entrada</h4>
+
+                  <p>
+                    Información que recibe la aplicación.
+                  </p>
+
+                </div>
+
+
+                <div class="card">
+
+                  <h4>Proceso</h4>
+
+                  <p>
+                    Acción que realiza con los datos.
+                  </p>
+
+                </div>
+
+
+                <div class="card">
+
+                  <h4>Decisión</h4>
+
+                  <p>
+                    Pregunta que puede producir resultados diferentes.
+                  </p>
+
+                </div>
+
+
+                <div class="card">
+
+                  <h4>Salida</h4>
+
+                  <p>
+                    Resultado que guarda o muestra.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="example">
+
+                <strong>Ejemplo:</strong><br><br>
+
+                Entrada → hora de llegada<br>
+                Proceso → comparar con la hora de inicio<br>
+                Decisión → ¿llegó después de la hora establecida?<br>
+                Salida → A tiempo / Tarde
+
+              </div>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             ALGORITMO
+             ----------------------------------------- */
+
+          {
+            title:
+              "Algoritmo básico de la solución",
+
+            body: `
+
+              <p>
+                Un algoritmo es simplemente el orden de los pasos
+                que debe seguir la solución.
+              </p>
+
+
+              <span class="code">1. Identificar al estudiante.
+2. Registrar fecha y hora.
+3. Registrar ubicación.
+4. Comparar la hora con el horario de entrada.
+5. Definir si llegó a tiempo o tarde.
+6. Guardar el registro.
+7. Mostrar el resultado.</span>
+
+
+              <div class="project">
+
+                <strong>En tu propuesta:</strong>
+
+                escribe los pasos principales que debe seguir
+                tu propia solución.
+
+              </div>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             REGLAS EN SHEETS
+             ----------------------------------------- */
+
+          {
+            title:
+              "Crear reglas sencillas con los datos",
+
+            body: `
+
+              <p>
+                Algunas decisiones pueden calcularse directamente
+                con los datos guardados.
+              </p>
+
+
+              <div class="example">
+
+                <strong>Ejemplo:</strong><br><br>
+
+                Si la hora de llegada es mayor que la hora de inicio,
+                el estado será “Tarde”.
+
+                <span class="code">=SI(HoraLlegada>HoraInicio;"Tarde";"A tiempo")</span>
+
+              </div>
+
+
+              <p>
+                Cada proyecto utilizará únicamente las reglas que
+                necesite para su solución.
+              </p>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             APPSHEET
+             ----------------------------------------- */
+
+          {
+            title:
+              "Conectar los datos con AppSheet",
+
+            body: `
+
+              <p>
+                La hoja creada en Google Sheets será la base de datos
+                inicial de la aplicación.
+              </p>
+
+              <p>
+                No es necesario volver a escribir los datos.
+                AppSheet puede utilizar esa misma estructura para
+                comenzar a construir la aplicación.
+              </p>
+
+
+              <div class="steps">
+
+                <div class="step">
+
+                  <span class="step-number">1</span>
+
+                  <div>
+                    <strong>Abrir AppSheet.</strong><br>
+                    Ingresar con la misma cuenta utilizada en
+                    Google Sheets.
+                  </div>
+
+                </div>
+
+
+                <div class="step">
+
+                  <span class="step-number">2</span>
+
+                  <div>
+                    <strong>Crear una aplicación.</strong><br>
+                    Seleccionar la opción para comenzar desde
+                    datos existentes.
+                  </div>
+
+                </div>
+
+
+                <div class="step">
+
+                  <span class="step-number">3</span>
+
+                  <div>
+                    <strong>Elegir la hoja.</strong><br>
+                    Seleccionar el archivo creado durante el
+                    Encuentro 1.
+                  </div>
+
+                </div>
+
+
+                <div class="step">
+
+                  <span class="step-number">4</span>
+
+                  <div>
+                    <strong>Revisar los datos.</strong><br>
+                    Comprobar que AppSheet reconozca correctamente
+                    las columnas.
+                  </div>
+
+                </div>
+
+
+                <div class="step">
+
+                  <span class="step-number">5</span>
+
+                  <div>
+                    <strong>Probar la aplicación.</strong><br>
+                    Registrar un dato nuevo y verificar que se
+                    guarde en la hoja.
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <a
+                class="resource-btn"
+                href="https://www.appsheet.com/start"
+                target="_blank"
+              >
+                Abrir AppSheet
+              </a>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             ROLES
+             ----------------------------------------- */
+
+          {
+            title:
+              "Una misma aplicación, diferentes usuarios",
+
+            body: `
+
+              <p>
+                No todos los usuarios necesitan ver ni hacer lo mismo.
+                La aplicación puede tener diferentes funciones
+                según el tipo de usuario.
+              </p>
+
+
+              <div class="roles">
+
+                <div class="role">
+
+                  <strong>Estudiante</strong>
+
+                  Registra su llegada. La aplicación puede guardar
+                  su identificación, fecha, hora y ubicación.
+
+                </div>
+
+
+                <div class="role">
+
+                  <strong>Profesor</strong>
+
+                  Consulta la lista de estudiantes y puede revisar
+                  quién registró llegada y cuál es su estado.
+
+                </div>
+
+
+                <div class="role">
+
+                  <strong>Coordinador</strong>
+
+                  Consulta información general y puede observar
+                  los datos de tardanzas por curso, estudiante,
+                  fecha u otros criterios.
+
+                </div>
+
+              </div>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             GPS
+             ----------------------------------------- */
+
+          {
+            title:
+              "Ejemplo: registrar una llegada con ubicación",
+
+            body: `
+
+              <p>
+                En el caso de asistencia, el estudiante puede abrir
+                la aplicación cuando llega al colegio y pulsar
+                <strong>Registrar llegada</strong>.
+              </p>
+
+
+              <div class="flow">
+
+                <span class="flow-box">
+                  Estudiante
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-box">
+                  Registrar llegada
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-box">
+                  Fecha + hora + ubicación
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-box">
+                  Validar
+                </span>
+
+                <span class="arrow">→</span>
+
+                <span class="flow-box">
+                  A tiempo / Tarde
+                </span>
+
+              </div>
+
+
+              <div class="example">
+
+                La aplicación registra el momento y la ubicación
+                del estudiante. Después utiliza la hora para
+                determinar el estado de asistencia.
+
+              </div>
+
+            `
+          },
+
+
+          /* -----------------------------------------
+             DATOS PARA COORDINACIÓN
+             ----------------------------------------- */
+
+          {
+            title:
+              "Usar los datos para tomar decisiones",
+
+            body: `
+
+              <p>
+                Los registros realizados desde la aplicación se
+                van acumulando en la base de datos.
+              </p>
+
+              <p>
+                Estos datos pueden utilizarse para mostrar información
+                útil al coordinador.
+              </p>
+
+
+              <div class="dashboard">
+
+                <p class="dashboard-title">
+                  Ejemplo · Vista del coordinador
+                </p>
+
+
+                <div class="kpis">
+
+                  <div class="kpi">
+                    <strong>325</strong>
+                    <span>Estudiantes registrados</span>
+                  </div>
+
+                  <div class="kpi">
+                    <strong>42</strong>
+                    <span>Llegadas tarde</span>
+                  </div>
+
+                  <div class="kpi">
+                    <strong>12,9%</strong>
+                    <span>Porcentaje de tardanzas</span>
+                  </div>
+
+                </div>
+
+
+                <div class="charts">
+
+                  <div class="mini-chart">
+
+                    <h4>Tardanzas por curso</h4>
+
+                    <div class="bar-row">
+                      <span>801</span>
+                      <div class="bar">
+                        <span style="width:80%"></span>
+                      </div>
+                      <strong>16</strong>
+                    </div>
+
+                    <div class="bar-row">
+                      <span>802</span>
+                      <div class="bar">
+                        <span style="width:45%"></span>
+                      </div>
+                      <strong>9</strong>
+                    </div>
+
+                    <div class="bar-row">
+                      <span>901</span>
+                      <div class="bar">
+                        <span style="width:70%"></span>
+                      </div>
+                      <strong>14</strong>
+                    </div>
+
+                  </div>
+
+
+                  <div class="mini-chart">
+
+                    <h4>Estudiantes con más tardanzas</h4>
+
+                    <div class="bar-row">
+                      <span>Est. A</span>
+                      <div class="bar">
+                        <span style="width:75%"></span>
+                      </div>
+                      <strong>6</strong>
+                    </div>
+
+                    <div class="bar-row">
+                      <span>Est. B</span>
+                      <div class="bar">
+                        <span style="width:60%"></span>
+                      </div>
+                      <strong>5</strong>
+                    </div>
+
+                    <div class="bar-row">
+                      <span>Est. C</span>
+                      <div class="bar">
+                        <span style="width:45%"></span>
+                      </div>
+                      <strong>4</strong>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="project">
+
+                Esta información es la que después puede mostrarse
+                dentro de la aplicación según el tipo de usuario.
+
+              </div>
+
+            `
+          }
+
+        ]
+      }
+
+    };
+
+
+    const title =
+      document.getElementById("topicTitle");
+
+    const intro =
+      document.getElementById("topicIntro");
+
+    const eyebrow =
+      document.getElementById("eyebrow");
+
+    const accordions =
+      document.getElementById("accordions");
+
+    const buttons =
+      document.querySelectorAll(".topic-button");
+
+
+    function renderTopic(key){
+
+      const topic = topics[key];
+
+      eyebrow.textContent =
+        topic.eyebrow;
+
+      title.textContent =
+        topic.title;
+
+      intro.textContent =
+        topic.intro;
+
+
+      accordions.innerHTML =
+        topic.sections.map(section => `
+
+          <article class="accordion">
+
+            <button
+              class="accordion-trigger"
+              type="button"
+            >
+
+              <span>
+                ${section.title}
+              </span>
+
+              <span class="accordion-icon"></span>
+
+            </button>
+
+
+            <div class="accordion-content">
+
+              <div class="accordion-inner">
+
+                <div class="accordion-body">
+                  ${section.body}
+                </div>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        `).join("");
+
+
+      document
+        .querySelectorAll(".accordion-trigger")
+        .forEach(trigger => {
+
+          trigger.addEventListener("click", () => {
+
+            const selected =
+              trigger.parentElement;
+
+            const wasOpen =
+              selected.classList.contains("open");
+
+
+            document
+              .querySelectorAll(".accordion")
+              .forEach(item => {
+
+                item.classList.remove("open");
+
+              });
+
+
+            if(!wasOpen){
+
+              selected.classList.add("open");
+
+            }
+
+          });
+
+        });
+
+    }
+
+
+    buttons.forEach(button => {
+
+      button.addEventListener("click", () => {
+
+        buttons.forEach(item => {
+
+          item.classList.remove("active");
+
+        });
+
+        button.classList.add("active");
+
+        renderTopic(
+          button.dataset.topic
+        );
+
+      });
+
+    });
+
+
+    renderTopic("encuentro1");
+
+  </script>
+
+</body>
+</html>
