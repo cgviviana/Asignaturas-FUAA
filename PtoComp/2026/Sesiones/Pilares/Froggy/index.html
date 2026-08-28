@@ -10,10 +10,9 @@
 :root{--verde:#7fb536;--verde2:#5f8f24;--gris:#3f3f3f;--borde:#dce3e6;--fondo:#f4f7f8;--agua1:#c8f0ff;--agua2:#6fc7e9;--ok:#237b3d;--error:#bd3d3d}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--fondo);font-family:Brown,Arial,sans-serif;color:var(--gris)}button,label{font:inherit}.wrap{width:min(1020px,calc(100% - 20px));margin:auto}
 .hero{background:#3b3b3b;border-bottom:5px solid var(--verde);color:#fff;padding:24px 0}.hero h1{margin:0;font-size:clamp(28px,4.4vw,46px);line-height:1.08}
-.game-root{counter-reset:score;padding:18px 0 34px;display:grid;grid-template-columns:1fr;gap:14px}
-.qcard input.correct:checked{counter-increment:score 100}
+.game-root{padding:18px 0 34px;display:grid;grid-template-columns:1fr;gap:14px}
 .score{grid-row:1;justify-self:end;background:#fff;border:1px solid var(--borde);border-radius:12px;padding:10px 16px;font-weight:700;box-shadow:0 5px 14px rgba(0,0,0,.06)}
-.score::after{content:counter(score) "/500";color:var(--verde2);font-size:24px;margin-left:7px}
+.score-value{color:var(--verde2);font-size:24px;margin-left:7px}
 .pond{grid-row:2;position:relative;height:270px;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 12% 22%,rgba(255,255,255,.45) 0 4px,transparent 5px),radial-gradient(circle at 35% 68%,rgba(255,255,255,.28) 0 5px,transparent 6px),radial-gradient(circle at 70% 18%,rgba(255,255,255,.35) 0 4px,transparent 5px),linear-gradient(180deg,var(--agua1),var(--agua2));border:2px solid #a7dbea;box-shadow:0 12px 26px rgba(0,0,0,.09)}
 .pad{position:absolute;width:112px;height:58px;border-radius:55% 45% 50% 50%/55% 60% 40% 45%;background:radial-gradient(circle at 30% 30%,#a7e25e 0%,var(--verde) 58%,#669529 100%);box-shadow:inset -6px -8px 0 rgba(0,0,0,.08),0 8px 12px rgba(0,0,0,.11);transform:translate(-50%,-50%)}
 .pad::before{content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:28px solid #629826}.pad.finish{background:radial-gradient(circle at 30% 30%,#ffef9d,#f8c34f 60%,#d49e25)}.pad.finish::before{border-top-color:#c99622}
@@ -36,13 +35,25 @@ body:has(#q5a:checked) .frog{left:92%;top:18%}
 .question{font-size:22px;line-height:1.35;font-weight:700;margin:0 0 16px}.options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.options input{position:absolute;opacity:0;pointer-events:none}.option{display:block;border:2px solid #dce2e5;background:#fff;border-radius:12px;padding:14px;min-height:78px;transition:.15s;cursor:pointer}.option:hover{border-color:#a8cc7c;background:#fbfdf8}.options input:checked + .option{border-color:#9abf6b;background:#f4faec}.options input.correct:checked + .option{border-color:var(--ok);background:#edf8f0}.options input.wrong:checked + .option{border-color:var(--error);background:#fff1f1}
 .explanation{display:none;margin-top:16px;padding:14px 16px;border-left:5px solid var(--verde);background:#f4f9ec;border-radius:0 10px 10px 0;line-height:1.55}.wrong + .option + .explanation{border-left-color:var(--error);background:#fff1f1}.qcard:has(input:checked) .explanation{display:block}.exp-ok,.exp-bad{display:none}.qcard:has(input.correct:checked) .exp-ok{display:block}.qcard:has(input.wrong:checked) .exp-bad{display:block}
 .nextlink{display:none;margin-top:14px;background:var(--verde);color:#fff;font-weight:700;border-radius:10px;padding:11px 16px;text-decoration:none;min-height:44px;align-items:center}.qcard:has(input:checked) .nextlink{display:inline-flex}.nextlink:hover{background:var(--verde2)}
-.result{display:none;grid-row:3;text-align:center;background:#fff;border:1px solid var(--borde);border-radius:16px;padding:28px;box-shadow:0 10px 24px rgba(0,0,0,.07)}#resultado:target{display:block}body:has(#resultado:target) .qcard{display:none!important}.result .big{font-size:48px;color:var(--verde2);font-weight:700}.result .big::after{content:counter(score) "/500"}
-@media(max-width:720px){.options{grid-template-columns:1fr}.pond{height:300px}.pad{width:90px;height:48px}.frog{width:74px}.question{font-size:19px}.score{justify-self:stretch;text-align:right}}
+.result{display:none;grid-row:3;text-align:center;background:#fff;border:1px solid var(--borde);border-radius:16px;padding:28px;box-shadow:0 10px 24px rgba(0,0,0,.07)}#resultado:target{display:block}body:has(#resultado:target) .qcard{display:none!important}.result .big{font-size:48px;color:var(--verde2);font-weight:700}
+
+.name-gate{background:#fff;border:1px solid var(--borde);border-radius:16px;padding:24px;box-shadow:0 10px 24px rgba(0,0,0,.07);margin-top:18px;text-align:center}
+.name-gate h2{margin:0 0 8px;font-size:24px}.name-gate p{margin:0 0 14px;color:#666}.name-row{display:flex;gap:10px;justify-content:center;max-width:560px;margin:auto}.name-row input{flex:1;min-width:0;min-height:46px;border:1px solid #bcc7cc;border-radius:10px;padding:10px 12px;font:inherit;font-size:16px}.name-row button{min-height:46px;border:1px solid var(--verde);background:var(--verde);color:#fff;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}.name-row button:hover{background:var(--verde2);border-color:var(--verde2)}.name-error{min-height:20px;margin-top:8px;color:var(--error);font-size:14px}.game-hidden{display:none!important}footer{background:#3f3f3f;color:#fff;text-align:center;padding:16px 18px;font-size:13px}footer strong{color:#d7ecb9}
+@media(max-width:720px){.name-row{flex-direction:column}.options{grid-template-columns:1fr}.pond{height:300px}.pad{width:90px;height:48px}.frog{width:74px}.question{font-size:19px}.score{justify-self:stretch;text-align:right}}
 </style>
 </head>
 <body>
 <header class="hero"><div class="wrap"><h1>Los cuatro pilares del pensamiento computacional</h1></div></header>
-<main class="wrap game-root">
+<section class="wrap name-gate" id="nameGate">
+  <h2>Antes de comenzar</h2>
+  <p>Escribe tu nombre.</p>
+  <div class="name-row">
+    <input id="playerName" type="text" maxlength="50" autocomplete="name" placeholder="Nombre">
+    <button id="enterGame" type="button">Ingresar</button>
+  </div>
+  <div class="name-error" id="nameError"></div>
+</section>
+<main class="wrap game-root game-hidden" id="gameRoot">
 
 <section class="qcard" id="q1">
   <p class="question">Vas a organizar una salida de fin de semana. ¿Cuál opción aplica mejor la descomposición?</p>
@@ -104,7 +115,7 @@ body:has(#q5a:checked) .frog{left:92%;top:18%}
   <a class="nextlink" href="#resultado">Ver resultado</a>
 </section>
 
-<div class="score">Puntaje</div>
+<div class="score">Puntaje <span class="score-value" id="scoreValue">0/500</span></div>
 
 <div class="pond">
   <div class="pad p0"></div><div class="pad p1"></div><div class="pad p2"></div><div class="pad p3"></div><div class="pad p4"></div><div class="pad p5 finish"></div>
@@ -113,10 +124,74 @@ body:has(#q5a:checked) .frog{left:92%;top:18%}
 </div>
 
 <section class="result" id="resultado">
-  <div class="big"></div>
+  <p id="finalMessage" style="font-size:24px;margin:0 0 8px"><strong>¡Felicitaciones!</strong></p>
+  <div class="big" id="finalScore">0/500</div>
   <p><strong>¡Froggy llegó a la meta!</strong></p>
-  <a class="nextlink" style="display:inline-flex" href="#q1">Jugar de nuevo</a>
+  <button class="nextlink" id="restartGame" style="display:inline-flex;border:0;cursor:pointer" type="button">Jugar de nuevo</button>
 </section>
 </main>
+<footer>Aprendiendo con <strong>@LaProfeVivy</strong></footer>
+<script>
+(() => {
+  let player = '';
+  const gate = document.getElementById('nameGate');
+  const game = document.getElementById('gameRoot');
+  const nameInput = document.getElementById('playerName');
+  const nameError = document.getElementById('nameError');
+  const scoreValue = document.getElementById('scoreValue');
+  const finalScore = document.getElementById('finalScore');
+  const finalMessage = document.getElementById('finalMessage');
+
+  function currentScore(){
+    return document.querySelectorAll('.qcard input.correct:checked').length * 100;
+  }
+
+  function updateScore(){
+    const score = currentScore();
+    scoreValue.textContent = score + '/500';
+    finalScore.textContent = score + '/500';
+    return score;
+  }
+
+  function enter(){
+    const value = nameInput.value.trim();
+    if(!value){
+      nameError.textContent = 'Escribe tu nombre para comenzar.';
+      nameInput.focus();
+      return;
+    }
+    player = value;
+    nameError.textContent = '';
+    gate.classList.add('game-hidden');
+    game.classList.remove('game-hidden');
+    location.hash = 'q1';
+    updateScore();
+  }
+
+  document.getElementById('enterGame').addEventListener('click', enter);
+  nameInput.addEventListener('keydown', e => { if(e.key === 'Enter') enter(); });
+
+  document.querySelectorAll('.qcard input[type="radio"]').forEach(input => {
+    input.addEventListener('change', updateScore);
+  });
+
+  document.querySelector('a[href="#resultado"]').addEventListener('click', () => {
+    const score = updateScore();
+    finalMessage.innerHTML = '<strong>¡Felicitaciones, ' + escapeHtml(player) + '!</strong><br>Tu puntuación final es ' + score + ' de 500 puntos.';
+  });
+
+  document.getElementById('restartGame').addEventListener('click', () => {
+    document.querySelectorAll('.qcard input[type="radio"]').forEach(input => input.checked = false);
+    updateScore();
+    location.hash = 'q1';
+  });
+
+  function escapeHtml(value){
+    const div = document.createElement('div');
+    div.textContent = value;
+    return div.innerHTML;
+  }
+})();
+</script>
 </body>
 </html>
