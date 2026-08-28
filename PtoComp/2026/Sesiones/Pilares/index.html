@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pilares del Pensamiento Computacional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+--green:#78b82a;--green-dark:#4f7a1c;--lime:#c6e88a;--soft:#f3f8ec;--ink:#20261f;--muted:#5c6858;
+--line:#e1e8d8;--white:#fff;--dark:#212a20;
+--c-descomp:#2f6fed;--c-descomp-soft:#eaf1ff;
+--c-patron:#c07f0c;--c-patron-soft:#fbf1de;
+--c-abstrac:#8148c9;--c-abstrac-soft:#f3ecfb;
+--c-algo:#1c9c78;--c-algo-soft:#e6f7f1;
+--font-display:'Manrope',system-ui,Arial,sans-serif;--font-body:'Inter',system-ui,Arial,sans-serif;
+--shadow:0 18px 46px rgba(35,45,28,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--white);color:var(--ink);font-family:var(--font-body);line-height:1.5}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0}
+button,select{font:inherit}
+.shell{width:min(1160px,calc(100% - 48px));margin:0 auto}
+img{max-width:100%}
+
+/* ---- header / nav ---- */
+.topbar{height:28px;background:var(--dark)}
+.topbar .shell{height:100%;display:flex;align-items:center;justify-content:flex-end;color:#fff;font-size:11px;letter-spacing:.2px}
+.site-header{border-bottom:1px solid var(--line)}
+.header-inner{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand img{display:block;width:160px;height:auto;object-fit:contain}
+.section-name{margin:0;display:flex;gap:12px;align-items:center;font-family:var(--font-display);font-weight:700;font-size:14px}
+.section-name span{padding-left:12px;border-left:1px solid #cfd6c4;color:var(--green-dark);font-weight:600}
+.web-nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-inner{min-height:50px;display:flex;align-items:center;justify-content:center;gap:6px;overflow-x:auto;scrollbar-width:none}
+.nav-inner::-webkit-scrollbar{display:none}
+.nav-inner a{padding:8px 15px;border-radius:999px;color:#4b5546;text-decoration:none;font-weight:600;font-size:13px;white-space:nowrap;transition:.15s}
+.nav-inner a:hover{background:var(--soft);color:var(--green-dark)}
+
+/* ---- shared layout ---- */
+.web-section{padding-top:80px;padding-bottom:80px}
+.section-intro{display:flex;align-items:baseline;gap:16px;margin-bottom:34px;flex-wrap:wrap}
+.section-intro>span{color:var(--green-dark);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px}
+.section-intro h2{font-size:clamp(28px,3.6vw,42px);letter-spacing:-1px;line-height:1.08}
+.section-lead{margin:-16px 0 36px;color:var(--muted);font-size:16px;max-width:66ch}
+.soft-section{background:var(--soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+/* ---- hero ---- */
+.hero{background:radial-gradient(circle at 85% 20%,#eef7de 0,rgba(238,247,222,0) 45%),linear-gradient(160deg,#fcfdf9,#fff)}
+.hero-grid{min-height:520px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:36px;padding-top:56px;padding-bottom:56px}
+.eyebrow{margin:0 0 16px;color:var(--green-dark);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px}
+.hero h1{max-width:640px;font-size:clamp(34px,4.6vw,54px);line-height:1.06;letter-spacing:-1.6px}
+.hero h1 em{font-style:normal;color:var(--green-dark)}
+.hero-copy>p:not(.eyebrow){max-width:560px;margin:22px 0 0;color:var(--muted);font-size:17px;line-height:1.65}
+.primary-link{display:inline-flex;align-items:center;gap:12px;margin-top:26px;padding:13px 20px;border-radius:999px;background:var(--dark);color:#fff;text-decoration:none;font-weight:700;font-size:14px}
+.primary-link:hover{background:var(--green-dark)}
+
+.flow-visual{position:relative;padding:34px 22px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:var(--shadow)}
+.flow-visual>span{display:block;color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin-bottom:20px;text-align:center}
+.flow-track{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.flow-track:before{content:"";position:absolute;left:9%;right:9%;top:27px;height:3px;background:var(--line);border-radius:99px}
+.flow-node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px;width:25%;text-align:center}
+.flow-node .dot{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:#fff;border:2px solid var(--line);color:var(--muted);box-shadow:0 8px 18px rgba(33,42,32,.06)}
+.flow-node svg{width:26px;height:26px}
+.flow-node span{font-size:12px;font-weight:700;color:var(--muted)}
+.flow-node[data-c="descomp"] .dot{border-color:var(--c-descomp);color:var(--c-descomp)}
+.flow-node[data-c="patron"] .dot{border-color:var(--c-patron);color:var(--c-patron)}
+.flow-node[data-c="abstrac"] .dot{border-color:var(--c-abstrac);color:var(--c-abstrac)}
+.flow-node[data-c="algo"] .dot{border-color:var(--c-algo);color:var(--c-algo)}
+.flow-node.active .dot{background:currentColor;color:#fff!important;transform:translateY(-4px);box-shadow:0 12px 24px rgba(33,42,32,.18)}
+.flow-node.active[data-c="descomp"] .dot{background:var(--c-descomp)}
+.flow-node.active[data-c="patron"] .dot{background:var(--c-patron)}
+.flow-node.active[data-c="abstrac"] .dot{background:var(--c-abstrac)}
+.flow-node.active[data-c="algo"] .dot{background:var(--c-algo)}
+.flow-node.active .dot svg{stroke:#fff}
+.flow-caption{margin-top:22px;padding:13px 16px;border-radius:12px;background:var(--soft);color:var(--muted);font-size:13.5px;text-align:center;min-height:20px}
+.flow-caption strong{color:var(--ink)}
+
+/* ---- concept ---- */
+.definition-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+.definition-card{min-height:220px;display:flex;align-items:center;padding:36px;border-radius:18px;background:var(--green);color:#fff}
+.definition-card p{margin:0;font-size:21px;line-height:1.55}
+.use-card{padding:28px;border:1px solid var(--line);border-radius:18px}
+.use-card h3{margin:0 0 16px;font-size:19px}
+.benefit-list{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.benefit-list span{position:relative;display:block;padding:10px 12px 10px 28px;border-radius:10px;background:var(--soft);font-size:13.5px;line-height:1.35}
+.benefit-list span:before{content:"✓";position:absolute;left:10px;color:var(--green-dark);font-weight:700}
+.triad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.triad article{padding:22px;border:1px solid var(--line);border-radius:15px;background:#fff}
+.triad article.is-core{background:var(--dark);border-color:var(--dark);color:#fff}
+.triad h4{margin:0 0 8px;font-size:15.5px;font-family:var(--font-display)}
+.triad p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.5}
+.triad article.is-core p{color:#d6ddd0}
+
+/* ---- pillar cards ---- */
+.pillar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pillar-card{position:relative;text-align:left;padding:26px 22px;border-radius:18px;border:1px solid var(--line);background:#fff;cursor:pointer;box-shadow:0 8px 20px rgba(33,42,32,.05);transition:.18s}
+.pillar-card:hover,.pillar-card:focus-visible{transform:translateY(-4px);box-shadow:0 16px 32px rgba(33,42,32,.12)}
+.pillar-card .icon-badge{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;margin-bottom:16px}
+.pillar-card .icon-badge svg{width:24px;height:24px}
+.pillar-card[data-c="descomp"] .icon-badge{background:var(--c-descomp-soft);color:var(--c-descomp)}
+.pillar-card[data-c="patron"] .icon-badge{background:var(--c-patron-soft);color:var(--c-patron)}
+.pillar-card[data-c="abstrac"] .icon-badge{background:var(--c-abstrac-soft);color:var(--c-abstrac)}
+.pillar-card[data-c="algo"] .icon-badge{background:var(--c-algo-soft);color:var(--c-algo)}
+.pillar-card h3{font-size:17.5px;margin-bottom:6px}
+.pillar-card p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.45}
+.pillar-card .open-hint{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:12px;font-weight:700}
+.pillar-card[data-c="descomp"] .open-hint{color:var(--c-descomp)}
+.pillar-card[data-c="patron"] .open-hint{color:var(--c-patron)}
+.pillar-card[data-c="abstrac"] .open-hint{color:var(--c-abstrac)}
+.pillar-card[data-c="algo"] .open-hint{color:var(--c-algo)}
+
+/* ---- modal ---- */
+.modal-backdrop{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(26,32,24,.6);backdrop-filter:blur(6px)}
+.modal-card{position:relative;width:min(560px,100%);padding:34px;border-radius:20px;background:#fff;box-shadow:0 30px 80px rgba(0,0,0,.28);animation:modal-in .18s ease}
+.modal-card .icon-badge{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;margin-bottom:16px}
+.modal-card .icon-badge svg{width:23px;height:23px}
+.modal-card>span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.modal-card h2{margin:8px 34px 14px 0;font-size:27px;line-height:1.15}
+.modal-card .m-block{margin-top:16px}
+.modal-card .m-block h4{margin:0 0 6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.modal-card .m-block p{margin:0;color:var(--ink);font-size:15px;line-height:1.6}
+.modal-card .m-why{margin-top:18px;padding:14px 16px;border-radius:11px;background:var(--soft)}
+.modal-card .m-why p{color:var(--muted)}
+.modal-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border:0;border-radius:50%;background:var(--soft);color:var(--ink);font-size:22px;line-height:1;cursor:pointer}
+@keyframes modal-in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+
+/* ---- case study ---- */
+.case-flow{overflow:hidden;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:var(--shadow)}
+.case-heading{padding:30px 32px 18px;text-align:center}
+.case-heading>span{color:var(--green-dark);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.case-heading h3{margin:8px 0 6px;font-size:26px}
+.case-heading p{margin:0;color:var(--muted)}
+.case-steps{position:relative;display:grid;grid-template-columns:repeat(4,1fr);padding:14px 28px 24px}
+.case-steps:before{content:"";position:absolute;left:12%;right:12%;top:35px;height:3px;background:#dfe6d3}
+.case-steps button{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:transparent;color:#626b5d;cursor:pointer;padding:6px}
+.case-steps button b{width:38px;height:38px;display:grid;place-items:center;border:4px solid #fff;border-radius:50%;background:#dfe6d3;color:#4b5546;box-shadow:0 0 0 1px #cdd8bb;font-size:12px}
+.case-steps button span{font-size:12.5px;font-weight:700}
+.case-steps button[aria-selected="true"] b{background:var(--dark);color:#fff;box-shadow:0 0 0 4px var(--soft)}
+.case-steps button[aria-selected="true"] span{color:var(--dark)}
+.case-display{min-height:250px;padding:36px 46px;background:linear-gradient(135deg,#79b92b,#537f1d);color:#fff}
+.case-display small{text-transform:uppercase;letter-spacing:1px;font-weight:700;font-size:12px}
+.case-display h3{margin:9px 0 14px;font-size:28px}
+.case-display p{margin:0;font-size:16.5px;line-height:1.62;max-width:70ch}
+.case-display .c-why{margin-top:20px;padding:13px 16px;border-left:3px solid #fff;background:rgba(255,255,255,.14);font-size:14px;line-height:1.5}
+.case-close{margin:24px 32px 30px;padding:16px 18px;border-radius:13px;background:var(--soft);color:var(--muted);font-size:14.5px;line-height:1.55}
+.case-close strong{color:var(--ink)}
+
+/* ---- practice / quiz ---- */
+.practice-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.score-pill{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;background:var(--dark);color:#fff;font-size:13px;font-weight:700;white-space:nowrap}
+.score-pill span{color:var(--lime)}
+.quiz-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.quiz-card{padding:22px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.quiz-card .q-tag{display:inline-block;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--green-dark);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.quiz-card p.q-text{margin:0 0 16px;font-size:14.5px;line-height:1.55;min-height:66px}
+.q-options{display:flex;flex-wrap:wrap;gap:7px}
+.q-options button{padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s}
+.q-options button:hover{border-color:var(--green);color:var(--green-dark)}
+.q-options button:disabled{cursor:default}
+.q-options button.pick-correct{background:var(--c-algo-soft);border-color:var(--c-algo);color:#0f6b52}
+.q-options button.pick-wrong{background:#fdeeee;border-color:#d3564f;color:#a23a34}
+.q-options button.reveal-correct{background:var(--c-algo-soft);border-color:var(--c-algo);color:#0f6b52}
+.q-feedback{margin-top:13px;padding:12px 14px;border-radius:11px;font-size:13.5px;line-height:1.5;display:none}
+.q-feedback.show{display:block}
+.q-feedback.ok{background:var(--c-algo-soft);border-left:4px solid var(--c-algo);color:#123f31}
+.q-feedback.no{background:#fdeeee;border-left:4px solid #d3564f;color:#5c1f1b}
+
+/* ---- sources / footer ---- */
+.sources{padding-top:56px;padding-bottom:60px}
+.sources h2{margin:0 0 18px;font-size:21px}
+.sources-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sources-grid a{display:flex;flex-direction:column;gap:5px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;font-weight:700;font-size:14.5px}
+.sources-grid a span{color:var(--green-dark);font-size:12px;font-weight:400}
+.sources-grid a:hover{border-color:var(--green)}
+footer{padding:18px 0;background:var(--dark);color:#fff;text-align:center;font-size:13px}
+footer strong{color:var(--lime)}
+
+button:focus-visible,a:focus-visible{outline:3px solid #1c2419;outline-offset:3px}
+
+@media (prefers-reduced-motion:reduce){.flow-node.active .dot,.pillar-card,.modal-card{transition:none;animation:none}}
+
+@media (max-width:1000px){
+.hero-grid{grid-template-columns:1fr}
+.flow-visual{order:-1}
+.pillar-grid{grid-template-columns:repeat(2,1fr)}
+.definition-grid{grid-template-columns:1fr}
+.quiz-grid{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+.shell{width:calc(100% - 28px)}
+.header-inner{min-height:64px}
+.brand img{width:135px}
+.web-section{padding-top:58px;padding-bottom:58px}
+.hero-grid{padding-top:44px;padding-bottom:40px}
+.hero h1{font-size:31px;letter-spacing:-1px}
+.triad{grid-template-columns:1fr}
+.pillar-grid{grid-template-columns:1fr}
+.benefit-list{grid-template-columns:1fr}
+.case-steps{grid-template-columns:repeat(2,1fr);row-gap:18px}
+.case-steps:before{display:none}
+.case-display{padding:26px 22px}
+.sources-grid{grid-template-columns:1fr}
+.flow-track{flex-wrap:wrap;gap:16px}
+.flow-track:before{display:none}
+.flow-node{width:calc(50% - 8px)}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="ic-descomp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="2" y="2" width="8" height="8" rx="1.5"></rect>
+<rect x="14" y="2" width="8" height="8" rx="1.5"></rect>
+<rect x="2" y="14" width="8" height="8" rx="1.5"></rect>
+<rect x="14" y="14" width="8" height="8" rx="1.5"></rect>
+</symbol>
+<symbol id="ic-patron" viewBox="0 0 24 24" fill="currentColor">
+<circle cx="4" cy="4" r="2.4"></circle>
+<circle cx="12" cy="4" r="2.4" opacity=".3"></circle>
+<circle cx="20" cy="4" r="2.4"></circle>
+<circle cx="4" cy="12" r="2.4" opacity=".3"></circle>
+<circle cx="12" cy="12" r="2.4"></circle>
+<circle cx="20" cy="12" r="2.4" opacity=".3"></circle>
+<circle cx="4" cy="20" r="2.4"></circle>
+<circle cx="12" cy="20" r="2.4" opacity=".3"></circle>
+<circle cx="20" cy="20" r="2.4"></circle>
+</symbol>
+<symbol id="ic-abstrac" viewBox="0 0 24 24" fill="currentColor">
+<rect x="2" y="2" width="20" height="6" rx="2" opacity=".3"></rect>
+<rect x="4" y="10" width="16" height="6" rx="2" opacity=".6"></rect>
+<rect x="7" y="18" width="10" height="4" rx="2"></rect>
+</symbol>
+<symbol id="ic-algo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="4" cy="20" r="2.3" fill="currentColor" stroke="none"></circle>
+<circle cx="12" cy="12" r="2.3" fill="currentColor" stroke="none"></circle>
+<circle cx="20" cy="4" r="2.3" fill="currentColor" stroke="none"></circle>
+<line x1="6.3" y1="17.7" x2="9.7" y2="14.3"></line>
+<line x1="14.3" y1="9.7" x2="17.7" y2="6.3"></line>
+</symbol>
+</svg>
+
+<div class="topbar"><div class="shell">Facultad de Ingeniería y Ciencias Básicas</div></div>
+<header class="site-header">
+<div class="shell header-inner">
+<a class="brand" href="#inicio" aria-label="Ir al inicio"><img src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x" alt="Areandina"></a>
+<p class="section-name">Pensamiento Computacional <span>Los 4 pilares</span></p>
+</div>
+</header>
+
+<nav class="web-nav" aria-label="Contenido del recurso">
+<div class="shell nav-inner">
+<a href="#concepto">Concepto</a>
+<a href="#pilares">Los pilares</a>
+<a href="#caso">Caso de estudio</a>
+<a href="#practica">Practica</a>
+<a href="#fuentes">Fuentes</a>
+</div>
+</nav>
+
+<main id="inicio">
+
+<section class="hero">
+<div class="shell hero-grid">
+<div class="hero-copy">
+<p class="eyebrow">Pensamiento computacional · Los 4 pilares</p>
+<h1>Cuatro formas de pensar antes de resolver <em>cualquier</em> problema</h1>
+<p>El pensamiento computacional no es programar: es la manera de dividir un problema, encontrar lo que se repite, quedarse con lo esencial y ordenar la solución paso a paso — con o sin computador de por medio.</p>
+<a class="primary-link" href="#pilares">Conocer los pilares <span>↓</span></a>
+</div>
+<div class="flow-visual">
+<span>Así se mueve el pensamiento</span>
+<div class="flow-track" id="flowTrack">
+<div class="flow-node" data-c="descomp"><div class="dot"><svg><use href="#ic-descomp"></use></svg></div><span>Descompone</span></div>
+<div class="flow-node" data-c="patron"><div class="dot"><svg><use href="#ic-patron"></use></svg></div><span>Reconoce</span></div>
+<div class="flow-node" data-c="abstrac"><div class="dot"><svg><use href="#ic-abstrac"></use></svg></div><span>Abstrae</span></div>
+<div class="flow-node" data-c="algo"><div class="dot"><svg><use href="#ic-algo"></use></svg></div><span>Ordena</span></div>
+</div>
+<div class="flow-caption" id="flowCaption">Divide el problema en partes más pequeñas.</div>
+</div>
+</div>
+</section>
+
+<section class="web-section shell" id="concepto">
+<header class="section-intro"><span>Concepto</span><h2>¿Qué es el pensamiento computacional?</h2></header>
+<div class="definition-grid">
+<div class="definition-card">
+<p>Es un proceso mental para resolver problemas: dividir el reto en partes, buscar lo que se repite, simplificar a lo esencial y ordenar la solución paso a paso — igual que lo haría alguien que jamás ha usado un computador.</p>
+</div>
+<div class="use-card">
+<h3>¿Para qué sirve?</h3>
+<div class="benefit-list">
+<span>Resolver problemas complejos</span>
+<span>Tomar mejores decisiones</span>
+<span>Explicar soluciones con claridad</span>
+<span>Organizar el trabajo en equipo</span>
+<span>Anticiparse a los problemas</span>
+<span>Aplicarlo en cualquier área de la vida</span>
+</div>
+</div>
+</div>
+<div class="triad">
+<article><h4>Usar un computador</h4><p>Operar herramientas digitales que otra persona ya construyó, como un celular o una app.</p></article>
+<article class="is-core"><h4>Pensar computacionalmente</h4><p>Un método mental para estructurar y resolver cualquier problema, se use o no una pantalla.</p></article>
+<article><h4>Programar</h4><p>Traducir una solución que ya se pensó en instrucciones que una máquina puede ejecutar.</p></article>
+</div>
+</section>
+
+<section class="soft-section" id="pilares">
+<div class="shell web-section">
+<header class="section-intro"><span>Los 4 pilares</span><h2>Una manera de pensar, cuatro movimientos</h2></header>
+<p class="section-lead">Cada pilar responde a una pregunta distinta frente al mismo problema. Toca cada tarjeta para ver su definición, un ejemplo de la vida real y por qué existe.</p>
+<div class="pillar-grid">
+<button class="pillar-card" type="button" data-pillar="descomp">
+<div class="icon-badge"><svg><use href="#ic-descomp"></use></svg></div>
+<h3>Descomposición</h3>
+<p>Divide el reto en partes más pequeñas y manejables.</p>
+<span class="open-hint">Ver detalle ↗</span>
+</button>
+<button class="pillar-card" type="button" data-pillar="patron">
+<div class="icon-badge"><svg><use href="#ic-patron"></use></svg></div>
+<h3>Reconocimiento de patrones</h3>
+<p>Encuentra lo que se repite entre varias situaciones.</p>
+<span class="open-hint">Ver detalle ↗</span>
+</button>
+<button class="pillar-card" type="button" data-pillar="abstrac">
+<div class="icon-badge"><svg><use href="#ic-abstrac"></use></svg></div>
+<h3>Abstracción</h3>
+<p>Se queda solo con la información esencial del problema.</p>
+<span class="open-hint">Ver detalle ↗</span>
+</button>
+<button class="pillar-card" type="button" data-pillar="algo">
+<div class="icon-badge"><svg><use href="#ic-algo"></use></svg></div>
+<h3>Algoritmos</h3>
+<p>Ordena la solución en una secuencia clara de pasos.</p>
+<span class="open-hint">Ver detalle ↗</span>
+</button>
+</div>
+</div>
+</section>
+
+<section class="web-section shell" id="caso">
+<header class="section-intro"><span>Caso de estudio</span><h2>Los retrasos de los estudiantes</h2></header>
+<p class="section-lead">Un mismo problema real, resuelto aplicando los 4 pilares en orden. Selecciona cada pilar para ver cómo se usa.</p>
+<div class="case-flow">
+<div class="case-heading">
+<span>Problema</span>
+<h3>Varios estudiantes llegan tarde a clase</h3>
+<p>Coordinación académica necesita entender y resolver la situación — no adivinar.</p>
+</div>
+<div class="case-steps" role="tablist" id="caseSteps">
+<button role="tab" aria-selected="true" data-index="0" type="button"><b>1</b><span>Descomposición</span></button>
+<button role="tab" aria-selected="false" data-index="1" type="button"><b>2</b><span>Patrones</span></button>
+<button role="tab" aria-selected="false" data-index="2" type="button"><b>3</b><span>Abstracción</span></button>
+<button role="tab" aria-selected="false" data-index="3" type="button"><b>4</b><span>Algoritmo</span></button>
+</div>
+<div class="case-display" id="caseDisplay"></div>
+<p class="case-close"><strong>De la idea al procedimiento:</strong> estos mismos 4 pasos son los que, después, se convierten en un sistema de asistencia automático. Primero se piensa el problema — después, si hace falta, se automatiza.</p>
+</div>
+</section>
+
+<section class="soft-section" id="practica">
+<div class="shell web-section">
+<header class="section-intro"><span>Practica</span><h2>¿Qué pilar es? Ponte a prueba</h2></header>
+<p class="section-lead">Lee cada situación de la vida real, elige qué pilar se está aplicando y revisa por qué.</p>
+<div class="practice-head">
+<span></span>
+<div class="score-pill">Aciertos <span id="scoreVal">0</span>/8</div>
+</div>
+<div class="quiz-grid" id="quizGrid"></div>
+</div>
+</section>
+
+<section class="sources shell" id="fuentes">
+<h2>Fuentes de consulta</h2>
+<div class="sources-grid">
+<a href="https://libros.catedu.es/books/pensamiento-computacional-y-actividades-desenchufadas/page/introduccion-al-pensamiento-computacional" target="_blank" rel="noreferrer">Catedu <span>Introducción al pensamiento computacional ↗</span></a>
+<a href="https://libros.catedu.es/books/pensamiento-computacional-y-actividades-desenchufadas/page/pilares-del-pensamiento-computacional-descomposicion" target="_blank" rel="noreferrer">Catedu <span>Pilar: Descomposición ↗</span></a>
+<a href="https://libros.catedu.es/books/pensamiento-computacional-y-actividades-desenchufadas/page/pilares-del-pensamiento-computacional-reconocimiento-de-patrones" target="_blank" rel="noreferrer">Catedu <span>Pilar: Reconocimiento de patrones ↗</span></a>
+<a href="https://libros.catedu.es/books/pensamiento-computacional-y-actividades-desenchufadas/page/pilares-del-pensamiento-computacional-abstraccion" target="_blank" rel="noreferrer">Catedu <span>Pilar: Abstracción ↗</span></a>
+</div>
+</section>
+
+</main>
+
+<footer><div class="shell">Aprendiendo con <strong>@LaProfeVivy</strong></div></footer>
+
+<script>
+/* ---------- data ---------- */
+const pillarData = {
+descomp: {
+icon:'ic-descomp', tag:'Pilar 1', title:'Descomposición',
+def:'Separar un problema grande en partes más pequeñas y manejables, que se puedan resolver una por una.',
+example:'Antes de un examen final, nadie estudia "todo el semestre" de una sola vez: el temario se separa por unidades, por temas y por días de estudio.',
+why:'Un problema completo suele ser demasiado grande para resolverlo de un solo intento. Dividirlo permite avanzar con orden y ubicar con precisión en qué parte está la dificultad.'
+},
+patron: {
+icon:'ic-patron', tag:'Pilar 2', title:'Reconocimiento de patrones',
+def:'Observar varias situaciones para encontrar semejanzas, repeticiones o tendencias que se puedan aprovechar.',
+example:'Alguien que hace las compras del mes nota que siempre gasta más los fines de semana, y ajusta su presupuesto según ese patrón.',
+why:'Detectar lo que se repite evita resolver cada situación desde cero: si ya se conoce el patrón, se puede anticipar y reutilizar una solución que ya funcionó antes.'
+},
+abstrac: {
+icon:'ic-abstrac', tag:'Pilar 3', title:'Abstracción',
+def:'Dejar de lado los detalles que no son importantes para el problema y quedarse solo con la información esencial.',
+example:'El mapa del transporte público de una ciudad no dibuja cada edificio ni cada árbol: solo muestra rutas, paradas y conexiones.',
+why:'Demasiada información distrae y complica encontrar la solución. Abstraer permite enfocarse en lo que realmente afecta el resultado.'
+},
+algo: {
+icon:'ic-algo', tag:'Pilar 4', title:'Algoritmos',
+def:'Crear una secuencia clara, ordenada y finita de pasos que lleve del problema a la solución.',
+example:'Una receta de cocina: una lista ordenada de pasos que cualquier persona puede seguir para obtener el mismo resultado.',
+why:'Sin una secuencia clara de pasos, ni una persona ni una máquina pueden ejecutar la solución de forma confiable ni repetirla después.'
+}
+};
+
+const flowCaptions = {
+descomp:'Divide el problema en partes más pequeñas.',
+patron:'Encuentra lo que se repite entre las partes.',
+abstrac:'Descarta el detalle y conserva lo esencial.',
+algo:'Ordena la solución en pasos claros.'
+};
+
+const caseData = [
+{tag:'Paso 1 · Descomposición', title:'Divide el problema', text:'En vez de preguntarse "¿por qué llegan tarde?" en general, coordinación separa el reto en partes: ¿quiénes llegan tarde?, ¿en qué días?, ¿a qué hora?, ¿cuántos minutos de diferencia?, ¿es siempre la misma persona?', why:'¿Por qué este pilar? Porque el problema completo es demasiado amplio para atacarlo de una vez; cada parte se puede investigar por separado.'},
+{tag:'Paso 2 · Patrones', title:'Busca lo que se repite', text:'Al revisar el registro de asistencia de varias semanas, coordinación nota un patrón: los mismos 3 estudiantes llegan tarde, casi siempre los lunes, casi siempre entre 5 y 10 minutos después de las 8:00.', why:'¿Por qué este pilar? Porque el patrón permite dejar de tratar cada retraso como un caso aislado y enfocar la solución donde realmente ocurre el problema.'},
+{tag:'Paso 3 · Abstracción', title:'Quédate con lo esencial', text:'De todo lo registrado — nombre, uniforme, clima, ruta, medio de transporte — solo dos datos importan para decidir si alguien llegó tarde: la hora de llegada y la hora de inicio de clase, las 8:00 a.m.', why:'¿Por qué este pilar? Porque todo lo demás es información de contexto, no parte de la regla que define si alguien llegó tarde.'},
+{tag:'Paso 4 · Algoritmo', title:'Ordena la solución paso a paso', text:'1. Registrar la hora de llegada. 2. Compararla con las 8:00. 3. Si es mayor, marcar "tarde" y avisar a coordinación. 4. Si no, marcar "a tiempo". El mismo procedimiento se repite cada día, para cada estudiante.', why:'¿Por qué este pilar? Porque con esta secuencia, cualquier persona — o un sistema automático — puede aplicar la misma solución sin ambigüedad.'}
+];
+
+const quizData = [
+{tag:'Muebles', text:'El instructivo de un mueble trae los pasos numerados del 1 al 12, en el orden exacto en que se deben armar las piezas.', correct:'algo', why:'Es una secuencia ordenada, clara y finita de pasos: si se sigue en orden, cualquier persona llega al mismo resultado. Eso es un <strong>algoritmo</strong>.'},
+{tag:'Mudanza', text:'Antes de mudarse de casa, una familia separa las tareas en grupos: empacar la cocina, empacar los cuartos, contratar el transporte y avisar a los servicios públicos.', correct:'descomp', why:'"Mudarse" es un reto demasiado grande para resolverlo de una vez; se divide en partes independientes que se organizan por separado. Eso es <strong>descomposición</strong>.'},
+{tag:'Cocina', text:'Un chef revisa el menú y nota que casi todos los platos que más piden los clientes llevan limón o algún cítrico.', correct:'patron', why:'Se comparan varios casos para encontrar algo que se repite y así anticipar qué gustará más. Eso es <strong>reconocimiento de patrones</strong>.'},
+{tag:'Seguridad', text:'El plano de evacuación de un edificio no muestra el color de las paredes ni los muebles de cada oficina: solo las rutas, las salidas y los puntos de encuentro.', correct:'abstrac', why:'Se descarta todo detalle que no ayuda a salir del edificio y se conserva solo la información esencial. Eso es <strong>abstracción</strong>.'},
+{tag:'Deporte', text:'Un entrenador revisa los últimos partidos y nota que el equipo casi siempre pierde cuando juega de visitante y llueve.', correct:'patron', why:'Analizar varios partidos para encontrar una tendencia común es <strong>reconocimiento de patrones</strong>.'},
+{tag:'Viajes', text:'Antes de un viaje, alguien organiza lo que va a empacar por categorías: ropa, aseo personal, documentos y electrónicos.', correct:'descomp', why:'Empacar "todo el viaje" de una vez es difícil; separarlo en categorías más pequeñas facilita no olvidar nada. Eso es <strong>descomposición</strong>.'},
+{tag:'Hogar', text:'Un sistema de climatización sigue esta regla: si la temperatura sube de 26°, enciende el aire; si baja de 18°, enciende la calefacción; si no, permanece apagado.', correct:'algo', why:'Es un conjunto de instrucciones condicionales, ordenadas y claras, que se ejecutan siempre de la misma manera. Eso es un <strong>algoritmo</strong>.'},
+{tag:'Transporte', text:'Una app de rutas no le muestra al conductor cada árbol o cada semáforo peatonal: solo las calles principales, los giros necesarios y el tiempo estimado.', correct:'abstrac', why:'Se simplifica la realidad a lo que realmente sirve para llegar al destino, ignorando lo irrelevante. Eso es <strong>abstracción</strong>.'}
+];
+
+const pillarLabels = {descomp:'Descomposición', patron:'Patrones', abstrac:'Abstracción', algo:'Algoritmo'};
+
+/* ---------- modal (pillars) ---------- */
+function openPillarModal(key){
+const d = pillarData[key];
+const backdrop = document.createElement('div');
+backdrop.className = 'modal-backdrop';
+backdrop.innerHTML =
+'<section class="modal-card" role="dialog" aria-modal="true">' +
+'<button class="modal-close" type="button" aria-label="Cerrar ventana">×</button>' +
+'<div class="icon-badge" style="background:var(--c-'+key+'-soft);color:var(--c-'+key+')"><svg><use href="#'+d.icon+'"></use></svg></div>' +
+'<span style="color:var(--c-'+key+')">'+d.tag+'</span>' +
+'<h2>'+d.title+'</h2>' +
+'<div class="m-block"><h4>Definición</h4><p>'+d.def+'</p></div>' +
+'<div class="m-block"><h4>Ejemplo de la vida real</h4><p>'+d.example+'</p></div>' +
+'<div class="m-why"><h4>¿Por qué este pilar?</h4><p>'+d.why+'</p></div>' +
+'</section>';
+backdrop.addEventListener('click', e => { if (e.target === backdrop) backdrop.remove(); });
+backdrop.querySelector('.modal-close').addEventListener('click', () => backdrop.remove());
+document.body.appendChild(backdrop);
+backdrop.querySelector('.modal-close').focus();
+}
+document.querySelectorAll('.pillar-card').forEach(card =>
+card.addEventListener('click', () => openPillarModal(card.dataset.pillar))
+);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelector('.modal-backdrop')?.remove(); });
+
+/* ---------- hero flow animation ---------- */
+const flowNodes = document.querySelectorAll('.flow-node');
+const flowCaption = document.getElementById('flowCaption');
+const flowKeys = ['descomp','patron','abstrac','algo'];
+let flowIndex = 0;
+function setFlow(i){
+flowNodes.forEach((n, idx) => n.classList.toggle('active', idx === i));
+flowCaption.textContent = flowCaptions[flowKeys[i]];
+}
+setFlow(0);
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+setInterval(() => { flowIndex = (flowIndex + 1) % 4; setFlow(flowIndex); }, 2600);
+}
+flowNodes.forEach((n, idx) => n.addEventListener('click', () => setFlow(idx)));
+
+/* ---------- case study steps ---------- */
+const caseButtons = document.querySelectorAll('#caseSteps button');
+const caseDisplay = document.getElementById('caseDisplay');
+function renderCase(i){
+const d = caseData[i];
+caseDisplay.innerHTML = '<small>'+d.tag+'</small><h3>'+d.title+'</h3><p>'+d.text+'</p><div class="c-why">'+d.why+'</div>';
+}
+caseButtons.forEach((btn, idx) => btn.addEventListener('click', () => {
+caseButtons.forEach(b => b.setAttribute('aria-selected', 'false'));
+btn.setAttribute('aria-selected', 'true');
+renderCase(idx);
+}));
+renderCase(0);
+
+/* ---------- quiz ---------- */
+const quizGrid = document.getElementById('quizGrid');
+const scoreVal = document.getElementById('scoreVal');
+let score = 0;
+
+quizData.forEach((q, qi) => {
+const card = document.createElement('article');
+card.className = 'quiz-card';
+const optionsHtml = Object.keys(pillarLabels).map(key =>
+'<button type="button" data-key="'+key+'">'+pillarLabels[key]+'</button>'
+).join('');
+card.innerHTML =
+'<span class="q-tag">'+q.tag+'</span>' +
+'<p class="q-text">'+q.text+'</p>' +
+'<div class="q-options">'+optionsHtml+'</div>' +
+'<div class="q-feedback"></div>';
+quizGrid.appendChild(card);
+
+const buttons = card.querySelectorAll('.q-options button');
+const feedback = card.querySelector('.q-feedback');
+let answered = false;
+
+buttons.forEach(btn => btn.addEventListener('click', () => {
+if (answered) return;
+answered = true;
+const picked = btn.dataset.key;
+const isCorrect = picked === q.correct;
+buttons.forEach(b => {
+b.disabled = true;
+if (b.dataset.key === q.correct) b.classList.add(b === btn ? 'pick-correct' : 'reveal-correct');
+else if (b === btn) b.classList.add('pick-wrong');
+});
+feedback.className = 'q-feedback show ' + (isCorrect ? 'ok' : 'no');
+feedback.innerHTML = (isCorrect ? '<strong>¡Correcto!</strong> ' : '<strong>No exactamente.</strong> ') + q.why;
+if (isCorrect) { score++; scoreVal.textContent = score; }
+}));
+});
+</script>
+</body>
+</html>
