@@ -1,1 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Los cuatro pilares del pensamiento computacional</title>
+<style>
+@font-face{font-family:Brown;src:local("BrownStd-Regular"),url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Regular.woff2") format("woff2");font-display:swap}
+@font-face{font-family:Brown;src:local("BrownStd-Bold"),url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+:root{--verde:#7fb536;--verde2:#5f8f24;--gris:#3f3f3f;--borde:#dce3e6;--fondo:#f4f7f8;--agua1:#c8f0ff;--agua2:#6fc7e9;--ok:#237b3d;--error:#bd3d3d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--fondo);font-family:Brown,Arial,sans-serif;color:var(--gris)}button,label{font:inherit}.wrap{width:min(1020px,calc(100% - 20px));margin:auto}
+.hero{background:#3b3b3b;border-bottom:5px solid var(--verde);color:#fff;padding:24px 0}.hero h1{margin:0;font-size:clamp(28px,4.4vw,46px);line-height:1.08}
+.game-root{counter-reset:score;padding:18px 0 34px;display:grid;grid-template-columns:1fr;gap:14px}
+.qcard input.correct:checked{counter-increment:score 100}
+.score{grid-row:1;justify-self:end;background:#fff;border:1px solid var(--borde);border-radius:12px;padding:10px 16px;font-weight:700;box-shadow:0 5px 14px rgba(0,0,0,.06)}
+.score::after{content:counter(score) "/500";color:var(--verde2);font-size:24px;margin-left:7px}
+.pond{grid-row:2;position:relative;height:270px;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 12% 22%,rgba(255,255,255,.45) 0 4px,transparent 5px),radial-gradient(circle at 35% 68%,rgba(255,255,255,.28) 0 5px,transparent 6px),radial-gradient(circle at 70% 18%,rgba(255,255,255,.35) 0 4px,transparent 5px),linear-gradient(180deg,var(--agua1),var(--agua2));border:2px solid #a7dbea;box-shadow:0 12px 26px rgba(0,0,0,.09)}
+.pad{position:absolute;width:112px;height:58px;border-radius:55% 45% 50% 50%/55% 60% 40% 45%;background:radial-gradient(circle at 30% 30%,#a7e25e 0%,var(--verde) 58%,#669529 100%);box-shadow:inset -6px -8px 0 rgba(0,0,0,.08),0 8px 12px rgba(0,0,0,.11);transform:translate(-50%,-50%)}
+.pad::before{content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:28px solid #629826}.pad.finish{background:radial-gradient(circle at 30% 30%,#ffef9d,#f8c34f 60%,#d49e25)}.pad.finish::before{border-top-color:#c99622}
+.p0{left:9%;top:66%}.p1{left:26%;top:34%}.p2{left:43%;top:70%}.p3{left:60%;top:31%}.p4{left:77%;top:67%}.p5{left:92%;top:35%}
+.frog{position:absolute;width:82px;height:70px;left:9%;top:49%;transform:translate(-50%,-50%);z-index:5;transition:left .65s ease,top .65s ease,transform .35s ease}
+.frog-body{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:70px;height:46px;background:#62c63d;border:3px solid #3c8c22;border-radius:42px 42px 28px 28px;box-shadow:inset 0 -8px rgba(0,0,0,.08)}
+.eye{position:absolute;top:4px;width:23px;height:23px;background:#79d44f;border:3px solid #3c8c22;border-radius:50%}.eye.l{left:12px}.eye.r{right:12px}.eye::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:#202020;border-radius:50%}.frog-belly{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:38px;height:20px;border-radius:50%;background:#b8e67d}.frog-shadow{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:56px;height:11px;border-radius:50%;background:rgba(0,0,0,.16);filter:blur(2px)}
+.splash{position:absolute;left:50%;top:63%;font-size:42px;opacity:0;transform:translate(-50%,-50%) scale(.6)}
+@keyframes splash{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}35%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-50%) scale(.8)}}
+@keyframes sink{0%{transform:translate(-50%,-50%)}45%{transform:translate(-50%,30%) rotate(12deg) scale(.9)}100%{transform:translate(-50%,-50%)}}
+body:has(.wrong:checked) .frog{animation:sink .8s ease}
+body:has(.wrong:checked) .splash{animation:splash .8s ease}
+body:has(#q1a:checked) .frog{left:26%;top:17%}
+body:has(#q2b:checked) .frog{left:43%;top:53%}
+body:has(#q3a:checked) .frog{left:60%;top:14%}
+body:has(#q4b:checked) .frog{left:77%;top:50%}
+body:has(#q5a:checked) .frog{left:92%;top:18%}
+.qcard{grid-row:3;display:none;background:#fff;border:1px solid var(--borde);border-radius:16px;padding:22px;box-shadow:0 10px 24px rgba(0,0,0,.07)}
+#q1{display:block}.qcard:target{display:block}body:has(.qcard:target) #q1:not(:target){display:none}
+.question{font-size:22px;line-height:1.35;font-weight:700;margin:0 0 16px}.options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.options input{position:absolute;opacity:0;pointer-events:none}.option{display:block;border:2px solid #dce2e5;background:#fff;border-radius:12px;padding:14px;min-height:78px;transition:.15s;cursor:pointer}.option:hover{border-color:#a8cc7c;background:#fbfdf8}.options input:checked + .option{border-color:#9abf6b;background:#f4faec}.options input.correct:checked + .option{border-color:var(--ok);background:#edf8f0}.options input.wrong:checked + .option{border-color:var(--error);background:#fff1f1}
+.explanation{display:none;margin-top:16px;padding:14px 16px;border-left:5px solid var(--verde);background:#f4f9ec;border-radius:0 10px 10px 0;line-height:1.55}.wrong + .option + .explanation{border-left-color:var(--error);background:#fff1f1}.qcard:has(input:checked) .explanation{display:block}.exp-ok,.exp-bad{display:none}.qcard:has(input.correct:checked) .exp-ok{display:block}.qcard:has(input.wrong:checked) .exp-bad{display:block}
+.nextlink{display:none;margin-top:14px;background:var(--verde);color:#fff;font-weight:700;border-radius:10px;padding:11px 16px;text-decoration:none;min-height:44px;align-items:center}.qcard:has(input:checked) .nextlink{display:inline-flex}.nextlink:hover{background:var(--verde2)}
+.result{display:none;grid-row:3;text-align:center;background:#fff;border:1px solid var(--borde);border-radius:16px;padding:28px;box-shadow:0 10px 24px rgba(0,0,0,.07)}#resultado:target{display:block}body:has(#resultado:target) .qcard{display:none!important}.result .big{font-size:48px;color:var(--verde2);font-weight:700}.result .big::after{content:counter(score) "/500"}
+@media(max-width:720px){.options{grid-template-columns:1fr}.pond{height:300px}.pad{width:90px;height:48px}.frog{width:74px}.question{font-size:19px}.score{justify-self:stretch;text-align:right}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap"><h1>Los cuatro pilares del pensamiento computacional</h1></div></header>
+<main class="wrap game-root">
 
+<section class="qcard" id="q1">
+  <p class="question">Vas a organizar una salida de fin de semana. ¿Cuál opción aplica mejor la descomposición?</p>
+  <div class="options">
+    <input class="correct" type="radio" name="q1" id="q1a"><label class="option" for="q1a">Separar la tarea en transporte, presupuesto, alimentación, actividades y horarios.</label>
+    <input class="wrong" type="radio" name="q1" id="q1b"><label class="option" for="q1b">Pensar en todo al mismo tiempo sin dividir nada.</label>
+    <input class="wrong" type="radio" name="q1" id="q1c"><label class="option" for="q1c">Elegir primero el color de la ropa y dejar todo lo demás para después.</label>
+    <input class="wrong" type="radio" name="q1" id="q1d"><label class="option" for="q1d">Copiar exactamente el plan de otra persona.</label>
+  </div>
+  <div class="explanation"><div class="exp-ok"><strong>Correcto.</strong> La descomposición divide un problema grande en partes pequeñas y manejables.</div><div class="exp-bad"><strong>No.</strong> Para descomponer debes separar la situación en componentes que puedas resolver por partes.</div></div>
+  <a class="nextlink" href="#q2">Siguiente</a>
+</section>
+
+<section class="qcard" id="q2">
+  <p class="question">Una panadería observa que entre las 5:00 y las 7:00 p. m. vende mucho más pan que en otros horarios. ¿Qué pilar está usando?</p>
+  <div class="options">
+    <input class="wrong" type="radio" name="q2" id="q2a"><label class="option" for="q2a">Abstracción.</label>
+    <input class="correct" type="radio" name="q2" id="q2b"><label class="option" for="q2b">Reconocimiento de patrones.</label>
+    <input class="wrong" type="radio" name="q2" id="q2c"><label class="option" for="q2c">Descomposición.</label>
+    <input class="wrong" type="radio" name="q2" id="q2d"><label class="option" for="q2d">Diseño de algoritmos.</label>
+  </div>
+  <div class="explanation"><div class="exp-ok"><strong>Correcto.</strong> Reconocer patrones consiste en detectar repeticiones o regularidades útiles.</div><div class="exp-bad"><strong>No.</strong> La pista está en que el mismo comportamiento se repite en un horario determinado.</div></div>
+  <a class="nextlink" href="#q3">Siguiente</a>
+</section>
+
+<section class="qcard" id="q3">
+  <p class="question">Quieres escoger la mejor ruta para llegar en bicicleta. ¿Qué información debes conservar para aplicar abstracción?</p>
+  <div class="options">
+    <input class="correct" type="radio" name="q3" id="q3a"><label class="option" for="q3a">Distancia, tiempo estimado, seguridad de la vía y dificultad del recorrido.</label>
+    <input class="wrong" type="radio" name="q3" id="q3b"><label class="option" for="q3b">Color de las casas y marcas de los carros que pasan.</label>
+    <input class="wrong" type="radio" name="q3" id="q3c"><label class="option" for="q3c">Toda la información posible, aunque no tenga relación con la ruta.</label>
+    <input class="wrong" type="radio" name="q3" id="q3d"><label class="option" for="q3d">Solo el nombre de las calles.</label>
+  </div>
+  <div class="explanation"><div class="exp-ok"><strong>Correcto.</strong> La abstracción permite quedarse con la información relevante y descartar lo que no aporta a la decisión.</div><div class="exp-bad"><strong>No.</strong> Debes conservar solo los datos que realmente ayudan a elegir la mejor ruta.</div></div>
+  <a class="nextlink" href="#q4">Siguiente</a>
+</section>
+
+<section class="qcard" id="q4">
+  <p class="question">Quieres preparar chocolate caliente. ¿Cuál secuencia representa mejor un algoritmo?</p>
+  <div class="options">
+    <input class="wrong" type="radio" name="q4" id="q4a"><label class="option" for="q4a">Servir, calentar la leche, buscar la taza y luego añadir el chocolate.</label>
+    <input class="correct" type="radio" name="q4" id="q4b"><label class="option" for="q4b">Reunir ingredientes, calentar la leche, añadir chocolate, mezclar y servir.</label>
+    <input class="wrong" type="radio" name="q4" id="q4c"><label class="option" for="q4c">Hacer los pasos en cualquier orden.</label>
+    <input class="wrong" type="radio" name="q4" id="q4d"><label class="option" for="q4d">Servir primero y decidir después qué preparar.</label>
+  </div>
+  <div class="explanation"><div class="exp-ok"><strong>Correcto.</strong> Un algoritmo es una secuencia clara y ordenada de pasos para alcanzar un resultado.</div><div class="exp-bad"><strong>No.</strong> La secuencia debe tener un orden lógico desde el inicio hasta el resultado final.</div></div>
+  <a class="nextlink" href="#q5">Siguiente</a>
+</section>
+
+<section class="qcard" id="q5">
+  <p class="question">Quieres mejorar el uso del agua en un jardín comunitario. ¿Qué secuencia integra correctamente los cuatro pilares?</p>
+  <div class="options">
+    <input class="correct" type="radio" name="q5" id="q5a"><label class="option" for="q5a">Dividir el problema → detectar cuándo se consume más agua → conservar los datos relevantes → definir pasos para regar mejor.</label>
+    <input class="wrong" type="radio" name="q5" id="q5b"><label class="option" for="q5b">Elegir una solución al azar → ignorar datos → repetir acciones → dividir al final.</label>
+    <input class="wrong" type="radio" name="q5" id="q5c"><label class="option" for="q5c">Guardar todos los datos → actuar sin orden → cambiar el problema → empezar de nuevo.</label>
+    <input class="wrong" type="radio" name="q5" id="q5d"><label class="option" for="q5d">Buscar una sola causa y aplicar una solución sin revisar nada más.</label>
+  </div>
+  <div class="explanation"><div class="exp-ok"><strong>Correcto.</strong> Allí aparecen los cuatro pilares en orden: descomposición, reconocimiento de patrones, abstracción y diseño de algoritmos.</div><div class="exp-bad"><strong>No.</strong> La solución debe integrar los cuatro pilares de forma coherente.</div></div>
+  <a class="nextlink" href="#resultado">Ver resultado</a>
+</section>
+
+<div class="score">Puntaje</div>
+
+<div class="pond">
+  <div class="pad p0"></div><div class="pad p1"></div><div class="pad p2"></div><div class="pad p3"></div><div class="pad p4"></div><div class="pad p5 finish"></div>
+  <div class="frog"><div class="eye l"></div><div class="eye r"></div><div class="frog-body"></div><div class="frog-belly"></div><div class="frog-shadow"></div></div>
+  <div class="splash">💦</div>
+</div>
+
+<section class="result" id="resultado">
+  <div class="big"></div>
+  <p><strong>¡Froggy llegó a la meta!</strong></p>
+  <a class="nextlink" style="display:inline-flex" href="#q1">Jugar de nuevo</a>
+</section>
+</main>
+</body>
+</html>
