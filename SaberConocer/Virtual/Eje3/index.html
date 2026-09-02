@@ -1,1 +1,1617 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saber Conocer | Eje 3</title>
+
+  <style>
+    :root{
+      --verde:#86a91e;
+      --verde-oscuro:#5f7d14;
+      --verde-suave:#eef5dc;
+      --tinta:#26322b;
+      --gris:#667168;
+      --borde:#dce3d9;
+      --fondo:#f6f8f5;
+      --amarillo:#d7a527;
+      --amarillo-suave:#fff9e8;
+      --blanco:#ffffff;
+      --oscuro:#29352d;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--fondo);
+      color:var(--tinta);
+    }
+
+    .topbar{
+      height:30px;
+      background:var(--oscuro);
+    }
+
+    header{
+      background:#fff;
+      padding:16px 7%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid var(--borde);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .brand img{
+      width:116px;
+      max-height:42px;
+      object-fit:contain;
+    }
+
+    .brand span{
+      color:var(--gris);
+      border-left:1px solid var(--borde);
+      padding-left:14px;
+      font-size:14px;
+    }
+
+    .badge{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+      border:1px solid #cbdca6;
+      padding:8px 14px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .app{
+      width:min(1180px,90%);
+      min-height:650px;
+      margin:32px auto;
+      display:grid;
+      grid-template-columns:305px 1fr;
+      background:#fff;
+      border:1px solid var(--borde);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 12px 35px rgba(37,55,39,.08);
+    }
+
+    /* MENÚ */
+    .sidebar{
+      padding:30px 20px;
+      background:#fbfcfa;
+      border-right:1px solid var(--borde);
+    }
+
+    .sidebar h1{
+      margin:0 0 8px;
+      color:var(--verde-oscuro);
+      font-size:20px;
+    }
+
+    .sidebar-intro{
+      margin:0 0 26px;
+      color:var(--gris);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .topic-button{
+      width:100%;
+      display:flex;
+      gap:11px;
+      align-items:flex-start;
+      text-align:left;
+      border:0;
+      border-radius:11px;
+      background:transparent;
+      color:#465047;
+      padding:15px 11px;
+      margin:7px 0;
+      cursor:pointer;
+      font-size:14px;
+      line-height:1.4;
+      transition:.2s;
+    }
+
+    .topic-button:hover{background:#f0f5e5}
+
+    .topic-button.active{
+      background:var(--verde);
+      color:#fff;
+      font-weight:bold;
+    }
+
+    .number{
+      min-width:34px;
+      height:34px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#e4ecd4;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      font-weight:bold;
+      flex-shrink:0;
+    }
+
+    .topic-button.active .number{
+      background:#fff;
+      color:var(--verde-oscuro);
+    }
+
+    .topic-text strong{
+      display:block;
+      margin-bottom:3px;
+      font-size:12px;
+      text-transform:uppercase;
+    }
+
+    .topic-text span{display:block}
+
+    /* CONTENIDO */
+    .workspace{
+      padding:42px 46px 48px;
+    }
+
+    .eyebrow{
+      margin:0 0 10px;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      font-weight:bold;
+    }
+
+    h2{
+      margin:0;
+      font-size:30px;
+      line-height:1.18;
+    }
+
+    .intro{
+      max-width:790px;
+      margin:14px 0 28px;
+      color:var(--gris);
+      font-size:15px;
+      line-height:1.65;
+    }
+
+    /* ACORDEONES */
+    .accordion{
+      margin-bottom:12px;
+      overflow:hidden;
+      border:1px solid var(--borde);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .accordion-trigger{
+      width:100%;
+      padding:17px 19px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px;
+      border:0;
+      background:#fff;
+      color:var(--tinta);
+      text-align:left;
+      font-size:15px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .accordion-trigger:hover{background:#fafcf7}
+
+    .accordion.open .accordion-trigger{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+    }
+
+    .accordion-icon{
+      width:27px;
+      height:27px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:#e5edd5;
+      color:var(--verde-oscuro);
+      flex-shrink:0;
+      font-size:19px;
+    }
+
+    .accordion.open .accordion-icon::after{content:"−"}
+    .accordion:not(.open) .accordion-icon::after{content:"+"}
+
+    .accordion-content{
+      display:grid;
+      grid-template-rows:0fr;
+      transition:grid-template-rows .25s ease;
+    }
+
+    .accordion.open .accordion-content{grid-template-rows:1fr}
+
+    .accordion-inner{overflow:hidden}
+
+    .accordion-body{
+      padding:21px;
+      color:#475149;
+      font-size:14px;
+      line-height:1.65;
+    }
+
+    .accordion-body p:first-child{margin-top:0}
+
+    /* BLOQUES */
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+      margin-top:14px;
+    }
+
+    .card{
+      padding:14px 16px;
+      border-left:4px solid var(--verde);
+      border-radius:0 8px 8px 0;
+      background:#f8faf5;
+    }
+
+    .card h4{
+      margin:0 0 6px;
+      color:var(--verde-oscuro);
+      font-size:12px;
+      text-transform:uppercase;
+    }
+
+    .card p{margin:0}
+
+    .example{
+      margin-top:14px;
+      padding:16px;
+      border:1px dashed #b9cc84;
+      border-radius:9px;
+      background:#f4f7ed;
+    }
+
+    .project{
+      margin-top:14px;
+      padding:16px 17px;
+      border-left:4px solid var(--amarillo);
+      border-radius:0 8px 8px 0;
+      background:var(--amarillo-suave);
+    }
+
+    .project strong{color:#86620a}
+
+    .code{
+      display:block;
+      margin-top:12px;
+      padding:14px;
+      border-radius:8px;
+      background:#26342c;
+      color:#eaf3d6;
+      white-space:pre-line;
+      font-family:Consolas, monospace;
+      font-size:13px;
+      line-height:1.7;
+    }
+
+    .steps{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .step{
+      display:grid;
+      grid-template-columns:32px 1fr;
+      gap:11px;
+      align-items:start;
+      padding:12px 14px;
+      border:1px solid #e0e7da;
+      border-radius:8px;
+      background:#f8faf5;
+    }
+
+    .step-number{
+      width:29px;
+      height:29px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:var(--verde);
+      color:#fff;
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .step strong{color:var(--verde-oscuro)}
+
+    /* FLUJO */
+    .flowchart{
+      margin-top:16px;
+      display:grid;
+      justify-items:center;
+      gap:8px;
+    }
+
+    .flow-node{
+      width:min(460px,100%);
+      padding:11px 15px;
+      text-align:center;
+      border:2px solid var(--verde);
+      background:#fff;
+      border-radius:8px;
+      font-weight:bold;
+      font-size:13px;
+    }
+
+    .flow-node.start{
+      width:190px;
+      border-color:#26342c;
+      background:#26342c;
+      color:#fff;
+      border-radius:28px;
+    }
+
+    .flow-node.decision{
+      width:240px;
+      border-radius:4px;
+      transform:skew(-10deg);
+      background:#f8faf5;
+    }
+
+    .flow-node.decision span{
+      display:block;
+      transform:skew(10deg);
+    }
+
+    .down{
+      color:var(--verde-oscuro);
+      font-weight:bold;
+      font-size:18px;
+      line-height:1;
+    }
+
+    /* TABLAS CONCEPTUALES */
+    .mini-table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:14px;
+      font-size:13px;
+    }
+
+    .mini-table th,
+    .mini-table td{
+      border:1px solid #dde5d9;
+      padding:10px 11px;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    .mini-table th{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+    }
+
+    .mini-table tr:nth-child(even) td{background:#fbfcfa}
+
+    /* PANTALLAS */
+    .screen-map{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-top:15px;
+    }
+
+    .screen-box{
+      padding:10px 13px;
+      border:1px solid #cad8a8;
+      background:#f4f7ed;
+      border-radius:7px;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .arrow{
+      color:var(--verde-oscuro);
+      font-weight:bold;
+    }
+
+    /* CHECKLIST */
+    .checklist{
+      margin:12px 0 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:8px;
+    }
+
+    .checklist li{
+      padding:9px 11px 9px 34px;
+      position:relative;
+      background:#fafcf8;
+      border:1px solid #e3e9df;
+      border-radius:7px;
+    }
+
+    .checklist li::before{
+      content:"✓";
+      position:absolute;
+      left:12px;
+      color:var(--verde-oscuro);
+      font-weight:bold;
+    }
+
+
+    /* CONTENEDORES CON PESTAÑAS */
+    .tab-container{
+      margin-top:16px;
+      border:1px solid var(--borde);
+      border-radius:14px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow:0 7px 20px rgba(37,55,39,.05);
+    }
+
+    .tab-bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:0;
+      background:#f4f7ed;
+      border-bottom:1px solid var(--borde);
+    }
+
+    .tab-btn{
+      flex:1 1 170px;
+      min-height:54px;
+      padding:12px 14px;
+      border:0;
+      border-right:1px solid var(--borde);
+      background:#f4f7ed;
+      color:#4b584e;
+      font-size:13px;
+      line-height:1.3;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.18s ease;
+      text-align:center;
+    }
+
+    .tab-btn:last-child{border-right:0}
+
+    .tab-btn:hover{
+      background:#e9f0da;
+      color:var(--verde-oscuro);
+    }
+
+    .tab-btn.active{
+      background:var(--verde);
+      color:#fff;
+    }
+
+    .tab-panel{
+      display:none;
+      padding:22px;
+      animation:tabFade .18s ease;
+    }
+
+    .tab-panel.active{display:block}
+
+    @keyframes tabFade{
+      from{opacity:.35; transform:translateY(2px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    .tab-title{
+      margin:0 0 8px;
+      color:var(--verde-oscuro);
+      font-size:18px;
+      line-height:1.3;
+    }
+
+    .tab-lead{
+      margin:0 0 15px;
+      color:var(--gris);
+      line-height:1.6;
+    }
+
+    .resource-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin:14px 0 16px;
+    }
+
+    .resource-row .resource-btn{
+      margin-top:0;
+    }
+
+    .resource-btn.secondary{
+      background:#fff;
+      color:var(--verde-oscuro);
+      border-color:#b9cc84;
+    }
+
+    .resource-btn.secondary:hover{
+      background:var(--verde-suave);
+      color:var(--verde-oscuro);
+      border-color:#9fb55f;
+    }
+
+    .mini-table.pretty{
+      border-collapse:separate;
+      border-spacing:0;
+      border:1px solid #dbe4d7;
+      border-radius:11px;
+      overflow:hidden;
+      box-shadow:0 4px 12px rgba(37,55,39,.04);
+      background:#fff;
+    }
+
+    .mini-table.pretty th{
+      background:#edf4dc;
+      color:#587313;
+      border-top:0;
+    }
+
+    .mini-table.pretty th,
+    .mini-table.pretty td{
+      border-left:0;
+      border-right:0;
+      border-bottom:1px solid #e1e8dc;
+      padding:11px 12px;
+    }
+
+    .mini-table.pretty tr:last-child td{
+      border-bottom:0;
+    }
+
+    .mini-table.pretty tbody tr:hover td{
+      background:#fafcf7;
+    }
+
+    .compact-check{
+      margin:12px 0 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:8px;
+    }
+
+    .compact-check li{
+      position:relative;
+      padding:10px 12px 10px 36px;
+      border:1px solid #e1e7dd;
+      border-radius:8px;
+      background:#fafcf8;
+      margin:0;
+    }
+
+    .compact-check li::before{
+      content:"✓";
+      position:absolute;
+      left:13px;
+      top:9px;
+      color:var(--verde-oscuro);
+      font-weight:bold;
+    }
+
+    .flow-strip{
+      display:grid;
+      gap:8px;
+      margin-top:15px;
+    }
+
+    .flow-step{
+      display:grid;
+      grid-template-columns:34px 1fr;
+      gap:10px;
+      align-items:start;
+      padding:11px 13px;
+      border:1px solid #e1e7dd;
+      border-radius:9px;
+      background:#fbfcfa;
+    }
+
+    .flow-step span:first-child{
+      width:28px;
+      height:28px;
+      display:grid;
+      place-items:center;
+      border-radius:50%;
+      background:var(--verde);
+      color:#fff;
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .doc-table td:first-child{
+      width:34%;
+      font-weight:bold;
+      color:#506c13;
+    }
+
+
+    .resource-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-top:14px;
+      padding:9px 15px;
+      background:var(--verde);
+      border:1px solid var(--verde);
+      border-radius:6px;
+      color:#fff;
+      text-decoration:none;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .resource-btn:hover{
+      background:var(--verde-oscuro);
+      border-color:var(--verde-oscuro);
+    }
+
+    ul{
+      margin:8px 0;
+      padding-left:20px;
+    }
+
+    li{margin:6px 0}
+
+    footer{
+      padding:4px 5% 28px;
+      text-align:center;
+      color:#7b837c;
+      font-size:12px;
+    }
+
+    @media(max-width:800px){
+      header{padding:14px 5%}
+      .brand span{display:none}
+
+      .app{
+        width:94%;
+        grid-template-columns:1fr;
+      }
+
+      .sidebar{
+        border-right:0;
+        border-bottom:1px solid var(--borde);
+      }
+
+      .workspace{padding:29px 22px}
+      h2{font-size:25px}
+      .grid{grid-template-columns:1fr}
+      .tab-bar{display:grid;grid-template-columns:1fr}
+      .tab-btn{border-right:0;border-bottom:1px solid var(--borde)}
+      .tab-btn:last-child{border-bottom:0}
+
+      .mini-table{
+        display:block;
+        overflow-x:auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar"></div>
+
+  <header>
+    <div class="brand">
+      <img
+        src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x"
+        alt="Areandina"
+      >
+      <span>Aprendiendo con @LaProfeVivy</span>
+    </div>
+
+    <div class="badge">Eje 3</div>
+  </header>
+
+  <main class="app">
+
+    <aside class="sidebar">
+      <h1>Temáticas del eje</h1>
+      <p class="sidebar-intro">
+        De la solución definida a una aplicación organizada y funcional.
+      </p>
+
+      <button class="topic-button active" data-topic="encuentro1" type="button">
+        <span class="number">01</span>
+        <span class="topic-text">
+          <strong>Encuentro 1</strong>
+          <span>Diseñar y representar la solución</span>
+        </span>
+      </button>
+
+      <button class="topic-button" data-topic="encuentro2" type="button">
+        <span class="number">02</span>
+        <span class="topic-text">
+          <strong>Encuentro 2</strong>
+          <span>Construir la app</span>
+        </span>
+      </button>
+    </aside>
+
+    <section class="workspace">
+      <p class="eyebrow" id="eyebrow"></p>
+      <h2 id="topicTitle"></h2>
+      <p class="intro" id="topicIntro"></p>
+      <div id="accordions"></div>
+    </section>
+
+  </main>
+
+  <footer>
+    Aprendiendo con @LaProfeVivy · Saber Conocer
+  </footer>
+
+  <script>
+    const topics = {
+
+      /* =====================================================
+         ENCUENTRO 1
+         ===================================================== */
+
+      encuentro1: {
+        eyebrow: "Saber Conocer · Eje 3 · Encuentro 1",
+        title: "Diseñar y representar la solución",
+        intro:
+          "En este encuentro se organiza la solución propuesta: se representa su funcionamiento, se identifican las funciones que requiere, se determina la estructura básica de datos y se preparan los documentos mínimos de PMV y UX para orientar su construcción.",
+
+        sections: [
+
+          {
+            title: "1. Del problema a la solución",
+            body: `
+              <p>
+                En los ejes anteriores ya se identificó la problemática y se propuso una solución.
+                Ahora el objetivo es describir <strong>cómo funcionará esa solución</strong> antes de construirla.
+              </p>
+
+              <div class="grid">
+                <div class="card">
+                  <h4>Problema</h4>
+                  <p>¿Qué situación concreta debe mejorar?</p>
+                </div>
+
+                <div class="card">
+                  <h4>Usuario</h4>
+                  <p>¿Quién utilizará la solución y qué necesita hacer?</p>
+                </div>
+
+                <div class="card">
+                  <h4>Acción</h4>
+                  <p>¿Qué debe permitir registrar, consultar, calcular o gestionar?</p>
+                </div>
+
+                <div class="card">
+                  <h4>Resultado</h4>
+                  <p>¿Qué información o decisión debe producir?</p>
+                </div>
+              </div>
+
+              <div class="example">
+                <strong>Ejemplo: control de retardos.</strong><br><br>
+                La solución debe permitir registrar la llegada de un estudiante, identificar la sesión,
+                calcular si existe retardo, guardar el motivo, controlar reincidencias y facilitar el
+                seguimiento de coordinación.
+              </div>
+            `
+          },
+
+          {
+            title: "2. Representación de la solución",
+            body: `
+              <div class="tab-container">
+                <div class="tab-bar">
+                  <button class="tab-btn active" type="button" data-tab="dfd">
+                    Diagrama de flujo
+                  </button>
+                  <button class="tab-btn" type="button" data-tab="revision">
+                    Revisión de la solución
+                  </button>
+                  <button class="tab-btn" type="button" data-tab="funciones">
+                    Funciones de la app
+                  </button>
+                  <button class="tab-btn" type="button" data-tab="ejemplo">
+                    Ejemplo aplicado
+                  </button>
+                </div>
+
+                <div class="tab-panel active" data-panel="dfd">
+                  <h3 class="tab-title">Diagrama de flujo</h3>
+                  <p class="tab-lead">
+                    Representa gráficamente la secuencia de acciones, decisiones y datos que intervienen
+                    en la solución. Sirve para ordenar cómo funcionará el proceso antes de construir la app.
+                  </p>
+
+                  <div class="resource-row">
+                    <a class="resource-btn" href="https://cgviviana.github.io/Asignaturas-FUAA/PtoComp/JuegoDFD0/" target="_blank" rel="noopener">
+                      Símbolos DFD
+                    </a>
+                    <a class="resource-btn secondary" href="https://cgviviana.github.io/Asignaturas-FUAA/PtoComp/ConceptoAlgYDfd/index.html" target="_blank" rel="noopener">
+                      ¿Qué es un algoritmo?
+                    </a>
+                  </div>
+
+                  <table class="mini-table pretty">
+                    <thead>
+                      <tr>
+                        <th>Elemento</th>
+                        <th>¿Qué representa?</th>
+                        <th>Ejemplo en una solución</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Inicio / Fin</strong></td>
+                        <td>El comienzo o cierre del proceso.</td>
+                        <td>Inicio del registro / proceso finalizado.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Proceso</strong></td>
+                        <td>Una acción que realiza el usuario o la app.</td>
+                        <td>Registrar llegada, calcular minutos, guardar información.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Decisión</strong></td>
+                        <td>Una condición que genera caminos diferentes.</td>
+                        <td>¿Llegó después de la hora permitida?</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Entrada / salida</strong></td>
+                        <td>Información que ingresa, se registra o se presenta.</td>
+                        <td>Correo, hora de ingreso, motivo o reporte.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Flechas</strong></td>
+                        <td>La dirección y el orden del recorrido.</td>
+                        <td>Indican qué ocurre después de cada acción o decisión.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="tab-panel" data-panel="revision">
+                  <h3 class="tab-title">Revisión de la solución</h3>
+                  <p class="tab-lead">
+                    Antes de construirla, revisa si el recorrido representa de manera completa
+                    lo que debe ocurrir desde el inicio hasta el resultado final.
+                  </p>
+
+                  <ul class="compact-check">
+                    <li>Está claro quién inicia el proceso.</li>
+                    <li>Se identifican los datos que necesita la solución.</li>
+                    <li>Se distinguen las acciones del usuario y las acciones de la app.</li>
+                    <li>Las decisiones tienen salidas claras, por ejemplo Sí / No.</li>
+                    <li>Se indica qué información se registra, calcula, consulta o muestra.</li>
+                    <li>Se contempla qué ocurre cuando aparece una situación alternativa o contingencia.</li>
+                    <li>El proceso termina con un resultado concreto y verificable.</li>
+                  </ul>
+                </div>
+
+                <div class="tab-panel" data-panel="funciones">
+                  <h3 class="tab-title">Del flujo a las funciones de la app</h3>
+                  <p class="tab-lead">
+                    Las acciones y decisiones del diagrama permiten identificar qué funciones
+                    deberá realizar la aplicación.
+                  </p>
+
+                  <table class="mini-table pretty">
+                    <thead>
+                      <tr>
+                        <th>En el flujo aparece...</th>
+                        <th>La app necesita...</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Identificar a una persona</td>
+                        <td>Reconocer o consultar un usuario.</td>
+                      </tr>
+                      <tr>
+                        <td>Registrar una acción</td>
+                        <td>Un formulario o una captura automática.</td>
+                      </tr>
+                      <tr>
+                        <td>Tomar una decisión</td>
+                        <td>Una condición o regla.</td>
+                      </tr>
+                      <tr>
+                        <td>Calcular un valor</td>
+                        <td>Una fórmula o cálculo automático.</td>
+                      </tr>
+                      <tr>
+                        <td>Consultar información</td>
+                        <td>Una vista, filtro o búsqueda.</td>
+                      </tr>
+                      <tr>
+                        <td>Gestionar un caso</td>
+                        <td>Estado, responsable, observación y seguimiento.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="tab-panel" data-panel="ejemplo">
+                  <h3 class="tab-title">Ejemplo aplicado: control de retardos</h3>
+                  <p class="tab-lead">
+                    El flujo de la solución puede resumirse en estas acciones principales:
+                  </p>
+
+                  <div class="flow-strip">
+                    <div class="flow-step"><span>1</span><div><strong>Docente abre la sesión.</strong><br>Selecciona el curso y activa el control de primera hora.</div></div>
+                    <div class="flow-step"><span>2</span><div><strong>Estudiante se identifica.</strong><br>Escanea el QR de la sesión o el docente realiza el registro de contingencia.</div></div>
+                    <div class="flow-step"><span>3</span><div><strong>Se registra la hora.</strong><br>La app guarda fecha y hora de ingreso.</div></div>
+                    <div class="flow-step"><span>4</span><div><strong>Se evalúa la llegada.</strong><br>La app determina si llegó a tiempo o existe retardo.</div></div>
+                    <div class="flow-step"><span>5</span><div><strong>Si hay retardo.</strong><br>Calcula minutos, registra motivo y estado de justificación.</div></div>
+                    <div class="flow-step"><span>6</span><div><strong>Se actualiza el historial.</strong><br>La información queda disponible para consulta y seguimiento.</div></div>
+                  </div>
+                </div>
+              </div>
+            `
+          },
+
+          {
+            title: "3. ¿Cómo se obtienen las tablas de la base de datos?",
+            body: `
+              <div class="tab-container">
+                <div class="tab-bar">
+                  <button class="tab-btn active" type="button" data-tab="pasos-tablas">
+                    De la solución a las tablas
+                  </button>
+                  <button class="tab-btn" type="button" data-tab="ejemplo-tablas">
+                    Tablas del ejemplo
+                  </button>
+                </div>
+
+                <div class="tab-panel active" data-panel="pasos-tablas">
+                  <h3 class="tab-title">De la solución a las tablas</h3>
+                  <p class="tab-lead">
+                    Las tablas no se inventan primero. Se obtienen revisando qué información debe guardar
+                    la solución para poder ejecutar el recorrido definido en el diagrama de flujo.
+                  </p>
+
+                  <div class="steps">
+                    <div class="step">
+                      <span class="step-number">1</span>
+                      <div>
+                        <strong>Revisar el flujo.</strong><br>
+                        Identificar las personas, objetos, eventos y procesos de los que debe quedar información.
+                      </div>
+                    </div>
+
+                    <div class="step">
+                      <span class="step-number">2</span>
+                      <div>
+                        <strong>Identificar las entidades.</strong><br>
+                        Una entidad es aquello sobre lo que se necesita guardar datos:
+                        estudiante, curso, sesión, registro, usuario, gestión, entre otros.
+                      </div>
+                    </div>
+
+                    <div class="step">
+                      <span class="step-number">3</span>
+                      <div>
+                        <strong>Agrupar los datos.</strong><br>
+                        Los campos que describen una misma entidad se organizan dentro de una tabla.
+                      </div>
+                    </div>
+
+                    <div class="step">
+                      <span class="step-number">4</span>
+                      <div>
+                        <strong>Definir el identificador.</strong><br>
+                        Cada tabla necesita un dato único que permita reconocer cada registro.
+                        Ejemplo: <b>id_estudiante</b>, <b>id_sesion</b> o <b>id_registro</b>.
+                      </div>
+                    </div>
+
+                    <div class="step">
+                      <span class="step-number">5</span>
+                      <div>
+                        <strong>Definir las relaciones.</strong><br>
+                        Las tablas se conectan usando sus identificadores. Por ejemplo,
+                        REGISTROS puede guardar <b>id_estudiante</b> para saber a qué estudiante pertenece cada llegada.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tab-panel" data-panel="ejemplo-tablas">
+                  <h3 class="tab-title">Tablas del ejemplo: control de retardos</h3>
+                  <p class="tab-lead">
+                    En este ejemplo, cada tabla responde a una necesidad concreta del flujo de la solución.
+                  </p>
+
+                  <table class="mini-table pretty">
+                    <thead>
+                      <tr>
+                        <th>Necesidad del flujo</th>
+                        <th>Tabla</th>
+                        <th>Datos principales</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Identificar al estudiante</td><td>ESTUDIANTES</td><td>id_estudiante, correo, estado</td></tr>
+                      <tr><td>Saber a qué curso pertenece</td><td>MATRICULAS</td><td>id_estudiante, id_curso, periodo</td></tr>
+                      <tr><td>Configurar curso y primera hora</td><td>CURSOS</td><td>id_curso, docente, hora_inicio</td></tr>
+                      <tr><td>Crear el control del día</td><td>SESIONES</td><td>id_sesion, fecha, periodo, token_qr</td></tr>
+                      <tr><td>Guardar cada llegada</td><td>REGISTROS</td><td>id_sesion, id_estudiante, hora, minutos, estado, motivo, justificación</td></tr>
+                      <tr><td>Registrar la intervención</td><td>GESTION</td><td>id_estudiante, responsable, acción, estado</td></tr>
+                      <tr><td>Definir permisos</td><td>USUARIOS</td><td>correo, rol, estado</td></tr>
+                      <tr><td>Guardar reglas institucionales</td><td>PARAMETROS</td><td>tolerancia, umbral, periodo activo</td></tr>
+                    </tbody>
+                  </table>
+
+                  <a class="resource-btn" href="https://docs.google.com/presentation/d/1FI1gGVhhlDRZ7YHfdXWlxyt4YDqKMWRm/edit?usp=drivesdk&ouid=109469599526912264889&rtpof=true&sd=true" target="_blank" rel="noopener">
+                    Ejemplo
+                  </a>
+                </div>
+              </div>
+            `
+          },
+
+          {
+            title: "4. Documentos mínimos: PMV y UX",
+            body: `
+              <p>
+                Para organizar la construcción se diligencian dos documentos breves.
+                Cada uno responde a una necesidad distinta: el <strong>PMV</strong> define qué se va a construir
+                y con qué datos; el <strong>UX</strong> define cómo lo utilizará la persona.
+              </p>
+
+              <div class="tab-container">
+                <div class="tab-bar">
+                  <button class="tab-btn active" type="button" data-tab="pmv">
+                    PMV y datos
+                  </button>
+                  <button class="tab-btn" type="button" data-tab="ux">
+                    UX
+                  </button>
+                </div>
+
+                <div class="tab-panel active" data-panel="pmv">
+                  <h3 class="tab-title">PMV · Producto Mínimo Viable</h3>
+                  <p class="tab-lead">
+                    El <strong>Producto Mínimo Viable</strong> es la primera versión funcional de la solución.
+                    Se utiliza para definir qué funciones son necesarias para probar la propuesta sin construir
+                    todavía todas las posibilidades de una aplicación final.
+                  </p>
+
+                  <table class="mini-table pretty doc-table">
+                    <thead>
+                      <tr>
+                        <th>Se diligencia</th>
+                        <th>Qué significa y qué se escribe</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Problema y objetivo</strong></td>
+                        <td>Problema que se atiende y resultado concreto que debe lograr la solución.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Funciones del PMV</strong></td>
+                        <td>Acciones que debe realizar la primera versión: registrar, consultar, calcular, validar, reportar o gestionar.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Reglas básicas</strong></td>
+                        <td>Condiciones que modifican el comportamiento de la solución. Ejemplo: después de 5 minutos se considera retardo.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Datos y tablas</strong></td>
+                        <td>Información que debe guardarse y cómo se agrupa. Ejemplo: ESTUDIANTES, CURSOS, SESIONES y REGISTROS.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Identificadores</strong></td>
+                        <td>Dato único que distingue cada registro dentro de una tabla. Ejemplo: id_estudiante o id_registro.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Relaciones</strong></td>
+                        <td>Conexiones entre tablas usando identificadores. Ejemplo: REGISTROS usa id_estudiante para relacionar una llegada con un estudiante.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Flujo mínimo</strong></td>
+                        <td>Recorrido principal que debe funcionar desde el inicio hasta el resultado final.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Tecnología seleccionada</strong></td>
+                        <td>Herramienta o plataforma elegida para construir el prototipo. Se escribe su nombre y la razón básica de selección según el benchmarking realizado.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="tab-panel" data-panel="ux">
+                  <h3 class="tab-title">UX · Experiencia de Usuario</h3>
+                  <p class="tab-lead">
+                    <strong>UX</strong> significa <strong>Experiencia de Usuario</strong>.
+                    Se utiliza para planear cómo una persona entiende, recorre y utiliza la aplicación
+                    para completar una tarea sin confundirse.
+                  </p>
+
+                  <table class="mini-table pretty doc-table">
+                    <thead>
+                      <tr>
+                        <th>Se diligencia</th>
+                        <th>Qué significa y qué se debe poner</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Usuarios y necesidades</strong></td>
+                        <td>Quién utiliza la solución y qué necesita hacer. Ejemplo: docente abre una sesión; coordinación consulta casos.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Pantallas mínimas</strong></td>
+                        <td>Lista de las pantallas necesarias para completar el recorrido principal.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Mapa de navegación</strong></td>
+                        <td>Representación de qué pantalla conduce a otra y cuáles son los caminos principales.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Wireflow</strong></td>
+                        <td>Une las pantallas con las acciones del usuario. Se dibujan las pantallas y se conectan con flechas indicando qué acción permite pasar de una a otra.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Wireframes</strong></td>
+                        <td>Boceto simple de cada pantalla. Se ubican campos, textos, botones, listas y elementos necesarios, sin diseñar todavía colores o apariencia final.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Criterios UX</strong></td>
+                        <td>Se revisa y anota si los nombres son claros, si las acciones principales son visibles, si el recorrido requiere pocos pasos, si los botones mantienen un uso coherente y si el usuario recibe confirmación cuando realiza una acción.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Validación</strong></td>
+                        <td>Se indica quién prueba el recorrido, qué tarea realiza y si logra completarla sin ayuda o qué debe corregirse.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `
+          }
+
+        ]
+      },
+
+      /* =====================================================
+         ENCUENTRO 2
+
+
+         ===================================================== */
+
+      encuentro2: {
+        eyebrow: "Saber Conocer · Eje 3 · Encuentro 2",
+        title: "Construir la app",
+        intro:
+          "En este encuentro se lleva la solución a la práctica. Se conecta la base de datos, se configuran relaciones y reglas, se crean las vistas necesarias y se prueba el recorrido definido en el diagrama de flujo.",
+
+        sections: [
+
+          {
+            title: "1. Antes de abrir AppSheet",
+            body: `
+              <p>
+                La construcción comienza revisando que la base esté preparada. AppSheet interpreta
+                las hojas como tablas y los encabezados como columnas.
+              </p>
+
+              <ul class="checklist">
+                <li>Una hoja por tabla.</li>
+                <li>Encabezados únicos en la primera fila.</li>
+                <li>Una columna identificadora por tabla.</li>
+                <li>Sin celdas combinadas dentro de las tablas.</li>
+                <li>Tipos de datos coherentes: texto, número, fecha, hora, correo, Sí/No.</li>
+                <li>Datos de prueba suficientes para verificar el funcionamiento.</li>
+              </ul>
+
+              <div class="code">ESTUDIANTES
+MATRICULAS
+CURSOS
+SESIONES
+REGISTROS
+GESTION
+USUARIOS
+PARAMETROS</div>
+
+              <div class="project">
+                <strong>Objetivo:</strong>
+                conectar una base organizada, no diseñar la estructura mientras se construye la aplicación.
+              </div>
+            `
+          },
+
+          {
+            title: "2. Crear la aplicación desde los datos",
+            body: `
+              <div class="steps">
+                <div class="step">
+                  <span class="step-number">1</span>
+                  <div>
+                    <strong>Abrir AppSheet.</strong><br>
+                    Ingresar con la cuenta que tiene acceso a la base de datos.
+                  </div>
+                </div>
+
+                <div class="step">
+                  <span class="step-number">2</span>
+                  <div>
+                    <strong>Crear una app nueva.</strong><br>
+                    Elegir la opción para comenzar desde datos existentes.
+                  </div>
+                </div>
+
+                <div class="step">
+                  <span class="step-number">3</span>
+                  <div>
+                    <strong>Seleccionar el archivo de Google Sheets.</strong><br>
+                    Elegir la base preparada en el Encuentro 1.
+                  </div>
+                </div>
+
+                <div class="step">
+                  <span class="step-number">4</span>
+                  <div>
+                    <strong>Agregar las tablas necesarias.</strong><br>
+                    Verificar que cada hoja que participará en la app aparezca como tabla.
+                  </div>
+                </div>
+              </div>
+
+              <a class="resource-btn" href="https://www.appsheet.com/" target="_blank" rel="noopener">
+                Abrir AppSheet
+              </a>
+            `
+          },
+
+          {
+            title: "3. Configurar columnas, llaves y relaciones",
+            body: `
+              <p>
+                Una app funciona mejor cuando AppSheet entiende qué representa cada columna y cómo se conectan las tablas.
+              </p>
+
+              <div class="grid">
+                <div class="card">
+                  <h4>Key</h4>
+                  <p>Identificador único del registro. Ejemplo: id_registro.</p>
+                </div>
+
+                <div class="card">
+                  <h4>Label</h4>
+                  <p>Dato comprensible que se muestra al usuario. Ejemplo: nombre del estudiante.</p>
+                </div>
+
+                <div class="card">
+                  <h4>Ref</h4>
+                  <p>Relaciona una tabla con otra usando una llave.</p>
+                </div>
+
+                <div class="card">
+                  <h4>Tipo de dato</h4>
+                  <p>Texto, número, fecha, hora, email, enum, Sí/No, entre otros.</p>
+                </div>
+              </div>
+
+              <div class="example">
+                <strong>Relaciones del ejemplo:</strong>
+                <span class="code">MATRICULAS.id_estudiante → ESTUDIANTES
+MATRICULAS.id_curso → CURSOS
+SESIONES.id_curso → CURSOS
+REGISTROS.id_sesion → SESIONES
+REGISTROS.id_estudiante → ESTUDIANTES
+GESTION.id_estudiante → ESTUDIANTES</span>
+              </div>
+            `
+          },
+
+          {
+            title: "4. Crear las vistas que necesita la solución",
+            body: `
+              <p>
+                Las vistas se crean a partir de las funciones definidas en el diagrama de flujo.
+                No todas las tablas necesitan aparecer en el menú.
+              </p>
+
+              <table class="mini-table">
+                <thead>
+                  <tr>
+                    <th>Necesidad</th>
+                    <th>Vista posible</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Registrar información</td>
+                    <td>Form</td>
+                  </tr>
+                  <tr>
+                    <td>Ver registros</td>
+                    <td>Table o Deck</td>
+                  </tr>
+                  <tr>
+                    <td>Consultar un caso</td>
+                    <td>Detail</td>
+                  </tr>
+                  <tr>
+                    <td>Comparar información</td>
+                    <td>Chart</td>
+                  </tr>
+                  <tr>
+                    <td>Ver varios indicadores</td>
+                    <td>Dashboard</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="screen-map">
+                <span class="screen-box">Inicio</span>
+                <span class="arrow">→</span>
+                <span class="screen-box">Abrir sesión</span>
+                <span class="arrow">→</span>
+                <span class="screen-box">Registrar llegada</span>
+                <span class="arrow">→</span>
+                <span class="screen-box">Historial</span>
+                <span class="arrow">→</span>
+                <span class="screen-box">Gestión / Dashboard</span>
+              </div>
+
+              <div class="project">
+                <strong>Criterio:</strong>
+                cada pantalla debe responder a una tarea del usuario. Si no cumple una función, no se agrega.
+              </div>
+            `
+          },
+
+          {
+            title: "5. Configurar reglas y cálculos",
+            body: `
+              <p>
+                Las decisiones del diagrama se convierten en expresiones, valores iniciales,
+                validaciones o columnas calculadas dentro de AppSheet.
+              </p>
+
+              <div class="grid">
+                <div class="card">
+                  <h4>Valor inicial</h4>
+                  <p>Completa automáticamente un dato al crear un registro.</p>
+                </div>
+
+                <div class="card">
+                  <h4>Validación</h4>
+                  <p>Restringe los valores permitidos.</p>
+                </div>
+
+                <div class="card">
+                  <h4>Condición</h4>
+                  <p>Decide cuándo mostrar, habilitar o ejecutar algo.</p>
+                </div>
+
+                <div class="card">
+                  <h4>Cálculo</h4>
+                  <p>Obtiene minutos, conteos, estados u otros resultados.</p>
+                </div>
+              </div>
+
+              <div class="example">
+                <strong>Ejemplo conceptual:</strong>
+                <span class="code">Si hora_llegada > hora_inicio + tolerancia
+→ estado_asistencia = "Retardo"
+
+Si cantidad_retardos >= umbral_reincidencia
+→ mostrar caso para seguimiento</span>
+              </div>
+
+              <div class="project">
+                <strong>Importante:</strong>
+                primero se prueba la regla con datos sencillos y luego se automatiza.
+              </div>
+            `
+          },
+
+          {
+            title: "6. Identificación, QR y captura del registro",
+            body: `
+              <p>
+                Cuando la solución usa QR, debe quedar claro <strong>qué identifica el código</strong>
+                y <strong>cómo se identifica el usuario</strong>.
+              </p>
+
+              <div class="example">
+                <strong>Ejemplo de control de retardos:</strong>
+                <ul>
+                  <li>El QR identifica la <strong>sesión</strong>: curso, fecha y control de primera hora.</li>
+                  <li>El estudiante se identifica mediante su cuenta o correo institucional.</li>
+                  <li>La app registra fecha y hora de ingreso.</li>
+                  <li>Si existe retardo, registra minutos, motivo y estado de justificación.</li>
+                  <li>Si el estudiante no puede usar el celular, el docente realiza el registro de contingencia.</li>
+                </ul>
+              </div>
+
+              <div class="flowchart">
+                <div class="flow-node">Abrir sesión</div>
+                <div class="down">↓</div>
+                <div class="flow-node">QR de sesión</div>
+                <div class="down">↓</div>
+                <div class="flow-node">Identificar estudiante</div>
+                <div class="down">↓</div>
+                <div class="flow-node">Registrar hora</div>
+                <div class="down">↓</div>
+                <div class="flow-node decision"><span>¿Hay retardo?</span></div>
+                <div class="down">↓</div>
+                <div class="flow-node">Guardar registro y actualizar historial</div>
+              </div>
+            `
+          },
+
+          {
+            title: "7. Roles, permisos y gestión",
+            body: `
+              <p>
+                La misma app puede mostrar información diferente según el usuario.
+                Los permisos se definen desde las necesidades del proyecto.
+              </p>
+
+              <table class="mini-table">
+                <thead>
+                  <tr>
+                    <th>Rol</th>
+                    <th>Acciones principales</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Estudiante</strong></td>
+                    <td>Registrar su llegada cuando la solución lo requiera.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Docente</strong></td>
+                    <td>Abrir sesión, registrar contingencia y consultar su curso.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Coordinación</strong></td>
+                    <td>Consultar reincidencias, validar justificaciones y gestionar casos.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Administrador</strong></td>
+                    <td>Configurar usuarios, tablas y parámetros institucionales.</td>
+                  </tr>
+                </tbody>
+              </table>
+            `
+          },
+
+          {
+            title: "8. Probar la solución completa",
+            body: `
+              <p>
+                La app no se valida pantalla por pantalla, sino siguiendo el mismo recorrido definido
+                en el diagrama de flujo.
+              </p>
+
+              <ul class="checklist">
+                <li>El usuario correcto puede ingresar.</li>
+                <li>La información llega a la tabla correcta.</li>
+                <li>Las relaciones muestran datos comprensibles.</li>
+                <li>Las reglas producen el resultado esperado.</li>
+                <li>Las decisiones del flujo están representadas en la app.</li>
+                <li>Los casos de contingencia también funcionan.</li>
+                <li>El reporte permite consultar la información que necesita el responsable.</li>
+              </ul>
+
+              <div class="project">
+                <strong>Resultado del Encuentro 2:</strong>
+                un prototipo funcional en AppSheet conectado a la base de datos y coherente con el
+                diagrama de flujo, las reglas, los roles y las necesidades de la problemática.
+              </div>
+            `
+          }
+
+        ]
+      }
+
+    };
+
+    const topicButtons = document.querySelectorAll(".topic-button");
+    const eyebrow = document.getElementById("eyebrow");
+    const topicTitle = document.getElementById("topicTitle");
+    const topicIntro = document.getElementById("topicIntro");
+    const accordionsContainer = document.getElementById("accordions");
+
+    function renderTopic(topicKey){
+      const topic = topics[topicKey];
+
+      eyebrow.textContent = topic.eyebrow;
+      topicTitle.textContent = topic.title;
+      topicIntro.textContent = topic.intro;
+
+      accordionsContainer.innerHTML = "";
+
+      topic.sections.forEach((section) => {
+        const accordion = document.createElement("div");
+        accordion.className = "accordion";
+
+        accordion.innerHTML = `
+          <button class="accordion-trigger" type="button">
+            <span>${section.title}</span>
+            <span class="accordion-icon" aria-hidden="true"></span>
+          </button>
+
+          <div class="accordion-content">
+            <div class="accordion-inner">
+              <div class="accordion-body">
+                ${section.body}
+              </div>
+            </div>
+          </div>
+        `;
+
+        const trigger = accordion.querySelector(".accordion-trigger");
+
+        trigger.addEventListener("click", () => {
+          accordion.classList.toggle("open");
+        });
+
+        accordion.querySelectorAll(".tab-btn").forEach((tabButton) => {
+          tabButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+
+            const tabBox = tabButton.closest(".tab-container");
+            const target = tabButton.dataset.tab;
+
+            tabBox.querySelectorAll(".tab-btn").forEach((btn) => {
+              btn.classList.remove("active");
+            });
+
+            tabBox.querySelectorAll(".tab-panel").forEach((panel) => {
+              panel.classList.remove("active");
+            });
+
+            tabButton.classList.add("active");
+
+            const targetPanel = tabBox.querySelector(`[data-panel="${target}"]`);
+            if (targetPanel) {
+              targetPanel.classList.add("active");
+            }
+          });
+        });
+
+        accordionsContainer.appendChild(accordion);
+      });
+    }
+
+    topicButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        topicButtons.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+        renderTopic(button.dataset.topic);
+      });
+    });
+
+    renderTopic("encuentro1");
+  </script>
+
+</body>
+</html>
+
