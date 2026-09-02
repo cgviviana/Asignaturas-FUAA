@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saber Conocer | Ruta temática</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Saber Conocer | Ruta temática</title><style>
     @font-face{
       font-family:Brown;
       src:local("BrownStd-Regular"),url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Regular.woff2") format("woff2");
@@ -63,6 +62,9 @@
     }
     .main-header h1{margin:0;color:var(--gris-oscuro);font-size:30px;line-height:1.1}
     .frame{display:grid;grid-template-columns:285px minmax(0,1fr);gap:18px;align-items:start}
+    .frame > br{display:none}
+    .tabs-panel{grid-column:1}
+    .content-panel{grid-column:2;min-width:0}
     .tabs-panel,.content-panel{background:#fff;border:1px solid var(--gris-claro);box-shadow:var(--sombra)}
     .tabs-panel{padding:0 0 14px;position:sticky;top:16px}
     .tabs-title{background:var(--gris-oscuro);color:#fff;padding:15px 18px;font-weight:700;font-size:16px}
@@ -166,6 +168,7 @@
     footer strong{color:#cfe7ad}
     @media(max-width:900px){
       .frame{grid-template-columns:1fr}
+      .tabs-panel,.content-panel{grid-column:1}
       .tabs-panel{position:static}
       .main-header h1{font-size:26px}
     }
@@ -181,383 +184,676 @@
       .detail-btn{border-bottom:1px solid #ddd;border-right:1px solid #ddd}
       .detail-btn.active{border-bottom:4px solid var(--verde)}
     }
-  </style>
+  
+    /* Subtemas colapsables dentro de cada tema */
+    .sub-accordion{display:grid;gap:10px;margin-top:2px}
+    .subacc-item{border:1px solid #d9e5c6;background:#fff;overflow:hidden}
+    .subacc-btn{
+      width:100%;border:0;border-left:5px solid var(--verde);background:#f7faef;color:var(--gris-oscuro);
+      padding:14px 16px;text-align:left;display:flex;align-items:center;justify-content:space-between;
+      gap:14px;cursor:pointer;font-size:15px;font-weight:700;line-height:1.35
+    }
+    .subacc-btn:hover{background:#eef6e2;color:var(--verde-oscuro)}
+    .subacc-item.open > .subacc-btn{background:var(--verde);color:#fff;border-left-color:var(--verde-oscuro)}
+    .subacc-label{display:flex;align-items:baseline;gap:9px}
+    .subacc-code{color:var(--verde-oscuro);font-weight:700;white-space:nowrap}
+    .subacc-item.open .subacc-code{color:#fff}
+    .subacc-plus{
+      flex:0 0 28px;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;
+      background:#fff;border:1px solid #cfcfcf;color:var(--verde-oscuro);font-size:18px;line-height:1;transition:.2s ease
+    }
+    .subacc-item.open .subacc-plus{transform:rotate(45deg);border-color:#fff}
+    .subacc-content{display:none;background:#fff}
+    .subacc-item.open > .subacc-content{display:block}
+    .subacc-inner{padding:16px 18px 18px;line-height:1.58;color:#555}
+    .subacc-inner > p:first-child{margin-top:0}
+    .subacc-inner > :last-child{margin-bottom:0}
+
+
+    /* Análisis de actores */
+    .actor-table-wrap{overflow-x:auto;margin-top:12px;border:1px solid #dcdcdc}
+    .actor-table{width:100%;border-collapse:collapse;min-width:820px;background:#fff;font-size:13px}
+    .actor-table th{background:var(--gris-oscuro);color:#fff;text-align:left;padding:10px 11px;border-right:1px solid #5b5b5b;vertical-align:top}
+    .actor-table td{padding:10px 11px;border-top:1px solid #e4e4e4;border-right:1px solid #e7e7e7;vertical-align:top;line-height:1.4}
+    .actor-table tr:nth-child(even) td{background:#fafcf7}
+    .actor-table .actor-type{font-weight:700;color:var(--verde-oscuro);white-space:nowrap}
+    .actor-note{margin-top:10px;padding:10px 12px;background:#f7faef;border-left:4px solid var(--verde);font-size:13px}
+    .power-matrix{display:grid;grid-template-columns:80px 1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:0;margin-top:14px;border:1px solid #d8d8d8;background:#fff}
+    .power-matrix .corner{background:#f3f3f3}
+    .power-matrix .axis-top{background:#f3f3f3;padding:9px 10px;text-align:center;font-size:12px;font-weight:700;color:#555;border-left:1px solid #ddd}
+    .power-matrix .axis-side{display:grid;place-items:center;padding:8px;background:#f3f3f3;font-size:12px;font-weight:700;color:#555;border-top:1px solid #ddd;text-align:center}
+    .power-cell{min-height:128px;padding:13px 14px;border-left:1px solid #ddd;border-top:1px solid #ddd}
+    .power-cell h5{margin:0 0 5px;font-size:14px;color:var(--verde-oscuro)}
+    .power-cell p{margin:0;font-size:13px;line-height:1.45}
+    .actor-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+    .actor-chip{display:inline-block;padding:5px 8px;border-radius:3px;background:#edf5df;border:1px solid #cbdcac;color:#536f25;font-size:12px;font-weight:700}
+    @media(max-width:700px){
+      .power-matrix{grid-template-columns:62px 1fr 1fr}
+      .power-cell{min-height:150px;padding:10px}
+    }
+
+</style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">Facultad de Ingeniería y Ciencias Básicas</div>
-  </div>
-
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="#inicio" aria-label="Ir al inicio">
-        <img src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x" alt="Areandina">
-      </a>
-      <p class="section-name">Saber Conocer / <span>Ruta temática</span></p>
-    </div>
-  </header>
-
-  <div class="wrap" id="inicio">
-    <header class="main-header">
-      <p class="eyebrow">Contenido de aprendizaje</p>
-      <h1>Saber Conocer</h1>
-    </header>
-
-    <div class="frame">
-      <aside class="tabs-panel" aria-label="Temas de Saber Conocer">
-        <div class="tabs-title">Cortes</div>
-        <button class="tab-btn" type="button" data-section="s1" aria-selected="false">
+<div class="topbar">
+<div class="topbar-inner">Facultad de Ingeniería y Ciencias Básicas</div>
+</div>
+<br/>
+<header class="site-header">
+<div class="header-inner">
+<a aria-label="Ir al inicio" class="brand" href="https://cgviviana.github.io/Asignaturas-FUAA/SaberConocer/Presencial/Menu/index.html#inicio">
+<img alt="Areandina" src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x"/>
+</a>
+<p class="section-name">Saber Conocer / <span>Ruta temática</span></p>
+</div>
+</header>
+<br/>
+<div class="wrap" id="inicio">
+<header class="main-header">
+<p class="eyebrow">Contenido de aprendizaje</p>
+<h1>Saber Conocer</h1>
+</header>
+<br/>
+<div class="frame">
+<aside aria-label="Temas de Saber Conocer" class="tabs-panel">
+<div class="tabs-title">Cortes</div>
+<button aria-selected="false" class="tab-btn" data-section="s1" type="button">
           Corte 1. Análisis de una problemática y sus necesidades
         </button>
-        <button class="tab-btn" type="button" data-section="s2" aria-selected="false">
+<button aria-selected="false" class="tab-btn" data-section="s2" type="button">
           Corte 2. Diseño lógico de la solución digital
         </button>
-        <button class="tab-btn" type="button" data-section="s3" aria-selected="false">
+<button aria-selected="false" class="tab-btn" data-section="s3" type="button">
           Corte 3. Desarrollo y componentes de una solución informática
         </button>
-      </aside>
+</aside>
+<main class="content-panel">
+<section class="section" id="s1">
+<div aria-expanded="false" class="section-head" role="button" tabindex="0">
+<div><span class="number">Corte 1</span><h2>Análisis de una problemática y sus necesidades</h2></div>
+<span aria-hidden="true" class="section-toggle">+</span>
+</div>
+<div class="section-body">
+<div class="lead-box">Comprensión de una situación del entorno para delimitar el problema, seleccionar la información relevante, representar su proceso, revisar antecedentes y diagnosticar oportunidades de mejora antes de proponer una solución.</div>
+<div class="accordion">
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">1.0</span>Elección de la problemática</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Situación seleccionada</h3>
+<p>En un colegio, la coordinación observa que varios estudiantes llegan tarde a la primera hora de clase. Esta situación interrumpe el inicio de las actividades, reduce el tiempo de aprendizaje y dificulta el seguimiento oportuno de la asistencia. Cuando las llegadas tarde se repiten sin un control claro, pueden normalizar el incumplimiento del horario, debilitar el respeto por las normas y los acuerdos institucionales, generar una percepción de indisciplina y restar credibilidad a los procesos de seguimiento del colegio. Antes de proponer una solución, es necesario comprender con precisión qué sucede, a quiénes afecta y qué factores pueden estar relacionados con la problemática.</p>
+</div>
+</div>
+</article>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">1.1</span>Delimitación de la problemática</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner"><div class="sub-accordion"><div class="subacc-item"><button aria-expanded="false" class="subacc-btn" type="button"><span class="subacc-label"><span class="subacc-code">1.1.1</span><span>Caracterización de la problemática</span></span><span aria-hidden="true" class="subacc-plus">+</span></button><div class="subacc-content"><div class="subacc-inner"><p>Delimitar es establecer con precisión qué parte de la problemática se estudiará. Selecciona cada elemento para comprender cómo se construye.</p><div class="detail-tabs">
+<div aria-label="Elementos de la delimitación" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="del-contexto" type="button">Contexto</button>
+<button class="detail-btn" data-detail="del-usuarios" type="button">Usuarios</button>
+<button class="detail-btn" data-detail="del-necesidad" type="button">Necesidad</button>
+<button class="detail-btn" data-detail="del-alcance" type="button">Alcance</button>
+<button class="detail-btn example-tab" data-detail="del-ejemplo" type="button">Aplicación al ejemplo</button>
+</div>
+<div class="detail-panel active" id="del-contexto">
+<h4>Contexto</h4>
+<p>Describe el entorno en el que ocurre la situación. Permite ubicar el problema y comprender las condiciones que lo rodean.</p>
+<ul class="guide-questions">
+<li>¿En qué lugar o institución ocurre?</li>
+<li>¿En qué momento o periodo se presenta?</li>
+<li>¿Qué condiciones del entorno son importantes?</li>
+</ul>
+</div>
+<div class="detail-panel" id="del-usuarios">
+<h4>Usuarios o población involucrada</h4>
+<p>Identifica a las personas que viven la situación, reciben sus consecuencias, aportan información o utilizarían la futura solución.</p>
+<ul class="guide-questions">
+<li>¿Quiénes son afectados directamente?</li>
+<li>¿Quiénes intervienen en el proceso?</li>
+<li>¿Quién tomaría decisiones con la información obtenida?</li>
+</ul>
+</div>
+<div class="detail-panel" id="del-necesidad">
+<h4>Necesidad</h4>
+<p>Expresa aquello que hace falta comprender, controlar o mejorar. Debe derivarse de la situación observada y no redactarse todavía como una aplicación o herramienta específica.</p>
+<ul class="guide-questions">
+<li>¿Qué dificultad requiere atención?</li>
+<li>¿Qué información hace falta conocer?</li>
+<li>¿Qué proceso necesita mejorar?</li>
+</ul>
+</div>
+<div class="detail-panel" id="del-alcance">
+<h4>Alcance</h4>
+<p>Define los límites del análisis para que el proyecto sea concreto y realizable. Puede establecer límites temporales, espaciales, poblacionales y temáticos.</p>
+<ul class="guide-questions">
+<li>¿Qué parte del problema se estudiará?</li>
+<li>¿Durante cuánto tiempo?</li>
+<li>¿Qué aspectos quedarán por fuera?</li>
+</ul>
+</div>
+<div class="detail-panel" id="del-ejemplo">
+<h4>Delimitación aplicada al caso de las llegadas tarde</h4>
+<div class="example-stack">
+<div class="example-item"><h4>Contexto</h4><p>Primera hora de clase de un colegio, durante una semana académica.</p></div>
+<div class="example-item"><h4>Usuarios</h4><p>Estudiantes que ingresan a primera hora y coordinación académica encargada del seguimiento.</p></div>
+<div class="example-item"><h4>Necesidad</h4><p>Comprender cuándo y en qué grupos se presentan con mayor frecuencia las llegadas tarde para orientar acciones de mejora.</p></div>
+<div class="example-item"><h4>Alcance</h4><p>Analizar las llegadas de la primera hora según día, curso y minutos de retraso. No se estudiará toda la asistencia escolar ni se determinarán sanciones.</p></div>
+</div>
+<div class="applied-result"><strong>Redacción completa:</strong> Durante una semana académica se analizarán las llegadas tarde de los estudiantes a la primera hora de clase de un colegio, considerando el día, el curso y los minutos de retraso, con el fin de identificar patrones que apoyen a la coordinación en la formulación de acciones de mejora.</div>
+</div>
+</div></div></div></div><div class="subacc-item"><button aria-expanded="false" class="subacc-btn" type="button"><span class="subacc-label"><span class="subacc-code">1.1.2</span><span>Árbol del problema</span></span><span aria-hidden="true" class="subacc-plus">+</span></button><div class="subacc-content"><div class="subacc-inner"><p>El árbol permite ordenar la situación y comprobar la relación lógica entre sus causas y consecuencias. Selecciona cada elemento.</p><div class="detail-tabs">
+<div aria-label="Elementos del árbol del problema" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="arb-central" type="button">Problema central</button>
+<button class="detail-btn" data-detail="arb-causas" type="button">Causas</button>
+<button class="detail-btn" data-detail="arb-efectos" type="button">Efectos</button>
+<button class="detail-btn" data-detail="arb-revision" type="button">Verificación</button>
+<button class="detail-btn example-tab" data-detail="arb-ejemplo" type="button">Aplicación al ejemplo</button>
+</div>
+<div class="detail-panel active" id="arb-central">
+<h4>Problema central — tronco</h4>
+<p>Es la situación negativa principal que se desea comprender. Debe ser concreta, observable y redactarse sin incluir todavía la solución.</p>
+<p><strong>Estructura sugerida:</strong> situación negativa + población afectada + contexto.</p>
+</div>
+<div class="detail-panel" id="arb-causas">
+<h4>Causas — raíces</h4>
+<p>Son las condiciones que originan o favorecen el problema central. Las causas directas se conectan con el problema y las indirectas explican el origen de esas causas.</p>
+<p>Deben formularse como factores que posteriormente puedan verificarse mediante observación o datos.</p>
+</div>
+<div class="detail-panel" id="arb-efectos">
+<h4>Efectos — ramas</h4>
+<p>Son las consecuencias producidas por el problema. Los efectos directos aparecen de manera inmediata y los indirectos pueden surgir como consecuencia de los primeros.</p>
+</div>
+<div class="detail-panel" id="arb-revision">
+<h4>Verificación de la lógica</h4>
+<p>El árbol debe poder leerse de abajo hacia arriba: <strong>las causas contribuyen al problema central y el problema genera los efectos</strong>.</p>
+<ul class="guide-questions">
+<li>¿Cada causa explica realmente el problema?</li>
+<li>¿Cada efecto es consecuencia del problema?</li>
+<li>¿Se evitó escribir soluciones dentro del árbol?</li>
+</ul>
+</div>
+<div class="detail-panel" id="arb-ejemplo">
+<h4>Árbol aplicado al caso de las llegadas tarde</h4>
+<div class="example-stack">
+<div class="example-item"><h4>Problema central</h4><p>Frecuentes llegadas tarde de estudiantes a la primera hora de clase.</p></div>
+<div class="example-item"><h4>Causas por verificar</h4><p>Dificultades de transporte, salida tardía del hogar, desconocimiento del horario o congestión en el ingreso al colegio.</p></div>
+<div class="example-item"><h4>Efectos observables</h4><p>Interrupciones al iniciar la clase, pérdida de tiempo de aprendizaje y dificultades en el seguimiento de la asistencia.</p></div>
+</div>
+<div class="resource-row">
+<a class="resource-btn" href="https://cgviviana.github.io/Asignaturas-FUAA/SaberConocer/Presencial/Menu/arbol.png" rel="noopener noreferrer" target="_blank">Abrir árbol del problema</a>
+</div>
+</div>
+</div></div></div></div></div></div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">1.2</span>Datos relevantes, variables y estructura del proceso</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner"><div class="sub-accordion"><div class="subacc-item"><button aria-expanded="false" class="subacc-btn" type="button"><span class="subacc-label"><span class="subacc-code">1.2.1</span><span>Datos relevantes e irrelevantes</span></span><span aria-hidden="true" class="subacc-plus">+</span></button><div class="subacc-content"><div class="subacc-inner"><p>Antes de analizar una problemática es necesario distinguir qué datos aportan información útil y cuáles no son necesarios para el propósito definido.</p><div class="detail-tabs">
+<div aria-label="Datos relevantes e irrelevantes" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="dat-relevante" type="button">Dato relevante</button>
+<button class="detail-btn" data-detail="dat-irrelevante" type="button">Dato irrelevante</button>
+<button class="detail-btn" data-detail="dat-criterio" type="button">¿Cómo decidir?</button>
 
-      <main class="content-panel">
-        <section id="s1" class="section">
-          <div class="section-head" role="button" tabindex="0" aria-expanded="false">
-            <div><span class="number">Corte 1</span><h2>Análisis de una problemática y sus necesidades</h2></div>
-            <span class="section-toggle" aria-hidden="true">+</span>
-          </div>
-          <div class="section-body">
-            <div class="lead-box">
-              Comprensión de una situación del entorno para delimitar el problema, reconocer sus necesidades y representar de manera lógica una posible solución.
-            </div>
-            <div class="accordion">
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">1.0</span>Elección de la problemática</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Situación seleccionada</h3>
-                    <p>En un colegio, la coordinación observa que varios estudiantes llegan tarde a la primera hora de clase. Esta situación interrumpe el inicio de las actividades, reduce el tiempo de aprendizaje y dificulta el seguimiento oportuno de la asistencia. Cuando las llegadas tarde se repiten sin un control claro, pueden normalizar el incumplimiento del horario, debilitar el respeto por las normas y los acuerdos institucionales, generar una percepción de indisciplina y restar credibilidad a los procesos de seguimiento del colegio. Antes de proponer una solución, es necesario comprender con precisión qué sucede, a quiénes afecta y qué factores pueden estar relacionados con la problemática.</p>
-                  </div>
-                </div>
-              </article>
+</div>
+<div class="detail-panel active" id="dat-relevante">
+<h4>Dato relevante</h4>
+<p>Es un dato que aporta directamente a la comprensión, medición o seguimiento de la problemática delimitada. Ayuda a describir lo que ocurre, comparar situaciones o tomar decisiones.</p>
+</div>
+<div class="detail-panel" id="dat-irrelevante">
+<h4>Dato irrelevante</h4>
+<p>Es un dato que puede existir en el contexto, pero no aporta al propósito específico del análisis. Incluirlo aumenta información sin mejorar la comprensión del problema.</p>
+</div>
+<div class="detail-panel" id="dat-criterio">
+<h4>Criterio de selección</h4>
+<p>Un dato debe conservarse cuando responde al menos una pregunta necesaria para analizar el problema.</p>
+<ul class="guide-questions">
+<li>¿Permite describir o medir una parte del problema?</li>
+<li>¿Ayuda a comparar casos, momentos o grupos?</li>
+<li>¿Es necesario para tomar una decisión o generar un resultado?</li>
+</ul>
+</div>
 
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">1.1</span>Delimitación de la problemática</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3><span class="subtopic-number">1.1.1</span>Caracterización de la problemática</h3>
-                    <p>Delimitar es establecer con precisión qué parte de la problemática se estudiará. Selecciona cada elemento para comprender cómo se construye.</p>
-                    <div class="detail-tabs">
-                      <div class="detail-nav" role="tablist" aria-label="Elementos de la delimitación">
-                        <button class="detail-btn active" type="button" data-detail="del-contexto">Contexto</button>
-                        <button class="detail-btn" type="button" data-detail="del-usuarios">Usuarios</button>
-                        <button class="detail-btn" type="button" data-detail="del-necesidad">Necesidad</button>
-                        <button class="detail-btn" type="button" data-detail="del-alcance">Alcance</button>
-                        <button class="detail-btn example-tab" type="button" data-detail="del-ejemplo">Aplicación al ejemplo</button>
-                      </div>
-                      <div id="del-contexto" class="detail-panel active">
-                        <h4>Contexto</h4>
-                        <p>Describe el entorno en el que ocurre la situación. Permite ubicar el problema y comprender las condiciones que lo rodean.</p>
-                        <ul class="guide-questions">
-                          <li>¿En qué lugar o institución ocurre?</li>
-                          <li>¿En qué momento o periodo se presenta?</li>
-                          <li>¿Qué condiciones del entorno son importantes?</li>
-                        </ul>
-                      </div>
-                      <div id="del-usuarios" class="detail-panel">
-                        <h4>Usuarios o población involucrada</h4>
-                        <p>Identifica a las personas que viven la situación, reciben sus consecuencias, aportan información o utilizarían la futura solución.</p>
-                        <ul class="guide-questions">
-                          <li>¿Quiénes son afectados directamente?</li>
-                          <li>¿Quiénes intervienen en el proceso?</li>
-                          <li>¿Quién tomaría decisiones con la información obtenida?</li>
-                        </ul>
-                      </div>
-                      <div id="del-necesidad" class="detail-panel">
-                        <h4>Necesidad</h4>
-                        <p>Expresa aquello que hace falta comprender, controlar o mejorar. Debe derivarse de la situación observada y no redactarse todavía como una aplicación o herramienta específica.</p>
-                        <ul class="guide-questions">
-                          <li>¿Qué dificultad requiere atención?</li>
-                          <li>¿Qué información hace falta conocer?</li>
-                          <li>¿Qué proceso necesita mejorar?</li>
-                        </ul>
-                      </div>
-                      <div id="del-alcance" class="detail-panel">
-                        <h4>Alcance</h4>
-                        <p>Define los límites del análisis para que el proyecto sea concreto y realizable. Puede establecer límites temporales, espaciales, poblacionales y temáticos.</p>
-                        <ul class="guide-questions">
-                          <li>¿Qué parte del problema se estudiará?</li>
-                          <li>¿Durante cuánto tiempo?</li>
-                          <li>¿Qué aspectos quedarán por fuera?</li>
-                        </ul>
-                      </div>
-                      <div id="del-ejemplo" class="detail-panel">
-                        <h4>Delimitación aplicada al caso de las llegadas tarde</h4>
-                        <div class="example-stack">
-                          <div class="example-item"><h4>Contexto</h4><p>Primera hora de clase de un colegio, durante una semana académica.</p></div>
-                          <div class="example-item"><h4>Usuarios</h4><p>Estudiantes que ingresan a primera hora y coordinación académica encargada del seguimiento.</p></div>
-                          <div class="example-item"><h4>Necesidad</h4><p>Comprender cuándo y en qué grupos se presentan con mayor frecuencia las llegadas tarde para orientar acciones de mejora.</p></div>
-                          <div class="example-item"><h4>Alcance</h4><p>Analizar las llegadas de la primera hora según día, curso y minutos de retraso. No se estudiará toda la asistencia escolar ni se determinarán sanciones.</p></div>
-                        </div>
-                        <div class="applied-result"><strong>Redacción completa:</strong> Durante una semana académica se analizarán las llegadas tarde de los estudiantes a la primera hora de clase de un colegio, considerando el día, el curso y los minutos de retraso, con el fin de identificar patrones que apoyen a la coordinación en la formulación de acciones de mejora.</div>
-                      </div>
-                    </div>
+</div></div></div></div><div class="subacc-item"><button aria-expanded="false" class="subacc-btn" type="button"><span class="subacc-label"><span class="subacc-code">1.2.2</span><span>De los datos relevantes a las variables</span></span><span aria-hidden="true" class="subacc-plus">+</span></button><div class="subacc-content"><div class="subacc-inner"><p>Entre los datos relevantes se identifican aquellos cuyo valor puede cambiar entre registros. Estos se representan como variables para poder capturarlos, compararlos y procesarlos.</p><div class="detail-tabs">
+<div aria-label="Variables del problema" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="var-concepto" type="button">Variable</button>
+<button class="detail-btn" data-detail="var-identificar" type="button">Cómo identificarla</button>
 
-                    <div class="subtopic-divider">
-                      <h3><span class="subtopic-number">1.1.2</span>Árbol del problema</h3>
-                      <p>El árbol permite ordenar la situación y comprobar la relación lógica entre sus causas y consecuencias. Selecciona cada elemento.</p>
-                      <div class="detail-tabs">
-                        <div class="detail-nav" role="tablist" aria-label="Elementos del árbol del problema">
-                          <button class="detail-btn active" type="button" data-detail="arb-central">Problema central</button>
-                          <button class="detail-btn" type="button" data-detail="arb-causas">Causas</button>
-                          <button class="detail-btn" type="button" data-detail="arb-efectos">Efectos</button>
-                          <button class="detail-btn" type="button" data-detail="arb-revision">Verificación</button>
-                          <button class="detail-btn example-tab" type="button" data-detail="arb-ejemplo">Aplicación al ejemplo</button>
-                        </div>
-                        <div id="arb-central" class="detail-panel active">
-                          <h4>Problema central — tronco</h4>
-                          <p>Es la situación negativa principal que se desea comprender. Debe ser concreta, observable y redactarse sin incluir todavía la solución.</p>
-                          <p><strong>Estructura sugerida:</strong> situación negativa + población afectada + contexto.</p>
-                        </div>
-                        <div id="arb-causas" class="detail-panel">
-                          <h4>Causas — raíces</h4>
-                          <p>Son las condiciones que originan o favorecen el problema central. Las causas directas se conectan con el problema y las indirectas explican el origen de esas causas.</p>
-                          <p>Deben formularse como factores que posteriormente puedan verificarse mediante observación o datos.</p>
-                        </div>
-                        <div id="arb-efectos" class="detail-panel">
-                          <h4>Efectos — ramas</h4>
-                          <p>Son las consecuencias producidas por el problema. Los efectos directos aparecen de manera inmediata y los indirectos pueden surgir como consecuencia de los primeros.</p>
-                        </div>
-                        <div id="arb-revision" class="detail-panel">
-                          <h4>Verificación de la lógica</h4>
-                          <p>El árbol debe poder leerse de abajo hacia arriba: <strong>las causas contribuyen al problema central y el problema genera los efectos</strong>.</p>
-                          <ul class="guide-questions">
-                            <li>¿Cada causa explica realmente el problema?</li>
-                            <li>¿Cada efecto es consecuencia del problema?</li>
-                            <li>¿Se evitó escribir soluciones dentro del árbol?</li>
-                          </ul>
-                        </div>
-                        <div id="arb-ejemplo" class="detail-panel">
-                          <h4>Árbol aplicado al caso de las llegadas tarde</h4>
-                          <div class="example-stack">
-                            <div class="example-item"><h4>Problema central</h4><p>Frecuentes llegadas tarde de estudiantes a la primera hora de clase.</p></div>
-                            <div class="example-item"><h4>Causas por verificar</h4><p>Dificultades de transporte, salida tardía del hogar, desconocimiento del horario o congestión en el ingreso al colegio.</p></div>
-                            <div class="example-item"><h4>Efectos observables</h4><p>Interrupciones al iniciar la clase, pérdida de tiempo de aprendizaje y dificultades en el seguimiento de la asistencia.</p></div>
-                          </div>
-                          <div class="resource-row">
-                            <a class="resource-btn" href="arbol.png" target="_blank" rel="noopener noreferrer">Abrir árbol del problema</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </article>
+</div>
+<div class="detail-panel active" id="var-concepto">
+<h4>¿Qué es una variable?</h4>
+<p>Es una característica o dato cuyo valor puede cambiar entre personas, momentos o registros. Se define con un nombre claro y con los valores que puede tomar.</p>
+</div>
+<div class="detail-panel" id="var-identificar">
+<h4>¿Cómo identificar una variable?</h4>
+<ul class="guide-questions">
+<li>¿Su valor puede cambiar de un registro a otro?</li>
+<li>¿Necesito almacenarlo o compararlo?</li>
+<li>¿Interviene en algún cálculo, clasificación o decisión?</li>
+</ul>
+</div>
 
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">1.2</span>Datos relevantes y abstracción de variables</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Seleccionar y representar información</h3>
-                    <p>Se identifican únicamente los datos necesarios para comprender la problemática. Después se abstraen como variables con un nombre, un significado y un conjunto de valores posibles.</p>
-                  </div>
-                </div>
-              </article>
+</div></div></div></div><div class="subacc-item"><button aria-expanded="false" class="subacc-btn" type="button"><span class="subacc-label"><span class="subacc-code">1.2.3</span><span>Entrada, proceso y salida</span></span><span aria-hidden="true" class="subacc-plus">+</span></button><div class="subacc-content"><div class="subacc-inner"><p>Una vez seleccionados los datos y variables, se identifica cómo circula la información dentro del proceso: qué se recibe, qué se hace con esos datos y qué resultado se obtiene.</p><div class="detail-tabs">
+<div aria-label="Entrada proceso y salida" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="eps-entrada" type="button">Entrada</button>
+<button class="detail-btn" data-detail="eps-proceso" type="button">Proceso</button>
+<button class="detail-btn" data-detail="eps-salida" type="button">Salida</button>
 
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">1.3</span>Estructura básica de un algoritmo</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Entrada, proceso y salida</h3>
-                    <p>Un algoritmo es una secuencia finita y ordenada de pasos. Recibe datos de entrada, los procesa mediante reglas y genera una salida o resultado.</p>
-                    <div class="tag-row"><span class="tag">Entrada</span><span class="tag">Proceso</span><span class="tag">Salida</span></div>
-                  </div>
-                </div>
-              </article>
+</div>
+<div class="detail-panel active" id="eps-entrada">
+<h4>Entrada</h4>
+<p>Son los datos que el proceso necesita para comenzar o realizar una operación.</p>
+</div>
+<div class="detail-panel" id="eps-proceso">
+<h4>Proceso</h4>
+<p>Son las acciones, reglas o cálculos que transforman los datos de entrada.</p>
+</div>
+<div class="detail-panel" id="eps-salida">
+<h4>Salida</h4>
+<p>Es el resultado generado después de procesar los datos.</p>
+</div>
 
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">1.4</span>Representación mediante diagramas de flujo</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Representar la lógica</h3>
-                    <p>El diagrama de flujo utiliza símbolos estandarizados para representar el inicio y el fin, las entradas, los procesos, las decisiones y la dirección de los pasos de un algoritmo.</p>
-                  </div>
-                </div>
-              </article>
+</div></div></div></div><div class="subacc-item"><button aria-expanded="false" class="subacc-btn" type="button"><span class="subacc-label"><span class="subacc-code">1.2.4</span><span>Aplicación al ejemplo</span></span><span aria-hidden="true" class="subacc-plus">+</span></button><div class="subacc-content"><div class="subacc-inner"><p>Integra los datos seleccionados, las variables y la estructura entrada–proceso–salida en el caso de las llegadas tardías.</p><div class="example-stack"><div class="example-item"><h4>Datos relevantes e irrelevantes</h4><p>Relevantes: identificación del estudiante, curso, fecha, hora programada, hora de entrada, estado de asistencia y minutos de retardo. Irrelevantes: datos que no ayudan a comprender ni gestionar la llegada a primera hora.</p></div><div class="example-item"><h4>Variables</h4><p>curso, hora_entrada y minutos_retardo son variables porque sus valores cambian entre registros y permiten comparar la situación.</p></div><div class="example-item"><h4>Entrada → proceso → salida</h4><p>Entrada: hora programada y hora de entrada. Proceso: comparar las horas y calcular la diferencia. Salida: estado de llegada y minutos de retardo.</p></div></div><div class="resource-row">
+<a class="resource-btn" href="https://cgviviana.github.io/Asignaturas-FUAA/SaberConocer/Presencial/S2/DatoReIrr/index.html" rel="noopener noreferrer" target="_blank">Ver ejemplo interactivo</a>
+</div></div></div></div></div></div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">1.3</span>Revisión de fuentes y antecedentes</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<div class="sub-accordion">
 
-            </div>
-          </div>
-        </section>
+<div class="subacc-item">
+<button aria-expanded="false" class="subacc-btn" type="button">
+<span class="subacc-label"><span class="subacc-code">1.3.1</span><span>¿Por qué revisar fuentes y antecedentes?</span></span><span aria-hidden="true" class="subacc-plus">+</span>
+</button>
+<div class="subacc-content"><div class="subacc-inner">
+<p>Antes de proponer una solución es necesario conocer qué se sabe sobre el problema y qué se ha intentado para resolverlo. La revisión evita repetir soluciones existentes y permite identificar limitaciones, necesidades no cubiertas y oportunidades de mejora.</p>
+<div class="detail-tabs">
+<div aria-label="Propósito de los antecedentes" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="ant-problema" type="button">Antecedentes del problema</button>
+<button class="detail-btn" data-detail="ant-solucion" type="button">Antecedentes de la solución</button>
+<button class="detail-btn" data-detail="ant-vacios" type="button">Vacíos</button>
+</div>
+<div class="detail-panel active" id="ant-problema"><h4>Antecedentes del problema</h4><p>Permiten conocer cómo se ha definido la problemática, qué causas y efectos se han reportado, qué datos se han utilizado y en qué contextos se ha estudiado.</p></div>
+<div class="detail-panel" id="ant-solucion"><h4>Antecedentes de la solución</h4><p>Permiten reconocer estrategias, productos, aplicaciones o tecnologías que ya se han utilizado para atender situaciones similares.</p></div>
+<div class="detail-panel" id="ant-vacios"><h4>Vacíos y oportunidades</h4><p>Surgen al comparar lo que necesita el contexto con lo que las soluciones existentes realmente ofrecen. El vacío identificado orienta una propuesta pertinente y diferenciada.</p></div>
+</div>
+</div></div>
+</div>
 
-        <section id="s2" class="section">
-          <div class="section-head" role="button" tabindex="0" aria-expanded="false">
-            <div><span class="number">Corte 2</span><h2>Diseño lógico de la solución digital</h2></div>
-            <span class="section-toggle" aria-hidden="true">+</span>
-          </div>
-          <div class="section-body">
-            <div class="lead-box">
+<div class="subacc-item">
+<button aria-expanded="false" class="subacc-btn" type="button">
+<span class="subacc-label"><span class="subacc-code">1.3.2</span><span>Fuentes académicas, institucionales y comerciales</span></span><span aria-hidden="true" class="subacc-plus">+</span>
+</button>
+<div class="subacc-content"><div class="subacc-inner">
+<p>No todas las fuentes responden las mismas preguntas. Se revisan de forma complementaria para comprender tanto el problema como las soluciones disponibles.</p>
+<div class="detail-tabs">
+<div aria-label="Tipos de fuentes" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="f-academicas" type="button">Académicas</button>
+<button class="detail-btn" data-detail="f-institucionales" type="button">Institucionales</button>
+<button class="detail-btn" data-detail="f-comerciales" type="button">Comerciales</button>
+</div>
+<div class="detail-panel active" id="f-academicas"><h4>Fuentes académicas</h4><p>Artículos, tesis, libros e investigaciones aportan conceptos, evidencia, métodos, resultados y limitaciones documentadas.</p></div>
+<div class="detail-panel" id="f-institucionales"><h4>Fuentes institucionales</h4><p>Reglamentos, registros, informes, protocolos y datos oficiales permiten comprender cómo se presenta y se gestiona el problema en el contexto real.</p></div>
+<div class="detail-panel" id="f-comerciales"><h4>Fuentes comerciales y tecnológicas</h4><p>Sitios de proveedores, aplicaciones, plataformas y productos muestran funciones disponibles, tecnologías utilizadas, costos, requisitos y restricciones de implementación.</p></div>
+</div>
+</div></div>
+</div>
+
+<div class="subacc-item">
+<button aria-expanded="false" class="subacc-btn" type="button">
+<span class="subacc-label"><span class="subacc-code">1.3.3</span><span>Competencia y benchmarking</span></span><span aria-hidden="true" class="subacc-plus">+</span>
+</button>
+<div class="subacc-content"><div class="subacc-inner">
+<p>Analizar la competencia significa revisar soluciones que ya atienden total o parcialmente la misma necesidad. El benchmarking permite compararlas con criterios comunes para descubrir buenas prácticas, limitaciones y posibilidades de diferenciación.</p>
+<div class="detail-tabs">
+<div aria-label="Competencia y benchmarking" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="bench-competencia" type="button">Competencia</button>
+<button class="detail-btn" data-detail="bench-criterios" type="button">Criterios</button>
+<button class="detail-btn" data-detail="bench-vacio" type="button">Oportunidad</button>
+</div>
+<div class="detail-panel active" id="bench-competencia"><h4>¿Quién es la competencia?</h4><p>Son aplicaciones, productos, servicios o procedimientos que resuelven una necesidad semejante, aunque utilicen otra tecnología o funcionen en otro contexto.</p></div>
+<div class="detail-panel" id="bench-criterios"><h4>¿Qué se compara?</h4><ul class="guide-questions"><li>Funciones que ofrece.</li><li>Tecnología utilizada.</li><li>Costo e infraestructura requerida.</li><li>Facilidad de uso e implementación.</li><li>Ventajas y limitaciones.</li><li>Aspectos que no cubre para el contexto analizado.</li></ul></div>
+<div class="detail-panel" id="bench-vacio"><h4>Del benchmarking a una propuesta original</h4><p>La originalidad no significa crear algo que nunca haya existido, sino responder mejor a un vacío concreto mediante una combinación pertinente de funciones, tecnología, costo y contexto.</p></div>
+</div>
+</div></div>
+</div>
+
+<div class="subacc-item">
+<button aria-expanded="false" class="subacc-btn" type="button">
+<span class="subacc-label"><span class="subacc-code">1.3.4</span><span>Análisis de actores: relación, influencia y poder</span></span><span aria-hidden="true" class="subacc-plus">+</span>
+</button>
+<div class="subacc-content"><div class="subacc-inner">
+<p>Antes de definir una solución es necesario identificar quiénes están relacionados con el problema, cómo los afecta, qué necesitan, qué pueden aportar y cuánto poder o influencia tienen sobre las decisiones. El análisis de actores evita diseñar una solución solo desde la mirada técnica.</p>
+<div class="detail-tabs">
+<div aria-label="Análisis de actores" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="act-tipos" type="button">Directos e indirectos</button>
+<button class="detail-btn" data-detail="act-matriz" type="button">Matriz de actores</button>
+<button class="detail-btn" data-detail="act-poder" type="button">Influencia y poder</button>
+<button class="detail-btn" data-detail="act-ejemplo" type="button">Aplicación al ejemplo</button>
+<button class="detail-btn" data-detail="act-condiciones" type="button">Condiciones</button>
+</div>
+
+<div class="detail-panel active" id="act-tipos">
+<h4>Actores directos e indirectos</h4>
+<p><strong>Actores directos:</strong> participan en el proceso central, viven el problema de forma inmediata, utilizan la solución o toman decisiones operativas con la información que genera.</p>
+<p><strong>Actores indirectos:</strong> no ejecutan necesariamente el proceso principal, pero pueden influir en él, verse afectados por sus resultados, establecer normas, aportar recursos o condicionar la implementación de la solución.</p>
+<div class="example-stack">
+<div class="example-item"><h4>Pregunta guía para actores directos</h4><p>¿Quién vive, ejecuta, registra, consulta o decide dentro del proceso que queremos mejorar?</p></div>
+<div class="example-item"><h4>Pregunta guía para actores indirectos</h4><p>¿Quién influye, autoriza, financia, regula, acompaña o recibe consecuencias del proceso aunque no lo ejecute diariamente?</p></div>
+</div>
+</div>
+
+<div class="detail-panel" id="act-matriz">
+<h4>Matriz de actores</h4>
+<p>La matriz organiza los actores para comparar su relación con el problema y con la futura solución. No basta con nombrarlos: es necesario establecer qué necesitan, qué papel cumplen y qué capacidad tienen para facilitar o bloquear el proyecto.</p>
+<div class="actor-table-wrap">
+<table class="actor-table">
+<thead><tr><th>Actor</th><th>Tipo</th><th>Relación con el problema</th><th>Necesidad / interés</th><th>Papel frente a la solución</th><th>Influencia</th><th>Poder de decisión</th></tr></thead>
+<tbody>
+<tr><td>Actor 1</td><td class="actor-type">Directo / indirecto</td><td>¿Cómo se relaciona?</td><td>¿Qué necesita o espera?</td><td>Usa, registra, consulta, aprueba, apoya...</td><td>Alta / media / baja</td><td>Alto / medio / bajo</td></tr>
+<tr><td>Actor 2</td><td class="actor-type">Directo / indirecto</td><td>¿Cómo se relaciona?</td><td>¿Qué necesita o espera?</td><td>¿Qué puede aportar o limitar?</td><td>Alta / media / baja</td><td>Alto / medio / bajo</td></tr>
+</tbody>
+</table>
+</div>
+<div class="actor-note"><strong>Clave:</strong> influencia y poder no significan lo mismo. Un actor puede influir mucho en que el proceso funcione, pero tener poco poder formal para aprobar cambios; otro puede tener alto poder de decisión aunque participe poco en el proceso diario.</div>
+</div>
+
+<div class="detail-panel" id="act-poder">
+<h4>Matriz de influencia y poder</h4>
+<p>Después de identificar los actores, se ubican según dos criterios: <strong>influencia</strong> sobre el funcionamiento o aceptación de la solución y <strong>poder</strong> para autorizar, modificar, financiar o detener decisiones.</p>
+<div class="power-matrix" aria-label="Matriz de influencia y poder">
+<div class="corner"></div><div class="axis-top">Poder bajo</div><div class="axis-top">Poder alto</div>
+<div class="axis-side">Influencia alta</div>
+<div class="power-cell"><h5>Mantener informados e involucrados</h5><p>Conocen el proceso y su participación afecta directamente el funcionamiento de la solución.</p></div>
+<div class="power-cell"><h5>Gestionar de cerca</h5><p>Son prioritarios: influyen en el resultado y además pueden tomar o cambiar decisiones.</p></div>
+<div class="axis-side">Influencia baja</div>
+<div class="power-cell"><h5>Monitorear</h5><p>Requieren seguimiento básico; su incidencia sobre las decisiones y el proceso es menor.</p></div>
+<div class="power-cell"><h5>Mantener satisfechos</h5><p>Tienen capacidad formal de decisión, aunque no intervengan de manera continua en el proceso.</p></div>
+</div>
+<div class="actor-note">La ubicación puede cambiar según el contexto. Por eso el gráfico debe construirse con evidencia del proyecto y no solo por el cargo de cada persona.</div>
+</div>
+
+<div class="detail-panel" id="act-ejemplo">
+<h4>Aplicación al caso de las llegadas tardías</h4>
+<div class="actor-table-wrap">
+<table class="actor-table">
+<thead><tr><th>Actor</th><th>Tipo</th><th>Relación con el problema</th><th>Interés / necesidad</th><th>Papel en la solución</th><th>Influencia</th><th>Poder</th></tr></thead>
+<tbody>
+<tr><td>Estudiantes</td><td class="actor-type">Directo</td><td>Son quienes registran su llegada y viven las consecuencias del retardo.</td><td>Registro rápido, claro y justo.</td><td>Realizan el registro mediante QR y consultan su estado cuando corresponda.</td><td>Alta</td><td>Bajo</td></tr>
+<tr><td>Docentes de primera hora</td><td class="actor-type">Directo</td><td>El retardo interrumpe el inicio de clase y afecta el control de asistencia.</td><td>Evitar pérdida de tiempo y contar con información confiable.</td><td>Consultan o verifican registros y reportan excepciones.</td><td>Alta</td><td>Medio</td></tr>
+<tr><td>Coordinación académica</td><td class="actor-type">Directo</td><td>Realiza seguimiento de reincidencias y aplica el proceso institucional.</td><td>Información consolidada, trazable y disponible a tiempo.</td><td>Consulta reportes, analiza acumulados y gestiona seguimiento.</td><td>Alta</td><td>Alto</td></tr>
+<tr><td>Directivos</td><td class="actor-type">Indirecto</td><td>Definen políticas, recursos y condiciones institucionales.</td><td>Viabilidad, cumplimiento, bajo costo y protección de datos.</td><td>Autorizan o respaldan la implementación.</td><td>Media</td><td>Alto</td></tr>
+<tr><td>Familias / acudientes</td><td class="actor-type">Indirecto</td><td>Pueden influir en hábitos de puntualidad y recibir comunicaciones de seguimiento.</td><td>Información clara y trato equitativo.</td><td>Acompañan acciones de mejora cuando sea necesario.</td><td>Media</td><td>Bajo</td></tr>
+</tbody>
+</table>
+</div>
+<div class="example-stack">
+<div class="example-item"><h4>Gestionar de cerca</h4><p>Coordinación académica: alta influencia y alto poder sobre el seguimiento.</p></div>
+<div class="example-item"><h4>Mantener informados e involucrados</h4><p>Estudiantes y docentes: alta influencia en el funcionamiento cotidiano, aunque con menor poder formal para aprobar la solución.</p></div>
+<div class="example-item"><h4>Mantener satisfechos</h4><p>Directivos: alto poder para autorizar recursos, normas o implementación, aunque su participación diaria sea menor.</p></div>
+</div>
+</div>
+
+<div class="detail-panel" id="act-condiciones">
+<h4>Condiciones del contexto que deben contrastarse con los actores</h4>
+<p>El análisis debe revisar presupuesto disponible, conectividad, acceso a celulares, infraestructura, conocimientos de los usuarios, normas institucionales, privacidad, protección de datos, tiempos de uso y resistencia al cambio. Estas condiciones pueden hacer que una alternativa técnicamente buena no sea viable para el contexto real.</p>
+</div>
+</div>
+</div></div>
+</div>
+
+<div class="subacc-item">
+<button aria-expanded="false" class="subacc-btn" type="button">
+<span class="subacc-label"><span class="subacc-code">1.3.5</span><span>Aplicación al ejemplo</span></span><span aria-hidden="true" class="subacc-plus">+</span>
+</button>
+<div class="subacc-content"><div class="subacc-inner">
+<p>En el caso de las llegadas tardías se comparan soluciones existentes de control de asistencia y registro de ingreso para establecer cuál resulta viable en un colegio con recursos limitados.</p>
+<div class="example-stack">
+<div class="example-item"><h4>Problema y antecedentes</h4><p>Se revisan estudios y registros relacionados con puntualidad, asistencia, seguimiento institucional y efectos de los retardos.</p></div>
+<div class="example-item"><h4>Competencia</h4><p>Se revisan alternativas como QR, RFID, Bluetooth, GPS, lectores y plataformas de asistencia.</p></div>
+<div class="example-item"><h4>Benchmarking</h4><p>Se comparan costo, facilidad de implementación, infraestructura, nivel de automatización y aporte de la aplicación no-code.</p></div>
+<div class="example-item"><h4>Vacío identificado</h4><p>Se requiere una alternativa de bajo costo, fácil de implementar y centrada en una app no-code que permita registrar, consultar y dar seguimiento a las llegadas tardías.</p></div>
+</div>
+<div class="resource-row"><a class="resource-btn" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQYwobCSl0_DHe5CdFScBMm0zTHePPPJ4bTCVYLgjKBEgwqAyrPbk1Ti7hHXXZuLIoaltZ8lwcnh4we/pubhtml" rel="noopener noreferrer" target="_blank">Ver ejemplo de revisión y benchmarking</a></div>
+</div></div>
+</div>
+
+</div>
+</div>
+</div>
+</article>
+<br/>
+
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">1.4</span>Diagnóstico del proceso mediante herramientas de análisis</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<div class="sub-accordion">
+
+<div class="subacc-item">
+<button aria-expanded="false" class="subacc-btn" type="button"><span class="subacc-label"><span class="subacc-code">1.4.1</span><span>¿Qué se diagnostica?</span></span><span aria-hidden="true" class="subacc-plus">+</span></button>
+<div class="subacc-content"><div class="subacc-inner">
+<p>El diagnóstico estudia cómo funciona actualmente el proceso para localizar dificultades concretas antes de diseñar la solución.</p>
+<ul class="guide-questions"><li>¿Qué actividades se realizan?</li><li>¿Quiénes participan y qué responsabilidad tienen?</li><li>¿Dónde se producen demoras, errores, interrupciones o duplicaciones?</li><li>¿Qué información se pierde, llega tarde o no queda registrada?</li><li>¿Qué parte del proceso puede mejorarse mediante una solución viable?</li></ul>
+</div></div>
+</div>
+
+<div class="subacc-item">
+<button aria-expanded="false" class="subacc-btn" type="button"><span class="subacc-label"><span class="subacc-code">1.4.2</span><span>Herramientas para el diagnóstico</span></span><span aria-hidden="true" class="subacc-plus">+</span></button>
+<div class="subacc-content"><div class="subacc-inner">
+<p>Cada herramienta permite observar la problemática desde una perspectiva distinta y se selecciona según la pregunta que se quiera responder.</p>
+<div class="detail-tabs">
+<div aria-label="Herramientas de diagnóstico" class="detail-nav" role="tablist">
+<button class="detail-btn active" data-detail="diag-ishikawa" type="button">Ishikawa</button>
+<button class="detail-btn" data-detail="diag-arbol" type="button">Árbol del problema</button>
+<button class="detail-btn" data-detail="diag-flujo" type="button">Diagrama de flujo</button>
+</div>
+<div class="detail-panel active" id="diag-ishikawa"><h4>Diagrama de Ishikawa</h4><p>Organiza posibles causas del problema por categorías y ayuda a formular qué factores deben verificarse.</p></div>
+<div class="detail-panel" id="diag-arbol"><h4>Árbol del problema</h4><p>Relaciona causas, problema central y efectos para comprobar la lógica de la situación analizada.</p></div>
+<div class="detail-panel" id="diag-flujo"><h4>Diagrama de flujo</h4><p>Representa cómo ocurre el proceso actual, sus actividades, decisiones, responsables, entradas y salidas, y permite ubicar puntos críticos.</p></div>
+</div>
+</div></div>
+</div>
+
+<div class="subacc-item">
+<button aria-expanded="false" class="subacc-btn" type="button"><span class="subacc-label"><span class="subacc-code">1.4.3</span><span>Aplicación al ejemplo</span></span><span aria-hidden="true" class="subacc-plus">+</span></button>
+<div class="subacc-content"><div class="subacc-inner">
+<p>En las llegadas tardías, el diagnóstico se concentra en aquello que el colegio sí puede intervenir: el registro, control y seguimiento institucional de los retardos, no en factores externos como el tráfico o el transporte.</p>
+<div class="example-stack">
+<div class="example-item"><h4>Ishikawa</h4><p>Permite organizar causas relacionadas con personas, método, datos, herramientas, entorno y control.</p></div>
+<div class="example-item"><h4>Árbol del problema</h4><p>Permite distinguir causas institucionales, problema central y efectos sobre disciplina, seguimiento y desarrollo de la clase.</p></div>
+<div class="example-item"><h4>Flujo actual</h4><p>Permite representar cómo se registra hoy una llegada, quién interviene, qué datos se capturan y en qué pasos aparecen pérdidas de tiempo o información.</p></div>
+</div>
+<div class="resource-row"><a class="resource-btn" href="https://cgviviana.github.io/Asignaturas-FUAA/SaberConocer/Presencial/S5Diagn/index.html" rel="noopener noreferrer" target="_blank">Abrir herramientas de diagnóstico</a></div>
+</div></div>
+</div>
+
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<br/>
+<section class="section" id="s2">
+<div aria-expanded="false" class="section-head" role="button" tabindex="0">
+<div><span class="number">Corte 2</span><h2>Diseño lógico de la solución digital</h2></div>
+<span aria-hidden="true" class="section-toggle">+</span>
+</div>
+<div class="section-body">
+<div class="lead-box">
               Uso de información verificable y herramientas digitales para organizar, visualizar e interpretar datos que sustenten la solución propuesta.
             </div>
-            <div class="accordion">
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">2.1</span>Recopilación de datos en fuentes verídicas</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Datos con respaldo</h3>
-                    <p>La información debe proceder de fuentes identificables, pertinentes y verificables. En una problemática institucional conviene priorizar registros oficiales, observaciones directas y documentos autorizados.</p>
-                  </div>
-                </div>
-              </article>
-
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">2.2</span>Organización y análisis de datos mediante aplicaciones</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Preparar los datos</h3>
-                    <p>Antes de analizar, los registros se organizan en filas y columnas, se corrigen inconsistencias, se eliminan duplicados y se establecen categorías comparables mediante una aplicación digital.</p>
-                  </div>
-                </div>
-              </article>
-
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">2.3</span>Visualización de datos de la problemática</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Mostrar patrones</h3>
-                    <p>La visualización convierte los datos en gráficos comprensibles. El tipo de gráfico se selecciona según se requiera comparar categorías, observar cambios o mostrar proporciones.</p>
-                  </div>
-                </div>
-              </article>
-
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">2.4</span>Interpretación de datos para justificar la solución</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>De los datos a la decisión</h3>
-                    <p>Interpretar consiste en explicar qué significan los patrones encontrados, sin confundir coincidencias con causas ni formular conclusiones que los datos no respaldan.</p>
-                  </div>
-                </div>
-              </article>
-
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">2.5</span>Aplicación al ejemplo: llegadas tarde</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Aplicación del análisis de datos</h3>
-                    <div class="example-stack">
-                      <div class="example-item"><h4>Recopilación</h4><p>Registro diario de la coordinación, contrastado con el horario oficial y los controles de ingreso.</p></div>
-                      <div class="example-item"><h4>Organización</h4><p>Una fila por llegada y columnas para fecha, curso, hora, estado y minutos de retraso.</p></div>
-                      <div class="example-item"><h4>Visualización</h4><p>Gráficos de barras para comparar tardanzas por curso, día y rango de minutos.</p></div>
-                      <div class="example-item"><h4>Interpretación</h4><p>Los patrones justifican una herramienta de registro y seguimiento, pero no demuestran por sí solos las causas de la tardanza.</p></div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section id="s3" class="section">
-          <div class="section-head" role="button" tabindex="0" aria-expanded="false">
-            <div><span class="number">Corte 3</span><h2>Desarrollo y componentes de una solución informática</h2></div>
-            <span class="section-toggle" aria-hidden="true">+</span>
-          </div>
-          <div class="section-body">
-            <div class="lead-box">
+<div class="accordion">
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">2.1</span>Recopilación de datos en fuentes verídicas</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Datos con respaldo</h3>
+<p>La información debe proceder de fuentes identificables, pertinentes y verificables. En una problemática institucional conviene priorizar registros oficiales, observaciones directas y documentos autorizados.</p>
+</div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">2.2</span>Organización y análisis de datos mediante aplicaciones</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Preparar los datos</h3>
+<p>Antes de analizar, los registros se organizan en filas y columnas, se corrigen inconsistencias, se eliminan duplicados y se establecen categorías comparables mediante una aplicación digital.</p>
+</div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">2.3</span>Visualización de datos de la problemática</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Mostrar patrones</h3>
+<p>La visualización convierte los datos en gráficos comprensibles. El tipo de gráfico se selecciona según se requiera comparar categorías, observar cambios o mostrar proporciones.</p>
+</div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">2.4</span>Interpretación de datos para justificar la solución</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>De los datos a la decisión</h3>
+<p>Interpretar consiste en explicar qué significan los patrones encontrados, sin confundir coincidencias con causas ni formular conclusiones que los datos no respaldan.</p>
+</div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">2.5</span>Aplicación al ejemplo: llegadas tarde</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Aplicación del análisis de datos</h3>
+<div class="example-stack">
+<div class="example-item"><h4>Recopilación</h4><p>Registro diario de la coordinación, contrastado con el horario oficial y los controles de ingreso.</p></div>
+<div class="example-item"><h4>Organización</h4><p>Una fila por llegada y columnas para fecha, curso, hora, estado y minutos de retraso.</p></div>
+<div class="example-item"><h4>Visualización</h4><p>Gráficos de barras para comparar tardanzas por curso, día y rango de minutos.</p></div>
+<div class="example-item"><h4>Interpretación</h4><p>Los patrones justifican una herramienta de registro y seguimiento, pero no demuestran por sí solos las causas de la tardanza.</p></div>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<br/>
+<section class="section" id="s3">
+<div aria-expanded="false" class="section-head" role="button" tabindex="0">
+<div><span class="number">Corte 3</span><h2>Desarrollo y componentes de una solución informática</h2></div>
+<span aria-hidden="true" class="section-toggle">+</span>
+</div>
+<div class="section-body">
+<div class="lead-box">
               Planeación y diseño inicial de una aplicación digital que responda a los requerimientos de la problemática e integre criterios de innovación y sustentabilidad.
             </div>
-            <div class="accordion">
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">3.1</span>Introducción al desarrollo y componentes de una solución informática</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Componentes de la solución</h3>
-                    <p>Una solución informática integra personas, datos, procesos, interfaz y tecnología. Sus componentes deben responder directamente a la necesidad delimitada.</p>
-                  </div>
-                </div>
-              </article>
-
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">3.2</span>Requisitos y requerimientos de la aplicación digital</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Requisitos y requerimientos</h3>
-                    <p>Los requisitos funcionales indican lo que la aplicación debe hacer. Los no funcionales establecen condiciones de calidad, seguridad, facilidad de uso y rendimiento.</p>
-                  </div>
-                </div>
-              </article>
-
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">3.3</span>Diseño del prototipo de la solución informática v1.0</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Prototipo v1.0</h3>
-                    <p>Es una primera representación visual y navegable de la solución. Permite comprobar la estructura, las funciones y el recorrido del usuario antes de programar.</p>
-                  </div>
-                </div>
-              </article>
-
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">3.4</span>Sustentabilidad, innovación e integración de IA</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Valor y responsabilidad</h3>
-                    <p>La solución debe ser viable, útil y sostenible en el tiempo. La innovación y la IA se integran solo cuando mejoran el proceso y respetan la privacidad, la transparencia y la supervisión humana.</p>
-                  </div>
-                </div>
-              </article>
-
-              <article class="acc-item">
-                <button class="acc-btn" type="button" aria-expanded="false">
-                  <span><span class="topic-code">3.5</span>Aplicación al ejemplo: llegadas tarde</span><span class="plus">+</span>
-                </button>
-                <div class="acc-content">
-                  <div class="acc-inner">
-                    <h3>Aplicación del diseño de la solución</h3>
-                    <div class="example-stack">
-                      <div class="example-item"><h4>Componentes</h4><p>Formulario de registro, base de datos, reglas para calcular el retraso y tablero de seguimiento.</p></div>
-                      <div class="example-item"><h4>Requisitos</h4><p>Registrar la hora, clasificar la llegada, generar reportes, proteger los datos y funcionar en celular y computador.</p></div>
-                      <div class="example-item"><h4>Prototipo v1.0</h4><p>Pantallas para ingreso, registro, consulta de llegadas, filtros y visualización de resultados.</p></div>
-                      <div class="example-item"><h4>Sustentabilidad, innovación e IA</h4><p>La aplicación reduce papel y puede usar IA para detectar patrones, sin delegar decisiones disciplinarias ni vulnerar la privacidad.</p></div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <footer>Aprendiendo con <strong>@LaProfeVivy</strong></footer>
-      </main>
-    </div>
-  </div>
-
-  <script>
+<div class="accordion">
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">3.1</span>Introducción al desarrollo y componentes de una solución informática</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Componentes de la solución</h3>
+<p>Una solución informática integra personas, datos, procesos, interfaz y tecnología. Sus componentes deben responder directamente a la necesidad delimitada.</p>
+</div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">3.2</span>Requisitos y requerimientos de la aplicación digital</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Requisitos y requerimientos</h3>
+<p>Los requisitos funcionales indican lo que la aplicación debe hacer. Los no funcionales establecen condiciones de calidad, seguridad, facilidad de uso y rendimiento.</p>
+</div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">3.3</span>Diseño del prototipo de la solución informática v1.0</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Prototipo v1.0</h3>
+<p>Es una primera representación visual y navegable de la solución. Permite comprobar la estructura, las funciones y el recorrido del usuario antes de programar.</p>
+</div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">3.4</span>Sustentabilidad, innovación e integración de IA</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Valor y responsabilidad</h3>
+<p>La solución debe ser viable, útil y sostenible en el tiempo. La innovación y la IA se integran solo cuando mejoran el proceso y respetan la privacidad, la transparencia y la supervisión humana.</p>
+</div>
+</div>
+</article>
+<br/>
+<article class="acc-item">
+<button aria-expanded="false" class="acc-btn" type="button">
+<span><span class="topic-code">3.5</span>Aplicación al ejemplo: llegadas tarde</span><span class="plus">+</span>
+</button>
+<div class="acc-content">
+<div class="acc-inner">
+<h3>Aplicación del diseño de la solución</h3>
+<div class="example-stack">
+<div class="example-item"><h4>Componentes</h4><p>Formulario de registro, base de datos, reglas para calcular el retraso y tablero de seguimiento.</p></div>
+<div class="example-item"><h4>Requisitos</h4><p>Registrar la hora, clasificar la llegada, generar reportes, proteger los datos y funcionar en celular y computador.</p></div>
+<div class="example-item"><h4>Prototipo v1.0</h4><p>Pantallas para ingreso, registro, consulta de llegadas, filtros y visualización de resultados.</p></div>
+<div class="example-item"><h4>Sustentabilidad, innovación e IA</h4><p>La aplicación reduce papel y puede usar IA para detectar patrones, sin delegar decisiones disciplinarias ni vulnerar la privacidad.</p></div>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<br/>
+<footer>Aprendiendo con <strong>@LaProfeVivy</strong></footer>
+</main>
+</div>
+</div>
+<br/>
+<script>
     const tabBtns = document.querySelectorAll('.tab-btn');
     const sections = document.querySelectorAll('.section');
 
@@ -579,8 +875,10 @@
         section.classList.add('open');
         section.querySelector('.section-head').setAttribute('aria-expanded', 'true');
         const menuBtn = document.querySelector(`[data-section="${section.id}"]`);
-        menuBtn.classList.add('active');
-        menuBtn.setAttribute('aria-selected', 'true');
+        if(menuBtn){
+          menuBtn.classList.add('active');
+          menuBtn.setAttribute('aria-selected', 'true');
+        }
       }
     }
 
@@ -607,38 +905,59 @@
     });
 
     const accordionItems = document.querySelectorAll('.acc-item');
-
-    function closeAllAccordions(){
-      accordionItems.forEach(item => {
-        const btn = item.querySelector('.acc-btn');
-        const content = item.querySelector('.acc-content');
-        item.classList.remove('open');
-        btn.setAttribute('aria-expanded', 'false');
-        content.style.maxHeight = '0px';
+    function closeInner(item){
+      item.querySelectorAll('.subacc-item').forEach(sub => {
+        sub.classList.remove('open');
+        const b=sub.querySelector('.subacc-btn');
+        if(b) b.setAttribute('aria-expanded','false');
       });
     }
-
+    function closeAllAccordions(){
+      accordionItems.forEach(item => {
+        item.classList.remove('open');
+        const btn = item.querySelector(':scope > .acc-btn');
+        if(btn) btn.setAttribute('aria-expanded', 'false');
+        closeInner(item);
+      });
+    }
     closeAllAccordions();
+
     window.addEventListener('pageshow', () => {
       closeAllCuts();
       closeAllAccordions();
     });
 
     accordionItems.forEach(item => {
-      const btn = item.querySelector('.acc-btn');
-      const content = item.querySelector('.acc-content');
+      const btn = item.querySelector(':scope > .acc-btn');
       btn.addEventListener('click', () => {
         const isOpen = item.classList.contains('open');
         item.classList.toggle('open');
         btn.setAttribute('aria-expanded', String(!isOpen));
-        content.style.maxHeight = isOpen ? null : content.scrollHeight + 'px';
+        if(isOpen) closeInner(item);
+      });
+    });
+
+    document.querySelectorAll('.subacc-item').forEach(item => {
+      const btn=item.querySelector(':scope > .subacc-btn');
+      btn.addEventListener('click', () => {
+        const isOpen=item.classList.contains('open');
+        // dentro del mismo grupo, dejar abierto solo el subtema elegido
+        const group=item.parentElement;
+        group.querySelectorAll(':scope > .subacc-item').forEach(other => {
+          other.classList.remove('open');
+          const ob=other.querySelector(':scope > .subacc-btn');
+          if(ob) ob.setAttribute('aria-expanded','false');
+        });
+        if(!isOpen){
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded','true');
+        }
       });
     });
 
     document.querySelectorAll('.detail-tabs').forEach(group => {
       const detailBtns = group.querySelectorAll('.detail-btn');
       const detailPanels = group.querySelectorAll('.detail-panel');
-
       detailBtns.forEach(detailBtn => {
         detailBtn.setAttribute('aria-selected', String(detailBtn.classList.contains('active')));
         detailBtn.addEventListener('click', () => {
@@ -647,27 +966,13 @@
             btn.setAttribute('aria-selected', 'false');
           });
           detailPanels.forEach(panel => panel.classList.remove('active'));
-
           detailBtn.classList.add('active');
           detailBtn.setAttribute('aria-selected', 'true');
-          document.getElementById(detailBtn.dataset.detail).classList.add('active');
-
-          const openContent = group.closest('.acc-content');
-          requestAnimationFrame(() => {
-            if (openContent.closest('.acc-item').classList.contains('open')) {
-              openContent.style.maxHeight = openContent.scrollHeight + 'px';
-            }
-          });
+          const panel=document.getElementById(detailBtn.dataset.detail);
+          if(panel) panel.classList.add('active');
         });
       });
     });
-
-    window.addEventListener('resize', () => {
-      document.querySelectorAll('.acc-item.open .acc-content').forEach(content => {
-        content.style.maxHeight = content.scrollHeight + 'px';
-      });
-    });
-
-  </script>
+</script>
 </body>
 </html>
