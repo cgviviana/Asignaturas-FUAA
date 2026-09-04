@@ -1,1 +1,826 @@
 
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnóstico del proceso | Froggy</title>
+
+<style>
+@font-face{
+  font-family:Brown;
+  src:local("BrownStd-Regular"),
+      url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Regular.woff2") format("woff2");
+  font-display:swap
+}
+@font-face{
+  font-family:Brown;
+  src:local("BrownStd-Bold"),
+      url("https://www.areandina.edu.co/assets/font-brown/BrownStd-Bold.woff2") format("woff2");
+  font-weight:700;
+  font-display:swap
+}
+
+:root{
+  --verde:#7fb536;
+  --verde2:#5f8f24;
+  --gris:#3f3f3f;
+  --borde:#dce3e6;
+  --fondo:#f4f7f8;
+  --agua1:#c8f0ff;
+  --agua2:#6fc7e9;
+  --ok:#237b3d;
+  --error:#bd3d3d
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  background:var(--fondo);
+  font-family:Brown,Arial,sans-serif;
+  color:var(--gris)
+}
+
+button,label{font:inherit}
+
+.wrap{
+  width:min(1020px,calc(100% - 20px));
+  margin:auto
+}
+
+/* CABECERA */
+.hero{
+  background:#3b3b3b;
+  border-bottom:5px solid var(--verde);
+  color:#fff;
+  padding:24px 0
+}
+
+.hero .tag{
+  margin:0 0 7px;
+  color:#c8e5a0;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase
+}
+
+.hero h1{
+  margin:0;
+  font-size:clamp(28px,4.4vw,46px);
+  line-height:1.08
+}
+
+.hero p:last-child{
+  margin:8px 0 0;
+  color:#e1e1e1;
+  font-size:15px
+}
+
+/* JUEGO */
+.game-root{
+  padding:18px 0 34px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px
+}
+
+.score{
+  grid-row:1;
+  justify-self:end;
+  background:#fff;
+  border:1px solid var(--borde);
+  border-radius:12px;
+  padding:10px 16px;
+  font-weight:700;
+  box-shadow:0 5px 14px rgba(0,0,0,.06)
+}
+
+.score-value{
+  color:var(--verde2);
+  font-size:24px;
+  margin-left:7px
+}
+
+/* ESTANQUE */
+.pond{
+  grid-row:2;
+  position:relative;
+  height:270px;
+  border-radius:22px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 12% 22%,rgba(255,255,255,.45) 0 4px,transparent 5px),
+    radial-gradient(circle at 35% 68%,rgba(255,255,255,.28) 0 5px,transparent 6px),
+    radial-gradient(circle at 70% 18%,rgba(255,255,255,.35) 0 4px,transparent 5px),
+    linear-gradient(180deg,var(--agua1),var(--agua2));
+  border:2px solid #a7dbea;
+  box-shadow:0 12px 26px rgba(0,0,0,.09)
+}
+
+.pad{
+  position:absolute;
+  width:112px;
+  height:58px;
+  border-radius:55% 45% 50% 50%/55% 60% 40% 45%;
+  background:radial-gradient(circle at 30% 30%,#a7e25e 0%,var(--verde) 58%,#669529 100%);
+  box-shadow:
+    inset -6px -8px 0 rgba(0,0,0,.08),
+    0 8px 12px rgba(0,0,0,.11);
+  transform:translate(-50%,-50%)
+}
+
+.pad::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:11px solid transparent;
+  border-right:11px solid transparent;
+  border-top:28px solid #629826
+}
+
+.pad.finish{
+  background:radial-gradient(circle at 30% 30%,#ffef9d,#f8c34f 60%,#d49e25)
+}
+
+.pad.finish::before{border-top-color:#c99622}
+
+.p0{left:9%;top:66%}
+.p1{left:26%;top:34%}
+.p2{left:43%;top:70%}
+.p3{left:60%;top:31%}
+.p4{left:77%;top:67%}
+.p5{left:92%;top:35%}
+
+/* RANA */
+.frog{
+  position:absolute;
+  width:82px;
+  height:70px;
+  left:9%;
+  top:49%;
+  transform:translate(-50%,-50%);
+  z-index:5;
+  transition:left .65s ease,top .65s ease,transform .35s ease
+}
+
+.frog-body{
+  position:absolute;
+  left:50%;
+  bottom:8px;
+  transform:translateX(-50%);
+  width:70px;
+  height:46px;
+  background:#62c63d;
+  border:3px solid #3c8c22;
+  border-radius:42px 42px 28px 28px;
+  box-shadow:inset 0 -8px rgba(0,0,0,.08)
+}
+
+.eye{
+  position:absolute;
+  top:4px;
+  width:23px;
+  height:23px;
+  background:#79d44f;
+  border:3px solid #3c8c22;
+  border-radius:50%
+}
+
+.eye.l{left:12px}
+.eye.r{right:12px}
+
+.eye::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:8px;
+  height:8px;
+  background:#202020;
+  border-radius:50%
+}
+
+.frog-belly{
+  position:absolute;
+  left:50%;
+  bottom:10px;
+  transform:translateX(-50%);
+  width:38px;
+  height:20px;
+  border-radius:50%;
+  background:#b8e67d
+}
+
+.frog-shadow{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:56px;
+  height:11px;
+  border-radius:50%;
+  background:rgba(0,0,0,.16);
+  filter:blur(2px)
+}
+
+.splash{
+  position:absolute;
+  left:50%;
+  top:63%;
+  font-size:42px;
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.6)
+}
+
+@keyframes splash{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+  35%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(.8)}
+}
+
+@keyframes sink{
+  0%{transform:translate(-50%,-50%)}
+  45%{transform:translate(-50%,30%) rotate(12deg) scale(.9)}
+  100%{transform:translate(-50%,-50%)}
+}
+
+body:has(.wrong:checked) .frog{animation:sink .8s ease}
+body:has(.wrong:checked) .splash{animation:splash .8s ease}
+
+/* AVANCE DE FROGGY */
+body:has(#q1a:checked) .frog{left:26%;top:17%}
+body:has(#q2c:checked) .frog{left:43%;top:53%}
+body:has(#q3b:checked) .frog{left:60%;top:14%}
+body:has(#q4d:checked) .frog{left:77%;top:50%}
+body:has(#q5a:checked) .frog{left:92%;top:18%}
+
+/* PREGUNTAS */
+.qcard{
+  grid-row:3;
+  display:none;
+  background:#fff;
+  border:1px solid var(--borde);
+  border-radius:16px;
+  padding:22px;
+  box-shadow:0 10px 24px rgba(0,0,0,.07)
+}
+
+#q1{display:block}
+
+.qcard:target{display:block}
+body:has(.qcard:target) #q1:not(:target){display:none}
+
+.question-number{
+  display:inline-block;
+  margin-bottom:7px;
+  color:var(--verde2);
+  font-size:13px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.07em
+}
+
+.question{
+  font-size:22px;
+  line-height:1.35;
+  font-weight:700;
+  margin:0 0 16px
+}
+
+.options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+
+.options input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none
+}
+
+.option{
+  display:block;
+  border:2px solid #dce2e5;
+  background:#fff;
+  border-radius:12px;
+  padding:14px;
+  min-height:78px;
+  transition:.15s;
+  cursor:pointer
+}
+
+.option:hover{
+  border-color:#a8cc7c;
+  background:#fbfdf8
+}
+
+.options input:checked + .option{
+  border-color:#9abf6b;
+  background:#f4faec
+}
+
+.options input.correct:checked + .option{
+  border-color:var(--ok);
+  background:#edf8f0
+}
+
+.options input.wrong:checked + .option{
+  border-color:var(--error);
+  background:#fff1f1
+}
+
+.explanation{
+  display:none;
+  margin-top:16px;
+  padding:14px 16px;
+  border-left:5px solid var(--verde);
+  background:#f4f9ec;
+  border-radius:0 10px 10px 0;
+  line-height:1.55
+}
+
+.wrong + .option + .explanation{
+  border-left-color:var(--error);
+  background:#fff1f1
+}
+
+.qcard:has(input:checked) .explanation{display:block}
+
+.exp-ok,.exp-bad{display:none}
+.qcard:has(input.correct:checked) .exp-ok{display:block}
+.qcard:has(input.wrong:checked) .exp-bad{display:block}
+
+.nextlink{
+  display:none;
+  margin-top:14px;
+  background:var(--verde);
+  color:#fff;
+  font-weight:700;
+  border-radius:10px;
+  padding:11px 16px;
+  text-decoration:none;
+  min-height:44px;
+  align-items:center
+}
+
+.qcard:has(input:checked) .nextlink{display:inline-flex}
+.nextlink:hover{background:var(--verde2)}
+
+/* RESULTADO */
+.result{
+  display:none;
+  grid-row:3;
+  text-align:center;
+  background:#fff;
+  border:1px solid var(--borde);
+  border-radius:16px;
+  padding:28px;
+  box-shadow:0 10px 24px rgba(0,0,0,.07)
+}
+
+#resultado:target{display:block}
+body:has(#resultado:target) .qcard{display:none!important}
+
+.result .big{
+  font-size:48px;
+  color:var(--verde2);
+  font-weight:700
+}
+
+.result-feedback{
+  margin:10px auto 0;
+  max-width:650px;
+  line-height:1.55;
+  color:#60676a
+}
+
+/* INGRESO */
+.name-gate{
+  background:#fff;
+  border:1px solid var(--borde);
+  border-radius:16px;
+  padding:24px;
+  box-shadow:0 10px 24px rgba(0,0,0,.07);
+  margin-top:18px;
+  text-align:center
+}
+
+.name-gate h2{
+  margin:0 0 8px;
+  font-size:24px
+}
+
+.name-gate p{
+  margin:0 0 14px;
+  color:#666
+}
+
+.name-row{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  max-width:560px;
+  margin:auto
+}
+
+.name-row input{
+  flex:1;
+  min-width:0;
+  min-height:46px;
+  border:1px solid #bcc7cc;
+  border-radius:10px;
+  padding:10px 12px;
+  font:inherit;
+  font-size:16px
+}
+
+.name-row button{
+  min-height:46px;
+  border:1px solid var(--verde);
+  background:var(--verde);
+  color:#fff;
+  border-radius:10px;
+  padding:10px 18px;
+  font-weight:700;
+  cursor:pointer
+}
+
+.name-row button:hover{
+  background:var(--verde2);
+  border-color:var(--verde2)
+}
+
+.name-error{
+  min-height:20px;
+  margin-top:8px;
+  color:var(--error);
+  font-size:14px
+}
+
+.game-hidden{display:none!important}
+
+footer{
+  background:#3f3f3f;
+  color:#fff;
+  text-align:center;
+  padding:16px 18px;
+  font-size:13px
+}
+
+footer strong{color:#d7ecb9}
+
+@media(max-width:720px){
+  .name-row{flex-direction:column}
+  .options{grid-template-columns:1fr}
+  .pond{height:300px}
+  .pad{width:90px;height:48px}
+  .frog{width:74px}
+  .question{font-size:19px}
+  .score{justify-self:stretch;text-align:right}
+}
+</style>
+</head>
+
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="tag">Tema 1.4 · Pensamiento Computacional</p>
+    <h1>Diagnóstico del proceso</h1>
+    <p>Ayuda a Froggy a analizar correctamente el proceso actual antes de proponer una automatización.</p>
+  </div>
+</header>
+
+<section class="wrap name-gate" id="nameGate">
+  <h2>Antes de comenzar</h2>
+  <p>Escribe tu nombre.</p>
+  <div class="name-row">
+    <input id="playerName" type="text" maxlength="50" autocomplete="name" placeholder="Nombre">
+    <button id="enterGame" type="button">Ingresar</button>
+  </div>
+  <div class="name-error" id="nameError"></div>
+</section>
+
+<main class="wrap game-root game-hidden" id="gameRoot">
+
+  <!-- RETO 1 -->
+  <section class="qcard" id="q1">
+    <span class="question-number">Reto 1 de 5</span>
+    <p class="question">
+      En un proceso se presentan errores frecuentes y el equipo necesita ordenar sus posibles causas en categorías como personas, método, datos, herramientas, entorno y control. ¿Qué herramienta debe utilizar?
+    </p>
+
+    <div class="options">
+      <input class="correct" type="radio" name="q1" id="q1a">
+      <label class="option" for="q1a">Diagrama de Ishikawa.</label>
+
+      <input class="wrong" type="radio" name="q1" id="q1b">
+      <label class="option" for="q1b">Árbol de problemas.</label>
+
+      <input class="wrong" type="radio" name="q1" id="q1c">
+      <label class="option" for="q1c">Flujo actual.</label>
+
+      <input class="wrong" type="radio" name="q1" id="q1d">
+      <label class="option" for="q1d">Prototipo de la solución.</label>
+    </div>
+
+    <div class="explanation">
+      <div class="exp-ok">
+        <strong>Correcto.</strong> El diagrama de Ishikawa permite organizar las posibles causas del problema en grupos para analizarlas de manera estructurada.
+      </div>
+      <div class="exp-bad">
+        <strong>No.</strong> Cuando se necesita identificar y agrupar las posibles causas de un problema, la herramienta adecuada es el diagrama de Ishikawa.
+      </div>
+    </div>
+
+    <a class="nextlink" href="#q2">Siguiente</a>
+  </section>
+
+  <!-- RETO 2 -->
+  <section class="qcard" id="q2">
+    <span class="question-number">Reto 2 de 5</span>
+    <p class="question">
+      En un árbol de problemas, ¿cómo deben ubicarse correctamente los elementos del diagnóstico?
+    </p>
+
+    <div class="options">
+      <input class="wrong" type="radio" name="q2" id="q2a">
+      <label class="option" for="q2a">Las causas en las ramas, el problema en las raíces y los efectos en el tronco.</label>
+
+      <input class="wrong" type="radio" name="q2" id="q2b">
+      <label class="option" for="q2b">Los efectos en las raíces, las soluciones en el tronco y las causas en las ramas.</label>
+
+      <input class="correct" type="radio" name="q2" id="q2c">
+      <label class="option" for="q2c">Las causas en las raíces, el problema central en el tronco y los efectos en las ramas.</label>
+
+      <input class="wrong" type="radio" name="q2" id="q2d">
+      <label class="option" for="q2d">El problema en las ramas y todas las causas y efectos juntos en las raíces.</label>
+    </div>
+
+    <div class="explanation">
+      <div class="exp-ok">
+        <strong>Correcto.</strong> El árbol relaciona causas, problema central y efectos: raíces = causas, tronco = problema central y ramas = efectos.
+      </div>
+      <div class="exp-bad">
+        <strong>No.</strong> Recuerda la lógica del árbol: las raíces representan las causas, el tronco el problema central y las ramas sus efectos.
+      </div>
+    </div>
+
+    <a class="nextlink" href="#q3">Siguiente</a>
+  </section>
+
+  <!-- RETO 3 -->
+  <section class="qcard" id="q3">
+    <span class="question-number">Reto 3 de 5</span>
+    <p class="question">
+      El equipo quiere mostrar cómo se realiza hoy un proceso, incluyendo acciones, decisiones, datos utilizados y responsables. ¿Qué debe construir?
+    </p>
+
+    <div class="options">
+      <input class="wrong" type="radio" name="q3" id="q3a">
+      <label class="option" for="q3a">Un listado de posibles causas.</label>
+
+      <input class="correct" type="radio" name="q3" id="q3b">
+      <label class="option" for="q3b">El flujo actual del proceso.</label>
+
+      <input class="wrong" type="radio" name="q3" id="q3c">
+      <label class="option" for="q3c">Un árbol de objetivos.</label>
+
+      <input class="wrong" type="radio" name="q3" id="q3d">
+      <label class="option" for="q3d">La interfaz de la futura aplicación.</label>
+    </div>
+
+    <div class="explanation">
+      <div class="exp-ok">
+        <strong>Correcto.</strong> El flujo actual representa la secuencia real del proceso y permite ubicar acciones, decisiones, datos y responsables.
+      </div>
+      <div class="exp-bad">
+        <strong>No.</strong> Para representar cómo ocurre realmente el proceso hoy se utiliza el flujo actual, antes de diseñar cualquier automatización.
+      </div>
+    </div>
+
+    <a class="nextlink" href="#q4">Siguiente</a>
+  </section>
+
+  <!-- RETO 4 -->
+  <section class="qcard" id="q4">
+    <span class="question-number">Reto 4 de 5</span>
+    <p class="question">
+      Un grupo ya seleccionó una situación problemática. ¿Cuál es la acción correcta durante la etapa de diagnóstico?
+    </p>
+
+    <div class="options">
+      <input class="wrong" type="radio" name="q4" id="q4a">
+      <label class="option" for="q4a">Diseñar inmediatamente la aplicación que resolverá el problema.</label>
+
+      <input class="wrong" type="radio" name="q4" id="q4b">
+      <label class="option" for="q4b">Elegir una tecnología y adaptar el problema a esa herramienta.</label>
+
+      <input class="wrong" type="radio" name="q4" id="q4c">
+      <label class="option" for="q4c">Proponer la solución primero y después justificar las causas.</label>
+
+      <input class="correct" type="radio" name="q4" id="q4d">
+      <label class="option" for="q4d">Observar y representar el proceso actual, identificando causas, efectos, datos y responsables.</label>
+    </div>
+
+    <div class="explanation">
+      <div class="exp-ok">
+        <strong>Correcto.</strong> En el diagnóstico todavía no se diseña la solución: primero se comprende qué ocurre actualmente y por qué ocurre.
+      </div>
+      <div class="exp-bad">
+        <strong>No.</strong> Diagnosticar significa comprender el proceso existente antes de proponer la automatización o seleccionar una solución.
+      </div>
+    </div>
+
+    <a class="nextlink" href="#q5">Siguiente</a>
+  </section>
+
+  <!-- RETO 5 -->
+  <section class="qcard" id="q5">
+    <span class="question-number">Reto 5 de 5</span>
+    <p class="question">
+      ¿Qué secuencia integra correctamente las tres herramientas para obtener una visión completa del diagnóstico?
+    </p>
+
+    <div class="options">
+      <input class="correct" type="radio" name="q5" id="q5a">
+      <label class="option" for="q5a">Organizar las causas con Ishikawa → relacionar causas, problema y efectos con el árbol → representar cómo ocurre el proceso con el flujo actual.</label>
+
+      <input class="wrong" type="radio" name="q5" id="q5b">
+      <label class="option" for="q5b">Diseñar la aplicación → crear el flujo futuro → buscar después algunas causas.</label>
+
+      <input class="wrong" type="radio" name="q5" id="q5c">
+      <label class="option" for="q5c">Construir únicamente el árbol de problemas y descartar las demás herramientas.</label>
+
+      <input class="wrong" type="radio" name="q5" id="q5d">
+      <label class="option" for="q5d">Representar el proceso futuro → definir efectos → escoger causas que justifiquen la solución.</label>
+    </div>
+
+    <div class="explanation">
+      <div class="exp-ok">
+        <strong>Correcto.</strong> Las tres herramientas se complementan: Ishikawa organiza causas, el árbol relaciona causas y efectos, y el flujo muestra dónde aparecen las dificultades en el proceso real.
+      </div>
+      <div class="exp-bad">
+        <strong>No.</strong> El diagnóstico parte del proceso actual: primero se analizan las causas, luego su relación con el problema y sus efectos, y finalmente se representa la secuencia real.
+      </div>
+    </div>
+
+    <a class="nextlink" href="#resultado">Ver resultado</a>
+  </section>
+
+  <!-- PUNTAJE -->
+  <div class="score">
+    Puntaje <span class="score-value" id="scoreValue">0/500</span>
+  </div>
+
+  <!-- ESTANQUE -->
+  <div class="pond">
+    <div class="pad p0"></div>
+    <div class="pad p1"></div>
+    <div class="pad p2"></div>
+    <div class="pad p3"></div>
+    <div class="pad p4"></div>
+    <div class="pad p5 finish"></div>
+
+    <div class="frog">
+      <div class="eye l"></div>
+      <div class="eye r"></div>
+      <div class="frog-body"></div>
+      <div class="frog-belly"></div>
+      <div class="frog-shadow"></div>
+    </div>
+
+    <div class="splash">💦</div>
+  </div>
+
+  <!-- RESULTADO -->
+  <section class="result" id="resultado">
+    <p id="finalMessage" style="font-size:24px;margin:0 0 8px">
+      <strong>¡Felicitaciones!</strong>
+    </p>
+
+    <div class="big" id="finalScore">0/500</div>
+
+    <p><strong>¡Froggy completó el diagnóstico!</strong></p>
+    <p class="result-feedback" id="resultFeedback"></p>
+
+    <button
+      class="nextlink"
+      id="restartGame"
+      style="display:inline-flex;border:0;cursor:pointer"
+      type="button">
+      Jugar de nuevo
+    </button>
+  </section>
+
+</main>
+
+<footer>
+  Aprendiendo con <strong>@LaProfeVivy</strong>
+</footer>
+
+<script>
+(() => {
+
+  let player = '';
+
+  const gate = document.getElementById('nameGate');
+  const game = document.getElementById('gameRoot');
+  const nameInput = document.getElementById('playerName');
+  const nameError = document.getElementById('nameError');
+
+  const scoreValue = document.getElementById('scoreValue');
+  const finalScore = document.getElementById('finalScore');
+  const finalMessage = document.getElementById('finalMessage');
+  const resultFeedback = document.getElementById('resultFeedback');
+
+  function currentScore(){
+    return document.querySelectorAll('.qcard input.correct:checked').length * 100;
+  }
+
+  function updateScore(){
+    const score = currentScore();
+    scoreValue.textContent = score + '/500';
+    finalScore.textContent = score + '/500';
+    return score;
+  }
+
+  function enter(){
+    const value = nameInput.value.trim();
+
+    if(!value){
+      nameError.textContent = 'Escribe tu nombre para comenzar.';
+      nameInput.focus();
+      return;
+    }
+
+    player = value;
+    nameError.textContent = '';
+    gate.classList.add('game-hidden');
+    game.classList.remove('game-hidden');
+    location.hash = 'q1';
+    updateScore();
+  }
+
+  document.getElementById('enterGame').addEventListener('click', enter);
+
+  nameInput.addEventListener('keydown', e => {
+    if(e.key === 'Enter') enter();
+  });
+
+  document.querySelectorAll('.qcard input[type="radio"]').forEach(input => {
+    input.addEventListener('change', updateScore);
+  });
+
+  document.querySelector('a[href="#resultado"]').addEventListener('click', () => {
+    const score = updateScore();
+
+    finalMessage.innerHTML =
+      '<strong>¡Felicitaciones, ' + escapeHtml(player) + '!</strong><br>' +
+      'Tu puntuación final es ' + score + ' de 500 puntos.';
+
+    if(score === 500){
+      resultFeedback.textContent =
+        'Dominas la función de Ishikawa, el árbol de problemas y el flujo actual dentro del diagnóstico del proceso.';
+    }else if(score >= 400){
+      resultFeedback.textContent =
+        'Tienes un buen dominio del diagnóstico. Revisa únicamente el reto en el que tuviste dificultad.';
+    }else if(score >= 300){
+      resultFeedback.textContent =
+        'Comprendes los elementos principales, pero conviene repasar cómo se complementan las tres herramientas.';
+    }else{
+      resultFeedback.textContent =
+        'Revisa nuevamente el tema 1.4 y vuelve a intentarlo. Concéntrate en la función específica de cada herramienta.';
+    }
+  });
+
+  document.getElementById('restartGame').addEventListener('click', () => {
+    document.querySelectorAll('.qcard input[type="radio"]').forEach(input => {
+      input.checked = false;
+    });
+
+    updateScore();
+    resultFeedback.textContent = '';
+    location.hash = 'q1';
+  });
+
+  function escapeHtml(value){
+    const div = document.createElement('div');
+    div.textContent = value;
+    return div.innerHTML;
+  }
+
+})();
+</script>
+
+</body>
+</html>
