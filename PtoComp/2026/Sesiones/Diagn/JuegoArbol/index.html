@@ -1,1 +1,895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego Árbol de Problemas | LaProfeVivy</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --slate:#475569;
+  --slate2:#64748b;
+  --line:#cbd5e1;
+  --bg:#eef1f4;
+  --white:#fff;
+  --causa:#8D6E63;
+  --problema:#42A5F5;
+  --efecto:#66BB6A;
+  --ok:#43A047;
+  --bad:#D32F2F;
+  --yellow:#fff7cc;
+}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--slate);
+}
+button,input{font:inherit}
+.page{
+  width:min(1120px,calc(100% - 20px));
+  margin:auto;
+  padding:12px 0 28px;
+}
+.main-title{
+  text-align:center;
+  font-size:34px;
+  font-weight:700;
+  margin:10px 0 14px;
+}
+.topbar{
+  background:#4c5b68;
+  color:#fff;
+  padding:12px;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  border-radius:12px;
+  margin-bottom:14px;
+}
+.badge,.stage{
+  background:#fff;
+  color:var(--slate);
+  border:2px solid var(--line);
+  border-radius:999px;
+  padding:9px 15px;
+  font-weight:700;
+  font-size:18px;
+}
+.stage.active{
+  background:var(--yellow);
+  border-color:var(--slate);
+}
+.stage-row{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.panel{
+  border:2px solid var(--line);
+  background:#f8f8f8;
+  border-radius:24px;
+  padding:18px;
+}
+.center{text-align:center}
+.big{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:7px;
+}
+.subtitle{
+  font-size:19px;
+  color:#6b7280;
+  line-height:1.45;
+}
+.player-line{
+  text-align:center;
+  font-size:20px;
+  font-weight:700;
+  color:var(--slate2);
+  margin:2px 0 12px;
+}
+.footer{
+  text-align:center;
+  font-size:20px;
+  color:#6b7280;
+  margin:18px 0 0;
+}
+
+/* nombre */
+.name-card{
+  max-width:620px;
+  margin:40px auto 0;
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:24px;
+  padding:28px;
+  text-align:center;
+}
+.name-input{
+  width:100%;
+  max-width:460px;
+  margin-top:18px;
+  padding:14px 16px;
+  border:2px solid var(--line);
+  border-radius:14px;
+  font-size:22px;
+  color:var(--slate);
+  outline:none;
+}
+.name-input:focus{border-color:var(--problema)}
+.error-text{
+  min-height:24px;
+  color:#C62828;
+  margin-top:10px;
+  font-size:18px;
+}
+.start-btn,.next-btn{
+  margin-top:14px;
+  color:#fff;
+  border:2px solid #94a3b8;
+  border-radius:18px;
+  padding:14px 26px;
+  font-size:24px;
+  font-weight:700;
+  cursor:pointer;
+}
+.start-btn{background:var(--problema)}
+.next-btn{background:#66BB6A}
+.start-btn:disabled{
+  background:#cbd5e1;
+  border-color:#cbd5e1;
+  cursor:default;
+}
+
+/* árbol */
+.tree-wrap{
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:22px;
+  padding:18px 12px;
+  margin-top:18px;
+  overflow-x:auto;
+}
+.tree{
+  position:relative;
+  width:860px;
+  height:420px;
+  margin:auto;
+}
+.trunk{
+  position:absolute;
+  left:365px;
+  top:150px;
+  width:130px;
+  height:150px;
+  background:#9C6B3D;
+  border-radius:30px 30px 12px 12px;
+  border:4px solid #6D4C41;
+}
+.crown{
+  position:absolute;
+  left:230px;
+  top:15px;
+  width:400px;
+  height:190px;
+  border-radius:50%;
+  background:#DFF3D9;
+  border:4px solid #66BB6A;
+}
+.root{
+  position:absolute;
+  height:12px;
+  background:#8D6E63;
+  border-radius:10px;
+  transform-origin:left center;
+}
+.r1{left:420px;top:285px;width:190px;transform:rotate(26deg)}
+.r2{left:425px;top:294px;width:195px;transform:rotate(-26deg)}
+.r3{left:410px;top:300px;width:150px;transform:rotate(55deg)}
+.r4{left:442px;top:300px;width:150px;transform:rotate(125deg)}
+.branch{
+  position:absolute;
+  height:10px;
+  background:#6D4C41;
+  border-radius:10px;
+  transform-origin:left center;
+}
+.b1{left:420px;top:165px;width:175px;transform:rotate(-35deg)}
+.b2{left:440px;top:170px;width:175px;transform:rotate(35deg)}
+.b3{left:425px;top:140px;width:130px;transform:rotate(-72deg)}
+.b4{left:450px;top:140px;width:130px;transform:rotate(72deg)}
+.tree-label{
+  position:absolute;
+  padding:11px 15px;
+  color:#fff;
+  border-radius:16px;
+  font-weight:700;
+  text-align:center;
+  box-shadow:0 4px 10px rgba(0,0,0,.12);
+}
+.label-effects{left:335px;top:50px;background:var(--efecto);font-size:23px}
+.label-problem{left:335px;top:210px;background:var(--problema);font-size:23px}
+.label-causes{left:337px;top:355px;background:var(--causa);font-size:23px}
+.small-note{
+  position:absolute;
+  font-size:16px;
+  font-weight:700;
+  color:#64748b;
+}
+.ne1{left:105px;top:80px}
+.ne2{left:630px;top:80px}
+.nc1{left:90px;top:345px}
+.nc2{left:650px;top:345px}
+
+/* tarjetas nivel 0 */
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-top:18px;
+}
+.learn-card{
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  min-height:190px;
+  cursor:pointer;
+  transition:.15s;
+}
+.learn-card:hover{transform:translateY(-2px)}
+.learn-card.revealed{border-width:3px}
+.learn-name{
+  color:#fff;
+  border-radius:14px;
+  padding:9px 10px;
+  text-align:center;
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+.learn-def{
+  text-align:center;
+  font-size:19px;
+  line-height:1.4;
+}
+.cover{
+  display:flex;
+  height:135px;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:24px;
+  font-weight:700;
+  color:var(--slate2);
+}
+
+/* quiz */
+.status-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 8px;
+  margin-bottom:12px;
+  font-size:28px;
+  font-weight:700;
+}
+.quiz-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.question-box,.answer-box{
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:24px;
+  padding:20px;
+}
+.question-box{
+  min-height:380px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.q-label{
+  font-size:18px;
+  color:#6b7280;
+  font-weight:700;
+  margin-bottom:12px;
+}
+.q-text{
+  font-size:30px;
+  line-height:1.35;
+  font-weight:700;
+}
+.mini-tree{
+  width:100%;
+  max-width:390px;
+  margin:16px auto 0;
+}
+.answer-box{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.option{
+  border:2px solid #94a3b8;
+  border-radius:16px;
+  min-height:72px;
+  color:#fff;
+  font-size:22px;
+  font-weight:700;
+  cursor:pointer;
+}
+.option:disabled{opacity:1;cursor:default}
+.option.correct{outline:4px solid #2e7d32}
+.option.wrong{outline:4px solid #c62828}
+.feedback{
+  margin-top:4px;
+  padding:14px;
+  border:2px solid var(--line);
+  border-radius:16px;
+  background:#f8fafc;
+  text-align:center;
+  line-height:1.4;
+  min-height:118px;
+}
+.feedback-title{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.points-up{
+  color:#2E7D32;
+  font-size:27px;
+  font-weight:700;
+}
+.points-zero{
+  color:#C62828;
+  font-size:27px;
+  font-weight:700;
+}
+
+/* resultado */
+.results-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin:18px 0;
+}
+.result-card{
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  text-align:center;
+}
+.result-title{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.result-value{
+  font-size:40px;
+  font-weight:700;
+  color:var(--slate2);
+}
+
+@media(max-width:850px){
+  .cards-grid,.results-grid,.quiz-grid{grid-template-columns:1fr}
+  .main-title{font-size:28px}
+  .q-text{font-size:25px}
+  .status-row{font-size:23px}
+}
+</style>
+</head>
+
+<body>
+<div id="app"></div>
+
+<script>
+const PARTS=[
+  {
+    id:"causa",
+    name:"Causa",
+    color:"#8D6E63",
+    definition:"Explica por qué ocurre el problema. Se ubica en las raíces del árbol.",
+    examples:[
+      "El registro de las llegadas tardías se realiza manualmente y puede contener errores.",
+      "El registro manual puede generar errores en la información."
+    ]
+  },
+  {
+    id:"problema",
+    name:"Problema central",
+    color:"#42A5F5",
+    definition:"Es la situación negativa principal que se desea comprender y mejorar. Se ubica en el tronco.",
+    examples:[
+      "El registro de llegadas tardías es lento, desorganizado y poco confiable.",
+      "Existe dificultad para controlar oportunamente las llegadas tardías a primera clase."
+    ]
+  },
+  {
+    id:"efecto",
+    name:"Efecto",
+    color:"#66BB6A",
+    definition:"Es una consecuencia producida por el problema central. Se ubica en las ramas.",
+    examples:[
+      "Se pierde tiempo de clase al verificar manualmente quién llegó tarde.",
+      "La información disponible no permite identificar fácilmente a los estudiantes reincidentes."
+    ]
+  }
+];
+
+const LEVEL1=[
+  {text:"El registro de las llegadas tardías se realiza manualmente y puede contener errores.",answerId:"causa"},
+  {text:"El registro de llegadas tardías es lento, desorganizado y poco confiable.",answerId:"problema"},
+  {text:"Se pierde tiempo de clase mientras se verifica manualmente la asistencia.",answerId:"efecto"},
+  {text:"Los docentes registran la información de forma diferente.",answerId:"causa"},
+  {text:"Existe dificultad para controlar oportunamente las llegadas tardías.",answerId:"problema"},
+  {text:"No se identifican con facilidad los estudiantes que presentan reincidencia.",answerId:"efecto"}
+];
+
+const LEVEL2=[
+  {
+    text:"Un grupo escribió como problema central: “No existe una aplicación para registrar retardos”. ¿Qué error cometió?",
+    options:[
+      "Formuló una ausencia de solución en vez de describir la situación negativa real.",
+      "Escribió un efecto en lugar de una causa.",
+      "Ubicó una causa indirecta como efecto."
+    ],
+    correct:0,
+    explanation:"El problema central debe describir una situación negativa existente, no la ausencia de una solución específica."
+  },
+  {
+    text:"¿Cuál relación causa → problema → efecto está correctamente construida?",
+    options:[
+      "Registro manual con posibles errores → dificultad para controlar oportunamente las llegadas tardías → pérdida de tiempo e información.",
+      "Pérdida de tiempo → aplicación inexistente → registro manual.",
+      "Control tardío → estudiantes → falta de tecnología."
+    ],
+    correct:0,
+    explanation:"La secuencia correcta conecta una causa real con el problema central y luego con una consecuencia observable."
+  },
+  {
+    text:"Si una causa dice “los docentes registran de manera distinta”, ¿qué elemento debería aparecer después en el árbol?",
+    options:[
+      "El problema central al que esa causa contribuye.",
+      "Una solución tecnológica.",
+      "Una actividad futura del proyecto."
+    ],
+    correct:0,
+    explanation:"Las causas deben conducir lógicamente al problema central."
+  },
+  {
+    text:"¿Cuál de estas frases está mejor formulada como efecto?",
+    options:[
+      "Aumenta la dificultad para identificar reincidencias y tomar decisiones oportunas.",
+      "No hay una app.",
+      "Registrar tarde."
+    ],
+    correct:0,
+    explanation:"Un efecto expresa una consecuencia clara derivada del problema central."
+  },
+  {
+    text:"¿Qué debe evitarse al construir un árbol de problemas?",
+    options:[
+      "Mezclar causas, soluciones y efectos sin relación lógica.",
+      "Diferenciar causas de efectos.",
+      "Definir un único problema central."
+    ],
+    correct:0,
+    explanation:"El árbol debe mostrar relaciones causales coherentes; las soluciones pertenecen a una etapa posterior."
+  },
+  {
+    text:"¿Para qué sirve finalmente el árbol de problemas dentro del diagnóstico?",
+    options:[
+      "Para comprender qué origina el problema y qué consecuencias genera antes de proponer una solución.",
+      "Para diseñar directamente la interfaz de una aplicación.",
+      "Para seleccionar colores y botones del prototipo."
+    ],
+    correct:0,
+    explanation:"El árbol organiza causalmente el diagnóstico antes de plantear soluciones."
+  }
+];
+
+const MAX_POINTS=500;
+const TOTAL_QUESTIONS=LEVEL1.length+LEVEL2.length;
+const START_TIME=24;
+
+const state={
+  screen:"start",
+  player:"",
+  revealed:[],
+  rounds:[],
+  current:0,
+  scoreLevel:0,
+  totalCorrect:0,
+  totalPoints:0,
+  selected:null,
+  showFeedback:false,
+  lastGain:0,
+  timeLeft:START_TIME,
+  result1:null,
+  result2:null
+};
+
+let timer=null;
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function esc(t){
+  return String(t).replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function calcPoints(){
+  return Math.round((state.totalCorrect/TOTAL_QUESTIONS)*MAX_POINTS);
+}
+function header(){return `<div class="main-title">Árbol de Problemas</div>`}
+function footer(){return `<div class="footer">Aprendiendo con @LaProfeVivy</div>`}
+function stages(){
+  return `<div class="stage-row">
+    <div class="stage ${state.screen==="level0"?"active":""}">Nivel 0</div>
+    <div class="stage ${state.screen==="level1"?"active":""}">Nivel 1</div>
+    <div class="stage ${state.screen==="level2"?"active":""}">Nivel 2</div>
+  </div>`;
+}
+function tree(){
+return `
+<div class="tree-wrap">
+  <div class="tree">
+    <div class="crown"></div>
+    <div class="branch b1"></div>
+    <div class="branch b2"></div>
+    <div class="branch b3"></div>
+    <div class="branch b4"></div>
+    <div class="trunk"></div>
+    <div class="root r1"></div>
+    <div class="root r2"></div>
+    <div class="root r3"></div>
+    <div class="root r4"></div>
+
+    <div class="tree-label label-effects">EFECTOS</div>
+    <div class="tree-label label-problem">PROBLEMA CENTRAL</div>
+    <div class="tree-label label-causes">CAUSAS</div>
+
+    <div class="small-note ne1">Consecuencias</div>
+    <div class="small-note ne2">¿Qué genera?</div>
+    <div class="small-note nc1">Origen del problema</div>
+    <div class="small-note nc2">¿Por qué ocurre?</div>
+  </div>
+</div>`;
+}
+function saveName(){
+  const input=document.getElementById("playerName");
+  const e=document.getElementById("nameError");
+  const name=input.value.trim();
+  if(!name){e.textContent="Escribe tu nombre para comenzar.";input.focus();return}
+  state.player=name;
+  state.screen="level0";
+  render();
+}
+function reveal(id){
+  if(!state.revealed.includes(id)) state.revealed.push(id);
+  render();
+}
+function buildLevel1(){
+  return shuffle(LEVEL1.map((q,i)=>{
+    const p=PARTS.find(x=>x.id===q.answerId);
+    return {
+      id:"l1-"+i,
+      text:q.text,
+      answerName:p.name,
+      answerId:p.id,
+      explanation:p.definition,
+      options:shuffle(PARTS.map(x=>x.name))
+    }
+  }));
+}
+function buildLevel2(){
+  return shuffle(LEVEL2.map((q,i)=>({
+    id:"l2-"+i,
+    text:q.text,
+    options:q.options,
+    correctText:q.options[q.correct],
+    explanation:q.explanation
+  })));
+}
+function resetRoundState(rounds){
+  state.rounds=rounds;
+  state.current=0;
+  state.scoreLevel=0;
+  state.selected=null;
+  state.showFeedback=false;
+  state.lastGain=0;
+  state.timeLeft=START_TIME;
+}
+function startLevel1(){
+  resetRoundState(buildLevel1());
+  state.screen="level1";
+  render();
+}
+function startLevel2(){
+  resetRoundState(buildLevel2());
+  state.screen="level2";
+  render();
+}
+function choose(value){
+  if(state.selected||state.showFeedback)return;
+  const q=state.rounds[state.current];
+  const correct=state.screen==="level1"?q.answerName:q.correctText;
+  state.selected=value;
+  if(value===correct){
+    const old=state.totalPoints;
+    state.scoreLevel++;
+    state.totalCorrect++;
+    state.totalPoints=calcPoints();
+    state.lastGain=state.totalPoints-old;
+  }else{
+    state.lastGain=0;
+  }
+  state.showFeedback=true;
+  render();
+}
+function timeout(){
+  state.selected="__timeout__";
+  state.lastGain=0;
+  state.showFeedback=true;
+  render();
+}
+function next(){
+  if(state.current+1<state.rounds.length){
+    state.current++;
+    state.selected=null;
+    state.showFeedback=false;
+    state.lastGain=0;
+    state.timeLeft=START_TIME;
+    render();
+    return;
+  }
+  if(state.screen==="level1"){
+    state.result1={score:state.scoreLevel,total:state.rounds.length};
+    startLevel2();
+  }else{
+    state.result2={score:state.scoreLevel,total:state.rounds.length};
+    state.screen="final";
+    render();
+  }
+}
+function resetAll(){
+  state.screen="start";
+  state.player="";
+  state.revealed=[];
+  state.rounds=[];
+  state.current=0;
+  state.scoreLevel=0;
+  state.totalCorrect=0;
+  state.totalPoints=0;
+  state.selected=null;
+  state.showFeedback=false;
+  state.lastGain=0;
+  state.timeLeft=START_TIME;
+  state.result1=null;
+  state.result2=null;
+  render();
+}
+function renderStart(){
+return `<div class="page">
+${header()}
+<div class="name-card">
+  <div class="big">Antes de comenzar</div>
+  <div class="subtitle">Escribe tu nombre para registrar tu resultado.</div>
+  <input id="playerName" class="name-input" maxlength="60" placeholder="Nombre del estudiante"
+    onkeydown="if(event.key==='Enter')saveName()">
+  <div id="nameError" class="error-text"></div>
+  <button class="start-btn" onclick="saveName()">Comenzar</button>
+</div>
+${footer()}
+</div>`;
+}
+function renderLevel0(){
+ const complete=state.revealed.length===PARTS.length;
+return `<div class="page">
+${header()}
+<div class="player-line">Estudiante: ${esc(state.player)}</div>
+<div class="topbar">
+  <div class="stage active">Nivel 0</div>
+  <div class="stage">Nivel 1</div>
+  <div class="stage">Nivel 2</div>
+  <div class="badge">Puntaje: ${state.totalPoints}/${MAX_POINTS}</div>
+</div>
+<div class="panel">
+  <div class="center">
+    <div class="big">Nivel 0 · Comprende la estructura</div>
+    <div class="subtitle">
+      En el árbol de problemas, las <strong>causas</strong> se ubican en las raíces,
+      el <strong>problema central</strong> en el tronco y los <strong>efectos</strong> en las ramas.
+    </div>
+  </div>
+  ${tree()}
+  <div class="cards-grid">
+    ${PARTS.map(p=>`
+      <div class="learn-card ${state.revealed.includes(p.id)?"revealed":""}" onclick="reveal('${p.id}')">
+        ${state.revealed.includes(p.id)
+          ? `<div class="learn-name" style="background:${p.color}">${p.name}</div>
+             <div class="learn-def">${p.definition}</div>`
+          : `<div class="cover">Toca para descubrir<br>${p.name}</div>`}
+      </div>`).join("")}
+  </div>
+  <div class="center">
+    <button class="start-btn" ${complete?"":"disabled"} onclick="startLevel1()">Ir al nivel 1</button>
+  </div>
+</div>
+${footer()}
+</div>`;
+}
+function optClass(value,correct){
+  if(!state.selected)return"";
+  if(value===correct)return"correct";
+  if(value===state.selected)return"wrong";
+  return"";
+}
+function renderQuiz(){
+ const q=state.rounds[state.current];
+ const correct=state.screen==="level1"?q.answerName:q.correctText;
+ const options=state.screen==="level1"?q.options:q.options;
+ return `<div class="page">
+${header()}
+<div class="player-line">Estudiante: ${esc(state.player)}</div>
+
+<div class="topbar" style="justify-content:space-between">
+  <div class="badge">Aciertos: ${state.scoreLevel}/${state.rounds.length}</div>
+  <div class="badge">Puntaje: ${state.totalPoints}/${MAX_POINTS}</div>
+  <div class="badge" id="timerBadge">00:${String(state.timeLeft).padStart(2,"0")}</div>
+</div>
+
+${stages()}
+
+<div class="status-row">
+  <div>${state.current+1} de ${state.rounds.length}</div>
+  <div>${state.screen==="level1"?"Clasifica el elemento":"Analiza la relación causal"}</div>
+</div>
+
+<div class="quiz-grid">
+  <div class="question-box">
+    <div class="q-label">
+      ${state.screen==="level1"
+        ?"¿Es causa, problema central o efecto?"
+        :"Selecciona la respuesta correcta"}
+    </div>
+
+    <div class="q-text">${q.text}</div>
+
+    <svg class="mini-tree" viewBox="0 0 420 250">
+      <ellipse cx="210" cy="65" rx="120" ry="55" fill="#DFF3D9" stroke="#66BB6A" stroke-width="4"/>
+      <rect x="170" y="95" width="80" height="80" rx="14" fill="#9C6B3D" stroke="#6D4C41" stroke-width="4"/>
+      <line x1="210" y1="170" x2="105" y2="230" stroke="#8D6E63" stroke-width="10" stroke-linecap="round"/>
+      <line x1="210" y1="170" x2="315" y2="230" stroke="#8D6E63" stroke-width="10" stroke-linecap="round"/>
+      <text x="210" y="62" text-anchor="middle" font-size="18" font-weight="700" fill="#388E3C">EFECTOS</text>
+      <text x="210" y="140" text-anchor="middle" font-size="16" font-weight="700" fill="white">PROBLEMA</text>
+      <text x="210" y="238" text-anchor="middle" font-size="18" font-weight="700" fill="#6D4C41">CAUSAS</text>
+    </svg>
+  </div>
+
+  <div class="answer-box">
+    ${options.map((o,i)=>{
+      let color="#64748b";
+      if(state.screen==="level1"){
+        const p=PARTS.find(x=>x.name===o);
+        if(p) color=p.color;
+      }else{
+        color=["#42A5F5","#AB47BC","#FFA726"][i%3];
+      }
+      return `<button class="option ${optClass(o,correct)}"
+        style="background:${color}"
+        onclick="choose('${o.replaceAll("'","\\'")}')"
+        ${state.selected?"disabled":""}>${o}</button>`;
+    }).join("")}
+
+    <div class="feedback">
+      ${!state.showFeedback
+        ? `<div class="feedback-title">Selecciona una respuesta</div>
+           <div>${state.screen==="level1"
+             ?"Piensa en la posición que tendría dentro del árbol."
+             :"Revisa la relación entre causas, problema y efectos."}</div>`
+        : `<div class="${state.lastGain>0?"points-up":"points-zero"}">
+             ${state.lastGain>0?"+"+state.lastGain+" puntos":"0 puntos"}
+           </div>
+           <div class="feedback-title">
+             ${state.selected===correct?"¡Correcto!":"Respuesta correcta"}
+           </div>
+           <div><strong>${correct}</strong></div>
+           <div style="margin-top:6px">${q.explanation}</div>
+           <button class="next-btn" onclick="next()">
+             ${state.current+1>=state.rounds.length
+               ?(state.screen==="level1"?"Ir al nivel 2":"Ver resultado")
+               :"Siguiente"}
+           </button>`}
+    </div>
+  </div>
+</div>
+
+${footer()}
+</div>`;
+}
+function renderFinal(){
+return `<div class="page">
+${header()}
+<div class="panel">
+  <div class="center">
+    <div class="big">¡Terminaste, ${esc(state.player)}!</div>
+    <div class="subtitle">Resultado de tu evaluación sobre el Árbol de Problemas.</div>
+  </div>
+
+  <div class="results-grid">
+    <div class="result-card">
+      <div class="result-title">Nivel 1</div>
+      <div class="result-value">${state.result1?.score||0}/${state.result1?.total||0}</div>
+    </div>
+    <div class="result-card">
+      <div class="result-title">Nivel 2</div>
+      <div class="result-value">${state.result2?.score||0}/${state.result2?.total||0}</div>
+    </div>
+    <div class="result-card">
+      <div class="result-title">Puntaje final</div>
+      <div class="result-value">${state.totalPoints}/${MAX_POINTS}</div>
+    </div>
+  </div>
+
+  ${tree()}
+
+  <div class="center">
+    <div class="subtitle" style="margin-top:15px">
+      Recuerda: <strong>raíces = causas</strong>, <strong>tronco = problema central</strong> y
+      <strong>ramas = efectos</strong>. Las soluciones se plantean después del diagnóstico.
+    </div>
+    <button class="start-btn" onclick="resetAll()">Nuevo jugador</button>
+  </div>
+</div>
+${footer()}
+</div>`;
+}
+function startTimer(){
+ clearInterval(timer);
+ if(state.screen!=="level1"&&state.screen!=="level2")return;
+ if(state.showFeedback)return;
+ timer=setInterval(()=>{
+   if(state.showFeedback){clearInterval(timer);return}
+   state.timeLeft--;
+   const b=document.getElementById("timerBadge");
+   if(b)b.textContent="00:"+String(state.timeLeft).padStart(2,"0");
+   if(state.timeLeft<=0){
+     state.timeLeft=0;
+     clearInterval(timer);
+     timeout();
+   }
+ },1000);
+}
+function render(){
+ clearInterval(timer);
+ const app=document.getElementById("app");
+ if(state.screen==="start")app.innerHTML=renderStart();
+ else if(state.screen==="level0")app.innerHTML=renderLevel0();
+ else if(state.screen==="final")app.innerHTML=renderFinal();
+ else app.innerHTML=renderQuiz();
+ startTimer();
+}
+
+window.saveName=saveName;
+window.reveal=reveal;
+window.startLevel1=startLevel1;
+window.startLevel2=startLevel2;
+window.choose=choose;
+window.next=next;
+window.resetAll=resetAll;
+
+render();
+</script>
+</body>
+</html>
 
