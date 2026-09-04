@@ -1,1 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego Diagrama de Ishikawa | LaProfeVivy</title>
 
+<style>
+*{box-sizing:border-box}
+:root{
+  --slate:#475569;
+  --slate2:#64748b;
+  --line:#cbd5e1;
+  --bg:#eef1f4;
+  --white:#fff;
+  --personas:#42A5F5;
+  --metodo:#66BB6A;
+  --datos:#AB47BC;
+  --herramientas:#FFA726;
+  --entorno:#EC407A;
+  --control:#26A69A;
+  --ok:#43A047;
+  --bad:#D32F2F;
+}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--slate);
+}
+button,input{font:inherit}
+.page{
+  width:min(1120px,calc(100% - 20px));
+  margin:auto;
+  padding:12px 0 28px;
+}
+.main-title{
+  text-align:center;
+  font-size:34px;
+  font-weight:700;
+  margin:10px 0 14px;
+}
+.topbar{
+  background:#4c5b68;
+  color:#fff;
+  padding:12px;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  border-radius:12px;
+  margin-bottom:14px;
+}
+.badge,.stage{
+  background:#fff;
+  color:var(--slate);
+  border:2px solid var(--line);
+  border-radius:999px;
+  padding:9px 15px;
+  font-weight:700;
+  font-size:18px;
+}
+.stage.active{
+  background:#fff7cc;
+  border-color:var(--slate);
+}
+.stage-row{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.panel{
+  border:2px solid var(--line);
+  background:#f8f8f8;
+  border-radius:24px;
+  padding:18px;
+}
+.center{text-align:center}
+.big{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:7px;
+}
+.subtitle{
+  font-size:19px;
+  color:#6b7280;
+  line-height:1.45;
+}
+.player-line{
+  text-align:center;
+  font-size:20px;
+  font-weight:700;
+  color:var(--slate2);
+  margin:2px 0 12px;
+}
+.footer{
+  text-align:center;
+  font-size:20px;
+  color:#6b7280;
+  margin:18px 0 0;
+}
+
+/* ingreso */
+.name-card{
+  max-width:620px;
+  margin:40px auto 0;
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:24px;
+  padding:28px;
+  text-align:center;
+}
+.name-input{
+  width:100%;
+  max-width:460px;
+  margin-top:18px;
+  padding:14px 16px;
+  border:2px solid var(--line);
+  border-radius:14px;
+  font-size:22px;
+  color:var(--slate);
+  outline:none;
+}
+.name-input:focus{border-color:var(--personas)}
+.error-text{
+  min-height:24px;
+  color:#C62828;
+  margin-top:10px;
+  font-size:18px;
+}
+.start-btn,.next-btn{
+  margin-top:14px;
+  color:#fff;
+  border:2px solid #94a3b8;
+  border-radius:18px;
+  padding:14px 26px;
+  font-size:24px;
+  font-weight:700;
+  cursor:pointer;
+}
+.start-btn{background:var(--personas)}
+.next-btn{background:#66BB6A}
+.start-btn:disabled{
+  background:#cbd5e1;
+  border-color:#cbd5e1;
+  cursor:default;
+}
+
+/* Ishikawa */
+.fish-wrap{
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:22px;
+  padding:18px 12px;
+  margin-top:18px;
+  overflow-x:auto;
+}
+.fish{
+  position:relative;
+  width:920px;
+  height:340px;
+  margin:auto;
+}
+.spine{
+  position:absolute;
+  left:115px;
+  top:168px;
+  width:650px;
+  height:5px;
+  background:#475569;
+}
+.tail{
+  position:absolute;
+  left:70px;
+  top:132px;
+  width:0;height:0;
+  border-top:38px solid transparent;
+  border-bottom:38px solid transparent;
+  border-right:70px solid #94a3b8;
+}
+.head{
+  position:absolute;
+  left:758px;
+  top:119px;
+  width:150px;
+  height:100px;
+  border-radius:55% 45% 45% 55%;
+  background:#fff4c7;
+  border:4px solid #475569;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:8px;
+  font-weight:700;
+  font-size:20px;
+}
+.bone{
+  position:absolute;
+  width:170px;
+  height:4px;
+  transform-origin:left center;
+  background:#64748b;
+}
+.bone.top{transform:rotate(-42deg)}
+.bone.bottom{transform:rotate(42deg)}
+.b1{left:205px;top:170px}
+.b2{left:415px;top:170px}
+.b3{left:620px;top:170px}
+.b4{left:205px;top:169px}
+.b5{left:415px;top:169px}
+.b6{left:620px;top:169px}
+.cat-label{
+  position:absolute;
+  min-width:145px;
+  padding:10px 12px;
+  border-radius:16px;
+  color:#fff;
+  font-weight:700;
+  text-align:center;
+  box-shadow:0 4px 10px rgba(0,0,0,.12);
+}
+.lp{left:104px;top:25px;background:var(--personas)}
+.lm{left:325px;top:25px;background:var(--metodo)}
+.ld{left:545px;top:25px;background:var(--datos)}
+.lh{left:104px;top:274px;background:var(--herramientas)}
+.le{left:325px;top:274px;background:var(--entorno)}
+.lc{left:545px;top:274px;background:var(--control)}
+
+/* tarjetas nivel 0 */
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-top:18px;
+}
+.learn-card{
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  min-height:175px;
+  cursor:pointer;
+  transition:.15s;
+}
+.learn-card:hover{transform:translateY(-2px)}
+.learn-card.revealed{border-width:3px}
+.learn-name{
+  color:#fff;
+  border-radius:14px;
+  padding:9px 10px;
+  text-align:center;
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+.learn-def{
+  text-align:center;
+  font-size:19px;
+  line-height:1.4;
+}
+.cover{
+  display:flex;
+  height:125px;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:24px;
+  font-weight:700;
+  color:var(--slate2);
+}
+
+/* preguntas */
+.status-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 8px;
+  margin-bottom:12px;
+  font-size:28px;
+  font-weight:700;
+}
+.quiz-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.question-box,.answer-box{
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:24px;
+  padding:20px;
+}
+.question-box{
+  min-height:370px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.q-label{
+  font-size:18px;
+  color:#6b7280;
+  font-weight:700;
+  margin-bottom:12px;
+}
+.q-text{
+  font-size:30px;
+  line-height:1.35;
+  font-weight:700;
+}
+.mini-fish{
+  width:100%;
+  max-width:410px;
+  margin:18px auto 0;
+}
+.answer-box{
+  display:flex;
+  flex-direction:column;
+  gap:11px;
+}
+.option{
+  border:2px solid #94a3b8;
+  border-radius:16px;
+  min-height:62px;
+  color:#fff;
+  font-size:21px;
+  font-weight:700;
+  cursor:pointer;
+}
+.option:disabled{opacity:1;cursor:default}
+.option.correct{outline:4px solid #2e7d32}
+.option.wrong{outline:4px solid #c62828}
+.feedback{
+  margin-top:4px;
+  padding:14px;
+  border:2px solid var(--line);
+  border-radius:16px;
+  background:#f8fafc;
+  text-align:center;
+  line-height:1.4;
+  min-height:100px;
+}
+.feedback-title{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.points-up{
+  color:#2E7D32;
+  font-size:27px;
+  font-weight:700;
+}
+.points-zero{
+  color:#C62828;
+  font-size:27px;
+  font-weight:700;
+}
+
+/* resultado */
+.results-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin:18px 0;
+}
+.result-card{
+  background:#fff;
+  border:2px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  text-align:center;
+}
+.result-title{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.result-value{
+  font-size:40px;
+  font-weight:700;
+  color:var(--slate2);
+}
+
+@media(max-width:850px){
+  .cards-grid,.results-grid,.quiz-grid{grid-template-columns:1fr}
+  .main-title{font-size:28px}
+  .q-text{font-size:25px}
+  .status-row{font-size:23px}
+}
+</style>
+</head>
+
+<body>
+<div id="app"></div>
+
+<script>
+const CATEGORIES=[
+  {
+    id:"personas",
+    name:"Personas",
+    color:"#42A5F5",
+    definition:"Causas relacionadas con conocimientos, habilidades, comunicación, compromiso o actuación de quienes participan.",
+    level1:"El personal no conoce correctamente el procedimiento que debe seguir."
+  },
+  {
+    id:"metodo",
+    name:"Método",
+    color:"#66BB6A",
+    definition:"Causas relacionadas con la forma de realizar el proceso, sus pasos, reglas o procedimientos.",
+    level1:"No existe un procedimiento claro y cada persona realiza el proceso de manera diferente."
+  },
+  {
+    id:"datos",
+    name:"Datos",
+    color:"#AB47BC",
+    definition:"Causas relacionadas con información incompleta, incorrecta, desactualizada o difícil de consultar.",
+    level1:"Los registros contienen información incompleta y algunos datos no están actualizados."
+  },
+  {
+    id:"herramientas",
+    name:"Herramientas",
+    color:"#FFA726",
+    definition:"Causas relacionadas con equipos, sistemas, aplicaciones, materiales o recursos utilizados.",
+    level1:"El equipo utilizado falla con frecuencia y retrasa la actividad."
+  },
+  {
+    id:"entorno",
+    name:"Entorno",
+    color:"#EC407A",
+    definition:"Causas asociadas con condiciones físicas, ambientales u organizacionales que afectan el proceso.",
+    level1:"El espacio de trabajo presenta ruido constante y dificulta realizar la actividad."
+  },
+  {
+    id:"control",
+    name:"Control",
+    color:"#26A69A",
+    definition:"Causas relacionadas con seguimiento, verificación, indicadores, revisión o supervisión del proceso.",
+    level1:"No se revisan los resultados ni se verifica si el procedimiento se está cumpliendo."
+  }
+];
+
+const LEVEL2=[
+  {text:"Un estudiante registra información, pero nadie verifica si los datos quedaron completos.",answerId:"control"},
+  {text:"Dos responsables ejecutan la misma tarea siguiendo pasos distintos porque no existe una secuencia definida.",answerId:"metodo"},
+  {text:"La aplicación se bloquea varias veces durante el registro y obliga a repetir la actividad.",answerId:"herramientas"},
+  {text:"La persona encargada desconoce cómo clasificar correctamente los casos que recibe.",answerId:"personas"},
+  {text:"La base de datos tiene campos vacíos y registros duplicados que dificultan el análisis.",answerId:"datos"},
+  {text:"El proceso se realiza en un lugar con interrupciones constantes que retrasan la actividad.",answerId:"entorno"}
+];
+
+const MAX_POINTS=500;
+const TOTAL_QUESTIONS=CATEGORIES.length+LEVEL2.length;
+const START_TIME=22;
+
+const state={
+  screen:"start",
+  player:"",
+  revealed:[],
+  rounds:[],
+  current:0,
+  scoreLevel:0,
+  totalCorrect:0,
+  totalPoints:0,
+  selected:null,
+  showFeedback:false,
+  lastGain:0,
+  timeLeft:START_TIME,
+  result1:null,
+  result2:null
+};
+
+let timer=null;
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function esc(t){
+  return String(t).replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function calcPoints(){
+  return Math.round((state.totalCorrect/TOTAL_QUESTIONS)*MAX_POINTS);
+}
+function header(){return `<div class="main-title">Diagrama de Ishikawa</div>`}
+function footer(){return `<div class="footer">Aprendiendo con @LaProfeVivy</div>`}
+function stages(){
+  return `<div class="stage-row">
+    <div class="stage ${state.screen==="level0"?"active":""}">Nivel 0</div>
+    <div class="stage ${state.screen==="level1"?"active":""}">Nivel 1</div>
+    <div class="stage ${state.screen==="level2"?"active":""}">Nivel 2</div>
+  </div>`;
+}
+function fish(){
+return `
+<div class="fish-wrap">
+  <div class="fish">
+    <div class="tail"></div>
+    <div class="spine"></div>
+    <div class="bone top b1"></div>
+    <div class="bone top b2"></div>
+    <div class="bone top b3"></div>
+    <div class="bone bottom b4"></div>
+    <div class="bone bottom b5"></div>
+    <div class="bone bottom b6"></div>
+    <div class="cat-label lp">Personas</div>
+    <div class="cat-label lm">Método</div>
+    <div class="cat-label ld">Datos</div>
+    <div class="cat-label lh">Herramientas</div>
+    <div class="cat-label le">Entorno</div>
+    <div class="cat-label lc">Control</div>
+    <div class="head">Problema<br>analizado</div>
+  </div>
+</div>`;
+}
+function saveName(){
+  const input=document.getElementById("playerName");
+  const e=document.getElementById("nameError");
+  const name=input.value.trim();
+  if(!name){e.textContent="Escribe tu nombre para comenzar.";input.focus();return}
+  state.player=name;
+  state.screen="level0";
+  render();
+}
+function reveal(id){
+  if(!state.revealed.includes(id)) state.revealed.push(id);
+  render();
+}
+function buildLevel1(){
+  return shuffle(CATEGORIES.map((c,i)=>({
+    id:"l1-"+i,
+    text:c.level1,
+    answerId:c.id,
+    answerName:c.name,
+    definition:c.definition
+  })));
+}
+function buildLevel2(){
+  return shuffle(LEVEL2.map((q,i)=>{
+    const c=CATEGORIES.find(x=>x.id===q.answerId);
+    return {
+      id:"l2-"+i,
+      text:q.text,
+      answerId:q.answerId,
+      answerName:c.name,
+      definition:c.definition
+    }
+  }));
+}
+function resetRoundState(rounds){
+  state.rounds=rounds;
+  state.current=0;
+  state.scoreLevel=0;
+  state.selected=null;
+  state.showFeedback=false;
+  state.lastGain=0;
+  state.timeLeft=START_TIME;
+}
+function startLevel1(){
+  resetRoundState(buildLevel1());
+  state.screen="level1";
+  render();
+}
+function startLevel2(){
+  resetRoundState(buildLevel2());
+  state.screen="level2";
+  render();
+}
+function choose(name){
+  if(state.selected||state.showFeedback)return;
+  const q=state.rounds[state.current];
+  state.selected=name;
+  if(name===q.answerName){
+    const old=state.totalPoints;
+    state.scoreLevel++;
+    state.totalCorrect++;
+    state.totalPoints=calcPoints();
+    state.lastGain=state.totalPoints-old;
+  }else{
+    state.lastGain=0;
+  }
+  state.showFeedback=true;
+  render();
+}
+function timeout(){
+  state.selected="__timeout__";
+  state.lastGain=0;
+  state.showFeedback=true;
+  render();
+}
+function next(){
+  if(state.current+1<state.rounds.length){
+    state.current++;
+    state.selected=null;
+    state.showFeedback=false;
+    state.lastGain=0;
+    state.timeLeft=START_TIME;
+    render();
+    return;
+  }
+  if(state.screen==="level1"){
+    state.result1={score:state.scoreLevel,total:state.rounds.length};
+    startLevel2();
+  }else{
+    state.result2={score:state.scoreLevel,total:state.rounds.length};
+    state.screen="final";
+    render();
+  }
+}
+function resetAll(){
+  state.screen="start";
+  state.player="";
+  state.revealed=[];
+  state.rounds=[];
+  state.current=0;
+  state.scoreLevel=0;
+  state.totalCorrect=0;
+  state.totalPoints=0;
+  state.selected=null;
+  state.showFeedback=false;
+  state.lastGain=0;
+  state.timeLeft=START_TIME;
+  state.result1=null;
+  state.result2=null;
+  render();
+}
+function renderStart(){
+return `<div class="page">
+${header()}
+<div class="name-card">
+  <div class="big">Antes de comenzar</div>
+  <div class="subtitle">Escribe tu nombre para registrar tu resultado.</div>
+  <input id="playerName" class="name-input" maxlength="60" placeholder="Nombre del estudiante"
+    onkeydown="if(event.key==='Enter')saveName()">
+  <div id="nameError" class="error-text"></div>
+  <button class="start-btn" onclick="saveName()">Comenzar</button>
+</div>
+${footer()}
+</div>`;
+}
+function renderLevel0(){
+ const complete=state.revealed.length===CATEGORIES.length;
+return `<div class="page">
+${header()}
+<div class="player-line">Estudiante: ${esc(state.player)}</div>
+<div class="topbar">
+  <div class="stage active">Nivel 0</div>
+  <div class="stage">Nivel 1</div>
+  <div class="stage">Nivel 2</div>
+  <div class="badge">Puntaje: ${state.totalPoints}/${MAX_POINTS}</div>
+</div>
+<div class="panel">
+  <div class="center">
+    <div class="big">Nivel 0 · Explora el Ishikawa</div>
+    <div class="subtitle">La pregunta central es: <strong>¿por qué ocurre el problema?</strong><br>
+    Toca las seis categorías para reconocer qué tipo de causas se ubican en cada una.</div>
+  </div>
+  ${fish()}
+  <div class="cards-grid">
+    ${CATEGORIES.map(c=>`
+      <div class="learn-card ${state.revealed.includes(c.id)?"revealed":""}" onclick="reveal('${c.id}')">
+        ${state.revealed.includes(c.id)
+          ? `<div class="learn-name" style="background:${c.color}">${c.name}</div>
+             <div class="learn-def">${c.definition}</div>`
+          : `<div class="cover">Toca para descubrir<br>${c.name}</div>`}
+      </div>`).join("")}
+  </div>
+  <div class="center">
+    <button class="start-btn" ${complete?"":"disabled"} onclick="startLevel1()">Ir al nivel 1</button>
+  </div>
+</div>
+${footer()}
+</div>`;
+}
+function optionClass(name,q){
+  if(!state.selected)return"";
+  if(name===q.answerName)return"correct";
+  if(name===state.selected)return"wrong";
+  return"";
+}
+function renderQuiz(){
+ const q=state.rounds[state.current];
+ const options=shuffle(CATEGORIES);
+return `<div class="page">
+${header()}
+<div class="player-line">Estudiante: ${esc(state.player)}</div>
+<div class="topbar" style="justify-content:space-between">
+  <div class="badge">Aciertos: ${state.scoreLevel}/${state.rounds.length}</div>
+  <div class="badge">Puntaje: ${state.totalPoints}/${MAX_POINTS}</div>
+  <div class="badge">00:${String(state.timeLeft).padStart(2,"0")}</div>
+</div>
+${stages()}
+<div class="status-row">
+  <div>${state.current+1} de ${state.rounds.length}</div>
+  <div>${state.screen==="level1"?"Identifica la categoría":"Clasifica la causa"}</div>
+</div>
+<div class="quiz-grid">
+  <div class="question-box">
+    <div class="q-label">${state.screen==="level1"?"¿A qué categoría pertenece esta causa?":"¿Dónde ubicarías esta causa en el Ishikawa?"}</div>
+    <div class="q-text">${q.text}</div>
+    <svg class="mini-fish" viewBox="0 0 520 170">
+      <line x1="80" y1="85" x2="410" y2="85" stroke="#64748b" stroke-width="5"/>
+      <line x1="150" y1="85" x2="105" y2="28" stroke="#64748b" stroke-width="4"/>
+      <line x1="260" y1="85" x2="215" y2="28" stroke="#64748b" stroke-width="4"/>
+      <line x1="365" y1="85" x2="320" y2="28" stroke="#64748b" stroke-width="4"/>
+      <line x1="150" y1="85" x2="105" y2="142" stroke="#64748b" stroke-width="4"/>
+      <line x1="260" y1="85" x2="215" y2="142" stroke="#64748b" stroke-width="4"/>
+      <line x1="365" y1="85" x2="320" y2="142" stroke="#64748b" stroke-width="4"/>
+      <ellipse cx="450" cy="85" rx="55" ry="40" fill="#fff4c7" stroke="#475569" stroke-width="4"/>
+      <text x="450" y="80" text-anchor="middle" font-size="15" font-weight="700" fill="#475569">Problema</text>
+      <text x="450" y="100" text-anchor="middle" font-size="15" font-weight="700" fill="#475569">analizado</text>
+    </svg>
+  </div>
+  <div class="answer-box">
+    ${options.map(c=>`
+      <button class="option ${optionClass(c.name,q)}"
+        style="background:${c.color}"
+        onclick="choose('${c.name.replaceAll("'","\\'")}')"
+        ${state.selected?"disabled":""}>${c.name}</button>`).join("")}
+    <div class="feedback">
+      ${!state.showFeedback
+        ? `<div class="feedback-title">Selecciona una categoría</div>
+           <div>Piensa qué origina realmente la situación descrita.</div>`
+        : `<div class="${state.lastGain>0?"points-up":"points-zero"}">
+             ${state.lastGain>0?"+"+state.lastGain+" puntos":"0 puntos"}
+           </div>
+           <div class="feedback-title">${state.selected===q.answerName?"¡Correcto!":"Respuesta correcta: "+q.answerName}</div>
+           <div>${q.definition}</div>
+           <button class="next-btn" onclick="next()">
+             ${state.current+1>=state.rounds.length
+               ?(state.screen==="level1"?"Ir al nivel 2":"Ver resultado")
+               :"Siguiente"}
+           </button>`}
+    </div>
+  </div>
+</div>
+${footer()}
+</div>`;
+}
+function renderFinal(){
+return `<div class="page">
+${header()}
+<div class="panel">
+  <div class="center">
+    <div class="big">¡Terminaste, ${esc(state.player)}!</div>
+    <div class="subtitle">Resultado de tu evaluación sobre el Diagrama de Ishikawa.</div>
+  </div>
+  <div class="results-grid">
+    <div class="result-card">
+      <div class="result-title">Nivel 1</div>
+      <div class="result-value">${state.result1?.score||0}/${state.result1?.total||0}</div>
+    </div>
+    <div class="result-card">
+      <div class="result-title">Nivel 2</div>
+      <div class="result-value">${state.result2?.score||0}/${state.result2?.total||0}</div>
+    </div>
+    <div class="result-card">
+      <div class="result-title">Puntaje final</div>
+      <div class="result-value">${state.totalPoints}/${MAX_POINTS}</div>
+    </div>
+  </div>
+  ${fish()}
+  <div class="center">
+    <div class="subtitle" style="margin-top:15px">
+      Ishikawa organiza las posibles causas del problema para evitar explicaciones generales o basadas únicamente en suposiciones.
+    </div>
+    <button class="start-btn" onclick="resetAll()">Nuevo jugador</button>
+  </div>
+</div>
+${footer()}
+</div>`;
+}
+function startTimer(){
+ clearInterval(timer);
+ if(state.screen!=="level1"&&state.screen!=="level2")return;
+ if(state.showFeedback)return;
+ timer=setInterval(()=>{
+   if(state.showFeedback){clearInterval(timer);return}
+   state.timeLeft--;
+   if(state.timeLeft<=0){
+     state.timeLeft=0;
+     clearInterval(timer);
+     timeout();
+   }else{
+     const badges=document.querySelectorAll(".badge");
+     if(badges.length>=3) badges[2].textContent="00:"+String(state.timeLeft).padStart(2,"0");
+   }
+ },1000);
+}
+function render(){
+ clearInterval(timer);
+ const app=document.getElementById("app");
+ if(state.screen==="start")app.innerHTML=renderStart();
+ else if(state.screen==="level0")app.innerHTML=renderLevel0();
+ else if(state.screen==="final")app.innerHTML=renderFinal();
+ else app.innerHTML=renderQuiz();
+ startTimer();
+}
+window.saveName=saveName;
+window.reveal=reveal;
+window.startLevel1=startLevel1;
+window.startLevel2=startLevel2;
+window.choose=choose;
+window.next=next;
+window.resetAll=resetAll;
+render();
+</script>
+</body>
+</html>
