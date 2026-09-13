@@ -1,1 +1,353 @@
 
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Modelo SIGIIP - Proyecto de Investigación</title>
+<style>
+  :root{
+    --blue:#0b7fd3;
+    --blue2:#b9e2f7;
+    --line:#d9d9d9;
+    --bg:#f7f7f7;
+    --text:#222;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#fff;color:var(--text)}
+  .wrap{max-width:1120px;margin:0 auto;padding:18px}
+  h1{font-size:22px;font-weight:500;margin:0 0 18px}
+  .card{border:1px solid var(--line);border-radius:4px;margin-bottom:10px;overflow:hidden}
+  .section-title{
+    padding:14px 16px;background:#f3eeee;font-size:18px;cursor:pointer;
+    display:flex;align-items:center;justify-content:space-between
+  }
+  .section-title span{font-weight:500}
+  .section-body{display:none;padding:14px;background:#fff}
+  .card.open .section-body{display:block}
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{
+    border:none;border-radius:18px;background:var(--blue2);color:#0452c7;
+    padding:8px 18px;cursor:pointer;font-size:14px
+  }
+  .pill:hover{filter:brightness(.97)}
+  .subpanel{
+    display:none;border-top:1px dashed #ccc;margin-top:14px;padding-top:14px
+  }
+  .subpanel.active{display:block}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .full{grid-column:1/-1}
+  label{display:block;font-size:13px;font-weight:bold;margin-bottom:5px}
+  input,select,textarea{
+    width:100%;border:1px solid #bcc6cf;border-radius:3px;padding:9px 10px;
+    font-size:14px;background:#fff
+  }
+  textarea{min-height:110px;resize:vertical}
+  input[readonly]{background:#e8edf1}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+  button.action{
+    border:1px solid var(--blue);background:#fff;color:var(--blue);
+    border-radius:5px;padding:9px 14px;font-weight:bold;cursor:pointer
+  }
+  button.primary{background:var(--blue);color:#fff}
+  .hint{font-size:12px;color:#666;margin-top:6px}
+  .info-list{margin-top:2px}
+  .info-row{
+    display:grid;grid-template-columns:1fr auto;align-items:center;
+    gap:20px;padding:8px 0;
+  }
+  .info-row span{font-size:13px;font-weight:bold}
+  .show-info{
+    border:2px solid var(--blue);background:#fff;color:#0077c8;
+    border-radius:5px;padding:7px 10px;font-size:14px;font-weight:bold;cursor:pointer;
+  }
+  .info-box{display:none;padding:4px 0 12px}
+  .info-box.open{display:block}
+  .info-box textarea{min-height:120px}
+  .mini-title{font-size:16px;margin:0 0 10px}
+  .status{margin-left:auto;font-size:12px;color:#4a4a4a}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  @media print{
+    .no-print,.section-title::after{display:none!important}
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    .card{break-inside:avoid}
+    .section-body,.subpanel,.info-box{display:block!important}
+    .pill-row{display:none}
+    input,select,textarea{border:none;padding:2px 0}
+    .section-title{background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Editar proyecto</h1>
+
+  <div class="card open">
+    <div class="section-title" onclick="toggleCard(this)"><span>Datos principales del proyecto</span><span>⌄</span></div>
+    <div class="section-body">
+      <div class="grid">
+        <div>
+          <label>Código del proyecto</label>
+          <input id="codigo" value="Sin código" readonly>
+        </div>
+        <div>
+          <label>Código de planeación y/o Centro de costos</label>
+          <input id="centro_costos">
+        </div>
+
+        <div class="full">
+          <label>Título del proyecto *</label>
+          <textarea id="titulo">Conciencia algorítmica y bienestar digital frente a la manipulación algorítmica emocional en estudiantes de pregrado de instituciones de</textarea>
+        </div>
+
+        <div>
+          <label>Fecha inicio *</label>
+          <input id="fecha_inicio" type="date" value="2027-02-08">
+        </div>
+        <div>
+          <label>Fecha fin *</label>
+          <input id="fecha_fin" type="date" value="2027-10-31">
+        </div>
+
+        <div>
+          <label>Duración en meses *</label>
+          <input id="duracion" type="number" value="8">
+        </div>
+        <div>
+          <label>Tipo de proyecto *</label>
+          <select id="tipo_proyecto">
+            <option selected>Proyectos de Investigación científica aplicada</option>
+            <option>Proyecto de investigación</option>
+            <option>Proyecto de innovación</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Idioma en el que se formula el proyecto *</label>
+          <select id="idioma"><option selected>Español; castellano</option></select>
+        </div>
+        <div></div>
+
+        <div class="full info-list">
+          <div class="info-row">
+            <span>Resumen del proyecto</span>
+            <button type="button" class="show-info no-print" onclick="toggleInfo('resumen_box')">Mostrar información</button>
+          </div>
+          <div id="resumen_box" class="info-box"><textarea id="resumen" placeholder="Ingrese el resumen del proyecto..."></textarea></div>
+
+          <div class="info-row">
+            <span>Problema de investigación</span>
+            <button type="button" class="show-info no-print" onclick="toggleInfo('problema_box')">Mostrar información</button>
+          </div>
+          <div id="problema_box" class="info-box"><textarea id="problema" placeholder="Ingrese el problema de investigación..."></textarea></div>
+
+          <div class="info-row">
+            <span>Estado del arte / Antecedentes</span>
+            <button type="button" class="show-info no-print" onclick="toggleInfo('estado_arte_box')">Mostrar información</button>
+          </div>
+          <div id="estado_arte_box" class="info-box"><textarea id="estado_arte" placeholder="Ingrese el estado del arte / antecedentes..."></textarea></div>
+
+          <div class="info-row">
+            <span>Pregunta de investigación</span>
+            <button type="button" class="show-info no-print" onclick="toggleInfo('pregunta_box')">Mostrar información</button>
+          </div>
+          <div id="pregunta_box" class="info-box"><textarea id="pregunta" placeholder="Ingrese la pregunta de investigación..."></textarea></div>
+
+          <div class="info-row">
+            <span>Objetivo general</span>
+            <button type="button" class="show-info no-print" onclick="toggleInfo('objetivo_general_box')">Mostrar información</button>
+          </div>
+          <div id="objetivo_general_box" class="info-box"><textarea id="objetivo_general" placeholder="Ingrese el objetivo general..."></textarea></div>
+
+          <div class="info-row">
+            <span>Marco teórico</span>
+            <button type="button" class="show-info no-print" onclick="toggleInfo('marco_teorico_box')">Mostrar información</button>
+          </div>
+          <div id="marco_teorico_box" class="info-box"><textarea id="marco_teorico" placeholder="Ingrese el marco teórico..."></textarea></div>
+
+          <div class="info-row">
+            <span>Conocimiento que generará el proyecto</span>
+            <button type="button" class="show-info no-print" onclick="toggleInfo('conocimiento_box')">Mostrar información</button>
+          </div>
+          <div id="conocimiento_box" class="info-box"><textarea id="conocimiento" placeholder="Ingrese el conocimiento que generará el proyecto..."></textarea></div>
+
+          <div class="info-row">
+            <span>Justificación del proyecto</span>
+            <button type="button" class="show-info no-print" onclick="toggleInfo('justificacion_box')">Mostrar información</button>
+          </div>
+          <div id="justificacion_box" class="info-box"><textarea id="justificacion" placeholder="Ingrese la justificación del proyecto..."></textarea></div>
+
+          <div class="info-row">
+            <span>Describa las fases de desarrollo del proyecto y si éste podría tener fases adicionales</span>
+            <button type="button" class="show-info no-print" onclick="toggleInfo('fases_box')">Mostrar información</button>
+          </div>
+          <div id="fases_box" class="info-box"><textarea id="fases" placeholder="Describa las fases del proyecto..."></textarea></div>
+        </div>
+
+        <div class="full">
+          <label><input id="requiere_aval" type="checkbox" checked style="width:auto"> Requiere aval del comité *</label>
+        </div>
+        <div class="full"><label>Justificación comité *</label><textarea id="just_comite">El estudio requiere aval del Comité de Ética e Integridad Científica porque involucra la participación de estudiantes y el tratamiento de datos</textarea></div>
+
+        <div>
+          <label>Clasificación Internacional Normalizada de la Educación (CINE) *</label>
+          <select id="cine"><option selected>111 Ciencias de la educación</option></select>
+        </div>
+        <div>
+          <label>País *</label>
+          <select id="pais"><option selected>Colombia</option></select>
+        </div>
+        <div>
+          <label>Departamento *</label>
+          <select id="departamento"><option selected>Bogotá</option></select>
+        </div>
+        <div>
+          <label>Ciudad *</label>
+          <select id="ciudad"><option selected>Bogotá D.C.</option></select>
+        </div>
+        <div>
+          <label>Sede / Campus / Zona / Núcleo al que pertenece *</label>
+          <select id="sede"><option selected>Nacional</option></select>
+        </div>
+      </div>
+
+      <div class="btns no-print">
+        <button class="action" onclick="saveData()">Guardar borrador</button>
+        <button class="action" onclick="loadData()">Cargar borrador</button>
+        <button class="action" onclick="clearData()">Limpiar</button>
+        <button class="action primary" onclick="window.print()">Generar PDF / Imprimir</button>
+      </div>
+      <div class="hint no-print">El botón “Generar PDF / Imprimir” abre la impresión del navegador para guardar como PDF.</div>
+    </div>
+  </div>
+
+  <div id="sections"></div>
+</div>
+
+<script>
+const structure = [
+  ["Datos generales", [
+    "Áreas de conocimiento","Focos Temáticos de Misión de Sabios","Estados proyecto","Áreas de trabajo del proyecto",
+    "Grupos de interés","Enlaces soportes documentales","Lugares ejecución proyecto","Objetivos específicos",
+    "Palabras clave","Referencias bibliográficas","Registro de ODS","Riesgos del proyecto",
+    "Soluciones que aporta el proyecto","Soportes aportados"
+  ]],
+  ["Integrantes", [
+    "Colaboradores","Datos del responsable de la entidad ejecutora","Grupos","Grupos externos","Integrantes",
+    "Semilleros","Unidades académicas/administrativas","Centros/Institutos vinculados"
+  ]],
+  ["Líneas de investigación, focos y ejes", [
+    "Focos estratégicos","Líneas institucionales","Sublíneas de investigación","Ejes temáticos del proyecto",
+    "Pilares / ejes / líneas / rutas del PDI"
+  ]],
+  ["Metodología", ["Enfoque","Metodología","Poblaciones de estudio","Técnicas e instrumentos"]],
+  ["Consideraciones éticas, resultados de sometimientos a comités y otros", [
+    "Consideraciones éticas","Permisos, pólizas o licencias requeridas para el proyecto","Sometimientos a comité",
+    "Recomendar posibles pares evaluadores"
+  ]],
+  ["Cronograma del proyecto", ["Actividades del proyecto","Prórrogas del proyecto","Solicitudes de suspensión"]],
+  ["Convocatorias, Convenios, redes y alianzas", ["Convocatorias"]],
+  ["Presupuesto", [
+    "Paso 1 - Creación de Patrocinadores (Entidad aliada o cofinanciadora)","Paso 2 - Gestión de presupuesto del proyecto",
+    "Evaluación de presupuesto","Registro de activos fijos","Ordenadores del gasto vinculados al proyecto"
+  ]],
+  ["Productos resultados de investigación", ["Proyecciones productos","Productos desarrollados","Productos GrupLac"]],
+  ["Impacto, transferencia e innovación proyecto", [
+    "Tipo de acción de transferencia o articulación","Aportes sociales","Contextos de desarrollo","Impactos esperados",
+    "Pertinencias sociales","Planes de sostenibilidad del proyecto","Participación en eventos"
+  ]],
+  ["Compromisos, informes y seguimientos al desarrollo del proyecto", [
+    "Compromisos adicionales a productos","Conclusiones del proyecto","Informes del proyecto","Seguimientos realizados al proyecto"
+  ]],
+  ["Gestión conocimiento del proyecto", ["Registro de casos de éxito o aprendizaje","Lecciones aprendidas"]]
+];
+
+function slug(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_|_$/g,"").toLowerCase()}
+
+function makeSection(title, items){
+  const card=document.createElement("div");
+  card.className="card";
+  const head=document.createElement("div");
+  head.className="section-title";
+  head.innerHTML=`<span>${title}</span><span>⌄</span>`;
+  head.onclick=()=>card.classList.toggle("open");
+  const body=document.createElement("div");
+  body.className="section-body";
+  const pills=document.createElement("div");
+  pills.className="pill-row";
+  items.forEach(it=>{
+    const b=document.createElement("button");
+    b.className="pill";
+    b.textContent=it;
+    b.onclick=()=>showSubpanel(body,it);
+    pills.appendChild(b);
+  });
+  body.appendChild(pills);
+  const holder=document.createElement("div");
+  holder.className="subpanel-holder";
+  body.appendChild(holder);
+  card.append(head,body);
+  return card;
+}
+
+function showSubpanel(body,title){
+  let holder=body.querySelector(".subpanel-holder");
+  holder.innerHTML="";
+  const p=document.createElement("div");
+  p.className="subpanel active";
+  const id=slug(title);
+  p.innerHTML=`
+    <h3 class="mini-title">${title}</h3>
+    <div class="grid">
+      <div class="full">
+        <label>Información / registro</label>
+        <textarea id="${id}" data-dynamic="1" placeholder="Ingrese aquí la información de ${title}..."></textarea>
+      </div>
+    </div>`;
+  holder.appendChild(p);
+}
+
+const sec=document.getElementById("sections");
+structure.forEach(s=>sec.appendChild(makeSection(s[0],s[1])));
+
+function toggleInfo(id){
+  const box=document.getElementById(id);
+  if(!box) return;
+  box.classList.toggle("open");
+  const btn=box.previousElementSibling?.querySelector(".show-info");
+  if(btn) btn.textContent=box.classList.contains("open") ? "Ocultar información" : "Mostrar información";
+}
+
+function collectData(){
+  const data={};
+  document.querySelectorAll("input,select,textarea").forEach(el=>{
+    if(!el.id) return;
+    data[el.id]=el.type==="checkbox"?el.checked:el.value;
+  });
+  return data;
+}
+function saveData(){
+  localStorage.setItem("sigiip_modelo",JSON.stringify(collectData()));
+  alert("Borrador guardado en este navegador.");
+}
+function loadData(){
+  const raw=localStorage.getItem("sigiip_modelo");
+  if(!raw){alert("No hay borrador guardado.");return}
+  const data=JSON.parse(raw);
+  Object.entries(data).forEach(([id,val])=>{
+    const el=document.getElementById(id);
+    if(el) el.type==="checkbox" ? el.checked=!!val : el.value=val;
+  });
+  alert("Borrador cargado.");
+}
+function clearData(){
+  if(!confirm("¿Limpiar los campos editables?")) return;
+  document.querySelectorAll("input:not([readonly]),textarea").forEach(el=>{
+    if(el.type==="checkbox") el.checked=false; else el.value="";
+  });
+}
+</script>
+</body>
+</html>
