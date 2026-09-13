@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -67,20 +66,123 @@
   .info-box textarea{min-height:120px}
   .mini-title{font-size:16px;margin:0 0 10px}
   .status{margin-left:auto;font-size:12px;color:#4a4a4a}
+  .print-header{display:none}
+  .subpanel-holder .subpanel{display:none}
+  .subpanel-holder .subpanel.active{display:block}
   @media(max-width:760px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  @page{
+    size:A4;
+    margin:24mm 14mm 18mm 14mm;
+    @bottom-center{
+      content:"Página " counter(page) " de " counter(pages);
+      font-size:9pt;
+      color:#555;
+    }
+  }
+
   @media print{
-    .no-print,.section-title::after{display:none!important}
-    body{background:#fff}
-    .wrap{max-width:none;padding:0}
-    .card{break-inside:avoid}
-    .section-body,.subpanel,.info-box{display:block!important}
-    .pill-row{display:none}
-    input,select,textarea{border:none;padding:2px 0}
-    .section-title{background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    html,body{background:#fff!important}
+    body{font-size:10.5pt}
+    .no-print,.pill-row,.show-info{display:none!important}
+    .wrap{max-width:none!important;padding:0!important;margin:0!important}
+    h1{display:none!important}
+
+    .print-header{
+      display:block!important;
+      position:fixed;
+      top:-18mm;
+      left:0;
+      right:0;
+      height:15mm;
+      border-bottom:1px solid #aaa;
+      padding-bottom:3mm;
+      background:#fff;
+      z-index:9999;
+    }
+    .print-header-title{
+      font-size:9pt;
+      color:#555;
+      margin-bottom:1mm;
+    }
+    .print-project-title{
+      font-size:11pt;
+      font-weight:bold;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .card{
+      border:none!important;
+      border-radius:0!important;
+      margin:0!important;
+      overflow:visible!important;
+      break-before:page;
+      page-break-before:always;
+      break-inside:auto;
+      page-break-inside:auto;
+    }
+    .card:first-of-type{
+      break-before:auto;
+      page-break-before:auto;
+    }
+
+    .section-title{
+      background:#eee!important;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+      border:1px solid #bbb;
+      margin:0 0 8px 0;
+      padding:10px 12px;
+      font-size:14pt;
+    }
+    .section-title span:last-child{display:none!important}
+
+    .section-body,
+    .info-box,
+    .subpanel,
+    .subpanel-holder .subpanel{
+      display:block!important;
+    }
+
+    .info-row{
+      grid-template-columns:1fr!important;
+      padding:4px 0 2px!important;
+    }
+    .info-box{padding:0 0 8px!important}
+
+    input,select,textarea{
+      border:1px solid #bbb!important;
+      background:#fff!important;
+      padding:6px!important;
+      color:#000!important;
+      font-size:10pt!important;
+    }
+    textarea{
+      min-height:75px!important;
+      overflow:visible!important;
+      resize:none!important;
+    }
+
+    .subpanel{
+      border-top:1px solid #ddd!important;
+      margin-top:10px!important;
+      padding-top:10px!important;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+    .mini-title{
+      font-size:11pt!important;
+      margin-bottom:6px!important;
+    }
   }
 </style>
 </head>
 <body>
+<div id="printHeader" class="print-header">
+  <div class="print-header-title">Proyecto de investigación</div>
+  <div id="printProjectTitle" class="print-project-title"></div>
+</div>
 <div class="wrap">
   <h1>Editar proyecto</h1>
 
@@ -214,12 +316,15 @@
       </div>
 
       <div class="btns no-print">
-        <button class="action" onclick="saveData()">Guardar borrador</button>
-        <button class="action" onclick="loadData()">Cargar borrador</button>
+        <button class="action" onclick="downloadDraft()">Guardar borrador</button>
+        <button class="action" onclick="document.getElementById('draftFile').click()">Cargar borrador</button>
+        <input id="draftFile" type="file" accept=".json,application/json" hidden onchange="loadDraftFile(event)">
         <button class="action" onclick="clearData()">Limpiar</button>
-        <button class="action primary" onclick="window.print()">Generar PDF / Imprimir</button>
+        <button class="action primary" onclick="prepareAndPrint()">Generar PDF / Imprimir</button>
       </div>
-      <div class="hint no-print">El botón “Generar PDF / Imprimir” abre la impresión del navegador para guardar como PDF.</div>
+      <div class="hint no-print">
+        “Guardar borrador” descarga un archivo JSON. “Cargar borrador” permite volver a abrir ese JSON en cualquier equipo.
+      </div>
     </div>
   </div>
 
@@ -293,20 +398,28 @@ function makeSection(title, items){
 }
 
 function showSubpanel(body,title){
-  let holder=body.querySelector(".subpanel-holder");
-  holder.innerHTML="";
-  const p=document.createElement("div");
-  p.className="subpanel active";
+  const holder=body.querySelector(".subpanel-holder");
   const id=slug(title);
-  p.innerHTML=`
-    <h3 class="mini-title">${title}</h3>
-    <div class="grid">
-      <div class="full">
-        <label>Información / registro</label>
-        <textarea id="${id}" data-dynamic="1" placeholder="Ingrese aquí la información de ${title}..."></textarea>
-      </div>
-    </div>`;
-  holder.appendChild(p);
+  let panel=holder.querySelector(`[data-panel-id="${id}"]`);
+
+  holder.querySelectorAll(".subpanel").forEach(p=>p.classList.remove("active"));
+
+  if(!panel){
+    panel=document.createElement("div");
+    panel.className="subpanel";
+    panel.dataset.panelId=id;
+    panel.innerHTML=`
+      <h3 class="mini-title">${title}</h3>
+      <div class="grid">
+        <div class="full">
+          <label>Información / registro</label>
+          <textarea id="${id}" data-dynamic="1" data-subsection="${title}" placeholder="Ingrese aquí la información de ${title}..."></textarea>
+        </div>
+      </div>`;
+    holder.appendChild(panel);
+  }
+
+  panel.classList.add("active");
 }
 
 const sec=document.getElementById("sections");
@@ -320,32 +433,136 @@ function toggleInfo(id){
   if(btn) btn.textContent=box.classList.contains("open") ? "Ocultar información" : "Mostrar información";
 }
 
+function ensureDynamicField(fieldMeta){
+  if(!fieldMeta || !fieldMeta.subsection) return null;
+
+  const wantedId=fieldMeta.id;
+  let existing=document.getElementById(wantedId);
+  if(existing) return existing;
+
+  for(const card of document.querySelectorAll("#sections .card")){
+    const buttons=[...card.querySelectorAll(".pill")];
+    const btn=buttons.find(b=>slug(b.textContent)===wantedId || b.textContent===fieldMeta.subsection);
+    if(btn){
+      const body=card.querySelector(".section-body");
+      showSubpanel(body,btn.textContent);
+      return document.getElementById(wantedId);
+    }
+  }
+  return null;
+}
+
 function collectData(){
-  const data={};
+  const data={
+    version:"SIGIIP-modelo-1.0",
+    savedAt:new Date().toISOString(),
+    fields:{}
+  };
+
   document.querySelectorAll("input,select,textarea").forEach(el=>{
-    if(!el.id) return;
-    data[el.id]=el.type==="checkbox"?el.checked:el.value;
+    if(!el.id || el.id==="draftFile") return;
+
+    data.fields[el.id]={
+      value:el.type==="checkbox" ? el.checked : el.value,
+      type:el.type || el.tagName.toLowerCase(),
+      subsection:el.dataset.subsection || null
+    };
   });
+
   return data;
 }
-function saveData(){
-  localStorage.setItem("sigiip_modelo",JSON.stringify(collectData()));
-  alert("Borrador guardado en este navegador.");
+
+function downloadDraft(){
+  const data=collectData();
+
+  const projectTitle=(document.getElementById("titulo")?.value || "proyecto")
+    .trim()
+    .replace(/[\\/:*?"<>|]+/g,"_")
+    .replace(/\s+/g," ")
+    .slice(0,70) || "proyecto";
+
+  const blob=new Blob(
+    [JSON.stringify(data,null,2)],
+    {type:"application/json;charset=utf-8"}
+  );
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=`SIGIIP_${projectTitle}_borrador.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
-function loadData(){
-  const raw=localStorage.getItem("sigiip_modelo");
-  if(!raw){alert("No hay borrador guardado.");return}
-  const data=JSON.parse(raw);
-  Object.entries(data).forEach(([id,val])=>{
-    const el=document.getElementById(id);
-    if(el) el.type==="checkbox" ? el.checked=!!val : el.value=val;
-  });
-  alert("Borrador cargado.");
+
+function loadDraftFile(event){
+  const file=event.target.files?.[0];
+  if(!file) return;
+
+  const reader=new FileReader();
+
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      const fields=data.fields || data;
+
+      Object.entries(fields).forEach(([id,meta])=>{
+        const normalized=(meta && typeof meta==="object" && "value" in meta)
+          ? meta
+          : {value:meta,subsection:null};
+
+        let el=document.getElementById(id);
+
+        if(!el && normalized.subsection){
+          el=ensureDynamicField({
+            id:id,
+            subsection:normalized.subsection
+          });
+        }
+
+        if(!el) return;
+
+        if(el.type==="checkbox"){
+          el.checked=!!normalized.value;
+        }else{
+          el.value=normalized.value ?? "";
+        }
+      });
+
+      alert("Borrador cargado correctamente.");
+    }catch(err){
+      alert("No se pudo cargar el archivo. Verifique que sea un JSON generado por este modelo SIGIIP.");
+    }finally{
+      event.target.value="";
+    }
+  };
+
+  reader.readAsText(file,"UTF-8");
 }
+
+function prepareAndPrint(){
+  const title=(document.getElementById("titulo")?.value || "Proyecto de investigación").trim();
+  document.getElementById("printProjectTitle").textContent=title;
+  window.print();
+}
+
+window.addEventListener("beforeprint",()=>{
+  const title=(document.getElementById("titulo")?.value || "Proyecto de investigación").trim();
+  document.getElementById("printProjectTitle").textContent=title;
+});
+
 function clearData(){
   if(!confirm("¿Limpiar los campos editables?")) return;
+
   document.querySelectorAll("input:not([readonly]),textarea").forEach(el=>{
-    if(el.type==="checkbox") el.checked=false; else el.value="";
+    if(el.id==="draftFile") return;
+
+    if(el.type==="checkbox"){
+      el.checked=false;
+    }else{
+      el.value="";
+    }
   });
 }
 </script>
