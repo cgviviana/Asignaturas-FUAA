@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saber Conocer | Eje 4</title>
+<style>
+:root{
+  --verde:#86a91e;--verde-oscuro:#5f7d14;--verde-suave:#eef5dc;
+  --tinta:#26322b;--gris:#667168;--borde:#dce3d9;--fondo:#f6f8f5;
+  --amarillo:#d7a527;--amarillo-suave:#fff9e8;--azul:#446a73;--azul-suave:#eef5f6;
+  --morado:#67547c;--morado-suave:#f4f0f8;--rojo:#a75d57;--rojo-suave:#fdf5f4;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--fondo);color:var(--tinta)}
+.topbar{background:#29352d;color:#fff;padding:9px 7%;font-size:12px;letter-spacing:.7px}
+header{background:#fff;padding:16px 7%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--borde);gap:20px}
+.brand{display:flex;align-items:center;gap:14px}.brand img{width:116px;max-height:42px;object-fit:contain}
+.brand span{color:var(--gris);border-left:1px solid var(--borde);padding-left:14px;font-size:14px}
+.badge{background:var(--verde-suave);color:var(--verde-oscuro);border:1px solid #cbdca6;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:bold}
+.app{width:min(1180px,92%);min-height:700px;margin:30px auto;display:grid;grid-template-columns:305px 1fr;background:#fff;border:1px solid var(--borde);border-radius:16px;overflow:hidden;box-shadow:0 12px 35px rgba(37,55,39,.08)}
+.sidebar{padding:30px 20px;background:#fbfcfa;border-right:1px solid var(--borde)}
+.sidebar h1{margin:0 0 8px;color:var(--verde-oscuro);font-size:20px}.sidebar-intro{margin:0 0 24px;color:var(--gris);font-size:13px;line-height:1.5}
+.topic-button{width:100%;display:flex;gap:11px;align-items:flex-start;text-align:left;border:0;border-radius:11px;background:transparent;color:#465047;padding:15px 11px;margin:7px 0;cursor:pointer;font-size:14px;line-height:1.4}
+.topic-button:hover{background:#f0f5e5}.topic-button.active{background:var(--verde);color:#fff;font-weight:bold}
+.number{min-width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#e4ecd4;color:var(--verde-oscuro);font-size:12px;font-weight:bold}
+.topic-button.active .number{background:#fff;color:var(--verde-oscuro)}
+.topic-text strong{display:block;margin-bottom:3px;font-size:12px;text-transform:uppercase}
+.workspace{padding:42px 46px 48px}.eyebrow{margin:0 0 10px;color:var(--verde-oscuro);font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:bold}
+h2{margin:0;font-size:30px;line-height:1.18}.intro{max-width:800px;margin:14px 0 26px;color:var(--gris);font-size:15px;line-height:1.65}
+.bridge{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 24px}
+.bridge-card{padding:12px;border:1px solid var(--borde);border-radius:10px;background:#fafcf8;font-size:12px;line-height:1.45}
+.bridge-card strong{display:block;color:var(--verde-oscuro);margin-bottom:4px}.bridge-card.current{background:var(--verde-suave);border-color:#cbdca6}
+.accordion{margin-bottom:12px;overflow:hidden;border:1px solid var(--borde);border-radius:12px;background:#fff}
+.accordion-trigger{width:100%;padding:17px 19px;display:flex;align-items:center;justify-content:space-between;gap:15px;border:0;background:#fff;color:var(--tinta);text-align:left;font-size:15px;font-weight:bold;cursor:pointer}
+.accordion-trigger:hover{background:#fafcf7}.accordion.open>.accordion-trigger{background:var(--verde-suave);color:var(--verde-oscuro)}
+.accordion-icon,.sub-icon{width:27px;height:27px;display:grid;place-items:center;border-radius:50%;background:#e5edd5;color:var(--verde-oscuro);flex-shrink:0;font-size:19px}
+.accordion-icon::after,.sub-icon::after{content:"+"}.accordion.open>.accordion-trigger .accordion-icon::after,.subaccordion.open>.sub-trigger .sub-icon::after{content:"−"}
+.accordion-content{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}.accordion.open>.accordion-content{grid-template-rows:1fr}
+.accordion-inner{overflow:hidden}.accordion-body{padding:21px;color:#475149;font-size:14px;line-height:1.65}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.card{padding:15px 16px;border-left:4px solid var(--verde);border-radius:0 9px 9px 0;background:#f8faf5}.card h4{margin:0 0 6px;color:var(--verde-oscuro);font-size:12px;text-transform:uppercase}.card p{margin:0}
+.card.blue{border-left-color:var(--azul);background:var(--azul-suave)}.card.blue h4{color:var(--azul)}
+.card.purple{border-left-color:var(--morado);background:var(--morado-suave)}.card.purple h4{color:var(--morado)}
+.card.alert{border-left-color:var(--rojo);background:var(--rojo-suave)}.card.alert h4{color:var(--rojo)}
+.project{margin-top:14px;padding:16px 17px;border-left:4px solid var(--amarillo);border-radius:0 8px 8px 0;background:var(--amarillo-suave)}.project strong{color:#86620a}
+.example{margin-top:14px;padding:16px;border:1px dashed #b9cc84;border-radius:9px;background:#f4f7ed}
+.teacher-note{margin-top:12px;padding:13px 15px;border-left:4px solid var(--azul);background:var(--azul-suave);border-radius:0 8px 8px 0}.teacher-note strong{color:var(--azul)}
+.code{display:block;margin-top:12px;padding:14px;border-radius:8px;background:#26342c;color:#eaf3d6;white-space:pre-wrap;font-family:Consolas,monospace;font-size:13px;line-height:1.65}
+.subaccordion{margin-top:10px;border:1px solid #e2e7df;border-radius:10px;overflow:hidden;background:#fff}
+.sub-trigger{width:100%;border:0;background:#fbfcfa;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;text-align:left;font-weight:bold;color:#465047;cursor:pointer}
+.sub-content{display:grid;grid-template-rows:0fr;transition:.22s}.subaccordion.open>.sub-content{grid-template-rows:1fr}.sub-inner{overflow:hidden}.sub-body{padding:15px 16px}
+.slide-box{margin-top:14px;border:1px solid var(--borde);border-radius:12px;background:#fff;overflow:hidden}
+.slide-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f7faf3;border-bottom:1px solid var(--borde);font-size:12px;color:var(--gris)}
+.slide-stage{min-height:225px;padding:20px}
+.slide-stage h4{margin:0 0 10px;color:var(--verde-oscuro);font-size:18px}.slide-stage p{margin:7px 0}
+.slide-nav{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-top:1px solid var(--borde);background:#fbfcfa}
+.slide-btn{border:1px solid #b9cc84;background:#fff;color:var(--verde-oscuro);padding:8px 12px;border-radius:7px;font-weight:bold;cursor:pointer}.slide-btn:hover{background:var(--verde-suave)}
+.slide-dots{font-size:12px;color:var(--gris)}
+.steps{display:grid;gap:10px;margin-top:12px}.step{display:grid;grid-template-columns:32px 1fr;gap:11px;padding:12px 14px;border:1px solid #e0e7da;border-radius:8px;background:#fff}
+.step .n{width:29px;height:29px;display:grid;place-items:center;border-radius:50%;background:var(--verde);color:#fff;font-size:12px;font-weight:bold}
+.ai-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}.ai-card{border:1px solid var(--borde);border-radius:10px;padding:14px;background:#fff}.ai-card strong{display:block;color:var(--verde-oscuro);margin-bottom:5px}.ai-card small{color:var(--gris)}
+.pill{display:inline-block;padding:5px 9px;margin:3px 4px 3px 0;border-radius:14px;background:#eef2eb;color:#49554b;font-size:12px}
+.checklist{padding-left:0;list-style:none}.checklist li{margin:8px 0;padding-left:27px;position:relative}.checklist li::before{content:"✓";position:absolute;left:0;width:19px;height:19px;border-radius:50%;background:var(--verde-suave);color:var(--verde-oscuro);display:grid;place-items:center;font-weight:bold;font-size:12px}
+.timebox{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.time{border:1px solid #dfe6da;border-radius:10px;padding:13px;background:#fff}.time strong{display:block;color:var(--verde-oscuro);margin-bottom:4px}
+footer{padding:5px 5% 28px;text-align:center;color:#7b837c;font-size:12px}
+@media(max-width:950px){.bridge{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){header{padding:14px 5%}.brand span{display:none}.badge{display:none}.app{width:94%;grid-template-columns:1fr}.sidebar{border-right:0;border-bottom:1px solid var(--borde)}.workspace{padding:29px 22px}h2{font-size:25px}.grid,.ai-grid,.timebox{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">SABER CONOCER · EJE 4</div>
+<header>
+  <div class="brand">
+    <img src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x" alt="Areandina">
+    <span>Aprendiendo con @LaProfeVivy</span>
+  </div>
+  <div class="badge">Eje 4 · Proponemos</div>
+</header>
+
+<main class="app">
+<aside class="sidebar">
+  <h1>Temáticas del eje</h1>
+  <p class="sidebar-intro">Dos encuentros de una hora. Cada encuentro tiene pocos bloques visibles; las explicaciones y guías paso a paso se abren solo cuando se necesitan.</p>
+  <button class="topic-button active" data-topic="encuentro1"><span class="number">01</span><span class="topic-text"><strong>Encuentro 1</strong><span>IA aplicada al desarrollo de soluciones</span></span></button>
+  <button class="topic-button" data-topic="encuentro2"><span class="number">02</span><span class="topic-text"><strong>Encuentro 2</strong><span>Construcción y validación del MVP</span></span></button>
+</aside>
+
+<section class="workspace">
+  <p class="eyebrow" id="eyebrow"></p>
+  <h2 id="topicTitle"></h2>
+  <p class="intro" id="topicIntro"></p>
+
+  <div class="bridge">
+    <div class="bridge-card"><strong>Eje 1</strong>Problema y objetivos.</div>
+    <div class="bridge-card"><strong>Eje 2</strong>Datos y lógica.</div>
+    <div class="bridge-card"><strong>Eje 3</strong>MVP, UX y prototipo.</div>
+    <div class="bridge-card current"><strong>Eje 4</strong>Construcción con IA.</div>
+  </div>
+
+  <div id="accordions"></div>
+</section>
+</main>
+<footer>Aprendiendo con @LaProfeVivy · Saber Conocer</footer>
+
+<script>
+const topics={
+encuentro1:{
+  eyebrow:"Saber Conocer · Eje 4 · Encuentro 1",
+  title:"IA aplicada al desarrollo de soluciones",
+  intro:"Vamos a entender qué puede hacer hoy la IA, cómo se usa para construir una aplicación y cómo elegir una función inteligente que aporte valor real al proyecto.",
+  sections:[
+    {
+      title:"1. Cómo trabajamos hoy con IA",
+      body:`
+        <p>No estudiaremos una historia por fechas. Veremos <strong>cómo ha cambiado la forma práctica de trabajar con IA</strong>: de pedir una respuesta a delegar procesos más completos.</p>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Prompt, contexto, tools, skills, agentes y loops</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <div class="ai-grid">
+              <div class="ai-card"><strong>Prompt</strong><small>La instrucción que damos.</small><p>Ej.: “Crea una pantalla para registrar un retardo”.</p></div>
+              <div class="ai-card"><strong>Contexto</strong><small>La información que necesita para entender.</small><p>Ej.: roles, datos, reglas y objetivo del proyecto.</p></div>
+              <div class="ai-card"><strong>Tools</strong><small>Herramientas que puede usar.</small><p>Ej.: archivos, código, base de datos, APIs.</p></div>
+              <div class="ai-card"><strong>Skills</strong><small>Procedimientos reutilizables.</small><p>Ej.: revisar siempre roles, datos, flujo y prueba.</p></div>
+              <div class="ai-card"><strong>Agente</strong><small>Ejecuta una tarea de varios pasos.</small><p>Puede analizar, actuar, revisar y continuar.</p></div>
+              <div class="ai-card"><strong>Agent Loop</strong><small>Repite hasta completar.</small><p>Decidir → actuar → observar → corregir.</p></div>
+            </div>
+          </div></div></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Workflow, handoff, multi-agent y human in the loop</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <p><strong>Workflow:</strong> secuencia organizada de pasos.</p>
+            <p><strong>Handoff:</strong> una tarea pasa a otro agente o componente especializado.</p>
+            <p><strong>Multi-agent:</strong> varios agentes colaboran.</p>
+            <p><strong>Human in the loop:</strong> una persona revisa o aprueba decisiones importantes.</p>
+            <div class="teacher-note"><strong>Para explicar:</strong> “Más autonomía no significa abandonar el control. Nosotros seguimos revisando lo que la IA hace”.</div>
+          </div></div></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Guía de explicación en clase, paso a paso</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <div class="slide-box" data-slides="ia-evolucion">
+              <div class="slide-head"><span>Mini guía docente</span><span class="slide-counter"></span></div>
+              <div class="slide-stage"></div>
+              <div class="slide-nav"><button class="slide-btn prev">← Anterior</button><span class="slide-dots"></span><button class="slide-btn next">Siguiente →</button></div>
+            </div>
+          </div></div></div>
+        </div>
+      `
+    },
+
+    {
+      title:"2. Qué tipos de IA puede incorporar una aplicación",
+      body:`
+        <p>Para el proyecto es más útil hablar de <strong>tipos de uso de IA</strong>: qué capacidad inteligente aporta a la aplicación. Una app puede combinar más de una, pero el MVP debería escoger solo la que realmente ayude.</p>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>IA generativa y asistentes</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <p><strong>Qué hace:</strong> genera texto, imágenes, código, audio o respuestas conversacionales.</p>
+            <div class="example"><strong>Control de Retardos:</strong> un asistente podría responder “¿cuántos retardos tengo este mes?” o resumir los casos de un curso.</div>
+            <p><strong>Otros proyectos:</strong> generar descripciones, redactar recomendaciones, explicar resultados, ayudar a llenar formularios.</p>
+          </div></div></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Sistemas de recomendación</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <p><strong>Qué hacen:</strong> sugieren opciones según datos, preferencias, comportamiento o reglas del contexto.</p>
+            <div class="grid">
+              <div class="card"><h4>Ejemplo comercial</h4><p>Recomendar productos según compras o intereses.</p></div>
+              <div class="card blue"><h4>Ejemplo educativo</h4><p>Sugerir recursos de apoyo según dificultades detectadas.</p></div>
+              <div class="card"><h4>Control de Retardos</h4><p>Sugerir qué casos requieren seguimiento prioritario según reincidencia y motivo.</p></div>
+              <div class="card blue"><h4>Salud / bienestar</h4><p>Sugerir hábitos o contenidos, sin reemplazar decisiones profesionales.</p></div>
+            </div>
+          </div></div></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Clasificación y reconocimiento</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <p><strong>Qué hace:</strong> aprende a colocar una entrada en una categoría.</p>
+            <div class="example"><strong>Control de Retardos:</strong> clasificar un motivo escrito como transporte, salud, familiar u otro.</div>
+            <p>También puede clasificar imágenes, sonidos o posturas.</p>
+          </div></div></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Entrenar un modelo propio: Teachable Machine</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <p><strong>Entrenamiento no es otro “tipo” de IA:</strong> es la forma de enseñarle al modelo ejemplos para que aprenda a reconocer categorías.</p>
+            <p><strong>Teachable Machine</strong> permite crear modelos de clasificación sin programar, usando imágenes, sonidos o poses.</p>
+            <div class="slide-box" data-slides="teachable">
+              <div class="slide-head"><span>Teachable Machine · paso a paso</span><span class="slide-counter"></span></div>
+              <div class="slide-stage"></div>
+              <div class="slide-nav"><button class="slide-btn prev">← Anterior</button><span class="slide-dots"></span><button class="slide-btn next">Siguiente →</button></div>
+            </div>
+            <div class="teacher-note"><strong>Ejemplo:</strong> una app ambiental podría entrenar un clasificador sencillo para diferenciar tipos de residuos mediante imágenes. Una app de ejercicios podría reconocer dos o tres posturas. No todos los proyectos necesitan entrenar un modelo.</div>
+          </div></div></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Predicción, visión y voz</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <p><strong>Predicción:</strong> estima un resultado futuro usando datos históricos. Requiere suficientes datos y evaluación.</p>
+            <p><strong>Visión:</strong> interpreta imágenes o video. Ej.: reconocer objetos, leer documentos o analizar fotografías.</p>
+            <p><strong>Voz:</strong> convierte voz a texto, texto a voz o permite interacción hablada.</p>
+            <div class="project"><strong>Para este curso:</strong> chatbot, resumen, clasificación o recomendación suelen ser más viables que una predicción compleja.</div>
+          </div></div></div>
+        </div>
+      `
+    },
+
+    {
+      title:"3. Del proyecto definido a las instrucciones para la IA",
+      body:`
+        <p>Los ejes anteriores no son un repaso: son los insumos que ahora se convierten en instrucciones de construcción.</p>
+
+        <div class="slide-box" data-slides="ejes">
+          <div class="slide-head"><span>Cómo se transforma el proyecto</span><span class="slide-counter"></span></div>
+          <div class="slide-stage"></div>
+          <div class="slide-nav"><button class="slide-btn prev">← Anterior</button><span class="slide-dots"></span><button class="slide-btn next">Siguiente →</button></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Construir el prompt maestro</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <div class="steps">
+              <div class="step"><span class="n">1</span><div><strong>Problema.</strong><br>Escribe qué situación debe ayudar a resolver la app.</div></div>
+              <div class="step"><span class="n">2</span><div><strong>Usuarios y roles.</strong><br>Quién entra y qué puede hacer cada persona.</div></div>
+              <div class="step"><span class="n">3</span><div><strong>Datos.</strong><br>Qué información debe guardar o consultar.</div></div>
+              <div class="step"><span class="n">4</span><div><strong>Funciones del MVP.</strong><br>Solo lo indispensable para demostrar la solución.</div></div>
+              <div class="step"><span class="n">5</span><div><strong>UX.</strong><br>Cómo debería verse y sentirse.</div></div>
+              <div class="step"><span class="n">6</span><div><strong>Función de IA.</strong><br>Qué capacidad inteligente aporta valor y con qué datos trabajará.</div></div>
+              <div class="step"><span class="n">7</span><div><strong>Límite.</strong><br>Qué no debe construir todavía.</div></div>
+            </div>
+          </div></div></div>
+        </div>
+      `
+    },
+
+    {
+      title:"4. De Google Sheets y AppSheet a Lovable y Supabase",
+      body:`
+        <p>El paso anterior no se pierde. En AppSheet aprendimos que <strong>unos datos organizados pueden convertirse en una aplicación</strong>. Ahora veremos una arquitectura más completa.</p>
+
+        <div class="slide-box" data-slides="datos">
+          <div class="slide-head"><span>De datos a aplicación · paso a paso</span><span class="slide-counter"></span></div>
+          <div class="slide-stage"></div>
+          <div class="slide-nav"><button class="slide-btn prev">← Anterior</button><span class="slide-dots"></span><button class="slide-btn next">Siguiente →</button></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>¿Qué es Supabase?</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <p>Supabase es el <strong>backend</strong>: la parte que queda detrás de la aplicación. Puede ofrecer base de datos PostgreSQL, usuarios/autenticación, almacenamiento y funciones de servidor.</p>
+            <div class="teacher-note"><strong>Explicación sencilla:</strong> “Lovable construye lo que el usuario ve. Supabase es la parte de atrás que guarda datos y controla servicios”.</div>
+          </div></div></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Conectar Lovable con Supabase · guía exacta</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <div class="slide-box" data-slides="supabase">
+              <div class="slide-head"><span>Guía práctica</span><span class="slide-counter"></span></div>
+              <div class="slide-stage"></div>
+              <div class="slide-nav"><button class="slide-btn prev">← Anterior</button><span class="slide-dots"></span><button class="slide-btn next">Siguiente →</button></div>
+            </div>
+          </div></div></div>
+        </div>
+      `
+    }
+  ]
+},
+
+encuentro2:{
+  eyebrow:"Saber Conocer · Eje 4 · Encuentro 2",
+  title:"Construcción y validación del MVP",
+  intro:"Ahora usamos Lovable para construir, conectamos datos si el tiempo lo permite, incorporamos una función de IA coherente con el proyecto y dejamos listo el MVP para probarlo y presentarlo.",
+  sections:[
+    {
+      title:"1. Construir el MVP en Lovable",
+      body:`
+        <div class="slide-box" data-slides="lovable">
+          <div class="slide-head"><span>Construcción guiada · paso a paso</span><span class="slide-counter"></span></div>
+          <div class="slide-stage"></div>
+          <div class="slide-nav"><button class="slide-btn prev">← Anterior</button><span class="slide-dots"></span><button class="slide-btn next">Siguiente →</button></div>
+        </div>
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Cómo pedir cambios sin dañar lo que ya funciona</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <span class="code">DÓNDE + QUÉ CAMBIAR + REGLA + QUÉ NO TOCAR
+
+“En el dashboard del coordinador,
+agrega una tarjeta con estudiantes que tienen 3 o más retardos.
+Usa los registros existentes.
+No modifiques la pantalla del estudiante.”</span>
+          </div></div></div>
+        </div>
+      `
+    },
+
+    {
+      title:"2. Incorporar una función de IA al proyecto",
+      body:`
+        <p>El grupo elige <strong>una sola función inteligente</strong> que aporte originalidad y pueda demostrarse.</p>
+        <div class="grid">
+          <div class="card"><h4>Chatbot / asistente</h4><p>Responder preguntas usando información permitida del sistema.</p></div>
+          <div class="card"><h4>Clasificación</h4><p>Ordenar textos, imágenes o sonidos en categorías.</p></div>
+          <div class="card"><h4>Recomendación</h4><p>Sugerir una acción, contenido o prioridad.</p></div>
+          <div class="card"><h4>Resumen</h4><p>Convertir muchos registros en una síntesis comprensible.</p></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Ejemplo completo: chatbot conectado a datos</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <div class="slide-box" data-slides="chatbot">
+              <div class="slide-head"><span>Cómo funciona</span><span class="slide-counter"></span></div>
+              <div class="slide-stage"></div>
+              <div class="slide-nav"><button class="slide-btn prev">← Anterior</button><span class="slide-dots"></span><button class="slide-btn next">Siguiente →</button></div>
+            </div>
+          </div></div></div>
+        </div>
+
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Cómo escoger la función correcta</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <ul class="checklist">
+              <li>Resuelve una tarea real, no se agrega solo “para tener IA”.</li>
+              <li>Usa datos que el proyecto realmente puede obtener.</li>
+              <li>Puede explicarse y probarse.</li>
+              <li>Cabe dentro del alcance del MVP.</li>
+              <li>Si la decisión es sensible, mantiene revisión humana.</li>
+            </ul>
+          </div></div></div>
+        </div>
+      `
+    },
+
+    {
+      title:"3. Probar, corregir y validar",
+      body:`
+        <div class="slide-box" data-slides="prueba">
+          <div class="slide-head"><span>Prueba rápida del MVP</span><span class="slide-counter"></span></div>
+          <div class="slide-stage"></div>
+          <div class="slide-nav"><button class="slide-btn prev">← Anterior</button><span class="slide-dots"></span><button class="slide-btn next">Siguiente →</button></div>
+        </div>
+        <div class="project"><strong>Human in the loop:</strong> aquí se ve claramente. La IA construye o propone, pero una persona prueba, revisa y decide qué corregir.</div>
+      `
+    },
+
+    {
+      title:"4. Modelo de negocio y video pitch",
+      body:`
+        <div class="grid">
+          <div class="card"><h4>Usuario</h4><p>¿Quién usa la solución?</p></div>
+          <div class="card"><h4>Cliente</h4><p>¿Quién podría adoptarla o pagarla?</p></div>
+          <div class="card"><h4>Propuesta de valor</h4><p>¿Qué mejora concreta produce?</p></div>
+          <div class="card"><h4>Sostenibilidad</h4><p>¿Cómo podría mantenerse?</p></div>
+        </div>
+        <div class="subaccordion">
+          <button class="sub-trigger"><span>Guion del pitch de 60 segundos</span><span class="sub-icon"></span></button>
+          <div class="sub-content"><div class="sub-inner"><div class="sub-body">
+            <div class="timebox">
+              <div class="time"><strong>0–15 s</strong>Problema y usuario.</div>
+              <div class="time"><strong>15–35 s</strong>Demostración del flujo principal.</div>
+              <div class="time"><strong>35–50 s</strong>Valor + función de IA.</div>
+              <div class="time"><strong>50–60 s</strong>Modelo de sostenibilidad.</div>
+            </div>
+          </div></div></div>
+        </div>
+        <div class="project"><strong>Producto final:</strong> MVP navegable + función de IA justificada + síntesis del modelo de negocio + video pitch.</div>
+      `
+    }
+  ]
+}
+};
+
+const slideSets={
+"ia-evolucion":[
+  {t:"1. Prompt",b:"Primero usamos la IA como una conversación: escribimos una instrucción y recibimos una respuesta.<br><br><strong>Ejemplo:</strong> “Diseña una pantalla para registrar retardos”."},
+  {t:"2. Contexto",b:"Después comprendimos que la respuesta mejora si explicamos el proyecto: problema, usuarios, datos, reglas y límites.<br><br><strong>Idea docente:</strong> la IA no adivina el proyecto; necesita contexto."},
+  {t:"3. Herramientas",b:"La IA deja de limitarse a escribir texto cuando puede usar herramientas: archivos, código, bases de datos o servicios externos."},
+  {t:"4. Skills",b:"Una skill permite reutilizar una forma de trabajo. En vez de explicar siempre el mismo procedimiento, se conserva una guía para aplicarla otra vez."},
+  {t:"5. Agentes",b:"Un agente recibe un objetivo y puede avanzar por varios pasos usando instrucciones y herramientas."},
+  {t:"6. Agent Loop",b:"El agente repite un ciclo: <strong>decide → actúa → observa → corrige</strong>. Esto explica por qué puede trabajar más tiempo sobre una tarea compleja."}
+],
+"teachable":[
+  {t:"1. Elegir qué reconocer",b:"Define las clases o categorías. Ejemplo: <strong>residuo reciclable</strong> y <strong>residuo no reciclable</strong>."},
+  {t:"2. Reunir ejemplos",b:"Carga o captura suficientes ejemplos de cada clase. La calidad y variedad de los ejemplos influye en el resultado."},
+  {t:"3. Entrenar",b:"Pulsa <strong>Train Model</strong>. Teachable Machine aprende patrones de los ejemplos sin que tengas que programar el algoritmo."},
+  {t:"4. Probar",b:"Muéstrale ejemplos nuevos. Observa si clasifica correctamente y con qué nivel de confianza."},
+  {t:"5. Mejorar",b:"Si se equivoca, agrega mejores ejemplos, equilibra las clases y vuelve a entrenar."},
+  {t:"6. Exportar",b:"El modelo puede exportarse o alojarse para usarlo después en un sitio o una aplicación."}
+],
+"ejes":[
+  {t:"Eje 1 → problema",b:"Lo que definimos como problema se convierte en contexto: <br><br><strong>“Necesitamos mejorar el seguimiento tardío y disperso de los retardos”.</strong>"},
+  {t:"Eje 1 → objetivos",b:"El objetivo marca qué producto debemos construir y para qué. Eso evita que la IA invente un alcance diferente."},
+  {t:"Eje 2 → datos",b:"Las columnas y variables se convierten en requisitos de datos: estudiante, curso, fecha, hora, minutos de retardo, motivo, validación..."},
+  {t:"Eje 2 → lógica",b:"Las reglas pasan a instrucciones: <strong>“si la hora de llegada supera la hora límite, calcula los minutos de retardo”.</strong>"},
+  {t:"Eje 3 → MVP y UX",b:"Definimos qué entra en la primera versión, qué pantallas necesita el usuario y qué experiencia queremos."},
+  {t:"Eje 4 → construcción",b:"Ahora juntamos todo en instrucciones claras para Lovable y revisamos lo que la IA construye."}
+],
+"datos":[
+  {t:"1. Google Sheets",b:"Aprendimos la idea de <strong>columnas = campos</strong> y <strong>filas = registros</strong>. Era una forma sencilla de visualizar la información."},
+  {t:"2. AppSheet",b:"AppSheet tomó esos datos y mostró algo importante: una fuente de datos puede convertirse rápidamente en formularios, vistas y acciones."},
+  {t:"3. Base de datos",b:"Cuando la aplicación crece, conviene una base de datos preparada para múltiples usuarios, relaciones, permisos y consultas."},
+  {t:"4. Supabase",b:"Supabase puede aportar una base PostgreSQL, autenticación, almacenamiento y funciones de backend."},
+  {t:"5. Lovable",b:"Lovable construye la interfaz y puede conectarse con Supabase. Así pasamos de una pantalla visual a una app que guarda y consulta datos reales."},
+  {t:"6. La idea completa",b:"<strong>Usuario → interfaz en Lovable → lógica → Supabase → base de datos → respuesta o dashboard.</strong>"}
+],
+"supabase":[
+  {t:"1. Crear el proyecto",b:"Crea o abre una cuenta en Supabase y crea un proyecto. Ese proyecto contendrá la base de datos."},
+  {t:"2. Abrir la integración en Lovable",b:"Dentro del proyecto de Lovable, busca <strong>Integrations → Supabase</strong> y selecciona la opción de conexión."},
+  {t:"3. Autorizar",b:"Inicia sesión en Supabase, autoriza la conexión y selecciona la organización/proyecto que usarás."},
+  {t:"4. Pedir la tabla",b:"En Lovable escribe algo concreto: <br><br><strong>“Crea una tabla registros con estudiante, curso, fecha, hora_llegada, minutos_retardo, motivo y estado”.</strong>"},
+  {t:"5. Revisar la estructura",b:"Abre Supabase y revisa <strong>Table Editor</strong>. Confirma que la tabla y columnas correspondan al proyecto."},
+  {t:"6. Conectar el formulario",b:"Pide a Lovable que el formulario guarde los datos en esa tabla. No cambies todavía otras pantallas."},
+  {t:"7. Hacer una prueba",b:"Registra un caso desde la app. Luego vuelve a Supabase y verifica que aparezca una nueva fila."},
+  {t:"8. Consultar el dato",b:"Pide que una vista o dashboard recupere los registros. Así completas el ciclo <strong>guardar → consultar → mostrar</strong>."}
+],
+"lovable":[
+  {t:"1. Preparar los insumos",b:"Antes de abrir Lovable, ten a mano problema, usuarios, datos, funciones del MVP, UX y función de IA elegida."},
+  {t:"2. Crear el proyecto",b:"Abre un proyecto nuevo y pega el prompt maestro. Pide primero pantallas y navegación, no todo el sistema."},
+  {t:"3. Revisar",b:"Comprueba: ¿aparecen los roles correctos?, ¿las pantallas corresponden al MVP?, ¿la IA inventó algo?"},
+  {t:"4. Corregir por partes",b:"Pide un cambio a la vez. Ej.: “En la pantalla del estudiante agrega hora y minutos de retardo. No modifiques las demás pantallas”."},
+  {t:"5. Conectar datos",b:"Si la navegación ya funciona, conecta Supabase y guarda un registro real."},
+  {t:"6. Incorporar IA",b:"Añade solo la función inteligente elegida: chatbot, clasificación, recomendación o resumen."},
+  {t:"7. Probar",b:"Haz que otra persona use el flujo principal sin explicación y registra dónde se confunde."}
+],
+"chatbot":[
+  {t:"1. El usuario pregunta",b:"Ejemplo: <strong>“¿Cuántos retardos tengo este mes?”</strong>"},
+  {t:"2. La app identifica al usuario",b:"Debe saber quién pregunta y qué información tiene permiso de consultar."},
+  {t:"3. Consulta los datos",b:"La aplicación obtiene de Supabase únicamente los registros necesarios."},
+  {t:"4. Entrega contexto a la IA",b:"La IA recibe la pregunta y los datos pertinentes. No necesita recibir toda la base."},
+  {t:"5. La IA responde",b:"Genera una respuesta entendible a partir de la información entregada."},
+  {t:"6. La app muestra el resultado",b:"Lovable presenta la respuesta dentro de la interfaz.<br><br><strong>Clave:</strong> Supabase conserva los datos; la IA los interpreta."}
+],
+"prueba":[
+  {t:"1. Elegir una tarea",b:"Ejemplo: registrar una llegada tarde y consultar el resultado."},
+  {t:"2. Pedir a otra persona que la haga",b:"No expliques dónde debe tocar. Observa si la interfaz se entiende sola."},
+  {t:"3. Registrar dificultades",b:"Anota dónde duda, se devuelve, no entiende una palabra o no encuentra una acción."},
+  {t:"4. Corregir una cosa",b:"Pide a la IA un cambio específico. No intentes cambiar todo a la vez."},
+  {t:"5. Repetir la tarea",b:"Comprueba si el ajuste realmente solucionó el problema."},
+  {t:"6. Guardar evidencia",b:"Conserva una captura antes y después. Eso demuestra que el MVP fue validado y mejorado."}
+]};
+
+function renderTopic(key){
+ const topic=topics[key];
+ document.getElementById("eyebrow").textContent=topic.eyebrow;
+ document.getElementById("topicTitle").textContent=topic.title;
+ document.getElementById("topicIntro").textContent=topic.intro;
+ document.getElementById("accordions").innerHTML=topic.sections.map(s=>`
+ <article class="accordion">
+   <button class="accordion-trigger"><span>${s.title}</span><span class="accordion-icon"></span></button>
+   <div class="accordion-content"><div class="accordion-inner"><div class="accordion-body">${s.body}</div></div></div>
+ </article>`).join("");
+ bindInteractions();
+}
+
+function bindInteractions(){
+ document.querySelectorAll(".accordion-trigger").forEach(btn=>{
+   btn.onclick=()=>btn.parentElement.classList.toggle("open");
+ });
+ document.querySelectorAll(".sub-trigger").forEach(btn=>{
+   btn.onclick=()=>btn.parentElement.classList.toggle("open");
+ });
+ document.querySelectorAll(".slide-box").forEach(box=>{
+   const key=box.dataset.slides, slides=slideSets[key]||[];
+   let i=0;
+   const stage=box.querySelector(".slide-stage");
+   const counter=box.querySelector(".slide-counter");
+   const dots=box.querySelector(".slide-dots");
+   const render=()=>{
+     const s=slides[i];
+     stage.innerHTML=`<h4>${s.t}</h4><p>${s.b}</p>`;
+     counter.textContent=`${i+1} / ${slides.length}`;
+     dots.textContent="● ".repeat(i+1)+"○ ".repeat(slides.length-i-1);
+     box.querySelector(".prev").disabled=i===0;
+     box.querySelector(".next").disabled=i===slides.length-1;
+   };
+   box.querySelector(".prev").onclick=()=>{if(i>0){i--;render()}};
+   box.querySelector(".next").onclick=()=>{if(i<slides.length-1){i++;render()}};
+   render();
+ });
+}
+
+document.querySelectorAll(".topic-button").forEach(btn=>{
+ btn.onclick=()=>{
+   document.querySelectorAll(".topic-button").forEach(b=>b.classList.remove("active"));
+   btn.classList.add("active");
+   renderTopic(btn.dataset.topic);
+ }
+});
+renderTopic("encuentro1");
+</script>
+</body>
+</html>
