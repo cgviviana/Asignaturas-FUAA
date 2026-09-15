@@ -237,31 +237,49 @@ function handleCredential(r){
   let family=p.family_name||"";
   if(!given && p.name){const parts=p.name.trim().split(/\s+/);given=parts.shift()||"";family=parts.join(" ")}
   S.user={sub:p.sub,email,name:upper(given),lastname:upper(family)};
-  name.value=S.user.name; lastname.value=S.user.lastname; document.getElementById("email").value=email;
-  loginState.textContent="Cuenta verificada: "+email+" · Revisa Nombre y Apellido antes de iniciar."
-  startBtn.disabled=false;
+  document.getElementById("name").value=S.user.name;
+  document.getElementById("lastname").value=S.user.lastname;
+  document.getElementById("email").value=email;
+  document.getElementById("loginState").textContent="Cuenta verificada: "+email+" · Revisa Nombre y Apellido antes de iniciar.";
+  document.getElementById("startBtn").disabled=false;
 }
 
 function strips(){
-  return `<span><strong>${esc(S.user.name)} ${esc(S.user.lastname)}</strong></span><span>•</span><span>${esc(S.user.email)}</span><span>•</span><span>Grupo: <strong>${esc(group.value.toUpperCase())}</strong></span><span>•</span><span>NRC: <strong>${esc(nrc.value.toUpperCase())}</strong></span>`;
+  const groupVal=document.getElementById("group").value.toUpperCase();
+  const nrcVal=document.getElementById("nrc").value.toUpperCase();
+  return `<span><strong>${esc(S.user.name)} ${esc(S.user.lastname)}</strong></span><span>•</span><span>${esc(S.user.email)}</span><span>•</span><span>Grupo: <strong>${esc(groupVal)}</strong></span><span>•</span><span>NRC: <strong>${esc(nrcVal)}</strong></span>`;
 }
-function updateStrips(){["studentExam","studentTheme","studentFinal"].forEach(id=>document.getElementById(id).innerHTML=strips())}
+function updateStrips(){
+  ["studentExam","studentTheme","studentFinal"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=strips();
+  });
+}
 
 function startExam(){
-  if(!S.user){alert("Ingresa con Google.");return}
-  if(!name.value.trim()||!lastname.value.trim()||!group.value.trim()||!nrc.value.trim()){
+  if(!S.user){alert("Ingresa con Google.");return;}
+
+  const nameEl=document.getElementById("name");
+  const lastnameEl=document.getElementById("lastname");
+  const groupEl=document.getElementById("group");
+  const nrcEl=document.getElementById("nrc");
+
+  if(!nameEl.value.trim()||!lastnameEl.value.trim()||!groupEl.value.trim()||!nrcEl.value.trim()){
     alert("Completa Nombre, Apellido, Grupo y NRC.");
     return;
   }
-  name.value=name.value.trim().toLocaleUpperCase("es-CO");
-  lastname.value=lastname.value.trim().toLocaleUpperCase("es-CO");
-  group.value=group.value.trim().toUpperCase();
-  nrc.value=nrc.value.trim().toUpperCase();
-  S.user.name=name.value;
-  S.user.lastname=lastname.value;
+
+  nameEl.value=nameEl.value.trim().toLocaleUpperCase("es-CO");
+  lastnameEl.value=lastnameEl.value.trim().toLocaleUpperCase("es-CO");
+  groupEl.value=groupEl.value.trim().toUpperCase();
+  nrcEl.value=nrcEl.value.trim().toUpperCase();
+
+  S.user.name=nameEl.value;
+  S.user.lastname=lastnameEl.value;
   S.startTime=Date.now();
-  start.classList.add("hidden");
-  exam.classList.remove("hidden");
+
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("exam").classList.remove("hidden");
   updateStrips();
   startThemeAttempt();
 }
@@ -273,14 +291,14 @@ function currentQ(){return THEMES[S.theme].questions[S.questionOrder[S.qIndex]]}
 
 function renderQ(){
   const t=THEMES[S.theme],q=currentQ();
-  themeTitle.textContent=t.title;themePos.textContent=`${S.theme+1} de ${THEMES.length}`;
-  qPos.textContent=`${S.qIndex+1} de ${t.questions.length}`;themeAttempt.textContent=`${S.themeAttempt} de 2`;
+  document.getElementById("themeTitle").textContent=t.title;document.getElementById("themePos").textContent=`${S.theme+1} de ${THEMES.length}`;
+  document.getElementById("qPos").textContent=`${S.qIndex+1} de ${t.questions.length}`;document.getElementById("themeAttempt").textContent=`${S.themeAttempt} de 2`;
   const done=THEMES.slice(0,S.theme).reduce((a,t)=>a+t.questions.length,0)+S.qIndex;
-  const total=THEMES.reduce((a,t)=>a+t.questions.length,0);bar.style.width=`${(done/total)*100}%`;
+  const total=THEMES.reduce((a,t)=>a+t.questions.length,0);document.getElementById("bar").style.width=`${(done/total)*100}%`;
   const terms=sh(q.pairs.map((p,i)=>({idx:i,term:p[0]}))),defs=sh(q.pairs.map((p,i)=>({idx:i,text:p[1]})));
   const opts=['<option value="">Selecciona la definición</option>'].concat(defs.map(d=>`<option value="${d.idx}">${esc(d.text)}</option>`)).join("");
   const rows=terms.map((x,i)=>`<div class="row"><div class="num">${i+1}</div><div class="term">${esc(x.term)}</div><select class="sel" data-i="${x.idx}">${opts}</select></div>`).join("");
-  questionBox.innerHTML=`<div class="question"><div class="qhead"><h2>${esc(q.title)}</h2><div class="badge">${q.pairs.length} puntos</div></div>
+  document.getElementById("questionBox").innerHTML=`<div class="question"><div class="qhead"><h2>${esc(q.title)}</h2><div class="badge">${q.pairs.length} puntos</div></div>
   <p class="qnote">Relaciona cada concepto con su definición. Cada acierto suma 1 punto.</p>
   <div class="rows">${rows}</div><div id="msg" class="notice"></div>
   <div class="actions"><button id="grade" class="btn btn-primary" onclick="gradeQ()">Calificar pregunta</button><button id="next" class="btn btn-secondary hidden" onclick="nextQ()">Continuar</button></div></div>`;
@@ -291,13 +309,13 @@ function gradeQ(){
   document.querySelectorAll(".row").forEach(r=>r.classList.remove("missing"));
   if(miss.length){
     miss.forEach(s=>s.closest(".row").classList.add("missing"));
-    msg.className="notice show bad";msg.textContent=`Te ${miss.length===1?"falta":"faltan"} ${miss.length} ${miss.length===1?"respuesta":"respuestas"}. Completa ${miss.length===1?"la marcada":"las marcadas"} para continuar.`;
+    document.getElementById("msg").className="notice show bad";document.getElementById("msg").textContent=`Te ${miss.length===1?"falta":"faltan"} ${miss.length} ${miss.length===1?"respuesta":"respuestas"}. Completa ${miss.length===1?"la marcada":"las marcadas"} para continuar.`;
     miss[0].scrollIntoView({behavior:"smooth",block:"center"});return;
   }
   let score=0;sels.forEach(s=>{if(Number(s.dataset.i)===Number(s.value))score++;s.disabled=true});
-  S.attemptScores.push(score);grade.disabled=true;next.classList.remove("hidden");
-  msg.className="notice show "+(score===q.pairs.length?"ok":score>=Math.ceil(q.pairs.length/2)?"warn":"bad");
-  msg.textContent=`Puntaje de esta pregunta: ${score}/${q.pairs.length}.`;
+  S.attemptScores.push(score);document.getElementById("grade").disabled=true;document.getElementById("next").classList.remove("hidden");
+  document.getElementById("msg").className="notice show "+(score===q.pairs.length?"ok":score>=Math.ceil(q.pairs.length/2)?"warn":"bad");
+  document.getElementById("msg").textContent=`Puntaje de esta pregunta: ${score}/${q.pairs.length}.`;
 }
 
 function nextQ(){
@@ -307,27 +325,27 @@ function nextQ(){
 function finishThemeAttempt(){
   const t=THEMES[S.theme],score=S.attemptScores.reduce((a,b)=>a+b,0);
   S.bestTheme[S.theme]=Math.max(S.bestTheme[S.theme],score);
-  exam.classList.add("hidden");themeEnd.classList.remove("hidden");updateStrips();
-  themeEndTitle.textContent=t.title;
-  themeAttemptScore.textContent=`Intento ${S.themeAttempt}: ${score}/${t.max}`;
-  themeBestScore.textContent=`Mejor puntaje del tema: ${S.bestTheme[S.theme]}/${t.max}`;
-  retryThemeBtn.classList.toggle("hidden",S.themeAttempt>=2||score===t.max);
+  document.getElementById("exam").classList.add("hidden");document.getElementById("themeEnd").classList.remove("hidden");updateStrips();
+  document.getElementById("themeEndTitle").textContent=t.title;
+  document.getElementById("themeAttemptScore").textContent=`Intento ${S.themeAttempt}: ${score}/${t.max}`;
+  document.getElementById("themeBestScore").textContent=`Mejor puntaje del tema: ${S.bestTheme[S.theme]}/${t.max}`;
+  document.getElementById("retryThemeBtn").classList.toggle("hidden",S.themeAttempt>=2||score===t.max);
 }
 function retryTheme(){
-  S.themeAttempt=2;themeEnd.classList.add("hidden");exam.classList.remove("hidden");startThemeAttempt();
+  S.themeAttempt=2;document.getElementById("themeEnd").classList.add("hidden");document.getElementById("exam").classList.remove("hidden");startThemeAttempt();
 }
 function closeTheme(){
-  themeEnd.classList.add("hidden");
-  if(S.theme<THEMES.length-1){S.theme++;S.themeAttempt=1;exam.classList.remove("hidden");startThemeAttempt()}else finishAll();
+  document.getElementById("themeEnd").classList.add("hidden");
+  if(S.theme<THEMES.length-1){S.theme++;S.themeAttempt=1;document.getElementById("exam").classList.remove("hidden");startThemeAttempt()}else finishAll();
 }
 function fmt(ms){let s=Math.round(ms/1000),m=Math.floor(s/60);s%=60;return `${m} min ${s} s`}
 function finishAll(){
-  updateStrips();finalCard.classList.remove("hidden");
+  updateStrips();document.getElementById("finalCard").classList.remove("hidden");
   const total=S.bestTheme.reduce((a,b)=>a+b,0),pct=Math.round(total/50*100);
-  finalScore.textContent=`${total}/50`;finalPct.textContent=`${pct}%`;
-  totalTime.textContent="Tiempo total utilizado: "+fmt(Date.now()-S.startTime);
-  resultTop.innerHTML=`<div><span>NOMBRE</span><strong>${esc(S.user.name)}</strong></div><div><span>APELLIDO</span><strong>${esc(S.user.lastname)}</strong></div><div><span>GRUPO</span><strong>${esc(group.value)}</strong></div><div><span>NRC</span><strong>${esc(nrc.value)}</strong></div>`;
-  resultList.innerHTML=THEMES.map((t,i)=>`<div class="result-row"><span>${esc(t.title)}</span><strong>${S.bestTheme[i]}/${t.max}</strong></div>`).join("")+`<div class="result-row"><span><strong>Total</strong></span><strong>${total}/50</strong></div>`;
+  document.getElementById("finalScore").textContent=`${total}/50`;document.getElementById("finalPct").textContent=`${pct}%`;
+  document.getElementById("totalTime").textContent="Tiempo total utilizado: "+fmt(Date.now()-S.startTime);
+  document.getElementById("resultTop").innerHTML=`<div><span>NOMBRE</span><strong>${esc(S.user.name)}</strong></div><div><span>APELLIDO</span><strong>${esc(S.user.lastname)}</strong></div><div><span>GRUPO</span><strong>${esc(document.getElementById("group").value)}</strong></div><div><span>NRC</span><strong>${esc(document.getElementById("nrc").value)}</strong></div>`;
+  document.getElementById("resultList").innerHTML=THEMES.map((t,i)=>`<div class="result-row"><span>${esc(t.title)}</span><strong>${S.bestTheme[i]}/${t.max}</strong></div>`).join("")+`<div class="result-row"><span><strong>Total</strong></span><strong>${total}/50</strong></div>`;
 }
 </script>
 </body>
