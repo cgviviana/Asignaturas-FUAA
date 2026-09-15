@@ -95,8 +95,8 @@ select{width:100%;padding:12px 13px;border:1px solid #d8e0ec;border-radius:12px;
     </div>
 
     <div class="grid" style="margin-top:16px">
-      <div class="field"><label>Nombre</label><input id="name" class="readonly" readonly></div>
-      <div class="field"><label>Apellido</label><input id="lastname" class="readonly" readonly></div>
+      <div class="field"><label>Nombre</label><input id="name" type="text" oninput="this.value=this.value.toLocaleUpperCase('es-CO')"></div>
+      <div class="field"><label>Apellido</label><input id="lastname" type="text" oninput="this.value=this.value.toLocaleUpperCase('es-CO')"></div>
       <div class="field"><label>Correo institucional</label><input id="email" class="readonly" readonly></div>
       <div class="field"><label>Grupo</label><input id="group" type="text"></div>
       <div class="field"><label>NRC</label><input id="nrc" type="text"></div>
@@ -238,7 +238,7 @@ function handleCredential(r){
   if(!given && p.name){const parts=p.name.trim().split(/\s+/);given=parts.shift()||"";family=parts.join(" ")}
   S.user={sub:p.sub,email,name:upper(given),lastname:upper(family)};
   name.value=S.user.name; lastname.value=S.user.lastname; document.getElementById("email").value=email;
-  loginState.textContent="Cuenta verificada: "+email;
+  loginState.textContent="Cuenta verificada: "+email+" · Revisa Nombre y Apellido antes de iniciar."
   startBtn.disabled=false;
 }
 
@@ -249,9 +249,21 @@ function updateStrips(){["studentExam","studentTheme","studentFinal"].forEach(id
 
 function startExam(){
   if(!S.user){alert("Ingresa con Google.");return}
-  if(!group.value.trim()||!nrc.value.trim()){alert("Completa Grupo y NRC.");return}
-  group.value=group.value.trim().toUpperCase();nrc.value=nrc.value.trim().toUpperCase();
-  S.startTime=Date.now();start.classList.add("hidden");exam.classList.remove("hidden");updateStrips();startThemeAttempt();
+  if(!name.value.trim()||!lastname.value.trim()||!group.value.trim()||!nrc.value.trim()){
+    alert("Completa Nombre, Apellido, Grupo y NRC.");
+    return;
+  }
+  name.value=name.value.trim().toLocaleUpperCase("es-CO");
+  lastname.value=lastname.value.trim().toLocaleUpperCase("es-CO");
+  group.value=group.value.trim().toUpperCase();
+  nrc.value=nrc.value.trim().toUpperCase();
+  S.user.name=name.value;
+  S.user.lastname=lastname.value;
+  S.startTime=Date.now();
+  start.classList.add("hidden");
+  exam.classList.remove("hidden");
+  updateStrips();
+  startThemeAttempt();
 }
 
 function startThemeAttempt(){
