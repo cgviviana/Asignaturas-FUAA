@@ -1,1 +1,322 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repasa Test Corte I</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --bg:#f6f8fc;--card:#fff;--text:#1f2a44;--muted:#667085;--line:#e4e9f2;
+  --violet:#635bff;--violet2:#8b5cf6;--teal:#11b7a3;--soft:#f4f6fb;
+  --ok:#16794d;--okbg:#eaf7ef;--warn:#9b5b00;--warnbg:#fff6e8;--bad:#b42318;--badbg:#fff0ee;
+  --shadow:0 18px 40px rgba(33,43,74,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text);background:
+radial-gradient(circle at 0% 0%,rgba(99,91,255,.11),transparent 28%),
+radial-gradient(circle at 100% 0%,rgba(17,183,163,.10),transparent 26%),var(--bg)}
+.wrap{width:min(1050px,94%);margin:26px auto 40px}
+.hero{padding:26px 28px;border-radius:26px;background:linear-gradient(135deg,var(--violet),var(--violet2) 58%,var(--teal));color:#fff;box-shadow:var(--shadow)}
+.hero h1{margin:0;font-size:clamp(1.9rem,4vw,2.7rem)}
+.hero p{margin:9px 0 0;max-width:790px;line-height:1.5;font-size:.98rem}
+.card{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:22px}
+.hidden{display:none!important}
+.title{margin:0 0 14px;font-size:1.18rem}
+.student-strip{display:flex;flex-wrap:wrap;gap:10px 18px;padding:11px 0 14px;border-bottom:1px solid var(--line);margin-bottom:16px;font-size:.92rem;color:#56637d}
+.student-strip strong{color:#23314f}
+.info{padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:#fafbfe;color:#5a6780;font-size:.9rem;line-height:1.48;margin:14px 0}
+.info strong{color:#2b3857}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.field label{display:block;font-weight:750;margin-bottom:7px;font-size:.92rem}
+.field input{width:100%;padding:13px 14px;border:1px solid #d8e0ec;border-radius:13px;font-size:.98rem;background:#fcfdff;outline:none}
+.field input:focus{border-color:#a8afff;box-shadow:0 0 0 4px rgba(99,91,255,.09)}
+.readonly{background:#f4f6fa!important;color:#667085}
+.btn{border:0;border-radius:14px;padding:12px 17px;font-weight:800;font-size:.96rem;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,var(--violet),var(--violet2));color:white}
+.btn-secondary{background:#edf1fb;color:#35415f}
+.btn-soft{background:#eafaf7;color:#08776c}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.login-box{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px;border:1px solid var(--line);border-radius:16px;background:#fbfcff}
+.login-state{font-size:.92rem;color:#667085}
+.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}
+.meta > div{padding:12px 14px;background:#f8faff;border:1px solid #e7ebf4;border-radius:14px}
+.meta span{display:block;color:#78849a;font-size:.76rem;text-transform:uppercase;font-weight:800;letter-spacing:.45px;margin-bottom:5px}
+.meta strong{font-size:.96rem}
+.progress{height:9px;background:#edf0f8;border-radius:999px;overflow:hidden;margin:4px 0 18px}
+.progress > div{height:100%;background:linear-gradient(90deg,var(--teal),var(--violet));width:0;transition:.25s}
+.question{padding:18px 0 2px}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:7px}
+.qhead h2{margin:0;font-size:1.28rem}
+.badge{padding:7px 11px;border-radius:999px;background:#eef1ff;color:#48558a;font-weight:800;font-size:.86rem}
+.qnote{font-size:.88rem;color:#6b778f;margin:0 0 12px;line-height:1.4}
+.rows{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:38px minmax(180px,260px) 1fr;gap:12px;align-items:center;padding:13px 2px;border-bottom:1px solid var(--line)}
+.num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#eef1ff;color:#48558a;font-weight:900;font-size:.88rem}
+.term{font-weight:800}
+select{width:100%;padding:12px 13px;border:1px solid #d8e0ec;border-radius:12px;background:white;font-size:.95rem;outline:none}
+.row.missing{background:#fff8f7;padding-left:8px;border-left:3px solid #eb6f62}
+.row.missing select{border-color:#ed9a91}
+.notice{display:none;margin-top:12px;padding:11px 13px;border-radius:12px;font-size:.9rem;font-weight:700}
+.notice.show{display:block}
+.notice.ok{background:var(--okbg);color:var(--ok);border:1px solid #b6dec6}
+.notice.warn{background:var(--warnbg);color:var(--warn);border:1px solid #f0d4aa}
+.notice.bad{background:var(--badbg);color:var(--bad);border:1px solid #efb9b4}
+.theme-summary{padding:6px 0}
+.score{font-size:2.2rem;font-weight:900;color:var(--violet);margin:6px 0}
+.result-top{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:10px 0 16px;border-bottom:1px solid var(--line)}
+.result-top span{display:block;color:#7b879b;font-size:.8rem;margin-bottom:5px}
+.result-list{margin-top:10px}
+.result-row{display:grid;grid-template-columns:1fr auto;gap:15px;padding:12px 2px;border-bottom:1px solid #edf0f5}
+.result-row:last-child{border-bottom:none}
+.final{font-size:3.2rem;font-weight:900;color:var(--violet);margin:4px 0}
+.footer{text-align:center;color:#7a869b;font-size:.9rem;margin:18px 0}
+@media(max-width:760px){.grid,.meta,.result-top{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>Repasa Test Corte I</h1>
+    <p>Para tener en cuenta: encontrarás preguntas organizadas por temas. Cada relación correcta suma 1 punto. Tienes hasta 2 intentos por tema y se conserva el mejor puntaje obtenido.</p>
+  </section>
+
+  <section id="start" class="card">
+    <h2 class="title">Ingreso del estudiante</h2>
+
+    <div class="login-box">
+      <div>
+        <strong>Acceso con cuenta institucional</strong>
+        <div id="loginState" class="login-state">Ingresa con Google para identificar automáticamente tu correo.</div>
+      </div>
+      <div id="googleBtn"></div>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="field"><label>Nombre</label><input id="name" class="readonly" readonly></div>
+      <div class="field"><label>Apellido</label><input id="lastname" class="readonly" readonly></div>
+      <div class="field"><label>Correo institucional</label><input id="email" class="readonly" readonly></div>
+      <div class="field"><label>Grupo</label><input id="group" type="text"></div>
+      <div class="field"><label>NRC</label><input id="nrc" type="text"></div>
+    </div>
+
+    <div class="info"><strong>Para tener en cuenta:</strong> el correo se toma de la cuenta de Google con la que ingresas. El repaso tiene 5 temas; cada tema permite hasta 2 intentos y se conserva la nota más alta.</div>
+    <div class="actions"><button id="startBtn" class="btn btn-primary" onclick="startExam()" disabled>Iniciar repaso</button></div>
+  </section>
+
+  <section id="exam" class="card hidden">
+    <div id="studentExam" class="student-strip"></div>
+    <h2 id="themeTitle" class="title"></h2>
+    <div class="meta">
+      <div><span>Tema</span><strong id="themePos"></strong></div>
+      <div><span>Pregunta</span><strong id="qPos"></strong></div>
+      <div><span>Intento del tema</span><strong id="themeAttempt"></strong></div>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div id="questionBox"></div>
+  </section>
+
+  <section id="themeEnd" class="card hidden">
+    <div id="studentTheme" class="student-strip"></div>
+    <div class="theme-summary">
+      <h2 id="themeEndTitle" class="title"></h2>
+      <div id="themeAttemptScore" class="score"></div>
+      <div id="themeBestScore" style="font-weight:800;color:#55627a"></div>
+      <div class="actions">
+        <button id="retryThemeBtn" class="btn btn-soft" onclick="retryTheme()">Segundo intento del tema</button>
+        <button class="btn btn-primary" onclick="closeTheme()">Cerrar tema y continuar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="finalCard" class="card hidden">
+    <div id="studentFinal" class="student-strip"></div>
+    <div style="text-align:center">
+      <h2 class="title">Resultado final</h2>
+      <div id="finalScore" class="final"></div>
+      <div id="finalPct" style="font-weight:800;color:#667085"></div>
+      <div id="totalTime" style="margin-top:8px;color:#667085"></div>
+    </div>
+    <div id="resultTop" class="result-top"></div>
+    <div id="resultList" class="result-list"></div>
+  </section>
+
+  <div class="footer">Aprendiendo con @LaProfeVivy</div>
+</div>
+
+<script>
+const CLIENT_ID = "738876904238-nj2qk738breb0qicg35jq62r5t0hegh3.apps.googleusercontent.com";
+const THEMES = [
+{title:"Tema 1 · Delimitación de la problemática",max:10,questions:[
+{id:"P1",title:"Delimitación de la problemática",pairs:[
+["Contexto","Describe el entorno, lugar, momento y condiciones en que ocurre la situación."],
+["Usuarios","Personas que viven la situación, aportan información, intervienen o utilizarían la futura solución."],
+["Necesidad","Expresa aquello que hace falta comprender, controlar o mejorar."],
+["Alcance","Define límites temporales, espaciales, poblacionales o temáticos del análisis."],
+["Delimitación","Establece con precisión qué parte de la problemática será estudiada."]]},
+{id:"P2",title:"Árbol del problema",pairs:[
+["Problema central","Situación negativa principal, concreta y observable que se desea comprender."],
+["Causa directa","Condición que contribuye directamente a que ocurra el problema."],
+["Causa indirecta","Factor que origina o explica una causa más cercana al problema."],
+["Efecto directo","Consecuencia que aparece inmediatamente como resultado del problema."],
+["Efecto indirecto","Consecuencia que puede producirse a partir de otros efectos del problema."]]}]},
+{title:"Tema 2 · Datos relevantes y procesamiento",max:10,questions:[
+{id:"P3",title:"Clasificación de los datos",pairs:[
+["Dato relevante","Aporta directamente para medir, comparar o comprender la problemática."],
+["Dato de identificación","Señala a quién pertenece determinado registro."],
+["Variable","Puede cambiar de un registro, persona o momento a otro."],
+["Constante","Permanece como referencia para realizar comparaciones."],
+["Dato derivado","Se obtiene después de realizar un cálculo o procesar otros datos."]]},
+{id:"P4",title:"Entrada, proceso y resultado",pairs:[
+["Entrada","Información que necesita el proceso para realizar una operación."],
+["Proceso","Acción, cálculo, comparación o regla aplicada a los datos."],
+["Salida","Resultado generado después de procesar los datos."],
+["Umbral","Valor límite utilizado para determinar cuándo debe ocurrir una acción."],
+["Alerta","Aviso producido cuando se cumple una condición establecida."]]}]},
+{title:"Tema 3 · Fuentes, antecedentes y benchmarking",max:12,questions:[
+{id:"P5",title:"Fuentes y antecedentes",pairs:[
+["Antecedente del problema","Permite conocer cómo se ha estudiado el problema, sus causas, efectos y características."],
+["Antecedente de solución","Permite reconocer estrategias, productos o tecnologías utilizadas previamente para atender problemas semejantes."],
+["Fuente académica","Artículos, tesis, libros o investigaciones con evidencia documentada."],
+["Fuente institucional","Reglamentos, registros, informes, protocolos o datos oficiales."],
+["Fuente comercial","Productos, aplicaciones, plataformas y proveedores existentes en el mercado."],
+["Vacío","Necesidad que sigue sin estar atendida después de revisar lo existente."]]},
+{id:"P6",title:"Análisis de soluciones y benchmarking",pairs:[
+["Competencia","Aplicaciones, productos, servicios o procedimientos que atienden una necesidad semejante."],
+["Benchmarking","Comparación sistemática de diferentes soluciones utilizando criterios comunes."],
+["Criterio de comparación","Característica común utilizada para comparar varias alternativas."],
+["Buena práctica","Aspecto positivo encontrado en una solución que puede servir como referencia."],
+["Limitación","Restricción o dificultad encontrada en una solución existente."],
+["Oportunidad de mejora","Aspecto que una solución no resuelve adecuadamente para el contexto analizado."]]}]},
+{title:"Tema 4 · Análisis de actores",max:6,questions:[
+{id:"P7",title:"Análisis de actores",pairs:[
+["Actor directo","Participa en el proceso central, vive directamente el problema o utiliza la solución."],
+["Actor indirecto","No ejecuta necesariamente el proceso central, pero puede afectarlo, regularlo o apoyar su implementación."],
+["Necesidad o interés","Aquello que el actor espera, requiere o busca frente a la problemática."],
+["Papel o rol","Función que desempeña el actor frente al problema o a la futura solución."],
+["Influencia","Capacidad de afectar el funcionamiento o aceptación de una solución."],
+["Poder","Capacidad formal para aprobar, modificar, financiar o detener una decisión."]]}]},
+{title:"Tema 5 · Diagnóstico mediante herramientas",max:12,questions:[
+{id:"P8",title:"Herramientas de diagnóstico",pairs:[
+["Diagnóstico","Estudia el funcionamiento actual para identificar dificultades y oportunidades de mejora."],
+["Diagrama de Ishikawa","Organiza posibles causas del problema mediante diferentes categorías."],
+["Árbol del problema","Relaciona causas, problema central y efectos."],
+["Diagrama de flujo","Representa actividades, decisiones, responsables, entradas y salidas del proceso actual."],
+["Punto crítico","Lugar del proceso donde se presenta una dificultad que afecta su funcionamiento."],
+["Causa por verificar","Factor planteado como posible origen del problema que posteriormente debe comprobarse."]]},
+{id:"P9",title:"Análisis del proceso actual",pairs:[
+["Actividad","Acción concreta que se realiza dentro del proceso."],
+["Decisión","Punto donde el recorrido cambia según una condición determinada."],
+["Responsable","Persona o rol encargado de realizar o controlar una parte del proceso."],
+["Entrada","Información o recurso necesario antes de ejecutar una acción."],
+["Salida","Resultado producido después de ejecutar una actividad o proceso."],
+["Pérdida de información","Situación en la que un dato necesario no se registra, desaparece o no llega oportunamente."]]}]}
+];
+
+let S = {
+  user:null,startTime:null,theme:0,themeAttempt:1,qIndex:0,
+  questionOrder:[],attemptScores:[],bestTheme:Array(THEMES.length).fill(0)
+};
+
+function sh(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function jwt(token){const p=token.split(".")[1].replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(decodeURIComponent(atob(p).split("").map(c=>"%"+("00"+c.charCodeAt(0).toString(16)).slice(-2)).join("")))}
+function upper(v){return (v||"").toLocaleUpperCase("es-CO")}
+
+window.onload = () => {
+  google.accounts.id.initialize({client_id:CLIENT_ID,callback:handleCredential});
+  google.accounts.id.renderButton(document.getElementById("googleBtn"),{theme:"outline",size:"large",text:"signin_with",shape:"pill"});
+};
+
+function handleCredential(r){
+  const p=jwt(r.credential);
+  const email=(p.email||"").toLowerCase();
+  let given=p.given_name||"";
+  let family=p.family_name||"";
+  if(!given && p.name){const parts=p.name.trim().split(/\s+/);given=parts.shift()||"";family=parts.join(" ")}
+  S.user={sub:p.sub,email,name:upper(given),lastname:upper(family)};
+  name.value=S.user.name; lastname.value=S.user.lastname; document.getElementById("email").value=email;
+  loginState.textContent="Cuenta verificada: "+email;
+  startBtn.disabled=false;
+}
+
+function strips(){
+  return `<span><strong>${esc(S.user.name)} ${esc(S.user.lastname)}</strong></span><span>•</span><span>${esc(S.user.email)}</span><span>•</span><span>Grupo: <strong>${esc(group.value.toUpperCase())}</strong></span><span>•</span><span>NRC: <strong>${esc(nrc.value.toUpperCase())}</strong></span>`;
+}
+function updateStrips(){["studentExam","studentTheme","studentFinal"].forEach(id=>document.getElementById(id).innerHTML=strips())}
+
+function startExam(){
+  if(!S.user){alert("Ingresa con Google.");return}
+  if(!group.value.trim()||!nrc.value.trim()){alert("Completa Grupo y NRC.");return}
+  group.value=group.value.trim().toUpperCase();nrc.value=nrc.value.trim().toUpperCase();
+  S.startTime=Date.now();start.classList.add("hidden");exam.classList.remove("hidden");updateStrips();startThemeAttempt();
+}
+
+function startThemeAttempt(){
+  S.qIndex=0;S.attemptScores=[];S.questionOrder=sh(THEMES[S.theme].questions.map((_,i)=>i));renderQ();
+}
+function currentQ(){return THEMES[S.theme].questions[S.questionOrder[S.qIndex]]}
+
+function renderQ(){
+  const t=THEMES[S.theme],q=currentQ();
+  themeTitle.textContent=t.title;themePos.textContent=`${S.theme+1} de ${THEMES.length}`;
+  qPos.textContent=`${S.qIndex+1} de ${t.questions.length}`;themeAttempt.textContent=`${S.themeAttempt} de 2`;
+  const done=THEMES.slice(0,S.theme).reduce((a,t)=>a+t.questions.length,0)+S.qIndex;
+  const total=THEMES.reduce((a,t)=>a+t.questions.length,0);bar.style.width=`${(done/total)*100}%`;
+  const terms=sh(q.pairs.map((p,i)=>({idx:i,term:p[0]}))),defs=sh(q.pairs.map((p,i)=>({idx:i,text:p[1]})));
+  const opts=['<option value="">Selecciona la definición</option>'].concat(defs.map(d=>`<option value="${d.idx}">${esc(d.text)}</option>`)).join("");
+  const rows=terms.map((x,i)=>`<div class="row"><div class="num">${i+1}</div><div class="term">${esc(x.term)}</div><select class="sel" data-i="${x.idx}">${opts}</select></div>`).join("");
+  questionBox.innerHTML=`<div class="question"><div class="qhead"><h2>${esc(q.title)}</h2><div class="badge">${q.pairs.length} puntos</div></div>
+  <p class="qnote">Relaciona cada concepto con su definición. Cada acierto suma 1 punto.</p>
+  <div class="rows">${rows}</div><div id="msg" class="notice"></div>
+  <div class="actions"><button id="grade" class="btn btn-primary" onclick="gradeQ()">Calificar pregunta</button><button id="next" class="btn btn-secondary hidden" onclick="nextQ()">Continuar</button></div></div>`;
+}
+
+function gradeQ(){
+  const q=currentQ(),sels=[...document.querySelectorAll(".sel")],miss=sels.filter(s=>!s.value);
+  document.querySelectorAll(".row").forEach(r=>r.classList.remove("missing"));
+  if(miss.length){
+    miss.forEach(s=>s.closest(".row").classList.add("missing"));
+    msg.className="notice show bad";msg.textContent=`Te ${miss.length===1?"falta":"faltan"} ${miss.length} ${miss.length===1?"respuesta":"respuestas"}. Completa ${miss.length===1?"la marcada":"las marcadas"} para continuar.`;
+    miss[0].scrollIntoView({behavior:"smooth",block:"center"});return;
+  }
+  let score=0;sels.forEach(s=>{if(Number(s.dataset.i)===Number(s.value))score++;s.disabled=true});
+  S.attemptScores.push(score);grade.disabled=true;next.classList.remove("hidden");
+  msg.className="notice show "+(score===q.pairs.length?"ok":score>=Math.ceil(q.pairs.length/2)?"warn":"bad");
+  msg.textContent=`Puntaje de esta pregunta: ${score}/${q.pairs.length}.`;
+}
+
+function nextQ(){
+  S.qIndex++;
+  if(S.qIndex<THEMES[S.theme].questions.length)renderQ();else finishThemeAttempt();
+}
+function finishThemeAttempt(){
+  const t=THEMES[S.theme],score=S.attemptScores.reduce((a,b)=>a+b,0);
+  S.bestTheme[S.theme]=Math.max(S.bestTheme[S.theme],score);
+  exam.classList.add("hidden");themeEnd.classList.remove("hidden");updateStrips();
+  themeEndTitle.textContent=t.title;
+  themeAttemptScore.textContent=`Intento ${S.themeAttempt}: ${score}/${t.max}`;
+  themeBestScore.textContent=`Mejor puntaje del tema: ${S.bestTheme[S.theme]}/${t.max}`;
+  retryThemeBtn.classList.toggle("hidden",S.themeAttempt>=2||score===t.max);
+}
+function retryTheme(){
+  S.themeAttempt=2;themeEnd.classList.add("hidden");exam.classList.remove("hidden");startThemeAttempt();
+}
+function closeTheme(){
+  themeEnd.classList.add("hidden");
+  if(S.theme<THEMES.length-1){S.theme++;S.themeAttempt=1;exam.classList.remove("hidden");startThemeAttempt()}else finishAll();
+}
+function fmt(ms){let s=Math.round(ms/1000),m=Math.floor(s/60);s%=60;return `${m} min ${s} s`}
+function finishAll(){
+  updateStrips();finalCard.classList.remove("hidden");
+  const total=S.bestTheme.reduce((a,b)=>a+b,0),pct=Math.round(total/50*100);
+  finalScore.textContent=`${total}/50`;finalPct.textContent=`${pct}%`;
+  totalTime.textContent="Tiempo total utilizado: "+fmt(Date.now()-S.startTime);
+  resultTop.innerHTML=`<div><span>NOMBRE</span><strong>${esc(S.user.name)}</strong></div><div><span>APELLIDO</span><strong>${esc(S.user.lastname)}</strong></div><div><span>GRUPO</span><strong>${esc(group.value)}</strong></div><div><span>NRC</span><strong>${esc(nrc.value)}</strong></div>`;
+  resultList.innerHTML=THEMES.map((t,i)=>`<div class="result-row"><span>${esc(t.title)}</span><strong>${S.bestTheme[i]}/${t.max}</strong></div>`).join("")+`<div class="result-row"><span><strong>Total</strong></span><strong>${total}/50</strong></div>`;
+}
+</script>
+</body>
+</html>
