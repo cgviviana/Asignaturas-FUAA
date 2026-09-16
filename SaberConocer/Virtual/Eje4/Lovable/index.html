@@ -1,1 +1,720 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construcción de App con IA | Control de Retardos</title>
+<style>
+:root{
+  --verde:#86a91e;
+  --verde-oscuro:#5f7d14;
+  --verde-suave:#eef5dc;
+  --tinta:#26322b;
+  --gris:#667168;
+  --borde:#dce3d9;
+  --fondo:#f6f8f5;
+  --azul:#446a73;
+  --azul-suave:#eef5f6;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--fondo);color:var(--tinta)}
+.topbar{background:#29352d;color:#fff;padding:9px 7%;font-size:12px;letter-spacing:.7px}
+header{background:#fff;padding:18px 7%;border-bottom:1px solid var(--borde)}
+header h1{margin:0;color:var(--verde-oscuro);font-size:28px}
+header p{margin:7px 0 0;color:var(--gris)}
+.app{
+  width:min(1220px,94%);
+  margin:28px auto;
+  display:grid;
+  grid-template-columns:300px 1fr;
+  background:#fff;
+  border:1px solid var(--borde);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 12px 35px rgba(37,55,39,.08);
+  min-height:780px
+}
+.sidebar{padding:26px 18px;background:#fbfcfa;border-right:1px solid var(--borde)}
+.sidebar h2{margin:0 0 8px;color:var(--verde-oscuro);font-size:18px}
+.sidebar p{margin:0 0 18px;color:var(--gris);font-size:12px;line-height:1.5}
+.nav{
+  width:100%;
+  border:0;
+  background:transparent;
+  padding:13px 12px;
+  margin:5px 0;
+  border-radius:10px;
+  text-align:left;
+  cursor:pointer;
+  color:#465047;
+  font-weight:700
+}
+.nav:hover{background:#f0f5e5}
+.nav.active{background:var(--verde);color:#fff}
+.content{padding:34px 38px 48px}
+.panel{display:none}
+.panel.active{display:block}
+.panel h2{margin:0;color:var(--verde-oscuro);font-size:28px}
+.intro{color:var(--gris);line-height:1.65;margin:9px 0 20px}
+.acc{border:1px solid var(--borde);border-radius:12px;margin:12px 0;overflow:hidden;background:#fff}
+.acc button{
+  width:100%;border:0;background:#fff;padding:16px 18px;display:flex;
+  justify-content:space-between;align-items:center;text-align:left;font-weight:700;
+  color:var(--tinta);cursor:pointer
+}
+.acc.open button{background:var(--verde-suave);color:var(--verde-oscuro)}
+.body{display:none;padding:18px;line-height:1.65;color:#475149}
+.acc.open .body{display:block}
+.mark{
+  width:27px;height:27px;border-radius:50%;display:grid;place-items:center;
+  background:#e5edd5;color:var(--verde-oscuro);flex-shrink:0
+}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.box{
+  padding:15px 16px;
+  border:1px solid var(--borde);
+  border-radius:10px;
+  background:#fafcf9
+}
+.box h3{margin:0 0 6px;color:var(--verde-oscuro);font-size:14px}
+.box p{margin:0}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0}
+.flow span{
+  padding:10px 12px;
+  background:var(--verde-suave);
+  border:1px solid #cadba3;
+  border-radius:8px;
+  font-weight:700;
+  font-size:13px
+}
+.flow b{color:var(--verde-oscuro)}
+.steps{display:grid;gap:10px}
+.step{
+  display:grid;
+  grid-template-columns:32px 1fr;
+  gap:10px;
+  padding:12px;
+  border:1px solid #e0e7da;
+  border-radius:9px;
+  background:#fff
+}
+.n{
+  width:29px;height:29px;border-radius:50%;display:grid;place-items:center;
+  background:var(--verde);color:#fff;font-weight:bold
+}
+.note{
+  margin-top:13px;
+  padding:14px;
+  border:1px solid #cbd7df;
+  background:var(--azul-suave);
+  border-radius:9px
+}
+.code{
+  display:block;
+  background:#26342c;
+  color:#eaf3d6;
+  padding:15px;
+  border-radius:9px;
+  white-space:pre-wrap;
+  font-family:Consolas,monospace;
+  font-size:13px;
+  line-height:1.6;
+  margin-top:12px
+}
+.real-shot{
+  margin:16px 0;
+  border:1px solid var(--borde);
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff
+}
+.real-shot img{width:100%;display:block}
+.real-shot figcaption{
+  padding:10px 12px;
+  font-size:12px;
+  color:var(--gris);
+  background:#fafcf8
+}
+.callouts{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:10px
+}
+.call{
+  border:1px solid var(--borde);
+  border-radius:9px;
+  padding:11px;
+  background:#fff;
+  font-size:12px;
+  line-height:1.45
+}
+.call strong{display:block;color:var(--verde-oscuro);margin-bottom:4px}
+.supa-map{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:180px 1fr;
+  border:1px solid var(--borde);
+  border-radius:12px;
+  overflow:hidden;
+  min-height:360px
+}
+.supa-menu{
+  background:#111715;
+  color:#dbe4de;
+  padding:14px;
+  font-size:12px
+}
+.supa-menu strong{display:block;color:#fff;margin-bottom:12px}
+.supa-menu div{padding:9px 8px;border-radius:7px;margin:4px 0}
+.supa-menu .active{background:#26342c}
+.supa-main{padding:16px;background:#fff}
+.supa-main h4{margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{border:1px solid #e0e5df;padding:7px;text-align:left}
+th{background:#f6f8f5}
+.mini{font-size:12px;color:var(--gris);line-height:1.5}
+footer{text-align:center;color:#7b837c;font-size:12px;padding:4px 0 28px}
+@media(max-width:850px){
+  .app{grid-template-columns:1fr}
+  .sidebar{border-right:0;border-bottom:1px solid var(--borde)}
+  .grid,.callouts,.supa-map{grid-template-columns:1fr}
+  .content{padding:26px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">SABER CONOCER · EJE 4</div>
+
+<header>
+  <h1>Construcción de App con IA</h1>
+  <p>Ejemplo: Control de Retardos · Lovable + Supabase</p>
+</header>
+
+<main class="app">
+
+<aside class="sidebar">
+  <h2>Ruta de trabajo</h2>
+  <p>Partimos de lo desarrollado en los ejes anteriores y lo llevamos a una aplicación funcional.</p>
+
+  <button class="nav active" data-target="previos">1. Pasos previos</button>
+  <button class="nav" data-target="conceptos">2. Conceptos aplicados</button>
+  <button class="nav" data-target="fb">3. Frontend y backend</button>
+  <button class="nav" data-target="lovable">4. Lovable: entorno</button>
+  <button class="nav" data-target="supabase">5. Supabase: entorno</button>
+  <button class="nav" data-target="flujo">6. Flujo completo</button>
+  <button class="nav" data-target="prompt">7. Prompt del proyecto</button>
+  <button class="nav" data-target="conexion">8. Conectar Supabase</button>
+  <button class="nav" data-target="verificar">9. Verificación</button>
+  <button class="nav" data-target="editar">10. Revisiones y ediciones</button>
+  <button class="nav" data-target="publicar">11. Publicación</button>
+</aside>
+
+<section class="content">
+
+<div class="panel active" id="previos">
+  <h2>Pasos previos</h2>
+  <p class="intro">Antes de abrir Lovable necesitamos tener clara la solución. Eso ya se construyó en los ejes anteriores.</p>
+
+  <div class="grid">
+    <div class="box">
+      <h3>1. Diseño de la solución</h3>
+      <p>Qué problema resuelve la aplicación y qué debe permitir hacer.</p>
+    </div>
+    <div class="box">
+      <h3>2. Flujo del algoritmo</h3>
+      <p>Qué ocurre primero, qué decisiones se toman y cómo termina el proceso.</p>
+    </div>
+    <div class="box">
+      <h3>3. Tablas a utilizar</h3>
+      <p>Usuarios, Estudiantes, Matrículas, Cursos, Sesiones, Registros, Gestión, Parámetros y Resumen.</p>
+    </div>
+    <div class="box">
+      <h3>4. UX</h3>
+      <p>Pantallas, mapa de navegación, wireflow y wireframes que muestran cómo debe verse y recorrerse la app.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    Todo esto será el contexto que le daremos a Lovable para que construya la aplicación.
+  </div>
+</div>
+
+<div class="panel" id="conceptos">
+  <h2>Conceptos aplicados al proyecto</h2>
+  <p class="intro">Los conceptos vistos sobre IA sí aparecen aquí, pero ahora aplicados a una tarea concreta.</p>
+
+  <div class="grid">
+    <div class="box"><h3>Contexto</h3><p>Problema + algoritmo + tablas + UX.</p></div>
+    <div class="box"><h3>Prompt</h3><p>La instrucción que le damos a Lovable para construir la app.</p></div>
+    <div class="box"><h3>Tools</h3><p>Lovable y Supabase son las herramientas que usamos para construir y guardar datos.</p></div>
+    <div class="box"><h3>Skill</h3><p>El procedimiento repetible: construir → revisar → conectar datos → probar → corregir.</p></div>
+    <div class="box"><h3>Agente</h3><p>Lovable recibe un objetivo y realiza varios pasos para construir o modificar la aplicación.</p></div>
+    <div class="box"><h3>Agent Loop</h3><p>Construir → revisar → corregir → volver a probar.</p></div>
+    <div class="box"><h3>Workflow</h3><p>Desde los ejes anteriores hasta la app publicada.</p></div>
+    <div class="box"><h3>Human in the loop</h3><p>La persona revisa, prueba y decide qué se acepta o qué debe corregirse.</p></div>
+  </div>
+</div>
+
+<div class="panel" id="fb">
+  <h2>Frontend y backend</h2>
+  <p class="intro">Son las dos partes principales de una aplicación.</p>
+
+  <div class="grid">
+    <div class="box">
+      <h3>Frontend</h3>
+      <p>Es lo que la persona ve y toca: inicio de sesión, botón Escanear QR, formularios, historial y dashboard.</p>
+    </div>
+    <div class="box">
+      <h3>Backend</h3>
+      <p>Es lo que trabaja detrás: guarda datos, identifica usuarios, consulta sesiones y devuelve información.</p>
+    </div>
+  </div>
+
+  <div class="flow">
+    <span>Estudiante pulsa “Escanear QR”</span><b>→</b>
+    <span>Frontend recibe la acción</span><b>→</b>
+    <span>Backend guarda y consulta</span><b>→</b>
+    <span>Frontend muestra el resultado</span>
+  </div>
+
+  <div class="note">
+    En este proyecto, Lovable construye la interfaz y conecta la lógica de la aplicación. Supabase será la plataforma donde administraremos los datos y usuarios que trabajan detrás.
+  </div>
+</div>
+
+<div class="panel" id="lovable">
+  <h2>Lovable: ¿dónde está cada cosa?</h2>
+  <p class="intro">Lovable es una página/plataforma web. Entramos, creamos un proyecto y trabajamos principalmente con el chat y la vista previa.</p>
+
+  <article class="acc open">
+    <button><span>Pantalla de inicio de Lovable</span><span class="mark">−</span></button>
+    <div class="body">
+      <figure class="real-shot">
+        <img src="https://lovable.dev/cdn-cgi/image/width%3D2544%2Cf%3Dauto%2Cfit%3Dscale-down/https%3A//assets.lovable.dev/img/download/downloads-desktop.webp" alt="Pantalla inicial de Lovable">
+        <figcaption>Interfaz actual de Lovable. En el centro está el cuadro donde se escribe la primera instrucción para crear el proyecto.</figcaption>
+      </figure>
+
+      <div class="callouts">
+        <div class="call"><strong>1. Cuadro central</strong>Aquí pegamos el prompt inicial.</div>
+        <div class="call"><strong>2. Menú izquierdo</strong>Permite volver a proyectos, buscar y abrir recursos.</div>
+        <div class="call"><strong>3. Proyecto nuevo</strong>Después de enviar el prompt, Lovable comienza a construir.</div>
+      </div>
+    </div>
+  </article>
+
+  <article class="acc">
+    <button><span>Editor después de crear la app</span><span class="mark">+</span></button>
+    <div class="body">
+      <figure class="real-shot">
+        <img src="https://lovable.dev/cdn-cgi/image/width%3D3840%2Cf%3Dauto%2Cfit%3Dscale-down/https%3A//assets.lovable.dev/content/use-cases/websites/intro/use-cases-websites-intro-screen.png" alt="Editor de Lovable">
+        <figcaption>Editor de Lovable: a la izquierda aparece el chat con la IA y a la derecha la vista previa de la aplicación.</figcaption>
+      </figure>
+
+      <div class="callouts">
+        <div class="call"><strong>Chat / Ask Lovable</strong>Aquí pedimos funciones nuevas o correcciones.</div>
+        <div class="call"><strong>Vista previa</strong>Aquí hacemos clic y comprobamos si la aplicación funciona.</div>
+        <div class="call"><strong>Edit</strong>Permite seleccionar elementos visuales y modificarlos directamente.</div>
+      </div>
+    </div>
+  </article>
+
+  <article class="acc">
+    <button><span>Backend dentro de Lovable</span><span class="mark">+</span></button>
+    <div class="body">
+      <figure class="real-shot">
+        <img src="https://lovable.dev/cdn-cgi/image/width%3D3840%2Cf%3Dauto%2Cfit%3Dscale-down/https%3A//assets.lovable.dev/content/use-cases/websites/backend/use-cases-websites-backend-backend.png" alt="Panel Cloud y Database de Lovable">
+        <figcaption>Ejemplo actual del área Cloud/Database de Lovable. Allí se administran servicios y datos cuando se usa el backend integrado.</figcaption>
+      </figure>
+      <p>En nuestra clase usaremos Supabase para ver de forma separada y más clara las tablas y los registros.</p>
+    </div>
+  </article>
+</div>
+
+<div class="panel" id="supabase">
+  <h2>Supabase: ¿qué es y dónde se usa?</h2>
+  <p class="intro">Sí: Supabase es otra página/plataforma. Se abre en el navegador y tiene su propio panel.</p>
+
+  <article class="acc open">
+    <button><span>Qué hacemos en Supabase</span><span class="mark">−</span></button>
+    <div class="body">
+      <p>Allí creamos un proyecto para Control de Retardos y administramos la información que la app necesita guardar.</p>
+
+      <div class="grid">
+        <div class="box"><h3>Database / Table Editor</h3><p>Ver tablas, columnas y registros.</p></div>
+        <div class="box"><h3>Authentication / Users</h3><p>Ver las cuentas que pueden iniciar sesión.</p></div>
+      </div>
+
+      <div class="note">
+        Piensa en Supabase como el lugar donde queda almacenada la información real de la aplicación.
+      </div>
+    </div>
+  </article>
+
+  <article class="acc">
+    <button><span>Cómo se ve el área de tablas</span><span class="mark">+</span></button>
+    <div class="body">
+      <div class="supa-map">
+        <div class="supa-menu">
+          <strong>SUPABASE</strong>
+          <div class="active">Table Editor</div>
+          <div>SQL Editor</div>
+          <div>Authentication</div>
+          <div>Storage</div>
+          <div>Logs</div>
+        </div>
+        <div class="supa-main">
+          <h4>Tabla: registros</h4>
+          <table>
+            <tr>
+              <th>estudiante</th>
+              <th>sesión</th>
+              <th>hora_llegada</th>
+              <th>minutos_retardo</th>
+            </tr>
+            <tr>
+              <td>Ana Pérez</td>
+              <td>102</td>
+              <td>07:08</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td>Luis Mora</td>
+              <td>102</td>
+              <td>07:00</td>
+              <td>0</td>
+            </tr>
+          </table>
+          <p class="mini">Este esquema muestra qué buscamos dentro de Supabase: el menú lateral y el Table Editor con las filas guardadas.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <article class="acc">
+    <button><span>Cómo entiende Supabase una tabla</span><span class="mark">+</span></button>
+    <div class="body">
+      <figure class="real-shot">
+        <img src="https://supabase.com/docs/_next/image?q=75&url=%2Fdocs%2Fimg%2Fdatabase%2Fmanaging-tables%2Fcreating-tables--light.png&w=3840" alt="Tabla y columnas en Supabase">
+        <figcaption>Imagen de la documentación de Supabase: una tabla está formada por columnas y cada columna tiene un tipo de dato.</figcaption>
+      </figure>
+    </div>
+  </article>
+</div>
+
+<div class="panel" id="flujo">
+  <h2>Flujo completo de Control de Retardos</h2>
+  <p class="intro">Ahora juntamos frontend, backend, Lovable y Supabase.</p>
+
+  <div class="steps">
+    <div class="step"><span class="n">1</span><div>El docente entra a la aplicación y abre una sesión.</div></div>
+    <div class="step"><span class="n">2</span><div>Lovable muestra el QR de esa sesión.</div></div>
+    <div class="step"><span class="n">3</span><div>El estudiante entra y escanea el QR.</div></div>
+    <div class="step"><span class="n">4</span><div>La app identifica estudiante, curso y sesión.</div></div>
+    <div class="step"><span class="n">5</span><div>Obtiene la hora real de llegada.</div></div>
+    <div class="step"><span class="n">6</span><div>Calcula los minutos de diferencia.</div></div>
+    <div class="step"><span class="n">7</span><div>Supabase guarda el registro.</div></div>
+    <div class="step"><span class="n">8</span><div>Lovable muestra la confirmación al estudiante.</div></div>
+    <div class="step"><span class="n">9</span><div>Docente y coordinador consultan esos mismos datos en sus pantallas.</div></div>
+  </div>
+</div>
+
+<div class="panel" id="prompt">
+  <h2>Prompt del proyecto</h2>
+  <p class="intro">Lo llamamos “prompt maestro” porque es la primera instrucción grande y completa con la que Lovable entiende el proyecto antes de empezar a construir. Aquí reunimos problema, usuarios, tablas, flujo, UX y funciones.</p>
+
+  <article class="acc open">
+    <button><span>Prompt maestro · Control de Retardos</span><span class="mark">−</span></button>
+    <div class="body">
+
+<span class="code">Crea una aplicación móvil responsive, moderna, intuitiva y visualmente atractiva para el CONTROL DE RETARDOS DE ESTUDIANTES DE UN COLEGIO.
+
+## CONTEXTO DEL PROYECTO
+
+La solución ya fue diseñada previamente.
+
+Se cuenta con:
+- definición del problema y de la solución;
+- flujo del algoritmo;
+- diseño UX con pantallas, navegación, wireflow y wireframes;
+- estructura de datos organizada en tablas.
+
+Usa estos elementos como base para construir la aplicación.
+
+## DATOS
+
+La aplicación trabajará con las siguientes tablas:
+
+- Usuarios
+- Estudiantes
+- Matrículas
+- Cursos
+- Sesiones
+- Registros
+- Gestión
+- Parámetros
+- Resumen
+
+Estas tablas deben quedar relacionadas para identificar correctamente usuario, rol, estudiante, matrícula, curso, sesión y registro de llegada.
+
+Usa Supabase para almacenar y consultar estos datos.
+
+## USUARIOS Y ACCESO
+
+La aplicación tendrá tres perfiles:
+
+1. Docente
+2. Estudiante
+3. Coordinador
+
+Al iniciar sesión mediante correo electrónico, identifica automáticamente al usuario y determina su rol.
+
+Después del inicio de sesión, muestra únicamente las funciones correspondientes a ese usuario.
+
+## PERFIL DOCENTE
+
+Cuando ingrese un docente:
+
+- identifica automáticamente sus datos;
+- consulta los cursos y sesiones que tiene asignados;
+- muestra claramente la clase o sesión correspondiente;
+- muestra curso, fecha, horario y demás información disponible;
+- permite iniciar la sesión de asistencia;
+- genera automáticamente un código QR único para esa sesión de clase;
+- el QR debe identificar la sesión;
+- muestra el QR grande en pantalla para que los estudiantes puedan escanearlo;
+- permite consultar en tiempo real los estudiantes que ya registraron su llegada.
+
+El docente también debe poder realizar un REGISTRO MANUAL DE LLEGADA cuando un estudiante no pueda utilizar el QR, no tenga conexión a Internet, haya tenido cambio de jornada o exista alguna novedad.
+
+Cuando el docente haga este registro, debe quedar identificado como REGISTRO MANUAL REALIZADO POR DOCENTE.
+
+## PERFIL ESTUDIANTE
+
+Cuando ingrese un estudiante:
+
+- identifica automáticamente sus datos mediante su correo;
+- consulta su información en Estudiantes y Matrículas;
+- muestra su nombre, curso y datos correspondientes;
+- presenta como acción principal el botón “Escanear QR”;
+- permite utilizar la cámara del teléfono para leer el QR generado por el docente.
+
+Cuando escanee el QR:
+
+1. identifica al estudiante;
+2. identifica la sesión de clase;
+3. identifica el curso;
+4. obtiene automáticamente la fecha;
+5. obtiene automáticamente la hora real de llegada;
+6. consulta la hora programada de la sesión;
+7. calcula los minutos de diferencia;
+8. determina automáticamente si llegó A TIEMPO o con RETARDO;
+9. guarda el registro en Supabase.
+
+Después del registro muestra una confirmación clara, por ejemplo:
+
+ASISTENCIA REGISTRADA
+Hora de llegada: 7:08 a. m.
+Retardo: 8 minutos.
+
+El estudiante también debe poder consultar su historial de asistencias y retardos y, cuando corresponda, registrar o consultar el motivo y estado de una justificación.
+
+## PERFIL COORDINADOR
+
+Cuando ingrese un coordinador, muestra un DASHBOARD ADMINISTRATIVO COMPLETO.
+
+Debe poder visualizar como mínimo:
+
+- total de retardos;
+- estudiantes con retardos;
+- estudiantes reincidentes;
+- cursos con mayor cantidad de retardos;
+- retardos por curso;
+- retardos por estudiante;
+- retardos por día;
+- días de la semana con mayor número de retardos;
+- minutos acumulados de retardo;
+- motivos de retardo;
+- retardos justificados y no justificados;
+- tendencias de retardos en el tiempo.
+
+Incluye gráficos claros y fáciles de interpretar.
+
+Permite filtrar la información por:
+
+- fecha o rango de fechas;
+- curso;
+- estudiante;
+- estado de asistencia;
+- estado de justificación.
+
+Genera una ALERTA VISUAL cuando un estudiante acumule 3 o más retardos.
+
+## DISEÑO DE LA APLICACIÓN
+
+La interfaz debe parecer una aplicación móvil real.
+
+Utiliza:
+
+- diseño limpio y educativo;
+- fondo claro;
+- tarjetas modernas;
+- bordes redondeados;
+- iconos sencillos;
+- tipografía muy legible;
+- buen contraste;
+- navegación inferior tipo aplicación móvil;
+- botones grandes para las acciones principales;
+- gráficos modernos para el dashboard;
+- diseño optimizado principalmente para teléfonos móviles.
+
+Incluye el LOGO DEL COLEGIO en la pantalla de acceso y en el encabezado de la aplicación.
+
+[PEGAR AQUÍ EL LOGO O INDICAR EL NOMBRE DEL COLEGIO]
+
+Utiliza los colores institucionales del colegio.
+
+## PANTALLAS PRINCIPALES
+
+ACCESO
+- Logo.
+- Nombre del sistema.
+- Inicio de sesión con correo.
+
+ESTUDIANTE
+- Inicio.
+- Escanear QR.
+- Confirmación de llegada.
+- Historial.
+- Justificaciones.
+- Perfil.
+
+DOCENTE
+- Inicio.
+- Clase/sesión actual.
+- Generación y visualización del QR.
+- Estudiantes registrados.
+- Registro manual.
+- Novedades.
+- Historial.
+
+COORDINADOR
+- Dashboard.
+- Estudiantes.
+- Cursos.
+- Registros.
+- Alertas.
+- Justificaciones.
+- Reportes.
+
+## FUNCIONAMIENTO PRINCIPAL
+
+Construye primero una versión funcional y responsive con:
+
+- los tres perfiles;
+- inicio de sesión;
+- flujo de QR;
+- registro automático de hora;
+- cálculo de retardos;
+- registro manual del docente;
+- historial del estudiante;
+- dashboard del coordinador;
+- conexión con Supabase.
+
+Al terminar la primera versión, muéstrala en la vista previa para revisar navegación y funcionamiento antes de realizar ajustes adicionales.</span>
+
+    </div>
+  </article>
+</div>
+
+<div class="panel" id="conexion">
+  <h2>Conectar Supabase</h2>
+  <p class="intro">Primero abrimos Supabase en otra pestaña del navegador y creamos el proyecto. Después volvemos a Lovable para conectarlo.</p>
+
+  <div class="steps">
+    <div class="step"><span class="n">1</span><div>Abrir <strong>Supabase</strong> y crear un proyecto para Control de Retardos.</div></div>
+    <div class="step"><span class="n">2</span><div>Crear o importar las tablas que ya definimos.</div></div>
+    <div class="step"><span class="n">3</span><div>Volver a Lovable.</div></div>
+    <div class="step"><span class="n">4</span><div>Abrir la opción de conexión con Supabase dentro del proyecto.</div></div>
+    <div class="step"><span class="n">5</span><div>Autorizar la cuenta y elegir el proyecto de Supabase.</div></div>
+    <div class="step"><span class="n">6</span><div>Pedir a Lovable que use esas tablas en formularios, login y dashboards.</div></div>
+  </div>
+
+  <div class="note">
+    A partir de este momento, cuando la app registre una llegada, podremos ir a Supabase y ver la fila guardada.
+  </div>
+</div>
+
+<div class="panel" id="verificar">
+  <h2>Verificación</h2>
+  <p class="intro">Probamos el flujo de principio a fin.</p>
+
+  <div class="steps">
+    <div class="step"><span class="n">1</span><div>Entrar como docente y abrir una sesión.</div></div>
+    <div class="step"><span class="n">2</span><div>Mostrar el QR.</div></div>
+    <div class="step"><span class="n">3</span><div>Entrar como estudiante y escanearlo.</div></div>
+    <div class="step"><span class="n">4</span><div>Comprobar el cálculo del retardo.</div></div>
+    <div class="step"><span class="n">5</span><div>Ir a Supabase y revisar la tabla Registros.</div></div>
+    <div class="step"><span class="n">6</span><div>Volver a Lovable y comprobar que docente y coordinador ven el mismo registro.</div></div>
+  </div>
+</div>
+
+<div class="panel" id="editar">
+  <h2>Revisiones y ediciones</h2>
+  <p class="intro">Cuando algo necesita ajuste, lo revisamos y pedimos cambios concretos.</p>
+
+  <div class="grid">
+    <div class="box">
+      <h3>History</h3>
+      <p>Permite revisar versiones anteriores del proyecto.</p>
+    </div>
+    <div class="box">
+      <h3>Visual Edits</h3>
+      <p>Permite seleccionar elementos en la vista previa y ajustar texto, tamaño, color o espaciado.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    Ejemplo: “En el dashboard del coordinador agrega una tarjeta de reincidencias con estudiantes que tengan 3 o más retardos usando los registros de Supabase. Conserva el diseño actual.”
+  </div>
+</div>
+
+<div class="panel" id="publicar">
+  <h2>Publicación</h2>
+  <p class="intro">Cuando la aplicación funciona, se publica para obtener un enlace accesible desde fuera del editor.</p>
+
+  <div class="steps">
+    <div class="step"><span class="n">1</span><div>Pulsar <strong>Publish</strong>.</div></div>
+    <div class="step"><span class="n">2</span><div>Revisar la dirección de la app.</div></div>
+    <div class="step"><span class="n">3</span><div>Publicar.</div></div>
+    <div class="step"><span class="n">4</span><div>Abrir el enlace final y repetir la prueba del estudiante.</div></div>
+  </div>
+</div>
+
+</section>
+</main>
+
+<footer>Aprendiendo con @LaProfeVivy · Saber Conocer</footer>
+
+<script>
+document.querySelectorAll('.nav').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('.nav').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.target).classList.add('active');
+  };
+});
+document.querySelectorAll('.acc button').forEach(btn=>{
+  btn.onclick=()=>{
+    const item=btn.parentElement;
+    item.classList.toggle('open');
+    btn.querySelector('.mark').textContent=item.classList.contains('open')?'−':'+';
+  };
+});
+</script>
+
+</body>
+</html>
