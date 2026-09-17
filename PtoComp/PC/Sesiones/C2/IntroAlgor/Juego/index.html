@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Academy! ✨ @LaProfeVivy</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #0ea5e9;
+            background-image: radial-gradient(circle, #38bdf8 20%, transparent 20%);
+            background-size: 24px 24px;
+        }
+
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+
+        .game-card {
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1);
+            border: 4px solid #f1f5f9;
+        }
+
+        .btn-3d {
+            border-bottom-width: 5px !important;
+            transition: transform 0.1s ease, filter 0.15s ease;
+        }
+
+        .btn-3d:active {
+            transform: translateY(4px);
+            border-bottom-width: 1px !important;
+        }
+
+        /* Enhanced Action Buttons */
+        .compact-action-btn {
+            background-color: #ffffff;
+            border: 3px solid #e2e8f0;
+            border-bottom: 5px solid #cbd5e1;
+            border-radius: 20px;
+            padding: 14px 18px;
+            font-weight: 700;
+            color: #334155;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        .compact-action-btn:hover {
+            border-color: #38bdf8;
+            background-color: #f0f9ff;
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.2);
+        }
+
+        .rhombus-node {
+            width: 88px;
+            height: 88px;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        .rhombus-node-content {
+            transform: rotate(-45deg);
+            text-align: center;
+        }
+
+        /* Flowchart animation glow pulse */
+        @keyframes flowPulse {
+            0% { background-color: #38bdf8; box-shadow: 0 0 5px #38bdf8; }
+            50% { background-color: #10b981; box-shadow: 0 0 20px #10b981; }
+            100% { background-color: #38bdf8; box-shadow: 0 0 5px #38bdf8; }
+        }
+        .flow-active {
+            animation: flowPulse 1.5s infinite;
+        }
+
+        /* Bilingual Hover Tooltip Styles */
+        .has-translation {
+            position: relative;
+        }
+        .translation-subtext {
+            display: block;
+            font-size: 0.72rem;
+            color: #0284c7;
+            font-weight: 700;
+            margin-top: 2px;
+            opacity: 0.85;
+            transition: all 0.2s ease;
+        }
+        
+        /* Floating Spanish Tooltip on Hover */
+        .es-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 105%;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: normal;
+            max-width: 260px;
+            text-align: center;
+            z-index: 100;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 2px solid #38bdf8;
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+            pointer-events: none;
+        }
+        .es-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: #0f172a transparent transparent transparent;
+        }
+        .has-hover-tr:hover .es-tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Print formatting for high quality Certificate */
+        @media print {
+            body {
+                background: #ffffff !important;
+                background-image: none !important;
+                padding: 0 !important;
+            }
+            #main-header, footer, #welcome-screen, #level-1, #level-2, #level-3, #feedback-modal, .no-print {
+                display: none !important;
+            }
+            #final-screen {
+                display: block !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: white !important;
+            }
+            #certificate-card {
+                border: 6px double #f59e0b !important;
+                box-shadow: none !important;
+                max-width: 100% !important;
+                margin: 0 auto !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between p-3 md:p-6">
+
+    <header id="main-header" class="hidden sticky top-0 z-40 bg-white/95 backdrop-blur-md rounded-2xl px-4 py-3 shadow-lg max-w-4xl mx-auto w-full mb-4 border-2 border-sky-100">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-400 border-b-4 border-amber-600 flex items-center justify-center text-xl text-white shadow">
+                    👩‍🏫
+                </div>
+                <div>
+                    <h1 class="text-base md:text-lg font-bold text-slate-800 leading-none">
+                        Algorithm Academy!
+                    </h1>
+                    <span class="text-xs font-bold text-sky-600">@LaProfeVivy</span>
+                </div>
+            </div>
+
+            <!-- Language Switcher Controls -->
+            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button onclick="setLanguage('en')" id="lang-btn-en" class="px-2.5 py-1 rounded-lg text-xs font-black bg-white shadow text-sky-600 transition-all">
+                    🇬🇧 EN
+                </button>
+                <button onclick="setLanguage('es')" id="lang-btn-es" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 transition-all">
+                    🇪🇸 ES
+                </button>
+                <button onclick="setLanguage('hover')" id="lang-btn-hover" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 transition-all flex items-center gap-1">
+                    💬 <span class="hidden sm:inline">EN + ES</span>
+                </button>
+                <button type="button" onclick="speakCurrentScreen()" title="Listen / Escuchar"
+                    class="w-7 h-7 rounded-lg bg-white text-slate-500 hover:text-sky-600 shadow-sm flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-volume-high text-[10px]"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <div id="level-badge" class="bg-sky-100 border-2 border-sky-300 px-3 py-1 rounded-xl font-bold text-sky-700 text-xs">
+                    Level 1 of 3
+                </div>
+
+                <div class="bg-amber-100 border-b-4 border-amber-400 px-3 py-1 rounded-xl flex items-center gap-1.5 font-black text-amber-800 text-sm">
+                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                    <span id="score-display">0 / 500 XP</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto w-full my-auto">
+
+        <!-- Welcome Screen -->
+        <section id="welcome-screen" class="game-card p-6 md:p-10 text-center my-4">
+            <div class="flex justify-center mb-4">
+                <div class="w-24 h-24 bg-sky-400 border-b-8 border-sky-600 rounded-3xl flex items-center justify-center text-5xl shadow-lg">
+                    🤖
+                </div>
+            </div>
+
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-1">
+                Algorithm Academy! ✨
+            </h1>
+            <p class="text-sm font-bold text-sky-600 mb-4">
+                Learning with @LaProfeVivy
+            </p>
+
+            <!-- Minimal Language Selector on Welcome Screen -->
+            <div class="max-w-sm mx-auto mb-6">
+                <div class="flex items-center justify-center gap-2 mb-2 opacity-55 hover:opacity-100 transition-opacity">
+                    <p class="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-[0.18em]">
+                        Language / Idioma
+                    </p>
+                    <button type="button" onclick="speakCurrentScreen()" title="Listen / Escuchar"
+                        class="w-6 h-6 rounded-full bg-slate-100 hover:bg-sky-100 text-slate-400 hover:text-sky-600 flex items-center justify-center transition-all">
+                        <i class="fa-solid fa-volume-high text-[10px]"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-xs font-bold">
+                    <button onclick="setLanguage('en')" id="welcome-lang-en" class="py-2.5 rounded-xl bg-sky-500 text-white shadow font-black transition-all">
+                        🇬🇧 English
+                    </button>
+                    <button onclick="setLanguage('hover')" id="welcome-lang-hover" class="py-2.5 rounded-xl bg-white text-slate-600 hover:bg-sky-50 border border-slate-200 font-bold transition-all">
+                        EN + ayuda ES
+                    </button>
+                    <button onclick="setLanguage('es')" id="welcome-lang-es" class="py-2.5 rounded-xl bg-white text-slate-600 hover:bg-sky-50 border border-slate-200 font-bold transition-all">
+                        🇪🇸 Español
+                    </button>
+                </div>
+            </div>
+
+            <div class="max-w-sm mx-auto space-y-3">
+                <div>
+                    <label id="lbl-fullname" class="block text-left text-xs font-black text-slate-600 mb-1 uppercase tracking-wider">Full First & Last Name</label>
+                    <input type="text" id="fullname-input" placeholder="e.g. ALEX MORGAN" oninput="validateStartForm()"
+                        class="w-full px-4 py-2.5 rounded-2xl border-3 border-slate-200 focus:border-sky-500 outline-none text-center font-bold text-base text-slate-800 bg-slate-50 uppercase placeholder:text-slate-300 placeholder:font-normal">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label id="lbl-nrc" class="block text-left text-xs font-black text-slate-600 mb-1 uppercase tracking-wider">NRC</label>
+                        <input type="text" id="nrc-input" placeholder="e.g. 2582" oninput="validateStartForm()"
+                            class="w-full px-4 py-2.5 rounded-2xl border-3 border-slate-200 focus:border-sky-500 outline-none text-center font-bold text-base text-slate-800 bg-slate-50 uppercase placeholder:text-slate-300 placeholder:font-normal">
+                    </div>
+                    <div>
+                        <label id="lbl-group" class="block text-left text-xs font-black text-slate-600 mb-1 uppercase tracking-wider">Group</label>
+                        <input type="text" id="group-input" placeholder="e.g. 1" oninput="validateStartForm()"
+                            class="w-full px-4 py-2.5 rounded-2xl border-3 border-slate-200 focus:border-sky-500 outline-none text-center font-bold text-base text-slate-800 bg-slate-50 uppercase placeholder:text-slate-300 placeholder:font-normal">
+                    </div>
+                </div>
+
+                <button id="start-btn" onclick="startGame()" disabled
+                    class="btn-3d w-full font-black py-3.5 rounded-2xl text-lg bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed shadow-lg flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-play"></i> <span id="lbl-start-btn">START CHALLENGE</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="level-1" class="hidden">
+            <div class="game-card p-6 md:p-8 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="lvl1-tag" class="text-xs font-black uppercase text-sky-600">
+                                LEVEL 1: Linear Algorithms
+                            </span>
+                            <span id="sublevel-counter" class="bg-sky-100 text-sky-800 text-[10px] font-black px-2.5 py-1 rounded-full">
+                                Exercise 1 of 5
+                            </span>
+                        </div>
+                        <h2 id="linear-exercise-title" class="text-2xl font-black text-slate-800 mt-1">
+                            <!-- Dynamic Title -->
+                        </h2>
+                    </div>
+                    <div id="linear-exercise-icon" class="text-3xl bg-sky-100 p-2.5 rounded-2xl text-sky-600 flex items-center justify-center min-w-[54px] min-h-[54px] border-2 border-sky-200 shadow-sm">
+                        🚦
+                    </div>
+                </div>
+
+                <div class="bg-sky-50/80 p-4 rounded-2xl border-2 border-sky-200 text-center space-y-1 relative has-hover-tr" id="linear-instruction-box">
+                    <p id="lbl-instr-title" class="text-xs font-extrabold uppercase tracking-wider text-sky-500">INSTRUCTION:</p>
+                    <p id="linear-instruction" class="text-base font-extrabold text-sky-800">
+                        Select the correct option or build the algorithm sequence.
+                    </p>
+                    <div id="linear-instruction-tooltip" class="es-tooltip"></div>
+                </div>
+
+                <div id="linear-options" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+                    <!-- Dynamic option buttons -->
+                </div>
+
+                <div class="bg-slate-900 p-5 rounded-2xl border-4 border-slate-800 shadow-inner">
+                    <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+                        <span id="lbl-construct-area" class="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                            <i class="fa-solid fa-laptop-code"></i> ALGORITHM CONSTRUCTION AREA
+                        </span>
+                        <button onclick="resetLinearLevel()" class="text-xs text-slate-400 hover:text-white font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-left"></i> <span id="lbl-reset-1">Reset</span>
+                        </button>
+                    </div>
+
+                    <div id="linear-sequence" class="flex flex-wrap items-center justify-start gap-2 min-h-[56px] bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <span class="text-slate-500 font-bold italic text-xs">Select actions above...</span>
+                    </div>
+                </div>
+
+                <button id="check-linear-btn" onclick="checkLinearAnswer()" disabled 
+                    class="btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-extrabold text-base cursor-not-allowed">
+                    <i class="fa-solid fa-check"></i> <span id="lbl-check-1">TEST ALGORITHM</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="level-2" class="hidden">
+            <div class="game-card p-6 md:p-8 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="lvl2-tag" class="text-xs font-black uppercase text-amber-600">
+                                LEVEL 2: Flowcharts (DFD)
+                            </span>
+                            <span id="dfd-sublevel-counter" class="bg-amber-100 text-amber-800 text-[10px] font-black px-2.5 py-1 rounded-full">
+                                Exercise 1 of 5
+                            </span>
+                        </div>
+                        <h2 id="dfd-exercise-title" class="text-2xl font-black text-slate-800 mt-1">
+                            <!-- Dynamic DFD Title -->
+                        </h2>
+                    </div>
+                    <div id="dfd-exercise-icon" class="text-3xl bg-amber-100 p-2.5 rounded-2xl text-amber-600 flex items-center justify-center min-w-[54px] min-h-[54px] border-2 border-amber-200 shadow-sm">
+                        📐
+                    </div>
+                </div>
+
+                <div class="bg-amber-50/80 p-4 rounded-2xl border-2 border-amber-200 text-center space-y-1 relative has-hover-tr" id="dfd-instruction-box">
+                    <p id="lbl-instr-title-2" class="text-xs font-extrabold uppercase tracking-wider text-amber-500">INSTRUCTION:</p>
+                    <p id="dfd-instruction" class="text-base font-extrabold text-amber-800">
+                        Select or assemble the flowchart diagram.
+                    </p>
+                    <div id="dfd-instruction-tooltip" class="es-tooltip"></div>
+                </div>
+
+                <div id="dfd-body-container" class="space-y-4">
+                    <!-- Dynamic DFD area -->
+                </div>
+
+                <button id="check-dfd-btn" onclick="checkDfdAnswer()" disabled 
+                    class="btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-extrabold text-base cursor-not-allowed">
+                    <i class="fa-solid fa-check"></i> <span id="lbl-check-2">EVALUATE FLOWCHART</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="level-3" class="hidden">
+            <div class="game-card p-6 md:p-8 space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="lvl3-tag" class="text-xs font-black uppercase text-purple-600">LEVEL 3: Flow → Code Simulator</span>
+                            <span id="sim-sublevel-counter" class="bg-purple-100 text-purple-800 text-[10px] font-black px-2.5 py-1 rounded-full">Exercise 1 of 5</span>
+                        </div>
+                        <h2 id="lvl3-title" class="text-2xl font-black text-slate-800 mt-1">Build the flowchart and watch it become code</h2>
+                    </div>
+                    <div id="sim-exercise-icon" class="text-3xl bg-purple-100 p-2.5 rounded-2xl text-purple-600 flex items-center justify-center min-w-[54px] min-h-[54px]">🧠</div>
+                </div>
+
+                <div id="sim-instruction-box" class="bg-purple-50 p-4 rounded-2xl border-2 border-purple-200 text-center relative has-hover-tr">
+                    <p id="sim-instruction-title" class="text-xs font-extrabold uppercase tracking-wider text-purple-500">INSTRUCTION:</p>
+                    <p id="sim-instruction" class="text-base font-extrabold text-purple-900 mt-1"></p>
+                    <div id="sim-instruction-tooltip" class="es-tooltip"></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
+                            <span class="text-xs font-black text-slate-500 uppercase tracking-wider">🔷 FLOW MODE</span>
+                            <button id="sim-reset-btn" onclick="resetSimulatorExercise()" class="text-xs font-bold text-slate-500 hover:text-purple-700">↺ Reset</button>
+                        </div>
+                        <div id="sim-flow-canvas" class="min-h-[270px] flex flex-col items-center justify-center gap-2 text-xs font-bold text-slate-700">
+                            <span class="text-slate-400 italic">Select the flowchart blocks below...</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 text-white p-4 rounded-2xl border-4 border-slate-800 shadow-inner">
+                        <div class="border-b border-slate-800 pb-2 mb-3">
+                            <span class="text-xs font-mono font-bold text-sky-400">🤖 PROGRAM MODE</span>
+                            <div class="mt-1 text-[11px] font-mono text-slate-400">Algorithm: <span id="sim-algorithm-name" class="text-amber-300 font-bold">---</span></div>
+                        </div>
+                        <pre id="sim-code-canvas" class="font-mono text-[12px] leading-6 whitespace-pre-wrap bg-slate-950 p-4 rounded-xl border border-slate-800 text-slate-300 min-h-[270px] overflow-auto">// Select a flowchart block to generate the program...</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <p id="sim-options-label" class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Flowchart blocks</p>
+                    <div id="level3-options-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        <!-- Options generated dynamically -->
+                    </div>
+                </div>
+
+                <button id="check-simulator-btn" onclick="checkSimulatorAnswer()" disabled class="btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-extrabold text-base cursor-not-allowed">
+                    <i class="fa-solid fa-flask"></i> <span id="lbl-check-simulator">TEST ALGORITHM</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="final-screen" class="hidden game-card p-5 md:p-8 text-center my-4">
+            <div class="w-16 h-16 bg-amber-400 border-b-8 border-amber-600 rounded-full flex items-center justify-center text-3xl shadow-xl mx-auto mb-3 no-print">
+                🎓
+            </div>
+
+            <h2 id="final-cert-title" class="text-3xl md:text-4xl font-black text-slate-800 mb-2">
+                CERTIFICATE ✨
+            </h2>
+            <p id="final-cert-subtitle" class="text-slate-500 font-bold text-sm md:text-base mb-6 max-w-2xl mx-auto">
+                Congratulations <span id="final-username" class="text-sky-600 font-black">Student</span>! You completed the challenge successfully.
+            </p>
+
+            <div id="certificate-lock-message" class="hidden max-w-2xl mx-auto mb-5 bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 text-sm font-bold text-slate-700">
+                🔒 Certificate available only after completing the full challenge in <span class="text-sky-600 font-black">English</span>.
+            </div>
+
+            <div id="certificate-card" class="relative bg-white p-6 md:p-8 rounded-[28px] border-[3px] border-amber-300 max-w-2xl mx-auto mb-6 shadow-[0_12px_30px_rgba(15,23,42,0.08)] text-left overflow-hidden">
+                <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-amber-400 via-sky-400 to-violet-400"></div>
+                <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-amber-100/70"></div>
+
+                <div class="relative flex items-start justify-between gap-4 border-b border-slate-200 pb-4 mb-5">
+                    <div>
+                        <span id="cert-header-lbl" class="text-xs font-black uppercase tracking-[0.2em] text-amber-600 block">
+                            Certificate of Completion
+                        </span>
+                        <h3 id="cert-title-lbl" class="text-2xl md:text-3xl font-black text-slate-800 mt-1">
+                            Algorithm Academy
+                        </h3>
+                        <p class="text-xs md:text-sm text-slate-500 font-bold mt-1">Learning with @LaProfeVivy</p>
+                    </div>
+                    <div class="w-14 h-14 rounded-full border-4 border-amber-300 bg-amber-50 text-2xl flex items-center justify-center shadow-sm">🏅</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5 relative">
+                    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                        <div id="cert-lbl-student" class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Student</div>
+                        <div id="cert-student-name" class="text-base md:text-lg font-black text-slate-800 uppercase">STUDENT</div>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                        <div class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">NRC</div>
+                        <div id="cert-nrc" class="text-base md:text-lg font-black text-slate-800 uppercase">N/A</div>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                        <div id="cert-lbl-group" class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Group</div>
+                        <div id="cert-group" class="text-base md:text-lg font-black text-slate-800 uppercase">N/A</div>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                        <div id="cert-lbl-date" class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Completion Date</div>
+                        <div id="cert-date-time" class="text-sm md:text-base font-black text-slate-800">00/00/0000 · 00:00</div>
+                    </div>
+
+                    <div class="md:col-span-2 bg-sky-50 rounded-2xl p-4 border border-sky-200">
+                        <div id="cert-lbl-module" class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Completed Module</div>
+                        <div id="cert-module-val" class="text-sm md:text-base font-black text-sky-700 leading-snug">Linear Algorithms (Sequence), Flowcharts (DFD) & Control Flow</div>
+                    </div>
+
+                    <div class="md:col-span-2 bg-violet-50 rounded-2xl p-4 border border-violet-200">
+                        <div id="cert-lbl-instructor" class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Instructor</div>
+                        <div class="text-base md:text-lg font-black text-violet-600">@LaProfeVivy</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 text-center">
+                        <span id="cert-lbl-score" class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Total Score</span>
+                        <span id="final-score" class="text-2xl md:text-3xl font-black text-amber-500">500 XP</span>
+                    </div>
+                    <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-200 text-center">
+                        <span id="cert-lbl-status" class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Status</span>
+                        <span id="cert-status-val" class="text-sm md:text-base font-black text-emerald-600">Passed 100% ✨</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-3 no-print">
+                <button id="btn-print-certificate" onclick="printCertificate()" class="btn-3d font-black px-5 py-3 rounded-2xl text-xs md:text-sm bg-violet-500 border-violet-700 text-white shadow-lg flex items-center gap-2 hover:bg-violet-400">
+                    <i class="fa-solid fa-file-arrow-down"></i> <span id="btn-print-lbl">SAVE / PRINT CERTIFICATE</span>
+                </button>
+                <button onclick="restartGame()" class="btn-3d font-black px-5 py-3 rounded-2xl text-xs md:text-sm bg-sky-500 border-sky-700 text-white shadow-lg flex items-center gap-2 hover:bg-sky-400">
+                    <i class="fa-solid fa-rotate-right"></i> <span id="btn-again-lbl">PLAY AGAIN</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Feedback Toast Modal -->
+    <div id="feedback-modal" class="fixed bottom-6 inset-x-0 pointer-events-none flex items-center justify-center z-50 opacity-0 transition-opacity duration-300">
+        <div id="feedback-card" class="bg-white px-5 py-3 rounded-2xl shadow-2xl border-3 border-emerald-400 flex items-center gap-3 transform translate-y-4 transition-all duration-300">
+            <div id="feedback-icon" class="text-2xl">✨</div>
+            <div>
+                <h4 id="feedback-title" class="font-black text-sm text-slate-800">Awesome!</h4>
+                <p id="feedback-msg" class="text-xs font-bold text-slate-500">+100 XP gained</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-2 text-xs font-bold text-white/90 drop-shadow">
+        Algorithm Academy! ✨ Learning with @LaProfeVivy
+    </footer>
+
+    <script>
+        let currentLang = 'en'; // 'en', 'es', or 'hover'
+
+        let gameState = {
+            fullName: 'STUDENT',
+            nrc: 'N/A',
+            group: 'N/A',
+            score: 0,
+            currentLevel: 1,
+            currentLinearIndex: 0,
+            currentDfdIndex: 0,
+            weather: 'SUNNY',
+            linearSelected: [],
+            dfdSelected: [],
+            currentSimulatorIndex: 0,
+            simulatorSelected: [],
+            gameStarted: false,
+            englishOnlyRun: true,
+            completedAt: null
+        };
+
+        // Static UI Translations Dictionary
+        const uiText = {
+            en: {
+                levelBadge: (lvl) => `Level ${lvl} of 3`,
+                lblFullName: "Full First & Last Name",
+                lblNrc: "NRC",
+                lblGroup: "Group",
+                startBtn: "START CHALLENGE",
+                lvl1Tag: "LEVEL 1: Linear Algorithms",
+                sublevelCounter: (cur, total) => `Exercise ${cur} of ${total}`,
+                instrTitle: "INSTRUCTION:",
+                constructArea: "ALGORITHM CONSTRUCTION AREA",
+                resetBtn: "Reset",
+                seqPlaceholder: "Select actions above...",
+                checkLinearBtn: "TEST ALGORITHM",
+                lvl2Tag: "LEVEL 2: Flowcharts (DFD)",
+                checkDfdBtn: "EVALUATE FLOWCHART",
+                dfdCanvasPlaceholder: "Click flowchart symbols below to construct the diagram...",
+                dfdCanvasUnderConstruction: "FLOWCHART UNDER CONSTRUCTION:",
+                lvl3Tag: "LEVEL 3: Flow → Code Simulator",
+                lvl3Title: "Build the flowchart and watch it become code",
+                certMainTitle: "CERTIFICATE ✨",
+                certSubTitle: (user) => `Congratulations <span class="text-sky-600 font-black">${user}</span>! You completed the challenge successfully.`,
+                certOfficialHeader: "Certificate of Completion",
+                certCourseTitle: "Algorithm Academy",
+                certGraduatedStudent: "Student",
+                certGroupLbl: "Group:",
+                certModuleLbl: "Completed Module",
+                certModuleVal: "Linear Algorithms (Sequence), Flowcharts (DFD) & Control Flow",
+                certDateLbl: "Completion Date",
+                certInstructorLbl: "Instructor:",
+                certTotalScore: "Total Score",
+                certStatusLbl: "Status",
+                certStatusVal: "Passed 100% ✨",
+                btnPrint: "SAVE / PRINT CERTIFICATE",
+                btnPdf: "",
+                btnAgain: "PLAY AGAIN"
+            },
+            es: {
+                levelBadge: (lvl) => `Nivel ${lvl} de 3`,
+                lblFullName: "Nombre y Apellido Completo",
+                lblNrc: "NRC",
+                lblGroup: "Grupo",
+                startBtn: "INICIAR DESAFÍO",
+                lvl1Tag: "NIVEL 1: Algoritmos Lineales",
+                sublevelCounter: (cur, total) => `Ejercicio ${cur} de ${total}`,
+                instrTitle: "INSTRUCCIÓN:",
+                constructArea: "ÁREA DE CONSTRUCCIÓN DEL ALGORITMO",
+                resetBtn: "Reiniciar",
+                seqPlaceholder: "Selecciona las acciones arriba...",
+                checkLinearBtn: "PROBAR ALGORITMO",
+                lvl2Tag: "NIVEL 2: Diagramas de Flujo (DFD)",
+                checkDfdBtn: "EVALUAR DIAGRAMA",
+                dfdCanvasPlaceholder: "Haz clic en los símbolos del diagrama para construir el flujo...",
+                dfdCanvasUnderConstruction: "DIAGRAMA EN CONSTRUCCIÓN:",
+                lvl3Tag: "NIVEL 3: Simulador Flujo → Código",
+                lvl3Title: "Construye el diagrama y observa cómo se convierte en código",
+                certMainTitle: "CERTIFICADO ✨",
+                certSubTitle: (user) => `¡Felicitaciones <span class="text-sky-600 font-black">${user}</span>! Completaste el reto con éxito.`,
+                certOfficialHeader: "Certificado de finalización",
+                certCourseTitle: "Algorithm Academy",
+                certGraduatedStudent: "Estudiante",
+                certGroupLbl: "Grupo:",
+                certModuleLbl: "Módulo completado",
+                certModuleVal: "Algoritmos Lineales (Secuencia), Diagramas de Flujo (DFD) y Flujo de Control",
+                certDateLbl: "Fecha de finalización",
+                certInstructorLbl: "Instructora:",
+                certTotalScore: "Puntaje Total",
+                certStatusLbl: "Estado",
+                certStatusVal: "Aprobado 100% ✨",
+                btnPrint: "GUARDAR / IMPRIMIR CERTIFICADO",
+                btnPdf: "",
+                btnAgain: "VOLVER A JUGAR"
+            }
+        };
+
+        const linearExercises = [
+            {
+                title_en: 'What is an Algorithm?',
+                title_es: '¿Qué es un Algoritmo?',
+                icon: '🧩',
+                instruction_en: 'Select the most clear and complete definition.',
+                instruction_es: 'Selecciona la definición más clara y completa.',
+                type: 'quiz',
+                question_en: 'How would you explain to a friend what an Algorithm is?',
+                question_es: '¿Cómo le explicarías a un amigo qué es un Algoritmo?',
+                options: [
+                    { 
+                        text_en: '💡 A set of clear, finite, and ordered steps to solve a problem or complete a task.', 
+                        text_es: '💡 Un conjunto de pasos claros, finitos y ordenados para resolver un problema o realizar una tarea.',
+                        isCorrect: true,
+                        explanation_en: 'Spot on! An algorithm is like a cooking recipe: precise steps leading to a result.',
+                        explanation_es: '¡Exacto! Un algoritmo es como una receta de cocina: pasos precisos que llevan a un resultado.'
+                    },
+                    { 
+                        text_en: '🤖 A smart robot that automatically does your homework for you.', 
+                        text_es: '🤖 Un robot inteligente que hace la tarea automáticamente por ti.',
+                        isCorrect: false,
+                        explanation_en: 'Not quite! A robot executes algorithms, but the algorithm itself is the set of instructions.',
+                        explanation_es: '¡Casi! Un robot ejecuta algoritmos, pero el algoritmo es la lista de instrucciones.'
+                    },
+                    { 
+                        text_en: '🌐 A website that only functions when you connect to Wi-Fi.', 
+                        text_es: '🌐 Un sitio web que solo funciona cuando te conectas a Wi-Fi.',
+                        isCorrect: false,
+                        explanation_en: 'An algorithm is a logical sequence—you can even write algorithms on paper!',
+                        explanation_es: 'Un algoritmo es una secuencia lógica, ¡incluso puedes escribir algoritmos en papel!'
+                    }
+                ]
+            },
+            {
+                title_en: 'What is a Linear Algorithm (Sequence)?',
+                title_es: '¿Qué es un Algoritmo Lineal (Secuencia)?',
+                icon: '➡️',
+                instruction_en: 'Choose the option that explains step-by-step execution.',
+                instruction_es: 'Elige la opción que explica la ejecución paso a paso.',
+                type: 'quiz',
+                question_en: 'Why is a linear algorithm also called "Sequential"?',
+                question_es: '¿Por qué a un algoritmo lineal también se le llama "Secuencial"?',
+                options: [
+                    { 
+                        text_en: '✨ Because its instructions execute one after another in strict top-to-bottom order without skipping.', 
+                        text_es: '✨ Porque sus instrucciones se ejecutan una tras otra en estricto orden de arriba a abajo sin saltos.',
+                        isCorrect: true,
+                        explanation_en: 'Correct! In linear algorithms, Step 2 never occurs before Step 1.',
+                        explanation_es: '¡Correcto! En algoritmos lineales, el Paso 2 nunca ocurre antes del Paso 1.'
+                    },
+                    { 
+                        text_en: '🔀 Because it executes steps randomly depending on what the computer feels like doing.', 
+                        text_es: '🔀 Porque ejecuta los pasos al azar según lo que la computadora quiera hacer.',
+                        isCorrect: false,
+                        explanation_en: 'Linear algorithms are not random; they follow a straight line of defined steps.',
+                        explanation_es: 'Los algoritmos lineales no son al azar, siguen una línea recta de pasos definidos.'
+                    },
+                    { 
+                        text_en: '📏 Because it is used only for drawing straight lines on the computer screen.', 
+                        text_es: '📏 Porque sirve únicamente para dibujar líneas rectas en la pantalla de la computadora.',
+                        isCorrect: false,
+                        explanation_en: 'The term "linear" refers to the direct flow of step-by-step execution.',
+                        explanation_es: 'El término "lineal" se refiere al flujo directo de ejecución paso a paso.'
+                    }
+                ]
+            },
+            {
+                title_en: 'Crossing the Street Safely',
+                title_es: 'Cruzar la Calle de Forma Segura',
+                icon: '🚦',
+                instruction_en: 'Arrange the steps in the correct order from 1 to 4 to cross.',
+                instruction_es: 'Organiza los pasos en el orden correcto de 1 a 4 para cruzar.',
+                type: 'sequence',
+                steps: [
+                    { id: 'ex1-1', icon: '🛑', text_en: 'Reach the corner and stop', text_es: 'Llegar a la esquina y detenerse', order: 1 },
+                    { id: 'ex1-2', icon: '🚦', text_en: 'Look at the pedestrian light', text_es: 'Mirar el semáforo peatonal', order: 2 },
+                    { id: 'ex1-3', icon: '🟢', text_en: 'Wait for green pedestrian light', text_es: 'Esperar luz verde peatonal', order: 3 },
+                    { id: 'ex1-4', icon: '🚶‍♂️', text_en: 'Cross the street looking both ways', text_es: 'Cruzar la calle mirando a ambos lados', order: 4 }
+                ]
+            },
+            {
+                title_en: 'Putting On Shoes',
+                title_es: 'Ponerse los Zapatos',
+                icon: '👟',
+                instruction_en: 'Organize the daily sequence logic from 1 to 4.',
+                instruction_es: 'Organiza la secuencia lógica diaria de 1 a 4.',
+                type: 'sequence',
+                steps: [
+                    { id: 'ex2-1', icon: '🧦', text_en: 'Put on socks first', text_es: 'Ponerse las medias/calcetines primero', order: 1 },
+                    { id: 'ex2-2', icon: '👟', text_en: 'Slide feet into shoes', text_es: 'Meter los pies en los zapatos', order: 2 },
+                    { id: 'ex2-3', icon: '🪢', text_en: 'Tie the shoe laces tightly', text_es: 'Atar los cordones firmemente', order: 3 },
+                    { id: 'ex2-4', icon: '🏃', text_en: 'Walk out happily', text_es: 'Salir a caminar felizmente', order: 4 }
+                ]
+            },
+            {
+                title_en: 'Withdrawing Money from an ATM',
+                title_es: 'Retirar Dinero del Cajero Automático',
+                icon: '🏧',
+                instruction_en: 'Organize the 6 steps of using an ATM in sequential order.',
+                instruction_es: 'Organiza los 6 pasos para usar un cajero automático en orden secuencial.',
+                type: 'sequence',
+                steps: [
+                    { id: 'ex5-1', icon: '💳', text_en: 'Insert card into slot', text_es: 'Insertar la tarjeta en la ranura', order: 1 },
+                    { id: 'ex5-2', icon: '🔢', text_en: 'Enter secret PIN code', text_es: 'Ingresar la clave o PIN secreto', order: 2 },
+                    { id: 'ex5-3', icon: '💵', text_en: 'Select Cash Withdrawal option', text_es: 'Seleccionar la opción Retiro de Efectivo', order: 3 },
+                    { id: 'ex5-4', icon: '⌨️', text_en: 'Enter desired amount of money', text_es: 'Ingresar el monto deseado de dinero', order: 4 },
+                    { id: 'ex5-5', icon: '💸', text_en: 'Take cash dispensed by machine', text_es: 'Tomar el dinero entregado por la máquina', order: 5 },
+                    { id: 'ex5-6', icon: '📄', text_en: 'Retrieve card and receipt', text_es: 'Retirar la tarjeta y el recibo', order: 6 }
+                ]
+            }
+        ];
+
+        const dfdExercises = [
+            {
+                title_en: 'Flowchart Symbols (DFD)',
+                title_es: 'Símbolos del Diagrama de Flujo (DFD)',
+                icon: '📐',
+                instruction_en: 'Learn the function of each geometric symbol.',
+                instruction_es: 'Aprende la función de cada símbolo geométrico.',
+                type: 'quiz',
+                question_en: 'Which symbol in a Flowchart is used to ask a QUESTION or MAKE A DECISION?',
+                question_es: '¿Qué símbolo en un Diagrama de Flujo se usa para hacer una PREGUNTA o DECISIÓN?',
+                options: [
+                    { 
+                        text_en: '🔷 Rhombus / Diamond (Decision Making: Yes or No?)', 
+                        text_es: '🔷 Rombo / Diamante (Toma de Decisión: ¿Sí o No?)',
+                        isCorrect: true, 
+                        explanation_en: 'Excellent! The Rhombus evaluates a condition and splits the path.',
+                        explanation_es: '¡Excelente! El Rombo evalúa una condición y divide el camino.' 
+                    },
+                    { 
+                        text_en: '🟢 Oval (Marks the Start and End)', 
+                        text_es: '🟢 Óvalo (Marca el Inicio y el Fin)',
+                        isCorrect: false, 
+                        explanation_en: 'The oval delimits where the diagram starts and finishes.',
+                        explanation_es: 'El óvalo únicamente delimita dónde inicia y termina el diagrama.' 
+                    },
+                    { 
+                        text_en: '🟦 Rectangle (Represents a Process or Action)', 
+                        text_es: '🟦 Rectángulo (Representa un Proceso o Acción)',
+                        isCorrect: false, 
+                        explanation_en: 'The rectangle performs operations, actions, or calculations.',
+                        explanation_es: 'El rectángulo realiza operaciones, acciones o cálculos.' 
+                    }
+                ]
+            },
+            {
+                title_en: 'Assigning Flowchart Symbols',
+                title_es: 'Asignando Símbolos en Diagramas',
+                icon: '🏷️',
+                instruction_en: 'Identify the proper geometric shape for an action.',
+                instruction_es: 'Identifica la forma geométrica adecuada para una acción.',
+                type: 'quiz',
+                question_en: 'If we want to represent the action: "Calculate the sum of two numbers", which shape should we use?',
+                question_es: 'Si queremos representar la acción: "Calcular la suma de dos números", ¿qué figura debemos usar?',
+                options: [
+                    { 
+                        text_en: '🟦 Process Rectangle', 
+                        text_es: '🟦 Rectángulo de Proceso',
+                        isCorrect: true, 
+                        explanation_en: 'Great job! Calculating or processing data is always placed in a rectangle.',
+                        explanation_es: '¡Gran trabajo! Calcular o procesar datos siempre va dentro de un rectángulo.' 
+                    },
+                    { 
+                        text_en: '🔷 Decision Rhombus', 
+                        text_es: '🔷 Rombo de Decisión',
+                        isCorrect: false, 
+                        explanation_en: 'The rhombus is used only when asking questions or checking conditions.',
+                        explanation_es: 'El rombo se usa únicamente al hacer preguntas o verificar condiciones.' 
+                    },
+                    { 
+                        text_en: '🟢 Start Oval', 
+                        text_es: '🟢 Óvalo de Inicio',
+                        isCorrect: false, 
+                        explanation_en: 'The oval solely indicates start or end points.',
+                        explanation_es: 'El óvalo únicamente indica el punto de inicio o final.' 
+                    }
+                ]
+            },
+            {
+                title_en: 'Turning On a Lamp',
+                title_es: 'Encender una Lámpara',
+                icon: '🔌',
+                instruction_en: 'Arrange the basic blocks of a simple flow process.',
+                instruction_es: 'Organiza los bloques básicos de un proceso de flujo simple.',
+                type: 'arrange',
+                correctOrder: ['dfd1-1', 'dfd1-2', 'dfd1-3'],
+                blocks: [
+                    { id: 'dfd1-1', shape: 'oval', text_en: '🟢 START', text_es: '🟢 INICIO', border: 'border-emerald-400', color: 'text-emerald-700' },
+                    { id: 'dfd1-2', shape: 'rect', text_en: '🔌 Plug in & Switch ON', text_es: '🔌 Enchufar y Encender', border: 'border-sky-400', color: 'text-sky-800' },
+                    { id: 'dfd1-3', shape: 'oval', text_en: '🔴 END', text_es: '🔴 FIN', border: 'border-rose-400', color: 'text-rose-700' }
+                ]
+            },
+            {
+                title_en: 'Workday & Alarm Clock ⏰',
+                title_es: 'Día de Trabajo y Despertador ⏰',
+                icon: '⏰',
+                instruction_en: 'It is a workday. Organize the flow to decide whether to get up for work or keep sleeping.',
+                instruction_es: 'Es un día de trabajo. Organiza el flujo para decidir entre levantarte para ir a trabajar o seguir durmiendo.',
+                type: 'arrange',
+                correctOrder: ['dfd2-1', 'dfd2-2', 'dfd2-3', 'dfd2-4', 'dfd2-5'],
+                blocks: [
+                    { id: 'dfd2-1', shape: 'oval', text_en: '🟢 START', text_es: '🟢 INICIO', border: 'border-emerald-400', color: 'text-emerald-700' },
+                    { id: 'dfd2-2', shape: 'rect', text_en: '⏰ Alarm Clock Rings', text_es: '⏰ Suena la Alarma', border: 'border-sky-400', color: 'text-sky-800' },
+                    { id: 'dfd2-3', shape: 'rhombus', text_en: 'Am I sleepy?', text_es: '¿Tengo sueño?', border: 'border-amber-400', color: 'text-amber-800' },
+                    { id: 'dfd2-4', shape: 'rect', text_en: '🏃 Get up to go to work', text_es: '🏃 Levantarse a trabajar', border: 'border-emerald-500', color: 'text-emerald-800' },
+                    { id: 'dfd2-5', shape: 'oval', text_en: '🔴 END', text_es: '🔴 FIN', border: 'border-rose-400', color: 'text-rose-700' }
+                ]
+            },
+            {
+                title_en: 'Weather & Umbrella Flowchart',
+                title_es: 'Diagrama de Clima y Sombrilla',
+                icon: '🌧️',
+                instruction_en: 'Organize the structure to evaluate whether to bring an umbrella.',
+                instruction_es: 'Organiza la estructura para evaluar si llevar sombrilla.',
+                type: 'arrange',
+                correctOrder: ['dfd3-1', 'dfd3-2', 'dfd3-3', 'dfd3-4', 'dfd3-5'],
+                blocks: [
+                    { id: 'dfd3-1', shape: 'oval', text_en: '🟢 START', text_es: '🟢 INICIO', border: 'border-emerald-400', color: 'text-emerald-700' },
+                    { id: 'dfd3-2', shape: 'rect', text_en: '🌤️ Look at the Sky', text_es: '🌤️ Mirar el Cielo', border: 'border-sky-400', color: 'text-sky-800' },
+                    { id: 'dfd3-3', shape: 'rhombus', text_en: 'Is it Raining?', text_es: '¿Está Lloviendo?', border: 'border-amber-400', color: 'text-amber-800' },
+                    { id: 'dfd3-4', shape: 'rect', text_en: '☂️ Take Umbrella', text_es: '☂️ Llevar Sombrilla', border: 'border-purple-400', color: 'text-purple-800' },
+                    { id: 'dfd3-5', shape: 'oval', text_en: '🔴 END', text_es: '🔴 FIN', border: 'border-rose-400', color: 'text-rose-700' }
+                ]
+            }
+        ];
+
+        const simulatorExercises = [
+            {
+                name_en: 'Lamp_On', name_es: 'Encender_Lampara', icon: '💡',
+                instruction_en: 'Build the flowchart to turn on a lamp in the correct sequence.',
+                instruction_es: 'Construye el diagrama de flujo para encender una lámpara en la secuencia correcta.',
+                correctOrder: ['sim1-start','sim1-plug','sim1-switch','sim1-end'],
+                blocks: [
+                    {id:'sim1-start', shape:'oval', label_en:'🟢 START', label_es:'🟢 INICIO', code_en:'START', code_es:'INICIO'},
+                    {id:'sim1-plug', shape:'rect', label_en:'🔌 Plug in the lamp', label_es:'🔌 Enchufar la lámpara', code_en:'plug_in(lamp)', code_es:'enchufar(lampara)'},
+                    {id:'sim1-switch', shape:'rect', label_en:'💡 Switch lamp ON', label_es:'💡 Encender la lámpara', code_en:'lamp = ON', code_es:'lampara = ENCENDIDA'},
+                    {id:'sim1-end', shape:'oval', label_en:'🔴 END', label_es:'🔴 FIN', code_en:'END', code_es:'FIN'}
+                ]
+            },
+            {
+                name_en: 'Cross_Street_Safely', name_es: 'Cruzar_Calle_Seguro', icon: '🚦',
+                instruction_en: 'Build the safe sequence for crossing the street.',
+                instruction_es: 'Construye la secuencia segura para cruzar la calle.',
+                correctOrder: ['sim2-start','sim2-corner','sim2-light','sim2-wait','sim2-cross','sim2-end'],
+                blocks: [
+                    {id:'sim2-start', shape:'oval', label_en:'🟢 START', label_es:'🟢 INICIO', code_en:'START', code_es:'INICIO'},
+                    {id:'sim2-corner', shape:'rect', label_en:'🛑 Reach corner and stop', label_es:'🛑 Llegar a la esquina y detenerse', code_en:'stop_at_corner()', code_es:'detenerse_en_esquina()'},
+                    {id:'sim2-light', shape:'rect', label_en:'🚦 Check pedestrian light', label_es:'🚦 Mirar semáforo peatonal', code_en:'check(pedestrian_light)', code_es:'mirar(semaforo_peatonal)'},
+                    {id:'sim2-wait', shape:'rect', label_en:'🟢 Wait for green', label_es:'🟢 Esperar luz verde', code_en:'wait_until(GREEN)', code_es:'esperar_hasta(VERDE)'},
+                    {id:'sim2-cross', shape:'rect', label_en:'🚶 Cross looking both ways', label_es:'🚶 Cruzar mirando a ambos lados', code_en:'cross_street()', code_es:'cruzar_calle()'},
+                    {id:'sim2-end', shape:'oval', label_en:'🔴 END', label_es:'🔴 FIN', code_en:'END', code_es:'FIN'}
+                ]
+            },
+            {
+                name_en: 'ATM_Withdrawal', name_es: 'Retiro_Cajero', icon: '🏧',
+                instruction_en: 'Build the algorithm for withdrawing cash from an ATM.',
+                instruction_es: 'Construye el algoritmo para retirar dinero de un cajero automático.',
+                correctOrder: ['sim3-start','sim3-card','sim3-pin','sim3-withdraw','sim3-amount','sim3-cash','sim3-end'],
+                blocks: [
+                    {id:'sim3-start', shape:'oval', label_en:'🟢 START', label_es:'🟢 INICIO', code_en:'START', code_es:'INICIO'},
+                    {id:'sim3-card', shape:'rect', label_en:'💳 Insert card', label_es:'💳 Insertar tarjeta', code_en:'insert(card)', code_es:'insertar(tarjeta)'},
+                    {id:'sim3-pin', shape:'rect', label_en:'🔢 Enter PIN', label_es:'🔢 Ingresar PIN', code_en:'read(PIN)', code_es:'leer(PIN)'},
+                    {id:'sim3-withdraw', shape:'rect', label_en:'💵 Select withdrawal', label_es:'💵 Seleccionar retiro', code_en:'option = WITHDRAWAL', code_es:'opcion = RETIRO'},
+                    {id:'sim3-amount', shape:'rect', label_en:'⌨️ Enter amount', label_es:'⌨️ Ingresar monto', code_en:'read(amount)', code_es:'leer(monto)'},
+                    {id:'sim3-cash', shape:'rect', label_en:'💸 Take cash', label_es:'💸 Tomar dinero', code_en:'take(cash)', code_es:'tomar(dinero)'},
+                    {id:'sim3-end', shape:'oval', label_en:'🔴 END', label_es:'🔴 FIN', code_en:'END', code_es:'FIN'}
+                ]
+            },
+            {
+                name_en: 'Workday_Alarm', name_es: 'Alarma_Dia_Trabajo', icon: '⏰',
+                instruction_en: 'It is a workday. Build the decision: get up for work or keep sleeping.',
+                instruction_es: 'Es un día de trabajo. Construye la decisión: levantarte para ir a trabajar o seguir durmiendo.',
+                correctOrder: ['sim4-start','sim4-alarm','sim4-decision','sim4-yes','sim4-no','sim4-end'],
+                blocks: [
+                    {id:'sim4-start', shape:'oval', label_en:'🟢 START', label_es:'🟢 INICIO', code_en:'START', code_es:'INICIO'},
+                    {id:'sim4-alarm', shape:'rect', label_en:'⏰ Alarm rings', label_es:'⏰ Suena la alarma', code_en:'alarm = RINGING', code_es:'alarma = SONANDO'},
+                    {id:'sim4-decision', shape:'rhombus', label_en:'🔷 Am I sleepy?', label_es:'🔷 ¿Tengo sueño?', code_en:'IF sleepy == YES THEN', code_es:'SI sueño == SI ENTONCES'},
+                    {id:'sim4-yes', shape:'rect', label_en:'YES → 😴 Keep sleeping', label_es:'SÍ → 😴 Seguir durmiendo', code_en:'    keep_sleeping()', code_es:'    seguir_durmiendo()'},
+                    {id:'sim4-no', shape:'rect', label_en:'NO → 🏃 Get up for work', label_es:'NO → 🏃 Levantarse a trabajar', code_en:'ELSE\n    get_up_for_work()', code_es:'SINO\n    levantarse_a_trabajar()'},
+                    {id:'sim4-end', shape:'oval', label_en:'🔴 END', label_es:'🔴 FIN', code_en:'END IF\nEND', code_es:'FIN SI\nFIN'}
+                ]
+            },
+            {
+                name_en: 'Umbrella_Decision', name_es: 'Decision_Sombrilla', icon: '🌧️',
+                instruction_en: 'Build the decision for taking an umbrella depending on the weather.',
+                instruction_es: 'Construye la decisión para llevar sombrilla según el clima.',
+                correctOrder: ['sim5-start','sim5-look','sim5-decision','sim5-yes','sim5-no','sim5-end'],
+                blocks: [
+                    {id:'sim5-start', shape:'oval', label_en:'🟢 START', label_es:'🟢 INICIO', code_en:'START', code_es:'INICIO'},
+                    {id:'sim5-look', shape:'rect', label_en:'🌤️ Look at the sky', label_es:'🌤️ Mirar el cielo', code_en:'observe(sky)', code_es:'observar(cielo)'},
+                    {id:'sim5-decision', shape:'rhombus', label_en:'🔷 Is it raining?', label_es:'🔷 ¿Está lloviendo?', code_en:'IF raining == YES THEN', code_es:'SI llueve == SI ENTONCES'},
+                    {id:'sim5-yes', shape:'rect', label_en:'YES → ☂️ Take umbrella', label_es:'SÍ → ☂️ Llevar sombrilla', code_en:'    take(umbrella)', code_es:'    llevar(sombrilla)'},
+                    {id:'sim5-no', shape:'rect', label_en:'NO → 🚶 Go without umbrella', label_es:'NO → 🚶 Salir sin sombrilla', code_en:'ELSE\n    go_without_umbrella()', code_es:'SINO\n    salir_sin_sombrilla()'},
+                    {id:'sim5-end', shape:'oval', label_en:'🔴 END', label_es:'🔴 FIN', code_en:'END IF\nEND', code_es:'FIN SI\nFIN'}
+                ]
+            }
+        ];
+
+        // Web Audio Synthesizer sound generator
+        let audioCtx = null;
+        function playSound(type) {
+            try {
+                if (!audioCtx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) audioCtx = new AudioContext();
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+                
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'win') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                }
+            } catch (e) {
+                // Ignore audio errors gracefully
+            }
+        }
+
+
+        function shuffleArray(items) {
+            const arr = [...items];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function speakText(text, lang = 'en-US') {
+            if (!('speechSynthesis' in window) || !text) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakCurrentScreen() {
+            const visibleIds = ['welcome-screen', 'level-1', 'level-2', 'level-3', 'final-screen'];
+            const visible = visibleIds
+                .map(id => document.getElementById(id))
+                .find(el => el && !el.classList.contains('hidden'));
+
+            if (!visible) return;
+
+            let text = visible.innerText
+                .replace(/\s+/g, ' ')
+                .replace(/\d+\s*\/\s*500\s*XP/gi, '')
+                .trim();
+
+            if (!text) return;
+            const speechLang = currentLang === 'es' ? 'es-ES' : 'en-US';
+            speakText(text, speechLang);
+        }
+
+        function setLanguage(lang) {
+            playSound('click');
+            currentLang = lang;
+
+            // Highlight header active lang button
+            const btnEn = document.getElementById('lang-btn-en');
+            const btnEs = document.getElementById('lang-btn-es');
+            const btnHover = document.getElementById('lang-btn-hover');
+
+            [btnEn, btnEs, btnHover].forEach(b => {
+                if (b) {
+                    b.className = "px-2.5 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-800 transition-all";
+                }
+            });
+
+            if (lang === 'en' && btnEn) btnEn.className = "px-2.5 py-1 rounded-lg text-xs font-black bg-white shadow text-sky-600 transition-all";
+            if (lang === 'es' && btnEs) btnEs.className = "px-2.5 py-1 rounded-lg text-xs font-black bg-white shadow text-sky-600 transition-all";
+            if (lang === 'hover' && btnHover) btnHover.className = "px-2.5 py-1 rounded-lg text-xs font-black bg-white shadow text-sky-600 transition-all";
+
+            // Welcome screen mode indicators
+            const wEn = document.getElementById('welcome-lang-en');
+            const wHover = document.getElementById('welcome-lang-hover');
+            const wEs = document.getElementById('welcome-lang-es');
+
+            if (gameState.gameStarted && lang !== 'en') {
+                gameState.englishOnlyRun = false;
+            }
+
+            if (wEn && wHover && wEs) {
+                [wEn, wHover, wEs].forEach(b => b.className = "py-2.5 rounded-xl bg-white text-slate-600 hover:bg-sky-50 border border-slate-200 font-bold transition-all");
+                if (lang === 'en') {
+                    wEn.className = "py-2.5 rounded-xl bg-sky-500 text-white shadow font-black transition-all";
+                } else if (lang === 'hover') {
+                    wHover.className = "py-2.5 rounded-xl bg-sky-500 text-white shadow font-black transition-all";
+                } else if (lang === 'es') {
+                    wEs.className = "py-2.5 rounded-xl bg-sky-500 text-white shadow font-black transition-all";
+                }
+            }
+
+            updateStaticTexts();
+            refreshCurrentLevelUI();
+        }
+
+        function updateStaticTexts() {
+            const langKey = (currentLang === 'es') ? 'es' : 'en';
+            const t = uiText[langKey];
+
+            document.getElementById('lbl-fullname').innerText = t.lblFullName;
+            document.getElementById('lbl-nrc').innerText = t.lblNrc;
+            document.getElementById('lbl-group').innerText = t.lblGroup;
+            document.getElementById('lbl-start-btn').innerText = t.startBtn;
+
+            document.getElementById('level-badge').innerText = t.levelBadge(gameState.currentLevel);
+            document.getElementById('lvl1-tag').innerText = t.lvl1Tag;
+            document.getElementById('lbl-instr-title').innerText = t.instrTitle;
+            document.getElementById('lbl-construct-area').innerText = t.constructArea;
+            document.getElementById('lbl-reset-1').innerText = t.resetBtn;
+            document.getElementById('lbl-check-1').innerText = t.checkLinearBtn;
+
+            document.getElementById('lvl2-tag').innerText = t.lvl2Tag;
+            document.getElementById('lbl-instr-title-2').innerText = t.instrTitle;
+            document.getElementById('lbl-check-2').innerText = t.checkDfdBtn;
+
+            document.getElementById('lvl3-tag').innerText = t.lvl3Tag;
+            document.getElementById('lvl3-title').innerText = t.lvl3Title;
+            const simInstrTitle = document.getElementById('sim-instruction-title');
+            const simOptionsLabel = document.getElementById('sim-options-label');
+            const simCheckLabel = document.getElementById('lbl-check-simulator');
+            const simResetBtn = document.getElementById('sim-reset-btn');
+            if (simInstrTitle) simInstrTitle.innerText = t.instrTitle;
+            if (simOptionsLabel) simOptionsLabel.innerText = currentLang === 'es' ? 'Bloques del diagrama' : 'Flowchart blocks';
+            if (simCheckLabel) simCheckLabel.innerText = currentLang === 'es' ? 'PROBAR ALGORITMO' : 'TEST ALGORITHM';
+            if (simResetBtn) simResetBtn.innerText = currentLang === 'es' ? '↺ Reiniciar' : '↺ Reset';
+
+            document.getElementById('final-cert-title').innerText = t.certMainTitle;
+            document.getElementById('final-cert-subtitle').innerHTML = t.certSubTitle(gameState.fullName);
+            document.getElementById('cert-header-lbl').innerText = t.certOfficialHeader;
+            document.getElementById('cert-title-lbl').innerText = t.certCourseTitle;
+            document.getElementById('cert-lbl-student').innerText = t.certGraduatedStudent;
+            document.getElementById('cert-lbl-group').innerText = t.certGroupLbl;
+            document.getElementById('cert-lbl-module').innerText = t.certModuleLbl;
+            document.getElementById('cert-module-val').innerText = t.certModuleVal;
+            document.getElementById('cert-lbl-date').innerText = t.certDateLbl;
+            document.getElementById('cert-lbl-instructor').innerText = t.certInstructorLbl;
+            document.getElementById('cert-lbl-score').innerText = t.certTotalScore;
+            document.getElementById('cert-lbl-status').innerText = t.certStatusLbl;
+            document.getElementById('cert-status-val').innerText = t.certStatusVal;
+            document.getElementById('btn-print-lbl').innerText = t.btnPrint;
+            document.getElementById('btn-again-lbl').innerText = t.btnAgain;
+        }
+
+        function refreshCurrentLevelUI() {
+            if (gameState.currentLevel === 1) initLinearLevel();
+            else if (gameState.currentLevel === 2) initDfdLevel();
+            else if (gameState.currentLevel === 3) initLevel3();
+        }
+
+        function validateStartForm() {
+            const fullNameVal = document.getElementById('fullname-input').value.trim();
+            const nrcVal = document.getElementById('nrc-input').value.trim();
+            const groupVal = document.getElementById('group-input').value.trim();
+            const btn = document.getElementById('start-btn');
+
+            if (fullNameVal && nrcVal && groupVal) {
+                btn.disabled = false;
+                btn.className = "btn-3d w-full font-black py-3.5 rounded-2xl text-lg bg-emerald-500 border-emerald-700 text-white shadow-lg flex items-center justify-center gap-2 hover:bg-emerald-400 cursor-pointer transition-all";
+            } else {
+                btn.disabled = true;
+                btn.className = "btn-3d w-full font-black py-3.5 rounded-2xl text-lg bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed shadow-lg flex items-center justify-center gap-2 transition-all";
+            }
+        }
+
+        function startGame() {
+            const fullNameVal = document.getElementById('fullname-input').value.trim();
+            const nrcVal = document.getElementById('nrc-input').value.trim();
+            const groupVal = document.getElementById('group-input').value.trim();
+
+            if (!fullNameVal || !nrcVal || !groupVal) {
+                showToast('Missing Info! 📝', 'Please fill in Name, NRC, and Group to proceed.', false);
+                return;
+            }
+
+            playSound('click');
+            gameState.gameStarted = true;
+            gameState.englishOnlyRun = (currentLang === 'en');
+            gameState.fullName = fullNameVal.toUpperCase();
+            gameState.nrc = nrcVal.toUpperCase();
+            gameState.group = groupVal.toUpperCase();
+
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('main-header').classList.remove('hidden');
+            loadLevel(1);
+        }
+
+        function loadLevel(levelNum) {
+            gameState.currentLevel = levelNum;
+            const langKey = (currentLang === 'es') ? 'es' : 'en';
+            document.getElementById('level-badge').innerText = uiText[langKey].levelBadge(levelNum);
+            
+            const screens = ['welcome-screen', 'level-1', 'level-2', 'level-3', 'final-screen'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            if (levelNum === 1) {
+                document.getElementById('level-1').classList.remove('hidden');
+                initLinearLevel();
+            } else if (levelNum === 2) {
+                document.getElementById('level-2').classList.remove('hidden');
+                initDfdLevel();
+            } else if (levelNum === 3) {
+                document.getElementById('level-3').classList.remove('hidden');
+                initLevel3();
+            } else if (levelNum === 4) {
+                showFinalScreen();
+            }
+        }
+
+        function initLinearLevel() {
+            gameState.linearSelected = [];
+            const currentEx = linearExercises[gameState.currentLinearIndex];
+            const langKey = (currentLang === 'es') ? 'es' : 'en';
+
+            document.getElementById('sublevel-counter').innerText = uiText[langKey].sublevelCounter(gameState.currentLinearIndex + 1, linearExercises.length);
+            
+            // Dynamic Title & Instructions
+            const titleText = currentEx[`title_${langKey}`] || currentEx.title_en;
+            document.getElementById('linear-exercise-title').innerText = titleText;
+            document.getElementById('linear-exercise-icon').innerText = currentEx.icon;
+
+            const instrText = currentEx[`instruction_${langKey}`] || currentEx.instruction_en;
+            document.getElementById('linear-instruction').innerText = instrText;
+
+            // Hover tooltip for instruction
+            const instrTooltip = document.getElementById('linear-instruction-tooltip');
+            if (currentLang === 'hover') {
+                instrTooltip.innerText = `💬 ES: ${currentEx.instruction_es}`;
+                document.getElementById('linear-instruction-box').classList.add('has-hover-tr');
+            } else {
+                instrTooltip.innerText = '';
+                document.getElementById('linear-instruction-box').classList.remove('has-hover-tr');
+            }
+
+            const container = document.getElementById('linear-options');
+            container.innerHTML = '';
+
+            if (currentEx.type === 'quiz') {
+                document.getElementById('linear-sequence').parentNode.classList.add('hidden');
+                document.getElementById('check-linear-btn').classList.add('hidden');
+
+                const qText = document.createElement('div');
+                qText.className = 'col-span-full text-center font-black text-slate-800 text-base md:text-lg mb-2 p-3 bg-amber-50 rounded-xl border border-amber-200 relative has-hover-tr';
+                qText.innerText = currentEx[`question_${langKey}`] || currentEx.question_en;
+                if (currentLang === 'hover') {
+                    qText.innerHTML += `<div class="es-tooltip">💬 ES: ${currentEx.question_es}</div>`;
+                }
+                container.appendChild(qText);
+
+                container.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5";
+
+                const shuffledOpts = shuffleArray(currentEx.options);
+
+                const colorStyles = [
+                    'border-sky-300 bg-sky-50/70 hover:bg-sky-100 text-sky-900',
+                    'border-purple-300 bg-purple-50/70 hover:bg-purple-100 text-purple-900',
+                    'border-amber-300 bg-amber-50/70 hover:bg-amber-100 text-amber-900'
+                ];
+
+                shuffledOpts.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    const colorClass = colorStyles[idx % colorStyles.length];
+                    const optText = opt[`text_${langKey}`] || opt.text_en;
+                    
+                    btn.className = `compact-action-btn flex items-center justify-between text-xs sm:text-sm text-left border-2 ${colorClass} h-full ${currentLang === 'hover' ? 'has-hover-tr' : ''}`;
+                    btn.innerHTML = `
+                        <span class="font-bold leading-snug">${optText}</span>
+                        <i class="fa-solid fa-circle-dot text-sky-500 text-xs shrink-0 ml-2"></i>
+                        ${currentLang === 'hover' ? `<div class="es-tooltip">💬 ES: ${opt.text_es}</div>` : ''}
+                    `;
+                    btn.onclick = () => {
+                        if (opt.isCorrect) {
+                            addScore(30);
+                            const msg = opt[`explanation_${langKey}`] || opt.explanation_en;
+                            showToast(currentLang === 'es' ? '¡Respuesta Correcta! ✨' : 'Correct Answer! ✨', msg, true);
+                            gameState.currentLinearIndex++;
+                            setTimeout(() => {
+                                if (gameState.currentLinearIndex < linearExercises.length) {
+                                    initLinearLevel();
+                                } else {
+                                    showToast(currentLang === 'es' ? '¡Nivel 1 Completado! 🎉' : 'Level 1 Completed! 🎉', currentLang === 'es' ? 'Has dominado los Algoritmos Lineales.' : 'You have mastered Linear Algorithms.', true);
+                                    setTimeout(() => loadLevel(2), 1600);
+                                }
+                            }, 2000);
+                        } else {
+                            playSound('wrong');
+                            const msg = opt[`explanation_${langKey}`] || opt.explanation_en;
+                            showToast(currentLang === 'es' ? '¡Piénsalo bien! 💡' : 'Think again! 💡', msg, false);
+                        }
+                    };
+                    container.appendChild(btn);
+                });
+            } else {
+                document.getElementById('linear-sequence').parentNode.classList.remove('hidden');
+                document.getElementById('check-linear-btn').classList.remove('hidden');
+                container.className = "grid grid-cols-1 sm:grid-cols-2 gap-3.5";
+
+                const shuffled = shuffleArray(currentEx.steps);
+                shuffled.forEach(step => {
+                    const btn = document.createElement('button');
+                    btn.id = `btn-${step.id}`;
+                    const stepText = step[`text_${langKey}`] || step.text_en;
+                    btn.className = `compact-action-btn flex items-center justify-between text-xs sm:text-sm border-2 border-sky-200 hover:border-sky-400 ${currentLang === 'hover' ? 'has-hover-tr' : ''}`;
+                    btn.innerHTML = `
+                        <span>${step.icon} ${stepText}</span> 
+                        <i class="fa-solid fa-plus text-sky-500"></i>
+                        ${currentLang === 'hover' ? `<div class="es-tooltip">💬 ES: ${step.text_es}</div>` : ''}
+                    `;
+                    btn.onclick = () => selectLinearStep(step);
+                    container.appendChild(btn);
+                });
+
+                updateLinearSequenceUI();
+            }
+        }
+
+        function selectLinearStep(step) {
+            playSound('click');
+            if (gameState.linearSelected.some(s => s.id === step.id)) return;
+
+            gameState.linearSelected.push(step);
+            const btn = document.getElementById(`btn-${step.id}`);
+            if (btn) btn.classList.add('opacity-40', 'pointer-events-none');
+
+            updateLinearSequenceUI();
+        }
+
+        function resetLinearLevel() {
+            playSound('click');
+            gameState.linearSelected = [];
+            const currentEx = linearExercises[gameState.currentLinearIndex];
+            if (currentEx && currentEx.steps) {
+                currentEx.steps.forEach(step => {
+                    const btn = document.getElementById(`btn-${step.id}`);
+                    if (btn) btn.classList.remove('opacity-40', 'pointer-events-none');
+                });
+            }
+            updateLinearSequenceUI();
+        }
+
+        function updateLinearSequenceUI() {
+            const seqContainer = document.getElementById('linear-sequence');
+            const checkBtn = document.getElementById('check-linear-btn');
+            const currentEx = linearExercises[gameState.currentLinearIndex];
+            const langKey = (currentLang === 'es') ? 'es' : 'en';
+
+            if (gameState.linearSelected.length === 0) {
+                seqContainer.innerHTML = `<span class="text-slate-500 font-bold italic text-xs">${uiText[langKey].seqPlaceholder}</span>`;
+                checkBtn.disabled = true;
+                checkBtn.className = 'btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-extrabold text-base cursor-not-allowed';
+                return;
+            }
+
+            seqContainer.innerHTML = '';
+            gameState.linearSelected.forEach((s, idx) => {
+                const badge = document.createElement('span');
+                const stepText = s[`text_${langKey}`] || s.text_en;
+                badge.className = 'bg-sky-500 text-white px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1 shadow-sm';
+                badge.innerHTML = `<span class="bg-sky-700 px-1.5 py-0.5 rounded-md text-[10px] font-black">${idx + 1}</span> ${s.icon} ${stepText}`;
+                seqContainer.appendChild(badge);
+            });
+
+            if (gameState.linearSelected.length === currentEx.steps.length) {
+                checkBtn.disabled = false;
+                checkBtn.className = 'btn-3d w-full py-3.5 rounded-2xl bg-emerald-500 border-emerald-700 text-white font-extrabold text-base shadow-lg hover:bg-emerald-400';
+            } else {
+                checkBtn.disabled = true;
+                checkBtn.className = 'btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-extrabold text-base cursor-not-allowed';
+            }
+        }
+
+        function checkLinearAnswer() {
+            const isCorrect = gameState.linearSelected.every((s, idx) => s.order === idx + 1);
+
+            if (isCorrect) {
+                addScore(30);
+                showToast(currentLang === 'es' ? '¡Secuencia Correcta! ✨' : 'Correct Sequence! ✨', currentLang === 'es' ? '¡Genial! Los pasos siguen el orden lógico adecuado.' : 'Awesome! Steps follow proper logical order.', true);
+                setTimeout(() => {
+                    if (gameState.currentLinearIndex < linearExercises.length - 1) {
+                        gameState.currentLinearIndex++;
+                        initLinearLevel();
+                    } else {
+                        showToast(currentLang === 'es' ? '¡Nivel 1 Completado! 🎉' : 'Level 1 Completed! 🎉', currentLang === 'es' ? 'Has dominado los Algoritmos Lineales.' : 'You have mastered Linear Algorithms.', true);
+                        setTimeout(() => loadLevel(2), 1600);
+                    }
+                }, 1800);
+            } else {
+                playSound('wrong');
+                showToast(currentLang === 'es' ? 'Orden Incorrecto 💡' : 'Incorrect Order 💡', currentLang === 'es' ? 'Revisa la secuencia de pasos e inténtalo de nuevo.' : 'Check the step sequence and try again.', false);
+            }
+        }
+
+        function initDfdLevel() {
+            gameState.dfdSelected = [];
+            const currentEx = dfdExercises[gameState.currentDfdIndex];
+            const langKey = (currentLang === 'es') ? 'es' : 'en';
+
+            document.getElementById('dfd-sublevel-counter').innerText = uiText[langKey].sublevelCounter(gameState.currentDfdIndex + 1, dfdExercises.length);
+            document.getElementById('dfd-exercise-title').innerText = currentEx[`title_${langKey}`] || currentEx.title_en;
+            document.getElementById('dfd-exercise-icon').innerText = currentEx.icon;
+
+            const instrText = currentEx[`instruction_${langKey}`] || currentEx.instruction_en;
+            document.getElementById('dfd-instruction').innerText = instrText;
+
+            // Hover tooltip for instruction
+            const instrTooltip = document.getElementById('dfd-instruction-tooltip');
+            if (currentLang === 'hover') {
+                instrTooltip.innerText = `💬 ES: ${currentEx.instruction_es}`;
+                document.getElementById('dfd-instruction-box').classList.add('has-hover-tr');
+            } else {
+                instrTooltip.innerText = '';
+                document.getElementById('dfd-instruction-box').classList.remove('has-hover-tr');
+            }
+
+            const bodyContainer = document.getElementById('dfd-body-container');
+            bodyContainer.innerHTML = '';
+            const checkBtn = document.getElementById('check-dfd-btn');
+            checkBtn.classList.add('hidden');
+
+            if (currentEx.type === 'quiz') {
+                const quizBox = document.createElement('div');
+                quizBox.className = 'space-y-4';
+                const qText = currentEx[`question_${langKey}`] || currentEx.question_en;
+                
+                quizBox.innerHTML = `
+                    <h3 class="font-black text-slate-800 text-base text-center p-3 bg-amber-50 rounded-xl border border-amber-200 relative has-hover-tr">
+                        ${qText}
+                        ${currentLang === 'hover' ? `<div class="es-tooltip">💬 ES: ${currentEx.question_es}</div>` : ''}
+                    </h3>
+                `;
+
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5';
+
+                const shuffledOpts = shuffleArray(currentEx.options);
+
+                const colorStyles = [
+                    'border-amber-300 bg-amber-50/70 hover:bg-amber-100 text-amber-900',
+                    'border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-900',
+                    'border-indigo-300 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-900'
+                ];
+
+                shuffledOpts.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    const colorClass = colorStyles[idx % colorStyles.length];
+                    const optText = opt[`text_${langKey}`] || opt.text_en;
+
+                    btn.className = `compact-action-btn flex items-center justify-between text-xs sm:text-sm text-left border-2 ${colorClass} h-full ${currentLang === 'hover' ? 'has-hover-tr' : ''}`;
+                    btn.innerHTML = `
+                        <span class="font-bold leading-snug">${optText}</span>
+                        <i class="fa-solid fa-shapes text-amber-500 text-xs shrink-0 ml-2"></i>
+                        ${currentLang === 'hover' ? `<div class="es-tooltip">💬 ES: ${opt.text_es}</div>` : ''}
+                    `;
+                    btn.onclick = () => {
+                        if (opt.isCorrect) {
+                            addScore(40);
+                            const msg = opt[`explanation_${langKey}`] || opt.explanation_en;
+                            showToast(currentLang === 'es' ? '¡Excelente Trabajo! 📐' : 'Great Job! 📐', msg, true);
+                            gameState.currentDfdIndex++;
+                            setTimeout(() => {
+                                if (gameState.currentDfdIndex < dfdExercises.length) {
+                                    initDfdLevel();
+                                } else {
+                                    showToast(currentLang === 'es' ? '¡Nivel 2 Completado! 🎉' : 'Level 2 Completed! 🎉', currentLang === 'es' ? 'Has dominado los Diagramas de Flujo (DFD).' : 'You mastered Flowcharts (DFD).', true);
+                                    setTimeout(() => loadLevel(3), 1600);
+                                }
+                            }, 2000);
+                        } else {
+                            playSound('wrong');
+                            const msg = opt[`explanation_${langKey}`] || opt.explanation_en;
+                            showToast(currentLang === 'es' ? 'Inténtalo de nuevo 💡' : 'Try again 💡', msg, false);
+                        }
+                    };
+                    optionsGrid.appendChild(btn);
+                });
+
+                quizBox.appendChild(optionsGrid);
+                bodyContainer.appendChild(quizBox);
+            } else if (currentEx.type === 'arrange') {
+                checkBtn.classList.remove('hidden');
+                checkBtn.disabled = true;
+                checkBtn.className = 'btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-extrabold text-base cursor-not-allowed';
+
+                const displayBox = document.createElement('div');
+                displayBox.className = 'bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 text-center space-y-3';
+                displayBox.innerHTML = `<p class="text-xs font-extrabold uppercase text-slate-400 tracking-wider">${uiText[langKey].dfdCanvasUnderConstruction}</p>
+                    <div id="dfd-built-canvas" class="flex flex-col items-center space-y-2 min-h-[120px] justify-center text-xs font-bold text-slate-700">
+                        <span class="text-slate-400 italic">${uiText[langKey].dfdCanvasPlaceholder}</span>
+                    </div>`;
+                bodyContainer.appendChild(displayBox);
+
+                const choicesBox = document.createElement('div');
+                choicesBox.id = 'dfd-options-grid';
+                choicesBox.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3.5';
+
+                const shuffledBlocks = shuffleArray(currentEx.blocks);
+                shuffledBlocks.forEach(b => {
+                    const btn = document.createElement('button');
+                    btn.id = `dfd-btn-${b.id}`;
+                    const bText = b[`text_${langKey}`] || b.text_en;
+
+                    btn.className = `compact-action-btn flex items-center justify-between text-xs sm:text-sm border-2 border-amber-200 hover:border-amber-400 ${currentLang === 'hover' ? 'has-hover-tr' : ''}`;
+                    btn.innerHTML = `
+                        <span>${bText}</span> 
+                        <i class="fa-solid fa-plus text-amber-500"></i>
+                        ${currentLang === 'hover' ? `<div class="es-tooltip">💬 ES: ${b.text_es}</div>` : ''}
+                    `;
+                    btn.onclick = () => selectDfdBlock(b);
+                    choicesBox.appendChild(btn);
+                });
+
+                bodyContainer.appendChild(choicesBox);
+            }
+        }
+
+        function selectDfdBlock(block) {
+            playSound('click');
+            if (gameState.dfdSelected.some(b => b.id === block.id)) return;
+
+            gameState.dfdSelected.push(block);
+            const btn = document.getElementById(`dfd-btn-${block.id}`);
+            if (btn) btn.classList.add('opacity-40', 'pointer-events-none');
+
+            updateDfdCanvasUI();
+        }
+
+        function updateDfdCanvasUI() {
+            const canvas = document.getElementById('dfd-built-canvas');
+            const checkBtn = document.getElementById('check-dfd-btn');
+            const currentEx = dfdExercises[gameState.currentDfdIndex];
+            const langKey = (currentLang === 'es') ? 'es' : 'en';
+
+            if (gameState.dfdSelected.length === 0) {
+                canvas.innerHTML = `<span class="text-slate-400 italic">${uiText[langKey].dfdCanvasPlaceholder}</span>`;
+                checkBtn.disabled = true;
+                checkBtn.className = 'btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-extrabold text-base cursor-not-allowed';
+                return;
+            }
+
+            canvas.innerHTML = '';
+            gameState.dfdSelected.forEach((b, idx) => {
+                if (idx > 0) {
+                    const arrow = document.createElement('i');
+                    arrow.className = 'fa-solid fa-arrow-down text-slate-300 text-xs my-0.5';
+                    canvas.appendChild(arrow);
+                }
+
+                const blockEl = document.createElement('div');
+                blockEl.id = `canvas-node-${idx}`;
+                const bText = b[`text_${langKey}`] || b.text_en;
+
+                if (b.shape === 'oval') {
+                    blockEl.className = `w-36 py-1.5 bg-white border-2 ${b.border} rounded-full ${b.color} shadow-sm transition-all duration-300`;
+                } else if (b.shape === 'rect') {
+                    blockEl.className = `w-44 py-2 bg-white border-2 ${b.border} rounded-xl ${b.color} shadow-sm transition-all duration-300`;
+                } else if (b.shape === 'rhombus') {
+                    blockEl.className = `rhombus-node bg-white border-2 ${b.border} ${b.color} shadow-sm transition-all duration-300`;
+                    blockEl.innerHTML = `<div class="rhombus-node-content font-black text-[10px]">${bText}</div>`;
+                }
+                if (b.shape !== 'rhombus') blockEl.innerText = bText;
+                canvas.appendChild(blockEl);
+            });
+
+            if (gameState.dfdSelected.length === currentEx.blocks.length) {
+                checkBtn.disabled = false;
+                checkBtn.className = 'btn-3d w-full py-3.5 rounded-2xl bg-emerald-500 border-emerald-700 text-white font-extrabold text-base shadow-lg hover:bg-emerald-400';
+            }
+        }
+
+        function checkDfdAnswer() {
+            const currentEx = dfdExercises[gameState.currentDfdIndex];
+            const isCorrect = gameState.dfdSelected.every((b, idx) => b.id === currentEx.correctOrder[idx]);
+
+            if (isCorrect) {
+                gameState.dfdSelected.forEach((_, idx) => {
+                    setTimeout(() => {
+                        const node = document.getElementById(`canvas-node-${idx}`);
+                        if (node) node.classList.add('flow-active');
+                    }, idx * 250);
+                });
+
+                addScore(40);
+                showToast(currentLang === 'es' ? '¡Diagrama Correcto! 📐' : 'Flowchart Correct! 📐', currentLang === 'es' ? 'Flujo de ejecución validado exitosamente.' : 'Flow and execution validated.', true);
+
+                setTimeout(() => {
+                    if (gameState.currentDfdIndex < dfdExercises.length - 1) {
+                        gameState.currentDfdIndex++;
+                        initDfdLevel();
+                    } else {
+                        showToast(currentLang === 'es' ? '¡Nivel 2 Completado! 🎉' : 'Level 2 Completed! 🎉', currentLang === 'es' ? 'Has dominado los Diagramas de Flujo (DFD).' : 'You mastered Flowcharts (DFD).', true);
+                        setTimeout(() => loadLevel(3), 1600);
+                    }
+                }, 1800);
+            } else {
+                playSound('wrong');
+                showToast(currentLang === 'es' ? 'Revisa el flujo 💡' : 'Check the flow 💡', currentLang === 'es' ? 'Los bloques deben seguir la lógica de inicio a fin.' : 'DFD blocks must follow start-to-end logic.', false);
+            }
+        }
+
+        function initLevel3() {
+            gameState.simulatorSelected = [];
+            const ex = simulatorExercises[gameState.currentSimulatorIndex];
+            const langKey = (currentLang === 'es') ? 'es' : 'en';
+
+            document.getElementById('sim-sublevel-counter').innerText = uiText[langKey].sublevelCounter(gameState.currentSimulatorIndex + 1, simulatorExercises.length);
+            document.getElementById('sim-exercise-icon').innerText = ex.icon;
+            document.getElementById('sim-algorithm-name').innerText = ex[`name_${langKey}`] || ex.name_en;
+            document.getElementById('sim-instruction').innerText = ex[`instruction_${langKey}`] || ex.instruction_en;
+
+            const tooltip = document.getElementById('sim-instruction-tooltip');
+            if (currentLang === 'hover') {
+                tooltip.innerText = `💬 ES: ${ex.instruction_es}`;
+                document.getElementById('sim-instruction-box').classList.add('has-hover-tr');
+            } else {
+                tooltip.innerText = '';
+                document.getElementById('sim-instruction-box').classList.remove('has-hover-tr');
+            }
+
+            document.getElementById('sim-flow-canvas').innerHTML = `<span class="text-slate-400 italic">${currentLang === 'es' ? 'Selecciona los bloques del diagrama de abajo...' : 'Select the flowchart blocks below...'}</span>`;
+            document.getElementById('sim-code-canvas').textContent = currentLang === 'es' ? '// Selecciona un bloque del diagrama para generar el programa...' : '// Select a flowchart block to generate the program...';
+
+            const container = document.getElementById('level3-options-container');
+            container.innerHTML = '';
+            shuffleArray(ex.blocks).forEach(block => {
+                const btn = document.createElement('button');
+                btn.id = `sim-btn-${block.id}`;
+                btn.className = `compact-action-btn min-h-[62px] flex items-center justify-between text-left border-2 ${block.shape === 'rhombus' ? 'border-amber-300' : block.shape === 'oval' ? 'border-emerald-300' : 'border-purple-200'} ${currentLang === 'hover' ? 'has-hover-tr' : ''}`;
+                const label = block[`label_${langKey}`] || block.label_en;
+                btn.innerHTML = `<span class="font-black text-sm">${label}</span><i class="fa-solid fa-plus text-purple-500"></i>${currentLang === 'hover' ? `<div class="es-tooltip">💬 ES: ${block.label_es}</div>` : ''}`;
+                btn.onclick = () => selectSimulatorBlock(block);
+                container.appendChild(btn);
+            });
+
+            const checkBtn = document.getElementById('check-simulator-btn');
+            checkBtn.disabled = true;
+            checkBtn.className = 'btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-extrabold text-base cursor-not-allowed';
+        }
+
+        function selectSimulatorBlock(block) {
+            if (gameState.simulatorSelected.some(b => b.id === block.id)) return;
+            playSound('click');
+            gameState.simulatorSelected.push(block);
+            const btn = document.getElementById(`sim-btn-${block.id}`);
+            if (btn) btn.classList.add('opacity-40', 'pointer-events-none');
+            updateSimulatorUI();
+        }
+
+        function updateSimulatorUI() {
+            const ex = simulatorExercises[gameState.currentSimulatorIndex];
+            const langKey = (currentLang === 'es') ? 'es' : 'en';
+            const flow = document.getElementById('sim-flow-canvas');
+            const code = document.getElementById('sim-code-canvas');
+            const checkBtn = document.getElementById('check-simulator-btn');
+
+            flow.innerHTML = '';
+            if (gameState.simulatorSelected.length === 0) {
+                flow.innerHTML = `<span class="text-slate-400 italic">${currentLang === 'es' ? 'Selecciona los bloques del diagrama de abajo...' : 'Select the flowchart blocks below...'}</span>`;
+                code.textContent = currentLang === 'es' ? '// Selecciona un bloque del diagrama para generar el programa...' : '// Select a flowchart block to generate the program...';
+                return;
+            }
+
+            gameState.simulatorSelected.forEach((b, idx) => {
+                if (idx > 0) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'text-slate-300 leading-none';
+                    arrow.innerHTML = '↓';
+                    flow.appendChild(arrow);
+                }
+                const node = document.createElement('div');
+                const label = b[`label_${langKey}`] || b.label_en;
+                node.id = `sim-node-${idx}`;
+                if (b.shape === 'oval') node.className = 'w-40 py-2 px-3 rounded-full border-2 border-emerald-400 bg-white text-emerald-800 shadow-sm text-center';
+                else if (b.shape === 'rhombus') {
+                    node.className = 'rhombus-node bg-white border-2 border-amber-400 text-amber-800 shadow-sm';
+                    node.innerHTML = `<div class="rhombus-node-content font-black text-[10px] px-1">${label}</div>`;
+                } else node.className = 'w-52 py-2 px-3 rounded-xl border-2 border-purple-300 bg-white text-purple-900 shadow-sm text-center';
+                if (b.shape !== 'rhombus') node.textContent = label;
+                flow.appendChild(node);
+            });
+
+            const codeLines = gameState.simulatorSelected.map(b => b[`code_${langKey}`] || b.code_en);
+            code.textContent = `// ${currentLang === 'es' ? 'Algoritmo' : 'Algorithm'}: ${ex[`name_${langKey}`] || ex.name_en}\n\n` + codeLines.join('\n');
+
+            if (gameState.simulatorSelected.length === ex.blocks.length) {
+                checkBtn.disabled = false;
+                checkBtn.className = 'btn-3d w-full py-3.5 rounded-2xl bg-emerald-500 border-emerald-700 text-white font-extrabold text-base shadow-lg hover:bg-emerald-400';
+            }
+        }
+
+        function resetSimulatorExercise() {
+            gameState.simulatorSelected = [];
+            initLevel3();
+        }
+
+        function checkSimulatorAnswer() {
+            const ex = simulatorExercises[gameState.currentSimulatorIndex];
+            const isCorrect = gameState.simulatorSelected.length === ex.correctOrder.length && gameState.simulatorSelected.every((b, idx) => b.id === ex.correctOrder[idx]);
+
+            if (!isCorrect) {
+                playSound('wrong');
+                showToast(currentLang === 'es' ? 'Algoritmo incorrecto 💡' : 'Algorithm not correct yet 💡', currentLang === 'es' ? 'Revisa el orden lógico del diagrama y vuelve a probar.' : 'Check the logical order of the flowchart and test it again.', false);
+                return;
+            }
+
+            gameState.simulatorSelected.forEach((_, idx) => {
+                setTimeout(() => {
+                    const node = document.getElementById(`sim-node-${idx}`);
+                    if (node) node.classList.add('flow-active');
+                }, idx * 180);
+            });
+
+            addScore(30);
+            showToast(currentLang === 'es' ? '¡Algoritmo correcto! ✅' : 'Algorithm correct! ✅', currentLang === 'es' ? 'El diagrama y su traducción a programa siguen la lógica correcta.' : 'The flowchart and its program translation follow the correct logic.', true);
+
+            setTimeout(() => {
+                if (gameState.currentSimulatorIndex < simulatorExercises.length - 1) {
+                    gameState.currentSimulatorIndex++;
+                    initLevel3();
+                } else {
+                    showToast(currentLang === 'es' ? '¡Simulador completado! 🎉' : 'Simulator completed! 🎉', currentLang === 'es' ? 'Completaste los 5 algoritmos.' : 'You completed all 5 algorithms.', true);
+                    setTimeout(() => loadLevel(4), 1600);
+                }
+            }, 1700);
+        }
+
+        function addScore(pts) {
+            gameState.score += pts;
+            document.getElementById('score-display').innerText = `${gameState.score} / 500 XP`;
+        }
+
+        function showToast(title, msg, isSuccess) {
+            playSound(isSuccess ? 'win' : 'wrong');
+            const modal = document.getElementById('feedback-modal');
+            const card = document.getElementById('feedback-card');
+
+            document.getElementById('feedback-title').innerText = title;
+            document.getElementById('feedback-msg').innerText = msg;
+
+            if (isSuccess) {
+                document.getElementById('feedback-icon').innerText = '✨';
+                card.className = 'bg-white px-5 py-3 rounded-2xl shadow-2xl border-3 border-emerald-400 flex items-center gap-3 transform translate-y-0 transition-all duration-300';
+            } else {
+                document.getElementById('feedback-icon').innerText = '💡';
+                card.className = 'bg-white px-5 py-3 rounded-2xl shadow-2xl border-3 border-amber-400 flex items-center gap-3 transform translate-y-0 transition-all duration-300';
+            }
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+
+            setTimeout(() => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }, 1800);
+        }
+
+        function showFinalScreen() {
+            const screens = ['level-1', 'level-2', 'level-3'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            document.getElementById('final-screen').classList.remove('hidden');
+
+            document.getElementById('final-username').innerText = gameState.fullName;
+            document.getElementById('cert-student-name').innerText = gameState.fullName;
+            document.getElementById('cert-nrc').innerText = gameState.nrc;
+            document.getElementById('cert-group').innerText = gameState.group;
+            document.getElementById('final-score').innerText = `${gameState.score} XP`;
+
+            const certificateAllowed = gameState.englishOnlyRun && currentLang === 'en';
+            const certCard = document.getElementById('certificate-card');
+            const lockMessage = document.getElementById('certificate-lock-message');
+            const printBtn = document.getElementById('btn-print-certificate');
+
+            if (certificateAllowed) {
+                certCard.classList.remove('hidden');
+                lockMessage.classList.add('hidden');
+                printBtn.classList.remove('hidden');
+            } else {
+                certCard.classList.add('hidden');
+                lockMessage.classList.remove('hidden');
+                printBtn.classList.add('hidden');
+            }
+
+            if (!gameState.completedAt) {
+                gameState.completedAt = new Date().toISOString();
+            }
+            const completionDate = new Date(gameState.completedAt);
+            const locale = currentLang === 'es' ? 'es-CO' : 'en-US';
+            const formattedDate = completionDate.toLocaleDateString(locale, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }) + ' · ' + completionDate.toLocaleTimeString(locale, {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('cert-date-time').innerText = formattedDate;
+
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 150,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#0ea5e9', '#a855f7', '#f59e0b', '#10b981']
+                });
+            }
+        }
+
+        function printCertificate() {
+            if (!(gameState.englishOnlyRun && currentLang === 'en')) {
+                showToast('Certificate locked 🔒', 'Complete the full challenge in English to enable the certificate.', false);
+                return;
+            }
+            playSound('click');
+            window.print();
+        }
+
+        function restartGame() {
+            gameState.score = 0;
+            gameState.currentLinearIndex = 0;
+            gameState.currentDfdIndex = 0;
+            gameState.currentSimulatorIndex = 0;
+            gameState.simulatorSelected = [];
+            gameState.linearSelected = [];
+            gameState.dfdSelected = [];
+            gameState.gameStarted = false;
+            gameState.englishOnlyRun = true;
+            gameState.completedAt = null;
+            document.getElementById('score-display').innerText = '0 / 500 XP';
+            document.getElementById('main-header').classList.add('hidden');
+            ['level-1', 'level-2', 'level-3', 'final-screen'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            document.getElementById('welcome-screen').classList.remove('hidden');
+            setLanguage('en');
+        }
+    </script>
+</body>
+</html>
