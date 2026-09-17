@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSeInt Academy · Class 2 · @LaProfeVivy</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Quicksand',sans-serif;background-color:#0ea5e9;background-image:radial-gradient(circle,#38bdf8 20%,transparent 20%);background-size:24px 24px}
+h1,h2,h3,.font-heading{font-family:'Fredoka',cursive}
+.game-card{background:#fff;border-radius:28px;box-shadow:0 10px 25px -5px rgba(0,0,0,.15),0 8px 10px -6px rgba(0,0,0,.1);border:4px solid #f1f5f9}
+.btn-3d{border-bottom-width:5px!important;transition:transform .1s ease,filter .15s ease}
+.btn-3d:active{transform:translateY(4px);border-bottom-width:1px!important}
+.opt{background:#fff;border:3px solid #e2e8f0;border-bottom:5px solid #cbd5e1;border-radius:18px;padding:14px 16px;font-weight:800;color:#334155;transition:.15s;text-align:left}
+.opt:hover{border-color:#38bdf8;background:#f0f9ff;transform:translateY(-2px)}
+.codebox{background:#0f172a;color:#e2e8f0;border:4px solid #1e293b;border-radius:20px;padding:18px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.token{display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:12px;background:#fff;border:2px solid #cbd5e1;font-weight:800;font-size:.85rem}
+.es-tip{display:none;margin-top:5px;font-size:.72rem;color:#0369a1;font-weight:800}
+.hover-mode .es-tip{display:block}
+.assistant{border-left:5px solid #8b5cf6;background:#f5f3ff;border-radius:18px;padding:14px 16px}
+@media print{
+ body{background:#fff!important;background-image:none!important;padding:0!important}
+ #main-header,#welcome-screen,#level-screen,#feedback,.no-print{display:none!important}
+ #final-screen{display:block!important}
+ #certificate-card{box-shadow:none!important;max-width:100%!important;margin:0 auto!important}
+}
+</style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col p-3 md:p-6">
+
+<header id="main-header" class="hidden sticky top-0 z-40 bg-white/95 backdrop-blur-md rounded-2xl px-4 py-3 shadow-lg max-w-5xl mx-auto w-full mb-4 border-2 border-sky-100">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-violet-500 border-b-4 border-violet-700 flex items-center justify-center text-xl text-white">⌨️</div>
+      <div><h1 class="font-black leading-none">PSeInt Academy</h1><span class="text-xs font-bold text-sky-600">@LaProfeVivy · Class 2</span></div>
+    </div>
+    <div class="flex items-center gap-2">
+      <div id="level-badge" class="bg-sky-100 border-2 border-sky-300 px-3 py-1 rounded-xl font-black text-sky-700 text-xs">Level 1 of 3</div>
+      <div class="bg-amber-100 border-b-4 border-amber-400 px-3 py-1 rounded-xl font-black text-amber-800 text-sm"><i class="fa-solid fa-bolt"></i> <span id="score-display">0 / 600 XP</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto w-full my-auto">
+
+<section id="welcome-screen" class="game-card p-6 md:p-10 text-center my-4">
+  <div class="w-24 h-24 bg-violet-500 border-b-8 border-violet-700 rounded-3xl flex items-center justify-center text-5xl shadow-lg mx-auto mb-4">💻</div>
+  <h1 class="text-3xl md:text-4xl font-black mb-1">PSeInt Academy ✨</h1>
+  <p class="text-sm font-bold text-sky-600 mb-5">Learning with @LaProfeVivy · Class 2</p>
+
+  <div class="max-w-md mx-auto mb-6">
+    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[.18em] mb-2">Language / Idioma</p>
+    <div class="grid grid-cols-3 gap-2">
+      <button type="button" id="lang-en" class="lang-btn py-2.5 rounded-xl bg-sky-500 text-white font-black border border-sky-500">English</button>
+      <button type="button" id="lang-hover" class="lang-btn py-2.5 rounded-xl bg-white text-slate-700 font-bold border border-sky-200">EN + ayuda ES</button>
+      <button type="button" id="lang-es" class="lang-btn py-2.5 rounded-xl bg-white text-slate-700 font-bold border border-sky-200">Español</button>
+    </div>
+    <button type="button" id="audio-help" class="mt-2 w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-500 hover:text-sky-600" title="Listen"><i class="fa-solid fa-volume-high"></i></button>
+  </div>
+
+  <div class="max-w-md mx-auto space-y-3">
+    <div><label id="lbl-name" class="block text-left text-xs font-black text-slate-600 mb-1 uppercase tracking-wider">Full First & Last Name</label>
+      <input id="name-input" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-sky-500 outline-none text-center font-bold uppercase" placeholder="e.g. ALEX MORGAN">
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="block text-left text-xs font-black text-slate-600 mb-1 uppercase">NRC</label><input id="nrc-input" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 text-center font-bold" placeholder="2582"></div>
+      <div><label id="lbl-group" class="block text-left text-xs font-black text-slate-600 mb-1 uppercase">Group</label><input id="group-input" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 text-center font-bold" placeholder="1"></div>
+    </div>
+    <button type="button" id="start-btn" disabled class="btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-black cursor-not-allowed"><i class="fa-solid fa-play"></i> <span id="start-label">START CHALLENGE</span></button>
+  </div>
+</section>
+
+<section id="level-screen" class="hidden game-card p-5 md:p-8 my-4">
+  <div class="flex items-start justify-between gap-4 border-b border-slate-100 pb-4 mb-5">
+    <div>
+      <div class="flex flex-wrap items-center gap-2 mb-1">
+        <span id="level-tag" class="text-xs font-black uppercase text-violet-600">LEVEL 1</span>
+        <span id="exercise-counter" class="bg-violet-100 text-violet-800 text-[10px] font-black px-2.5 py-1 rounded-full">Exercise 1 of 5</span>
+      </div>
+      <h2 id="exercise-title" class="text-2xl md:text-3xl font-black">Variables & Data Types</h2>
+    </div>
+    <div id="exercise-icon" class="text-3xl bg-violet-100 p-3 rounded-2xl">🧠</div>
+  </div>
+
+  <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 text-center mb-5">
+    <p id="instruction-label" class="text-xs font-black uppercase tracking-wider text-sky-500 mb-1">INSTRUCTION</p>
+    <p id="instruction" class="font-black text-sky-900"></p>
+    <p id="instruction-es" class="es-tip"></p>
+  </div>
+
+  <div id="question-area"></div>
+
+  <div id="assistant-box" class="assistant mt-5 hidden">
+    <div class="flex gap-3 items-start">
+      <div class="text-2xl">🤖</div>
+      <div class="min-w-0">
+        <p id="assistant-title" class="font-black text-violet-700 text-sm">PSeInt Assistant</p>
+        <p id="assistant-text" class="text-sm font-bold text-slate-600 mt-1"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5 flex gap-3 no-print">
+    <button type="button" id="reset-btn" class="btn-3d px-4 py-3 rounded-2xl bg-slate-100 border-slate-300 font-black text-slate-600"><i class="fa-solid fa-rotate-left"></i> <span id="reset-label">Reset</span></button>
+    <button type="button" id="check-btn" disabled class="btn-3d flex-1 py-3 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-black cursor-not-allowed"><i class="fa-solid fa-check"></i> <span id="check-label">TEST</span></button>
+  </div>
+</section>
+
+<section id="final-screen" class="hidden game-card p-5 md:p-8 text-center my-4">
+  <div class="w-16 h-16 bg-amber-400 border-b-8 border-amber-600 rounded-full flex items-center justify-center text-3xl shadow-xl mx-auto mb-3 no-print">🎓</div>
+  <h2 id="final-title" class="text-3xl md:text-4xl font-black mb-2">CERTIFICATE ✨</h2>
+  <p id="final-subtitle" class="text-slate-500 font-bold mb-6">Challenge completed successfully.</p>
+
+  <div id="certificate-lock" class="hidden max-w-2xl mx-auto mb-5 bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 text-sm font-bold">
+    🔒 Certificate available only after completing the full challenge in English.
+  </div>
+
+  <div id="certificate-card" class="relative bg-white p-6 md:p-8 rounded-[28px] border-[3px] border-amber-300 max-w-2xl mx-auto mb-6 shadow-lg text-left overflow-hidden">
+    <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-amber-400 via-sky-400 to-violet-400"></div>
+    <div class="flex justify-between items-start gap-4 border-b border-slate-200 pb-4 mb-5">
+      <div>
+        <span id="cert-small" class="text-xs font-black uppercase tracking-[.2em] text-amber-600 block">Certificate of Completion</span>
+        <h3 class="text-2xl md:text-3xl font-black mt-1">PSeInt Academy · Class 2</h3>
+        <p class="text-xs md:text-sm text-slate-500 font-bold mt-1">Learning with @LaProfeVivy</p>
+      </div>
+      <div class="w-14 h-14 rounded-full border-4 border-amber-300 bg-amber-50 text-2xl flex items-center justify-center">🏅</div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+      <div class="bg-slate-50 rounded-2xl p-4 border"><div id="cert-lbl-student" class="text-[10px] font-black uppercase text-slate-400">Student</div><div id="cert-student" class="font-black text-lg uppercase">STUDENT</div></div>
+      <div class="bg-slate-50 rounded-2xl p-4 border"><div class="text-[10px] font-black uppercase text-slate-400">NRC</div><div id="cert-nrc" class="font-black text-lg">N/A</div></div>
+      <div class="bg-slate-50 rounded-2xl p-4 border"><div id="cert-lbl-group" class="text-[10px] font-black uppercase text-slate-400">Group</div><div id="cert-group" class="font-black text-lg">N/A</div></div>
+      <div class="bg-slate-50 rounded-2xl p-4 border"><div id="cert-lbl-date" class="text-[10px] font-black uppercase text-slate-400">Completion Date</div><div id="cert-date" class="font-black text-sm">—</div></div>
+      <div class="md:col-span-2 bg-sky-50 rounded-2xl p-4 border border-sky-200"><div id="cert-lbl-module" class="text-[10px] font-black uppercase text-slate-400">Completed Module</div><div id="cert-module" class="font-black text-sky-700">Variables, Data Types, Input/Output, Operators, Sequences & Conditionals</div></div>
+      <div class="md:col-span-2 grid grid-cols-2 gap-4">
+        <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 text-center"><span id="cert-lbl-score" class="block text-[10px] font-black uppercase text-slate-400">Total Score</span><span id="cert-score" class="text-2xl font-black text-amber-500">600 XP</span></div>
+        <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-200 text-center"><span id="cert-lbl-status" class="block text-[10px] font-black uppercase text-slate-400">Status</span><span id="cert-status" class="font-black text-emerald-600">Passed 100% ✨</span></div>
+      </div>
+    </div>
+    <div class="text-right font-black text-violet-600">@LaProfeVivy</div>
+  </div>
+
+  <div class="flex flex-wrap justify-center gap-3 no-print">
+    <button type="button" id="print-btn" class="btn-3d px-5 py-3 rounded-2xl bg-violet-500 border-violet-700 text-white font-black"><i class="fa-solid fa-print"></i> <span id="print-label">PRINT CERTIFICATE</span></button>
+    <button type="button" id="again-btn" class="btn-3d px-5 py-3 rounded-2xl bg-sky-500 border-sky-700 text-white font-black"><i class="fa-solid fa-rotate-right"></i> <span id="again-label">PLAY AGAIN</span></button>
+  </div>
+</section>
+
+</main>
+
+<div id="feedback" class="fixed bottom-5 inset-x-0 pointer-events-none flex justify-center z-50 opacity-0 transition-opacity">
+  <div id="feedback-card" class="bg-white px-5 py-3 rounded-2xl shadow-2xl border-3 border-emerald-400 flex gap-3 items-center">
+    <div id="feedback-icon" class="text-2xl">✨</div>
+    <div><div id="feedback-title" class="font-black text-sm">Great!</div><div id="feedback-msg" class="text-xs font-bold text-slate-500"></div></div>
+  </div>
+</div>
+
+<footer class="text-center py-2 text-xs font-bold text-white/90">PSeInt Academy ✨ Learning with @LaProfeVivy</footer>
+
+<script>
+let currentLang='en';
+const state={name:'',nrc:'',group:'',level:0,index:0,score:0,selected:[],englishOnly:true,started:false,completedAt:null};
+
+const T={
+ en:{name:'Full First & Last Name',group:'Group',start:'START CHALLENGE',instruction:'INSTRUCTION',reset:'Reset',test:'TEST',level:n=>`Level ${n} of 3`,exercise:(a,b)=>`Exercise ${a} of ${b}`,assistant:'PSeInt Assistant',print:'PRINT CERTIFICATE',again:'PLAY AGAIN',student:'Student',date:'Completion Date',module:'Completed Module',score:'Total Score',status:'Status',passed:'Passed 100% ✨'},
+ es:{name:'Nombre y Apellido Completo',group:'Grupo',start:'INICIAR DESAFÍO',instruction:'INSTRUCCIÓN',reset:'Reiniciar',test:'PROBAR',level:n=>`Nivel ${n} de 3`,exercise:(a,b)=>`Ejercicio ${a} de ${b}`,assistant:'Asistente PSeInt',print:'IMPRIMIR CERTIFICADO',again:'VOLVER A JUGAR',student:'Estudiante',date:'Fecha de finalización',module:'Módulo completado',score:'Puntaje total',status:'Estado',passed:'Aprobado 100% ✨'}
+};
+
+const levels=[
+ {tag_en:'LEVEL 1: Variables & Data',tag_es:'NIVEL 1: Variables y Datos',icon:'🧠',items:[
+  {type:'quiz',title_en:'Choose the correct data type',title_es:'Elige el tipo de dato correcto',instruction_en:'Which data type should store the value 25?',instruction_es:'¿Qué tipo de dato debería almacenar el valor 25?',options:[
+   {en:'Integer / Entero',es:'Entero',ok:true,why_en:'25 has no decimal part, so an Integer is appropriate.',why_es:'25 no tiene parte decimal, por eso corresponde a Entero.'},
+   {en:'Real',es:'Real',ok:false},{en:'String / Cadena',es:'Cadena',ok:false},{en:'Logical / Lógico',es:'Lógico',ok:false}]},
+  {type:'quiz',title_en:'Text data',title_es:'Datos de texto',instruction_en:'Which type should store the value "Bogotá"?',instruction_es:'¿Qué tipo debería almacenar el valor "Bogotá"?',options:[
+   {en:'String / Cadena',es:'Cadena',ok:true,why_en:'Text is stored as a string or character chain.',why_es:'El texto se almacena como una cadena de caracteres.'},
+   {en:'Integer / Entero',es:'Entero',ok:false},{en:'Real',es:'Real',ok:false},{en:'Logical / Lógico',es:'Lógico',ok:false}]},
+  {type:'quiz',title_en:'Define a variable',title_es:'Definir una variable',instruction_en:'Which PSeInt instruction correctly defines an integer variable called age?',instruction_es:'¿Qué instrucción de PSeInt define correctamente una variable entera llamada edad?',options:[
+   {en:'Definir edad Como Entero',es:'Definir edad Como Entero',ok:true,why_en:'Definir creates the variable and Como Entero specifies its data type.',why_es:'Definir crea la variable y Como Entero especifica su tipo de dato.'},
+   {en:'edad = Entero',es:'edad = Entero',ok:false},{en:'Leer edad Como Entero',es:'Leer edad Como Entero',ok:false},{en:'Escribir edad Entero',es:'Escribir edad Entero',ok:false}]},
+  {type:'quiz',title_en:'Assign a value',title_es:'Asignar un valor',instruction_en:'Which instruction assigns the value 18 to age in PSeInt?',instruction_es:'¿Qué instrucción asigna el valor 18 a edad en PSeInt?',options:[
+   {en:'edad <- 18',es:'edad <- 18',ok:true,why_en:'The arrow <- means assignment: the value on the right is stored in the variable on the left.',why_es:'La flecha <- significa asignación: el valor de la derecha se guarda en la variable de la izquierda.'},
+   {en:'edad > 18',es:'edad > 18',ok:false},{en:'Leer 18',es:'Leer 18',ok:false},{en:'18 <- edad',es:'18 <- edad',ok:false}]},
+  {type:'match',title_en:'Match values with types',title_es:'Relaciona valores con tipos',instruction_en:'Match each value with its most appropriate data type.',instruction_es:'Relaciona cada valor con el tipo de dato más adecuado.',
+   pairs:[['42','Entero'],['3.75','Real'],['"Ana"','Cadena'],['Verdadero','Lógico']]}
+ ]},
+ {tag_en:'LEVEL 2: Input, Output & Sequence',tag_es:'NIVEL 2: Entrada, salida y secuencia',icon:'⌨️',items:[
+  {type:'quiz',title_en:'Read data',title_es:'Leer datos',instruction_en:'Which instruction asks the user for a value and stores it in edad?',instruction_es:'¿Qué instrucción pide un valor al usuario y lo guarda en edad?',options:[
+   {en:'Leer edad',es:'Leer edad',ok:true,why_en:'Leer captures data entered by the user and stores it in the indicated variable.',why_es:'Leer captura el dato ingresado por el usuario y lo guarda en la variable indicada.'},
+   {en:'Escribir edad',es:'Escribir edad',ok:false},{en:'edad <- Leer',es:'edad <- Leer',ok:false},{en:'Definir edad',es:'Definir edad',ok:false}]},
+  {type:'quiz',title_en:'Show a result',title_es:'Mostrar un resultado',instruction_en:'Which instruction displays a message or result on screen?',instruction_es:'¿Qué instrucción muestra un mensaje o resultado en pantalla?',options:[
+   {en:'Escribir',es:'Escribir',ok:true,why_en:'Escribir sends text or values to the screen.',why_es:'Escribir envía texto o valores a la pantalla.'},
+   {en:'Leer',es:'Leer',ok:false},{en:'Definir',es:'Definir',ok:false},{en:'Si',es:'Si',ok:false}]},
+  {type:'quiz',title_en:'Basic operators',title_es:'Operadores básicos',instruction_en:'What is the result of 10 + 4 * 2?',instruction_es:'¿Cuál es el resultado de 10 + 4 * 2?',options:[
+   {en:'18',es:'18',ok:true,why_en:'Multiplication is evaluated before addition: 4×2=8, then 10+8=18.',why_es:'La multiplicación se evalúa antes que la suma: 4×2=8 y luego 10+8=18.'},
+   {en:'28',es:'28',ok:false},{en:'24',es:'24',ok:false},{en:'12',es:'12',ok:false}]},
+  {type:'sequence',title_en:'Build a sequential algorithm',title_es:'Construye un algoritmo secuencial',instruction_en:'Order the steps to calculate the sum of two numbers.',instruction_es:'Ordena los pasos para calcular la suma de dos números.',
+   steps:[
+    {id:'a',en:'Definir a, b, suma Como Real',es:'Definir a, b, suma Como Real'},
+    {id:'b',en:'Leer a, b',es:'Leer a, b'},
+    {id:'c',en:'suma <- a + b',es:'suma <- a + b'},
+    {id:'d',en:'Escribir suma',es:'Escribir suma'}],correct:['a','b','c','d']},
+  {type:'builder',title_en:'PSeInt mini simulator',title_es:'Mini simulador PSeInt',instruction_en:'Build the algorithm that asks for a price, adds 19% tax and displays the total.',instruction_es:'Construye el algoritmo que pide un precio, suma 19% de impuesto y muestra el total.',
+   blocks:[
+    {id:'d',en:'Definir precio, total Como Real',es:'Definir precio, total Como Real'},
+    {id:'l',en:'Leer precio',es:'Leer precio'},
+    {id:'a',en:'total <- precio * 1.19',es:'total <- precio * 1.19'},
+    {id:'e',en:'Escribir total',es:'Escribir total'}],correct:['d','l','a','e']}
+ ]},
+ {tag_en:'LEVEL 3: Conditions & Logic',tag_es:'NIVEL 3: Condiciones y lógica',icon:'🔀',items:[
+  {type:'quiz',title_en:'Relational operators',title_es:'Operadores relacionales',instruction_en:'Which condition checks whether edad is greater than or equal to 18?',instruction_es:'¿Qué condición comprueba si edad es mayor o igual que 18?',options:[
+   {en:'edad >= 18',es:'edad >= 18',ok:true,why_en:'>= means “greater than or equal to”.',why_es:'>= significa “mayor o igual que”.'},
+   {en:'edad <> 18',es:'edad <> 18',ok:false},{en:'edad <- 18',es:'edad <- 18',ok:false},{en:'edad + 18',es:'edad + 18',ok:false}]},
+  {type:'quiz',title_en:'Simple condition',title_es:'Condición simple',instruction_en:'A discount is applied only when total > 100000. Which structure is appropriate?',instruction_es:'Se aplica descuento solo cuando total > 100000. ¿Qué estructura es adecuada?',options:[
+   {en:'Si total > 100000 Entonces ... FinSi',es:'Si total > 100000 Entonces ... FinSi',ok:true,why_en:'A simple Si is enough because there is only one action when the condition is true.',why_es:'Un Si simple es suficiente porque solo hay una acción cuando la condición es verdadera.'},
+   {en:'Para ... FinPara',es:'Para ... FinPara',ok:false},{en:'Leer total',es:'Leer total',ok:false},{en:'Definir total',es:'Definir total',ok:false}]},
+  {type:'quiz',title_en:'Si / SiNo',title_es:'Si / SiNo',instruction_en:'You must show “Approved” if grade >= 3, otherwise “Not approved”. Which structure should you use?',instruction_es:'Debes mostrar “Aprobado” si nota >= 3 y, de lo contrario, “No aprobado”. ¿Qué estructura debes usar?',options:[
+   {en:'Si ... SiNo ... FinSi',es:'Si ... SiNo ... FinSi',ok:true,why_en:'SiNo provides the alternative path when the condition is false.',why_es:'SiNo permite ejecutar la alternativa cuando la condición es falsa.'},
+   {en:'Solo Si',es:'Solo Si',ok:false},{en:'Para',es:'Para',ok:false},{en:'Mientras',es:'Mientras',ok:false}]},
+  {type:'quiz',title_en:'Compound condition with Y',title_es:'Condición compuesta con Y',instruction_en:'Which condition is true only when age is at least 18 AND hasID is true?',instruction_es:'¿Qué condición es verdadera solo cuando edad es al menos 18 Y tieneDocumento es verdadero?',options:[
+   {en:'edad >= 18 Y tieneDocumento = Verdadero',es:'edad >= 18 Y tieneDocumento = Verdadero',ok:true,why_en:'Y requires both conditions to be true.',why_es:'Y exige que ambas condiciones sean verdaderas.'},
+   {en:'edad >= 18 O tieneDocumento = Verdadero',es:'edad >= 18 O tieneDocumento = Verdadero',ok:false},{en:'NO edad >= 18',es:'NO edad >= 18',ok:false},{en:'edad <- 18',es:'edad <- 18',ok:false}]},
+  {type:'builder',title_en:'Final conditional challenge',title_es:'Reto condicional final',instruction_en:'Build the PSeInt logic: read a grade and display Approved if grade >= 3, otherwise display Not approved.',instruction_es:'Construye la lógica en PSeInt: lee una nota y muestra Aprobado si nota >= 3; de lo contrario, muestra No aprobado.',
+   blocks:[
+    {id:'d',en:'Definir nota Como Real',es:'Definir nota Como Real'},
+    {id:'l',en:'Leer nota',es:'Leer nota'},
+    {id:'s',en:'Si nota >= 3 Entonces',es:'Si nota >= 3 Entonces'},
+    {id:'a',en:'Escribir "Approved"',es:'Escribir "Aprobado"'},
+    {id:'n',en:'SiNo',es:'SiNo'},
+    {id:'r',en:'Escribir "Not approved"',es:'Escribir "No aprobado"'},
+    {id:'f',en:'FinSi',es:'FinSi'}],correct:['d','l','s','a','n','r','f']}
+ ]}
+];
+
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function langKey(){return currentLang==='es'?'es':'en'}
+function tr(obj,k){return obj[k+'_'+langKey()] ?? obj[k+'_en'] ?? ''}
+function speak(text){if(!('speechSynthesis' in window))return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text);u.lang=currentLang==='es'?'es-ES':'en-US';u.rate=.9;speechSynthesis.speak(u)}
+function toast(title,msg,ok=true){
+ const f=document.getElementById('feedback');document.getElementById('feedback-title').innerText=title;document.getElementById('feedback-msg').innerText=msg;document.getElementById('feedback-icon').innerText=ok?'✨':'💡';f.classList.remove('opacity-0');setTimeout(()=>f.classList.add('opacity-0'),1800)
+}
+function setLang(l){
+ if(state.started && state.level<3 && l!=='en') state.englishOnly=false;
+ currentLang=l;
+ document.body.classList.toggle('hover-mode',l==='hover');
+ document.querySelectorAll('.lang-btn').forEach(b=>b.className='lang-btn py-2.5 rounded-xl bg-white text-slate-700 font-bold border border-sky-200');
+ const active=document.getElementById('lang-'+l); if(active) active.className='lang-btn py-2.5 rounded-xl bg-sky-500 text-white font-black border border-sky-500';
+ updateStatic();
+ if(!document.getElementById('level-screen').classList.contains('hidden')) renderExercise();
+}
+function updateStatic(){
+ const t=T[langKey()];
+ document.getElementById('lbl-name').innerText=t.name;document.getElementById('lbl-group').innerText=t.group;document.getElementById('start-label').innerText=t.start;
+ document.getElementById('instruction-label').innerText=t.instruction;document.getElementById('reset-label').innerText=t.reset;document.getElementById('check-label').innerText=t.test;document.getElementById('assistant-title').innerText=t.assistant;
+ document.getElementById('print-label').innerText=t.print;document.getElementById('again-label').innerText=t.again;document.getElementById('cert-lbl-student').innerText=t.student;document.getElementById('cert-lbl-group').innerText=t.group;document.getElementById('cert-lbl-date').innerText=t.date;document.getElementById('cert-lbl-module').innerText=t.module;document.getElementById('cert-lbl-score').innerText=t.score;document.getElementById('cert-lbl-status').innerText=t.status;document.getElementById('cert-status').innerText=t.passed;
+ if(state.level<3) document.getElementById('level-badge').innerText=t.level(state.level+1);
+}
+function validate(){
+ const ok=document.getElementById('name-input').value.trim()&&document.getElementById('nrc-input').value.trim()&&document.getElementById('group-input').value.trim();
+ const b=document.getElementById('start-btn');b.disabled=!ok;b.className=ok?'btn-3d w-full py-3.5 rounded-2xl bg-emerald-500 border-emerald-700 text-white font-black cursor-pointer':'btn-3d w-full py-3.5 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-black cursor-not-allowed';
+}
+['name-input','nrc-input','group-input'].forEach(id=>document.getElementById(id).addEventListener('input',validate));
+document.getElementById('lang-en').addEventListener('click',()=>setLang('en'));
+document.getElementById('lang-hover').addEventListener('click',()=>setLang('hover'));
+document.getElementById('lang-es').addEventListener('click',()=>setLang('es'));
+document.getElementById('audio-help').addEventListener('click',()=>speak(currentLang==='es'?'Selecciona el idioma y completa tus datos para comenzar.':'Choose a language and complete your information to begin.'));
+document.getElementById('start-btn').addEventListener('click',()=>{
+ state.name=document.getElementById('name-input').value.trim().toUpperCase();state.nrc=document.getElementById('nrc-input').value.trim().toUpperCase();state.group=document.getElementById('group-input').value.trim().toUpperCase();state.started=true;state.englishOnly=currentLang==='en';state.level=0;state.index=0;state.score=0;
+ document.getElementById('welcome-screen').classList.add('hidden');document.getElementById('main-header').classList.remove('hidden');document.getElementById('level-screen').classList.remove('hidden');renderExercise();
+});
+document.getElementById('reset-btn').addEventListener('click',()=>renderExercise());
+document.getElementById('check-btn').addEventListener('click',check);
+document.getElementById('print-btn').addEventListener('click',()=>window.print());
+document.getElementById('again-btn').addEventListener('click',()=>location.reload());
+
+function renderExercise(){
+ state.selected=[];const lev=levels[state.level],item=lev.items[state.index],t=T[langKey()];
+ document.getElementById('level-badge').innerText=t.level(state.level+1);
+ document.getElementById('level-tag').innerText=lev['tag_'+langKey()];document.getElementById('exercise-counter').innerText=t.exercise(state.index+1,lev.items.length);document.getElementById('exercise-title').innerText=tr(item,'title');document.getElementById('exercise-icon').innerText=lev.icon;document.getElementById('instruction').innerText=tr(item,'instruction');document.getElementById('instruction-es').innerText=currentLang==='hover'?item.instruction_es:'';
+ document.getElementById('assistant-box').classList.add('hidden');document.getElementById('assistant-text').innerText='';
+ const q=document.getElementById('question-area');q.innerHTML='';
+ const check=document.getElementById('check-btn');check.disabled=true;check.className='btn-3d flex-1 py-3 rounded-2xl bg-slate-200 border-slate-300 text-slate-400 font-black cursor-not-allowed';
+ if(item.type==='quiz') renderQuiz(item,q);
+ else if(item.type==='sequence'||item.type==='builder') renderBlocks(item,q);
+ else if(item.type==='match') renderMatch(item,q);
+}
+function enableCheck(){const b=document.getElementById('check-btn');b.disabled=false;b.className='btn-3d flex-1 py-3 rounded-2xl bg-emerald-500 border-emerald-700 text-white font-black'}
+function renderQuiz(item,q){
+ const wrap=document.createElement('div');wrap.className='grid grid-cols-1 md:grid-cols-2 gap-3';
+ shuffle(item.options).forEach((o,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.innerHTML=`<span>${currentLang==='es'?o.es:o.en}</span>${currentLang==='hover'?`<span class="es-tip">${o.es}</span>`:''}`;b.addEventListener('click',()=>{[...wrap.children].forEach(x=>x.classList.remove('ring-4','ring-sky-300'));b.classList.add('ring-4','ring-sky-300');state.selected=[o];enableCheck()});wrap.appendChild(b)});q.appendChild(wrap);
+}
+function renderBlocks(item,q){
+ const top=document.createElement('div');top.className='mb-4';
+ const pool=document.createElement('div');pool.className='grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4';
+ shuffle(item.blocks||item.steps).forEach(s=>{const b=document.createElement('button');b.type='button';b.className='opt';b.innerHTML=`${currentLang==='es'?s.es:s.en}${currentLang==='hover'?`<span class="es-tip">${s.es}</span>`:''}`;b.addEventListener('click',()=>{if(state.selected.some(x=>x.id===s.id))return;state.selected.push(s);b.disabled=true;b.classList.add('opacity-40');drawProgram(item,program);if(state.selected.length===(item.blocks||item.steps).length) enableCheck()});pool.appendChild(b)});
+ const program=document.createElement('div');program.className='codebox min-h-[110px]';program.innerHTML='<span class="text-slate-500">// Select blocks to build your algorithm...</span>';
+ top.appendChild(pool);top.appendChild(program);q.appendChild(top);
+}
+function drawProgram(item,box){
+ box.innerHTML='';state.selected.forEach((s,i)=>{const p=document.createElement('div');p.className='py-1';p.textContent=(i+1)+'. '+(currentLang==='es'?s.es:s.en);box.appendChild(p)});
+}
+function renderMatch(item,q){
+ const values=shuffle(item.pairs.map(p=>p[0])), types=shuffle(item.pairs.map(p=>p[1]));state.selected={};
+ const grid=document.createElement('div');grid.className='space-y-3';
+ values.forEach(v=>{const row=document.createElement('div');row.className='grid grid-cols-[1fr_1.2fr] gap-3 items-center';const lab=document.createElement('div');lab.className='token justify-center';lab.textContent=v;const sel=document.createElement('select');sel.className='w-full px-3 py-3 rounded-xl border-2 border-slate-200 font-bold bg-white';sel.innerHTML='<option value="">—</option>'+types.map(t=>`<option>${t}</option>`).join('');sel.addEventListener('change',()=>{state.selected[v]=sel.value;if(Object.keys(state.selected).length===item.pairs.length&&Object.values(state.selected).every(Boolean))enableCheck()});row.append(lab,sel);grid.appendChild(row)});q.appendChild(grid);
+}
+function explain(text){document.getElementById('assistant-box').classList.remove('hidden');document.getElementById('assistant-text').innerText=text}
+function check(){
+ const item=levels[state.level].items[state.index];let ok=false,why='';
+ if(item.type==='quiz'){ok=state.selected[0]?.ok===true;why=state.selected[0]?.['why_'+langKey()]||state.selected[0]?.why_en||''}
+ else if(item.type==='sequence'||item.type==='builder'){ok=state.selected.map(x=>x.id).join('|')===item.correct.join('|');why=ok?(currentLang==='es'?'La secuencia respeta el orden lógico de definición, entrada, proceso y salida.':'The sequence follows the logical order: definition, input, process and output.'):(currentLang==='es'?'Revisa el orden. En PSeInt primero se preparan los datos y luego se ejecutan las acciones.':'Check the order. In PSeInt, data is prepared before actions are executed.')}
+ else if(item.type==='match'){ok=item.pairs.every(([v,t])=>state.selected[v]===t);why=ok?(currentLang==='es'?'Correcto: cada valor está asociado con el tipo de dato adecuado.':'Correct: each value is associated with the appropriate data type.'):(currentLang==='es'?'Revisa qué tipo de información representa cada valor.':'Check what kind of information each value represents.')}
+ explain(why);
+ if(!ok){toast(currentLang==='es'?'Revisa tu respuesta 💡':'Check your answer 💡',currentLang==='es'?'Inténtalo de nuevo.':'Try again.',false);return}
+ state.score+=40;document.getElementById('score-display').innerText=`${state.score} / 600 XP`;toast(currentLang==='es'?'¡Correcto! ✨':'Correct! ✨','+40 XP',true);
+ setTimeout(next,1200);
+}
+function next(){
+ const lev=levels[state.level];
+ if(state.index<lev.items.length-1){state.index++;renderExercise();return}
+ if(state.level<levels.length-1){state.level++;state.index=0;renderExercise();return}
+ finish();
+}
+function finish(){
+ state.completedAt=Date.now();state.level=3;document.getElementById('level-screen').classList.add('hidden');document.getElementById('final-screen').classList.remove('hidden');document.getElementById('level-badge').innerText=currentLang==='es'?'Completado':'Completed';
+ const allowed=state.englishOnly;
+ document.getElementById('certificate-card').classList.toggle('hidden',!allowed);document.getElementById('certificate-lock').classList.toggle('hidden',allowed);document.getElementById('print-btn').classList.toggle('hidden',!allowed);
+ document.getElementById('cert-student').innerText=state.name;document.getElementById('cert-nrc').innerText=state.nrc;document.getElementById('cert-group').innerText=state.group;document.getElementById('cert-score').innerText=`${state.score} XP`;
+ const d=new Date(state.completedAt),loc=currentLang==='es'?'es-CO':'en-US';document.getElementById('cert-date').innerText=d.toLocaleDateString(loc,{year:'numeric',month:'long',day:'numeric'})+' · '+d.toLocaleTimeString(loc,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+ document.getElementById('final-title').innerText=currentLang==='es'?'CERTIFICADO ✨':'CERTIFICATE ✨';document.getElementById('final-subtitle').innerText=currentLang==='es'?`¡Felicitaciones ${state.name}! Completaste la Clase 2.`:`Congratulations ${state.name}! You completed Class 2.`;
+ if(typeof confetti==='function')confetti({particleCount:160,spread:80,origin:{y:.6}});
+}
+updateStatic();validate();
+</script>
+</body>
+</html>
