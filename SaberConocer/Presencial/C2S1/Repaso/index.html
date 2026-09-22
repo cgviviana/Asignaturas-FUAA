@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Repasa · Reto de datos</title>
+<style>
+:root{
+  --v:#7fb536;--vo:#668e2c;--g:#343434;--bg:#f4f6f8;--b:#dfe3e6;
+  --c1:#e74c3c;--c2:#3478f6;--c3:#e5a823;--c4:#7e57c2;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--g)}
+.top{background:#343434;color:#fff;padding:9px 18px;font-size:12px;text-align:right}
+.wrap{width:min(980px,calc(100% - 28px));margin:auto;padding:22px 0 44px}
+.hero{background:#fff;border:1px solid var(--b);border-bottom:4px solid var(--v);padding:20px 22px;margin-bottom:14px}
+.hero h1{margin:0;font-size:29px}.hero p{margin:7px 0 0;line-height:1.45}
+.status{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;margin:12px 0}
+.bar{height:12px;background:#e5e8eb;border-radius:20px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:var(--v);transition:.25s}
+.badge{background:#fff;border:1px solid var(--b);padding:7px 10px;font-weight:800;font-size:13px}
+.game{background:#fff;border:1px solid var(--b);padding:22px}
+.topic{color:var(--vo);font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.phase{display:inline-block;margin-top:6px;background:#eef6e3;color:var(--vo);padding:5px 9px;font-weight:800}
+.question{font-size:24px;font-weight:800;line-height:1.35;margin:18px 0 8px}
+.prompt{color:#666;margin-bottom:16px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.answer{min-height:92px;border:0;color:white;padding:16px;font-size:16px;font-weight:800;text-align:left;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:8px}
+.answer span:first-child{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;background:rgba(255,255,255,.22);border-radius:50%;font-size:18px}
+.answer.a{background:var(--c1)}.answer.b{background:var(--c2)}.answer.c{background:var(--c3)}.answer.d{background:var(--c4)}
+.answer:disabled{cursor:default;opacity:.88}
+.answer.correct{outline:5px solid #b9e39b;filter:saturate(1.15)}
+.answer.wrong{outline:5px solid #f4b0b0;opacity:.55}
+.feedback{min-height:48px;margin-top:16px;padding:12px 14px;border-left:5px solid #bbb;background:#fafafa;line-height:1.45}
+.feedback.ok{border-color:var(--v);background:#f0f8e9}.feedback.bad{border-color:#c74646;background:#fff1f1}
+.next{margin-top:14px;border:1px solid var(--v);background:var(--v);color:#fff;padding:10px 16px;font-weight:800;cursor:pointer}
+.next[hidden]{display:none}
+.finish{text-align:center;padding:30px 14px}.finish h2{color:var(--vo);font-size:28px}
+.review{margin-top:18px;text-align:left;border-top:1px solid #ddd;padding-top:15px}
+.review div{margin:7px 0}
+@media(max-width:720px){.answers{grid-template-columns:1fr}.question{font-size:21px}.status{grid-template-columns:1fr 1fr}.bar{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="top">Saber Conocer · Corte 2</div>
+<div class="wrap">
+  <section class="hero">
+    <h1>Repasa · Reto de datos</h1>
+    <p>Responde una pregunta a la vez. Si te equivocas, puedes volver a elegir. Cada intento adicional reduce el puntaje. La respuesta solo se revela cuando la encuentras.</p>
+  </section>
+
+  <div class="status">
+    <div class="bar"><span id="bar"></span></div>
+    <div class="badge" id="score">⭐ 0</div>
+    <div class="badge" id="streak">Intentos: 1</div>
+  </div>
+
+  <main class="game" id="game">
+    <div class="topic" id="topic"></div>
+    <div class="phase" id="phase"></div>
+    <div class="question" id="question"></div>
+    <div class="prompt">Elige el término que corresponde a la definición.</div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback">Selecciona una opción.</div>
+    <button class="next" id="next" hidden>Siguiente</button>
+  </main>
+
+  <section class="game finish" id="finish" hidden>
+    <h2>¡Repaso completado!</h2>
+    <p id="finalText"></p>
+    <button class="next" id="restart">Jugar de nuevo</button>
+    <div class="review" id="review"></div>
+  </section>
+</div>
+
+<script>
+const topics=[
+{
+name:"Base de datos y organización",
+es:[
+["Base de datos","Conjunto organizado de registros que puede consultarse, relacionarse y utilizarse posteriormente."],
+["Registro","Conjunto de datos que representa un elemento o evento específico."],
+["Campo","Espacio definido donde se almacena un valor específico dentro de un registro."],
+["Tabla","Estructura que agrupa registros del mismo tipo."],
+["Fila","Representa un registro individual dentro de una tabla."],
+["Columna","Representa un campo o característica dentro de una tabla."],
+["Datos estructurados","Información organizada en campos definidos y separados."]
+],
+en:[
+["Database","Conjunto organizado de registros que puede consultarse, relacionarse y utilizarse posteriormente."],
+["Record","Conjunto de datos que representa un elemento o evento específico."],
+["Field","Espacio definido donde se almacena un valor específico dentro de un registro."],
+["Table","Estructura que agrupa registros del mismo tipo."],
+["Row","Representa un registro individual dentro de una tabla."],
+["Column","Representa un campo o característica dentro de una tabla."],
+["Structured Data","Información organizada en campos definidos y separados."]
+]},
+{
+name:"Modelo de datos y relaciones",
+es:[
+["Modelo de datos","Estructura que define qué información necesita la base de datos, en qué tablas se guarda y cómo se relacionan."],
+["Clave principal","Identificador único de cada registro dentro de una tabla."],
+["Clave foránea","Campo que permite relacionar un registro con otra tabla."],
+["Referencia","Dato utilizado para conectar registros entre diferentes tablas."],
+["Relación de datos","Conexión entre registros de diferentes tablas mediante campos relacionados."]
+],
+en:[
+["Data Model","Estructura que define qué información necesita la base de datos, en qué tablas se guarda y cómo se relacionan."],
+["Primary Key","Identificador único de cada registro dentro de una tabla."],
+["Foreign Key","Campo que permite relacionar un registro con otra tabla."],
+["Reference","Dato utilizado para conectar registros entre diferentes tablas."],
+["Data Relationship","Conexión entre registros de diferentes tablas mediante campos relacionados."]
+]},
+{
+name:"Tipos de datos",
+es:[
+["Tipo de dato","Define qué clase de valor puede almacenar un campo."],
+["Texto","Tipo de dato usado para códigos, nombres, motivos y observaciones."],
+["Número entero","Tipo de dato usado para cantidades enteras como minutos de retraso o reincidencias."],
+["Fecha y hora","Tipo de dato que representa un momento exacto del registro."],
+["Booleano","Tipo de dato con dos posibilidades, como TRUE o FALSE."],
+["Categoría","Tipo de dato que permite elegir entre un conjunto definido de opciones."],
+["Archivo","Tipo de dato utilizado para asociar una evidencia o soporte."]
+],
+en:[
+["Data Type","Define qué clase de valor puede almacenar un campo."],
+["Text","Tipo de dato usado para códigos, nombres, motivos y observaciones."],
+["Integer","Tipo de dato usado para cantidades enteras como minutos de retraso o reincidencias."],
+["Date and Time","Tipo de dato que representa un momento exacto del registro."],
+["Boolean","Tipo de dato con dos posibilidades, como TRUE o FALSE."],
+["Category","Tipo de dato que permite elegir entre un conjunto definido de opciones."],
+["File","Tipo de dato utilizado para asociar una evidencia o soporte."]
+]},
+{
+name:"Captura y origen de los datos",
+es:[
+["Fuente de datos","Lugar o sistema del cual proviene la información."],
+["Campo calculado","Campo cuyo valor se obtiene a partir de otros datos mediante una operación o regla."],
+["Validación de datos","Proceso que comprueba que un dato cumple las reglas definidas."]
+],
+en:[
+["Data Source","Lugar o sistema del cual proviene la información."],
+["Calculated Field","Campo cuyo valor se obtiene a partir de otros datos mediante una operación o regla."],
+["Data Validation","Proceso que comprueba que un dato cumple las reglas definidas."]
+]},
+{
+name:"Limpieza y calidad de datos",
+es:[
+["Limpieza de datos","Proceso de revisar y corregir los registros antes de utilizarlos."],
+["Registro duplicado","Registro repetido que representa el mismo evento más de una vez."],
+["Dato faltante","Información que debería estar presente pero está vacía."],
+["Valor inválido","Dato que no cumple las condiciones esperadas, como una hora imposible."]
+],
+en:[
+["Data Cleaning","Proceso de revisar y corregir los registros antes de utilizarlos."],
+["Duplicate Record","Registro repetido que representa el mismo evento más de una vez."],
+["Missing Data","Información que debería estar presente pero está vacía."],
+["Invalid Value","Dato que no cumple las condiciones esperadas, como una hora imposible."]
+]},
+{
+name:"Aplicación al caso de retardos",
+es:[
+["Minutos de retraso","Cantidad de minutos entre la hora programada de inicio y la hora real de llegada."],
+["Justificación","Información que explica el motivo de una llegada tardía y puede incluir soporte."],
+["Seguimiento","Acción aplicada de acuerdo con el historial de retardos contabilizados y la normativa."],
+["Patrón","Comportamiento repetido que puede identificarse al analizar los datos."]
+],
+en:[
+["Delay Minutes","Cantidad de minutos entre la hora programada de inicio y la hora real de llegada."],
+["Justification","Información que explica el motivo de una llegada tardía y puede incluir soporte."],
+["Follow-up","Acción aplicada de acuerdo con el historial de retardos contabilizados y la normativa."],
+["Pattern","Comportamiento repetido que puede identificarse al analizar los datos."]
+]}
+];
+
+let t=0, phase="es", q=0, score=1000, attempts=0, totalErrors=0;
+let order=[], currentChoices=[], correctAnswer="", questionLocked=false;
+
+const $=s=>document.querySelector(s);
+
+function shuffle(a){
+  const x=[...a];
+  for(let i=x.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [x[i],x[j]]=[x[j],x[i]];
+  }
+  return x;
+}
+
+function makeOrder(){
+  order=shuffle(topics[t][phase].map((_,i)=>i));
+  q=0;
+}
+
+function choices(correct,data){
+  const others=shuffle(data.map(x=>x[0]).filter(x=>x!==correct)).slice(0,3);
+  return shuffle([correct,...others]);
+}
+
+function updateStatus(){
+  let totalDone=0,totalAll=0;
+  topics.forEach((x,i)=>{
+    totalAll+=x.es.length+x.en.length;
+    if(i<t) totalDone+=x.es.length+x.en.length;
+  });
+  totalDone += (phase==="en" ? topics[t].es.length : 0) + q;
+  $("#bar").style.width=Math.round((totalDone/totalAll)*100)+"%";
+  $("#score").textContent="⭐ "+score;
+  $("#streak").textContent="Intentos: "+(attempts+1);
+}
+
+function render(){
+  questionLocked=false;
+  attempts=0;
+  $("#next").hidden=true;
+
+  const data=topics[t][phase];
+  const item=data[order[q]];
+  correctAnswer=item[0];
+  currentChoices=choices(correctAnswer,data);
+
+  $("#topic").textContent=`Tema ${t+1} de ${topics.length} · ${topics[t].name}`;
+  $("#phase").textContent=phase==="es"?"Fase 1 · Español":"Fase 2 · English";
+  $("#question").textContent=item[1];
+  $("#feedback").className="feedback";
+  $("#feedback").innerHTML="Elige la opción que mejor corresponde. Si no aciertas, puedes volver a intentarlo.";
+
+  const labels=["▲","◆","●","■"], cls=["a","b","c","d"];
+  $("#answers").innerHTML="";
+
+  currentChoices.forEach((op,i)=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className=`answer ${cls[i]}`;
+    b.innerHTML=`<span>${labels[i]}</span><span>${op}</span>`;
+    b.addEventListener("click",()=>answer(b,op));
+    $("#answers").appendChild(b);
+  });
+
+  updateStatus();
+}
+
+function answer(btn,value){
+  if(questionLocked) return;
+
+  const buttons=[...document.querySelectorAll(".answer")];
+
+  if(value===correctAnswer){
+    questionLocked=true;
+    buttons.forEach(b=>b.disabled=true);
+    btn.classList.add("correct");
+
+    const earned=Math.max(100,1000-(attempts*200));
+    score += earned;
+
+    $("#feedback").className="feedback ok";
+    $("#feedback").innerHTML=
+      `<strong>¡Muy bien!</strong> Encontraste la relación correcta.<br>`+
+      `Este término corresponde a la definición porque ambos expresan la misma idea dentro del tema trabajado.<br>`+
+      `<strong>+${earned} puntos</strong>`;
+    $("#next").hidden=false;
+  }else{
+    attempts++;
+    totalErrors++;
+    score=Math.max(0,score-100);
+
+    btn.classList.add("wrong");
+    btn.disabled=true;
+
+    const messages=[
+      "Vas cerca. Relee la definición y piensa qué concepto describe con mayor precisión.",
+      "Inténtalo otra vez. Fíjate en la palabra clave de la definición.",
+      "Revisa las opciones que quedan. Relaciona la función del término con lo que dice la definición."
+    ];
+    $("#feedback").className="feedback bad";
+    $("#feedback").innerHTML=
+      `<strong>Aún no.</strong> ${messages[Math.min(attempts-1,messages.length-1)]}<br>`+
+      `Puedes volver a seleccionar otra opción. El puntaje baja un poco con cada intento.`;
+
+    updateStatus();
+  }
+}
+
+$("#next").addEventListener("click",()=>{
+  q++;
+  if(q<order.length){render();return;}
+
+  if(phase==="es"){
+    phase="en";
+    makeOrder();
+    render();
+    return;
+  }
+
+  t++;
+  phase="es";
+
+  if(t<topics.length){
+    makeOrder();
+    render();
+    return;
+  }
+
+  finish();
+});
+
+function finish(){
+  $("#game").hidden=true;
+  $("#finish").hidden=false;
+  $("#bar").style.width="100%";
+
+  const msg = totalErrors===0
+    ? "Excelente recorrido. Relacionaste todos los conceptos sin errores."
+    : `Completaste todo el repaso. Tuviste ${totalErrors} intento${totalErrors===1?"":"s"} adicional${totalErrors===1?"":"es"} durante el recorrido.`;
+
+  $("#finalText").innerHTML=`Puntaje final: <strong>${score}</strong>.<br>${msg}`;
+  $("#review").innerHTML="<strong>Repasa lo aprendido:</strong><div>Español → comprensión del concepto.</div><div>English → reconocimiento del vocabulario técnico.</div>";
+}
+
+$("#restart").addEventListener("click",()=>{
+  t=0; phase="es"; q=0; score=1000; attempts=0; totalErrors=0;
+  $("#finish").hidden=true;
+  $("#game").hidden=false;
+  makeOrder();
+  render();
+});
+
+makeOrder();
+render();
+</script>
+</body>
+</html>
