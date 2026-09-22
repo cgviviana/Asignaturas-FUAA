@@ -1,1 +1,322 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2.1 Recopilación y preparación de datos</title>
+<style>
+:root{--v:#7fb536;--vo:#668e2c;--vs:#eef6e3;--g:#414141;--b:#ddd;--bg:#f5f5f5;--r:#c74646;--a:#e0a52a}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--g)}
+.top{height:30px;background:var(--g);color:white}.top div,.head,.wrap{width:min(1180px,calc(100% - 40px));margin:auto}
+.top div{height:100%;display:flex;justify-content:flex-end;align-items:center;font-size:12px}
+header{background:#fff;border-bottom:1px solid #ddd}.head{min-height:78px;display:flex;align-items:center;justify-content:space-between}.head img{width:175px}
+.wrap{padding:28px 0 60px}.hero{background:#fff;border:1px solid var(--b);border-bottom:4px solid var(--v);padding:24px 26px;margin-bottom:18px}
+.hero h1{margin:0;font-size:30px}.hero p{margin:10px 0 0;line-height:1.5}
+.layout{display:grid;grid-template-columns:255px 1fr;gap:18px}.side{background:#fff;border:1px solid var(--b);position:sticky;top:14px}
+.side h3{margin:0;background:var(--g);color:#fff;padding:14px 16px}.side button{width:100%;border:0;border-bottom:1px solid #eee;border-left:5px solid transparent;background:#fff;padding:14px;text-align:left;font-weight:700;cursor:pointer}
+.side button.active{background:var(--v);color:#fff;border-left-color:var(--vo)}
+.content{background:#fff;border:1px solid var(--b)}.panel{display:none;padding:24px}.panel.active{display:block}.panel h2{margin:0 0 8px}
+.lead{padding:14px 16px;background:var(--vs);border-left:5px solid var(--v);line-height:1.5;margin-bottom:18px}
+.box{border:1px solid #cfe0ad;background:#fbfdf7;padding:14px 16px;margin:14px 0;line-height:1.5}.box strong{color:var(--vo)}
+.table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}.table th{background:var(--g);color:#fff;padding:9px;text-align:left;border:1px solid #555}.table td{padding:9px;border:1px solid #ddd;vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{border:1px solid #ddd;padding:13px;background:#fff}.card h4{margin:0 0 6px;color:var(--vo)}.card p{margin:0;line-height:1.4;color:#666}
+.logic{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:16px 0}.logic>div{border:1px solid #ddd;padding:14px;background:#fff}.arr{border:0!important;font-size:26px;color:var(--vo)}
+.sim{margin-top:18px;border:1px solid #d9e5c6;background:#fbfdf8}.sim h3{margin:0;background:#eef6e3;padding:13px 16px}.sim .body{padding:16px}
+.rec{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rec label{font-size:13px;font-weight:700}.rec select{width:100%;margin-top:5px;padding:8px}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.btn{display:inline-flex;padding:9px 14px;border:1px solid var(--v);background:var(--v);color:#fff;text-decoration:none;font-weight:700;cursor:pointer}.btn.alt{background:#fff;color:var(--vo)}
+.fb{display:none;margin-top:12px;padding:11px;border-left:4px solid #aaa}.fb.show{display:block}.fb.ok{background:#eff9e8;border-color:var(--v)}.fb.bad{background:#fff1f1;border-color:var(--r)}
+.sheet{margin-top:14px;border:1px solid #ccc;overflow:auto}.sheetin{min-width:760px;font-family:Arial}.smenu{display:flex;gap:18px;background:#f8f9fa;padding:10px}.smenu b{color:#137333;background:#e6f4ea;padding:4px}.sgrid{width:100%;border-collapse:collapse;font-size:13px}.sgrid th,.sgrid td{border:1px solid #e0e0e0;padding:7px}.sgrid .hdr{background:#e9f4e4;font-weight:700}.stabs{display:flex;gap:4px;background:#f8f9fa;padding:8px}.stabs span{background:#fff;border:1px solid #ddd;padding:6px 10px}.stabs .on{border-bottom:3px solid #137333;font-weight:700;color:#137333}
+.clean{display:grid;grid-template-columns:180px 1fr 1fr;border:1px solid #ddd;margin-bottom:8px}.clean>*{padding:10px}.clean b{background:#f3f3f3}.clean i{font-style:normal;background:#fbfbfb}
+.fake{width:100%;border-collapse:collapse}.fake th{background:var(--g);color:#fff;padding:9px}.fake td{position:relative;border:1px solid #ddd;padding:9px 34px 9px 9px}.fake td.sel{cursor:pointer}.fake td.sel.on{background:#f1fae8;outline:2px solid var(--v);outline-offset:-2px}.fake td.sel.on:after{content:"✓";position:absolute;right:7px;top:50%;transform:translateY(-50%);width:21px;height:21px;border-radius:50%;background:var(--v);color:#fff;display:grid;place-items:center;font-weight:900}
+.warn{padding:12px 14px;border-left:5px solid var(--a);background:#fff8e8;margin:14px 0;line-height:1.5}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+.flow div{border:1px solid #d8e5c5;background:#fbfdf8;padding:13px;line-height:1.4}
+.flow b{display:block;color:var(--vo);margin-bottom:5px}
+.calcgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calcgrid label{font-size:13px;font-weight:700}
+.calcgrid input{width:100%;margin-top:5px;padding:9px;border:1px solid #ccc}
+.resultbox{margin-top:14px;padding:14px;border:1px solid #cfe0ad;background:#fbfdf7;line-height:1.6}
+.dataflow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch;margin:16px 0}
+.dataflow .step{border:1px solid #d8e5c5;background:#fbfdf8;padding:14px;line-height:1.45}
+.dataflow .step b{display:block;color:var(--vo);margin-bottom:6px}
+.dataflow .arrow{display:grid;place-items:center;color:var(--vo);font-size:24px}
+.follow,.patterns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.follow div,.patterns div{border:1px solid #d8e5c5;background:#fbfdf8;padding:13px;line-height:1.45}
+.follow b,.patterns b{display:block;color:var(--vo);margin-bottom:5px}
+.calcgrid select{width:100%;margin-top:5px;padding:9px;border:1px solid #ccc;background:#fff}
+footer{margin-top:20px;background:var(--g);color:#fff;padding:15px;text-align:center}footer strong{color:#cfe7ad}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.side{position:static}.grid{grid-template-columns:1fr}.logic{grid-template-columns:1fr}.arr{transform:rotate(90deg);text-align:center}.clean{grid-template-columns:1fr}.rec{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.calcgrid{grid-template-columns:1fr}.dataflow{grid-template-columns:1fr}.dataflow .arrow{transform:rotate(90deg)}.follow,.patterns{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top"><div>Facultad de Ingeniería y Ciencias Básicas</div></div>
+<header><div class="head">
+<a href="https://cgviviana.github.io/Asignaturas-FUAA/SaberConocer/Presencial/Menu/index.html"><img src="https://cms.areandina.edu.co/sites/default/files/styles/max_650x650_webp/public/2023-03/AREANDINA%20%281%29.png.webp?itok=r5N1M-5x" alt="Areandina"></a>
+<b>Saber Conocer / <span style="color:#668e2c">Corte 2</span></b>
+</div></header>
+
+<div class="wrap">
+<section class="hero"><h1>2.1 Recopilación y preparación de datos para la solución</h1><p>En esta clase se define qué información necesita la aplicación, cómo se captura, cómo se organiza en tablas y qué reglas permiten convertir los registros en información útil.</p></section>
+
+<div class="layout">
+<aside class="side"><h3>Contenido</h3>
+<button class="nav active" data-p="p1">1. Cómo funciona la solución</button>
+<button class="nav" data-p="p2">2. De los registros a la base de datos</button>
+<button class="nav" data-p="p3">3. Cómo se organiza la base de datos</button>
+<button class="nav" data-p="p4">4. Tipos de datos</button>
+<button class="nav" data-p="p5">5. Cálculos, justificaciones y seguimiento</button>
+<button class="nav" data-p="p6">6. Limpieza de datos</button>
+<button class="nav" data-p="p7">7. Claves y relaciones</button>
+</aside>
+
+<main class="content">
+
+<section class="panel active" id="p1"><h2>1. ¿Cómo funciona la solución?</h2>
+<div class="lead">El problema es el ingreso tardío a la primera hora de clase. La solución registra la hora real de llegada, distingue los retardos justificados de los que sí se contabilizan y permite hacer seguimiento según la normativa institucional.</div>
+
+<div class="flow">
+<div><b>1. Información institucional</b>La aplicación consulta estudiantes, docentes, asignaturas, grupos, inscripciones y horarios.</div>
+<div><b>2. Apertura de la clase</b>El docente abre la clase correspondiente a la primera hora. La aplicación genera el QR asociado a esa clase.</div>
+<div><b>3. Registro de llegada</b>El estudiante inicia sesión institucional y escanea el QR. Si necesita apoyo porque no puede usar su dispositivo, el docente registra la llegada manualmente.</div>
+<div><b>4. Cálculo del retraso</b>El sistema compara la hora de llegada con la hora programada de inicio y calcula los minutos de retraso.</div>
+</div>
+
+<div class="flow">
+<div><b>5. Justificación</b>Cuando existe una justificación válida, el evento queda registrado, pero no se suma al conteo de retardos para seguimiento.</div>
+<div><b>6. Seguimiento</b>Los retardos sin justificación válida se acumulan y la aplicación muestra la acción que corresponda según la normativa institucional.</div>
+<div><b>7. Acciones progresivas</b>La solución puede apoyar una secuencia como llamado de atención, comunicación con familia o acudiente y la medida definida por el reglamento.</div>
+<div><b>8. Análisis de patrones</b>El tablero permite observar concentraciones de retardos por día, grupo, asignatura, docente o motivo reportado.</div>
+</div>
+
+<table class="table">
+<tr><th>Fuente / actor</th><th>Qué ocurre</th><th>Información que aporta</th></tr>
+<tr><td>Registros institucionales</td><td>Proveen la información base</td><td>Estudiantes, docentes, asignaturas, grupos, inscripciones y horarios</td></tr>
+<tr><td>Docente</td><td>Abre la clase de primera hora</td><td>ID_docente, ID_clase, fecha, hora_inicio, token_QR</td></tr>
+<tr><td>Estudiante</td><td>Escanea el QR</td><td>ID_estudiante, ID_clase, fecha_hora_captura, método_registro=QR</td></tr>
+<tr><td>Docente</td><td>Apoya el registro cuando el estudiante no puede hacerlo desde su dispositivo</td><td>ID_estudiante, ID_clase, fecha_hora_captura, método_registro=Manual</td></tr>
+<tr><td>Estudiante</td><td>Registra el motivo y adjunta soporte cuando corresponde</td><td>motivo_retraso, archivo_soporte</td></tr>
+<tr><td>Sistema</td><td>Calcula y organiza el seguimiento</td><td>minutos_retraso, justificación_válida, cuenta_como_retardo, total_reincidencias, acción_seguimiento</td></tr>
+</table>
+
+<div class="box"><strong>Propósito de la solución:</strong> registrar con evidencia los ingresos tardíos, aplicar criterios de justificación y seguimiento de manera consistente e identificar tanto reincidencias individuales como situaciones anómalas que afecten a varios estudiantes.</div>
+</section>
+
+<section class="panel" id="p2"><h2>2. De los registros a la base de datos</h2>
+<div class="lead">Durante el uso de la aplicación se generan muchos registros. El conjunto organizado de esos registros forma una <strong>base de datos</strong>: una colección de información que puede consultarse, relacionarse y utilizarse después.</div>
+
+<div class="dataflow">
+<div class="step"><b>Acción</b>El estudiante E014 escanea el QR de la clase C102 a las 07:12.</div>
+<div class="arrow">→</div>
+<div class="step"><b>Registro</b>Se guardan por separado el estudiante, la clase, la fecha, la hora y el método de registro.</div>
+<div class="arrow">→</div>
+<div class="step"><b>Base de datos</b>Ese registro se guarda junto con los demás registros de estudiantes, clases, llegadas y justificaciones.</div>
+</div>
+
+<div class="box"><strong>Dato estructurado:</strong> cada valor ocupa un campo definido. En lugar de guardar una frase como “E014 llegó a C102 a las 07:12”, se guardan valores separados: <strong>ID_estudiante = E014</strong>, <strong>ID_clase = C102</strong>, <strong>hora_captura = 07:12</strong>.</div>
+
+<div class="box"><strong>Modelo de datos:</strong> es el plano que define qué información necesita la base de datos, en qué tablas se guarda y cómo se relacionan esas tablas. En este proyecto, el modelo conecta una llegada con el estudiante, la clase, el grupo, la asignatura, el docente, la justificación y el seguimiento.</div>
+
+<div class="sim"><h3>Simulador · convierte una acción en un registro</h3><div class="body">
+<p>Evento: “E014 escanea el QR de la clase C102 el 10/09/2026 a las 07:12”. Ubica cada valor en el campo correspondiente.</p>
+<div class="rec" id="rec">
+<label>ID estudiante<select data-a="E014"></select></label>
+<label>ID clase<select data-a="C102"></select></label>
+<label>Fecha<select data-a="10/09/2026"></select></label>
+<label>Hora de captura<select data-a="07:12"></select></label>
+<label>Método de registro<select data-a="QR"></select></label>
+</div>
+<div class="btns"><button class="btn" id="checkRec">Comprobar</button><button class="btn alt" id="shuffleRec">Mezclar otra vez</button></div><div class="fb" id="fbRec"></div>
+</div></div>
+</section>
+
+<section class="panel" id="p3"><h2>3. ¿Cómo se organiza la base de datos?</h2>
+<div class="lead">Una <strong>tabla</strong> agrupa registros del mismo tipo. Cada <strong>fila</strong> representa un registro y cada <strong>columna</strong> representa un campo. El modelo de datos utiliza varias tablas porque la aplicación maneja diferentes tipos de información.</div>
+
+<div class="grid">
+<div class="card"><h4>Estudiantes</h4><p>Una fila por estudiante. Campos como ID_estudiante, nombre y correo.</p></div>
+<div class="card"><h4>Docentes</h4><p>Una fila por docente. Campos como ID_docente, nombre y correo.</p></div>
+<div class="card"><h4>Asignaturas</h4><p>Una fila por asignatura. Permite saber qué materia corresponde a cada grupo.</p></div>
+<div class="card"><h4>Grupos</h4><p>Una fila por grupo o NRC. Se relaciona con una asignatura.</p></div>
+<div class="card"><h4>Inscripciones</h4><p>Relaciona estudiantes con los grupos en los que están matriculados.</p></div>
+<div class="card"><h4>Clases</h4><p>Una fila por sesión de clase. Guarda grupo, docente, fecha y hora de inicio.</p></div>
+<div class="card"><h4>Llegadas</h4><p>Una fila por registro de llegada. Guarda estudiante, clase, hora y método de registro.</p></div>
+<div class="card"><h4>Justificaciones</h4><p>Relaciona una llegada con el motivo, soporte y resultado de la validación.</p></div>
+<div class="card"><h4>Seguimientos</h4><p>Registra las acciones aplicadas según el número de retardos contabilizados.</p></div>
+</div>
+
+<div class="sheet"><div class="sheetin">
+<div class="smenu"><span>Archivo</span><span>Editar</span><span>Ver</span><span>Insertar</span><span>Formato</span><b>Datos</b><span>Herramientas</span></div>
+<table class="sgrid"><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr>
+<tr><th>1</th><td class="hdr">ID_llegada</td><td class="hdr">ID_estudiante</td><td class="hdr">ID_clase</td><td class="hdr">Fecha_hora_captura</td><td class="hdr">Método_registro</td></tr>
+<tr><th>2</th><td>L001</td><td>E014</td><td>C102</td><td>2026-09-10 07:12</td><td>QR</td></tr></table>
+<div class="stabs"><span>Estudiantes</span><span>Docentes</span><span>Asignaturas</span><span>Grupos</span><span>Inscripciones</span><span>Clases</span><span class="on">Llegadas</span><span>Justificaciones</span><span>Seguimientos</span></div>
+</div></div>
+
+<div class="box"><strong>En Google Sheets:</strong> cada pestaña puede representar una de estas tablas. Así se prepara la estructura inicial del modelo de datos antes de conectarla con la aplicación.</div>
+</section>
+
+<section class="panel" id="p4"><h2>4. Tipos de datos</h2>
+<div class="lead">Después de definir las tablas se establece qué tipo de valor guarda cada campo. Esto permite que la aplicación interprete correctamente la información y aplique cálculos, filtros y reglas.</div>
+<table class="table">
+<tr><th>Tipo</th><th>Ejemplo</th><th>Uso en este proyecto</th><th>AppSheet</th><th>Supabase</th></tr>
+<tr><td>Texto</td><td>E014, Transporte</td><td>Códigos, nombres, motivos y observaciones</td><td>Text</td><td>text / uuid</td></tr>
+<tr><td>Número entero</td><td>12</td><td>Minutos de retraso y número de reincidencias</td><td>Number</td><td>integer</td></tr>
+<tr><td>Fecha y hora</td><td>2026-09-10 07:12</td><td>Momento exacto del registro</td><td>DateTime</td><td>timestamp / timestamptz</td></tr>
+<tr><td>Booleano</td><td>TRUE / FALSE</td><td>Estados con dos posibilidades: llegó_tarde, justificación_válida, cuenta_como_retardo</td><td>Yes/No</td><td>boolean</td></tr>
+<tr><td>Categoría</td><td>QR / Manual</td><td>Opciones definidas como método de registro o motivo de retraso</td><td>Enum</td><td>text / enum</td></tr>
+<tr><td>Referencia</td><td>ID_clase</td><td>Conectar una llegada con la clase o una justificación con la llegada</td><td>Ref</td><td>foreign key</td></tr>
+<tr><td>Archivo</td><td>soporte.pdf</td><td>Evidencia asociada a una justificación</td><td>File</td><td>Storage + URL</td></tr>
+</table>
+<div class="box"><strong>Ejemplo de categoría:</strong> el campo <strong>motivo_retraso</strong> puede utilizar opciones definidas como Transporte, Situación institucional, Personal u Otro. Esto facilita después analizar patrones.</div>
+</section>
+
+<section class="panel" id="p5"><h2>5. Cálculos, justificaciones y seguimiento</h2>
+<div class="lead">Los datos capturados permiten calcular el retraso y decidir si ese evento se contabiliza. Después, el historial de retardos contabilizados permite aplicar el seguimiento establecido por la normativa institucional.</div>
+
+<div class="logic">
+<div><strong>Datos capturados</strong><br>hora_inicio = 07:00<br>hora_captura = 07:12</div>
+<div class="arr">→</div>
+<div><strong>Cálculo</strong><br>07:12 − 07:00 = 12 minutos<br><br><strong>Resultado</strong><br>minutos_retraso = 12</div>
+</div>
+
+<div class="logic">
+<div><strong>Justificación</strong><br>Si la justificación cumple los criterios establecidos, justificación_válida = TRUE.</div>
+<div class="arr">→</div>
+<div><strong>Conteo</strong><br>El evento queda registrado, pero <strong>cuenta_como_retardo = FALSE</strong>. Si no existe una justificación válida, el retardo sí se suma al historial.</div>
+</div>
+
+<table class="table">
+<tr><th>Campo</th><th>Cómo se obtiene</th><th>Regla</th></tr>
+<tr><td>minutos_retraso</td><td>Calculado</td><td>Diferencia entre hora_captura y hora_inicio, con mínimo de 0</td></tr>
+<tr><td>llegó_tarde</td><td>Calculado</td><td>TRUE cuando minutos_retraso &gt; 0</td></tr>
+<tr><td>justificación_válida</td><td>Validación del soporte</td><td>TRUE cuando la justificación cumple los criterios definidos</td></tr>
+<tr><td>cuenta_como_retardo</td><td>Calculado</td><td>TRUE cuando llegó_tarde = TRUE y justificación_válida = FALSE</td></tr>
+<tr><td>total_reincidencias</td><td>Calculado</td><td>Suma de retardos que sí cuentan para seguimiento</td></tr>
+<tr><td>acción_seguimiento</td><td>Regla institucional</td><td>Acción correspondiente al nivel de reincidencia</td></tr>
+</table>
+
+<div class="follow">
+<div><b>Primer nivel</b>Llamado de atención y registro del seguimiento.</div>
+<div><b>Siguiente nivel</b>Comunicación con familia o acudiente, cuando así lo establezca la normativa.</div>
+<div><b>Nivel posterior</b>Aplicación de la medida definida en el reglamento institucional.</div>
+</div>
+
+<div class="box"><strong>Para el prototipo:</strong> esta secuencia muestra la lógica de seguimiento. Los límites exactos de reincidencia y las medidas aplicables se configuran con base en la normativa institucional vigente.</div>
+
+<div class="patterns">
+<div><b>Patrón por día o franja</b>Muchos retardos en la misma mañana pueden indicar una situación externa o institucional.</div>
+<div><b>Patrón por grupo, asignatura o docente</b>Una concentración repetida permite revisar si existe una condición asociada al horario o a la dinámica de ingreso.</div>
+<div><b>Patrón por motivo</b>Varios estudiantes reportando transporte u otra causa similar permite visualizar un evento común en lugar de tratarlo como casos aislados.</div>
+</div>
+
+<div class="sim"><h3>Simulador · retraso, justificación y seguimiento</h3><div class="body">
+<p>Cambia los datos para observar cuándo el retardo se contabiliza y qué seguimiento correspondería en este ejemplo de prototipo.</p>
+<div class="calcgrid">
+<label>Hora de inicio<input type="time" id="horaInicio" value="07:00"></label>
+<label>Hora de llegada<input type="time" id="horaLlegada" value="07:12"></label>
+<label>¿Justificación válida?<select id="justVal"><option value="no">No</option><option value="si">Sí</option></select></label>
+<label>Retardos contabilizados anteriores<input type="number" id="prevDelay" min="0" value="0"></label>
+</div>
+<div class="btns"><button class="btn" id="calcDelay">Calcular</button></div>
+<div class="resultbox" id="delayResult">Pulsa <strong>Calcular</strong> para ver el resultado.</div>
+</div></div>
+</section>
+
+<section class="panel" id="p6"><h2>6. Limpieza de datos</h2>
+<div class="lead">La limpieza de datos consiste en corregir los registros para que puedan utilizarse con seguridad en la aplicación. Cada problema debe tener una acción concreta de corrección.</div>
+
+<div class="clean"><b>Campo obligatorio vacío</b><span>Ej.: falta ID_estudiante.</span><i>Consultar la fuente institucional y completar el dato antes de cargar el registro. Si el dato no puede recuperarse, se descarta ese registro y se realiza una nueva captura correcta.</i></div>
+<div class="clean"><b>Campo opcional vacío</b><span>Ej.: el estudiante no presentó soporte.</span><i>Mantener el campo vacío porque ese dato no existe para ese registro.</i></div>
+<div class="clean"><b>Registro duplicado</b><span>Mismo estudiante, clase y momento de registro.</span><i>Comparar los registros y conservar una sola versión del evento válido.</i></div>
+<div class="clean"><b>Formato diferente</b><span>Fecha u hora registrada con otra estructura.</span><i>Convertir el valor al formato definido para ese campo antes de utilizarlo.</i></div>
+<div class="clean"><b>Valor imposible</b><span>Ej.: una hora como 27:80.</span><i>Verificar el dato en la fuente original. Si existe el valor correcto, reemplazarlo; si no puede verificarse, retirar ese registro de los cálculos y volver a capturarlo.</i></div>
+<div class="clean"><b>Valor fuera de catálogo</b><span>Ej.: motivo escrito de distintas formas.</span><i>Reemplazarlo por una de las categorías definidas para mantener consistencia en los análisis.</i></div>
+
+<div class="box"><strong>En este proyecto:</strong> primero se revisan los datos institucionales que alimentan el modelo. Después se revisan los registros generados por la aplicación: clases, llegadas, justificaciones y seguimientos.</div>
+
+<div class="sim"><h3>Laboratorio · detecta y corrige</h3><div class="body">
+<p>Selecciona las celdas que requieren revisión.</p>
+<table class="fake" id="clean">
+<tr><th>ID_llegada</th><th>ID_estudiante</th><th>ID_clase</th><th>Fecha_hora_captura</th></tr>
+<tr><td>L001</td><td>E014</td><td>C102</td><td>2026-09-10 07:12</td></tr>
+<tr><td>L002</td><td class="sel" data-e="1" data-msg="Falta ID_estudiante: consultar la fuente institucional y completar el dato antes de cargar el registro. Si no puede recuperarse, se descarta y se realiza una nueva captura."></td><td>C102</td><td>2026-09-10 07:06</td></tr>
+<tr><td>L003</td><td>E018</td><td>C102</td><td class="sel" data-e="1" data-msg="La hora 27:80 es imposible: verificar el valor correcto. Si no puede verificarse, retirar el registro de los cálculos y volver a capturarlo.">27:80</td></tr>
+<tr><td class="sel" data-e="1" data-msg="El identificador L001 aparece repetido: comparar los registros y conservar una sola versión del evento válido.">L001</td><td>E014</td><td>C102</td><td>2026-09-10 07:12</td></tr>
+</table>
+<div class="btns"><button class="btn" id="checkClean">Comprobar</button><button class="btn alt" id="resetClean">Reiniciar</button></div><div class="fb" id="fbClean"></div>
+</div></div>
+</section>
+
+<section class="panel" id="p7"><h2>7. Claves y relaciones</h2>
+<div class="lead">Las claves permiten enlazar las tablas del modelo de datos. Gracias a esas relaciones, una llegada puede conectarse con el estudiante, la clase, la asignatura, la justificación y el seguimiento correspondiente.</div>
+<table class="table">
+<tr><th>Tabla</th><th>Clave principal</th><th>Se relaciona con</th></tr>
+<tr><td>Estudiantes</td><td>ID_estudiante</td><td>Inscripciones, Llegadas, Seguimientos</td></tr>
+<tr><td>Docentes</td><td>ID_docente</td><td>Clases</td></tr>
+<tr><td>Asignaturas</td><td>ID_asignatura</td><td>Grupos</td></tr>
+<tr><td>Grupos</td><td>ID_grupo</td><td>ID_asignatura</td></tr>
+<tr><td>Inscripciones</td><td>ID_inscripción</td><td>ID_estudiante, ID_grupo</td></tr>
+<tr><td>Clases</td><td>ID_clase</td><td>ID_grupo, ID_docente</td></tr>
+<tr><td>Llegadas</td><td>ID_llegada</td><td>ID_estudiante, ID_clase</td></tr>
+<tr><td>Justificaciones</td><td>ID_justificación</td><td>ID_llegada</td></tr>
+<tr><td>Seguimientos</td><td>ID_seguimiento</td><td>ID_estudiante, ID_llegada</td></tr>
+</table>
+
+<div class="box"><strong>Ejemplo:</strong> L001 identifica una llegada. Ese registro contiene E014 y C102. E014 permite encontrar al estudiante. C102 permite encontrar la clase, su grupo, la asignatura y el docente. Si L001 tiene una justificación válida, el sistema conserva el evento pero no lo suma al conteo de reincidencias. Si sí se contabiliza, puede relacionarse con el seguimiento que corresponda.</div>
+</section>
+
+</main></div>
+<footer>Aprendiendo con <strong>@LaProfeVivy</strong></footer>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+$$('.nav').forEach(b=>b.addEventListener('click',()=>{$$('.nav').forEach(x=>x.classList.remove('active'));$$('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#'+b.dataset.p).classList.add('active')}));
+const vals=['E014','C102','10/09/2026','07:12','QR'];
+function sh(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function load(){const o=sh([...vals]);$$('#rec select').forEach(s=>s.innerHTML='<option value="">Selecciona</option>'+o.map(v=>`<option value="${v}">${v}</option>`).join(''))}
+load();$('#shuffleRec').onclick=load;$('#checkRec').onclick=()=>{const ok=$$('#rec select').every(s=>s.value===s.dataset.a),f=$('#fbRec');f.textContent=ok?'Correcto. Cada valor quedó ubicado en el campo que le corresponde.':'Revisa qué valor corresponde a cada campo del registro.';f.className='fb show '+(ok?'ok':'bad')};
+
+function toMinutes(t){
+  if(!t || !/^\d{2}:\d{2}$/.test(t)) return null;
+  const [h,m]=t.split(':').map(Number);
+  if(h<0||h>23||m<0||m>59) return null;
+  return h*60+m;
+}
+$('#calcDelay').onclick=()=>{
+  const ini=toMinutes($('#horaInicio').value);
+  const lle=toMinutes($('#horaLlegada').value);
+  const just=$('#justVal').value==='si';
+  const prev=Math.max(0,parseInt($('#prevDelay').value||'0',10));
+  const r=$('#delayResult');
+  if(ini===null||lle===null){
+    r.innerHTML='<strong>Revisa las horas ingresadas.</strong>';
+    return;
+  }
+  const min=Math.max(0,lle-ini);
+  const tarde=min>0;
+  const cuenta=tarde && !just;
+  const total=prev+(cuenta?1:0);
+  let accion='Sin acción de seguimiento por retardo.';
+  if(cuenta){
+    if(total===1) accion='Llamado de atención y registro del seguimiento.';
+    else if(total===2) accion='Comunicación con familia o acudiente, según la normativa institucional.';
+    else accion='Aplicar la medida correspondiente definida por el reglamento institucional.';
+  }else if(tarde && just){
+    accion='La llegada tardía queda registrada como justificada y no aumenta el conteo de reincidencias.';
+  }
+  r.innerHTML=
+    '<strong>minutos_retraso = '+min+'</strong><br>'+
+    'llegó_tarde = <strong>'+(tarde?'TRUE':'FALSE')+'</strong><br>'+
+    'justificación_válida = <strong>'+(just?'TRUE':'FALSE')+'</strong><br>'+
+    'cuenta_como_retardo = <strong>'+(cuenta?'TRUE':'FALSE')+'</strong><br>'+
+    'total_reincidencias = <strong>'+total+'</strong><br><br>'+
+    '<strong>Seguimiento:</strong> '+accion;
+};
+
+$$('#clean .sel').forEach(c=>c.onclick=()=>c.classList.toggle('on'));
+$('#checkClean').onclick=()=>{const e=$$('#clean [data-e="1"]'),s=$$('#clean .on'),ok=s.length===e.length&&s.every(c=>c.dataset.e==='1'),f=$('#fbClean');f.innerHTML=ok?'<strong>Correcto.</strong><br>'+e.map(c=>'• '+c.dataset.msg).join('<br>'):`Encontraste ${s.filter(c=>c.dataset.e==='1').length} de ${e.length} problemas.`;f.className='fb show '+(ok?'ok':'bad')};
+$('#resetClean').onclick=()=>{$$('#clean .sel').forEach(c=>c.classList.remove('on'));$('#fbClean').className='fb'};
+</script>
+</body></html>
