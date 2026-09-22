@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -47,6 +48,63 @@ header{background:#fff;border-bottom:1px solid #ddd}.head{min-height:78px;displa
 .calcgrid select{width:100%;margin-top:5px;padding:9px;border:1px solid #ccc;background:#fff}
 footer{margin-top:20px;background:var(--g);color:#fff;padding:15px;text-align:center}footer strong{color:#cfe7ad}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.side{position:static}.grid{grid-template-columns:1fr}.logic{grid-template-columns:1fr}.arr{transform:rotate(90deg);text-align:center}.clean{grid-template-columns:1fr}.rec{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.calcgrid{grid-template-columns:1fr}.dataflow{grid-template-columns:1fr}.dataflow .arrow{transform:rotate(90deg)}.follow,.patterns{grid-template-columns:1fr}}
+
+/* Acordeones compactos para reducir carga visual */
+.acc-flow{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+margin:16px 0;
+}
+.acc-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:12px;
+margin:14px 0;
+}
+.acc{
+border:1px solid #d8e5c5;
+background:#fbfdf8;
+}
+.acc-grid .acc{
+border-color:#ddd;
+background:#fff;
+}
+.acc summary{
+list-style:none;
+cursor:pointer;
+padding:13px 38px 13px 13px;
+font-weight:700;
+color:var(--vo);
+position:relative;
+line-height:1.35;
+}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::after{
+content:"＋";
+position:absolute;
+right:13px;
+top:50%;
+transform:translateY(-50%);
+font-size:20px;
+color:var(--vo);
+font-weight:700;
+}
+.acc[open] summary::after{content:"−"}
+.acc .accbody{
+padding:0 13px 13px;
+line-height:1.45;
+color:#555;
+border-top:1px solid #e8efdf;
+padding-top:10px;
+}
+.acc-grid .acc .accbody{
+border-top-color:#eee;
+}
+@media(max-width:900px){
+.acc-flow,.acc-grid{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -75,18 +133,15 @@ footer{margin-top:20px;background:var(--g);color:#fff;padding:15px;text-align:ce
 <section class="panel active" id="p1"><h2>1. ¿Cómo funciona la solución?</h2>
 <div class="lead">El problema es el ingreso tardío a la primera hora de clase. La solución registra la hora real de llegada, distingue los retardos justificados de los que sí se contabilizan y permite hacer seguimiento según la normativa institucional.</div>
 
-<div class="flow">
-<div><b>1. Información institucional</b>La aplicación consulta estudiantes, docentes, asignaturas, grupos, inscripciones y horarios.</div>
-<div><b>2. Apertura de la clase</b>El docente abre la clase correspondiente a la primera hora. La aplicación genera el QR asociado a esa clase.</div>
-<div><b>3. Registro de llegada</b>El estudiante inicia sesión institucional y escanea el QR. Si necesita apoyo porque no puede usar su dispositivo, el docente registra la llegada manualmente.</div>
-<div><b>4. Cálculo del retraso</b>El sistema compara la hora de llegada con la hora programada de inicio y calcula los minutos de retraso.</div>
-</div>
-
-<div class="flow">
-<div><b>5. Justificación</b>Cuando existe una justificación válida, el evento queda registrado, pero no se suma al conteo de retardos para seguimiento.</div>
-<div><b>6. Seguimiento</b>Los retardos sin justificación válida se acumulan y la aplicación muestra la acción que corresponda según la normativa institucional.</div>
-<div><b>7. Acciones progresivas</b>La solución puede apoyar una secuencia como llamado de atención, comunicación con familia o acudiente y la medida definida por el reglamento.</div>
-<div><b>8. Análisis de patrones</b>El tablero permite observar concentraciones de retardos por día, grupo, asignatura, docente o motivo reportado.</div>
+<div class="acc-flow">
+<details class="acc"><summary>1. Información institucional</summary><div class="accbody">La aplicación consulta estudiantes, docentes, asignaturas, grupos, inscripciones y horarios.</div></details>
+<details class="acc"><summary>2. Apertura de la clase</summary><div class="accbody">El docente abre la clase correspondiente a la primera hora. La aplicación genera el QR asociado a esa clase.</div></details>
+<details class="acc"><summary>3. Registro de llegada</summary><div class="accbody">El estudiante inicia sesión institucional y escanea el QR. Si necesita apoyo porque no puede usar su dispositivo, el docente registra la llegada manualmente.</div></details>
+<details class="acc"><summary>4. Cálculo del retraso</summary><div class="accbody">El sistema compara la hora de llegada con la hora programada de inicio y calcula los minutos de retraso.</div></details>
+<details class="acc"><summary>5. Justificación</summary><div class="accbody">Cuando existe una justificación válida, el evento queda registrado, pero no se suma al conteo de retardos para seguimiento.</div></details>
+<details class="acc"><summary>6. Seguimiento</summary><div class="accbody">Los retardos sin justificación válida se acumulan y la aplicación muestra la acción que corresponda según la normativa institucional.</div></details>
+<details class="acc"><summary>7. Acciones progresivas</summary><div class="accbody">La solución puede apoyar una secuencia como llamado de atención, comunicación con familia o acudiente y la medida definida por el reglamento.</div></details>
+<details class="acc"><summary>8. Análisis de patrones</summary><div class="accbody">El tablero permite observar concentraciones de retardos por día, grupo, asignatura, docente o motivo reportado.</div></details>
 </div>
 
 <table class="table">
@@ -133,16 +188,16 @@ footer{margin-top:20px;background:var(--g);color:#fff;padding:15px;text-align:ce
 <section class="panel" id="p3"><h2>3. ¿Cómo se organiza la base de datos?</h2>
 <div class="lead">Una <strong>tabla</strong> agrupa registros del mismo tipo. Cada <strong>fila</strong> representa un registro y cada <strong>columna</strong> representa un campo. El modelo de datos utiliza varias tablas porque la aplicación maneja diferentes tipos de información.</div>
 
-<div class="grid">
-<div class="card"><h4>Estudiantes</h4><p>Una fila por estudiante. Campos como ID_estudiante, nombre y correo.</p></div>
-<div class="card"><h4>Docentes</h4><p>Una fila por docente. Campos como ID_docente, nombre y correo.</p></div>
-<div class="card"><h4>Asignaturas</h4><p>Una fila por asignatura. Permite saber qué materia corresponde a cada grupo.</p></div>
-<div class="card"><h4>Grupos</h4><p>Una fila por grupo o NRC. Se relaciona con una asignatura.</p></div>
-<div class="card"><h4>Inscripciones</h4><p>Relaciona estudiantes con los grupos en los que están matriculados.</p></div>
-<div class="card"><h4>Clases</h4><p>Una fila por sesión de clase. Guarda grupo, docente, fecha y hora de inicio.</p></div>
-<div class="card"><h4>Llegadas</h4><p>Una fila por registro de llegada. Guarda estudiante, clase, hora y método de registro.</p></div>
-<div class="card"><h4>Justificaciones</h4><p>Relaciona una llegada con el motivo, soporte y resultado de la validación.</p></div>
-<div class="card"><h4>Seguimientos</h4><p>Registra las acciones aplicadas según el número de retardos contabilizados.</p></div>
+<div class="acc-grid">
+<details class="acc"><summary>Estudiantes</summary><div class="accbody">Una fila por estudiante. Campos como ID_estudiante, nombre y correo.</div></details>
+<details class="acc"><summary>Docentes</summary><div class="accbody">Una fila por docente. Campos como ID_docente, nombre y correo.</div></details>
+<details class="acc"><summary>Asignaturas</summary><div class="accbody">Una fila por asignatura. Permite saber qué materia corresponde a cada grupo.</div></details>
+<details class="acc"><summary>Grupos</summary><div class="accbody">Una fila por grupo o NRC. Se relaciona con una asignatura.</div></details>
+<details class="acc"><summary>Inscripciones</summary><div class="accbody">Relaciona estudiantes con los grupos en los que están matriculados.</div></details>
+<details class="acc"><summary>Clases</summary><div class="accbody">Una fila por sesión de clase. Guarda grupo, docente, fecha y hora de inicio.</div></details>
+<details class="acc"><summary>Llegadas</summary><div class="accbody">Una fila por registro de llegada. Guarda estudiante, clase, hora y método de registro.</div></details>
+<details class="acc"><summary>Justificaciones</summary><div class="accbody">Relaciona una llegada con el motivo, soporte y resultado de la validación.</div></details>
+<details class="acc"><summary>Seguimientos</summary><div class="accbody">Registra las acciones aplicadas según el número de retardos contabilizados.</div></details>
 </div>
 
 <div class="sheet"><div class="sheetin">
@@ -271,52 +326,145 @@ footer{margin-top:20px;background:var(--g);color:#fff;padding:15px;text-align:ce
 </div>
 
 <script>
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-$$('.nav').forEach(b=>b.addEventListener('click',()=>{$$('.nav').forEach(x=>x.classList.remove('active'));$$('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#'+b.dataset.p).classList.add('active')}));
-const vals=['E014','C102','10/09/2026','07:12','QR'];
-function sh(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function load(){const o=sh([...vals]);$$('#rec select').forEach(s=>s.innerHTML='<option value="">Selecciona</option>'+o.map(v=>`<option value="${v}">${v}</option>`).join(''))}
-load();$('#shuffleRec').onclick=load;$('#checkRec').onclick=()=>{const ok=$$('#rec select').every(s=>s.value===s.dataset.a),f=$('#fbRec');f.textContent=ok?'Correcto. Cada valor quedó ubicado en el campo que le corresponde.':'Revisa qué valor corresponde a cada campo del registro.';f.className='fb show '+(ok?'ok':'bad')};
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 
+/* Navegación principal: los 7 temas */
+$$('.nav').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.getElementById(btn.dataset.p);
+    if (!target) return;
+
+    $$('.nav').forEach(x => x.classList.remove('active'));
+    $$('.panel').forEach(x => x.classList.remove('active'));
+
+    btn.classList.add('active');
+    target.classList.add('active');
+
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+});
+
+/* Simulador: acción -> registro */
+const vals = ['E014','C102','10/09/2026','07:12','QR'];
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function loadRecordOptions(){
+  const options = shuffle(vals);
+  $$('#rec select').forEach(select => {
+    select.innerHTML =
+      '<option value="">Selecciona</option>' +
+      options.map(v => `<option value="${v}">${v}</option>`).join('');
+  });
+}
+
+const rec = $('#rec');
+if(rec){
+  loadRecordOptions();
+
+  const shuffleBtn = $('#shuffleRec');
+  if(shuffleBtn) shuffleBtn.addEventListener('click', loadRecordOptions);
+
+  const checkBtn = $('#checkRec');
+  if(checkBtn){
+    checkBtn.addEventListener('click', () => {
+      const ok = $$('#rec select').every(s => s.value === s.dataset.a);
+      const f = $('#fbRec');
+      if(!f) return;
+      f.textContent = ok
+        ? 'Correcto. Cada valor quedó ubicado en el campo que le corresponde.'
+        : 'Revisa qué valor corresponde a cada campo del registro.';
+      f.className = 'fb show ' + (ok ? 'ok' : 'bad');
+    });
+  }
+}
+
+/* Simulador de retraso */
 function toMinutes(t){
   if(!t || !/^\d{2}:\d{2}$/.test(t)) return null;
-  const [h,m]=t.split(':').map(Number);
-  if(h<0||h>23||m<0||m>59) return null;
-  return h*60+m;
+  const [h,m] = t.split(':').map(Number);
+  if(h < 0 || h > 23 || m < 0 || m > 59) return null;
+  return h * 60 + m;
 }
-$('#calcDelay').onclick=()=>{
-  const ini=toMinutes($('#horaInicio').value);
-  const lle=toMinutes($('#horaLlegada').value);
-  const just=$('#justVal').value==='si';
-  const prev=Math.max(0,parseInt($('#prevDelay').value||'0',10));
-  const r=$('#delayResult');
-  if(ini===null||lle===null){
-    r.innerHTML='<strong>Revisa las horas ingresadas.</strong>';
-    return;
-  }
-  const min=Math.max(0,lle-ini);
-  const tarde=min>0;
-  const cuenta=tarde && !just;
-  const total=prev+(cuenta?1:0);
-  let accion='Sin acción de seguimiento por retardo.';
-  if(cuenta){
-    if(total===1) accion='Llamado de atención y registro del seguimiento.';
-    else if(total===2) accion='Comunicación con familia o acudiente, según la normativa institucional.';
-    else accion='Aplicar la medida correspondiente definida por el reglamento institucional.';
-  }else if(tarde && just){
-    accion='La llegada tardía queda registrada como justificada y no aumenta el conteo de reincidencias.';
-  }
-  r.innerHTML=
-    '<strong>minutos_retraso = '+min+'</strong><br>'+
-    'llegó_tarde = <strong>'+(tarde?'TRUE':'FALSE')+'</strong><br>'+
-    'justificación_válida = <strong>'+(just?'TRUE':'FALSE')+'</strong><br>'+
-    'cuenta_como_retardo = <strong>'+(cuenta?'TRUE':'FALSE')+'</strong><br>'+
-    'total_reincidencias = <strong>'+total+'</strong><br><br>'+
-    '<strong>Seguimiento:</strong> '+accion;
-};
 
-$$('#clean .sel').forEach(c=>c.onclick=()=>c.classList.toggle('on'));
-$('#checkClean').onclick=()=>{const e=$$('#clean [data-e="1"]'),s=$$('#clean .on'),ok=s.length===e.length&&s.every(c=>c.dataset.e==='1'),f=$('#fbClean');f.innerHTML=ok?'<strong>Correcto.</strong><br>'+e.map(c=>'• '+c.dataset.msg).join('<br>'):`Encontraste ${s.filter(c=>c.dataset.e==='1').length} de ${e.length} problemas.`;f.className='fb show '+(ok?'ok':'bad')};
-$('#resetClean').onclick=()=>{$$('#clean .sel').forEach(c=>c.classList.remove('on'));$('#fbClean').className='fb'};
+const calcDelayBtn = $('#calcDelay');
+if(calcDelayBtn){
+  calcDelayBtn.addEventListener('click', () => {
+    const ini = toMinutes($('#horaInicio').value);
+    const lle = toMinutes($('#horaLlegada').value);
+    const just = $('#justVal').value === 'si';
+    const prev = Math.max(0, parseInt($('#prevDelay').value || '0', 10));
+    const r = $('#delayResult');
+
+    if(ini === null || lle === null){
+      r.innerHTML = '<strong>Revisa las horas ingresadas.</strong>';
+      return;
+    }
+
+    const min = Math.max(0, lle - ini);
+    const tarde = min > 0;
+    const cuenta = tarde && !just;
+    const total = prev + (cuenta ? 1 : 0);
+
+    let accion = 'Sin acción de seguimiento por retardo.';
+    if(cuenta){
+      if(total === 1) accion = 'Llamado de atención y registro del seguimiento.';
+      else if(total === 2) accion = 'Comunicación con familia o acudiente, según la normativa institucional.';
+      else accion = 'Aplicar la medida correspondiente definida por el reglamento institucional.';
+    }else if(tarde && just){
+      accion = 'La llegada tardía queda registrada como justificada y no aumenta el conteo de reincidencias.';
+    }
+
+    r.innerHTML =
+      '<strong>minutos_retraso = ' + min + '</strong><br>' +
+      'llegó_tarde = <strong>' + (tarde ? 'TRUE' : 'FALSE') + '</strong><br>' +
+      'justificación_válida = <strong>' + (just ? 'TRUE' : 'FALSE') + '</strong><br>' +
+      'cuenta_como_retardo = <strong>' + (cuenta ? 'TRUE' : 'FALSE') + '</strong><br>' +
+      'total_reincidencias = <strong>' + total + '</strong><br><br>' +
+      '<strong>Seguimiento:</strong> ' + accion;
+  });
+}
+
+/* Laboratorio de limpieza */
+$$('#clean .sel').forEach(cell => {
+  cell.addEventListener('click', () => cell.classList.toggle('on'));
+});
+
+const checkCleanBtn = $('#checkClean');
+if(checkCleanBtn){
+  checkCleanBtn.addEventListener('click', () => {
+    const errors = $$('#clean [data-e="1"]');
+    const selected = $$('#clean .on');
+    const ok = selected.length === errors.length &&
+               selected.every(c => c.dataset.e === '1');
+    const f = $('#fbClean');
+
+    if(ok){
+      f.innerHTML = '<strong>Correcto.</strong><br>' +
+        errors.map(c => '• ' + c.dataset.msg).join('<br>');
+    }else{
+      const found = selected.filter(c => c.dataset.e === '1').length;
+      f.textContent = `Encontraste ${found} de ${errors.length} problemas.`;
+    }
+    f.className = 'fb show ' + (ok ? 'ok' : 'bad');
+  });
+}
+
+const resetCleanBtn = $('#resetClean');
+if(resetCleanBtn){
+  resetCleanBtn.addEventListener('click', () => {
+    $$('#clean .sel').forEach(c => c.classList.remove('on'));
+    const f = $('#fbClean');
+    if(f) f.className = 'fb';
+  });
+}
 </script>
 </body></html>
