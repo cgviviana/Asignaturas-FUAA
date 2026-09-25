@@ -1,0 +1,106 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PSeInt · Laboratorio guiado</title>
+<style>
+:root{--bg:#f4f6f8;--panel:#fff;--line:#d9dee5;--ink:#17202a;--muted:#66727f;--nav:#171b21;--editor:#1e2229;--editor2:#252a32;--accent:#2563eb;--ok:#287a4b;--bad:#b3423d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif}
+header{height:58px;background:var(--nav);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid #303640}
+.brand{font-weight:750}.sub{font-size:12px;color:#aeb7c2}
+main{max-width:1240px;margin:18px auto;padding:0 18px}
+.progress{display:flex;gap:6px;margin-bottom:12px}.progress span{height:4px;flex:1;background:#d4d9df;border-radius:9px}.progress .on{background:#5c6672}
+.workspace{display:grid;grid-template-columns:310px minmax(0,1fr);gap:12px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.guide{padding:18px;min-height:600px}.eyebrow{font-size:11px;letter-spacing:.08em;color:var(--muted);font-weight:700}.guide h1{font-size:20px;margin:7px 0}.statement{font-size:14px;line-height:1.5;color:#394553}
+.rule{height:1px;background:#e4e7eb;margin:18px 0}.guide h2{font-size:16px;margin:5px 0 7px}.steptext{font-size:13px;line-height:1.45;color:#52606d}
+.choices{display:grid;gap:7px;margin-top:13px}.choice{background:#fafbfc;border:1px solid #cdd3da;border-radius:5px;padding:9px 10px;text-align:left;font:13px Consolas,monospace;cursor:pointer}.choice:hover,.choice.sel{border-color:#65717d;background:#f0f2f4}
+.feedback{margin-top:12px;border-left:3px solid #a0a8b0;background:#f3f4f5;padding:10px 11px;border-radius:4px;font-size:13px;line-height:1.45}.feedback.ok{border-color:var(--ok)}.feedback.bad{border-color:var(--bad)}
+.ide{min-height:600px;background:var(--editor);display:flex;flex-direction:column}
+.idehead{height:40px;background:var(--editor2);color:#dbe1e7;padding:0 13px;display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.toolbar{background:#f8f9fa;border-bottom:1px solid var(--line);padding:8px 10px;display:flex;gap:6px;flex-wrap:wrap}
+.tool{background:#fff;border:1px solid #cfd5dc;border-radius:5px;padding:7px 9px;font-size:12px;color:#27313b;cursor:pointer}.tool:disabled{opacity:.45}
+.editor{flex:1;min-height:355px;padding:18px;color:#e7ebef;font:14px/1.7 Consolas,monospace;white-space:pre-wrap}.cursor{border-left:2px solid #aeb7c2;padding-left:7px;color:#87919c}
+.actionbar{background:#f8f9fa;border-top:1px solid var(--line);padding:9px 10px;display:flex;gap:7px}
+button.action{border:0;border-radius:5px;padding:8px 12px;font-weight:700;cursor:pointer}.run{background:#374151;color:white}.next{background:#58636f;color:white}.ghost{background:#e6e9ed;color:#27313b}.action:disabled{opacity:.4;cursor:not-allowed}
+.io{border-top:1px solid #343a43;background:#15191f;color:#e6ebef;padding:13px;min-height:125px;font:14px/1.55 Consolas,monospace}.iolabel{font:10px Inter,Segoe UI,sans-serif;color:#8f9aa6;letter-spacing:.09em;margin-bottom:9px}
+.io input{background:#20252c;color:#fff;border:1px solid #4a535d;border-radius:4px;padding:8px 9px;width:250px;font:14px Consolas,monospace;margin:7px 8px 0 0}.io button{border:0;background:#596570;color:white;border-radius:4px;padding:8px 11px;font-weight:700;cursor:pointer}
+.output{white-space:pre-wrap;margin-top:8px}.hidden{display:none}
+footer{text-align:center;padding:16px;color:#707a84;font-size:11px}@media(max-width:820px){.workspace{grid-template-columns:1fr}.guide{min-height:auto}}
+</style></head>
+<body>
+<header><div class="brand">PSeInt · Laboratorio</div><div class="sub">Fundamentos de programación</div></header>
+<main>
+<div class="progress"><span></span><span></span><span></span><span></span></div>
+<div class="workspace">
+<aside class="panel guide">
+ <div class="eyebrow">EJERCICIO <b id="exn"></b> DE 4</div>
+ <h1 id="title"></h1><div id="statement" class="statement"></div>
+ <div class="rule"></div>
+ <div class="eyebrow">PASO <b id="stepn"></b></div>
+ <h2 id="steptitle"></h2><div id="steptext" class="steptext"></div>
+ <div id="choices" class="choices"></div>
+ <div id="feedback" class="feedback">Selecciona una instrucción para llevarla al editor.</div>
+</aside>
+<section class="panel ide">
+ <div class="idehead"><span>algoritmo.psc</span><span>PSeInt</span></div>
+ <div class="toolbar">
+  <button class="tool" disabled>"" Escribir</button><button class="tool" disabled>⌨ Leer</button><button class="tool" disabled>← Asignar</button><button class="tool" disabled>Tipos</button>
+ </div>
+ <div id="editor" class="editor"></div>
+ <div class="actionbar" id="actions"><button id="test" class="action run">▶ Testear</button><button id="undo" class="action ghost">Deshacer</button><button id="nextstep" class="action next" disabled>Siguiente paso →</button></div>
+ <div id="io" class="io"><div class="iolabel">SALIDA</div><div id="iobody">La salida del programa aparecerá aquí al ejecutarlo.</div></div>
+</section>
+</div>
+</main><footer>Aprendiendo con @LaProfeVivy</footer>
+<script>
+const E=[
+{title:"Mostrar en pantalla",statement:"Haz que el programa muestre en pantalla: Hola, bienvenido a PSeInt.",steps:[
+["Iniciar el algoritmo","El programa necesita una instrucción de inicio.",["Algoritmo Saludo","Leer Saludo","Definir Saludo"],0,"Algoritmo Saludo","Algoritmo inicia el programa; Saludo es el nombre que le asignaste."],
+["Mostrar el mensaje","Ahora necesitas enviar el mensaje a la pantalla.",['Leer "Hola, bienvenido a PSeInt"','Escribir "Hola, bienvenido a PSeInt"','Definir "Hola, bienvenido a PSeInt"'],1,'    Escribir "Hola, bienvenido a PSeInt"',"Escribir es una instrucción de salida: envía el texto a la pantalla."],
+["Cerrar el algoritmo","El programa ya tiene la salida. Falta cerrarlo.",["FinSi","FinAlgoritmo","FinPara"],1,"FinAlgoritmo","FinAlgoritmo marca el final del programa."]]},
+{title:"Capturar y mostrar",statement:"Solicita el nombre de una persona y después muestra: Hola [nombre].",steps:[
+["Iniciar","Inicia el programa.",["Algoritmo SaludoNombre","Leer nombre","FinAlgoritmo"],0,"Algoritmo SaludoNombre","Algoritmo inicia el programa."],
+["Definir la variable","El nombre que escriba el usuario debe quedar guardado.",["Definir nombre Como Entero","Definir nombre Como Caracter","Definir nombre Como Logico"],1,"    Definir nombre Como Caracter","Caracter permite almacenar texto, como un nombre."],
+["Pedir el dato","Muestra al usuario qué dato debe ingresar.",['Escribir "Digite su nombre:"','Leer "Digite su nombre:"','Definir "Digite su nombre:"'],0,'    Escribir "Digite su nombre:"',"Escribir muestra la indicación antes de esperar la entrada."],
+["Capturar el dato","Guarda lo que escriba el usuario en la variable nombre.",["Escribir nombre","Leer nombre","nombre <- Hola"],1,"    Leer nombre","Leer captura la entrada y la guarda en nombre."],
+["Mostrar el saludo","Usa el valor guardado en nombre para construir la salida.",['Escribir "Hola ", nombre','Leer "Hola ", nombre','Definir nombre Como Hola'],0,'    Escribir "Hola ", nombre',"Escribir muestra el texto Hola seguido del valor almacenado en nombre."],
+["Cerrar","Finaliza el programa.",["FinAlgoritmo","FinSi","Cerrar"],0,"FinAlgoritmo","FinAlgoritmo cierra el programa."]]},
+{title:"Calcular edad",statement:"Solicita el año de nacimiento y el año actual, calcula la edad y muestra el resultado.",steps:[
+["Iniciar","Inicia el programa.",["Algoritmo CalcularEdad","Leer edad","Definir edad"],0,"Algoritmo CalcularEdad","Algoritmo inicia el programa."],
+["Definir variables","Necesitas guardar dos años y el resultado.",["Definir anioNacimiento, anioActual, edad Como Entero","Definir edad Como Caracter","Definir edad Como Logico"],0,"    Definir anioNacimiento, anioActual, edad Como Entero","Entero es adecuado porque en este ejercicio los años y la edad no usan decimales."],
+["Pedir año de nacimiento","Antes de leer un dato, indica al usuario qué debe ingresar.",['Escribir "Digite su año de nacimiento:"','Leer "Digite su año de nacimiento:"','Definir anioNacimiento'],0,'    Escribir "Digite su año de nacimiento:"',"Escribir muestra la solicitud para que el usuario sepa qué dato debe ingresar."],
+["Leer año de nacimiento","Ahora sí captura el dato que acaba de solicitarse.",["Leer anioNacimiento","Escribir anioNacimiento","Leer edad"],0,"    Leer anioNacimiento","Leer guarda en anioNacimiento el dato que ingresó el usuario."],
+["Pedir año actual","Indica al usuario cuál es el segundo dato que debe ingresar.",['Escribir "Digite el año actual:"','Leer "Digite el año actual:"','Definir anioActual'],0,'    Escribir "Digite el año actual:"',"Escribir muestra la segunda solicitud antes de capturar el dato."],
+["Leer año actual","Ahora captura el segundo dato solicitado.",["Escribir anioActual","Leer anioActual","Leer edad"],1,"    Leer anioActual","Leer guarda en anioActual el dato que ingresó el usuario."],
+["Calcular","Obtén la edad usando los dos datos.",["edad <- anioActual - anioNacimiento","edad <- anioActual + anioNacimiento","edad <- anioNacimiento / anioActual"],0,"    edad <- anioActual - anioNacimiento","<- asigna a edad el resultado de la resta."],
+["Mostrar","Muestra el resultado.",['Escribir "Su edad es: ", edad','Leer edad','Definir edad'],0,'    Escribir "Su edad es: ", edad',"Escribir muestra el valor calculado de edad."],
+["Cerrar","Finaliza el programa.",["FinAlgoritmo","FinMientras","FinSi"],0,"FinAlgoritmo","FinAlgoritmo cierra el programa."]]},
+{title:"Precio con descuento",statement:"Solicita el precio y el porcentaje de descuento, calcula el precio final y muéstralo.",steps:[
+["Iniciar","Inicia el programa.",["Algoritmo PrecioConDescuento","Leer precio","FinAlgoritmo"],0,"Algoritmo PrecioConDescuento","Algoritmo inicia el programa."],
+["Definir variables","Necesitas precio, descuento y resultado.",["Definir precio, descuento, total Como Real","Definir precio Como Caracter","Definir total Como Logico"],0,"    Definir precio, descuento, total Como Real","Real permite trabajar con valores que pueden tener decimales."],
+["Pedir precio","Antes de leer el precio, indica al usuario qué debe ingresar.",['Escribir "Digite el precio:"','Leer "Digite el precio:"','Definir precio'],0,'    Escribir "Digite el precio:"',"Escribir muestra la solicitud del precio."],
+["Leer precio","Ahora captura el precio solicitado.",["Leer precio","Escribir precio","Leer total"],0,"    Leer precio","Leer guarda el precio ingresado por el usuario."],
+["Pedir descuento","Indica al usuario el segundo dato que debe ingresar.",['Escribir "Digite el porcentaje de descuento:"','Leer "Digite el porcentaje de descuento:"','Definir descuento'],0,'    Escribir "Digite el porcentaje de descuento:"',"Escribir muestra la solicitud del porcentaje de descuento."],
+["Leer descuento","Ahora captura el porcentaje solicitado.",["Escribir descuento","Leer descuento","Definir descuento"],1,"    Leer descuento","Leer guarda el porcentaje ingresado por el usuario."],
+["Calcular","Calcula el valor final.",["total <- precio - (precio * descuento / 100)","total <- precio + descuento","total <- descuento - precio"],0,"    total <- precio - (precio * descuento / 100)","La expresión calcula el descuento y lo resta del precio original."],
+["Mostrar","Muestra el resultado.",['Escribir "El precio final es: ", total','Leer total','Definir total'],0,'    Escribir "El precio final es: ", total',"Escribir muestra el total calculado."],
+["Cerrar","Finaliza el programa.",["FinAlgoritmo","FinPara","FinSi"],0,"FinAlgoritmo","FinAlgoritmo cierra el programa."]]}
+];
+let ex=0,st=0,lines=[],pick=null,passed=false;
+const $=id=>document.getElementById(id);
+function load(){st=0;lines=[];pick=null;passed=false;$("exn").textContent=ex+1;$("title").textContent=E[ex].title;$("statement").textContent=E[ex].statement;document.querySelectorAll(".progress span").forEach((b,i)=>b.classList.toggle("on",i<=ex));$("actions").classList.remove("hidden");$("io").classList.remove("hidden");$("iobody").textContent="La salida del programa aparecerá aquí al ejecutarlo.";renderStep()}
+function renderStep(){let s=E[ex].steps[st];$("stepn").textContent=st+1;$("steptitle").textContent=s[0];$("steptext").textContent=s[1];$("choices").innerHTML="";$("feedback").className="feedback";$("feedback").textContent="Selecciona una instrucción para llevarla al editor.";$("nextstep").disabled=true;pick=null;passed=false;s[2].forEach((v,i)=>{let b=document.createElement("button");b.className="choice";b.textContent=v;b.onclick=()=>{pick=i;document.querySelectorAll(".choice").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");$("feedback").className="feedback";$("feedback").textContent="Instrucción colocada. Pulsa Testear.";draw()};$("choices").appendChild(b)});draw()}
+function draw(){let ed=$("editor");ed.innerHTML="";lines.forEach(l=>{let d=document.createElement("div");d.textContent=l;ed.appendChild(d)});let c=document.createElement("div");c.className="cursor";c.textContent=pick===null?"▌":E[ex].steps[st][2][pick];ed.appendChild(c)}
+$("test").onclick=()=>{if(pick===null){$("feedback").className="feedback bad";$("feedback").textContent="Selecciona una instrucción antes de testear.";return}let s=E[ex].steps[st];if(pick===s[3]){passed=true;$("feedback").className="feedback ok";$("feedback").textContent=s[5];$("nextstep").disabled=false}else{passed=false;$("feedback").className="feedback bad";$("feedback").textContent="Esa instrucción no realiza lo solicitado en este paso. Prueba otra.";$("nextstep").disabled=true}}
+$("undo").onclick=()=>{pick=null;passed=false;$("nextstep").disabled=true;draw()}
+$("nextstep").onclick=()=>{if(!passed)return;lines.push(E[ex].steps[st][4]);if(st<E[ex].steps.length-1){st++;renderStep()}else{execution()}}
+function execution(){$("choices").innerHTML="";$("stepn").textContent=E[ex].steps.length;$("steptitle").textContent="Ejecutar";$("steptext").textContent="Ejecuta el algoritmo que acabas de construir.";$("feedback").className="feedback ok";$("feedback").textContent="Algoritmo construido.";$("actions").classList.add("hidden");drawCode();startIO()}
+function drawCode(){let ed=$("editor");ed.innerHTML="";lines.forEach(l=>{let d=document.createElement("div");d.textContent=l;ed.appendChild(d)})}
+function startIO(){let body=$("iobody");body.innerHTML="";if(ex===0){let b=btn("▶ Ejecutar");b.onclick=()=>result("Hola, bienvenido a PSeInt");body.appendChild(b)}else if(ex===1){ask("Digite su nombre:","Nombre",v=>result("Hola "+v))}else if(ex===2){ask("Digite su año de nacimiento:","Año de nacimiento",a=>ask("Digite el año actual:","Año actual",b=>result("Su edad es: "+(Number(b)-Number(a)))))}else{ask("Digite el precio:","Precio",p=>ask("Digite el porcentaje de descuento:","Descuento %",d=>result("El precio final es: "+(Number(p)-(Number(p)*Number(d)/100)))))}}
+function ask(label,ph,cb){let body=$("iobody");body.innerHTML="";let l=document.createElement("div");l.textContent=label;let i=document.createElement("input");i.placeholder=ph;let b=btn("Enviar");b.onclick=()=>{if(i.value.trim())cb(i.value.trim())};i.onkeydown=e=>{if(e.key==="Enter"&&i.value.trim())cb(i.value.trim())};body.append(l,i,b);i.focus()}
+function result(text){let body=$("iobody");body.innerHTML="";let o=document.createElement("div");o.className="output";o.textContent=text;let b=btn(ex===3?"Finalizar":"Siguiente ejercicio →");b.style.marginTop="12px";b.onclick=()=>{if(ex<3){ex++;load()}else{body.innerHTML='<div class="output">Laboratorio completado.</div>'}};body.append(o,b)}
+function btn(t){let b=document.createElement("button");b.textContent=t;return b}
+load();
+</script></body></html>
