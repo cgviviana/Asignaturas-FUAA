@@ -1,1 +1,983 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador - Tablas relacionadas</title>
+<style>
+:root{
+  --g:#0f766e; --g2:#e8f5f2; --b:#2563eb; --b2:#edf4ff;
+  --ink:#17211f; --muted:#66736f; --line:#d9e2df; --bg:#f6f8f7; --card:#fff;
+  --ok:#166534; --okbg:#ecfdf3; --warn:#92400e; --warnbg:#fff7ed;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+.app{max-width:1100px;margin:auto;padding:22px}
+header{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px}
+h1{margin:0 0 6px;font-size:27px}
+h2{font-size:21px;margin:0 0 10px}
+h3{font-size:17px;margin:0 0 8px}
+p{line-height:1.5;margin:8px 0}
+.small{font-size:13px;color:var(--muted)}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.step{border:1px solid var(--line);background:white;border-radius:10px;padding:10px 12px;cursor:pointer;font-weight:700}
+.step.active{background:var(--g2);border-color:var(--g);color:#0b5d56}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px;margin-bottom:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{background:#f8faf9}
+.tag{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700}
+.pk{background:var(--g2);color:#0b5d56}
+.fk{background:var(--b2);color:#1d4ed8}
+.highlight{outline:3px solid #f59e0b;outline-offset:-3px;background:#fff8e7}
+.rowpick{cursor:pointer}
+.rowpick:hover{background:#f8faf9}
+.flow{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.entity{border:1px solid var(--line);border-radius:12px;padding:14px;background:white}
+.arrow{font-size:28px;text-align:center;color:var(--muted)}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+button.choice,button.main{min-height:42px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:14px}
+button.choice{background:white;border:1px solid var(--line)}
+button.main{background:var(--g);color:#fff;border:0;font-weight:700}
+.feedback{margin-top:10px;border-radius:10px;padding:11px;background:#f8faf9;border:1px solid var(--line);min-height:44px}
+.feedback.ok{background:var(--okbg);border-color:#bbf7d0;color:var(--ok)}
+.feedback.warn{background:var(--warnbg);border-color:#fed7aa;color:var(--warn)}
+select{width:100%;min-height:42px;border:1px solid var(--line);border-radius:9px;padding:8px;background:#fff;font-size:15px}
+label{display:block;font-size:14px;font-weight:700;margin-bottom:5px}
+.connection{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.box{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}
+.bigid{font-size:28px;font-weight:800;letter-spacing:.5px}
+.center{text-align:center}
+.hidden{display:none}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:14px}
+@media(max-width:760px){
+  .two,.three,.flow,.connection{grid-template-columns:1fr}
+  .arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>Simulador: tablas relacionadas</h1>
+  <p class="small">Caso: control de llegadas tarde</p>
+</header>
+
+<div class="steps">
+  <button class="step active" data-p="p1">1. Una tabla</button>
+  <button class="step" data-p="p2">2. Separar datos</button>
+  <button class="step" data-p="p3">3. Clave primaria</button>
+  <button class="step" data-p="p4">4. Conectar tablas</button>
+  <button class="step" data-p="p5">5. Relación 1:N</button>
+  <button class="step" data-p="p6">6. Conectar clases</button>
+  <button class="step" data-p="p7">7. Flujo de la app</button>
+  <button class="step" data-p="p8">8. Tablas del sistema</button>
+  <button class="step" data-p="p9">9. Modelo completo</button>
+</div>
+
+<section id="p1" class="panel active">
+  <div class="card">
+    <h2>1. Empezamos con una sola tabla</h2>
+    <p>Cada fila representa una llegada de un estudiante a una clase.</p>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>Estudiante</th><th>Curso</th><th>Fecha</th><th>Hora clase</th><th>Hora llegada</th></tr>
+      <tr><td>Laura</td><td>801</td><td>24/09</td><td>7:00</td><td>7:08</td></tr>
+      <tr><td>Mateo</td><td>801</td><td>24/09</td><td>7:00</td><td>6:59</td></tr>
+      <tr><td>Laura</td><td>801</td><td>25/09</td><td>7:00</td><td>7:04</td></tr>
+      <tr><td>Sara</td><td>802</td><td>25/09</td><td>7:00</td><td>7:11</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <p><strong>Observa:</strong> Laura aparece varias veces porque tiene varios registros de llegada. La fecha y la hora de clase también se repiten.</p>
+    <button class="main next">Continuar</button>
+  </div>
+</section>
+
+<section id="p2" class="panel">
+  <div class="card">
+    <h2>2. Separamos la información en tablas</h2>
+    <p>Una tabla guarda estudiantes, otra las clases y otra cada llegada.</p>
+  </div>
+
+  <div class="three">
+    <div class="card">
+      <h3>Estudiantes</h3>
+      <table>
+        <tr><th>ID</th><th>Nombre</th></tr>
+        <tr><td>E01</td><td>Laura</td></tr>
+        <tr><td>E02</td><td>Mateo</td></tr>
+        <tr><td>E03</td><td>Sara</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Clases</h3>
+      <table>
+        <tr><th>ID</th><th>Fecha</th><th>Hora</th></tr>
+        <tr><td>C01</td><td>24/09</td><td>7:00</td></tr>
+        <tr><td>C02</td><td>25/09</td><td>7:00</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Registros</h3>
+      <table>
+        <tr><th>ID</th><th>Est.</th><th>Clase</th><th>Llegada</th></tr>
+        <tr><td>R01</td><td>E01</td><td>C01</td><td>7:08</td></tr>
+        <tr><td>R02</td><td>E02</td><td>C01</td><td>6:59</td></tr>
+        <tr><td>R03</td><td>E01</td><td>C02</td><td>7:04</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>Ahora el mismo dato se puede reconocer por un identificador. Por ejemplo, <strong>E01</strong> siempre representa a Laura.</p>
+    <button class="main next">Continuar</button>
+  </div>
+</section>
+
+<section id="p3" class="panel">
+  <div class="card">
+    <h2>3. Clave primaria</h2>
+    <p>La clave primaria es el campo que identifica de forma única cada fila dentro de una tabla.</p>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h3>Tabla Estudiantes</h3>
+      <table>
+        <tr><th>ID_estudiante</th><th>Nombre</th><th>Curso</th></tr>
+        <tr><td class="pk">E01</td><td>Laura</td><td>801</td></tr>
+        <tr><td class="pk">E02</td><td>Mateo</td><td>801</td></tr>
+        <tr><td class="pk">E03</td><td>Sara</td><td>802</td></tr>
+      </table>
+      <p class="small"><span class="tag pk">PK</span> = Primary Key = clave primaria</p>
+    </div>
+
+    <div class="card">
+      <h3>Selecciona cuál identifica una sola fila</h3>
+      <div class="controls">
+        <button class="choice pkq" data-v="nombre">Nombre</button>
+        <button class="choice pkq" data-v="curso">Curso</button>
+        <button class="choice pkq" data-v="id">ID_estudiante</button>
+      </div>
+      <div id="pkfb" class="feedback">Selecciona una opción.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p>En la tabla Clases ocurre lo mismo: <strong>ID_clase</strong> identifica una clase específica. En Registros, <strong>ID_registro</strong> identifica una llegada específica.</p>
+    <button class="main next">Continuar</button>
+  </div>
+</section>
+
+
+<section id="p4" class="panel">
+  <div class="card">
+    <h2>4. ¿Cómo se conectan dos tablas?</h2>
+    <p>Vamos a conectar únicamente <strong>Estudiantes</strong> con <strong>Registros</strong>.</p>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h3>Tabla Estudiantes</h3>
+      <table>
+        <tr><th>ID_estudiante</th><th>Nombre</th></tr>
+        <tr><td class="pk">E01</td><td>Laura</td></tr>
+        <tr><td class="pk">E02</td><td>Mateo</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Tabla Registros</h3>
+      <table>
+        <tr><th>ID_registro</th><th>ID_estudiante</th><th>Hora llegada</th></tr>
+        <tr><td>R01</td><td class="fk">E01</td><td>7:08</td></tr>
+        <tr><td>R02</td><td class="fk">E02</td><td>6:59</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Paso 1</h3>
+    <p>Busca el mismo valor en las dos tablas.</p>
+    <div class="controls">
+      <button class="choice sameid" data-v="E01">E01</button>
+      <button class="choice sameid" data-v="Laura">Laura</button>
+      <button class="choice sameid" data-v="R01">R01</button>
+    </div>
+    <div id="samefb" class="feedback">Selecciona el dato que aparece en las dos tablas.</div>
+  </div>
+
+  <div class="card">
+    <h3>Paso 2</h3>
+    <p><strong>E01</strong> identifica a Laura en Estudiantes y aparece otra vez en Registros.</p>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">ESTUDIANTES</div>
+        <div class="bigid">E01</div>
+        <div>Laura</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box center">
+        <div class="small">REGISTROS</div>
+        <div>R01</div>
+        <div class="bigid">E01</div>
+        <div>7:08</div>
+      </div>
+    </div>
+    <p>Ese valor compartido permite saber que el registro <strong>R01 pertenece a Laura</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Paso 3</h3>
+    <p>Cuando <strong>E01</strong> está en su tabla original, funciona como clave primaria. Cuando aparece en otra tabla para crear la conexión, funciona como clave foránea.</p>
+    <div class="two">
+      <div class="box center"><span class="tag pk">PK</span><p><strong>E01</strong><br>en Estudiantes</p></div>
+      <div class="box center"><span class="tag fk">FK</span><p><strong>E01</strong><br>en Registros</p></div>
+    </div>
+    <button class="main next">Continuar</button>
+  </div>
+</section>
+
+
+<section id="p5" class="panel">
+  <div class="card">
+    <h2>5. ¿Qué significa 1 : N?</h2>
+    <p>Vamos a verlo con Laura y sus registros de llegada.</p>
+  </div>
+
+  <div class="card">
+    <h3>Paso 1. Laura tiene un registro</h3>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">ESTUDIANTE</div>
+        <div class="bigid">E01</div>
+        <div>Laura</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box center">
+        <div class="small">REGISTRO</div>
+        <div class="bigid">R01</div>
+        <div>24/09 · 7:08</div>
+      </div>
+    </div>
+    <p>Hasta aquí vemos <strong>1 estudiante</strong> conectado con <strong>1 registro</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Paso 2. Laura vuelve a llegar otro día</h3>
+    <p>Ese nuevo evento crea otro registro.</p>
+
+    <div class="connection">
+      <div class="box center">
+        <div class="small">EL MISMO ESTUDIANTE</div>
+        <div class="bigid">E01</div>
+        <div>Laura</div>
+      </div>
+      <div class="arrow">→</div>
+      <div>
+        <div class="box">R01 · 24/09 · 7:08</div>
+        <div class="box" style="margin-top:7px">R03 · 25/09 · 7:04</div>
+      </div>
+    </div>
+
+    <p>Laura sigue siendo <strong>un solo estudiante</strong>, pero ahora tiene <strong>dos registros</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Paso 3. Laura sigue acumulando registros</h3>
+
+    <div class="connection">
+      <div class="box center">
+        <div class="small">1 ESTUDIANTE</div>
+        <div class="bigid">E01</div>
+        <div>Laura</div>
+      </div>
+      <div class="arrow">→</div>
+      <div>
+        <div class="box">R01 · 24/09</div>
+        <div class="box" style="margin-top:7px">R03 · 25/09</div>
+        <div class="box" style="margin-top:7px">R07 · 26/09</div>
+        <div class="box" style="margin-top:7px">R11 · 27/09</div>
+      </div>
+    </div>
+
+    <p>Un estudiante puede estar conectado con varios registros.</p>
+  </div>
+
+  <div class="card">
+    <h3>Paso 4. Interpreta los símbolos</h3>
+
+    <div class="two">
+      <div class="box center">
+        <div class="bigid">1</div>
+        <p>Representa <strong>un estudiante</strong>.</p>
+      </div>
+      <div class="box center">
+        <div class="bigid">N</div>
+        <p>Representa <strong>muchos registros</strong>.</p>
+      </div>
+    </div>
+
+    <div class="center" style="margin-top:14px">
+      <div class="bigid">1 : N</div>
+      <p>Un estudiante → muchos registros</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Paso 5. Comprueba</h3>
+    <p>Mateo también puede tener registros en diferentes días.</p>
+
+    <div class="connection">
+      <div class="box center">
+        <div class="small">ESTUDIANTE</div>
+        <div class="bigid">E02</div>
+        <div>Mateo</div>
+      </div>
+      <div class="arrow">→</div>
+      <div>
+        <div class="box">R02 · 24/09</div>
+        <div class="box" style="margin-top:7px">R06 · 25/09</div>
+        <div class="box" style="margin-top:7px">R10 · 27/09</div>
+      </div>
+    </div>
+
+    <p>¿Qué relación existe entre Mateo y sus registros?</p>
+    <div class="controls">
+      <button class="choice relq" data-v="11">1 : 1</button>
+      <button class="choice relq" data-v="1n">1 : N</button>
+      <button class="choice relq" data-v="nm">N : M</button>
+    </div>
+    <div id="relfb" class="feedback">Selecciona una opción.</div>
+  </div>
+
+  <div class="card">
+    <button class="main next">Continuar</button>
+  </div>
+</section>
+
+
+<section id="p6" class="panel">
+  <div class="card">
+    <h2>6. Relacionamos una clase con sus registros</h2>
+    <p>Ahora trabajamos con una clase real: <strong>Español, curso 801, 24/09, 7:00.</strong></p>
+  </div>
+
+  <div class="card">
+    <h3>Paso 1. La clase completa</h3>
+    <div class="box">
+      <table>
+        <tr><th>ID_clase</th><th>Asignatura</th><th>Curso</th><th>Fecha</th><th>Hora</th></tr>
+        <tr><td class="pk">C01</td><td>Español</td><td>801</td><td>24/09</td><td>7:00</td></tr>
+      </table>
+    </div>
+    <p>El código <strong>C01</strong> representa exactamente esa clase de Español.</p>
+  </div>
+
+  <div class="card">
+    <h3>Paso 2. Llegan los estudiantes</h3>
+    <p>Cada estudiante que entra genera un registro de llegada.</p>
+    <div class="box">
+      <table>
+        <tr><th>Registro</th><th>Estudiante</th><th>Clase</th><th>Hora llegada</th></tr>
+        <tr><td>R01</td><td>Laura · E01</td><td><strong>C01</strong></td><td>7:08</td></tr>
+        <tr><td>R02</td><td>Mateo · E02</td><td><strong>C01</strong></td><td>6:59</td></tr>
+        <tr><td>R04</td><td>Sara · E03</td><td><strong>C01</strong></td><td>7:05</td></tr>
+      </table>
+    </div>
+    <p>Como los tres registros tienen <strong>C01</strong>, sabemos que pertenecen a la misma clase: <strong>Español 801 del 24/09 a las 7:00</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Paso 3. Mira la conexión</h3>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">UNA CLASE</div>
+        <div class="bigid">C01</div>
+        <div>Español</div>
+        <div>801 · 24/09 · 7:00</div>
+      </div>
+      <div class="arrow">→</div>
+      <div>
+        <div class="box">R01 · Laura · 7:08</div>
+        <div class="box" style="margin-top:7px">R02 · Mateo · 6:59</div>
+        <div class="box" style="margin-top:7px">R04 · Sara · 7:05</div>
+      </div>
+    </div>
+    <p><strong>Una clase</strong> puede tener <strong>muchos registros de llegada</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Paso 4. ¿Qué significa 1 : N aquí?</h3>
+    <div class="two">
+      <div class="box center">
+        <div class="bigid">1</div>
+        <p>Una clase<br><strong>Español 801</strong></p>
+      </div>
+      <div class="box center">
+        <div class="bigid">N</div>
+        <p>Muchos registros<br>Laura, Mateo, Sara...</p>
+      </div>
+    </div>
+    <div class="center" style="margin-top:14px">
+      <div class="bigid">1 : N</div>
+      <p>Una clase → muchos registros</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Paso 5. Comprueba con otra clase</h3>
+    <p><strong>C02 = Matemáticas, curso 801, 25/09, 8:00.</strong></p>
+    <div class="box">R05 · Laura · C02 · 8:03</div>
+    <div class="box" style="margin-top:7px">R06 · Mateo · C02 · 7:58</div>
+    <div class="box" style="margin-top:7px">R07 · Sara · C02 · 8:06</div>
+    <p style="margin-top:14px">¿Qué relación existe entre la clase C02 y sus registros?</p>
+    <div class="controls">
+      <button class="choice classrel" data-v="11">1 : 1</button>
+      <button class="choice classrel" data-v="1n">1 : N</button>
+      <button class="choice classrel" data-v="nm">N : M</button>
+    </div>
+    <div id="classrelfb" class="feedback">Selecciona una opción.</div>
+  </div>
+
+  <div class="card">
+    <button class="main next">Continuar</button>
+  </div>
+</section>
+
+
+<section id="p7" class="panel">
+  <div class="card">
+    <h2>7. Primero entendamos qué hace la aplicación</h2>
+    <p>Cada acción de un usuario produce, consulta o actualiza datos.</p>
+  </div>
+
+  <div class="card">
+    <h3>1. Entra el docente</h3>
+    <div class="two">
+      <div class="box">
+        <div class="small">INICIO DE SESIÓN</div>
+        <p><strong>Correo:</strong> docente1@colegio.edu.co</p>
+        <p><strong>Contraseña:</strong> ••••••••</p>
+        <p><strong>Rol:</strong> Docente</p>
+      </div>
+      <div class="box">
+        <div class="small">EL SISTEMA IDENTIFICA</div>
+        <p><strong>Docente:</strong> Ana Pérez</p>
+        <p><strong>ID_docente:</strong> D01</p>
+        <p><strong>Curso:</strong> 801</p>
+        <p><strong>Asignatura:</strong> Español</p>
+      </div>
+    </div>
+    <p>El correo permite reconocer qué usuario entró y qué funciones puede usar.</p>
+  </div>
+
+  <div class="card">
+    <h3>2. El docente abre la clase</h3>
+    <div class="box">
+      <table>
+        <tr><th>ID_evento</th><th>Docente</th><th>Curso</th><th>Asignatura</th><th>Fecha</th><th>Hora inicio</th></tr>
+        <tr><td>EV01</td><td>D01</td><td>801</td><td>Español</td><td>24/09</td><td>7:00</td></tr>
+      </table>
+    </div>
+    <p>Al abrir la clase se crea un <strong>evento de clase</strong>. Ese evento genera un QR que representa a <strong>EV01</strong>.</p>
+
+    <div class="box center" style="margin-top:12px">
+      <div class="small">QR PROYECTADO</div>
+      <div style="display:inline-grid;grid-template-columns:repeat(5,18px);gap:3px;margin:12px auto">
+        <span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#fff;border:1px solid #111"></span><span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#111"></span>
+        <span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#fff;border:1px solid #111"></span><span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#fff;border:1px solid #111"></span><span style="width:18px;height:18px;background:#111"></span>
+        <span style="width:18px;height:18px;background:#fff;border:1px solid #111"></span><span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#fff;border:1px solid #111"></span>
+        <span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#fff;border:1px solid #111"></span><span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#fff;border:1px solid #111"></span><span style="width:18px;height:18px;background:#111"></span>
+        <span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#fff;border:1px solid #111"></span><span style="width:18px;height:18px;background:#111"></span><span style="width:18px;height:18px;background:#111"></span>
+      </div>
+      <p><strong>QR → EV01</strong></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3. Entra el estudiante</h3>
+    <div class="two">
+      <div class="box">
+        <div class="small">INICIO DE SESIÓN</div>
+        <p><strong>Correo:</strong> laura@colegio.edu.co</p>
+        <p><strong>Rol:</strong> Estudiante</p>
+      </div>
+      <div class="box">
+        <div class="small">EL SISTEMA IDENTIFICA</div>
+        <p><strong>Estudiante:</strong> Laura</p>
+        <p><strong>ID_estudiante:</strong> E01</p>
+        <p><strong>Curso:</strong> 801</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>4. Laura captura el QR</h3>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">ESTUDIANTE</div>
+        <div class="bigid">E01</div>
+        <div>Laura</div>
+      </div>
+      <div class="arrow">+</div>
+      <div class="box center">
+        <div class="small">QR</div>
+        <div class="bigid">EV01</div>
+        <div>Español 801</div>
+      </div>
+    </div>
+    <p>El sistema ya sabe <strong>quién llegó</strong> y <strong>a qué clase llegó</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>5. Se crea el registro de asistencia</h3>
+    <div class="box">
+      <table>
+        <tr><th>ID_registro</th><th>Estudiante</th><th>Evento</th><th>Hora llegada</th><th>Modo captura</th></tr>
+        <tr><td>R01</td><td>E01</td><td>EV01</td><td>7:08</td><td>QR</td></tr>
+      </table>
+    </div>
+    <p>El registro guarda el <strong>modo de captura</strong>. Puede ser, por ejemplo: QR, manual u offline.</p>
+  </div>
+
+  <div class="card">
+    <h3>6. El sistema compara las horas</h3>
+    <div class="two">
+      <div class="box center">
+        <div class="small">HORA DE INICIO</div>
+        <div class="bigid">7:00</div>
+      </div>
+      <div class="box center">
+        <div class="small">HORA DE LLEGADA</div>
+        <div class="bigid">7:08</div>
+      </div>
+    </div>
+    <p><strong>7:08 − 7:00 = 8 minutos de retardo.</strong></p>
+  </div>
+
+  <div class="card">
+    <h3>7. Si hay retardo, se consulta la justificación</h3>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">RESULTADO</div>
+        <div class="bigid">8 min</div>
+        <div>Retardo</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box center">
+        <p><strong>¿Tiene justificación?</strong></p>
+        <p>Sí / No</p>
+      </div>
+    </div>
+    <p>Si existe soporte, se almacena una justificación relacionada con ese registro.</p>
+  </div>
+
+  <div class="card">
+    <h3>8. Entra el coordinador</h3>
+    <div class="two">
+      <div class="box">
+        <p><strong>Correo:</strong> coordinacion@colegio.edu.co</p>
+        <p><strong>Rol:</strong> Coordinador</p>
+      </div>
+      <div class="box">
+        <p>Puede consultar los registros de diferentes cursos, docentes, estudiantes, fechas y estados.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>9. El coordinador ve el dashboard</h3>
+    <div class="three">
+      <div class="box center"><div class="small">RETARDOS</div><div class="bigid">27</div></div>
+      <div class="box center"><div class="small">A TIEMPO</div><div class="bigid">153</div></div>
+      <div class="box center"><div class="small">JUSTIFICADOS</div><div class="bigid">6</div></div>
+    </div>
+    <p>El dashboard se construye consultando los datos guardados en las tablas.</p>
+    <button class="main next">Continuar</button>
+  </div>
+</section>
+
+<section id="p8" class="panel">
+  <div class="card">
+    <h2>8. ¿Qué tablas necesita este sistema?</h2>
+    <p>Ahora sí podemos reconocer de dónde sale cada tabla.</p>
+  </div>
+
+  <div class="card">
+    <h3>Usuarios</h3>
+    <table>
+      <tr><th>ID_usuario</th><th>Correo</th><th>Contraseña</th><th>Rol</th></tr>
+      <tr><td>U01</td><td>docente1@colegio.edu.co</td><td>••••••</td><td>Docente</td></tr>
+      <tr><td>U02</td><td>laura@colegio.edu.co</td><td>••••••</td><td>Estudiante</td></tr>
+      <tr><td>U03</td><td>coordinacion@colegio.edu.co</td><td>••••••</td><td>Coordinador</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Docentes</h3>
+    <table>
+      <tr><th>ID_docente</th><th>ID_usuario</th><th>Nombre</th></tr>
+      <tr><td>D01</td><td>U01</td><td>Ana Pérez</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Estudiantes</h3>
+    <table>
+      <tr><th>ID_estudiante</th><th>ID_usuario</th><th>Nombre</th><th>Curso</th></tr>
+      <tr><td>E01</td><td>U02</td><td>Laura</td><td>801</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Eventos de clase</h3>
+    <table>
+      <tr><th>ID_evento</th><th>ID_docente</th><th>Curso</th><th>Asignatura</th><th>Fecha</th><th>Hora inicio</th><th>QR</th></tr>
+      <tr><td>EV01</td><td>D01</td><td>801</td><td>Español</td><td>24/09</td><td>7:00</td><td>QR-EV01</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Registros de asistencia</h3>
+    <table>
+      <tr><th>ID_registro</th><th>ID_evento</th><th>ID_estudiante</th><th>Hora llegada</th><th>Modo captura</th><th>Min. retardo</th><th>Estado</th></tr>
+      <tr><td>R01</td><td>EV01</td><td>E01</td><td>7:08</td><td>QR</td><td>8</td><td>Retardo</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Justificaciones</h3>
+    <table>
+      <tr><th>ID_justificacion</th><th>ID_registro</th><th>Tipo</th><th>Soporte</th><th>Validada</th></tr>
+      <tr><td>J01</td><td>R01</td><td>Médica</td><td>soporte.pdf</td><td>Sí</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Prueba rápida</h3>
+    <label for="tableq">¿En qué tabla se guarda que Laura llegó por QR a las 7:08?</label>
+    <select id="tableq">
+      <option value="">Selecciona</option>
+      <option value="usuarios">Usuarios</option>
+      <option value="eventos">Eventos de clase</option>
+      <option value="registros">Registros de asistencia</option>
+      <option value="justificaciones">Justificaciones</option>
+    </select>
+    <button id="checktable" class="main" style="margin-top:10px">Comprobar</button>
+    <div id="tablefb" class="feedback"></div>
+    <button class="main next" style="margin-top:12px">Continuar</button>
+  </div>
+</section>
+
+<section id="p9" class="panel">
+  <div class="card">
+    <h2>9. Modelo completo del sistema</h2>
+    <p>Las relaciones salen del flujo que acabamos de recorrer.</p>
+  </div>
+
+  <div class="card">
+    <h3>1. Usuario y rol</h3>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">USUARIOS</div>
+        <div>U01</div>
+        <div>docente1@colegio.edu.co</div>
+        <div>Rol: Docente</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box center">
+        <div class="small">DOCENTES</div>
+        <div>D01</div>
+        <div>Ana Pérez</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2. El docente crea eventos de clase</h3>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">DOCENTE</div>
+        <div class="bigid">D01</div>
+      </div>
+      <div class="arrow">1 → N</div>
+      <div class="box center">
+        <div class="small">EVENTOS DE CLASE</div>
+        <div>EV01 · Español</div>
+        <div>EV02 · Español</div>
+        <div>EV03 · Español</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3. El estudiante genera registros</h3>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">ESTUDIANTE</div>
+        <div class="bigid">E01</div>
+        <div>Laura</div>
+      </div>
+      <div class="arrow">1 → N</div>
+      <div class="box center">
+        <div class="small">REGISTROS</div>
+        <div>R01</div>
+        <div>R05</div>
+        <div>R09</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>4. Cada evento de clase recibe muchos registros</h3>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">EVENTO</div>
+        <div class="bigid">EV01</div>
+        <div>Español 801</div>
+      </div>
+      <div class="arrow">1 → N</div>
+      <div class="box center">
+        <div class="small">REGISTROS</div>
+        <div>R01 · Laura</div>
+        <div>R02 · Mateo</div>
+        <div>R03 · Sara</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>5. Un registro puede tener una justificación</h3>
+    <div class="connection">
+      <div class="box center">
+        <div class="small">REGISTRO</div>
+        <div class="bigid">R01</div>
+        <div>8 min de retardo</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box center">
+        <div class="small">JUSTIFICACIÓN</div>
+        <div>J01</div>
+        <div>Soporte médico</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>6. Mira qué datos conectan cada tabla</h3>
+    <table>
+      <tr><th>Tabla origen</th><th>Campo</th><th>Tabla relacionada</th><th>Campo usado</th></tr>
+      <tr><td>Usuarios</td><td>ID_usuario</td><td>Docentes / Estudiantes</td><td>ID_usuario</td></tr>
+      <tr><td>Docentes</td><td>ID_docente</td><td>Eventos de clase</td><td>ID_docente</td></tr>
+      <tr><td>Estudiantes</td><td>ID_estudiante</td><td>Registros</td><td>ID_estudiante</td></tr>
+      <tr><td>Eventos de clase</td><td>ID_evento</td><td>Registros</td><td>ID_evento</td></tr>
+      <tr><td>Registros</td><td>ID_registro</td><td>Justificaciones</td><td>ID_registro</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>7. Comprueba el recorrido completo</h3>
+    <p>Laura entra con su correo, captura el QR de Español 801 y llega a las 7:08.</p>
+
+    <div class="two">
+      <div>
+        <label for="q1">¿Qué identifica a Laura?</label>
+        <select id="q1">
+          <option value="">Selecciona</option>
+          <option value="E01">E01</option>
+          <option value="EV01">EV01</option>
+          <option value="R01">R01</option>
+        </select>
+      </div>
+      <div>
+        <label for="q2">¿Qué identifica la clase abierta?</label>
+        <select id="q2">
+          <option value="">Selecciona</option>
+          <option value="E01">E01</option>
+          <option value="EV01">EV01</option>
+          <option value="R01">R01</option>
+        </select>
+      </div>
+      <div>
+        <label for="q3">¿Dónde queda guardada la llegada?</label>
+        <select id="q3">
+          <option value="">Selecciona</option>
+          <option value="usuarios">Usuarios</option>
+          <option value="registros">Registros</option>
+          <option value="eventos">Eventos</option>
+        </select>
+      </div>
+      <div>
+        <label for="q4">¿Qué modo de captura se almacena?</label>
+        <select id="q4">
+          <option value="">Selecciona</option>
+          <option value="qr">QR</option>
+          <option value="correo">Correo</option>
+          <option value="dashboard">Dashboard</option>
+        </select>
+      </div>
+    </div>
+
+    <button id="finalmodel" class="main" style="margin-top:12px">Comprobar recorrido</button>
+    <div id="finalmodelfb" class="feedback"></div>
+  </div>
+</section>
+<footer>Aprendiendo con @LaProfeVivy</footer>
+</div>
+
+<script>
+const steps=[...document.querySelectorAll('.step')];
+const panels=[...document.querySelectorAll('.panel')];
+
+function showPanel(id){
+  panels.forEach(p=>p.classList.toggle('active',p.id===id));
+  steps.forEach(s=>s.classList.toggle('active',s.dataset.p===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+steps.forEach(s=>s.addEventListener('click',()=>showPanel(s.dataset.p)));
+
+document.querySelectorAll('.next').forEach(btn=>btn.addEventListener('click',()=>{
+  const current=panels.findIndex(p=>p.classList.contains('active'));
+  if(current>=0 && current<panels.length-1) showPanel(panels[current+1].id);
+}));
+
+
+document.querySelectorAll('.pkq').forEach(b=>b.addEventListener('click',()=>{
+  const f=document.getElementById('pkfb');
+  f.className='feedback';
+  if(b.dataset.v==='id'){
+    f.classList.add('ok');
+    f.innerHTML='<strong>Correcto.</strong> E01, E02 y E03 identifican una sola fila cada uno.';
+  }else{
+    f.classList.add('warn');
+    f.textContent=b.dataset.v==='curso' ? '801 aparece en más de una fila.' : 'Un nombre puede repetirse.';
+  }
+}));
+
+document.querySelectorAll('.sameid').forEach(b=>b.addEventListener('click',()=>{
+  const f=document.getElementById('samefb');
+  f.className='feedback';
+  if(b.dataset.v==='E01'){
+    f.classList.add('ok');
+    f.innerHTML='<strong>Correcto.</strong> E01 aparece en Estudiantes y en Registros.';
+  }else{
+    f.classList.add('warn');
+    f.textContent='Busca exactamente el mismo valor en las dos tablas.';
+  }
+}));
+
+document.querySelectorAll('.relq').forEach(b=>b.addEventListener('click',()=>{
+  const f=document.getElementById('relfb');
+  f.className='feedback';
+  if(b.dataset.v==='1n'){
+    f.classList.add('ok');
+    f.innerHTML='<strong>Correcto.</strong> Mateo es 1 estudiante y tiene varios registros. Por eso la relación es 1 : N.';
+  }else if(b.dataset.v==='11'){
+    f.classList.add('warn');
+    f.textContent='1 : 1 significaría que Mateo solo pudiera tener un registro. Aquí tiene varios.';
+  }else{
+    f.classList.add('warn');
+    f.textContent='Aquí estamos mirando un estudiante frente a sus registros. Primero cuenta: 1 estudiante y varios registros.';
+  }
+}));
+
+document.getElementById('checkclass').addEventListener('click',()=>{
+  const v=document.getElementById('classlink').value;
+  const f=document.getElementById('classfb');
+  f.className='feedback';
+  if(v==='id_clase'){
+    f.classList.add('ok');
+    f.innerHTML='<strong>Correcto.</strong> ID_clase aparece en Clases y también en Registros.';
+  }else if(!v){
+    f.textContent='Selecciona una opción.';
+  }else{
+    f.classList.add('warn');
+    f.textContent='Busca el identificador que aparece en las dos tablas.';
+  }
+});
+
+
+document.querySelectorAll('.classrel').forEach(b=>b.addEventListener('click',()=>{
+  const f=document.getElementById('classrelfb');
+  f.className='feedback';
+  if(b.dataset.v==='1n'){
+    f.classList.add('ok');
+    f.innerHTML='<strong>Correcto.</strong> C02 es una sola clase y está relacionada con varios registros.';
+  }else if(b.dataset.v==='11'){
+    f.classList.add('warn');
+    f.textContent='C02 aparece en más de un registro.';
+  }else{
+    f.classList.add('warn');
+    f.textContent='Aquí estamos comparando una clase con sus registros: una clase y varios registros.';
+  }
+}));
+
+document.getElementById('modelcheck').addEventListener('click',()=>{
+  const a=document.getElementById('m1').value;
+  const b=document.getElementById('m2').value;
+  const f=document.getElementById('modelfb');
+  f.className='feedback';
+
+  if(!a || !b){
+    f.textContent='Completa las dos conexiones.';
+    return;
+  }
+
+  if(a==='id_estudiante' && b==='id_clase'){
+    f.classList.add('ok');
+    f.innerHTML='<strong>Correcto.</strong> ID_estudiante conecta Estudiantes con Registros e ID_clase conecta Clases con Registros.';
+    document.getElementById('modelresult').classList.remove('hidden');
+  }else{
+    f.classList.add('warn');
+    f.textContent='Busca el identificador que se repite entre cada par de tablas.';
+    document.getElementById('modelresult').classList.add('hidden');
+  }
+});
+
+document.getElementById('checktable')?.addEventListener('click',()=>{
+  const v=document.getElementById('tableq').value;
+  const f=document.getElementById('tablefb');
+  f.className='feedback';
+  if(v==='registros'){
+    f.classList.add('ok');
+    f.innerHTML='<strong>Correcto.</strong> La hora de llegada y el modo de captura se guardan en Registros de asistencia.';
+  }else if(!v){
+    f.textContent='Selecciona una opción.';
+  }else{
+    f.classList.add('warn');
+    f.textContent='Piensa en la acción que ocurrió: el estudiante registró una llegada.';
+  }
+});
+
+document.getElementById('finalmodel')?.addEventListener('click',()=>{
+  const a=document.getElementById('q1').value;
+  const b=document.getElementById('q2').value;
+  const c=document.getElementById('q3').value;
+  const d=document.getElementById('q4').value;
+  const f=document.getElementById('finalmodelfb');
+  f.className='feedback';
+  if(!a||!b||!c||!d){
+    f.textContent='Completa los cuatro campos.';
+    return;
+  }
+  if(a==='E01'&&b==='EV01'&&c==='registros'&&d==='qr'){
+    f.classList.add('ok');
+    f.innerHTML='<strong>Correcto.</strong> E01 identifica a Laura, EV01 identifica la clase abierta y la llegada queda guardada en Registros con modo de captura QR.';
+  }else{
+    f.classList.add('warn');
+    f.textContent='Revisa el recorrido: usuario → evento de clase → captura → registro.';
+  }
+});
+</script>
+</body>
+</html>
