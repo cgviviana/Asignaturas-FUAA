@@ -55,6 +55,12 @@ label{display:block;font-size:14px;font-weight:700;margin-bottom:5px}
 .center{text-align:center}
 .hidden{display:none}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:14px}
+.concept-extra{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.concept-extra summary{cursor:pointer;font-weight:700;color:var(--g)}
+.concept-extra p{font-size:14px}
+.mini-rel{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:10px 0;font-size:13px}
+.mini-rel span{background:var(--g2);padding:8px 5px;border-radius:5px;text-align:center;flex:1}
+.mini-rel b{white-space:nowrap;color:var(--g)}
 @media(max-width:760px){
   .two,.three,.flow,.connection{grid-template-columns:1fr}
   .arrow{transform:rotate(90deg)}
@@ -81,6 +87,24 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:14px}
 </div>
 
 <section id="p1" class="panel active">
+  <div class="card">
+    <h2>Antes de comenzar · ¿Cómo se organizan los datos?</h2>
+    <p>Una <strong>entidad</strong> es algo sobre lo que necesitamos guardar información; por ejemplo, un estudiante. Sus <strong>atributos</strong> son características como el nombre y el curso.</p>
+    <div class="two" style="margin-top:12px">
+      <div class="box">
+        <div class="small">ENTIDAD · ESTUDIANTE</div>
+        <p><strong>Atributos:</strong> ID, nombre y curso.</p>
+      </div>
+      <div class="box">
+        <div class="small">TABLA · ESTUDIANTES</div>
+        <table><tr><th>ID</th><th>Nombre</th><th>Curso</th></tr><tr><td>E01</td><td>Laura</td><td>801</td></tr></table>
+      </div>
+    </div>
+    <details class="concept-extra">
+      <summary>Campo, registro y tabla: ¿cuál es la diferencia?</summary>
+      <p><strong>Campo:</strong> una columna, como Nombre. <strong>Registro:</strong> una fila, como E01 · Laura · 801. <strong>Tabla:</strong> el conjunto de campos y registros sobre una entidad.</p>
+    </details>
+  </div>
   <div class="card">
     <h2>1. Empezamos con una sola tabla</h2>
     <p>Cada fila representa una llegada de un estudiante a una clase.</p>
@@ -360,6 +384,24 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:14px}
     <div id="relfb" class="feedback">Selecciona una opción.</div>
   </div>
 
+  <div class="card">
+    <details class="concept-extra">
+      <summary>Otros tipos de relación: 1:1 y N:M</summary>
+      <div class="two" style="margin-top:12px">
+        <div class="box">
+          <strong>1:1 · Uno a uno</strong>
+          <p>Un usuario docente tiene un perfil docente y ese perfil corresponde a un solo usuario.</p>
+          <div class="mini-rel"><span>Usuario U01</span><b>1 ↔ 1</b><span>Docente D01</span></div>
+        </div>
+        <div class="box">
+          <strong>N:M · Muchos a muchos</strong>
+          <p>Un estudiante puede asistir a varias clases y una clase puede recibir a varios estudiantes. La tabla <strong>Registros</strong> conecta ambos lados.</p>
+          <div class="mini-rel"><span>Estudiantes</span><b>N ↔ M</b><span>Clases</span></div>
+          <p class="small">En el modelo, esta relación se resuelve mediante dos relaciones 1:N hacia Registros.</p>
+        </div>
+      </div>
+    </details>
+  </div>
   <div class="card">
     <button class="main next">Continuar</button>
   </div>
@@ -891,22 +933,6 @@ document.querySelectorAll('.relq').forEach(b=>b.addEventListener('click',()=>{
   }
 }));
 
-document.getElementById('checkclass').addEventListener('click',()=>{
-  const v=document.getElementById('classlink').value;
-  const f=document.getElementById('classfb');
-  f.className='feedback';
-  if(v==='id_clase'){
-    f.classList.add('ok');
-    f.innerHTML='<strong>Correcto.</strong> ID_clase aparece en Clases y también en Registros.';
-  }else if(!v){
-    f.textContent='Selecciona una opción.';
-  }else{
-    f.classList.add('warn');
-    f.textContent='Busca el identificador que aparece en las dos tablas.';
-  }
-});
-
-
 document.querySelectorAll('.classrel').forEach(b=>b.addEventListener('click',()=>{
   const f=document.getElementById('classrelfb');
   f.className='feedback';
@@ -921,28 +947,6 @@ document.querySelectorAll('.classrel').forEach(b=>b.addEventListener('click',()=
     f.textContent='Aquí estamos comparando una clase con sus registros: una clase y varios registros.';
   }
 }));
-
-document.getElementById('modelcheck').addEventListener('click',()=>{
-  const a=document.getElementById('m1').value;
-  const b=document.getElementById('m2').value;
-  const f=document.getElementById('modelfb');
-  f.className='feedback';
-
-  if(!a || !b){
-    f.textContent='Completa las dos conexiones.';
-    return;
-  }
-
-  if(a==='id_estudiante' && b==='id_clase'){
-    f.classList.add('ok');
-    f.innerHTML='<strong>Correcto.</strong> ID_estudiante conecta Estudiantes con Registros e ID_clase conecta Clases con Registros.';
-    document.getElementById('modelresult').classList.remove('hidden');
-  }else{
-    f.classList.add('warn');
-    f.textContent='Busca el identificador que se repite entre cada par de tablas.';
-    document.getElementById('modelresult').classList.add('hidden');
-  }
-});
 
 document.getElementById('checktable')?.addEventListener('click',()=>{
   const v=document.getElementById('tableq').value;
