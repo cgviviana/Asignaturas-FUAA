@@ -338,6 +338,12 @@ MAX_NIVEL &lt;- <span class="kw-num">10</span>   <span class="kw-comentario">// 
 </div>
 
 <script>
+// ——— Integración con el menú Repasatest ———
+const _P=new URLSearchParams(location.search);
+const EMBED=_P.get('embed')==='1', EMBED_NAME=(_P.get('nombre')||'').trim(), EMBED_JUEGO=_P.get('juego')||'';
+function _esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function volverMenu(){ if(EMBED) parent.postMessage({repasatest:1,accion:'menu'},'*'); }
+
 let curSlide=0, totalSlides=6;
 let aciertos=0, playerName='', score=0, curQ=0, questions=[], answered=false;
 const SLIDE_NAMES=['Qué es una variable','Declarar en PSeInt','Constante en PSeInt','Tipos de dato','Cuándo usar cada una','Algoritmo completo'];
@@ -417,6 +423,12 @@ function showNameScreen(){
       <input class="name-input" id="name-inp" type="text" placeholder="Tu nombre completo..." maxlength="50">
       <button class="start-btn" onclick="startQuiz()">Comenzar!</button>
     </div>`;
+  if(EMBED&&EMBED_NAME){
+    const i=document.getElementById('name-inp'); i.value=EMBED_NAME; i.style.display='none';
+    const t=document.querySelector('.name-sub');
+    if(t) t.innerHTML=t.innerHTML.replace('Escribe tu nombre completo para comenzar.','¡Hola '+_esc(EMBED_NAME)+'! Cuando estés listo, comienza.');
+    return;
+  }
   setTimeout(()=>{const i=document.getElementById('name-inp');if(i)i.focus();},100);
 }
 
@@ -562,8 +574,10 @@ function showResult(){
       </div>
       <button class="rbtn" onclick="rePlay()">Jugar de nuevo</button>
       <button class="rbtn sec" onclick="goTab('learn')">Repasar</button>
+      ${EMBED?'<button class="rbtn" onclick="volverMenu()">Volver al menú</button>':''}
     </div>`;
   document.getElementById('hdr-score').textContent=score+' pts';
+  if(EMBED) parent.postMessage({repasatest:1,accion:'resultado',juego:EMBED_JUEGO,score:score,max:max,aciertos:aciertos,total:questions.length},'*');
 }
 
 function rePlay(){
