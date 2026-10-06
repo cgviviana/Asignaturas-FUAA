@@ -1,1 +1,597 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Misterio del árbol de problemas</title>
+<style>
+:root{
+  --verde:#365f0c;
+  --verde2:#6f9f21;
+  --tinta:#273126;
+  --muted:#687264;
+  --borde:#d6ddd1;
+  --amarillo:#f1c94e;
+  --oscuro:#2f3a33;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef3eb;color:var(--tinta)}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid rgba(54,95,12,.35);outline-offset:2px}
+[hidden]{display:none!important}
+
+.wrap{width:min(1100px,calc(100% - 20px));margin:18px auto 24px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:10px}
+.top h1{margin:0;font-size:23px}
+.top p{margin:4px 0 0;color:var(--muted);font-size:12.5px}
+.reset{border:1px solid #cfd7ca;background:#fff;color:var(--verde);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:800}
+
+.pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.paso{display:flex;gap:9px;align-items:center;padding:10px 12px;background:#fff;border:1px solid #d9e0d5;border-radius:9px;font-size:12.5px;line-height:1.35;color:#8a9386}
+.paso .num{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#e6ebe2;color:#7b8476;font-weight:900;font-size:13px}
+.paso.on{border-color:var(--verde);background:#f3f9ec;color:#2f3a2a;font-weight:700}
+.paso.on .num{background:var(--verde);color:#fff}
+.paso .solo-movil{display:none}
+.tabs{display:none}
+
+/* ESCENA */
+.scene{position:relative;height:400px;overflow:hidden;border:1px solid #cfc8bd;border-radius:14px;background:linear-gradient(#efe5d2 0 85%,#c69365 85% 100%)}
+.scene.colegio{background:linear-gradient(#e3eef3 0 85%,#9aa3a8 85% 100%)}
+.scene:before{content:"";position:absolute;left:0;right:0;bottom:15%;height:6px;background:#8f6442}
+.scene.colegio:before{background:#6d7478}
+.decor{position:absolute;inset:0;pointer-events:none}
+.window{position:absolute;left:30px;top:44px;width:110px;height:80px;border:8px solid #fff;background:#bfe2f4;box-shadow:0 0 0 2px #a99b88}
+.shelf{position:absolute;left:190px;top:96px;width:220px;height:12px;background:#7e5938;border-radius:4px}
+.jar{position:absolute;top:-34px;width:28px;height:34px;border-radius:5px 5px 7px 7px;background:#d7b26d;border:2px solid #936f3f}
+.stove{position:absolute;right:40px;bottom:15%;width:130px;height:70px;background:#e8e8e4;border:4px solid #9b9c96;border-radius:7px 7px 0 0}
+.pot{position:absolute;right:62px;bottom:calc(15% + 70px);width:84px;height:44px;background:#555d62;border:4px solid #30363a;border-radius:6px 6px 16px 16px}
+.smoke{position:absolute;right:80px;bottom:calc(15% + 112px);font-size:36px;opacity:.6;animation:float 2.2s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px);opacity:.35}}
+.board{position:absolute;left:170px;top:40px;width:260px;height:95px;background:#2f5d3a;border:7px solid #8a6545;border-radius:4px}
+.board:after{content:"Primera hora 6:30 a. m.";position:absolute;left:14px;top:14px;color:#e8f0e4;font-size:14px;font-family:"Comic Sans MS",cursive}
+.clock{position:absolute;left:40px;top:40px;font-size:54px}
+.bus{position:absolute;right:30px;bottom:15%;font-size:70px;line-height:1}
+.door{position:absolute;right:150px;bottom:15%;width:70px;height:120px;background:#8a6545;border:4px solid #6a4a32;border-radius:4px 4px 0 0}
+
+.hud{position:absolute;left:12px;right:12px;top:10px;display:flex;justify-content:flex-end;gap:8px;z-index:8}
+.badge{background:rgba(255,255,255,.94);border:1px solid #ddd7cd;border-radius:8px;padding:6px 9px;font-size:11.5px;font-weight:800}
+.badge b{color:var(--verde)}
+
+.box{position:absolute;width:44px;height:44px;display:grid;place-items:center;border:4px solid #9a7721;border-radius:7px;background:var(--amarillo);color:#634c12;font-size:22px;font-weight:900;box-shadow:inset 0 0 0 3px #f8df82,0 4px 0 #765c1b;z-index:4;padding:0}
+.box.abierta{background:#c9c7bd;border-color:#98958d;color:#777;box-shadow:none;opacity:.55;cursor:default}
+.box.golpe{animation:golpe .25s}
+@keyframes golpe{50%{transform:translateY(-8px)}}
+
+.player{position:absolute;bottom:15%;width:46px;height:62px;z-index:7;transition:left .08s linear,bottom .13s ease}
+.head{position:absolute;left:9px;top:0;width:28px;height:28px;border-radius:50%;background:#f1c6a2;border:3px solid #583e2b}
+.hat{position:absolute;left:4px;top:-8px;width:38px;height:18px;border-radius:12px 12px 5px 5px;background:#fff;border:3px solid #c9c9c4;z-index:2}
+.colegio .hat{background:#365f0c;border-color:#24400a;height:12px;top:-4px}
+.body{position:absolute;left:7px;top:27px;width:32px;height:31px;border-radius:7px;background:#4b7f22;border:3px solid #315711}
+.leg{position:absolute;bottom:-10px;width:10px;height:18px;background:#2b3330;border-radius:3px}
+.l1{left:8px}.l2{right:8px}
+
+.controls{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;gap:8px;z-index:9}
+.controls button{height:40px;padding:0 14px;border:1px solid #9a8a75;background:rgba(255,255,255,.95);border-radius:9px;font-weight:800;font-size:12px;color:#384234}
+
+/* TABLERO */
+.panel{margin-top:14px;background:#fff;border:1px solid var(--borde);border-radius:14px;padding:16px}
+.clue{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:9px;background:#f4f7f1;border:1px solid var(--borde)}
+.clue p{flex:1;min-width:220px;margin:0;font-size:15px;font-weight:800;color:#354130;line-height:1.4}
+.clue p.vacia{font-weight:400;color:var(--muted);font-size:13px}
+.clue button{border:1px solid #cfd7ca;background:#fff;color:var(--verde);border-radius:8px;padding:7px 11px;font-size:12px;font-weight:800}
+.feedback{margin-top:10px;padding:10px 12px;border-radius:8px;background:#f7f8f6;border:1px solid #e2e7de;font-size:12.5px;line-height:1.55;color:#596353;min-height:44px}
+.feedback.ok{background:#edf6e4;color:#365226;border-color:#cfe2bd}
+.feedback.bad{background:#fff3dd;color:#755a25;border-color:#ecd6aa}
+.feedback.hint{background:#eef4fb;color:#2f4c66;border-color:#cddcec}
+.feedback em{font-style:normal;font-weight:800}
+
+.tree-scroll{overflow-x:auto;margin-top:14px}
+.tree{min-width:660px;display:grid;grid-template-columns:96px repeat(3,1fr);gap:0 10px}
+.rowlabel{display:flex;align-items:center;justify-content:center;text-align:center;font-size:10.5px;font-weight:800;color:#fff;border-radius:7px;padding:6px;margin:0}
+.rl-e{background:#4a5450}.rl-c{background:#4a5450}.rl-ed,.rl-cd{background:var(--verde2)}
+.linehead{text-align:center;font-size:11px;font-weight:800;color:#fff;background:var(--verde);border-radius:7px;padding:7px 4px;margin-bottom:6px}
+.slot{min-height:58px;padding:8px;border:1.5px dashed #cbd5c5;border-radius:8px;background:#fafbf9;font-size:11.5px;line-height:1.35;color:#9aa394;text-align:center;display:flex;align-items:center;justify-content:center}
+.slot.lleno{border:1.5px solid var(--verde2);background:#fff;color:#2f3a2a;font-weight:700;cursor:default}
+.slot.activo{border-color:var(--verde);background:#f3f9ec;color:var(--verde)}
+.slot.activo:hover{background:#e6f2d8}
+.slot.error{animation:sacudir .35s;border-color:#d49b58;background:#fff0dc}
+@keyframes sacudir{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.arrow{text-align:center;color:var(--verde2);font-size:15px;line-height:20px;height:20px}
+.central{grid-column:2/5;background:var(--oscuro);color:#fff;border-radius:8px;padding:12px;text-align:center}
+.central small{display:block;color:#b8d58c;font-size:10px;font-weight:800;margin-bottom:4px}
+.central strong{font-size:14px;line-height:1.35}
+
+/* VENTANAS */
+.overlay{position:fixed;inset:0;background:rgba(26,30,24,.55);display:grid;place-items:center;padding:16px;z-index:100}
+.card{width:min(520px,100%);background:#fff;border-radius:12px;overflow:hidden;border:1px solid #d7ddd2}
+.card-head{background:var(--verde);color:#fff;padding:16px 18px}
+.card-head h2{margin:0;font-size:19px}
+.card-head p{margin:5px 0 0;font-size:12.5px;color:#dce8d2}
+.card-body{padding:18px}
+.card-body label{display:block;font-size:12px;font-weight:800;margin:0 0 5px;color:#3d4a37}
+.card-body input{width:100%;padding:10px;border:1px solid #cfd7ca;border-radius:8px;margin-bottom:12px;font-size:14px}
+.card-body .nota{font-size:12px;color:var(--muted);margin:0 0 14px}
+.err{color:#a0521f;font-size:12px;min-height:16px;margin:-4px 0 10px}
+.primary{width:100%;border:0;background:var(--verde);color:#fff;border-radius:8px;padding:12px;font-weight:800;font-size:14px}
+.secondary{width:100%;border:1px solid #cfd7ca;background:#fff;color:var(--verde);border-radius:8px;padding:11px;font-weight:800;font-size:13px;margin-top:8px}
+.datos{width:100%;border-collapse:collapse;margin:4px 0 14px;font-size:13px}
+.datos td{padding:7px 4px;border-bottom:1px solid #e6ebe2}
+.datos td:first-child{color:var(--muted);width:46%}
+.datos td:last-child{font-weight:800}
+.trofeo{font-size:44px;text-align:center;margin-bottom:4px}
+
+footer{width:min(1100px,calc(100% - 20px));margin:0 auto 18px;display:flex;justify-content:space-between;color:#747e70;font-size:11px}
+footer strong{color:var(--verde)}
+
+@media(max-width:700px){
+  .wrap{margin-top:10px}
+  .top{flex-direction:row;align-items:center}
+  .top h1{font-size:18px}
+  .pasos{grid-template-columns:1fr;gap:5px}
+  .paso{padding:8px 10px;font-size:12px}
+  .paso:not(.on){display:none}
+  .paso .solo-pc{display:none}
+  .paso .solo-movil{display:inline}
+  .scene{height:260px}
+  .box{width:36px;height:36px;font-size:18px;margin-left:4px}
+  .controls{display:none}
+  .window{width:80px;height:60px;left:14px;top:46px}
+  .shelf{left:110px;width:130px;top:80px}
+  .board{left:90px;top:44px;width:170px;height:70px}
+  .board:after{font-size:11px}
+  .clock{left:14px;font-size:40px}
+  .stove,.pot,.smoke,.door,.window,.shelf,.board{display:none}
+  .bus{font-size:46px}
+  .panel{padding:12px}
+  .clue.activa{position:sticky;top:0;z-index:30;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+  .tabs{display:flex;gap:6px;margin-top:12px;overflow-x:auto}
+  .tabs button{flex:1;min-width:max-content;border:1px solid #cfd7ca;background:#fff;color:var(--verde);border-radius:8px;padding:9px 10px;font-size:12px;font-weight:800}
+  .tabs button.on{background:var(--verde);color:#fff;border-color:var(--verde)}
+  .tabs button.lista:after{content:" ✓"}
+  .tree{min-width:0;grid-template-columns:84px 1fr}
+  .tree [data-col]:not(.ver){display:none}
+  .tree .linehead,.tree .esquina{display:none}
+  .central{grid-column:2/3}
+  .central strong{font-size:12.5px}
+  .rowlabel{font-size:10px}
+  .slot{min-height:52px;font-size:12.5px}
+  footer{flex-direction:column;gap:4px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{
+  body>*:not(#finOverlay){display:none!important}
+  #finOverlay{position:static;background:none;padding:0}
+  #finOverlay .secondary,#finOverlay .primary{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1 id="titulo">🍳 Misterio del árbol de problemas</h1>
+      <p id="subtitulo">Nivel 1: el arroz quemado</p>
+    </div>
+    <button id="reset" class="reset" type="button">Reiniciar</button>
+  </div>
+
+
+  <section id="scene" class="scene" tabindex="0" aria-label="Escena del juego">
+    <div id="decor" class="decor"></div>
+    <div class="hud">
+      <div class="badge">Bloques <b id="count">0/12</b></div>
+      <div class="badge">Puntos <b id="score">0</b></div>
+    </div>
+    <div id="boxes"></div>
+  </section>
+
+  <section class="panel">
+    <div class="clue" id="clueBar">
+      <p id="clueText" class="vacia">Toca un bloque ? para empezar.</p>
+      <button id="hintBtn" type="button" hidden>Pedir pista</button>
+    </div>
+    <div id="feedback" class="feedback" hidden></div>
+    <div id="tabs" class="tabs"></div>
+    <div class="tree-scroll"><div id="tree" class="tree"></div></div>
+  </section>
+</div>
+
+<footer>
+  <strong>Aprendiendo con @LaProfeVivy</strong>
+  <span>Saber Conocer</span>
+</footer>
+
+<!-- Registro -->
+<div id="startOverlay" class="overlay">
+  <div class="card">
+    <div class="card-head">
+      <h2>🍳 Misterio del árbol de problemas</h2>
+      <p>Dos niveles: primero el arroz quemado y luego el caso real del colegio.</p>
+    </div>
+    <div class="card-body">
+      <label for="nombre">Nombre completo</label>
+      <input id="nombre" type="text" autocomplete="name" placeholder="Nombres y apellidos">
+      <label for="nrc">NRC</label>
+      <input id="nrc" type="text" inputmode="numeric" placeholder="Ej. 3482">
+      <p class="nota">Abre los bloques <b>?</b> y lleva cada situación a su casilla del árbol.</p>
+      <div id="startErr" class="err"></div>
+      <button id="startBtn" class="primary" type="button">Empezar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Fin de nivel -->
+<div id="levelOverlay" class="overlay" hidden>
+  <div class="card">
+    <div class="card-head">
+      <h2>✅ Nivel 1 completado</h2>
+      <p>Armaste el árbol del arroz quemado.</p>
+    </div>
+    <div class="card-body">
+      <p class="nota" style="font-size:13px;color:#3d4a37">Ahora, el mismo ejercicio con el caso del colegio.</p>
+      <button id="nextBtn" class="primary" type="button">Ir al nivel 2</button>
+    </div>
+  </div>
+</div>
+
+<!-- Final -->
+<div id="finOverlay" class="overlay" hidden>
+  <div class="card">
+    <div class="card-head">
+      <h2 id="finTitulo">¡Felicitaciones!</h2>
+      <p>Completaste los dos árboles de problemas.</p>
+    </div>
+    <div class="card-body">
+      <div class="trofeo">🏆</div>
+      <table class="datos"><tbody id="finDatos"></tbody></table>
+      <button id="printBtn" class="primary" type="button">Imprimir o guardar en PDF</button>
+      <button id="againBtn" class="secondary" type="button">Volver a jugar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const NIV = {ci:'Causa indirecta', cd:'Causa directa', ed:'Efecto directo', ei:'Efecto indirecto'};
+const ESCALON = {
+  ci:'Es <em>indirecta</em>: no causa el problema, causa otra causa.',
+  cd:'Es <em>directa</em>: causa el problema de inmediato.',
+  ed:'Es <em>directo</em>: pasa justo después del problema.',
+  ei:'Es <em>indirecto</em>: pasa después, por culpa del efecto directo.'
+};
+
+const NIVELES = [
+  {
+    titulo:'🍳 Misterio del árbol de problemas',
+    sub:'Nivel 1: el arroz quemado',
+    escena:'cocina',
+    problema:'El arroz se quemó.',
+    lineas:['Tiempo','Fuego','Atención'],
+    pistas:[
+      {t:'No se puso alarma ni temporizador.', l:0, n:'ci'},
+      {t:'La olla se quedó demasiado tiempo al fuego.', l:0, n:'cd'},
+      {t:'El arroz quedó duro y negro, no se pudo servir.', l:0, n:'ed'},
+      {t:'Hubo que cocinar otra cosa y el almuerzo se retrasó.', l:0, n:'ei'},
+      {t:'La perilla de la estufa está dañada y no marca la llama.', l:1, n:'ci'},
+      {t:'La llama quedó muy alta.', l:1, n:'cd'},
+      {t:'La olla quedó pegada y quemada por dentro.', l:1, n:'ed'},
+      {t:'Se gastó mucho tiempo y esfuerzo lavando la olla.', l:1, n:'ei'},
+      {t:'La persona se puso a ver el celular mientras cocinaba.', l:2, n:'ci'},
+      {t:'Nadie revisó la olla cuando se secó el agua.', l:2, n:'cd'},
+      {t:'La cocina se llenó de humo.', l:2, n:'ed'},
+      {t:'La casa quedó oliendo a quemado todo el día.', l:2, n:'ei'}
+    ]
+  },
+  {
+    titulo:'🏫 Misterio del árbol de problemas',
+    sub:'Nivel 2: llegadas tardías en el colegio',
+    escena:'colegio',
+    problema:'Persistencia de llegadas tardías recurrentes a la primera hora de clase en el Colegio privado comunitario San Agustín de Omnia.',
+    lineas:['Transporte','Organización del tiempo','Seguimiento institucional'],
+    pistas:[
+      {t:'Congestión vial o baja frecuencia del transporte.', l:0, n:'ci'},
+      {t:'Demoras en el trayecto al colegio.', l:0, n:'cd'},
+      {t:'Interrupción del inicio de la clase.', l:0, n:'ed'},
+      {t:'Menor aprovechamiento de la clase.', l:0, n:'ei'},
+      {t:'Desorganización de la rutina en el hogar.', l:1, n:'ci'},
+      {t:'Salida tardía del hogar.', l:1, n:'cd'},
+      {t:'Afectación de la puntualidad escolar.', l:1, n:'ed'},
+      {t:'Percepción de indisciplina.', l:1, n:'ei'},
+      {t:'Registro manual y disperso de retardos.', l:2, n:'ci'},
+      {t:'Seguimiento insuficiente de los retardos.', l:2, n:'cd'},
+      {t:'Casos sin intervención oportuna.', l:2, n:'ed'},
+      {t:'Menor credibilidad del control escolar.', l:2, n:'ei'}
+    ]
+  }
+];
+
+const DECOR = {
+  cocina:'<div class="window"></div><div class="shelf"><span class="jar" style="left:18px"></span><span class="jar" style="left:70px;background:#b9d185"></span><span class="jar" style="left:122px;background:#d99b84"></span><span class="jar" style="left:174px;background:#c9b1d8"></span></div><div class="stove"></div><div class="pot"></div><div class="smoke">☁️</div>',
+  colegio:'<div class="clock">🕗</div><div class="board"></div><div class="door"></div><div class="bus">🚌</div>'
+};
+const POS = [
+  {x:6,b:30},{x:14,b:58},{x:22,b:30},{x:30,b:58},{x:38,b:30},{x:46,b:58},
+  {x:54,b:30},{x:62,b:58},{x:70,b:30},{x:78,b:58},{x:86,b:30},{x:94,b:58}
+];
+
+const $ = id => document.getElementById(id);
+const scene=$('scene'), boxesEl=$('boxes'), treeEl=$('tree');
+const clueText=$('clueText'), feedback=$('feedback'), hintBtn=$('hintBtn');
+
+let est = null;
+
+function nuevoEstado(nombre,nrc){
+  return {nombre, nrc, inicio:new Date(), fin:null, nivel:0, puntos:0, primeros:0,
+          errores:0, pistasUsadas:0, colocadas:{}, actual:null, intentos:0, pista:0};
+}
+function nivelActual(){ return NIVELES[est.nivel]; }
+function sinPunto(s){ return s.replace(/\.$/,''); }
+function barajar(a){ const r=[...a]; for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];} return r; }
+
+/* ---------- construir nivel ---------- */
+function cargarNivel(){
+  const N = nivelActual();
+  est.colocadas = {}; est.actual = null;
+  $('titulo').textContent = N.titulo;
+  $('subtitulo').textContent = N.sub;
+  scene.className = 'scene ' + N.escena;
+  $('decor').innerHTML = DECOR[N.escena];
+
+  // bloques
+  boxesEl.innerHTML = '';
+  const orden = barajar(N.pistas.map((_,i)=>i));
+  POS.forEach((p,i)=>{
+    const b = document.createElement('button');
+    b.type='button'; b.className='box'; b.textContent='?';
+    b.style.left = 'calc(' + p.x + '% - 22px)';
+    b.style.bottom = p.b + '%';
+    b.dataset.pista = orden[i];
+    b.setAttribute('aria-label','Bloque sorpresa');
+    b.addEventListener('click',()=>abrir(b));
+    boxesEl.appendChild(b);
+  });
+
+  construirArbol();
+  limpiarPista();
+  feedback.hidden=true;
+  actualizarHud();
+}
+
+let lineaVista = 0;
+function construirArbol(){
+  const N = nivelActual();
+  treeEl.innerHTML = '';
+  const add = (cls,html,extra) => { const d=document.createElement('div'); d.className=cls; if(html!==undefined) d.innerHTML=html; if(extra) extra(d); treeEl.appendChild(d); return d; };
+  const flechas = () => { add(''); for(let i=0;i<3;i++) add('arrow','↑',d=>d.dataset.col=i); };
+  const fila = (n,cls) => {
+    add('rowlabel '+cls, NIV[n]);
+    for(let l=0;l<3;l++){
+      const s=document.createElement('button');
+      s.type='button'; s.className='slot'; s.dataset.l=l; s.dataset.n=n; s.dataset.col=l;
+      s.textContent='?';
+      s.setAttribute('aria-label', NIV[n]+', línea '+N.lineas[l]);
+      s.addEventListener('click',()=>colocar(s));
+      treeEl.appendChild(s);
+    }
+  };
+  add('esquina');
+  N.lineas.forEach((x,i)=>add('linehead',x,d=>d.dataset.col=i));
+  fila('ei','rl-e'); flechas();
+  fila('ed','rl-ed'); flechas();
+  add('');
+  add('central','<small>Problema central</small><strong></strong>',d=>d.querySelector('strong').textContent=N.problema);
+  flechas();
+  fila('cd','rl-cd'); flechas();
+  fila('ci','rl-c');
+
+  const tabs=$('tabs'); tabs.innerHTML='';
+  N.lineas.forEach((x,i)=>{
+    const b=document.createElement('button'); b.type='button'; b.textContent=x;
+    b.addEventListener('click',()=>verLinea(i));
+    tabs.appendChild(b);
+  });
+  verLinea(0);
+}
+function verLinea(i){
+  lineaVista=i;
+  treeEl.querySelectorAll('[data-col]').forEach(c=>c.classList.toggle('ver',Number(c.dataset.col)===i));
+  $('tabs').querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j===i));
+}
+function marcarPaso(){}
+
+function bloqueado(){
+  return !$('startOverlay').hidden || !$('levelOverlay').hidden || !$('finOverlay').hidden;
+}
+
+function dibujarJugador(){}
+/* ---------- pistas ---------- */
+function abrir(b){
+  if(b.classList.contains('abierta')) return;
+  if(est.actual!==null){
+    feedback.className='feedback bad';
+    feedback.textContent='Primero ubica en el árbol la que ya tienes.'; feedback.hidden=false;
+    $('clueBar').scrollIntoView({behavior:'smooth',block:'nearest'});
+    return;
+  }
+  b.classList.add('abierta','golpe');
+  b.textContent='✓';
+  est.actual = Number(b.dataset.pista);
+  est.intentos = 0; est.pista = 0;
+  const p = nivelActual().pistas[est.actual];
+  clueText.className=''; clueText.textContent = p.t;
+  $('clueBar').classList.add('activa'); marcarPaso(2);
+  hintBtn.hidden=false; hintBtn.textContent='Pedir pista';
+  activarCasillas(true);
+  feedback.hidden=true;
+  $('clueBar').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function limpiarPista(){
+  clueText.className='vacia';
+  clueText.textContent='Toca un bloque ? para seguir.';
+  $('clueBar').classList.remove('activa'); marcarPaso(1);
+  hintBtn.hidden=true;
+  activarCasillas(false);
+}
+function activarCasillas(on){
+  treeEl.querySelectorAll('.slot:not(.lleno)').forEach(s=>s.classList.toggle('activo',on));
+}
+
+function nombreCasilla(l,n){
+  const N=nivelActual();
+  return (n.startsWith('e')?'el ':'la ')+NIV[n].toLowerCase()+' de la línea «'+N.lineas[l]+'»';
+}
+function vec(l,n){
+  const k=l+'-'+n;
+  return est.colocadas[k] ? sinPunto(est.colocadas[k]) : nombreCasilla(l,n);
+}
+function lectura(l,n,txt){
+  const PC = sinPunto(nivelActual().problema);
+  const t = sinPunto(txt);
+  if(n==='ci') return '«'+vec(l,'cd')+'» pasa porque: «'+t+'».';
+  if(n==='cd') return '«'+PC+'» pasa porque: «'+t+'».';
+  if(n==='ed') return 'Como «'+PC+'», entonces: «'+t+'».';
+  return 'Como «'+vec(l,'ed')+'», entonces: «'+t+'».';
+}
+
+function colocar(s){
+  if(s.classList.contains('lleno')) return;
+  if(est.actual===null){
+    feedback.className='feedback';
+    feedback.textContent='Primero toca un bloque ?.'; feedback.hidden=false;
+    return;
+  }
+  const N=nivelActual(), p=N.pistas[est.actual];
+  const l=Number(s.dataset.l), n=s.dataset.n;
+
+  if(l===p.l && n===p.n){
+    const pts = est.intentos===0 ? 10 : 5;
+    est.puntos += pts;
+    if(est.intentos===0) est.primeros++;
+    est.colocadas[l+'-'+n] = p.t;
+    s.classList.remove('activo'); s.classList.add('lleno'); s.textContent=p.t;
+    let msg = '<em>¡Correcto!</em> '+lectura(l,n,p.t);
+    if(lineaCompleta(l)) $('tabs').children[l].classList.add('lista');
+    est.actual=null;
+    limpiarPista();
+    feedback.className='feedback ok';
+    feedback.innerHTML=msg; feedback.hidden=false;
+    actualizarHud();
+    if(Object.keys(est.colocadas).length===12) setTimeout(finNivel, 900);
+    else if(window.innerWidth<=700) setTimeout(()=>feedback.scrollIntoView({behavior:'smooth',block:'center'}),100);
+  } else {
+    est.intentos++; est.errores++;
+    s.classList.remove('error'); void s.offsetWidth; s.classList.add('error');
+    let msg = '<em>Todavía no.</em> Ahí se leería: '+lectura(l,n,p.t)+' ¿Tiene sentido?';
+    if(n===p.n && l!==p.l) msg = '<em>Fila correcta, línea equivocada.</em>';
+    feedback.className='feedback bad';
+    feedback.innerHTML=msg; feedback.hidden=false;
+    if(window.innerWidth<=700) feedback.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+
+function lineaCompleta(l){
+  const c=est.colocadas, k=n=>c[l+'-'+n];
+  if(!(k('ci')&&k('cd')&&k('ed')&&k('ei'))) return null;
+  const N=nivelActual();
+  return '«'+sinPunto(k('ci'))+'» → «'+sinPunto(k('cd'))+'» → «'+sinPunto(N.problema)+'» → «'+sinPunto(k('ed'))+'» → «'+sinPunto(k('ei'))+'».';
+}
+
+function darPista(){
+  if(est.actual===null) return;
+  const N=nivelActual(), p=N.pistas[est.actual];
+  est.pista = Math.min(est.pista+1,3);
+  est.pistasUsadas++;
+  let msg;
+  if(est.pista===1){
+    msg = p.n[0]==='c' ? 'Es una <em>causa</em>: va debajo del problema.' : 'Es un <em>efecto</em>: va encima del problema.';
+  } else if(est.pista===2){
+    msg = ESCALON[p.n];
+  } else {
+    msg = 'Línea <em>'+N.lineas[p.l]+'</em>, fila <em>'+NIV[p.n]+'</em>.';
+  }
+  hintBtn.textContent = est.pista<3 ? 'Otra pista' : 'Sin más pistas';
+  feedback.className='feedback hint';
+  feedback.innerHTML=msg; feedback.hidden=false;
+}
+
+
+function actualizarHud(){
+  $('count').textContent = Object.keys(est.colocadas).length+'/12';
+  $('score').textContent = est.puntos;
+}
+
+/* ---------- fin ---------- */
+function finNivel(){
+  if(est.nivel===0){ $('levelOverlay').hidden=false; $('nextBtn').focus(); }
+  else terminar();
+}
+function terminar(){
+  est.fin = new Date();
+  const fecha = est.fin.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const hora = d => d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  const min = Math.max(1, Math.round((est.fin-est.inicio)/60000));
+  $('finTitulo').textContent = '¡Felicitaciones, '+est.nombre.split(' ')[0]+'!';
+  const filas = [
+    ['Nombre completo', est.nombre],
+    ['NRC', est.nrc],
+    ['Fecha de presentación', fecha.charAt(0).toUpperCase()+fecha.slice(1)],
+    ['Hora de inicio', hora(est.inicio)],
+    ['Hora de finalización', hora(est.fin)],
+    ['Tiempo empleado', min+' min'],
+    ['Puntos', est.puntos+' de 240'],
+    ['Aciertos al primer intento', est.primeros+' de 24'],
+    ['Pistas usadas', est.pistasUsadas]
+  ];
+  const tb=$('finDatos'); tb.innerHTML='';
+  filas.forEach(([a,b])=>{
+    const tr=document.createElement('tr');
+    const t1=document.createElement('td'); t1.textContent=a;
+    const t2=document.createElement('td'); t2.textContent=b;
+    tr.append(t1,t2); tb.appendChild(tr);
+  });
+  $('finOverlay').hidden=false;
+}
+
+/* ---------- inicio ---------- */
+$('startBtn').addEventListener('click',()=>{
+  const nombre=$('nombre').value.trim().replace(/\s+/g,' ');
+  const nrc=$('nrc').value.trim();
+  if(nombre.split(' ').length<2){ $('startErr').textContent='Escribe tu nombre completo (nombres y apellidos).'; $('nombre').focus(); return; }
+  if(!/^\d{3,6}$/.test(nrc)){ $('startErr').textContent='Escribe el NRC con números, por ejemplo 3482.'; $('nrc').focus(); return; }
+  $('startErr').textContent='';
+  est = nuevoEstado(nombre,nrc);
+  $('startOverlay').hidden=true;
+  cargarNivel();
+  scene.focus();
+});
+['nombre','nrc'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter') $('startBtn').click(); }));
+
+$('nextBtn').addEventListener('click',()=>{
+  $('levelOverlay').hidden=true;
+  est.nivel=1; cargarNivel(); scene.focus();
+});
+$('printBtn').addEventListener('click',()=>window.print());
+$('againBtn').addEventListener('click',()=>{
+  $('finOverlay').hidden=true;
+  est = nuevoEstado(est.nombre, est.nrc);
+  cargarNivel(); scene.focus();
+});
+$('reset').addEventListener('click',()=>{
+  if(!est) return;
+  est = nuevoEstado(est.nombre, est.nrc);
+  $('levelOverlay').hidden=true; $('finOverlay').hidden=true;
+  cargarNivel(); scene.focus();
+});
+
+hintBtn.addEventListener('click',darPista);
+
+
+// árbol de fondo mientras se registra
+est = nuevoEstado('','');
+cargarNivel();
+$('nombre').focus();
+</script>
+</body>
+</html>
 
