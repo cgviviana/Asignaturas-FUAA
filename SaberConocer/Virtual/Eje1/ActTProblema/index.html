@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tipos de problemáticas · Saber Conocer</title>
+<style>
+:root{
+  --verde:#365f0c;
+  --verde2:#79a814;
+  --tinta:#273126;
+  --muted:#687264;
+  --fondo:#f4f6f2;
+  --blanco:#fff;
+  --borde:#d3dbcf;
+  --suave:#eef3e9;
+  --acierto:#edf6e5;
+  --revision:#fff4dc;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--fondo);
+  color:var(--tinta);
+  font-family:Arial,Helvetica,sans-serif;
+}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid rgba(54,95,12,.25);outline-offset:2px}
+[hidden]{display:none!important}
+
+header{
+  background:#fff;
+  border-bottom:1px solid #e2e7de;
+}
+.header-in{
+  width:min(860px,calc(100% - 28px));
+  min-height:64px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.marca{display:flex;align-items:center;gap:10px}
+.icono{
+  width:36px;height:36px;border-radius:8px;
+  display:grid;place-items:center;
+  background:var(--verde);
+  color:#fff;
+  font-weight:900;
+}
+.marca strong,.marca small{display:block}
+.marca strong{font-size:15px}
+.marca small{margin-top:2px;color:var(--muted);font-size:11px}
+.reiniciar{
+  border:1px solid var(--borde);
+  background:#fff;
+  color:var(--verde);
+  border-radius:7px;
+  padding:8px 11px;
+  font-size:11px;
+  font-weight:800;
+}
+
+main{
+  width:min(860px,calc(100% - 28px));
+  margin:24px auto 32px;
+}
+.intro{
+  padding:23px 25px;
+  background:var(--verde);
+  color:#fff;
+  border-radius:12px 12px 0 0;
+}
+.intro small{
+  display:block;
+  color:#dce8d2;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.1em;
+}
+.intro h1{margin:5px 0 7px;font-size:24px}
+.intro p{
+  margin:0;
+  color:#eef4e9;
+  font-size:12.5px;
+  line-height:1.55;
+}
+
+.quiz{
+  background:#fff;
+  border:1px solid var(--borde);
+  border-top:0;
+  border-radius:0 0 12px 12px;
+  overflow:hidden;
+}
+.estado{
+  padding:15px 22px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border-bottom:1px solid #e6ebe2;
+  background:#fbfcfa;
+}
+.progreso{
+  flex:1;
+  height:8px;
+  border-radius:999px;
+  background:#e8ece5;
+  overflow:hidden;
+}
+.progreso span{
+  display:block;
+  height:100%;
+  width:0;
+  background:var(--verde2);
+  transition:.2s ease;
+}
+.estado b{
+  color:var(--verde);
+  font-size:11px;
+  white-space:nowrap;
+}
+.pregunta{
+  padding:24px 25px;
+}
+.pregunta small{
+  color:var(--verde);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.1em;
+}
+.pregunta h2{
+  margin:6px 0 0;
+  font-size:20px;
+  line-height:1.4;
+}
+.pregunta p{
+  margin:8px 0 0;
+  color:var(--muted);
+  font-size:11.5px;
+}
+
+.opciones{
+  padding:0 25px 24px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+.opcion{
+  min-height:54px;
+  border:1px solid var(--borde);
+  background:#fff;
+  border-radius:8px;
+  color:#34402f;
+  font-size:12px;
+  font-weight:850;
+  text-align:left;
+  padding:11px 13px;
+}
+.opcion:hover:not(:disabled){
+  border-color:#91ad73;
+  background:#f7faf4;
+}
+.opcion:disabled{cursor:default}
+.opcion.correcta{
+  border-color:#8eae69;
+  background:var(--acierto);
+  color:#355126;
+}
+.opcion.elegida{
+  border-color:#d7b06f;
+  background:var(--revision);
+  color:#6d572b;
+}
+
+.feedback{
+  margin:0 25px 22px;
+  padding:14px 15px;
+  border-radius:8px;
+  font-size:12px;
+  line-height:1.55;
+}
+.feedback.acierto{
+  background:var(--acierto);
+  border:1px solid #cadfba;
+  color:#365126;
+}
+.feedback.revision{
+  background:var(--revision);
+  border:1px solid #ead5a8;
+  color:#6c5729;
+}
+.feedback strong{
+  display:block;
+  margin-bottom:3px;
+  font-size:13px;
+}
+.accion{
+  padding:0 25px 24px;
+  display:flex;
+  justify-content:flex-end;
+}
+.siguiente{
+  border:0;
+  border-radius:7px;
+  background:var(--verde);
+  color:#fff;
+  padding:9px 15px;
+  font-size:11px;
+  font-weight:850;
+}
+.siguiente:hover{background:#2e520a}
+
+.final{
+  padding:28px 25px;
+  text-align:center;
+}
+.final .score{
+  width:82px;height:82px;
+  margin:0 auto 14px;
+  border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--verde);
+  color:#fff;
+  font-size:23px;
+  font-weight:900;
+}
+.final h2{margin:0;font-size:21px}
+.final p{margin:7px auto 0;max-width:560px;color:var(--muted);font-size:12px;line-height:1.55}
+.resumen{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  text-align:left;
+}
+.resumen div{
+  padding:11px 10px;
+  border:1px solid var(--borde);
+  border-radius:7px;
+  background:#fafbf9;
+}
+.resumen b{
+  display:block;
+  color:var(--verde);
+  font-size:10px;
+}
+.resumen span{
+  display:block;
+  margin-top:4px;
+  color:#596453;
+  font-size:10.5px;
+  line-height:1.4;
+}
+
+footer{
+  width:min(860px,calc(100% - 28px));
+  margin:0 auto 20px;
+  display:flex;
+  justify-content:space-between;
+  color:#747e70;
+  font-size:10.5px;
+}
+footer strong{color:var(--verde)}
+
+@media(max-width:620px){
+  .opciones,.resumen{grid-template-columns:1fr}
+  .pregunta,.opciones,.accion{padding-left:16px;padding-right:16px}
+  .feedback{margin-left:16px;margin-right:16px}
+  .intro{padding-left:18px;padding-right:18px}
+  footer{flex-direction:column;gap:4px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-in">
+    <div class="marca">
+      <span class="icono">?</span>
+      <div>
+        <strong>Tipos de problemáticas</strong>
+        <small>Saber Conocer · Actividad de reconocimiento</small>
+      </div>
+    </div>
+    <button id="reiniciar" class="reiniciar" type="button">Reiniciar</button>
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <small>ACTIVIDAD</small>
+    <h1>¿Qué tipo de problemática es?</h1>
+    <p>Lee cada situación y selecciona si corresponde a una problemática simple, complicada, compleja o caótica. Después de responder conocerás la razón.</p>
+  </section>
+
+  <section class="quiz">
+    <div id="estado" class="estado">
+      <div class="progreso"><span id="barra"></span></div>
+      <b id="contador">1 de 8</b>
+    </div>
+
+    <div id="zonaPregunta">
+      <div class="pregunta">
+        <small>CASO <span id="numeroCaso">1</span></small>
+        <h2 id="textoPregunta"></h2>
+        <p>Selecciona el tipo de problemática.</p>
+      </div>
+
+      <div id="opciones" class="opciones"></div>
+
+      <div id="feedback" class="feedback" hidden></div>
+
+      <div class="accion">
+        <button id="siguiente" class="siguiente" type="button" hidden>Siguiente</button>
+      </div>
+    </div>
+
+    <div id="final" class="final" hidden>
+      <div id="scoreFinal" class="score">0/8</div>
+      <h2>Actividad completada</h2>
+      <p>La diferencia está en reconocer cuánto se conoce del problema, cómo se organiza su solución y cuántos factores intervienen.</p>
+
+      <div class="resumen">
+        <div><b>Simple</b><span>Proceso claro y repetible. Método definido.</span></div>
+        <div><b>Complicada</b><span>Muchas partes y conocimiento especializado. Técnicas estructuradas.</span></div>
+        <div><b>Compleja</b><span>Múltiples factores e incertidumbre. Requiere adaptación constante.</span></div>
+        <div><b>Caótica</b><span>Desorden, ausencia de patrones claros y necesidad de acción inmediata.</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <strong>Aprendiendo con @LaProfeVivy</strong>
+  <span>Saber Conocer</span>
+</footer>
+
+<script>
+const preguntas = [
+  {
+    caso:"Preparar una taza de café siguiendo una receta con cantidades y pasos conocidos.",
+    respuesta:"Simple",
+    porque:"Es una problemática simple porque el proceso es claro, repetible y puede resolverse siguiendo un método definido."
+  },
+  {
+    caso:"Instalar el sistema eléctrico completo de un edificio de veinte pisos.",
+    respuesta:"Complicada",
+    porque:"Es una problemática complicada porque intervienen muchas partes, requiere conocimientos especializados y puede abordarse con técnicas estructuradas."
+  },
+  {
+    caso:"Reducir el abandono escolar en una ciudad donde intervienen condiciones familiares, económicas, sociales y educativas.",
+    respuesta:"Compleja",
+    porque:"Es una problemática compleja porque intervienen múltiples factores relacionados entre sí, existe incertidumbre y la respuesta debe adaptarse al contexto."
+  },
+  {
+    caso:"Coordinar la evacuación de un edificio durante un terremoto que acaba de ocurrir.",
+    respuesta:"Caótica",
+    porque:"Es una problemática caótica porque la situación cambia rápidamente, existe gran incertidumbre y se requiere acción inmediata y liderazgo."
+  },
+  {
+    caso:"Cambiar una bombilla fundida por otra del mismo tipo siguiendo las indicaciones del fabricante.",
+    respuesta:"Simple",
+    porque:"Es una problemática simple porque existe un procedimiento conocido, corto y repetible."
+  },
+  {
+    caso:"Diseñar y construir un puente que soporte determinadas cargas y cumpla normas técnicas.",
+    respuesta:"Complicada",
+    porque:"Es una problemática complicada porque exige expertos, coordinación de muchas partes y procedimientos técnicos estructurados."
+  },
+  {
+    caso:"Mejorar la convivencia en un barrio donde participan familias, comercios, jóvenes, instituciones y condiciones sociales diferentes.",
+    respuesta:"Compleja",
+    porque:"Es una problemática compleja porque participan múltiples actores y factores, y las relaciones entre ellos cambian según el contexto."
+  },
+  {
+    caso:"Responder a una inundación repentina que afecta viviendas, vías, energía y comunicaciones al mismo tiempo.",
+    respuesta:"Caótica",
+    porque:"Es una problemática caótica porque predomina el desorden, las condiciones cambian rápidamente y la prioridad es actuar de inmediato."
+  }
+];
+
+const tipos = ["Simple","Complicada","Compleja","Caótica"];
+let actual=0;
+let puntaje=0;
+let respondida=false;
+
+const textoPregunta=document.getElementById("textoPregunta");
+const numeroCaso=document.getElementById("numeroCaso");
+const opciones=document.getElementById("opciones");
+const feedback=document.getElementById("feedback");
+const siguiente=document.getElementById("siguiente");
+const contador=document.getElementById("contador");
+const barra=document.getElementById("barra");
+const zonaPregunta=document.getElementById("zonaPregunta");
+const final=document.getElementById("final");
+const scoreFinal=document.getElementById("scoreFinal");
+
+function render(){
+  respondida=false;
+  const p=preguntas[actual];
+
+  numeroCaso.textContent=actual+1;
+  textoPregunta.textContent=p.caso;
+  contador.textContent=(actual+1)+" de "+preguntas.length;
+  barra.style.width=((actual)/preguntas.length*100)+"%";
+
+  feedback.hidden=true;
+  feedback.className="feedback";
+  feedback.innerHTML="";
+  siguiente.hidden=true;
+  opciones.innerHTML="";
+
+  tipos.forEach(tipo=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="opcion";
+    b.textContent=tipo;
+    b.addEventListener("click",()=>responder(tipo,b));
+    opciones.appendChild(b);
+  });
+}
+
+function responder(tipo,boton){
+  if(respondida)return;
+  respondida=true;
+
+  const p=preguntas[actual];
+  const correcta=tipo===p.respuesta;
+
+  document.querySelectorAll(".opcion").forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===p.respuesta)b.classList.add("correcta");
+  });
+
+  if(correcta){
+    puntaje++;
+    feedback.className="feedback acierto";
+    feedback.innerHTML="<strong>✓ Acertaste</strong>"+p.porque;
+  }else{
+    boton.classList.add("elegida");
+    feedback.className="feedback revision";
+    feedback.innerHTML="<strong>↻ Revisa la diferencia</strong>"+p.porque;
+  }
+
+  feedback.hidden=false;
+  siguiente.hidden=false;
+}
+
+siguiente.addEventListener("click",()=>{
+  actual++;
+  if(actual<preguntas.length){
+    render();
+  }else{
+    mostrarFinal();
+  }
+});
+
+function mostrarFinal(){
+  zonaPregunta.hidden=true;
+  document.getElementById("estado").hidden=true;
+  final.hidden=false;
+  scoreFinal.textContent=puntaje+"/"+preguntas.length;
+}
+
+document.getElementById("reiniciar").addEventListener("click",()=>{
+  actual=0;
+  puntaje=0;
+  zonaPregunta.hidden=false;
+  document.getElementById("estado").hidden=false;
+  final.hidden=true;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
