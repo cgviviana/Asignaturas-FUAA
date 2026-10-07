@@ -1,1 +1,1675 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfumería Esencia · Tablas dinámicas</title>
+<style>
+:root{
+  --green:#217346;--green-dark:#17653c;--green2:#2ca765;--bg:#edf3ef;
+  --line:#cfd8d2;--head:#f2f5f3;--text:#20372a;--muted:#66796e;
+  --blue:#2f6fae;--blue-soft:#eaf3ff;--ok:#e9f8ef;--bad:#fff2e6;--hint:#fff7dd
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",Arial,sans-serif}
+button,input{font:inherit}button{cursor:pointer}[hidden]{display:none!important}
+button:focus-visible,input:focus-visible{outline:3px solid rgba(33,115,70,.25);outline-offset:2px}
+.app{width:min(1240px,98vw);margin:12px auto 0;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.10)}
+.top{background:linear-gradient(135deg,var(--green-dark),#25a65f);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+.brand h1{font-size:20px;margin:0}.brand p{font-size:12px;margin:3px 0 0;color:#ddf2e5}
+.topRight{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.stats{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;font-weight:700}
+.help{border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.12);color:#fff;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:800}
+main{padding:18px}.stage{display:grid;grid-template-columns:minmax(270px,.62fr) minmax(580px,1.55fr);gap:16px;align-items:start}
+.panel{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px}
+.eyebrow{margin:0;color:var(--green);font-size:12px;font-weight:800}.progress{display:flex;gap:5px;margin:7px 0 14px}.progress span{width:26px;height:5px;border-radius:2px;background:#e3ebe6}.progress span.done{background:#a9cdb7}.progress span.current{background:#4f9669}
+.challenge h2{margin:0 0 7px;font-size:19px;line-height:1.3}.instruction{margin:0;color:var(--muted);font-size:13.5px;line-height:1.5}
+.options{display:grid;gap:8px;margin-top:14px}.option{border:1.5px solid #d1dad4;background:#fff;border-radius:9px;min-height:49px;padding:10px 12px;text-align:left;color:#2f4036;font-weight:750}.option.ok{border-color:var(--green2);background:#edf8f1;color:#145f39}.option.bad{border-color:#d4a05a;background:#fff4e4;color:#7a531d}
+.feedback{margin-top:12px;padding:11px 13px;border-radius:9px;font-size:13px;line-height:1.48}.feedback.ok{background:var(--ok);color:#145f39}.feedback.bad{background:var(--bad);color:#805221}.feedback.hint{background:var(--hint);color:#6e5918}
+.actions{display:flex;gap:9px;margin-top:14px}.btn{border:0;border-radius:9px;padding:11px 14px;min-height:44px;font-weight:800}.btn.secondary{flex:1;background:#eef5f0;color:#17653c;border:1px solid #d4e1d8}.btn.primary{flex:1.35;background:var(--green);color:#fff}
+.work{display:grid;gap:14px;min-width:0}.work>*{min-width:0}.title{margin:0 0 8px;font-size:13px;color:#53655b;font-weight:800}.note{margin:0 0 10px;color:var(--muted);font-size:12.5px;line-height:1.45}
+.scroll{overflow-x:auto}.source{border:1px solid #bcc9c0;border-radius:10px;overflow:hidden;background:#fff}.sourceHead{background:#e8f1eb;color:#1e5f3b;border-bottom:1px solid #c7d2ca;padding:9px 12px;font-weight:800;font-size:13px}
+table.data{border-collapse:collapse;min-width:980px;width:100%;font-size:12px}.data th,.data td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px 7px;white-space:nowrap}.data th{background:#f2f5f3;color:#53655b;text-align:left}.data td.num{text-align:right}.data tr.hl td{background:#f2f9f4}
+.transform{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
+.transformTitle{font-size:15px;font-weight:850;color:var(--green-dark);margin:0 0 4px}.transformSub{font-size:12.5px;color:var(--muted);margin:0 0 12px;line-height:1.45}
+.transformGrid{display:grid;grid-template-columns:1fr;gap:10px}.summaries{display:grid;grid-template-columns:1fr 1fr;gap:10px}.downArrow{text-align:center;font-size:25px;color:#7c8e83;font-weight:800;line-height:1}
+.miniCard{border:1px solid #dbe4de;border-radius:10px;background:#fbfdfc;padding:11px;min-width:0}.miniCard h3{font-size:13px;margin:0 0 7px;color:#405349}.miniCard p{font-size:12px;line-height:1.4;color:#5a6b61;margin:7px 0 0}
+.arrow{text-align:center;font-size:30px;color:#7c8e83;font-weight:800}
+table.mini{width:100%;border-collapse:collapse;font-size:11.5px}.mini th,.mini td{border:1px solid #dbe4de;padding:6px 7px}.mini th{background:#e5f1e9;text-align:left;color:#285c3d}.mini td:last-child,.mini th:last-child{text-align:right}
+.sumline{margin-top:9px;padding:8px 9px;background:#eef6f1;border-radius:7px;font-size:12px;line-height:1.45;color:#365047}
+.reveal{margin-top:10px;padding:11px 12px;border-left:4px solid var(--green2);background:#f3f8f5;border-radius:7px;font-size:12.8px;line-height:1.5}.reveal b{color:var(--green-dark)}
+details.base{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}details.base summary{cursor:pointer;padding:10px 12px;background:#f7faf8;font-size:12.5px;font-weight:800;color:var(--green-dark)}
+.lesson{display:grid;grid-template-columns:42px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid #e7ece9}.lesson:last-child{border-bottom:0}.lessonIcon{width:38px;height:38px;border-radius:8px;background:#f2f6f3;display:grid;place-items:center;font-size:18px;font-weight:800;color:var(--green-dark)}.lesson b{font-size:14px;color:var(--green-dark)}.lesson p{margin:3px 0 0;font-size:13px;line-height:1.45;color:#46564c}
+.builder{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}.coach{border:1px solid #cfe1d5;background:#f3f8f5;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;line-height:1.5}.coach b{color:var(--green-dark)}
+.builderGrid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:13px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.field{border:1.5px solid #cfd8d2;background:#fff;color:#35463c;border-radius:8px;padding:8px 9px;min-height:43px;text-align:left;font-size:12.5px;font-weight:750}.field small{display:block;color:#7a8980;font-size:10.5px;font-weight:500;margin-top:2px}.field.selected{border-color:var(--blue);background:var(--blue-soft);color:#214f7c}.field.used{opacity:.46}
+.areas{display:grid;grid-template-columns:1fr 1fr;gap:8px}.area{border:1.5px dashed #b9c9be;border-radius:9px;min-height:76px;background:#fafcfb;padding:8px;text-align:left;color:#425249}.area.ready{border-color:var(--blue);background:#f6faff}.area small{display:block;font-size:10.5px;font-weight:800;color:#77867d;margin-bottom:6px}.areaValue{display:block;background:#e9f4ee;border:1px solid #cfe1d5;color:#17653c;border-radius:6px;padding:6px 7px;font-size:11.5px;font-weight:800}.areaHint{display:block;color:#7a8980;font-size:11px;line-height:1.3}
+.calc,.filter{margin-top:11px;border-top:1px solid #e5ebe7;padding-top:10px}.calc p,.filter p{margin:0 0 7px;font-size:11.5px;font-weight:800;color:#607168}.calcBtns,.filterBtns,.slicerFields,.slicerBtns{display:flex;gap:7px;flex-wrap:wrap}.calcBtns button,.filterBtns button,.slicerFields button,.slicerBtns button{border:1px solid #cfd8d2;background:#fff;color:#425249;border-radius:7px;padding:8px 10px;font-size:12px;font-weight:750}.calcBtns button.on,.filterBtns button.on,.slicerFields button.on,.slicerBtns button.on{border-color:var(--blue);background:var(--blue-soft);color:#214f7c}
+.clear{margin-top:10px;border:1px solid #cfd8d2;background:#fff;color:#526158;border-radius:7px;padding:7px 10px;font-size:11.5px;font-weight:750}
+.pivot{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}table.pt{border-collapse:collapse;width:100%;min-width:460px;font-size:12.5px}.pt th,.pt td{border:1px solid #d9e2dc;padding:7px 9px;white-space:nowrap}.pt thead th{background:#dfeee4;color:#285c3d;text-align:left}.pt td.num,.pt th.num{text-align:right}.pt tr.total td{background:#eef6f1;font-weight:800}.empty{padding:18px;border:1px dashed #d5ded8;border-radius:8px;color:#718078;text-align:center;font-size:12.5px}
+.analysis{margin-top:10px;padding:10px 12px;border-left:4px solid var(--green2);border-radius:7px;background:#f3f8f5;color:#3d5146;font-size:12.6px;line-height:1.48}
+.slicer{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}.slicer h3{margin:0 0 5px;font-size:14px}.slicerBtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.slicerBtns button.off{opacity:.45}
+.overlay{position:fixed;inset:0;background:rgba(20,31,24,.52);z-index:100;display:grid;place-items:center;padding:18px}.modal{width:min(620px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 18px 55px rgba(0,0,0,.25)}.modalHead{background:linear-gradient(135deg,var(--green-dark),#25a65f);color:#fff;padding:17px 20px}.modalHead h2{margin:0;font-size:21px}.modalHead p{margin:5px 0 0;color:#def1e5;font-size:13px;line-height:1.4}.modalBody{padding:18px 20px}.modalBody label{display:block;font-size:12px;font-weight:800;margin:0 0 5px}.modalBody input{width:100%;padding:11px 12px;border:1px solid #cbd6cf;border-radius:9px;margin-bottom:10px;font-size:16px}.err{min-height:18px;color:#9a5c26;font-size:12px}.welcome{text-align:center;margin-bottom:17px}.welcome .emoji{font-size:50px}.welcome h3{margin:4px 0;font-size:25px}.welcome p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.45}
+footer{width:min(1240px,98vw);margin:0 auto 16px;padding:10px 4px 0;display:flex;justify-content:space-between;gap:10px;color:#738178;font-size:11.5px}footer strong{color:var(--green)}
+@media(max-width:900px){.stage{grid-template-columns:1fr}.work{order:-1}}
+@media(max-width:700px){.summaries{grid-template-columns:1fr}}
+@media(max-width:640px){main{padding:12px}.builderGrid{grid-template-columns:1fr}.fields,.areas{grid-template-columns:1fr 1fr}.actions{flex-direction:column}.slicerBtns{grid-template-columns:1fr}.brand h1{font-size:18px}footer{flex-direction:column}}
+@media(max-width:380px){.fields,.areas{grid-template-columns:1fr}}
 
+.tutorial{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px}
+.tutorialStep{border:1px solid #dce5df;border-radius:10px;background:#fbfdfc;padding:14px}
+.tutorialStep h3{margin:0 0 6px;font-size:15px;color:var(--green-dark)}
+.tutorialStep p{margin:0;font-size:13px;line-height:1.5;color:#46564c}
+.tutorialAction{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.tutorialAction button{border:1px solid #cfd8d2;background:#fff;color:#35463c;border-radius:8px;padding:9px 12px;font-weight:800;font-size:12.5px}
+.tutorialAction button.primaryStep{background:var(--green);color:#fff;border-color:var(--green)}
+.tutorialVisual{margin-top:12px;border:1px solid #e0e8e3;border-radius:9px;padding:10px;background:#f7faf8}
+.fakeRibbon{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.fakeTab{padding:6px 9px;border-radius:6px;background:#fff;border:1px solid #d7e0da;font-size:11.5px;font-weight:750;color:#53655b}
+.fakeTab.active{background:#e7f2eb;color:var(--green-dark);border-color:#bcd3c3}
+.fakePanel{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fakeList,.fakeAreas{border:1px solid #dbe4de;border-radius:8px;background:#fff;padding:9px}
+.fakeList b,.fakeAreas b{display:block;font-size:11.5px;margin-bottom:6px;color:#53655b}
+.fakeField,.fakeArea{display:block;border:1px solid #d8e1db;border-radius:6px;padding:6px 7px;margin:5px 0;font-size:11.5px;background:#fafcfb}
+.fakeField.on,.fakeArea.on{background:#e9f4ee;border-color:#bcd7c5;color:#17653c;font-weight:800}
+
+
+.bridge{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  padding:14px;
+}
+.bridgeQuestion{
+  border-left:4px solid var(--green2);
+  background:#f3f8f5;
+  border-radius:7px;
+  padding:10px 12px;
+  font-size:13px;
+  line-height:1.5;
+  margin-bottom:12px;
+}
+.bridgeStep{
+  border:1px solid #dce5df;
+  border-radius:10px;
+  padding:13px;
+  background:#fbfdfc;
+}
+.bridgeStep h3{
+  margin:0 0 6px;
+  font-size:15px;
+  color:var(--green-dark)
+}
+.bridgeStep p{
+  margin:0 0 10px;
+  font-size:13px;
+  line-height:1.48;
+  color:#46564c
+}
+.bridgeChoices{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px
+}
+.bridgeChoices button{
+  border:1.5px solid #cfd8d2;
+  background:#fff;
+  color:#35463c;
+  border-radius:8px;
+  padding:9px 10px;
+  text-align:left;
+  font-weight:750;
+  font-size:12.5px
+}
+.bridgeChoices button.good{
+  border-color:var(--green2);
+  background:#edf8f1;
+  color:#145f39
+}
+.bridgeChoices button.wrong{
+  border-color:#d4a05a;
+  background:#fff4e4;
+  color:#7a531d
+}
+.bridgeMap{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:1fr 46px 1fr;
+  gap:8px;
+  align-items:center
+}
+.bridgeBox{
+  border:1px solid #d8e1db;
+  border-radius:8px;
+  padding:10px;
+  background:#fff;
+  font-size:12.5px
+}
+.bridgeBox b{color:var(--green-dark)}
+.bridgeArrow{text-align:center;font-size:22px;color:#7c8e83}
+@media(max-width:640px){
+  .bridgeChoices,.bridgeMap{grid-template-columns:1fr}
+  .bridgeArrow{transform:rotate(90deg)}
+}
+
+
+.readQuestion{
+  border:1px solid #cfe1d5;background:#f7fbf8;border-radius:10px;padding:12px;margin-bottom:10px
+}
+.readQuestion small{display:block;color:#6a7b70;font-weight:750;margin-bottom:5px}
+.readQuestion strong{font-size:15px;color:#263c2f}
+.phraseMap{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px
+}
+.phrase{
+  border:1px solid #d8e1db;border-radius:8px;background:#fff;padding:9px;font-size:12px;line-height:1.4
+}
+.phrase b{display:block;color:var(--green-dark);margin-bottom:3px}
+.explainAfter{
+  margin-top:10px;padding:10px 12px;border-radius:8px;background:#eef6f1;
+  border-left:4px solid var(--green2);font-size:12.6px;line-height:1.5
+}
+.checkUnderstanding{
+  margin-top:12px;border-top:1px solid #e1e8e3;padding-top:12px
+}
+.checkUnderstanding h4{margin:0 0 7px;font-size:13px;color:var(--green-dark)}
+@media(max-width:640px){.phraseMap{grid-template-columns:1fr}}
+
+
+.appBody{display:block}
+.sideMenu{
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  width:min(290px,86vw);
+  background:#f7faf8;
+  border-right:1px solid #d9e2dc;
+  padding:16px 12px;
+  overflow:auto;
+  z-index:220;
+  transform:translateX(-105%);
+  transition:transform .2s ease;
+  box-shadow:8px 0 28px rgba(0,0,0,.14);
+}
+.sideMenu.open{transform:translateX(0)}
+.menuBackdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(20,31,24,.38);
+  z-index:210;
+}
+.menuHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:12px;
+}
+.menuHead .sideTitle{margin:0}
+.closeMenu{
+  border:1px solid #cfd8d2;
+  background:#fff;
+  color:#46564c;
+  border-radius:7px;
+  width:34px;
+  height:34px;
+  font-weight:900;
+}
+.sideTitle{
+  margin:0 0 10px;
+  font-size:12px;
+  font-weight:900;
+  color:var(--green-dark);
+}
+
+.sideTask{
+  width:100%;
+  border:1px solid #d5dfd8;
+  background:#fff;
+  color:#425249;
+  border-radius:7px;
+  padding:7px 8px;
+  text-align:left;
+  font-size:11.5px;
+  font-weight:750;
+}
+.sideTask:hover{border-color:#a7bcae;background:#fbfdfb}
+.sideTask.current{
+  background:#e7f3eb;
+  border-color:#8db69a;
+  color:#17653c;
+}
+.sideTask.done::after{
+  content:" ✓";
+  color:#217346;
+  font-weight:900;
+}
+.reviewNote{
+  margin:8px 0 0;
+  padding:8px;
+  border-radius:7px;
+  background:#eef5f0;
+  font-size:10.5px;
+  line-height:1.35;
+  color:#5e6f65;
+}
+.correctPanel{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:8px;
+  background:#edf8f1;
+  border-left:4px solid var(--green2);
+  color:#145f39;
+  font-size:12.8px;
+  line-height:1.5;
+}
+.stepContinue{
+  margin-top:10px;
+  width:100%;
+  border:0;
+  border-radius:8px;
+  padding:10px 12px;
+  background:var(--green);
+  color:#fff;
+  font-weight:850;
+}
+@media(max-width:520px){
+  .sideMenu{width:min(280px,90vw)}
+}
+
+
+.sideLevel{
+  margin-bottom:8px;
+  border:1px solid #d9e2dc;
+  border-radius:9px;
+  background:#fff;
+  overflow:hidden;
+}
+.sideLevel summary{
+  list-style:none;
+  cursor:pointer;
+  padding:9px 10px;
+  font-size:11.8px;
+  font-weight:850;
+  color:#405349;
+  background:#f8fbf9;
+}
+.sideLevel summary::-webkit-details-marker{display:none}
+.sideLevel summary::after{
+  content:"▾";
+  float:right;
+  color:#718078;
+  transition:transform .15s ease;
+}
+.sideLevel:not([open]) summary::after{transform:rotate(-90deg)}
+.sideLevel[open] summary{
+  background:#edf6f1;
+  color:var(--green-dark);
+}
+.sideTasks{
+  display:grid;
+  gap:4px;
+  padding:7px;
+  border-top:1px solid #e4ebe6;
+}
+.sideTask{
+  width:100%;
+  border:1px solid transparent;
+  background:#fff;
+  color:#425249;
+  border-radius:7px;
+  padding:7px 8px;
+  text-align:left;
+  font-size:11.3px;
+  line-height:1.25;
+  font-weight:720;
+}
+.sideTask:hover{background:#f5f9f6;border-color:#d5dfd8}
+.sideTask.current{
+  background:#e1f1e7;
+  border-color:#8db69a;
+  color:#17653c;
+  font-weight:850;
+}
+.sideTask.done::after{
+  content:" ✓";
+  color:#217346;
+  font-weight:900;
+}
+
+
+.teachBox{
+  border:1px solid #d7e3db;
+  background:#f8fbf9;
+  border-radius:10px;
+  padding:12px;
+  margin-bottom:10px;
+}
+.teachBox h3{margin:0 0 6px;font-size:15px;color:var(--green-dark)}
+.teachBox p{margin:0;font-size:13px;line-height:1.5;color:#46564c}
+.dataClue{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.dataClue > div{
+  border:1px solid #dce5df;
+  background:#fff;
+  border-radius:8px;
+  padding:9px;
+  font-size:12px;
+  line-height:1.4;
+}
+.dataClue b{display:block;color:var(--green-dark);margin-bottom:3px}
+.filterDemo{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+.filterDemo span{
+  border:1px solid #cfd8d2;
+  background:#fff;
+  border-radius:7px;
+  padding:7px 9px;
+  font-size:12px;
+}
+.filterDemo span.on{
+  background:#e5f3ea;
+  border-color:#8eb99b;
+  color:#17653c;
+  font-weight:800;
+}
+@media(max-width:640px){.dataClue{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+<header class="top">
+  <div class="brand"><h1>🌸 Perfumería Esencia · Tablas dinámicas</h1><p id="levelName">De la base al resumen.</p></div>
+  <div class="topRight"><button id="menuBtn" class="help" type="button">☰ Menú</button><button id="helpBtn" class="help" type="button">Conceptos</button><div class="stats"><span id="player">Estudiante: —</span><span id="score">⭐ 0 puntos</span><span id="global">Reto 0/15</span></div></div>
+</header>
+
+<div class="appBody">
+<aside id="sideMenu" class="sideMenu" aria-label="Navegación de niveles y retos"></aside>
+<div id="menuBackdrop" class="menuBackdrop" hidden></div>
+<main><div class="stage">
+<section class="panel challenge">
+  <p id="stepLabel" class="eyebrow">Reto</p>
+  <div id="progress" class="progress"></div>
+  <h2 id="question">Comienza para ver el primer reto.</h2>
+  <p id="instruction" class="instruction"></p>
+  <div id="options" class="options" hidden></div>
+  <button id="checkBtn" class="btn primary" style="width:100%;margin-top:12px" hidden>Comprobar</button>
+  <div id="feedback" class="feedback" hidden></div>
+  <div class="actions"><button id="hintBtn" class="btn secondary">Pista</button><button id="nextBtn" class="btn primary" hidden>Siguiente</button></div>
+</section>
+<div id="work" class="work"></div>
+</div></main>
+</div>
+</div>
+
+<footer><strong>Aprendiendo con @LaProfeVivy</strong><span>Saber Conocer · Gestión y visualización de datos</span></footer>
+
+<div id="startOverlay" class="overlay"><div class="modal">
+<div class="modalHead"><h2>🌷 Tablas dinámicas y segmentación</h2><p>Primero verás qué es. Después aprenderás a construirla.</p></div>
+<div class="modalBody">
+<div class="welcome"><div class="emoji">🌸📊</div><h3>De muchos registros a un resumen</h3><p>Transforma una base de ventas en un resumen y descubre cómo Excel organiza y calcula la información.</p></div>
+<label for="nameInput">¿Cómo te llamas?</label><input id="nameInput" placeholder="Escribe tu nombre"><div id="startErr" class="err"></div><button id="startBtn" class="btn primary" style="width:100%">Comenzar</button>
+</div></div></div>
+
+<div id="lessonOverlay" class="overlay" hidden><div class="modal">
+<div class="modalHead"><h2 id="lessonTitle"></h2><p id="lessonSub"></p></div>
+<div class="modalBody"><div id="lessonBody"></div><button id="lessonBtn" class="btn primary" style="width:100%;margin-top:12px">Practicar</button></div>
+</div></div>
+
+<script>
+(()=>{
+"use strict";
+const DATA=[
+["PERF001","Aura Floral","Dior","Floral",2,85000,170000,"Tarjeta","Laura"],
+["PERF002","Noir Elegance","Chanel","Oriental",1,120000,120000,"Contado","Camila"],
+["PERF003","Brisa Rosa","Dior","Floral",3,65000,195000,"Tarjeta",""],
+["PERF004","Velvet Night","Carolina Herrera","Oriental",2,99000,198000,"Tarjeta","Laura"],
+["PERF005","Cítrico Fresh","Chanel","Cítrico",4,58000,232000,"Contado",""],
+["PERF006","Luna Intense","Dior","Oriental",1,145000,145000,"Tarjeta","Camila"],
+["PERF007","Jardín Blanco","Lancôme","Floral",2,78000,156000,"Contado","Laura"],
+["PERF008","Ocean Blue","Versace","Fresco",3,72000,216000,"Tarjeta",""]
+];
+const FIELDS=[
+{name:"Código",type:"text"},{name:"Producto",type:"text"},{name:"Marca",type:"text"},{name:"Categoría",type:"text"},
+{name:"Cantidad",type:"number"},{name:"Precio unitario",type:"number"},{name:"Venta",type:"number"},{name:"Forma de pago",type:"text"},{name:"Asesor",type:"text"}
+];
+const IDX=Object.fromEntries(FIELDS.map((f,i)=>[f.name,i]));
+
+const LESSONS=[
+{title:"Nivel 1 · Mira qué ocurre con los datos",sub:"Primero observa cómo varios registros se convierten en un resumen.",rows:[
+["1","Base original","La base tiene 8 filas. Cada fila representa una venta distinta."],
+["2","Pregunta","Queremos responder algo que la base no muestra directamente: ¿cuánto vendió cada marca en total?"],
+["3","Agrupar","Excel reúne las filas que tienen la misma marca."],
+["4","Calcular","Después suma las ventas de cada grupo."],
+["✓","Resultado","Obtienes una tabla pequeña con una fila por marca y su total. A ese resumen automático se le llama tabla dinámica."]
+]},
+{title:"Nivel 2 · Cómo se construye una tabla dinámica",sub:"Verás el proceso completo en orden, una acción a la vez.",rows:[
+["1","Seleccionar la base","Primero se parte de la tabla con los registros que quieres resumir."],
+["2","Insertar","En Excel eliges <b>Insertar → Tabla dinámica</b>."],
+["3","Campos","Excel muestra los encabezados de la base como campos disponibles."],
+["4","Ubicar campos","Cada campo se coloca en un área según la función que cumplirá en el resumen."],
+["5","Resultado","La tabla dinámica se actualiza y muestra el resumen."]
+]},
+{title:"Nivel 3 · Suma, conteo y promedio",sub:"El tipo de pregunta indica qué cálculo necesita el resumen.",rows:[
+["Σ","Suma","Se usa cuando quieres acumular cantidades. Ejemplo: 2 + 3 + 2 unidades = 7 unidades."],
+["#","Conteo","Se usa cuando quieres saber cuántos registros hay. Para contar ventas podemos contar Código, porque cada venta tiene un código."],
+["x̄","Promedio","Se usa cuando quieres un valor medio. Excel suma los valores y los divide entre la cantidad de registros."],
+["✓","Cómo decidir","«¿Cuánto dinero o cuántas unidades en total?» → Suma. «¿Cuántas ventas?» → Conteo. «¿Cuál es el precio promedio?» → Promedio."]
+]},
+{title:"Nivel 4 · Filtros y segmentación",sub:"Aprenderás dos maneras de mostrar solo una parte del resumen.",rows:[
+["⌄","Filtro","Permite elegir un valor de un campo. Si eliges Marca = Dior, el resumen muestra solamente los registros Dior."],
+["▦","Segmentación","Hace el mismo tipo de filtrado mediante botones visibles: Dior, Chanel, Versace, etc."],
+["👁","Diferencia","El filtro se elige desde una lista. La segmentación deja las opciones visibles como botones."],
+["↺","La base permanece completa","Filtrar cambia lo que ves en el resumen; los registros originales siguen en la base."]
+]}
+];
+
+const TASKS=[
+{level:0,type:"observe",q:"Observa el ejemplo. ¿Qué hizo Excel para crear el resumen por Marca?",ops:["Agrupó las ventas por marca y sumó sus valores","Borró los productos repetidos","Ordenó los productos alfabéticamente","Cambió los precios unitarios"],ok:"Agrupó las ventas por marca y sumó sus valores",hint:"Mira las tres ventas Dior y luego el total Dior del resumen por Marca."},
+{level:0,type:"observe",q:"En el resumen por Marca, Dior aparece una sola vez con $510.000. ¿De dónde sale ese valor?",ops:["De sumar las tres ventas Dior","Del precio más alto de Dior","De contar tres productos","De multiplicar las marcas"],ok:"De sumar las tres ventas Dior",hint:"Mira las tres ventas Dior: $170.000, $195.000 y $145.000."},
+{level:0,type:"observe",q:"Los 4 datos de partida siguen siendo los mismos. ¿Qué cambió en los dos resúmenes?",ops:["Cambió la forma de agrupar los mismos datos","Reemplazó la base original","Eliminó filas innecesarias","Guardó solo las marcas"],ok:"Cambió la forma de agrupar los mismos datos",hint:"Compara: un resumen agrupa por Marca y el otro por Categoría."},
+{level:0,type:"observe",q:"¿Cómo se llama en Excel este tipo de resumen que puede reorganizar los mismos datos?",ops:["Tabla dinámica","Hoja de cálculo","Filtro avanzado","Gráfico dinámico"],ok:"Tabla dinámica",hint:"Es el nombre del resumen que acabas de observar."},
+
+{level:1,type:"guided",q:"Tutorial paso a paso: crea una tabla dinámica con el total vendido por marca.",hint:"Avanza un paso a la vez. Cada pantalla explica una sola acción."},
+{level:1,type:"scaffold",q:"¿Cuánto dinero se vendió con Tarjeta y cuánto de Contado?",expect:{rows:"Forma de pago",cols:null,values:"Venta",calc:"SUMA",filter:null,filterValue:null},hint:"Lee la pregunta por partes: «según la forma de pago» y «total vendido».",analysis:"Tarjeta suma $924.000 y Contado $508.000."},
+{level:1,type:"scaffold",q:"¿Cuánto vendió cada marca y cuánto de esas ventas fue con Tarjeta o Contado?",expect:{rows:"Marca",cols:"Forma de pago",values:"Venta",calc:"SUMA",filter:null,filterValue:null},hint:"Avanza una decisión a la vez.",analysis:"Cada marca queda en una fila y Tarjeta/Contado aparecen como columnas."},
+{level:1,type:"scaffold",q:"¿Cuánto dinero se vendió en cada categoría de perfume?",expect:{rows:"Categoría",cols:null,values:"Venta",calc:"SUMA",filter:null,filterValue:null},hint:"Avanza una decisión a la vez.",analysis:"Floral suma $521.000; Oriental $463.000; Cítrico $232.000 y Fresco $216.000."},
+
+{level:2,type:"calcguide",calcKind:"count",
+ q:"¿Cuántas ventas se hicieron con Tarjeta y cuántas con Contado?",
+ expect:{rows:"Forma de pago",cols:null,values:"Código",calc:"CONTEO",filter:null,filterValue:null},
+ analysis:"Se hicieron 5 ventas con Tarjeta y 3 ventas de Contado."},
+
+{level:2,type:"calcguide",calcKind:"average",
+ q:"¿Cuál es el precio unitario promedio de los perfumes de cada categoría?",
+ expect:{rows:"Categoría",cols:null,values:"Precio unitario",calc:"PROMEDIO",filter:null,filterValue:null},
+ analysis:"Oriental tiene el precio unitario promedio más alto: aproximadamente $121.333."},
+
+{level:2,type:"calcguide",calcKind:"sumqty",
+ q:"¿Cuántas unidades se vendieron en total dentro de cada categoría?",
+ expect:{rows:"Categoría",cols:null,values:"Cantidad",calc:"SUMA",filter:null,filterValue:null},
+ analysis:"Floral suma 7 unidades; Oriental y Cítrico 4 cada una; Fresco 3."},
+
+{level:3,type:"filterguide",mode:"filter",
+ q:"Quieres ver solamente las ventas de productos Dior. ¿Cómo filtras el resumen?",
+ field:"Marca",value:"Dior",
+ pivot:{rows:"Producto",cols:null,values:"Venta",calc:"SUMA"},
+ analysis:"Al elegir Marca = Dior quedan Aura Floral, Brisa Rosa y Luna Intense."},
+
+{level:3,type:"filterguide",mode:"slicer",
+ q:"Ahora quieres filtrar por Marca usando botones visibles. ¿Cómo lo haces?",
+ field:"Marca",value:"Dior",
+ pivot:{rows:"Producto",cols:null,values:"Venta",calc:"SUMA"},
+ analysis:"La segmentación de Marca muestra botones como Dior, Chanel, Versace y permite filtrar con un clic."},
+
+{level:3,type:"filterguide",mode:"slicer",
+ q:"Usa una segmentación para mostrar solamente las ventas pagadas de Contado.",
+ field:"Forma de pago",value:"Contado",
+ pivot:{rows:"Marca",cols:null,values:"Venta",calc:"SUMA"},
+ analysis:"Al seleccionar Contado, el total general es $508.000."},
+
+{level:3,type:"filterguide",mode:"slicer",
+ q:"Usa una segmentación para mostrar solamente la categoría Floral.",
+ field:"Categoría",value:"Floral",
+ pivot:{rows:"Producto",cols:null,values:"Venta",calc:"SUMA"},
+ analysis:"La categoría Floral suma $521.000 en ventas."}
+];
+
+const $=id=>document.getElementById(id);
+let state=null,piv=fresh(),selectedField=null,guideStep=0,bridgeStep=0,scaffoldStep=0,slicer={field:null,value:null,phase:1},reviewMode=false;
+
+function taskIndexWithinLevel(globalIndex){
+  const l=TASKS[globalIndex].level;
+  return TASKS.slice(0,globalIndex+1).filter(t=>t.level===l).length;
+}
+function closeSideMenu(){
+  const menu=$("sideMenu");
+  const back=$("menuBackdrop");
+  if(menu) menu.classList.remove("open");
+  if(back) back.hidden=true;
+}
+function openSideMenu(){
+  const menu=$("sideMenu");
+  const back=$("menuBackdrop");
+  if(menu) menu.classList.add("open");
+  if(back) back.hidden=false;
+}
+function taskMenuLabel(globalIndex){
+  const labels=[
+    "Cómo se crea un resumen",
+    "De dónde sale $510.000",
+    "Base original y resumen",
+    "Qué es una tabla dinámica",
+
+    "Tutorial paso a paso",
+    "Tarjeta vs. Contado",
+    "Marca + forma de pago",
+    "Ventas por categoría",
+
+    "Contar ventas",
+    "Precio promedio",
+    "Sumar unidades",
+
+    "Filtro por Dior",
+    "Segmentación por marca",
+    "Segmentación por pago",
+    "Segmentación por categoría"
+  ];
+  return labels[globalIndex] || ("Actividad "+(globalIndex+1));
+}
+function renderSideMenu(){
+  const box=$("sideMenu");
+  if(!box || !state){ if(box) box.innerHTML=""; return; }
+
+  const currentLevel=TASKS[state.index].level;
+  let html='<div class="menuHead"><p class="sideTitle">Ir directamente a…</p><button type="button" class="closeMenu" id="closeMenu" aria-label="Cerrar menú">×</button></div>';
+
+  LESSONS.forEach((L,levelIndex)=>{
+    const indices=TASKS.map((t,i)=>t.level===levelIndex?i:null).filter(i=>i!==null);
+    const cleanTitle=L.title.replace(/^Nivel \d+ · /,"");
+    html+=`<details class="sideLevel" ${levelIndex===currentLevel?"open":""}>
+      <summary>Nivel ${levelIndex+1} · ${cleanTitle}</summary>
+      <div class="sideTasks">`;
+
+    indices.forEach((globalIndex)=>{
+      const t=TASKS[globalIndex];
+      const cls=["sideTask"];
+      if(globalIndex===state.index) cls.push("current");
+      if(t.done) cls.push("done");
+      html+=`<button type="button" class="${cls.join(" ")}" data-jump="${globalIndex}">${taskMenuLabel(globalIndex)}</button>`;
+    });
+
+    html+='</div></details>';
+  });
+
+  html+='<div class="reviewNote">Abre un nivel y entra directamente a la actividad que quieras revisar. El puntaje no cambia al navegar desde aquí.</div>';
+  box.innerHTML=html;
+
+  const close=$("closeMenu");
+  if(close) close.addEventListener("click",closeSideMenu);
+
+  box.querySelectorAll("[data-jump]").forEach(b=>{
+    b.addEventListener("click",()=>{
+      const target=Number(b.dataset.jump);
+      if(!Number.isInteger(target) || !TASKS[target]) return;
+      reviewMode=true;
+      state.index=target;
+      closeSideMenu();
+      load();
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
+  });
+}
+
+function fresh(){return{rows:null,cols:null,values:null,calc:"SUMA",filter:null,filterValue:null}}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}
+function money(v){return "$"+Math.round(Number(v)).toLocaleString("es-CO")}
+function fname(){return state?.name?state.name.trim().split(/\s+/)[0]:"Estudiante"}
+function cur(){return TASKS[state.index]} function lvl(){return cur().level}
+function pos(){const l=lvl(),total=TASKS.filter(t=>t.level===l).length,n=TASKS.slice(0,state.index).filter(t=>t.level===l).length+1;return{n,total}}
+function progress(n,total){const b=$("progress");b.innerHTML="";for(let i=1;i<=total;i++){const s=document.createElement("span");s.className=i<n?"done":i===n?"current":"";b.appendChild(s)}}
+function msg(k,h){const f=$("feedback");f.className="feedback "+k;f.innerHTML=h;f.hidden=false} function clearMsg(){$("feedback").hidden=true}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function score(){
+  if(reviewMode) return 0;
+  const p=state.attempts===1?10:7;
+  state.score+=p;
+  if(state.attempts===1)state.first++;
+  $("score").textContent="⭐ "+state.score+" puntos";
+  return p;
+}
+function fv(r,n){return r[IDX[n]]} function uniq(n,rows=DATA){return[...new Set(rows.map(r=>fv(r,n)).filter(v=>v!==""&&v!=null))]} function numeric(n){return FIELDS[IDX[n]]?.type==="number"}
+function agg(rows,n,c){if(c==="CONTEO")return rows.filter(r=>fv(r,n)!==""&&fv(r,n)!=null).length;const a=rows.map(r=>Number(fv(r,n))).filter(Number.isFinite);if(c==="PROMEDIO")return a.reduce((x,y)=>x+y,0)/a.length;return a.reduce((x,y)=>x+y,0)}
+function fmt(v,n,c){if(c==="CONTEO")return String(v);if(n==="Venta"||n==="Precio unitario")return money(v);return Number(v).toLocaleString("es-CO",{maximumFractionDigits:0})}
+function filt(f,v,ef=null,ev=null){return DATA.filter(r=>(!f||v==null||fv(r,f)===v)&&(!ef||ev==null||fv(r,ef)===ev))}
+function source(open=false,highlightDior=false){
+let h=`<${open?'div class="source"':'details class="base"'}>${open?'<div class="sourceHead">Base original · 8 ventas</div>':'<summary>Ver base original de Perfumería Esencia</summary>'}<div class="scroll"><table class="data"><thead><tr>`;
+FIELDS.forEach(f=>h+=`<th>${f.name}</th>`);h+='</tr></thead><tbody>';
+DATA.forEach(r=>{h+=`<tr class="${highlightDior&&r[2]==="Dior"?"hl":""}">`;r.forEach((v,i)=>h+=`<td class="${FIELDS[i].type==="number"?"num":""}">${i===5||i===6?money(v):(v===""?"—":esc(v))}</td>`);h+='</tr>'});
+h+=`</tbody></table></div></${open?'div':'details'}>`;return h}
+function transformDemo(){
+return `<section class="transform">
+<p class="transformTitle">Un ejemplo pequeño</p>
+<p class="transformSub">Tomemos solo 4 ventas de Perfumería Esencia para ver con claridad qué hace Excel.</p>
+
+<div class="transformGrid">
+  <div class="miniCard">
+    <h3>1 · Estos son los datos de partida</h3>
+    <table class="mini">
+      <tr><th>Producto</th><th>Marca</th><th>Categoría</th><th>Venta</th></tr>
+      <tr><td>Aura Floral</td><td>Dior</td><td>Floral</td><td>$170.000</td></tr>
+      <tr><td>Brisa Rosa</td><td>Dior</td><td>Floral</td><td>$195.000</td></tr>
+      <tr><td>Noir Elegance</td><td>Chanel</td><td>Oriental</td><td>$120.000</td></tr>
+      <tr><td>Luna Intense</td><td>Dior</td><td>Oriental</td><td>$145.000</td></tr>
+    </table>
+    <p>Hay 4 ventas. Algunas comparten la misma marca y otras la misma categoría.</p>
+  </div>
+
+  <div class="downArrow">↓</div>
+
+  <div>
+    <p class="title" style="margin-bottom:8px">2 · Con los mismos 4 registros podemos crear distintos resúmenes</p>
+    <div class="summaries">
+      <div class="miniCard">
+        <h3>Resumen por Marca</h3>
+        <table class="mini">
+          <tr><th>Marca</th><th>Suma de Venta</th></tr>
+          <tr><td>Dior</td><td>$510.000</td></tr>
+          <tr><td>Chanel</td><td>$120.000</td></tr>
+        </table>
+        <div class="sumline">Excel reunió las 3 filas de <b>Dior</b> y sumó sus ventas.</div>
+      </div>
+
+      <div class="miniCard">
+        <h3>Resumen por Categoría</h3>
+        <table class="mini">
+          <tr><th>Categoría</th><th>Suma de Venta</th></tr>
+          <tr><td>Floral</td><td>$365.000</td></tr>
+          <tr><td>Oriental</td><td>$265.000</td></tr>
+        </table>
+        <div class="sumline">Los mismos datos ahora se agruparon por <b>Categoría</b>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="reveal"><b>Eso es una tabla dinámica:</b> un resumen que puedes reorganizar para mirar los mismos datos desde distintas preguntas.</div>
+</section>`;
+}
+function ptable(c,ef=null,ev=null){
+if(!c.rows||!c.values)return'<div class="empty">Aquí aparecerá el resumen cuando tengas un campo en <b>Filas</b> y otro en <b>Valores</b>.</div>';
+const rows=filt(c.filter,c.filterValue,ef,ev),rv=uniq(c.rows,rows),cv=c.cols?uniq(c.cols,rows):[];let h='<div class="scroll"><table class="pt"><thead><tr><th>'+c.rows+'</th>';
+if(c.cols)cv.forEach(x=>h+=`<th class="num">${x}</th>`);const name=c.calc==="SUMA"?"Suma":c.calc==="CONTEO"?"Conteo":"Promedio";h+=`<th class="num">${name} de ${c.values}</th></tr></thead><tbody>`;
+rv.forEach(v=>{const rr=rows.filter(r=>fv(r,c.rows)===v);h+=`<tr><td>${v}</td>`;if(c.cols)cv.forEach(x=>{const cr=rr.filter(r=>fv(r,c.cols)===x);h+=`<td class="num">${cr.length?fmt(agg(cr,c.values,c.calc),c.values,c.calc):""}</td>`});h+=`<td class="num">${fmt(agg(rr,c.values,c.calc),c.values,c.calc)}</td></tr>`});
+h+='<tr class="total"><td>Total general</td>';if(c.cols)cv.forEach(x=>{const cr=rows.filter(r=>fv(r,c.cols)===x);h+=`<td class="num">${fmt(agg(cr,c.values,c.calc),c.values,c.calc)}</td>`});h+=`<td class="num">${fmt(agg(rows,c.values,c.calc),c.values,c.calc)}</td></tr></tbody></table></div>`;return h}
+function builder(coach=""){
+const used=[piv.rows,piv.cols,piv.values,piv.filter];let fs='<div class="fields">';FIELDS.forEach(f=>fs+=`<button class="field ${selectedField===f.name?"selected":""} ${used.includes(f.name)?"used":""}" data-field="${f.name}">${f.name}<small>${f.type==="number"?"Dato numérico":"Dato de texto"}</small></button>`);fs+='</div>';
+const names={rows:"Filas",cols:"Columnas",values:"Valores",filter:"Filtros"};let ar='<div class="areas">';["rows","cols","values","filter"].forEach(k=>{let v=piv[k],lab=v?v:"";if(k==="values"&&v)lab=(piv.calc==="SUMA"?"Suma":piv.calc==="CONTEO"?"Conteo":"Promedio")+" de "+v;const help={rows:"Categoría principal",cols:"Segunda categoría",values:"Dato que se calcula",filter:"Campo para filtrar"}; ar+=`<button class="area ${selectedField?"ready":""}" data-area="${k}"><small>${names[k]}</small>${v?`<span class="areaValue">${lab}</span>`:`<span class="areaHint">${help[k]}</span>`}</button>`});ar+='</div>';
+let ex="";if(piv.values){ex+='<div class="calc"><p>Cálculo de Valores</p><div class="calcBtns">';["SUMA","CONTEO","PROMEDIO"].forEach(c=>{const dis=c!=="CONTEO"&&!numeric(piv.values);ex+=`<button data-calc="${c}" class="${piv.calc===c?"on":""}" ${dis?"disabled":""}>${c==="SUMA"?"Suma":c==="CONTEO"?"Conteo":"Promedio"}</button>`});ex+='</div></div>'}
+if(piv.filter){ex+=`<div class="filter"><p>Filtro de ${piv.filter}</p><div class="filterBtns"><button data-fv="" class="${piv.filterValue==null?"on":""}">Todos</button>`;uniq(piv.filter).forEach(v=>ex+=`<button data-fv="${v}" class="${piv.filterValue===v?"on":""}">${v}</button>`);ex+='</div></div>'}
+return `${coach?`<div class="coach">${coach}</div>`:""}<div class="coach"><b>¿Qué estás viendo aquí?</b> Esto simula lo que aparece en Excel después de elegir <b>Insertar → Tabla dinámica</b>: a la izquierda ves la lista de campos de la base y a la derecha las áreas donde se ubican para construir el resumen.</div><section class="builder"><p class="title">Panel de la tabla dinámica</p><div class="builderGrid"><div><p class="note"><b>Campos disponibles:</b> salen de los encabezados de la base de datos. En Excel aparecen en una lista como esta.</p>${fs}</div><div><p class="note"><b>Recuerda:</b> Filas = categorías una debajo de otra · Columnas = segunda categoría · Valores = dato que Excel calcula · Filtros = limita el resumen.</p>${ar}${ex}<button id="clear" class="clear">Limpiar</button></div></div></section>`}
+function bindBuilder(g=false){
+document.querySelectorAll("[data-field]").forEach(b=>b.onclick=()=>{if(g){gField(b.dataset.field);return}selectedField=selectedField===b.dataset.field?null:b.dataset.field;renderPivot()});
+document.querySelectorAll("[data-area]").forEach(b=>b.onclick=()=>{const a=b.dataset.area;if(g){gArea(a);return}if(!selectedField){if(piv[a]){piv[a]=null;if(a==="filter")piv.filterValue=null;renderPivot()}else msg("bad",`Primero toca un campo.`);return}Object.keys(piv).forEach(k=>{if(["rows","cols","values","filter"].includes(k)&&piv[k]===selectedField)piv[k]=null});piv[a]=selectedField;if(a==="values")piv.calc=numeric(selectedField)?"SUMA":"CONTEO";if(a==="filter")piv.filterValue=null;selectedField=null;clearMsg();renderPivot()});
+document.querySelectorAll("[data-calc]").forEach(b=>b.onclick=()=>{if(!b.disabled){piv.calc=b.dataset.calc;renderPivot()}});
+document.querySelectorAll("[data-fv]").forEach(b=>b.onclick=()=>{piv.filterValue=b.dataset.fv||null;renderPivot()});
+const c=$("clear");if(c)c.onclick=()=>{piv=fresh();selectedField=null;renderPivot()}
+}
+function renderPivot(){const t=cur();$("work").innerHTML=source(false)+builder()+`<section class="pivot"><p class="title">Resumen que estás construyendo</p>${ptable(piv)}${t.done&&t.analysis?`<div class="analysis"><b>Lectura:</b> ${t.analysis}</div>`:""}</section>`;bindBuilder()}
+function guidedTutorialHTML(){
+  const steps=[
+    {title:"Paso 1 · ¿Qué queremos obtener?",body:"Queremos responder: <b>¿cuánto vendió cada marca?</b> Identificamos dos cosas: <b>Marca</b> será lo que agrupamos y <b>Venta</b> será el número que calculamos.",action:'<button class="primaryStep" data-guide-next>Entendido</button>'},
+    {title:"Paso 2 · Seleccionar la base",body:"En Excel haces clic dentro de la base de datos que quieres resumir. Así Excel reconoce sus encabezados y registros.",visual:`<div class="tutorialVisual">${source(true,false)}</div>`,action:'<button class="primaryStep" data-guide-next>Base seleccionada</button>'},
+    {title:"Paso 3 · Insertar la tabla dinámica",body:"Con la base seleccionada, vas a la pestaña <b>Insertar</b> y eliges <b>Tabla dinámica</b>.",visual:`<div class="tutorialVisual"><div class="fakeRibbon"><span class="fakeTab">Inicio</span><span class="fakeTab active">Insertar</span><span class="fakeTab">Diseño</span></div><button class="primaryStep" data-guide-next>Tabla dinámica</button></div>`,action:""},
+    {title:"Paso 4 · Aparece el panel de campos",body:"Excel muestra una lista con los <b>encabezados de la base</b>. Por eso aparecen Código, Producto, Marca, Categoría, Venta, etc. También aparecen las áreas donde se ubican.",visual:`<div class="tutorialVisual"><div class="fakePanel"><div class="fakeList"><b>Campos</b><span class="fakeField">Código</span><span class="fakeField">Producto</span><span class="fakeField on">Marca</span><span class="fakeField">Categoría</span><span class="fakeField on">Venta</span></div><div class="fakeAreas"><b>Áreas</b><span class="fakeArea">Filas</span><span class="fakeArea">Columnas</span><span class="fakeArea">Valores</span><span class="fakeArea">Filtros</span></div></div></div>`,action:'<button class="primaryStep" data-guide-next>Continuar</button>'},
+    {title:"Paso 5 · Colocar Marca en Filas",body:"La pregunta dice <b>cada marca</b>. Por eso colocamos <b>Marca</b> en <b>Filas</b>. Así las marcas aparecen una debajo de otra.",visual:`<div class="tutorialVisual"><div class="fakePanel"><div class="fakeList"><b>Campos</b><span class="fakeField on">Marca</span><span class="fakeField">Venta</span></div><div class="fakeAreas"><b>Áreas</b><span class="fakeArea on">Filas → Marca</span><span class="fakeArea">Valores</span></div></div></div>`,action:'<button class="primaryStep" data-guide-next>Marca en Filas</button>'},
+    {title:"Paso 6 · Colocar Venta en Valores",body:"La pregunta dice <b>cuánto vendió</b>. Por eso colocamos <b>Venta</b> en <b>Valores</b>. Excel usará ese campo para calcular el total de cada marca.",visual:`<div class="tutorialVisual"><div class="fakePanel"><div class="fakeList"><b>Campos</b><span class="fakeField on">Marca</span><span class="fakeField on">Venta</span></div><div class="fakeAreas"><b>Áreas</b><span class="fakeArea on">Filas → Marca</span><span class="fakeArea on">Valores → Suma de Venta</span></div></div></div>`,action:'<button class="primaryStep" data-guide-next>Venta en Valores</button>'},
+    {title:"Paso 7 · Leer el resultado",body:"La tabla dinámica ya está construida. Cada marca aparece una vez y Excel muestra cuánto vendió en total.",visual:`<div class="tutorialVisual">${ptable({rows:"Marca",cols:null,values:"Venta",calc:"SUMA",filter:null,filterValue:null})}</div>`,action:'<button class="primaryStep" data-guide-finish>Terminar tutorial</button>'}
+  ];
+  const s=steps[guideStep];
+  return `<section class="tutorial"><div class="tutorialStep"><h3>${s.title}</h3><p>${s.body}</p>${s.visual||""}<div class="tutorialAction">${s.action||""}</div></div></section>`;
+}
+function renderGuided(){
+  $("work").innerHTML=guidedTutorialHTML();
+  $("nextBtn").hidden=true;
+  document.querySelectorAll("[data-guide-next]").forEach(b=>b.onclick=()=>{guideStep++;renderGuided()});
+  const f=document.querySelector("[data-guide-finish]");
+  if(f)f.onclick=()=>{cur().done=true;msg("ok","Tutorial completado. Ya viste el proceso completo para crear la tabla dinámica.");$("nextBtn").hidden=false;f.disabled=true};
+}
+
+
+function bridgeHTML(){
+  const steps=[
+    {
+      title:"Paso 1 · Identificar el campo que forma los grupos",
+      body:"Queremos obtener el <b>total vendido para Tarjeta y para Contado</b>. Esas dos opciones están guardadas en el campo <b>Forma de pago</b>.",
+      action:'<button type="button" data-bridge-choice="Forma de pago">Usar Forma de pago</button>'
+    },
+    {
+      title:"Paso 2 · Aprender para qué sirve Filas",
+      body:"El área <b>Filas</b> sirve para mostrar categorías <b>una debajo de otra</b>. Como queremos ver <b>Tarjeta</b> y <b>Contado</b> de esa forma, colocaremos <b>Forma de pago en Filas</b>.",
+      action:'<button type="button" data-bridge-choice="Filas">Colocar Forma de pago en Filas</button>'
+    },
+    {
+      title:"Paso 3 · Identificar el dato que se va a calcular",
+      body:"La pregunta pide el <b>total vendido</b>. El dinero de cada registro está en el campo <b>Venta</b>.",
+      action:'<button type="button" data-bridge-choice="Venta">Usar Venta</button>'
+    },
+    {
+      title:"Paso 4 · Aprender para qué sirve Valores",
+      body:"El área <b>Valores</b> recibe el dato que Excel debe <b>calcular</b>. Como queremos calcular las ventas, colocaremos <b>Venta en Valores</b>.",
+      action:'<button type="button" data-bridge-choice="Valores">Colocar Venta en Valores</button>'
+    },
+    {
+      title:"Paso 5 · Elegir el cálculo",
+      body:"La palabra <b>total</b> indica que Excel debe <b>sumar</b> las ventas que pertenecen a cada forma de pago.",
+      action:'<button type="button" data-bridge-choice="Suma">Aplicar Suma</button>'
+    }
+  ];
+
+  const s=steps[bridgeStep];
+
+  let progressHTML="";
+  if(bridgeStep===0){
+    progressHTML=`<div class="bridgeMap">
+      <div class="bridgeBox"><b>Pregunta</b><br>Total vendido para Tarjeta y Contado</div>
+      <div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>Campo</b><br>Forma de pago</div>
+    </div>`;
+  }
+  if(bridgeStep===1){
+    progressHTML=`<div class="bridgeMap">
+      <div class="bridgeBox"><b>Forma de pago</b><br>Tarjeta · Contado</div>
+      <div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>Filas</b><br>Categorías una debajo de otra</div>
+    </div>`;
+  }
+  if(bridgeStep===2){
+    progressHTML=`<div class="bridgeMap">
+      <div class="bridgeBox"><b>Forma de pago</b></div>
+      <div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>Filas</b><br>Tarjeta<br>Contado</div>
+    </div>
+    <div class="bridgeMap">
+      <div class="bridgeBox"><b>Pregunta</b><br>Total vendido</div>
+      <div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>Campo</b><br>Venta</div>
+    </div>`;
+  }
+  if(bridgeStep===3){
+    progressHTML=`<div class="bridgeMap">
+      <div class="bridgeBox"><b>Forma de pago</b></div>
+      <div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>Filas</b><br>Tarjeta<br>Contado</div>
+    </div>
+    <div class="bridgeMap">
+      <div class="bridgeBox"><b>Venta</b><br>Dato numérico</div>
+      <div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>Valores</b><br>Dato que Excel calcula</div>
+    </div>`;
+  }
+  if(bridgeStep===4){
+    progressHTML=`<div class="bridgeMap">
+      <div class="bridgeBox"><b>Forma de pago</b></div>
+      <div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>Filas</b><br>Tarjeta<br>Contado</div>
+    </div>
+    <div class="bridgeMap">
+      <div class="bridgeBox"><b>Venta</b></div>
+      <div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>Valores</b><br>Suma de Venta</div>
+    </div>`;
+  }
+
+  return `<section class="bridge">
+    <div class="bridgeQuestion"><b>Objetivo:</b> obtener el total vendido para Tarjeta y para Contado.</div>
+    <div class="bridgeStep">
+      <h3>${s.title}</h3>
+      <p>${s.body}</p>
+      <div class="tutorialAction">${s.action}</div>
+      ${progressHTML}
+    </div>
+  </section>`;
+}
+function renderBridge(){
+  const t=cur();
+
+  let preview="";
+  if(bridgeStep===0){
+    preview='<div class="empty">Primero identifica el campo que contiene Tarjeta y Contado.</div>';
+  }else if(bridgeStep===1){
+    preview='<div class="empty"><b>Campo elegido: Forma de pago.</b><br>Ahora aprenderás dónde se coloca para que sus categorías aparezcan una debajo de otra.</div>';
+  }else if(bridgeStep===2){
+    preview=`<div class="scroll"><table class="pt"><thead><tr><th>Forma de pago</th><th class="num">Valor por calcular</th></tr></thead><tbody><tr><td>Tarjeta</td><td class="num">—</td></tr><tr><td>Contado</td><td class="num">—</td></tr></tbody></table></div>`;
+  }else if(bridgeStep===3){
+    preview=`<div class="scroll"><table class="pt"><thead><tr><th>Forma de pago</th><th class="num">Venta</th></tr></thead><tbody><tr><td>Tarjeta</td><td class="num">?</td></tr><tr><td>Contado</td><td class="num">?</td></tr></tbody></table></div>`;
+  }else{
+    preview=`<div class="scroll"><table class="pt"><thead><tr><th>Forma de pago</th><th class="num">Suma de Venta</th></tr></thead><tbody><tr><td>Tarjeta</td><td class="num">?</td></tr><tr><td>Contado</td><td class="num">?</td></tr></tbody></table></div>`;
+  }
+
+  $("work").innerHTML=source(false)+bridgeHTML()+
+    `<section class="pivot">
+      <p class="title">Lo que llevas construido</p>
+      ${preview}
+    </section>`;
+
+  const expected=["Forma de pago","Filas","Venta","Valores","Suma"][bridgeStep];
+  const b=document.querySelector("[data-bridge-choice]");
+  if(b){
+    b.addEventListener("click",()=>{
+      if(b.dataset.bridgeChoice!==expected)return;
+      if(bridgeStep<4){
+        bridgeStep++;
+        clearMsg();
+        renderBridge();
+      }else{
+        t.done=true;
+        state.attempts=1;
+        const p=score();
+        msg("ok",`Muy bien. Ya viste para qué sirve cada área mientras construías la tabla. +${p} puntos.`);
+        $("nextBtn").hidden=false;
+        $("work").innerHTML=source(false)+
+          `<section class="pivot">
+            <p class="title">Resultado final</p>
+            ${ptable(t.expect)}
+            <div class="analysis"><b>Lectura:</b> ${t.analysis}</div>
+          </section>`;
+      }
+    });
+  }
+}
+
+function scaffoldPlan(t){
+  const e=t.expect;
+
+  if(e.rows==="Forma de pago"){
+    return [
+      {
+        title:"1 · Mirar los datos",
+        explain:`La pregunta es: <b>¿Cuánto dinero se vendió con Tarjeta y cuánto de Contado?</b><br><br>
+        En la base, <b>Tarjeta</b> y <b>Contado</b> aparecen dentro de una misma columna.`,
+        choices:[
+          {text:"Forma de pago", value:"Forma de pago"},
+          {text:"Venta", value:"Venta"},
+          {text:"Producto", value:"Producto"}
+        ],
+        prompt:"¿Qué columna contiene Tarjeta y Contado?",
+        ok:"Forma de pago",
+        after:"Correcto. Forma de pago es la columna que separa los registros en Tarjeta y Contado."
+      },
+      {
+        title:"2 · Organizar los dos grupos",
+        explain:`Queremos que el resumen muestre una fila para <b>Tarjeta</b> y otra para <b>Contado</b>.`,
+        choices:[
+          {text:"Filas", value:"Filas"},
+          {text:"Valores", value:"Valores"},
+          {text:"Filtros", value:"Filtros"}
+        ],
+        prompt:"¿En qué área colocarías Forma de pago para ver Tarjeta y Contado uno debajo del otro?",
+        ok:"Filas",
+        after:"Correcto. Filas muestra las categorías una debajo de otra."
+      },
+      {
+        title:"3 · Buscar el dinero que se va a calcular",
+        explain:`Ahora falta saber <b>cuánto dinero</b> corresponde a Tarjeta y cuánto a Contado.`,
+        choices:[
+          {text:"Venta", value:"Venta"},
+          {text:"Cantidad", value:"Cantidad"},
+          {text:"Precio unitario", value:"Precio unitario"}
+        ],
+        prompt:"¿Qué columna contiene el dinero de cada venta?",
+        ok:"Venta",
+        after:"Correcto. Venta contiene el valor en dinero de cada registro."
+      },
+      {
+        title:"4 · Excel calcula el total",
+        explain:`Ya tenemos los grupos <b>Tarjeta</b> y <b>Contado</b>, y el campo <b>Venta</b> contiene el dinero de cada registro.<br><br>Como queremos saber <b>cuánto dinero acumuló cada grupo</b>, Excel <b>suma</b> las ventas de Tarjeta por un lado y las de Contado por otro.`,
+        info:true,
+        after:"Excel usará Suma para obtener el total de cada grupo."
+      },
+      {
+        title:"5 · Leer el resultado",
+        explain:`El resumen ya está construido.`,
+        choices:[
+          {text:"Tarjeta vendió más dinero que Contado", value:"correct"},
+          {text:"Contado vendió más dinero que Tarjeta", value:"wrong1"},
+          {text:"Tarjeta y Contado vendieron exactamente lo mismo", value:"wrong2"}
+        ],
+        prompt:"¿Qué puedes concluir al leer la tabla?",
+        ok:"correct",
+        after:"Correcto. Tarjeta suma $924.000 y Contado $508.000."
+      }
+    ];
+  }
+
+  if(e.cols){
+    return [
+      {
+        title:"1 · Mirar qué queremos comparar",
+        explain:`La pregunta es: <b>¿Cuánto vendió cada marca y cuánto de esas ventas fue con Tarjeta o Contado?</b>`,
+        choices:[
+          {text:"Marca", value:"Marca"},
+          {text:"Producto", value:"Producto"},
+          {text:"Categoría", value:"Categoría"}
+        ],
+        prompt:"¿Qué columna identifica las marcas que queremos comparar?",
+        ok:"Marca",
+        after:"Correcto. Marca será el grupo principal del resumen."
+      },
+      {
+        title:"2 · Organizar las marcas",
+        explain:`Queremos ver <b>Dior, Chanel, Versace...</b> una debajo de otra.`,
+        choices:[
+          {text:"Filas", value:"Filas"},
+          {text:"Valores", value:"Valores"},
+          {text:"Filtros", value:"Filtros"}
+        ],
+        prompt:"¿En qué área colocarías Marca?",
+        ok:"Filas",
+        after:"Correcto. Las marcas aparecerán en Filas."
+      },
+      {
+        title:"3 · Separar Tarjeta y Contado",
+        explain:`Dentro de cada marca queremos distinguir cuánto se pagó con <b>Tarjeta</b> y cuánto de <b>Contado</b>.`,
+        choices:[
+          {text:"Forma de pago", value:"Forma de pago"},
+          {text:"Venta", value:"Venta"},
+          {text:"Cantidad", value:"Cantidad"}
+        ],
+        prompt:"¿Qué columna contiene Tarjeta y Contado?",
+        ok:"Forma de pago",
+        after:"Correcto. Forma de pago será la segunda categoría."
+      },
+      {
+        title:"4 · Ubicar la segunda categoría",
+        explain:`Queremos que <b>Tarjeta</b> y <b>Contado</b> aparezcan como encabezados separados dentro del resumen.`,
+        choices:[
+          {text:"Columnas", value:"Columnas"},
+          {text:"Valores", value:"Valores"},
+          {text:"Filtros", value:"Filtros"}
+        ],
+        prompt:"¿En qué área colocarías Forma de pago?",
+        ok:"Columnas",
+        after:"Correcto. Columnas divide cada marca entre Tarjeta y Contado."
+      },
+      {
+        title:"5 · Identificar el dinero",
+        explain:`Ahora necesitamos calcular cuánto dinero se vendió en cada combinación.`,
+        choices:[
+          {text:"Venta", value:"Venta"},
+          {text:"Cantidad", value:"Cantidad"},
+          {text:"Precio unitario", value:"Precio unitario"}
+        ],
+        prompt:"¿Qué columna contiene el dinero de cada venta?",
+        ok:"Venta",
+        after:"Correcto. Venta es el dato que se debe calcular."
+      },
+      {
+        title:"6 · Excel calcula las ventas",
+        explain:`Ya organizamos <b>Marca</b> en Filas, <b>Forma de pago</b> en Columnas y <b>Venta</b> como dato numérico.<br><br>Como queremos saber <b>cuánto dinero vendió cada grupo</b>, Excel <b>suma</b> los valores de Venta.`,
+        info:true,
+        after:"Excel usará Suma para calcular las ventas de cada combinación."
+      },
+      {
+        title:"7 · Leer el resultado",
+        explain:`Observa la tabla terminada.`,
+        choices:[
+          {text:"Permite comparar las marcas y además ver Tarjeta y Contado por separado", value:"correct"},
+          {text:"Solo muestra cuántos productos tiene cada marca", value:"wrong1"},
+          {text:"Solo calcula el precio unitario promedio", value:"wrong2"}
+        ],
+        prompt:"¿Qué información nueva permite ver este resumen?",
+        ok:"correct",
+        after:"Correcto. El resumen compara marcas y muestra cómo se distribuyen sus ventas entre Tarjeta y Contado."
+      }
+    ];
+  }
+
+  return [
+    {
+      title:"1 · Mirar los grupos",
+      explain:`La pregunta es: <b>¿Cuánto dinero se vendió en cada categoría de perfume?</b><br><br>
+      En la base aparecen categorías como Floral, Oriental, Cítrico y Fresco.`,
+      choices:[
+        {text:"Categoría", value:"Categoría"},
+        {text:"Producto", value:"Producto"},
+        {text:"Marca", value:"Marca"}
+      ],
+      prompt:"¿Qué columna contiene esos grupos?",
+      ok:"Categoría",
+      after:"Correcto. Categoría será el grupo principal."
+    },
+    {
+      title:"2 · Organizar las categorías",
+      explain:`Queremos ver Floral, Oriental, Cítrico y Fresco una debajo de otra.`,
+      choices:[
+        {text:"Filas", value:"Filas"},
+        {text:"Valores", value:"Valores"},
+        {text:"Filtros", value:"Filtros"}
+      ],
+      prompt:"¿En qué área colocarías Categoría?",
+      ok:"Filas",
+      after:"Correcto. Las categorías aparecerán en Filas."
+    },
+    {
+      title:"3 · Buscar el dinero",
+      explain:`Ahora debemos calcular cuánto dinero se vendió dentro de cada categoría.`,
+      choices:[
+        {text:"Venta", value:"Venta"},
+        {text:"Cantidad", value:"Cantidad"},
+        {text:"Precio unitario", value:"Precio unitario"}
+      ],
+      prompt:"¿Qué columna contiene el dinero vendido?",
+      ok:"Venta",
+      after:"Correcto. Venta es el dato que se debe calcular."
+    },
+    {
+      title:"4 · Excel calcula el total",
+      explain:`Cada categoría puede tener varias ventas. Como queremos saber <b>cuánto dinero se vendió en cada categoría</b>, Excel <b>suma</b> las ventas que pertenecen a cada una.`,
+      info:true,
+      after:"Excel usará Suma para obtener el total vendido de cada categoría."
+    },
+    {
+      title:"5 · Leer el resultado",
+      explain:`Observa el resumen terminado.`,
+      choices:[
+        {text:"Floral es la categoría con mayor valor vendido", value:"correct"},
+        {text:"Fresco es la categoría con mayor valor vendido", value:"wrong1"},
+        {text:"Todas las categorías vendieron lo mismo", value:"wrong2"}
+      ],
+      prompt:"¿Qué conclusión puedes sacar?",
+      ok:"correct",
+      after:"Correcto. Floral suma $521.000 y es la categoría con mayor valor vendido."
+    }
+  ];
+}
+
+
+function scaffoldVisual(t,step){
+  const e=t.expect;
+
+  if(e.rows==="Forma de pago"){
+    if(step===0) return `
+      <div class="tutorialVisual">
+        <table class="mini">
+          <tr><th>Forma de pago</th><th>Venta</th></tr>
+          <tr><td>Tarjeta</td><td>$170.000</td></tr>
+          <tr><td>Contado</td><td>$120.000</td></tr>
+          <tr><td>Tarjeta</td><td>$195.000</td></tr>
+          <tr><td>Tarjeta</td><td>$198.000</td></tr>
+        </table>
+      </div>`;
+    if(step===1) return `
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Forma de pago</b><br>Tarjeta · Contado</div>
+        <div class="bridgeArrow">→</div>
+        <div class="bridgeBox"><b>¿Dónde se ubica?</b><br>?</div>
+      </div>`;
+    if(step===2) return `
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Forma de pago</b></div><div class="bridgeArrow">→</div>
+        <div class="bridgeBox"><b>Filas</b><br>Tarjeta<br>Contado</div>
+      </div>`;
+    if(step===3) return `
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Forma de pago</b></div><div class="bridgeArrow">→</div>
+        <div class="bridgeBox"><b>Filas</b></div>
+      </div>
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Venta</b><br>dinero de cada registro</div><div class="bridgeArrow">→</div>
+        <div class="bridgeBox"><b>Valores</b><br>Suma de Venta</div>
+      </div>`;
+    return `<div class="tutorialVisual">${ptable(e)}</div>`;
+  }
+
+  if(e.cols){
+    if(step===0) return `
+      <div class="tutorialVisual">
+        <table class="mini">
+          <tr><th>Marca</th><th>Forma de pago</th><th>Venta</th></tr>
+          <tr><td>Dior</td><td>Tarjeta</td><td>$170.000</td></tr>
+          <tr><td>Chanel</td><td>Contado</td><td>$120.000</td></tr>
+          <tr><td>Dior</td><td>Tarjeta</td><td>$195.000</td></tr>
+          <tr><td>Chanel</td><td>Contado</td><td>$232.000</td></tr>
+        </table>
+      </div>`;
+    if(step===1) return `
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Marca</b><br>Dior · Chanel · Versace…</div>
+        <div class="bridgeArrow">→</div>
+        <div class="bridgeBox"><b>¿Dónde se ubica?</b><br>?</div>
+      </div>`;
+    if(step===2) return `
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Marca</b></div><div class="bridgeArrow">→</div><div class="bridgeBox"><b>Filas</b></div>
+      </div>`;
+    if(step===3) return `
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Marca</b></div><div class="bridgeArrow">→</div><div class="bridgeBox"><b>Filas</b></div>
+      </div>
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Forma de pago</b><br>Tarjeta · Contado</div><div class="bridgeArrow">→</div><div class="bridgeBox"><b>¿Dónde se ubica?</b><br>?</div>
+      </div>`;
+    if(step===4) return `
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Marca</b></div><div class="bridgeArrow">→</div><div class="bridgeBox"><b>Filas</b></div>
+      </div>
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Forma de pago</b></div><div class="bridgeArrow">→</div><div class="bridgeBox"><b>Columnas</b><br>Tarjeta · Contado</div>
+      </div>`;
+    if(step===5) return `
+      <div class="bridgeMap">
+        <div class="bridgeBox"><b>Venta</b><br>dinero de cada registro</div><div class="bridgeArrow">→</div>
+        <div class="bridgeBox"><b>Valores</b><br>Suma de Venta</div>
+      </div>`;
+    return `<div class="tutorialVisual">${ptable(e)}</div>`;
+  }
+
+  if(step===0) return `
+    <div class="tutorialVisual">
+      <table class="mini">
+        <tr><th>Categoría</th><th>Venta</th></tr>
+        <tr><td>Floral</td><td>$170.000</td></tr>
+        <tr><td>Oriental</td><td>$120.000</td></tr>
+        <tr><td>Floral</td><td>$195.000</td></tr>
+        <tr><td>Oriental</td><td>$198.000</td></tr>
+      </table>
+    </div>`;
+  if(step===1) return `
+    <div class="bridgeMap">
+      <div class="bridgeBox"><b>Categoría</b><br>Floral · Oriental · Cítrico · Fresco</div>
+      <div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>¿Dónde se ubica?</b><br>?</div>
+    </div>`;
+  if(step===2) return `
+    <div class="bridgeMap">
+      <div class="bridgeBox"><b>Categoría</b></div><div class="bridgeArrow">→</div><div class="bridgeBox"><b>Filas</b></div>
+    </div>`;
+  if(step===3) return `
+    <div class="bridgeMap">
+      <div class="bridgeBox"><b>Venta</b><br>dinero de cada registro</div><div class="bridgeArrow">→</div>
+      <div class="bridgeBox"><b>Valores</b><br>Suma de Venta</div>
+    </div>`;
+  return `<div class="tutorialVisual">${ptable(e)}</div>`;
+}
+
+
+function renderScaffold(){
+  const t=cur();
+  const plan=scaffoldPlan(t);
+  const s=plan[scaffoldStep];
+
+  let interaction="";
+  if(s.info){
+    interaction=`
+      <div class="correctPanel">
+        <b>Qué está haciendo Excel:</b> ${s.after}
+      </div>
+      <button type="button" class="stepContinue" id="infoContinue">Continuar</button>`;
+  }else{
+    interaction=`
+      <div class="checkUnderstanding">
+        <h4>${s.prompt}</h4>
+        <div class="bridgeChoices">
+          ${s.choices.map(c=>`<button type="button" data-scaffold-choice="${c.value}">${c.text}</button>`).join("")}
+        </div>
+      </div>
+      <div id="stepAnswer"></div>`;
+  }
+
+  $("work").innerHTML=
+    source(false)+
+    `<section class="bridge">
+      <div class="readQuestion">
+        <small>Pregunta del reto</small>
+        <strong>${t.q}</strong>
+      </div>
+      <div class="bridgeStep">
+        <h3>${s.title}</h3>
+        <p>${s.explain}</p>
+        ${scaffoldVisual(t,scaffoldStep)}
+        ${interaction}
+      </div>
+    </section>`;
+
+  if(s.info){
+    const b=$("infoContinue");
+    if(b){
+      b.addEventListener("click",()=>{
+        if(scaffoldStep<plan.length-1){
+          scaffoldStep++;
+          clearMsg();
+          renderScaffold();
+        }
+      });
+    }
+    return;
+  }
+
+  document.querySelectorAll("[data-scaffold-choice]").forEach(b=>{
+    b.addEventListener("click",()=>{
+      if(b.disabled) return;
+      state.attempts++;
+
+      if(b.dataset.scaffoldChoice===s.ok){
+        document.querySelectorAll("[data-scaffold-choice]").forEach(x=>{
+          x.disabled=true;
+          if(x.dataset.scaffoldChoice===s.ok) x.classList.add("good");
+        });
+
+        const answer=$("stepAnswer");
+        const last=scaffoldStep===plan.length-1;
+
+        answer.innerHTML=`
+          <div class="correctPanel">
+            <b>Respuesta:</b> ${s.after}
+          </div>
+          <button type="button" class="stepContinue" id="stepContinue">
+            ${last?"Ver resultado final":"Continuar"}
+          </button>`;
+
+        clearMsg();
+
+        $("stepContinue").addEventListener("click",()=>{
+          if(!last){
+            scaffoldStep++;
+            renderScaffold();
+            return;
+          }
+
+          t.done=true;
+          const p=score();
+          msg(
+            "ok",
+            reviewMode
+              ? `${s.after}<br><b>Reto revisado.</b>`
+              : `${s.after}<br><b>Reto completado. +${p} puntos.</b>`
+          );
+          $("nextBtn").hidden=false;
+          $("work").innerHTML=
+            source(false)+
+            `<section class="pivot">
+              <p class="title">Resultado final</p>
+              ${ptable(t.expect)}
+              <div class="analysis"><b>Lectura:</b> ${t.analysis}</div>
+            </section>`;
+          renderSideMenu();
+        });
+
+      }else{
+        b.classList.add("wrong");
+        b.disabled=true;
+        msg("bad","Mira los datos que aparecen en pantalla y vuelve a relacionarlos con lo que pide la pregunta.");
+      }
+    });
+  });
+}
+
+function guidedStepCard(question, title, body, visual, prompt, choices, correct, after, onContinue){
+  $("work").innerHTML=
+    source(false)+
+    `<section class="bridge">
+      <div class="readQuestion">
+        <small>Pregunta del reto</small>
+        <strong>${question}</strong>
+      </div>
+      <div class="teachBox">
+        <h3>${title}</h3>
+        <p>${body}</p>
+        ${visual||""}
+        ${prompt?`
+          <div class="checkUnderstanding">
+            <h4>${prompt}</h4>
+            <div class="bridgeChoices">
+              ${choices.map(c=>`<button type="button" data-guide-choice="${c.value}">${c.text}</button>`).join("")}
+            </div>
+          </div>
+          <div id="guideAnswer"></div>`:""}
+      </div>
+    </section>`;
+
+  if(!prompt){
+    const answer=$("guideAnswer");
+    return;
+  }
+
+  document.querySelectorAll("[data-guide-choice]").forEach(b=>{
+    b.addEventListener("click",()=>{
+      if(b.disabled) return;
+      state.attempts++;
+      if(b.dataset.guideChoice===correct){
+        document.querySelectorAll("[data-guide-choice]").forEach(x=>{
+          x.disabled=true;
+          if(x.dataset.guideChoice===correct) x.classList.add("good");
+        });
+        $("guideAnswer").innerHTML=
+          `<div class="correctPanel"><b>Respuesta:</b> ${after}</div>
+           <button type="button" class="stepContinue" id="guideContinue">Continuar</button>`;
+        clearMsg();
+        $("guideContinue").addEventListener("click",onContinue);
+      }else{
+        b.classList.add("wrong");
+        b.disabled=true;
+        msg("bad","Mira los datos y vuelve a relacionarlos con lo que pregunta el reto.");
+      }
+    });
+  });
+}
+
+function finishGuidedTask(t, analysis){
+  t.done=true;
+  const p=score();
+  msg("ok",reviewMode?`<b>Reto revisado.</b>`:`<b>Reto completado. +${p} puntos.</b>`);
+  $("nextBtn").hidden=false;
+  $("work").innerHTML=
+    source(false)+
+    `<section class="pivot">
+      <p class="title">Resultado final</p>
+      ${ptable(t.expect || t.pivot)}
+      <div class="analysis"><b>Lectura:</b> ${analysis}</div>
+    </section>`;
+  renderSideMenu();
+}
+
+function calcGuidePlan(t){
+  if(t.calcKind==="count"){
+    return [
+      {
+        title:"1 · Entender qué significa «cuántas ventas»",
+        body:"La pregunta pide saber <b>cuántos registros de venta</b> hay con Tarjeta y cuántos con Contado.",
+        visual:`<div class="dataClue">
+          <div><b>Forma de pago</b>Tarjeta · Contado</div>
+          <div><b>Código</b>PERF001 · PERF002 · PERF003…</div>
+        </div>`,
+        prompt:"¿Qué campo forma los dos grupos que quieres comparar?",
+        choices:[{text:"Forma de pago",value:"Forma de pago"},{text:"Venta",value:"Venta"},{text:"Producto",value:"Producto"}],
+        correct:"Forma de pago",
+        after:"Forma de pago separa los registros en Tarjeta y Contado."
+      },
+      {
+        title:"2 · Entender qué se debe contar",
+        body:"Cada venta tiene un <b>Código</b> propio. Por eso, contar los códigos equivale a contar cuántas ventas hay.",
+        visual:`<div class="dataClue">
+          <div><b>PERF001</b>una venta</div>
+          <div><b>PERF002</b>otra venta</div>
+        </div>`,
+        prompt:"Si cada venta tiene un código, ¿qué campo puedes contar para saber cuántas ventas hubo?",
+        choices:[{text:"Código",value:"Código"},{text:"Precio unitario",value:"Precio unitario"},{text:"Marca",value:"Marca"}],
+        correct:"Código",
+        after:"Conteo de Código cuenta una vez cada registro de venta."
+      },
+      {
+        title:"3 · Diferenciar Conteo de Suma",
+        body:"Aquí queremos saber <b>cuántas ventas</b> hubo. No queremos sumar dinero ni unidades.",
+        visual:"",
+        prompt:"¿Qué cálculo corresponde?",
+        choices:[{text:"Conteo",value:"CONTEO"},{text:"Suma",value:"SUMA"},{text:"Promedio",value:"PROMEDIO"}],
+        correct:"CONTEO",
+        after:"Conteo responde a «¿cuántas ventas hay?»."
+      },
+      {
+        title:"4 · Leer el resultado",
+        body:"Excel organiza Forma de pago en Filas y cuenta los códigos dentro de cada grupo.",
+        visual:`<div class="tutorialVisual">${ptable(t.expect)}</div>`,
+        prompt:"¿Qué indica el resultado?",
+        choices:[{text:"5 ventas con Tarjeta y 3 de Contado",value:"ok"},{text:"5 pesos con Tarjeta y 3 pesos de Contado",value:"bad1"},{text:"Tarjeta y Contado tienen 8 ventas cada uno",value:"bad2"}],
+        correct:"ok",
+        after:"Hay 5 registros de venta con Tarjeta y 3 con Contado."
+      }
+    ];
+  }
+
+  if(t.calcKind==="average"){
+    return [
+      {
+        title:"1 · Identificar los grupos",
+        body:"Queremos comparar el <b>precio unitario promedio</b> entre Floral, Oriental, Cítrico y Fresco.",
+        visual:"",
+        prompt:"¿Qué campo contiene esos grupos?",
+        choices:[{text:"Categoría",value:"Categoría"},{text:"Producto",value:"Producto"},{text:"Forma de pago",value:"Forma de pago"}],
+        correct:"Categoría",
+        after:"Categoría crea los grupos Floral, Oriental, Cítrico y Fresco."
+      },
+      {
+        title:"2 · Identificar el número",
+        body:"La pregunta pide trabajar con el precio de una unidad de cada perfume.",
+        visual:"",
+        prompt:"¿Qué campo contiene ese número?",
+        choices:[{text:"Precio unitario",value:"Precio unitario"},{text:"Venta",value:"Venta"},{text:"Cantidad",value:"Cantidad"}],
+        correct:"Precio unitario",
+        after:"Precio unitario es el dato que se va a calcular."
+      },
+      {
+        title:"3 · Entender Promedio",
+        body:"Promedio significa obtener un valor medio: Excel suma los precios del grupo y los divide entre la cantidad de registros.",
+        visual:`<div class="dataClue">
+          <div><b>Floral</b>$85.000 · $65.000 · $78.000</div>
+          <div><b>Promedio</b>($85.000 + $65.000 + $78.000) ÷ 3</div>
+        </div>`,
+        prompt:"¿Qué cálculo corresponde a «precio promedio»?",
+        choices:[{text:"Promedio",value:"PROMEDIO"},{text:"Suma",value:"SUMA"},{text:"Conteo",value:"CONTEO"}],
+        correct:"PROMEDIO",
+        after:"Promedio obtiene el valor medio de los precios de cada categoría."
+      },
+      {
+        title:"4 · Leer el resultado",
+        body:"La tabla muestra un precio promedio para cada categoría.",
+        visual:`<div class="tutorialVisual">${ptable(t.expect)}</div>`,
+        prompt:"¿Qué categoría tiene el precio unitario promedio más alto?",
+        choices:[{text:"Oriental",value:"ok"},{text:"Floral",value:"bad1"},{text:"Cítrico",value:"bad2"}],
+        correct:"ok",
+        after:"Oriental tiene el promedio más alto, aproximadamente $121.333."
+      }
+    ];
+  }
+
+  return [
+    {
+      title:"1 · Distinguir ventas de unidades",
+      body:"La pregunta pide <b>cuántas unidades</b> se vendieron, no cuántas filas hay.",
+      visual:`<div class="dataClue">
+        <div><b>Aura Floral</b>Cantidad = 2</div>
+        <div><b>Brisa Rosa</b>Cantidad = 3</div>
+      </div>`,
+      prompt:"¿Qué campo contiene el número de unidades vendidas?",
+      choices:[{text:"Cantidad",value:"Cantidad"},{text:"Código",value:"Código"},{text:"Venta",value:"Venta"}],
+      correct:"Cantidad",
+      after:"Cantidad indica cuántas unidades se vendieron en cada registro."
+    },
+    {
+      title:"2 · Identificar los grupos",
+      body:"Queremos el total de unidades dentro de Floral, Oriental, Cítrico y Fresco.",
+      visual:"",
+      prompt:"¿Qué campo contiene esos grupos?",
+      choices:[{text:"Categoría",value:"Categoría"},{text:"Marca",value:"Marca"},{text:"Producto",value:"Producto"}],
+      correct:"Categoría",
+      after:"Categoría organiza las unidades por tipo de perfume."
+    },
+    {
+      title:"3 · Sumar unidades",
+      body:"Una categoría puede aparecer en varias filas. Para saber las unidades totales debemos <b>sumar Cantidad</b>.",
+      visual:`<div class="dataClue"><div><b>Floral</b>2 + 3 + 2</div><div><b>Total</b>7 unidades</div></div>`,
+      prompt:"¿Qué cálculo corresponde?",
+      choices:[{text:"Suma",value:"SUMA"},{text:"Conteo",value:"CONTEO"},{text:"Promedio",value:"PROMEDIO"}],
+      correct:"SUMA",
+      after:"Suma acumula las unidades de todos los registros de cada categoría."
+    },
+    {
+      title:"4 · Leer el resultado",
+      body:"La tabla muestra las unidades totales por categoría.",
+      visual:`<div class="tutorialVisual">${ptable(t.expect)}</div>`,
+      prompt:"¿Cuántas unidades suma la categoría Floral?",
+      choices:[{text:"7",value:"ok"},{text:"3",value:"bad1"},{text:"521.000",value:"bad2"}],
+      correct:"ok",
+      after:"Floral suma 7 unidades."
+    }
+  ];
+}
+
+function renderCalcGuide(){
+  const t=cur();
+  const plan=calcGuidePlan(t);
+  const s=plan[scaffoldStep];
+
+  guidedStepCard(
+    t.q,s.title,s.body,s.visual,s.prompt,s.choices,s.correct,s.after,
+    ()=>{
+      if(scaffoldStep<plan.length-1){
+        scaffoldStep++;
+        renderCalcGuide();
+      }else{
+        finishGuidedTask(t,t.analysis);
+      }
+    }
+  );
+}
+
+function filterGuidePlan(t){
+  if(t.mode==="filter"){
+    return [
+      {
+        title:"1 · Identificar qué quieres conservar",
+        body:"Quieres ver únicamente los productos de la marca <b>Dior</b>.",
+        visual:"",
+        prompt:"¿Qué campo de la base contiene Dior, Chanel, Versace y las demás marcas?",
+        choices:[{text:"Marca",value:"Marca"},{text:"Producto",value:"Producto"},{text:"Categoría",value:"Categoría"}],
+        correct:"Marca",
+        after:"Marca es el campo que permite elegir Dior."
+      },
+      {
+        title:"2 · Usar el área Filtros",
+        body:"El área <b>Filtros</b> sirve para escoger un valor y hacer que todo el resumen muestre solamente ese valor.",
+        visual:`<div class="bridgeMap"><div class="bridgeBox"><b>Marca</b></div><div class="bridgeArrow">→</div><div class="bridgeBox"><b>Filtros</b></div></div>`,
+        prompt:"¿Qué valor debes seleccionar dentro del filtro Marca?",
+        choices:[{text:"Dior",value:"Dior"},{text:"Chanel",value:"Chanel"},{text:"Versace",value:"Versace"}],
+        correct:"Dior",
+        after:"Al elegir Dior, el resumen muestra solamente registros de esa marca."
+      },
+      {
+        title:"3 · Leer el resumen filtrado",
+        body:"El filtro ya está aplicado.",
+        visual:`<div class="tutorialVisual">${ptable(t.pivot,"Marca","Dior")}</div>`,
+        prompt:"¿Qué productos permanecen en el resumen?",
+        choices:[{text:"Aura Floral, Brisa Rosa y Luna Intense",value:"ok"},{text:"Noir Elegance y Cítrico Fresh",value:"bad1"},{text:"Todos los productos",value:"bad2"}],
+        correct:"ok",
+        after:"Quedan únicamente los productos Dior."
+      }
+    ];
+  }
+
+  return [
+    {
+      title:"1 · Elegir el campo del segmentador",
+      body:`Una segmentación convierte los valores de un campo en botones visibles. Queremos filtrar por <b>${t.field}</b>.`,
+      visual:"",
+      prompt:`¿Qué campo debe convertirse en botones?`,
+      choices:[
+        {text:t.field,value:t.field},
+        {text:t.field==="Marca"?"Categoría":"Marca",value:"otro1"},
+        {text:"Producto",value:"otro2"}
+      ],
+      correct:t.field,
+      after:`La segmentación mostrará botones con los valores de ${t.field}.`
+    },
+    {
+      title:"2 · Elegir el botón",
+      body:`Ahora aparecen las opciones del campo <b>${t.field}</b>.`,
+      visual:`<div class="filterDemo">${unique(t.field).map(v=>`<span class="${v===t.value?"on":""}">${v}</span>`).join("")}</div>`,
+      prompt:`¿Qué botón debes usar para mostrar solamente ${t.value}?`,
+      choices:[
+        {text:t.value,value:t.value},
+        ...unique(t.field).filter(v=>v!==t.value).slice(0,2).map(v=>({text:v,value:v}))
+      ],
+      correct:t.value,
+      after:`Al seleccionar ${t.value}, la tabla dinámica muestra solamente esos registros.`
+    },
+    {
+      title:"3 · Leer el resultado filtrado",
+      body:"Observa cómo cambió el resumen.",
+      visual:`<div class="tutorialVisual">${ptable(t.pivot,t.field,t.value)}</div>`,
+      prompt:t.field==="Marca"
+        ?"¿Qué producto Dior tiene la venta más alta?"
+        :t.field==="Forma de pago"
+          ?"¿Cuál es el total de las ventas de Contado?"
+          :"¿Cuál es el total vendido de la categoría Floral?",
+      choices:t.field==="Marca"
+        ?[{text:"Brisa Rosa",value:"ok"},{text:"Aura Floral",value:"bad1"},{text:"Luna Intense",value:"bad2"}]
+        :t.field==="Forma de pago"
+          ?[{text:"$508.000",value:"ok"},{text:"$924.000",value:"bad1"},{text:"$1.432.000",value:"bad2"}]
+          :[{text:"$521.000",value:"ok"},{text:"$463.000",value:"bad1"},{text:"$216.000",value:"bad2"}],
+      correct:"ok",
+      after:t.analysis
+    },
+    {
+      title:"4 · Entender qué hizo la segmentación",
+      body:"La segmentación no cambió la base. Solamente cambió qué registros aparecen en el resumen.",
+      visual:"",
+      prompt:"¿Cuál es la ventaja principal frente a un filtro de lista?",
+      choices:[
+        {text:"Las opciones quedan visibles como botones",value:"ok"},
+        {text:"Borra los datos que no se seleccionan",value:"bad1"},
+        {text:"Convierte todos los datos en texto",value:"bad2"}
+      ],
+      correct:"ok",
+      after:"La segmentación deja visibles las opciones de filtrado y permite cambiar entre ellas con un clic."
+    }
+  ];
+}
+
+function renderFilterGuide(){
+  const t=cur();
+  const plan=filterGuidePlan(t);
+  const s=plan[scaffoldStep];
+
+  guidedStepCard(
+    t.q,s.title,s.body,s.visual,s.prompt,s.choices,s.correct,s.after,
+    ()=>{
+      if(scaffoldStep<plan.length-1){
+        scaffoldStep++;
+        renderFilterGuide();
+      }else{
+        t.done=true;
+        const p=score();
+        msg("ok",reviewMode?`<b>Reto revisado.</b>`:`<b>Reto completado. +${p} puntos.</b>`);
+        $("nextBtn").hidden=false;
+        $("work").innerHTML=
+          source(false)+
+          `<section class="pivot">
+            <p class="title">Resultado final</p>
+            ${ptable(t.pivot,t.field,t.value)}
+            <div class="analysis"><b>Lectura:</b> ${t.analysis}</div>
+          </section>`;
+        renderSideMenu();
+      }
+    }
+  );
+}
+
+function options(ops,fn){const box=$("options");box.innerHTML="";box.hidden=false;shuffle(ops).forEach(o=>{const b=document.createElement("button");b.className="option";b.textContent=o;b.onclick=()=>fn(o,b);box.appendChild(b)})}
+function answer(o,b){const t=cur();state.attempts++;if(o===t.ok){t.done=true;const p=score();b.classList.add("ok");$("options").querySelectorAll("button").forEach(x=>x.disabled=true);msg("ok",`Correcto, ${fname()}. +${p} puntos.`);$("nextBtn").hidden=false}else{b.classList.add("bad");b.disabled=true;msg("bad",`Compara otra vez los datos de partida con los resúmenes.`)}}
+function same(a,b){return["rows","cols","values","calc","filter","filterValue"].every(k=>(a[k]??null)===(b[k]??null))}
+function checkPivot(){const t=cur();state.attempts++;if(same(piv,t.expect)){t.done=true;const p=score();msg("ok",`Correcto, ${fname()}. +${p} puntos.`);$("nextBtn").hidden=false;renderPivot()}else{const e=t.expect;let m=piv.rows!==e.rows?"Revisa <b>Filas</b>: ahí va lo que quieres agrupar.":piv.cols!==e.cols?(e.cols?"La pregunta pide una segunda categoría en <b>Columnas</b>.":"En este reto deja <b>Columnas</b> vacío."):piv.values!==e.values?"Revisa <b>Valores</b>: ahí va el dato que quieres calcular.":piv.calc!==e.calc?"Relaciona la pregunta con el cálculo correcto: <b>Suma, Conteo o Promedio</b>.":piv.filter!==e.filter?"Revisa <b>Filtros</b>.":piv.filterValue!==e.filterValue?"El campo de filtro está bien; ahora elige el valor solicitado.":"Revisa la configuración.";msg("bad",`${m}`)}}
+function slicerView(){
+const t=cur();let a='<section class="slicer"><h3>Crear segmentación</h3><p class="note">Elige qué campo quieres convertir en botones.</p><div class="slicerFields">';["Marca","Categoría","Forma de pago","Asesor"].forEach(f=>a+=`<button data-sf="${f}" class="${slicer.field===f?"on":""}">${f}</button>`);a+='</div></section>';
+let b="";if(slicer.field){b=`<section class="slicer"><h3>Segmentación · ${slicer.field}</h3><p class="note">Toca un valor para filtrar.</p><div class="slicerBtns">`;uniq(slicer.field).forEach(v=>b+=`<button data-sv="${v}" class="${slicer.value===v?"on":slicer.value!=null?"off":""}">${v}</button>`);b+='</div></section>'}
+$("work").innerHTML=source(false)+a+b+`<section class="pivot"><p class="title">Tabla dinámica vinculada</p>${ptable(t.pivot,slicer.field,slicer.value)}${t.done?`<div class="analysis"><b>Lectura:</b> ${t.analysis}</div>`:""}</section>`;
+document.querySelectorAll("[data-sf]").forEach(x=>x.onclick=()=>{if(t.done)return;slicer.field=x.dataset.sf;slicer.value=null;slicer.phase=1;clearMsg();slicerView()});
+document.querySelectorAll("[data-sv]").forEach(x=>x.onclick=()=>{if(t.done)return;slicer.value=x.dataset.sv;if(slicer.field===t.slicerField&&slicer.value===t.selectValue){slicer.phase=2;msg("ok","Bien. El resumen cambió al aplicar la segmentación.");$("question").textContent=t.q2;$("instruction").textContent="Ahora lee el resumen filtrado.";options(t.ops,slicerAnswer)}else msg("bad","Revisa qué campo y qué valor pide la misión.");slicerView();if(slicer.phase===2){$("question").textContent=t.q2;$("instruction").textContent="Ahora lee el resumen filtrado.";options(t.ops,slicerAnswer)}})
+}
+function slicerAnswer(o,b){const t=cur();state.attempts++;if(o===t.ok){t.done=true;const p=score();msg("ok",`Correcto, ${fname()}. +${p} puntos.`);$("nextBtn").hidden=false;slicerView()}else{b.classList.add("bad");b.disabled=true;msg("bad","El filtro ya está bien. Ahora lee el resumen.")}}
+function lesson(i){const L=LESSONS[i];$("lessonTitle").textContent=L.title;$("lessonSub").textContent=fname()+", "+L.sub.charAt(0).toLowerCase()+L.sub.slice(1);$("lessonBody").innerHTML=L.rows.map(([ic,a,b])=>`<div class="lesson"><div class="lessonIcon">${ic}</div><div><b>${a}</b><p>${b}</p></div></div>`).join("");$("lessonOverlay").hidden=false}
+function load(){
+const t=cur(),p=pos();state.attempts=0;piv=fresh();selectedField=null;guideStep=0;bridgeStep=0;scaffoldStep=0;slicer={field:null,value:null,phase:1};clearMsg();$("nextBtn").hidden=true;$("checkBtn").hidden=true;$("options").hidden=true;$("levelName").textContent=LESSONS[t.level].title;$("stepLabel").textContent=`Reto ${p.n} de ${p.total}`;progress(p.n,p.total);$("global").textContent=`Reto ${state.index+1}/${TASKS.length}`;$("question").textContent=t.q;renderSideMenu();
+if(t.type==="observe"){$("instruction").textContent=`Mira primero la transformación de los datos y responde con lo que ves.`;$("work").innerHTML=transformDemo();options(t.ops,answer)}
+if(t.type==="guided"){$("instruction").textContent=`Avanza una acción a la vez. Cada paso muestra qué se hace y para qué sirve.`;renderGuided()}
+if(t.type==="scaffold"){$("instruction").textContent=`Construye esta tabla una decisión a la vez. Cada paso explica qué campo usar y para qué sirve el área.`;renderScaffold()}
+if(t.type==="calcguide"){$("instruction").textContent=`Primero entiende qué está preguntando el reto; después decide qué cálculo corresponde.`;renderCalcGuide()}
+if(t.type==="filterguide"){$("instruction").textContent=`Aprende el filtro mientras ves qué cambia en el resumen.`;renderFilterGuide()}
+if(t.type==="pivot"){$("instruction").textContent=`Ahora usarás el panel completo porque ya practicaste Filas, Columnas y Valores paso a paso.`;$("checkBtn").hidden=false;renderPivot()}
+if(t.type==="slicer"){$("instruction").textContent=`Crea el segmentador y observa cómo cambia el resumen.`;slicerView()}
+}
+function next(){reviewMode=false;if(state.index>=TASKS.length-1){alert(`Terminaste, ${fname()}. Puntaje: ${state.score}/${TASKS.length*10}`);return}const old=lvl();state.index++;load();if(lvl()!==old)lesson(lvl());window.scrollTo({top:0,behavior:"smooth"})}
+
+$("menuBtn").addEventListener("click",openSideMenu);
+$("menuBackdrop").addEventListener("click",closeSideMenu);
+document.addEventListener("keydown",e=>{if(e.key==="Escape") closeSideMenu()});
+$("startBtn").onclick=()=>{const n=$("nameInput").value.trim();if(n.length<2){$("startErr").textContent="Escribe tu nombre.";return}state={name:n,index:0,score:0,first:0,hints:0,attempts:0};reviewMode=false;$("player").textContent="Estudiante: "+n.trim().split(/\s+/)[0];$("startOverlay").hidden=true;load()}
+$("nameInput").onkeydown=e=>{if(e.key==="Enter")$("startBtn").click()}
+$("lessonBtn").onclick=()=>{$("lessonOverlay").hidden=true}
+$("helpBtn").onclick=()=>{if(state)lesson(lvl())}
+$("checkBtn").onclick=checkPivot
+$("nextBtn").onclick=next
+$("hintBtn").onclick=()=>{if(!state)return;state.hints++;const t=cur();msg("hint",`<b>Pista:</b> ${slicer.phase===2&&t.hint2?t.hint2:t.hint}`)}
+})();
+</script>
+</body>
+</html>
