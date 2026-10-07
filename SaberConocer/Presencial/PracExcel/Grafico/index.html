@@ -1,1 +1,1397 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfumería Esencia · Gráficos en Excel</title>
+<style>
+:root{
+  --green:#217346;
+  --green-dark:#17653c;
+  --green-2:#2ca765;
+  --bg:#edf3ef;
+  --line:#cfd8d2;
+  --head:#f2f5f3;
+  --text:#20372a;
+  --muted:#66796e;
+  --blue:#2f6fae;
+  --pink:#a5487f;
+  --gold:#d89d37;
+  --ok:#e9f8ef;
+  --bad:#fff0e3;
+  --hint:#fff7dd;
+  --select:#eaf3ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Segoe UI",Arial,sans-serif;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{
+  outline:3px solid rgba(33,115,70,.25);
+  outline-offset:2px;
+}
+[hidden]{display:none!important}
+
+.app{
+  width:min(1240px,98vw);
+  margin:12px auto 0;
+  background:#fff;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.10);
+}
+.top{
+  background:linear-gradient(135deg,var(--green-dark),#25a65f);
+  color:#fff;
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.brand h1{font-size:20px;margin:0}
+.brand p{font-size:12px;margin:3px 0 0;color:#ddf2e5}
+.stats{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;font-weight:700}
+.stats span{white-space:nowrap}
+
+main{padding:18px}
+.stage{
+  display:grid;
+  grid-template-columns:minmax(300px,.82fr) minmax(470px,1.35fr);
+  gap:16px;
+  align-items:start;
+}
+.panel{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  padding:16px;
+}
+.challenge .eyebrow{
+  color:var(--green);
+  font-size:12px;
+  font-weight:800;
+  margin:0 0 5px;
+}
+.challenge h2{
+  font-size:21px;
+  line-height:1.3;
+  margin:0 0 7px;
+}
+.challenge .instruction{
+  color:var(--muted);
+  font-size:13.5px;
+  line-height:1.45;
+  margin:0;
+}
+.progress{
+  display:flex;
+  gap:5px;
+  margin:6px 0 15px;
+  height:auto;
+  background:none;
+  overflow:visible;
+}
+.progress-step{
+  width:26px;
+  height:5px;
+  border-radius:2px;
+  background:#e3ebe6;
+  transition:background .2s ease;
+}
+.progress-step.done{background:#a9cdb7}
+.progress-step.current{background:#4f9669}
+
+.selection-guide{
+  margin:12px 0 2px;
+  padding:11px 12px;
+  background:#f5f8f6;
+  border:1px solid #dce6df;
+  border-radius:9px;
+  font-size:12.8px;
+  line-height:1.5;
+  color:#425249;
+}
+.selection-guide b{color:var(--green-dark)}
+.selection-guide .mini{
+  display:block;
+  margin-top:5px;
+  color:#66796e;
+}
+
+.options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:14px;
+}
+.option{
+  min-height:58px;
+  border:1.5px solid #d1dad4;
+  background:#fff;
+  color:#2f4036;
+  border-radius:9px;
+  padding:10px;
+  display:flex;
+  gap:9px;
+  align-items:center;
+  text-align:left;
+  font-weight:750;
+}
+.option:hover{border-color:#9db6a7;background:#fbfdfb}
+.option.ok{border-color:var(--green-2);background:#edf8f1;color:#145f39}
+.option.bad{border-color:#d4a05a;background:#fff4e4;color:#7a531d}
+.chart-icon{
+  width:38px;height:38px;flex:none;
+  display:grid;place-items:center;
+  background:#f4f7f5;
+  border-radius:8px;
+}
+.chart-icon svg{width:32px;height:32px;display:block}
+
+.actions{
+  display:flex;
+  gap:9px;
+  margin-top:14px;
+  align-items:stretch;
+}
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:11px 14px;
+  font-weight:800;
+  min-height:44px;
+}
+.btn.secondary{
+  background:#eef5f0;
+  color:#17653c;
+  border:1px solid #d4e1d8;
+  flex:1;
+}
+.btn.primary{
+  background:var(--green);
+  color:white;
+  flex:1.3;
+}
+.btn.primary:disabled{opacity:.5;cursor:not-allowed}
+.feedback{
+  margin-top:12px;
+  padding:11px 13px;
+  border-radius:9px;
+  font-size:13px;
+  line-height:1.45;
+}
+.feedback.ok{background:var(--ok);color:#145f39}
+.feedback.bad{background:var(--bad);color:#805221}
+.feedback.hint{background:var(--hint);color:#6e5918}
+
+.workspace{display:grid;gap:14px}
+.sheet{
+  border:1px solid #bcc9c0;
+  border-radius:10px;
+  overflow:auto;
+  background:#fff;
+}
+.sheet-title{
+  min-width:980px;
+  background:#e8f1eb;
+  color:#1e5f3b;
+  border-bottom:1px solid #c7d2ca;
+  padding:9px 12px;
+  font-weight:800;
+  font-size:13px;
+}
+.sheet-note{
+  min-width:980px;
+  padding:7px 12px;
+  background:#fbfcfb;
+  border-bottom:1px solid #e2e8e4;
+  font-size:12px;
+  color:var(--muted);
+}
+table.grid{
+  border-collapse:collapse;
+  min-width:980px;
+  width:100%;
+  table-layout:fixed;
+}
+.grid th,.grid td{
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:6px 7px;
+  height:35px;
+  font-size:12.5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.grid thead th{
+  background:var(--head);
+  color:#53655b;
+  text-align:center;
+  font-weight:800;
+}
+.grid .rownum{
+  width:38px;
+  background:var(--head);
+  color:#718078;
+  text-align:center;
+  font-size:11px;
+  font-weight:700;
+}
+.grid td.header{
+  background:#f7faf8;
+  font-weight:800;
+}
+.grid .money{text-align:right}
+.grid thead th.colpick{cursor:pointer}
+.grid thead th.selected{
+  background:#cfe3f5;
+  color:var(--blue);
+  box-shadow:inset 0 -3px 0 var(--blue);
+}
+.grid td.selected{
+  background:var(--select);
+  box-shadow:inset 1px 0 0 #83acd5,inset -1px 0 0 #83acd5;
+}
+.selection-tools{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:10px;
+}
+.key{
+  border:1.5px solid #9aa89f;
+  border-bottom-width:4px;
+  background:#fff;
+  border-radius:8px;
+  padding:8px 14px;
+  font-weight:900;
+  min-height:42px;
+}
+.key.on{
+  background:#2f3a33;
+  color:#fff;
+  border-color:#101410;
+  transform:translateY(2px);
+  border-bottom-width:2px;
+}
+.smallbtn{
+  border:1px solid #cfd8d2;
+  background:#fff;
+  color:#526158;
+  border-radius:8px;
+  padding:8px 11px;
+  font-size:12px;
+  font-weight:750;
+  min-height:42px;
+}
+.selection-label{
+  font-size:12.5px;
+  color:var(--muted);
+  margin-left:auto;
+}
+.selection-label b{
+  color:var(--blue);
+  font-family:Consolas,"Courier New",monospace;
+}
+
+.chart-card{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  min-height:300px;
+  background:#fff;
+}
+.chart-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:8px;
+}
+.chart-head h3{margin:0;font-size:15px}
+.chart-head p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.chart-area{min-height:245px;display:grid;place-items:center}
+.chart-area svg{width:100%;height:auto;max-height:320px;display:block}
+.chart-analysis{
+  margin-top:10px;
+  padding:11px 13px;
+  border-left:4px solid var(--green-2);
+  background:#f3f8f5;
+  border-radius:7px;
+  color:#385045;
+  font-size:12.8px;
+  line-height:1.48;
+}
+.chart-analysis b{color:var(--green-dark)}
+
+.order-list{display:grid;gap:8px;margin-top:14px}
+.order-btn{
+  border:1.5px solid #d1dad4;
+  background:#fff;
+  color:#2f4036;
+  border-radius:9px;
+  min-height:50px;
+  padding:9px 11px;
+  display:flex;
+  gap:9px;
+  align-items:center;
+  text-align:left;
+  font-weight:750;
+}
+.order-btn .n{
+  width:25px;height:25px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#e8eeea;color:#6b776f;
+  flex:none;font-size:12px;
+}
+.order-btn.ok{border-color:var(--green-2);background:#edf8f1;color:#145f39}
+.order-btn.ok .n{background:var(--green);color:#fff}
+
+.level-grid{display:grid;gap:10px}
+.lesson-row{
+  display:grid;
+  grid-template-columns:42px 1fr;
+  gap:10px;
+  align-items:start;
+  padding:10px 0;
+  border-bottom:1px solid #e7ece9;
+}
+.lesson-row:last-child{border-bottom:0}
+.lesson-icon{
+  width:38px;height:38px;border-radius:8px;
+  background:#f2f6f3;
+  display:grid;place-items:center;
+  font-size:21px;
+}
+.lesson-row b{font-size:14px;color:var(--green-dark)}
+.lesson-row p{font-size:13px;line-height:1.4;margin:3px 0 0;color:#46564c}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(20,31,24,.52);
+  z-index:90;
+  display:grid;
+  place-items:center;
+  padding:18px;
+}
+.modal{
+  width:min(560px,96vw);
+  max-height:92vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 18px 55px rgba(0,0,0,.25);
+}
+.modal-head{
+  background:linear-gradient(135deg,var(--green-dark),#25a65f);
+  color:#fff;
+  padding:17px 20px;
+}
+.modal-head h2{margin:0;font-size:21px}
+.modal-head p{margin:5px 0 0;color:#def1e5;font-size:13px;line-height:1.4}
+.modal-body{padding:18px 20px}
+.modal-body label{
+  display:block;
+  font-size:12px;
+  font-weight:800;
+  margin:0 0 5px;
+}
+.modal-body input{
+  width:100%;
+  border:1px solid #cbd6cf;
+  border-radius:9px;
+  padding:11px 12px;
+  margin-bottom:12px;
+  font-size:16px;
+}
+.err{min-height:18px;color:#9a5c26;font-size:12px;margin:-5px 0 8px}
+.welcome{
+  text-align:center;
+  margin-bottom:17px;
+}
+.welcome .emoji{font-size:52px}
+.welcome h3{margin:4px 0;font-size:26px}
+.welcome p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.45}
+.summary{
+  width:100%;
+  border-collapse:collapse;
+  margin:7px 0 14px;
+  font-size:13px;
+}
+.summary td{border-bottom:1px solid #e7ece9;padding:8px 4px}
+.summary td:first-child{color:var(--muted);width:48%}
+.summary td:last-child{font-weight:800}
+.trophy{text-align:center;font-size:50px}
+.big-score{text-align:center;font-size:40px;font-weight:900;color:var(--green);margin:0 0 8px}
+.print-note{text-align:center;color:var(--muted);font-size:12px;margin:0 0 12px}
+
+footer{
+  width:min(1240px,98vw);
+  margin:0 auto 16px;
+  padding:10px 4px 0;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  color:#738178;
+  font-size:11.5px;
+}
+footer strong{color:var(--green)}
+
+@media(max-width:840px){
+  .stage{grid-template-columns:1fr}
+  .workspace{order:-1}
+}
+@media(max-width:560px){
+  main{padding:12px}
+  .options{grid-template-columns:1fr}
+  .actions{flex-direction:column}
+  .selection-label{width:100%;margin-left:0}
+  .brand h1{font-size:18px}
+  .stats{gap:10px}
+  footer{flex-direction:column}
+}
+@media print{
+  body>*:not(#finishOverlay){display:none!important}
+  #finishOverlay{position:static;background:none;padding:0}
+  #finishOverlay .modal{box-shadow:none;width:100%}
+  #finishOverlay button{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>🌸 Perfumería Esencia · Gráficos en Excel</h1>
+      <p id="levelName">Aprende a elegir, seleccionar, construir e interpretar gráficos.</p>
+    </div>
+    <div class="stats">
+      <span id="player">Estudiante: —</span>
+      <span id="score">⭐ 0 puntos</span>
+      <span id="globalProgress">Reto 0/16</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="stage">
+      <section class="panel challenge">
+        <p class="eyebrow" id="stepLabel">Reto</p>
+        <div id="progressBar" class="progress" aria-label="Avance del nivel"></div>
+        <h2 id="question">Comienza el juego para ver el primer reto.</h2>
+        <p class="instruction" id="instruction"></p>
+
+        <div id="selectionGuide" class="selection-guide" hidden></div>
+        <div id="options" class="options" hidden></div>
+        <div id="orderList" class="order-list" hidden></div>
+
+        <div id="selectionTools" class="selection-tools" hidden>
+          <button id="ctrlBtn" class="key" type="button" aria-pressed="false">Ctrl</button>
+          <button id="clearBtn" class="smallbtn" type="button">Quitar selección</button>
+          <span class="selection-label">Selección: <b id="selectionText">—</b></span>
+        </div>
+
+        <div id="feedback" class="feedback" hidden></div>
+
+        <div class="actions">
+          <button id="hintBtn" class="btn secondary" type="button">Pista</button>
+          <button id="nextBtn" class="btn primary" type="button" hidden>Siguiente</button>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <section id="sheetPanel" class="sheet">
+          <div class="sheet-title">Perfumería Esencia · Registro de ventas</div>
+          <div class="sheet-note" id="sheetNote">Usaremos la misma base de datos durante todo el juego.</div>
+          <table id="sheet" class="grid"></table>
+        </section>
+
+        <section id="chartPanel" class="chart-card" hidden>
+          <div class="chart-head">
+            <div>
+              <h3 id="chartTitle">Vista previa</h3>
+              <p id="chartSubtitle"></p>
+            </div>
+          </div>
+          <div id="chartArea" class="chart-area"></div>
+          <div id="chartAnalysis" class="chart-analysis" hidden></div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <strong>Aprendiendo con @LaProfeVivy</strong>
+  <span>Saber Conocer · Gestión y visualización de datos</span>
+</footer>
+
+<div id="startOverlay" class="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>🌷 Gráficos con Perfumería Esencia</h2>
+      <p>Trabajarás siempre con la misma tabla de ventas para aprender a representar los datos sin cambiar de contexto.</p>
+    </div>
+    <div class="modal-body">
+      <div class="welcome">
+        <div class="emoji">🌸📊</div>
+        <h3>Tu misión</h3>
+        <p>Reconoce el gráfico adecuado, selecciona los datos como en Excel, construye la visualización e interpreta lo que muestra.</p>
+      </div>
+      <label for="nameInput">¿Cómo te llamas?</label>
+      <input id="nameInput" type="text" autocomplete="given-name" placeholder="Escribe tu nombre">
+      <div id="startErr" class="err"></div>
+      <button id="startBtn" class="btn primary" style="width:100%" type="button">Comenzar</button>
+    </div>
+  </div>
+</div>
+
+<div id="lessonOverlay" class="overlay" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="lessonTitle"></h2>
+      <p id="lessonSub"></p>
+    </div>
+    <div class="modal-body">
+      <div id="lessonBody" class="level-grid"></div>
+      <button id="lessonBtn" class="btn primary" style="width:100%;margin-top:12px" type="button">Practicar</button>
+    </div>
+  </div>
+</div>
+
+<div id="finishOverlay" class="overlay" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="finishTitle">¡Felicitaciones!</h2>
+      <p>Completaste el juego de gráficos con la base de Perfumería Esencia.</p>
+    </div>
+    <div class="modal-body">
+      <div class="trophy">🏆</div>
+      <div id="finalScore" class="big-score"></div>
+      <p class="print-note">Tu resultado resume la actividad realizada.</p>
+      <table class="summary"><tbody id="finishData"></tbody></table>
+      <button id="printBtn" class="btn primary" style="width:100%" type="button">Imprimir o guardar en PDF</button>
+      <button id="againBtn" class="btn secondary" style="width:100%;margin-top:8px" type="button">Volver a jugar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+const DATA = [
+  ["PERF001","Aura Floral","Dior","Floral",2,85000,170000,"Tarjeta","Laura"],
+  ["PERF002","Noir Elegance","Chanel","Oriental",1,120000,120000,"Contado","Camila"],
+  ["PERF003","Brisa Rosa","Dior","Floral",3,65000,195000,"Tarjeta",""],
+  ["PERF004","Velvet Night","Carolina Herrera","Oriental",2,99000,198000,"Tarjeta","Laura"],
+  ["PERF005","Cítrico Fresh","Chanel","Cítrico",4,58000,232000,"Contado",""],
+  ["PERF006","Luna Intense","Dior","Oriental",1,145000,145000,"Tarjeta","Camila"],
+  ["PERF007","Jardín Blanco","Lancôme","Floral",2,78000,156000,"Contado","Laura"],
+  ["PERF008","Ocean Blue","Versace","Fresco",3,72000,216000,"Tarjeta",""]
+];
+
+const COLS = [
+  {letter:"A",name:"Código"},
+  {letter:"B",name:"Producto"},
+  {letter:"C",name:"Marca"},
+  {letter:"D",name:"Categoría"},
+  {letter:"E",name:"Cantidad"},
+  {letter:"F",name:"Precio unitario"},
+  {letter:"G",name:"Venta"},
+  {letter:"H",name:"Forma de pago"},
+  {letter:"I",name:"Asesor"}
+];
+
+const TYPE_INFO = {
+  columnas:{name:"Columnas",desc:"Compara valores entre categorías."},
+  barras:{name:"Barras",desc:"Compara categorías y ayuda cuando los nombres son largos."},
+  circular:{name:"Circular",desc:"Muestra qué parte representa cada categoría dentro de un total."},
+  dispersion:{name:"Dispersión",desc:"Relaciona dos variables numéricas."},
+  lineas:{name:"Líneas",desc:"Muestra cambios en una secuencia ordenada, especialmente en el tiempo."},
+  noaplica:{name:"No aplica",desc:"La pregunta necesita un dato que esta tabla no contiene."}
+};
+
+const LESSONS = [
+  {
+    title:"Nivel 1 · ¿Qué gráfico uso?",
+    sub:"Antes de elegir un gráfico, identifica qué quieres comunicar con los datos.",
+    rows:[
+      ["▥","Gráfico de columnas","Representa los valores mediante columnas verticales. Cada columna corresponde a una categoría y su <b>altura</b> indica el valor. Permite comparar fácilmente cuál categoría tiene un valor mayor, menor o similar."],
+      ["☰","Gráfico de barras","Representa los valores mediante barras horizontales. Cada barra corresponde a una categoría y su <b>longitud</b> indica el valor. Es útil para comparar categorías y facilita la lectura cuando sus nombres son largos."],
+      ["◔","Gráfico circular","Representa un total mediante un círculo dividido en porciones. Cada porción corresponde a una categoría y su <b>tamaño</b> indica qué parte del total representa. Todas las porciones juntas forman el 100%."],
+      ["⠿","Gráfico de dispersión","Representa cada registro mediante un <b>punto</b>. La posición horizontal del punto corresponde al valor de una variable y la posición vertical corresponde al valor de otra. La distribución de los puntos permite observar si las dos variables parecen relacionarse."],
+      ["⌁","Gráfico de líneas","Sirve para observar <b>cómo cambia un valor a lo largo del tiempo</b> y reconocer tendencias. Los valores se representan con puntos unidos por una línea. Si la línea sube, el valor aumenta; si baja, disminuye. Por ejemplo, permite ver cómo cambian las ventas de enero a junio."]
+    ]
+  },
+  {
+    title:"Nivel 2 · Seleccionar los datos",
+    sub:"Antes de crear un gráfico debes decidir qué categoría vas a representar y qué valor necesitas mostrar.",
+    rows:[
+      ["1","¿Qué quieres comparar?","Primero identifica la <b>categoría</b> que vas a representar: por ejemplo Producto, Marca o Forma de pago. Esa columna permite saber a qué corresponde cada dato del gráfico."],
+      ["2","¿Qué valor quieres mostrar?","Después identifica la columna <b>numérica</b> que responde la pregunta: por ejemplo Venta, Precio unitario o Cantidad. Ese es el valor que el gráfico representará."],
+      ["◔","Si vas a usar un gráfico circular","Selecciona una columna de <b>categorías</b> y una columna de <b>valores</b>. La categoría indica qué representa cada porción y el valor determina qué tan grande será."],
+      ["⠿","Si vas a usar dispersión","Selecciona <b>dos columnas numéricas</b>. Un número se ubicará en el eje horizontal y el otro en el eje vertical. Cada fila de la tabla se representará con un punto."],
+      ["Ctrl","Si las columnas no están juntas","Selecciona la primera columna, activa Ctrl y luego selecciona la segunda. Así mantienes ambas seleccionadas al mismo tiempo."]
+    ]
+  },
+  {
+    title:"Nivel 3 · Construir el gráfico",
+    sub:"Ahora usarás las decisiones anteriores dentro de un proceso completo. Estas ideas NO están mostradas en el orden correcto: tú tendrás que descubrir la secuencia.",
+    rows:[
+      ["▥","Tipo de gráfico","Debes escoger una representación que responda a la pregunta que quieres comunicar."],
+      ["✓","Revisión final","Antes de terminar, verifica que título, etiquetas y ejes permitan entender la visualización."],
+      ["▦","Datos","Un gráfico necesita saber qué información de la tabla va a representar."],
+      ["＋","Herramienta de Excel","Excel dispone de la pestaña Insertar para crear la visualización una vez que sabes con qué datos trabajar."]
+    ]
+  },
+  {
+    title:"Nivel 4 · Interpretar",
+    sub:"Crear el gráfico no es el final. Debes leerlo y convertir lo que ves en una conclusión basada en los datos.",
+    rows:[
+      ["🔎","Mira qué representa cada eje o categoría","Antes de concluir, identifica qué significa cada barra, columna, porción o punto."],
+      ["↕","Compara","Observa valores mayores, menores, diferencias y agrupaciones. No basta con decir «se ve más grande»: relaciona la forma con el dato."],
+      ["Σ","Agrupa cuando corresponda","Si la pregunta es por marca o forma de pago, reúne los registros de la misma categoría antes de compararlos."],
+      ["✓","Concluye con evidencia","La respuesta debe poder justificarse con los valores del gráfico. No agregues causas que los datos no demuestren."]
+    ]
+  }
+];
+
+const TASKS = [
+  {level:0,type:"type",q:"Quieres comparar el valor de venta de cada perfume. ¿Qué gráfico es más adecuado?",ok:"columnas",ops:["columnas","circular","dispersion","lineas"],hint:"Pregúntate si quieres comparar categorías, mostrar partes de un total, relacionar dos números o estudiar cambios en el tiempo."},
+  {level:0,type:"type",q:"Quieres comparar las ventas, pero los nombres de los perfumes ocupan bastante espacio. ¿Qué gráfico facilita la lectura?",ok:"barras",ops:["barras","columnas","circular","dispersion"],hint:"¿Qué orientación dejaría más espacio para leer nombres largos: vertical u horizontal?"},
+  {level:0,type:"type",q:"Quieres mostrar qué parte del total de ventas representa cada perfume. ¿Qué gráfico usarías?",ok:"circular",ops:["circular","lineas","dispersion","barras"],hint:"La pregunta habla de la participación de cada parte dentro de un mismo total."},
+  {level:0,type:"type",q:"Quieres explorar si el precio unitario se relaciona con el valor final de la venta. ¿Qué gráfico usarías?",ok:"dispersion",ops:["dispersion","circular","barras","lineas"],hint:"Necesitas una visualización donde cada registro pueda ubicarse según dos valores numéricos."},
+  {level:0,type:"type",q:"Quieres mostrar cómo evolucionaron las ventas mes a mes. ¿Qué puedes hacer con esta tabla tal como está?",ok:"noaplica",ops:["lineas","columnas","noaplica","circular"],hint:"Antes de elegir un gráfico, busca en la tabla la variable necesaria para ordenar los datos en el tiempo."},
+
+  {level:1,type:"select",q:"Selecciona las columnas necesarias para comparar la venta de cada producto.",ok:[1,6],chart:"columnas",dataset:"productSales",hint:"Identifica una columna que permita reconocer cada elemento y otra que contenga el número que quieres comparar."},
+  {level:1,type:"select",q:"Selecciona las columnas necesarias para comparar el precio unitario de cada producto.",ok:[1,5],chart:"barras",dataset:"productPrices",hint:"Una columna debe servir como etiqueta de cada elemento y la otra debe aportar el valor numérico que pide la pregunta."},
+  {level:1,type:"select",q:"Selecciona los dos datos numéricos necesarios para estudiar la relación entre precio unitario y venta.",ok:[5,6],chart:"dispersion",dataset:"scatter",hint:"Busca dos columnas numéricas: una será el eje horizontal y la otra el eje vertical."},
+  {level:1,type:"select",q:"Selecciona los datos para mostrar qué parte del total de ventas representa cada producto.",ok:[1,6],chart:"circular",dataset:"productSales",hint:"Piensa qué columna identificará cada porción y cuál determinará su tamaño."},
+
+  {level:2,type:"order",q:"Los pasos están desordenados. Tócalos uno a uno en el orden en que realmente crearías un gráfico en Excel.",steps:["Seleccionar los datos","Ir a la pestaña Insertar","Elegir el tipo de gráfico","Revisar título, etiquetas y ejes"],hint:"Pregúntate qué debes tener definido antes de que Excel pueda construir una visualización."},
+  {level:2,type:"mission",q:"Misión: crea un gráfico que permita comparar la venta de cada producto.",okCols:[1,6],okChart:"columnas",dataset:"productSales",ops:["columnas","circular","dispersion","lineas"],hint:"Primero identifica qué debe aparecer como nombre de cada elemento y qué magnitud será comparada. Después decide qué forma visual facilita comparar."},
+  {level:2,type:"mission",q:"Misión: crea un gráfico que muestre qué participación tiene cada producto dentro del total vendido.",okCols:[1,6],okChart:"circular",dataset:"productSales",ops:["barras","circular","lineas","dispersion"],hint:"Piensa en una visualización donde todas las categorías formen un solo total."},
+  {level:2,type:"mission",q:"Misión: crea un gráfico para explorar si el precio unitario y el valor de la venta parecen relacionarse.",okCols:[5,6],okChart:"dispersion",dataset:"scatter",ops:["dispersion","columnas","circular","lineas"],hint:"La pregunta relaciona dos variables numéricas del mismo registro; busca un gráfico que represente pares de valores."},
+
+  {level:3,type:"interpret",q:"Según el gráfico de ventas por producto, ¿qué perfume tuvo la venta de mayor valor?",chart:"columnas",dataset:"productSales",ok:"Cítrico Fresh",ops:["Aura Floral","Cítrico Fresh","Ocean Blue","Brisa Rosa"],hint:"Localiza la columna de mayor altura y luego lee la etiqueta que le corresponde."},
+  {level:3,type:"interpret",q:"Según el gráfico de ventas por producto, ¿cuál tuvo la venta de menor valor?",chart:"barras",dataset:"productSales",ok:"Noir Elegance",ops:["Noir Elegance","Luna Intense","Jardín Blanco","Aura Floral"],hint:"Busca la barra más corta y verifica el valor que aparece junto a ella."},
+  {level:3,type:"interpret",q:"Al agrupar las ventas por marca, ¿qué marca generó más dinero?",chart:"columnas",dataset:"brandSales",ok:"Dior",ops:["Chanel","Dior","Versace","Carolina Herrera"],hint:"Compara las columnas ya agrupadas por marca; no necesitas volver a calcular registro por registro."},
+  {level:3,type:"interpret",q:"Al contar las formas de pago, ¿cuál fue la más frecuente?",chart:"columnas",dataset:"paymentCount",ok:"Tarjeta",ops:["Contado","Tarjeta","Ambas por igual","No se puede saber"],hint:"Compara la altura de las dos categorías y lee la cantidad representada."}
+];
+
+const $ = id => document.getElementById(id);
+let state = null;
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+}
+function money(v){ return "$"+Number(v).toLocaleString("es-CO"); }
+function shortMoney(v){ return "$"+Math.round(Number(v)/1000)+" mil"; }
+function firstName(){ return state?.name ? state.name.trim().split(/\s+/)[0] : "Estudiante"; }
+function shuffled(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function totalTasks(){ return TASKS.length; }
+function currentTask(){ return TASKS[state.index]; }
+function currentLevel(){ return currentTask().level; }
+function taskNumberInLevel(){
+  const l=currentLevel();
+  const same=TASKS.filter(t=>t.level===l);
+  const before=TASKS.slice(0,state.index).filter(t=>t.level===l).length;
+  return {n:before+1,total:same.length};
+}
+function renderLevelProgress(n,total){
+  const box=$("progressBar");
+  box.innerHTML="";
+  for(let i=1;i<=total;i++){
+    const part=document.createElement("span");
+    part.className="progress-step"+(i<n?" done":i===n?" current":"");
+    part.setAttribute("aria-hidden","true");
+    box.appendChild(part);
+  }
+  box.setAttribute("aria-label",`Reto ${n} de ${total} en este nivel`);
+}
+function setFeedback(kind,msg){
+  const el=$("feedback");
+  el.className="feedback "+kind;
+  el.innerHTML=msg;
+  el.hidden=false;
+}
+function clearFeedback(){
+  $("feedback").hidden=true;
+  $("feedback").innerHTML="";
+}
+function addScore(){
+  const earned=state.attempts===1?10:7;
+  state.score+=earned;
+  if(state.attempts===1) state.firstTry++;
+  $("score").textContent="⭐ "+state.score+" puntos";
+  return earned;
+}
+function icon(type){
+  const g="#2ca765",b="#2f6fae",p="#a5487f",l="#aab6af";
+  const common='<svg viewBox="0 0 40 40" aria-hidden="true">';
+  const end='</svg>';
+  const map={
+    columnas:`<rect x="7" y="21" width="6" height="13" fill="${g}"/><rect x="17" y="11" width="6" height="23" fill="${b}"/><rect x="27" y="16" width="6" height="18" fill="${p}"/><line x1="5" y1="35" x2="35" y2="35" stroke="${l}"/>`,
+    barras:`<rect x="7" y="7" width="24" height="6" fill="${g}"/><rect x="7" y="17" width="18" height="6" fill="${b}"/><rect x="7" y="27" width="28" height="6" fill="${p}"/>`,
+    circular:`<circle cx="20" cy="20" r="13" fill="${g}"/><path d="M20 20 L20 7 A13 13 0 0 1 32.4 24 Z" fill="${b}"/><path d="M20 20 L32.4 24 A13 13 0 0 1 14 31.6 Z" fill="${p}"/>`,
+    dispersion:`<circle cx="9" cy="30" r="2.5" fill="${b}"/><circle cx="14" cy="26" r="2.5" fill="${b}"/><circle cx="19" cy="24" r="2.5" fill="${b}"/><circle cx="25" cy="18" r="2.5" fill="${p}"/><circle cx="31" cy="12" r="2.5" fill="${g}"/><line x1="6" y1="34" x2="35" y2="34" stroke="${l}"/>`,
+    lineas:`<polyline points="6,29 14,24 21,26 28,17 35,10" fill="none" stroke="${b}" stroke-width="3"/><line x1="6" y1="34" x2="35" y2="34" stroke="${l}"/>`,
+    noaplica:`<circle cx="20" cy="20" r="13" fill="none" stroke="${l}" stroke-width="2"/><path d="M12 12 L28 28 M28 12 L12 28" stroke="${p}" stroke-width="3"/>`
+  };
+  return common+(map[type]||map.noaplica)+end;
+}
+
+function paintSheet(selectable=false){
+  const table=$("sheet");
+  let html='<thead><tr><th class="rownum"></th>';
+  COLS.forEach((c,i)=>{
+    const sel=state.selected.includes(i)?" selected":"";
+    html+=`<th class="colpick${sel}" data-col="${i}" title="${esc(c.name)}">${c.letter}</th>`;
+  });
+  html+='</tr></thead><tbody>';
+  html+='<tr><td class="rownum">1</td>';
+  COLS.forEach((c,i)=>{
+    const sel=state.selected.includes(i)?" selected":"";
+    html+=`<td class="header${sel}">${esc(c.name)}</td>`;
+  });
+  html+='</tr>';
+  DATA.forEach((row,ri)=>{
+    html+=`<tr><td class="rownum">${ri+2}</td>`;
+    row.forEach((v,i)=>{
+      const sel=state.selected.includes(i)?" selected":"";
+      const cls=(i===5||i===6)?" money":"";
+      const val=(i===5||i===6)?money(v):esc(v===""?"":v);
+      html+=`<td class="${(sel+" "+cls).trim()}">${val}</td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</tbody>';
+  table.innerHTML=html;
+
+  table.querySelectorAll("th.colpick").forEach(th=>{
+    th.style.cursor=selectable?"pointer":"default";
+    if(selectable){
+      th.addEventListener("click",()=>toggleColumn(Number(th.dataset.col)));
+    }
+  });
+}
+
+function toggleColumn(i){
+  if(!state || !["select","mission"].includes(currentTask().type)) return;
+  const exists=state.selected.includes(i);
+  if(exists){
+    state.selected=state.selected.filter(x=>x!==i);
+  }else{
+    if(!state.ctrl && state.selected.length && Math.abs(state.selected[state.selected.length-1]-i)>1){
+      state.selected=[i];
+    }else{
+      state.selected=[...state.selected,i].sort((a,b)=>a-b);
+    }
+  }
+  updateSelection();
+  paintSheet(true);
+}
+
+function updateSelection(){
+  const txt=state.selected.length
+    ? state.selected.map(i=>`${COLS[i].name} (${COLS[i].letter})`).join(" + ")
+    : "Aún no has seleccionado columnas";
+  $("selectionText").textContent=txt;
+  $("ctrlBtn").classList.toggle("on",state.ctrl);
+  $("ctrlBtn").setAttribute("aria-pressed",String(state.ctrl));
+}
+
+function showOptions(task, handler){
+  const box=$("options");
+  box.hidden=false;
+  box.innerHTML="";
+  shuffled(task.ops).forEach(op=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="option";
+    b.dataset.value=op;
+    b.innerHTML=`<span class="chart-icon">${icon(op)}</span><span><strong>${esc(TYPE_INFO[op]?.name||op)}</strong><br><small style="font-weight:500;color:#66796e">${esc(TYPE_INFO[op]?.desc||"")}</small></span>`;
+    b.addEventListener("click",()=>handler(op,b));
+    box.appendChild(b);
+  });
+}
+
+function showTextOptions(task, handler){
+  const box=$("options");
+  box.hidden=false;
+  box.innerHTML="";
+  shuffled(task.ops).forEach(op=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="option";
+    b.dataset.value=op;
+    b.innerHTML=`<span class="chart-icon" style="font-size:20px">✓</span><span>${esc(op)}</span>`;
+    b.addEventListener("click",()=>handler(op,b));
+    box.appendChild(b);
+  });
+}
+
+function markChoice(container,chosen,correct){
+  container.querySelectorAll("button").forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.value===correct) b.classList.add("ok");
+    if(b.dataset.value===chosen && chosen!==correct) b.classList.add("bad");
+  });
+}
+
+function checkType(chosen,btn){
+  if(currentTask().done) return;
+  state.attempts++;
+  const t=currentTask();
+  if(chosen===t.ok){
+    t.done=true;
+    const earned=addScore();
+    markChoice($("options"),chosen,t.ok);
+    setFeedback("ok",`Muy bien, ${firstName()}. ${TYPE_INFO[t.ok].desc} +${earned} puntos.`);
+    $("nextBtn").hidden=false;
+  }else{
+    btn.classList.add("bad");
+    setFeedback("bad",`${firstName()}, todavía no. Vuelve a la pregunta: ¿qué necesitas comunicar con los datos?`);
+  }
+}
+
+function sameCols(a,b){
+  const A=[...a].sort((x,y)=>x-y),B=[...b].sort((x,y)=>x-y);
+  return A.length===B.length && A.every((v,i)=>v===B[i]);
+}
+
+function selectionGuideFor(t){
+  if(t.type==="mission") {
+    if(t.okChart==="dispersion"){
+      return `<b>Qué debes buscar:</b> esta misión relaciona dos números del mismo perfume. Necesitas <b>dos columnas numéricas</b>, una para cada eje.<span class="mini">No necesitas una columna de nombres para ubicar los puntos.</span>`;
+    }
+    if(t.okChart==="circular"){
+      return `<b>Qué debes buscar:</b> el gráfico debe saber <b>cómo se llama cada parte</b> y <b>cuánto vale cada parte</b>.<span class="mini">Por eso necesitas una columna de texto + una columna numérica.</span>`;
+    }
+    return `<b>Qué debes buscar:</b> una columna debe <b>identificar qué estás comparando</b> y otra debe contener <b>el número que vas a comparar</b>.<span class="mini">Piensa en «nombre del elemento + valor».</span>`;
+  }
+  if(t.chart==="dispersion"){
+    return `<b>En este reto:</b> necesitas <b>dos columnas numéricas</b>. Cada fila se convertirá en un punto usando un número para el eje horizontal y otro para el vertical.`;
+  }
+  if(t.chart==="circular"){
+    return `<b>En este reto:</b> necesitas <b>una columna que nombre cada parte</b> y <b>otra que indique cuánto vale esa parte</b>.<span class="mini">Si eliges dos columnas numéricas, el gráfico no sabrá qué porción corresponde a cada producto.</span>`;
+  }
+  return `<b>En este reto:</b> necesitas <b>una columna que identifique cada elemento</b> y <b>otra columna con el valor numérico que vas a representar</b>.`;
+}
+
+function explainWrongSelection(t){
+  const names=state.selected.map(i=>COLS[i].name);
+  const numeric=new Set([4,5,6]);
+  const textCols=new Set([0,1,2,3,7,8]);
+  const allNumeric=state.selected.length>0 && state.selected.every(i=>numeric.has(i));
+
+  if(state.selected.length===0){
+    return `${firstName()}, todavía no has seleccionado ninguna columna. Lee la pregunta y busca qué debe aparecer con nombre y qué número debe representarse.`;
+  }
+  if((t.chart==="circular" || t.okChart==="circular") && allNumeric){
+    return `${firstName()}, elegiste <b>${names.join(" + ")}</b>. Las dos son numéricas. Eso serviría para relacionar números, pero un gráfico circular necesita saber <b>qué nombre corresponde a cada porción</b> y <b>qué valor determina su tamaño</b>. Revisa cuál columna identifica a cada producto.`;
+  }
+  if((t.chart==="dispersion" || t.okChart==="dispersion") && state.selected.some(i=>textCols.has(i))){
+    return `${firstName()}, para dispersión cada punto se ubica con <b>dos números</b>. En tu selección hay una columna de texto. Busca las dos variables numéricas que menciona la pregunta.`;
+  }
+  if(state.selected.length>2){
+    return `${firstName()}, seleccionaste ${state.selected.length} columnas. En este reto solo necesitas <b>dos</b>. Elimina las que no sean indispensables para responder la pregunta.`;
+  }
+  return `${firstName()}, seleccionaste <b>${names.join(" + ")}</b>, pero esa combinación no responde exactamente la pregunta. Usa esta regla: identifica primero <b>qué debe aparecer con nombre</b> y después <b>qué número debe representarse</b>.`;
+}
+
+function checkSelection(){
+  const t=currentTask();
+  state.attempts++;
+  if(sameCols(state.selected,t.ok)){
+    t.done=true;
+    const earned=addScore();
+    setFeedback("ok",`Correcto. Seleccionaste <b>${state.selected.map(i=>COLS[i].name).join(" + ")}</b>. +${earned} puntos.`);
+    renderChart(t.chart,"Así se ven los datos que seleccionaste.",t.dataset,true);
+    $("nextBtn").hidden=false;
+  }else{
+    setFeedback("bad",explainWrongSelection(t));
+  }
+}
+
+function setupOrder(task){
+  const box=$("orderList");
+  box.hidden=false;
+  const mixedSteps=shuffled(task.steps);
+  box.innerHTML="";
+  mixedSteps.forEach(step=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="order-btn";
+    b.dataset.step=step;
+    b.innerHTML=`<span class="n">?</span><span>${esc(step)}</span>`;
+    b.addEventListener("click",()=>checkOrderStep(b,step));
+    box.appendChild(b);
+  });
+}
+
+function checkOrderStep(btn,step){
+  const t=currentTask();
+  const expected=t.steps[state.orderIndex];
+  state.attempts++;
+  if(step===expected){
+    btn.classList.add("ok");
+    btn.disabled=true;
+    btn.querySelector(".n").textContent=state.orderIndex+1;
+    state.orderIndex++;
+    if(state.orderIndex===t.steps.length){
+      t.done=true;
+      const earned=addScore();
+      setFeedback("ok",`Secuencia completa. +${earned} puntos.`);
+      $("nextBtn").hidden=false;
+    }else{
+      setFeedback("ok","Bien. Continúa con el siguiente paso.");
+    }
+  }else{
+    setFeedback("bad","Ese paso no va todavía. Piensa qué debes tener listo antes.");
+  }
+}
+
+function setupMission(task){
+  state.missionPhase=1;
+  paintSheet(true);
+  $("selectionTools").hidden=false;
+  $("sheetNote").textContent="Fase 1 de 2 · Elige las columnas que necesita la pregunta. Si están separadas, conserva la primera con Ctrl. Luego pulsa Comprobar selección.";
+  const check=document.createElement("button");
+  check.type="button";
+  check.className="btn primary";
+  check.id="missionCheck";
+  check.textContent="Comprobar selección";
+  check.style.width="100%";
+  check.style.marginTop="10px";
+  $("selectionTools").after(check);
+  check.addEventListener("click",checkMissionSelection);
+}
+
+function checkMissionSelection(){
+  const t=currentTask();
+  state.attempts++;
+  if(!sameCols(state.selected,t.okCols)){
+    setFeedback("bad",explainWrongSelection(t));
+    return;
+  }
+  state.missionPhase=2;
+  const b=$("missionCheck"); if(b) b.remove();
+  $("selectionTools").hidden=true;
+  $("sheetNote").textContent="Fase 2 de 2 · La selección ya es correcta. Ahora elige el tipo de gráfico que comunica mejor esa información.";
+  clearFeedback();
+  showOptions(t,(chosen,btn)=>checkMissionChart(chosen,btn));
+}
+
+function checkMissionChart(chosen,btn){
+  const t=currentTask();
+  state.attempts++;
+  if(chosen===t.okChart){
+    t.done=true;
+    const earned=addScore();
+    markChoice($("options"),chosen,t.okChart);
+    setFeedback("ok",`Misión completada. Los datos y el tipo de gráfico son coherentes. +${earned} puntos.`);
+    renderChart(t.okChart,"Gráfico construido correctamente.",t.dataset,true);
+    $("nextBtn").hidden=false;
+  }else{
+    btn.classList.add("bad");
+    setFeedback("bad","Los datos están bien, pero ese tipo de gráfico no responde mejor a la misión.");
+  }
+}
+
+function aggregateBrandSales(){
+  const m={};
+  DATA.forEach(r=>m[r[2]]=(m[r[2]]||0)+r[6]);
+  return Object.entries(m).map(([label,value])=>({label,value}));
+}
+function aggregatePayment(){
+  const m={};
+  DATA.forEach(r=>m[r[7]]=(m[r[7]]||0)+1);
+  return Object.entries(m).map(([label,value])=>({label,value}));
+}
+function productSales(){ return DATA.map(r=>({label:r[1],value:r[6]})); }
+function productPrices(){ return DATA.map(r=>({label:r[1],value:r[5]})); }
+function scatterPriceSales(){ return DATA.map(r=>({label:r[1],x:r[5],y:r[6]})); }
+
+function chartData(kind){
+  if(kind==="brandSales") return aggregateBrandSales();
+  if(kind==="paymentCount") return aggregatePayment();
+  if(kind==="productPrices") return productPrices();
+  return productSales();
+}
+
+function svgBar(data,horizontal=false,title=""){
+  const W=760,H=300,pad={l:horizontal?150:52,r:24,t:24,b:horizontal?28:75};
+  const max=Math.max(...data.map(d=>d.value))*1.08;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}">`;
+  s+=`<rect width="${W}" height="${H}" fill="#ffffff"/>`;
+  const palette=["#2ca765","#2f6fae","#a5487f","#d89d37","#6f9f21","#7896ad","#b06c4f","#5c7f69"];
+  if(horizontal){
+    const innerH=H-pad.t-pad.b, gap=8, bh=(innerH-gap*(data.length-1))/data.length;
+    data.forEach((d,i)=>{
+      const y=pad.t+i*(bh+gap), bw=(W-pad.l-pad.r)*(d.value/max);
+      s+=`<text x="${pad.l-8}" y="${y+bh/2+4}" text-anchor="end" font-size="11" fill="#526158">${esc(d.label)}</text>`;
+      s+=`<rect x="${pad.l}" y="${y}" width="${Math.max(1,bw)}" height="${bh}" rx="3" fill="${palette[i%palette.length]}"/>`;
+      s+=`<text x="${pad.l+bw+5}" y="${y+bh/2+4}" font-size="10.5" fill="#526158">${esc(d.value>999?money(d.value):d.value)}</text>`;
+    });
+  }else{
+    const iw=W-pad.l-pad.r, gap=10, bw=(iw-gap*(data.length-1))/data.length;
+    data.forEach((d,i)=>{
+      const h=(H-pad.t-pad.b)*(d.value/max),x=pad.l+i*(bw+gap),y=H-pad.b-h;
+      s+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="3" fill="${palette[i%palette.length]}"/>`;
+      s+=`<text transform="translate(${x+bw/2},${H-pad.b+8}) rotate(42)" text-anchor="start" font-size="10.5" fill="#526158">${esc(d.label)}</text>`;
+      s+=`<text x="${x+bw/2}" y="${Math.max(14,y-5)}" text-anchor="middle" font-size="10" fill="#526158">${esc(d.value>999?money(d.value):d.value)}</text>`;
+    });
+    s+=`<line x1="${pad.l}" y1="${H-pad.b}" x2="${W-pad.r}" y2="${H-pad.b}" stroke="#c8d1cb"/>`;
+  }
+  s+="</svg>";
+  return s;
+}
+
+function svgPie(data,title=""){
+  const W=760,H=300,cx=240,cy=150,r=105;
+  const total=data.reduce((a,d)=>a+d.value,0);
+  const palette=["#2ca765","#2f6fae","#a5487f","#d89d37","#6f9f21","#7896ad","#b06c4f","#5c7f69"];
+  let a0=-Math.PI/2;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}"><rect width="${W}" height="${H}" fill="#fff"/>`;
+  data.forEach((d,i)=>{
+    const a1=a0+(d.value/total)*Math.PI*2;
+    const x1=cx+r*Math.cos(a0),y1=cy+r*Math.sin(a0),x2=cx+r*Math.cos(a1),y2=cy+r*Math.sin(a1);
+    const large=(a1-a0)>Math.PI?1:0;
+    s+=`<path d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z" fill="${palette[i%palette.length]}" stroke="#fff" stroke-width="2"/>`;
+    a0=a1;
+  });
+  data.forEach((d,i)=>{
+    const y=38+i*29;
+    const pct=((d.value/total)*100).toFixed(1).replace(".",",");
+    s+=`<rect x="420" y="${y-11}" width="14" height="14" rx="2" fill="${palette[i%palette.length]}"/>`;
+    s+=`<text x="442" y="${y}" font-size="11.5" fill="#425249">${esc(d.label)} · ${pct}%</text>`;
+  });
+  s+="</svg>";
+  return s;
+}
+
+function svgScatter(data,title=""){
+  const W=760,H=330,p={l:82,r:55,t:32,b:58};
+  const xs=data.map(d=>d.x),ys=data.map(d=>d.y);
+  const xmin=Math.floor(Math.min(...xs)*.90/1000)*1000;
+  const xmax=Math.ceil(Math.max(...xs)*1.06/1000)*1000;
+  const ymin=Math.floor(Math.min(...ys)*.90/1000)*1000;
+  const ymax=Math.ceil(Math.max(...ys)*1.06/1000)*1000;
+  const X=x=>p.l+(x-xmin)/(xmax-xmin)*(W-p.l-p.r);
+  const Y=y=>H-p.b-(y-ymin)/(ymax-ymin)*(H-p.t-p.b);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}"><rect width="${W}" height="${H}" fill="#fff"/>`;
+
+  for(let i=0;i<5;i++){
+    const frac=i/4;
+    const gy=p.t+frac*(H-p.t-p.b);
+    const val=Math.round(ymax-frac*(ymax-ymin));
+    s+=`<line x1="${p.l}" y1="${gy}" x2="${W-p.r}" y2="${gy}" stroke="#e8eeea"/>`;
+    s+=`<text x="${p.l-10}" y="${gy+4}" text-anchor="end" font-size="10" fill="#67786e">${shortMoney(val)}</text>`;
+  }
+  for(let i=0;i<5;i++){
+    const frac=i/4;
+    const gx=p.l+frac*(W-p.l-p.r);
+    const val=Math.round(xmin+frac*(xmax-xmin));
+    s+=`<line x1="${gx}" y1="${p.t}" x2="${gx}" y2="${H-p.b}" stroke="#f0f3f1"/>`;
+    s+=`<text x="${gx}" y="${H-p.b+18}" text-anchor="middle" font-size="10" fill="#67786e">${shortMoney(val)}</text>`;
+  }
+
+  s+=`<line x1="${p.l}" y1="${H-p.b}" x2="${W-p.r}" y2="${H-p.b}" stroke="#aebbb3"/>`;
+  s+=`<line x1="${p.l}" y1="${p.t}" x2="${p.l}" y2="${H-p.b}" stroke="#aebbb3"/>`;
+
+  const offsets=[
+    [8,-9],[8,15],[8,-9],[-8,-10],[8,-10],[-8,16],[-8,-10],[-8,16]
+  ];
+  data.forEach((d,i)=>{
+    const c=["#2ca765","#2f6fae","#a5487f","#d89d37"][i%4];
+    const [dx,dy]=offsets[i%offsets.length];
+    const anchor=dx<0?"end":"start";
+    s+=`<circle cx="${X(d.x)}" cy="${Y(d.y)}" r="6.5" fill="${c}" stroke="#fff" stroke-width="1.5"><title>${esc(d.label)} · Precio ${money(d.x)} · Venta ${money(d.y)}</title></circle>`;
+    s+=`<text x="${X(d.x)+dx}" y="${Y(d.y)+dy}" text-anchor="${anchor}" font-size="9.5" font-weight="700" fill="#425249">${esc(d.label)}</text>`;
+  });
+
+  s+=`<text x="${(p.l+W-p.r)/2}" y="${H-7}" text-anchor="middle" font-size="11" font-weight="700" fill="#425249">Precio unitario →</text>`;
+  s+=`<text transform="translate(18 ${(p.t+H-p.b)/2}) rotate(-90)" text-anchor="middle" font-size="11" font-weight="700" fill="#425249">Venta total →</text>`;
+  s+="</svg>";
+  return s;
+}
+
+function analysisText(type,dataset=null){
+  if(dataset==="brandSales"){
+    const d=aggregateBrandSales().sort((a,b)=>b.value-a.value);
+    return `<b>Lectura del gráfico:</b> ${esc(d[0].label)} reúne el mayor valor vendido, con <b>${money(d[0].value)}</b>. Este gráfico ya suma los registros que pertenecen a una misma marca antes de compararlos.`;
+  }
+  if(dataset==="paymentCount"){
+    const d=aggregatePayment().sort((a,b)=>b.value-a.value);
+    return `<b>Lectura del gráfico:</b> la forma de pago más frecuente es <b>${esc(d[0].label)}</b> con ${d[0].value} ventas, frente a ${d[1].value} de ${esc(d[1].label)}.`;
+  }
+  if(type==="dispersion" || dataset==="scatter"){
+    return `<b>Cómo leerlo:</b> cada punto es un perfume. <b>Derecha = precio unitario más alto.</b> <b>Arriba = venta total más alta.</b><br><br><b>¿Qué muestran estos datos?</b> Cítrico Fresh cuesta ${money(58000)} por unidad, pero llega a ${money(232000)} en venta total porque se vendieron 4 unidades. Luna Intense cuesta ${money(145000)} por unidad, pero su venta total es ${money(145000)} porque se vendió 1 unidad.<br><br><b>Conclusión:</b> aquí un precio más alto no significa automáticamente una venta total más alta; la cantidad vendida también importa.`;
+  }
+  if(dataset==="productPrices"){
+    const d=productPrices().slice().sort((a,b)=>b.value-a.value);
+    return `<b>Lectura del gráfico:</b> el precio unitario más alto es ${esc(d[0].label)} (${money(d[0].value)}) y el más bajo es ${esc(d[d.length-1].label)} (${money(d[d.length-1].value)}).`;
+  }
+  if(type==="circular"){
+    const d=productSales().slice().sort((a,b)=>b.value-a.value);
+    const total=d.reduce((a,x)=>a+x.value,0);
+    const pct=(d[0].value/total*100).toFixed(1).replace(".",",");
+    return `<b>Lectura del gráfico:</b> cada porción representa la participación de un producto dentro de ${money(total)} vendidos en total. La porción más grande corresponde a ${esc(d[0].label)}, con aproximadamente <b>${pct}%</b> del total.`;
+  }
+  const d=productSales().slice().sort((a,b)=>b.value-a.value);
+  return `<b>Lectura del gráfico:</b> al comparar las ventas por producto, ${esc(d[0].label)} presenta el valor más alto (${money(d[0].value)}) y ${esc(d[d.length-1].label)} el más bajo (${money(d[d.length-1].value)}).`;
+}
+
+function showChartAnalysis(type,dataset=null){
+  const box=$("chartAnalysis");
+  box.innerHTML=analysisText(type,dataset);
+  box.hidden=false;
+}
+
+function renderChart(type,subtitle,dataset=null,showAnalysis=false){
+  $("chartPanel").hidden=false;
+  $("chartAnalysis").hidden=true;
+  $("chartAnalysis").innerHTML="";
+  const area=$("chartArea");
+  let title="";
+  if(type==="columnas"){
+    const data=chartData(dataset||"productSales");
+    title=dataset==="brandSales"?"Ventas totales por marca":dataset==="paymentCount"?"Cantidad de ventas por forma de pago":"Venta total por producto";
+    area.innerHTML=svgBar(data,false,title);
+  }else if(type==="barras"){
+    title=dataset==="productPrices"?"Precio unitario por producto":"Venta total por producto";
+    area.innerHTML=svgBar(chartData(dataset||"productSales"),true,title);
+  }else if(type==="circular"){
+    title="Participación de cada producto en el total vendido";
+    area.innerHTML=svgPie(productSales(),title);
+  }else if(type==="dispersion"){
+    title="Relación entre precio unitario y venta total";
+    area.innerHTML=svgScatter(scatterPriceSales(),title);
+  }else{
+    title="Vista previa";
+    area.innerHTML='<div style="color:#66796e;font-size:13px">No hay gráfico para esta respuesta.</div>';
+  }
+  $("chartTitle").textContent=title;
+  $("chartSubtitle").textContent=type==="dispersion"
+    ? "Cada punto representa un perfume. Lee su posición usando los dos ejes."
+    : (subtitle||"");
+  if(showAnalysis) showChartAnalysis(type,dataset);
+}
+
+function setupInterpret(task){
+  renderChart(task.chart,"Observa el gráfico y responde.",task.dataset,false);
+  showTextOptions(task,(chosen,btn)=>{
+    if(task.done) return;
+    state.attempts++;
+    if(chosen===task.ok){
+      task.done=true;
+      const earned=addScore();
+      markChoice($("options"),chosen,task.ok);
+      setFeedback("ok",`Muy bien, ${firstName()}. Primero respondiste; ahora sí puedes leer el análisis del gráfico. +${earned} puntos.`);
+      showChartAnalysis(task.chart,task.dataset);
+      $("nextBtn").hidden=false;
+    }else{
+      btn.classList.add("bad");
+      setFeedback("bad",`${firstName()}, vuelve al gráfico y relaciona la forma visual con su etiqueta y su valor.`);
+    }
+  });
+}
+
+function loadTask(){
+  const t=currentTask();
+  state.selected=[];
+  state.ctrl=false;
+  state.attempts=0;
+  state.orderIndex=0;
+  state.missionPhase=0;
+
+  document.querySelectorAll(".task-temp").forEach(n=>n.remove());
+  const mc=$("missionCheck"); if(mc) mc.remove();
+
+  clearFeedback();
+  $("options").hidden=true;
+  $("options").innerHTML="";
+  $("selectionGuide").hidden=true;
+  $("selectionGuide").innerHTML="";
+  $("orderList").hidden=true;
+  $("orderList").innerHTML="";
+  $("selectionTools").hidden=true;
+  $("chartPanel").hidden=true;
+  $("chartAnalysis").hidden=true;
+  $("chartAnalysis").innerHTML="";
+  $("nextBtn").hidden=true;
+  $("hintBtn").hidden=false;
+  $("ctrlBtn").classList.remove("on");
+  $("ctrlBtn").setAttribute("aria-pressed","false");
+
+  const pos=taskNumberInLevel();
+  $("levelName").textContent=LESSONS[t.level].title;
+  $("stepLabel").textContent=`Reto ${pos.n} de ${pos.total}`;
+  $("question").textContent=t.q;
+  $("instruction").textContent=
+    t.type==="select"
+      ? `${firstName()}, elige exactamente dos columnas. Primero piensa qué dato debe aparecer con nombre y qué número debe mostrarse. Si están separadas, conserva la primera con Ctrl.`
+      : t.type==="mission"
+      ? `${firstName()}, harás dos cosas: primero elegir los datos y después escoger el gráfico. Lee la pregunta antes de tocar columnas.`
+      : t.type==="interpret"
+      ? `${firstName()}, lee primero el título del gráfico y las etiquetas. Luego compara los valores y responde. El análisis aparecerá solo después de acertar.`
+      : t.type==="order"
+      ? `${firstName()}, los cuatro botones aparecen desordenados. Toca primero el paso que harías al comenzar en Excel; luego continúa uno por uno.`
+      : `${firstName()}, lee qué se quiere comunicar y elige el gráfico que mejor responde a esa necesidad.`;
+  $("globalProgress").textContent=`Reto ${state.index+1}/${totalTasks()}`;
+  renderLevelProgress(pos.n,pos.total);
+
+  if(["select","mission"].includes(t.type)){
+    $("selectionGuide").innerHTML=selectionGuideFor(t);
+    $("selectionGuide").hidden=false;
+  }
+
+  paintSheet(["select","mission"].includes(t.type));
+  $("sheetNote").textContent="Usaremos la misma base de datos durante todo el juego.";
+
+  if(t.type==="type") showOptions(t,checkType);
+  if(t.type==="select"){
+    $("selectionTools").hidden=false;
+    updateSelection();
+    const check=document.createElement("button");
+    check.type="button";
+    check.className="btn primary task-temp";
+    check.textContent="Comprobar selección";
+    check.style.width="100%";
+    check.style.marginTop="10px";
+    $("selectionTools").after(check);
+    check.addEventListener("click",checkSelection);
+  }
+  if(t.type==="order") setupOrder(t);
+  if(t.type==="mission") setupMission(t);
+  if(t.type==="interpret") setupInterpret(t);
+}
+
+function openLesson(level,buttonText="Practicar"){
+  const L=LESSONS[level];
+  $("lessonTitle").textContent=L.title;
+  $("lessonSub").textContent=firstName()+", "+L.sub.charAt(0).toLowerCase()+L.sub.slice(1);
+  $("lessonBody").innerHTML=L.rows.map(([ic,a,b])=>`
+    <div class="lesson-row">
+      <div class="lesson-icon">${esc(ic)}</div>
+      <div><b>${esc(a)}</b><p>${b}</p></div>
+    </div>`).join("");
+  $("lessonBtn").textContent=buttonText;
+  $("lessonOverlay").hidden=false;
+}
+
+function nextTask(){
+  if(state.index>=TASKS.length-1){ finish(); return; }
+  const oldLevel=currentLevel();
+  state.index++;
+  const newLevel=currentLevel();
+  if(newLevel!==oldLevel){
+    openLesson(newLevel,"Practicar");
+  }
+  loadTask();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function finish(){
+  const now=new Date();
+  const min=Math.max(1,Math.round((now-state.start)/60000));
+  $("finishTitle").textContent="¡Terminaste, "+state.name.split(" ")[0]+"!";
+  $("finalScore").textContent=state.score+" / "+(TASKS.length*10)+" pts";
+  const rows=[
+    ["Nombre",state.name],
+    ["Fecha",now.toLocaleDateString("es-CO",{day:"2-digit",month:"long",year:"numeric"})],
+    ["Hora de inicio",state.start.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"})],
+    ["Hora de finalización",now.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"})],
+    ["Tiempo empleado",min+" min"],
+    ["Aciertos al primer intento",state.firstTry+" de "+TASKS.length],
+    ["Pistas usadas",state.hints]
+  ];
+  $("finishData").innerHTML=rows.map(([a,b])=>`<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join("");
+  $("finishOverlay").hidden=false;
+}
+
+function resetTaskDone(){
+  TASKS.forEach(t=>{delete t.done;});
+}
+function start(name){
+  resetTaskDone();
+  state={name,index:0,score:0,firstTry:0,hints:0,start:new Date(),selected:[],ctrl:false,attempts:0,orderIndex:0,missionPhase:0};
+  $("player").textContent="Estudiante: "+name;
+  $("score").textContent="⭐ 0 puntos";
+  $("startOverlay").hidden=true;
+  loadTask();
+  openLesson(0,"Practicar");
+}
+
+$("ctrlBtn").addEventListener("click",()=>{
+  state.ctrl=!state.ctrl;
+  updateSelection();
+});
+$("clearBtn").addEventListener("click",()=>{
+  state.selected=[];
+  updateSelection();
+  paintSheet(true);
+});
+$("hintBtn").addEventListener("click",()=>{
+  if(!state) return;
+  state.hints++;
+  setFeedback("hint",`<b>Pista para ${esc(firstName())}:</b> ${esc(currentTask().hint)}`);
+});
+$("nextBtn").addEventListener("click",nextTask);
+$("lessonBtn").addEventListener("click",()=>{$("lessonOverlay").hidden=true;});
+$("printBtn").addEventListener("click",()=>window.print());
+$("againBtn").addEventListener("click",()=>{
+  $("finishOverlay").hidden=true;
+  start(state.name);
+});
+
+$("startBtn").addEventListener("click",()=>{
+  const name=$("nameInput").value.trim().replace(/\s+/g," ");
+  if(name.length<2){
+    $("startErr").textContent="Escribe tu nombre para comenzar.";
+    $("nameInput").focus();
+    return;
+  }
+  $("startErr").textContent="";
+  start(name);
+});
+$("nameInput").addEventListener("keydown",e=>{
+  if(e.key==="Enter") $("startBtn").click();
+});
+
+/* Autoprueba básica de datos */
+(function selfTest(){
+  const total=DATA.reduce((a,r)=>a+r[6],0);
+  const dior=DATA.filter(r=>r[2]==="Dior").reduce((a,r)=>a+r[6],0);
+  const card=DATA.filter(r=>r[7]==="Tarjeta").length;
+  if(total!==1432000 || dior!==510000 || card!==5){
+    throw new Error("Autoprueba de Perfumería Esencia falló.");
+  }
+})();
+
+// La tabla se dibuja cuando el estudiante inicia la actividad.
+})();
+</script>
+</body>
+</html>
 
