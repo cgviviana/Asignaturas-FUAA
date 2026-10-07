@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Perfumería Excel Quest · LaProfeVivy</title>
+<style>
+:root{--green:#217346;--green2:#2ca765;--line:#cfd8d2;--head:#f2f5f3;--text:#20372a;--muted:#66796e;--ok:#e9f8ef;--bad:#fff0f0;--hint:#fff6d9;--ref:#eaf3ff}
+*{box-sizing:border-box} body{margin:0;background:#edf3ef;font-family:Segoe UI,Arial,sans-serif;color:var(--text)}
+.app{width:min(1260px,98vw);margin:12px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+.top{background:linear-gradient(135deg,#17653c,#25a65f);color:white;padding:14px 20px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.top h1{font-size:20px;margin:0} .stats{display:flex;gap:16px;font-size:14px;flex-wrap:wrap}
+main{padding:18px} .screen{display:none} .screen.active{display:block}
+.start{max-width:540px;margin:45px auto;text-align:center} .start h2{font-size:34px;margin:8px 0} .start p{color:var(--muted)}
+input,button{font:inherit} .name{width:100%;padding:14px;border:1px solid #cbd6cf;border-radius:10px;font-size:17px}
+button{border:0;border-radius:10px;padding:12px 15px;font-weight:700;cursor:pointer} .primary{background:var(--green);color:#fff} .secondary{background:#eaf4ee;color:#145f39} .start .primary{width:100%;margin-top:10px}
+.badge{display:inline-block;background:#eaf4ee;color:#17663d;padding:5px 9px;border-radius:7px;font-size:13px;font-weight:800}
+.challenge h2{font-size:24px;margin:8px 0 4px} .challenge p{margin:0;color:var(--muted)} .progress{height:8px;background:#e7eee9;border-radius:20px;overflow:hidden;margin:14px 0 18px} .progress div{height:100%;background:var(--green2)}
+.sheet-wrap{border:1px solid #bcc9c0;border-radius:10px;overflow:auto} .sheet-title{min-width:1360px;padding:9px 12px;background:#e8f1eb;border-bottom:1px solid #c7d2ca;font-weight:800;color:#1e5f3b}
+.formula-bar{min-width:1360px;display:grid;grid-template-columns:82px 44px 1fr;border-bottom:1px solid #c8d1cb} .name-box,.fx,.formula-input{height:40px;border:0;background:white}
+.name-box,.fx{display:flex;align-items:center;justify-content:center;border-right:1px solid #d5ddd8} .name-box{font-weight:700} .fx{font-style:italic;font-weight:800} .formula-input{padding:0 12px;outline:none}
+.formula-note{min-width:1360px;padding:6px 12px;background:#fbfcfb;border-bottom:1px solid #e2e8e4;font-size:12px;color:#66786e}
+.grid{border-collapse:collapse;min-width:1360px;width:100%;table-layout:fixed} .grid col.r{width:44px} .grid col.a{width:100px} .grid col.b{width:180px} .grid col.c{width:135px} .grid col.d{width:120px} .grid col.e{width:90px} .grid col.f{width:130px} .grid col.g{width:125px} .grid col.h{width:140px} .grid col.i{width:120px}.grid col.j{width:110px}
+.grid th,.grid td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);height:36px;padding:5px 7px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grid thead th,.rowhead{background:var(--head);text-align:center;color:#53655b;font-weight:700} .grid td.header{background:#f7faf8;font-weight:800}
+.grid td.target{outline:3px solid #21a366;outline-offset:-3px;background:#f1fbf5;font-weight:700} .grid td.reference{box-shadow:inset 0 0 0 2px #7ba7da;background:var(--ref)}
+.grid td.label{background:#f7faf8;font-weight:800} .indicator-note{white-space:normal!important;line-height:1.25;font-size:12px}
+.challenge-toolbar{display:grid;grid-template-columns:minmax(0,1fr) 128px;gap:18px;align-items:start;margin-bottom:10px}.actions{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:0}.actions button{width:100%;min-width:0;padding:6px 10px;font-size:13px;line-height:1.1}@media (max-width:820px){.challenge-toolbar{grid-template-columns:1fr}.actions{flex-direction:row;gap:10px}.actions button{width:auto;min-width:110px}} .feedback,.hint{display:none;margin-top:14px;padding:14px 16px;border-radius:11px;line-height:1.45}
+.feedback.show,.hint.show{display:block} .feedback.ok{background:var(--ok);color:#145f39} .feedback.bad{background:var(--bad);color:#8b2f2f} .hint{background:var(--hint);color:#6b5517}
+.next{display:none;margin-top:14px} .next.show{display:block} .steps{margin:7px 0 0 20px;padding:0} .finish{text-align:center;padding:45px 10px} .score-big{font-size:58px;font-weight:900;color:var(--green)}
+.modal-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:99;align-items:center;justify-content:center;padding:20px} .modal{width:min(480px,94vw);background:#fff;border-radius:16px;padding:22px;box-shadow:0 18px 55px rgba(0,0,0,.28)} .modal h3{margin:0 0 8px} .modal .icon{font-size:32px}
+footer{text-align:center;padding:12px;border-top:1px solid #edf1ee;color:#75847b;font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><h1>🌸 Perfumería Excel Quest</h1><div class="stats"><span id="player">Jugador: —</span><span id="score">⭐ 0 puntos</span><span id="level">Reto 0/10</span></div></header>
+<main>
+<section id="start" class="screen active start"><div style="font-size:54px">🌷📊</div><h2>Perfumería Esencia</h2><p>Ayuda a analizar las ventas usando fórmulas de Excel.</p><input id="nameInput" class="name" placeholder="Escribe tu nombre"><button class="primary" onclick="startGame()">Comenzar</button></section>
+<section id="game" class="screen">
+<div class="challenge-toolbar">
+  <div class="challenge">
+    <span id="topic" class="badge"></span>
+    <h2 id="question"></h2>
+    <p id="instruction"></p>
+  </div>
+  <div class="actions">
+    <button class="secondary" onclick="showHint(1)">Pista 1</button>
+    <button class="secondary" onclick="showHint(2)">Pista 2</button>
+  </div>
+</div>
+<div id="hint" class="hint"></div>
+<div class="progress"><div id="progress"></div></div>
+<div class="sheet-wrap">
+<div class="sheet-title">Perfumería Esencia · Registro de ventas</div>
+<div class="formula-bar"><div class="name-box" id="cellName">—</div><div class="fx">fx</div><input id="formulaInput" class="formula-input" placeholder="Escribe la fórmula y pulsa Enter"></div>
+<div class="formula-note">La celda verde es donde va la respuesta. Puedes pulsar otras celdas para consultarlas; <b>el destino no cambia</b>.</div>
+<table id="grid" class="grid"><colgroup><col class="r"><col class="a"><col class="b"><col class="c"><col class="d"><col class="e"><col class="f"><col class="g"><col class="h"><col class="i"><col class="j"></colgroup></table>
+</div>
+<div id="feedback" class="feedback"></div>
+</section>
+<section id="finish" class="screen finish"><div style="font-size:58px">🏆</div><h2 id="finishTitle"></h2><div id="finalScore" class="score-big"></div><p>Completaste los indicadores a partir de la tabla de ventas.</p><button class="primary" onclick="restart()">Jugar otra vez</button></section>
+</main><footer>Aprendiendo con @LaProfeVivy</footer>
+</div>
+<div id="modalBack" class="modal-back"><div class="modal"><div class="icon" id="modalIcon">🔎</div><h3 id="modalTitle">Revisa</h3><div id="modalText"></div><button id="modalButton" class="primary" style="width:100%;margin-top:16px" onclick="handleModalAction()">Entendido</button></div></div>
+<script>
+
+const Core = (() => {
+  function stripOuter(s){
+    s = String(s).trim();
+    let changed = true;
+    while(changed && s.startsWith("(") && s.endsWith(")")){
+      changed = false;
+      let depth = 0, wraps = true, quote = null;
+      for(let i=0;i<s.length;i++){
+        const ch=s[i];
+        if(quote){
+          if(ch===quote && s[i-1]!=="\\") quote=null;
+          continue;
+        }
+        if(ch==='"' || ch==="'"){ quote=ch; continue; }
+        if(ch==="(") depth++;
+        else if(ch===")") depth--;
+        if(depth===0 && i<s.length-1){ wraps=false; break; }
+        if(depth<0){ wraps=false; break; }
+      }
+      if(wraps && depth===0){ s=s.slice(1,-1).trim(); changed=true; }
+    }
+    return s;
+  }
+
+  function splitArgs(s){
+    const out=[]; let cur="", depth=0, quote=null;
+    for(let i=0;i<s.length;i++){
+      const ch=s[i];
+      if(quote){
+        cur+=ch;
+        if(ch===quote && s[i-1]!=="\\") quote=null;
+        continue;
+      }
+      if(ch==='"' || ch==="'"){ quote=ch; cur+=ch; continue; }
+      if(ch==="("){ depth++; cur+=ch; continue; }
+      if(ch===")"){ depth--; cur+=ch; continue; }
+      if((ch===";" || ch===",") && depth===0){ out.push(cur.trim()); cur=""; continue; }
+      cur+=ch;
+    }
+    out.push(cur.trim());
+    return out;
+  }
+
+  function parseRange(s){
+    const m=String(s).trim().toUpperCase().match(/^([A-Z]+\d+):([A-Z]+\d+)$/);
+    return m ? {start:m[1], end:m[2]} : null;
+  }
+
+  function unquote(s){
+    s=String(s).trim();
+    if((s.startsWith('"')&&s.endsWith('"')) || (s.startsWith("'")&&s.endsWith("'"))){
+      return s.slice(1,-1);
+    }
+    return s;
+  }
+
+  function parseFormula(formula){
+    const original=String(formula).trim();
+    if(!original.startsWith("=")) return {error:"La fórmula debe comenzar con ="};
+    const raw=original.slice(1).trim();
+    const hadOuterParens = raw.startsWith("(") && raw.endsWith(")") && stripOuter(raw)!==raw;
+    const body=stripOuter(raw);
+
+    let m=body.match(/^([A-Z]+\d+)\s*([+\-*/])\s*([A-Z]+\d+)$/i);
+    if(m){
+      return {
+        kind:"binary",
+        op:m[2],
+        left:m[1].toUpperCase(),
+        right:m[3].toUpperCase(),
+        hadOuterParens,
+        original
+      };
+    }
+
+    m=body.match(/^([A-ZÁÉÍÓÚÑ.]+)\s*\((.*)\)$/i);
+    if(m){
+      const name=m[1].toUpperCase();
+      const args=splitArgs(m[2]);
+      return {kind:"function", name, args, original};
+    }
+
+    return {error:"No reconozco la estructura de esa fórmula"};
+  }
+
+  function getValue(values,ref){
+    return values[String(ref).trim().toUpperCase()];
+  }
+
+  function toNumber(v){
+    if(typeof v==="number") return v;
+    if(v===null || v===undefined || v==="") return NaN;
+    const s=String(v).trim();
+    if(/^-?\d+(?:[.,]\d+)?$/.test(s)) return Number(s.replace(",","."));
+    return NaN;
+  }
+
+  function rangeValues(values,range){
+    const a=range.start.match(/^([A-Z]+)(\d+)$/), b=range.end.match(/^([A-Z]+)(\d+)$/);
+    if(!a || !b || a[1]!==b[1]) throw new Error("Rango no válido");
+    const out=[];
+    for(let r=Number(a[2]); r<=Number(b[2]); r++) out.push(getValue(values,a[1]+r));
+    return out;
+  }
+
+  function evaluate(ast,values){
+    if(ast.error) throw new Error(ast.error);
+
+    if(ast.kind==="binary"){
+      const a=toNumber(getValue(values,ast.left)), b=toNumber(getValue(values,ast.right));
+      if(!Number.isFinite(a)||!Number.isFinite(b)) throw new Error("Una de las celdas no contiene un número");
+      if(ast.op==="+") return a+b;
+      if(ast.op==="-") return a-b;
+      if(ast.op==="*") return a*b;
+      if(ast.op==="/"){
+        if(b===0) throw new Error("No se puede dividir entre cero");
+        return a/b;
+      }
+    }
+
+    if(ast.kind==="function"){
+      const n=ast.name;
+
+      if(n==="SUMA" || n==="SUM"){
+        if(ast.args.length!==1) throw new Error("SUMA necesita un rango");
+        const r=parseRange(ast.args[0]); if(!r) throw new Error("Rango de SUMA no válido");
+        const nums=rangeValues(values,r).map(toNumber).filter(Number.isFinite);
+        if(!nums.length) throw new Error("El rango no contiene números");
+        return nums.reduce((a,b)=>a+b,0);
+      }
+
+      if(n==="PROMEDIO" || n==="AVERAGE"){
+        if(ast.args.length!==1) throw new Error("PROMEDIO necesita un rango");
+        const r=parseRange(ast.args[0]); if(!r) throw new Error("Rango de PROMEDIO no válido");
+        const nums=rangeValues(values,r).map(toNumber).filter(Number.isFinite);
+        if(!nums.length) throw new Error("El rango no contiene números");
+        return nums.reduce((a,b)=>a+b,0)/nums.length;
+      }
+
+      if(n==="MAX" || n==="MAXIMO" || n==="MÁXIMO"){
+        if(ast.args.length!==1) throw new Error("MAX necesita un rango");
+        const r=parseRange(ast.args[0]); if(!r) throw new Error("Rango de MAX no válido");
+        const a=rangeValues(values,r).map(toNumber).filter(Number.isFinite);
+        if(!a.length) throw new Error("El rango no contiene números");
+        return Math.max(...a);
+      }
+
+      if(n==="MIN" || n==="MINIMO" || n==="MÍNIMO"){
+        if(ast.args.length!==1) throw new Error("MIN necesita un rango");
+        const r=parseRange(ast.args[0]); if(!r) throw new Error("Rango de MIN no válido");
+        const a=rangeValues(values,r).map(toNumber).filter(Number.isFinite);
+        if(!a.length) throw new Error("El rango no contiene números");
+        return Math.min(...a);
+      }
+
+      if(n==="CONTARA" || n==="COUNTA"){
+        if(ast.args.length!==1) throw new Error("CONTARA necesita un rango");
+        const r=parseRange(ast.args[0]); if(!r) throw new Error("Rango de CONTARA no válido");
+        return rangeValues(values,r).filter(v=>v!=="" && v!==null && v!==undefined).length;
+      }
+
+      if(n==="CONTAR.BLANCO" || n==="COUNTBLANK"){
+        if(ast.args.length!==1) throw new Error("CONTAR.BLANCO necesita un rango");
+        const r=parseRange(ast.args[0]); if(!r) throw new Error("Rango de CONTAR.BLANCO no válido");
+        return rangeValues(values,r).filter(v=>v==="" || v===null || v===undefined).length;
+      }
+
+      if(n==="CONTAR.SI.CONJUNTO" || n==="COUNTIFS"){
+        if(ast.args.length<4 || ast.args.length%2!==0) throw new Error("CONTAR.SI.CONJUNTO necesita pares rango; criterio");
+        const pares=[];
+        for(let i=0;i<ast.args.length;i+=2){
+          const r=parseRange(ast.args[i]); if(!r) throw new Error("Rango de CONTAR.SI.CONJUNTO no válido");
+          pares.push([rangeValues(values,r),unquote(ast.args[i+1]).trim().toUpperCase()]);
+        }
+        const len=pares[0][0].length;
+        if(!pares.every(p=>p[0].length===len)) throw new Error("Los rangos deben tener el mismo tamaño");
+        let total=0;
+        for(let i=0;i<len;i++){
+          if(pares.every(([arr,c])=>String(arr[i]??"").trim().toUpperCase()===c)) total++;
+        }
+        return total;
+      }
+
+      if(n==="CONTAR.SI" || n==="COUNTIF"){
+        if(ast.args.length!==2) throw new Error("CONTAR.SI necesita rango y criterio");
+        const r=parseRange(ast.args[0]); if(!r) throw new Error("Rango de CONTAR.SI no válido");
+        const criterion=unquote(ast.args[1]).trim().toUpperCase();
+        return rangeValues(values,r).filter(v=>String(v??"").trim().toUpperCase()===criterion).length;
+      }
+
+      if(n==="SUMAR.SI" || n==="SUMIF"){
+        if(ast.args.length!==3) throw new Error("SUMAR.SI necesita rango, criterio y rango_suma");
+        const cr=parseRange(ast.args[0]), sr=parseRange(ast.args[2]);
+        if(!cr || !sr) throw new Error("Rango de SUMAR.SI no válido");
+        const criterion=unquote(ast.args[1]).trim().toUpperCase();
+        const cv=rangeValues(values,cr), sv=rangeValues(values,sr);
+        let total=0;
+        cv.forEach((v,i)=>{
+          if(String(v??"").trim().toUpperCase()===criterion){
+            const num=toNumber(sv[i]);
+            if(Number.isFinite(num)) total+=num;
+          }
+        });
+        return total;
+      }
+
+      if(n==="SUMA.SI"){
+        throw new Error("En Excel en español la función se llama SUMAR.SI, con R");
+      }
+
+      throw new Error("Esa función no está habilitada en este reto");
+    }
+
+    throw new Error("No se pudo calcular la fórmula");
+  }
+
+  function sameRange(arg,start,end){
+    const r=parseRange(arg);
+    return !!r && r.start===start && r.end===end;
+  }
+
+  function validate(challenge,formula,values){
+    const ast=parseFormula(formula);
+    if(ast.error) return {ok:false,message:ast.error};
+
+    let semantic=false, specificMessage="Revisa la fórmula.";
+
+    if(challenge.type==="mul"){
+      if(ast.kind==="binary" && ast.op==="*" &&
+        ((ast.left==="E2"&&ast.right==="F2")||(ast.left==="F2"&&ast.right==="E2"))){
+        if(!ast.hadOuterParens){
+          return {ok:false,message:"La multiplicación está bien, pero en este ejercicio debes encerrar la operación entre paréntesis."};
+        }
+        semantic=true;
+      } else if(ast.kind==="binary" && (ast.left==="G2"||ast.right==="G2")){
+        return {ok:false,message:"G2 es la celda donde va el resultado; no debe usarse dentro de su propia fórmula."};
+      } else {
+        specificMessage="Para calcular la venta debes multiplicar Cantidad (E2) por Precio unitario (F2).";
+      }
+    }
+
+    if(challenge.type==="sum"){
+      semantic = ast.kind==="function" &&
+        (ast.name==="SUMA"||ast.name==="SUM") &&
+        ast.args.length===1 && sameRange(ast.args[0],"G2","G9");
+      specificMessage="El total de ventas debe sumar exactamente el rango G2:G9.";
+    }
+
+    if(challenge.type==="sumif"){
+      if(ast.kind==="function" && ast.name==="SUMA.SI"){
+        return {ok:false,message:"La idea es correcta, pero en Excel en español la función se llama SUMAR.SI, con R."};
+      }
+      semantic = ast.kind==="function" &&
+        (ast.name==="SUMAR.SI"||ast.name==="SUMIF") &&
+        ast.args.length===3 &&
+        sameRange(ast.args[0],"C2","C9") &&
+        unquote(ast.args[1]).trim().toUpperCase()==="DIOR" &&
+        sameRange(ast.args[2],"G2","G9");
+      specificMessage='Usa SUMAR.SI con Marca C2:C9, criterio "Dior" y Venta G2:G9.';
+    }
+
+    if(challenge.type==="seller_count"){
+      semantic = ast.kind==="function" &&
+        (ast.name==="CONTAR.SI"||ast.name==="COUNTIF") &&
+        ast.args.length===2 &&
+        sameRange(ast.args[0],"J2","J9") &&
+        unquote(ast.args[1]).trim().toUpperCase()==="PEPE";
+      specificMessage='Necesitas contar los registros del vendedor Pepe en la columna Vendedor.';
+    }
+
+    if(challenge.type==="average"){
+      semantic = ast.kind==="function" &&
+        (ast.name==="PROMEDIO"||ast.name==="AVERAGE") &&
+        ast.args.length===1 && sameRange(ast.args[0],"F2","F9");
+      specificMessage="El precio promedio debe calcularse sobre F2:F9.";
+    }
+
+    if(challenge.type==="max"){
+      semantic = ast.kind==="function" &&
+        ["MAX","MAXIMO","MÁXIMO"].includes(ast.name) &&
+        ast.args.length===1 && sameRange(ast.args[0],"G2","G9");
+      specificMessage="Busca el valor máximo de G2:G9.";
+    }
+
+    if(challenge.type==="min"){
+      semantic = ast.kind==="function" &&
+        ["MIN","MINIMO","MÍNIMO"].includes(ast.name) &&
+        ast.args.length===1 && sameRange(ast.args[0],"G2","G9");
+      specificMessage="Busca el valor mínimo de G2:G9.";
+    }
+
+    if(challenge.type==="counta"){
+      semantic = ast.kind==="function" &&
+        (ast.name==="CONTARA"||ast.name==="COUNTA") &&
+        ast.args.length===1 && sameRange(ast.args[0],"I2","I9");
+      specificMessage="CONTARA debe revisar I2:I9.";
+    }
+
+    if(challenge.type==="countblank"){
+      semantic = ast.kind==="function" &&
+        (ast.name==="CONTAR.BLANCO"||ast.name==="COUNTBLANK") &&
+        ast.args.length===1 && sameRange(ast.args[0],"I2","I9");
+      specificMessage="CONTAR.BLANCO debe revisar I2:I9.";
+    }
+
+    if(challenge.type==="countifs"){
+      semantic = ast.kind==="function" &&
+        (ast.name==="CONTAR.SI.CONJUNTO"||ast.name==="COUNTIFS") &&
+        ast.args.length===4 &&
+        sameRange(ast.args[0],"C2","C9") &&
+        unquote(ast.args[1]).trim().toUpperCase()==="DIOR" &&
+        sameRange(ast.args[2],"H2","H9") &&
+        unquote(ast.args[3]).trim().toUpperCase()==="TARJETA";
+      specificMessage='Cuenta las filas donde Marca sea "Dior" Y Forma de pago sea "Tarjeta".';
+    }
+
+    if(!semantic) return {ok:false,message:specificMessage,ast};
+
+    let result;
+    try{ result=evaluate(ast,values); }
+    catch(e){ return {ok:false,message:e.message,ast}; }
+
+    if(!Number.isFinite(result) || Math.abs(result-challenge.expected)>0.0001){
+      return {
+        ok:false,
+        message:`La fórmula calcula ${result}, pero este reto debe dar ${challenge.expected}.`,
+        result,
+        ast
+      };
+    }
+
+    return {ok:true,result,ast};
+  }
+
+  return {parseFormula,evaluate,validate,stripOuter,splitArgs,parseRange};
+})();
+
+
+const DATA=[
+["PERF001","Aura Floral","Dior","Floral",2,85000,170000,"Tarjeta","FLOR10","Pepe"],
+["PERF002","Noir Elegance","Chanel","Oriental",1,120000,120000,"Contado","VIP15","Ana"],
+["PERF003","Brisa Rosa","Dior","Floral",3,65000,195000,"Tarjeta","","Pepe"],
+["PERF004","Velvet Night","Carolina Herrera","Oriental",2,99000,198000,"Tarjeta","NOCHE10","Luis"],
+["PERF005","Cítrico Fresh","Chanel","Cítrico",4,58000,232000,"Contado","","Ana"],
+["PERF006","Luna Intense","Dior","Oriental",1,145000,145000,"Tarjeta","DIOR5","Pepe"],
+["PERF007","Jardín Blanco","Lancôme","Floral",2,78000,156000,"Contado","FIEL10","Luis"],
+["PERF008","Ocean Blue","Versace","Fresco",3,72000,216000,"Tarjeta","","Ana"]
+];
+const CHALLENGES=[
+{
+ topic:"Reto 1",
+ question:"¿Cuál es el valor de la venta de Aura Floral?",
+ instruction:"Registra el resultado en G2 usando una fórmula de Excel.",
+ target:"G2",expected:170000,type:"mul",
+ hint1:"Para conocer el valor de una venta debes relacionar la cantidad comprada con el precio de cada unidad.",
+ steps:["Busca la fila de Aura Floral.","Identifica Cantidad y Precio unitario.","Construye la operación con esas dos celdas.","Escribe la fórmula en G2 y pulsa Enter."],
+ indicatorWhy:"Este cálculo todavía no resume todo el negocio: genera el dato Venta de un registro. Ese dato alimenta después indicadores como total de ventas, promedio, máximo o ventas por marca.",
+ resultContext:"La venta de Aura Floral fue de $170.000 COP."
+},
+{
+ topic:"Reto 2",
+ question:"¿Cuánto dinero vendió la perfumería en total?",
+ instruction:"Calcula el indicador y regístralo en F13.",
+ target:"F13",expected:1432000,type:"sum",
+ hint1:"Necesitas reunir en un solo resultado el valor de todas las ventas registradas.",
+ steps:["Ubica la columna Venta.","Identifica todas las filas con ventas.","Piensa qué función reúne varios valores numéricos en un total.","Registra la fórmula en F13."],
+ indicatorWhy:"El total de ventas resume cuánto dinero generaron todas las operaciones registradas. Permite comparar periodos y saber si el negocio está vendiendo más o menos.",
+ resultContext:"Ventas totales: $1.432.000 COP."
+},
+{
+ topic:"Reto 3",
+ question:"¿Cuánto dinero generaron los productos de la marca Dior?",
+ instruction:"Calcula el indicador y regístralo en H13.",
+ target:"H13",expected:510000,type:"sumif",
+ hint1:"Solo debes incluir las ventas de las filas que pertenecen a una marca específica.",
+ steps:["Identifica la columna Marca.","Identifica qué marca quieres analizar.","Ubica la columna Venta.","Usa una función que sume únicamente los registros que cumplen esa condición."],
+ indicatorWhy:"Las ventas por marca permiten saber cuánto aporta una marca al negocio y comparar su desempeño con otras.",
+ resultContext:"Dior generó $510.000 COP en ventas."
+},
+{
+ topic:"Reto 4",
+ question:"¿Cuántas ventas hizo Pepe?",
+ instruction:"Calcula el indicador y regístralo en H12.",
+ target:"H12",expected:3,type:"seller_count",
+ hint1:"Necesitas contar cuántos registros de la tabla corresponden al mismo vendedor.",
+ steps:["Ubica la columna Vendedor.","Busca el nombre Pepe.","Piensa qué función cuenta cuántas veces se cumple una condición.","Registra la fórmula en H12."],
+ indicatorWhy:"Las ventas por vendedor permiten medir actividad comercial y comparar cuántas operaciones realizó cada integrante del equipo.",
+ resultContext:"Pepe realizó 3 ventas."
+},
+{
+ topic:"Reto 5",
+ question:"¿Cuál es el precio unitario promedio de los perfumes registrados?",
+ instruction:"Calcula el indicador y regístralo en F12.",
+ target:"F12",expected:90250,type:"average",
+ hint1:"Buscas un valor que represente el nivel general de los precios unitarios.",
+ steps:["Ubica Precio unitario.","Identifica todas las filas con precios.","Piensa qué función obtiene un valor medio.","Registra la fórmula en F12."],
+ indicatorWhy:"El precio promedio resume el nivel de precios del catálogo y permite comparar si el portafolio se mueve hacia productos más económicos o más costosos.",
+ resultContext:"Precio unitario promedio: $90.250 COP."
+},
+{
+ topic:"Reto 6",
+ question:"¿Cuál fue el valor de la venta más alta registrada?",
+ instruction:"Calcula el indicador y regístralo en F14.",
+ target:"F14",expected:232000,type:"max",
+ hint1:"Debes encontrar el valor más grande dentro de la columna Venta.",
+ steps:["Ubica la columna Venta.","Identifica el rango completo de ventas.","Piensa qué función devuelve el mayor valor de un conjunto.","Registra la fórmula en F14."],
+ indicatorWhy:"La venta más alta muestra el mayor valor alcanzado por una transacción individual. Sirve para identificar compras de alto valor y comparar el tamaño de las operaciones.",
+ resultContext:"La venta más alta fue de $232.000 COP y corresponde a Cítrico Fresh."
+},
+{
+ topic:"Reto 7",
+ question:"¿Cuál fue el valor de la venta más baja registrada?",
+ instruction:"Calcula el indicador y regístralo en H14.",
+ target:"H14",expected:120000,type:"min",
+ hint1:"Debes encontrar el valor más pequeño dentro de la columna Venta.",
+ steps:["Ubica la columna Venta.","Identifica el rango completo de ventas.","Piensa qué función devuelve el menor valor de un conjunto.","Registra la fórmula en H14."],
+ indicatorWhy:"La venta más baja muestra el menor valor de una transacción. Junto con la venta más alta ayuda a entender el rango de valores de las compras.",
+ resultContext:"La venta más baja fue de $120.000 COP y corresponde a Noir Elegance."
+},
+{
+ topic:"Reto 8",
+ question:"¿Cuántas ventas usaron un cupón de descuento?",
+ instruction:"Calcula el indicador y regístralo en F15.",
+ target:"F15",expected:5,type:"counta",
+ hint1:"Algunas compras tienen un cupón escrito y otras no. Necesitas contar cuántos registros contienen información en esa columna.",
+ steps:["Ubica la columna Cupón.","Observa qué filas tienen algún código.","Piensa qué función cuenta celdas que contienen información.","Registra la fórmula en F15."],
+ indicatorWhy:"Las ventas con cupón muestran qué tanto se están usando las promociones. Sirve para evaluar la adopción de campañas de descuento.",
+ resultContext:"5 ventas utilizaron un cupón de descuento."
+},
+{
+ topic:"Reto 9",
+ question:"¿Cuántas ventas se hicieron sin cupón de descuento?",
+ instruction:"Calcula el indicador y regístralo en H15.",
+ target:"H15",expected:3,type:"countblank",
+ hint1:"En la columna Cupón, las compras que no usaron promoción aparecen con la celda vacía.",
+ steps:["Ubica la columna Cupón.","Identifica los registros vacíos.","Piensa qué función cuenta específicamente celdas vacías.","Registra la fórmula en H15."],
+ indicatorWhy:"Las ventas sin cupón permiten comparar cuánto se vende sin depender de promociones y contrastarlo con las ventas incentivadas por descuentos.",
+ resultContext:"3 ventas se realizaron sin cupón."
+},
+{
+ topic:"Reto 10",
+ question:"¿Cuántas ventas de Dior fueron pagadas con tarjeta?",
+ instruction:"Calcula el indicador y regístralo en F16.",
+ target:"F16",expected:3,type:"countifs",
+ hint1:"Cada registro debe cumplir dos condiciones al mismo tiempo: una marca determinada y una forma de pago determinada.",
+ steps:["Identifica la columna Marca y el criterio Dior.","Identifica la columna Forma de pago y el criterio Tarjeta.","Piensa qué función permite contar registros que cumplen varias condiciones simultáneamente.","Registra la fórmula en F16."],
+ indicatorWhy:"Este indicador cruza dos características del negocio. Permite segmentar las ventas y descubrir, por ejemplo, cómo se paga una marca específica.",
+ resultContext:"3 ventas de Dior fueron pagadas con tarjeta."
+}
+];
+
+let playerName="",idx=0,points=0,attempts=0,values={},formulas={},referenceCell="";
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active")}
+function fmt(v){return typeof v==="number"?v.toLocaleString("es-CO",{maximumFractionDigits:2}):(v??"")}
+function initValues(){
+ values={}; formulas={};
+ DATA.forEach((r,i)=>{const row=i+2;["A","B","C","D","E","F","G","H","I","J"].forEach((c,j)=>values[c+row]=r[j])});
+ values.G2="";
+ ["F12","H12","F13","H13","F14","H14","F15","H15","F16"].forEach(a=>values[a]="");
+}
+function renderGrid(){
+ const letters=["A","B","C","D","E","F","G","H","I","J"],headers=["Código","Producto","Marca","Categoría","Cantidad","Precio unitario","Venta","Forma de pago","Cupón","Vendedor"];
+ const t=$("grid"),cg=t.querySelector("colgroup")?.outerHTML||""; t.innerHTML=cg;
+ const thead=document.createElement("thead"),hr=document.createElement("tr"),corner=document.createElement("th");corner.className="rowhead";hr.appendChild(corner);
+ letters.forEach(l=>{const th=document.createElement("th");th.textContent=l;hr.appendChild(th)});thead.appendChild(hr);t.appendChild(thead);
+ const tb=document.createElement("tbody");
+ const hrow=document.createElement("tr"),rh=document.createElement("th");rh.className="rowhead";rh.textContent="1";hrow.appendChild(rh);
+ headers.forEach((h,i)=>{const td=document.createElement("td");td.className="header";td.textContent=h;td.dataset.addr=letters[i]+"1";hrow.appendChild(td)});tb.appendChild(hrow);
+
+ for(let row=2;row<=17;row++){
+  const tr=document.createElement("tr"),rn=document.createElement("th");rn.className="rowhead";rn.textContent=row;tr.appendChild(rn);
+  for(let ci=0;ci<letters.length;ci++){
+   const letter=letters[ci],addr=letter+row,td=document.createElement("td");td.dataset.addr=addr;
+   if(row<=9) td.textContent=fmt(values[addr]);
+   else if(row===11 && letter==="E"){td.colSpan=5;td.className="label";td.textContent="Indicadores de la perfumería";tr.appendChild(td);break}
+   else if(row===12){
+     if(letter==="E"){td.textContent="Precio promedio";td.className="label"} if(letter==="F")td.textContent=fmt(values.F12);
+     if(letter==="G"){td.textContent="Ventas de Pepe";td.className="label"} if(letter==="H")td.textContent=fmt(values.H12);
+   } else if(row===13){
+     if(letter==="E"){td.textContent="Total ventas";td.className="label"} if(letter==="F")td.textContent=fmt(values.F13);
+     if(letter==="G"){td.textContent="Ventas Dior";td.className="label"} if(letter==="H")td.textContent=fmt(values.H13);
+   } else if(row===14){
+     if(letter==="E"){td.textContent="Venta más alta (COP)";td.className="label"} if(letter==="F")td.textContent=fmt(values.F14);
+     if(letter==="G"){td.textContent="Venta más baja (COP)";td.className="label"} if(letter==="H")td.textContent=fmt(values.H14);
+   } else if(row===15){
+     if(letter==="E"){td.textContent="Ventas con cupón";td.className="label"} if(letter==="F")td.textContent=fmt(values.F15);
+     if(letter==="G"){td.textContent="Ventas sin cupón";td.className="label"} if(letter==="H")td.textContent=fmt(values.H15);
+   } else if(row===16){
+     if(letter==="E"){td.textContent="Dior + Tarjeta";td.className="label"} if(letter==="F")td.textContent=fmt(values.F16);
+   } else if(row===17 && letter==="E"){
+     td.colSpan=5;td.className="indicator-note";td.textContent="Un indicador resume un aspecto del negocio para poder interpretarlo, compararlo y tomar decisiones. Cada reto explicará por qué el resultado obtenido funciona como indicador.";tr.appendChild(td);break;
+   }
+   if(addr===CHALLENGES[idx]?.target)td.classList.add("target");
+   if(addr===referenceCell && addr!==CHALLENGES[idx]?.target)td.classList.add("reference");
+   td.onclick=()=>consultCell(addr);tr.appendChild(td);
+  }
+  tb.appendChild(tr);
+ }
+ t.appendChild(tb);
+}
+function consultCell(addr){
+ referenceCell=addr;
+ renderGrid();
+ $("cellName").textContent=CHALLENGES[idx].target;
+ $("formulaInput").focus();
+}
+let modalAction="close";
+function modal(title,text,action="close",buttonText="Entendido",icon="🔎"){
+ $("modalTitle").textContent=title;
+ $("modalText").innerHTML=text;
+ $("modalIcon").textContent=icon;
+ $("modalButton").textContent=buttonText;
+ modalAction=action;
+ $("modalBack").style.display="flex";
+}
+function closeModal(){
+ $("modalBack").style.display="none";
+ $("formulaInput").focus();
+}
+function handleModalAction(){
+ $("modalBack").style.display="none";
+ if(modalAction==="next"){nextChallenge();return;}
+ closeModal();
+}
+function loadChallenge(){
+ attempts=0;referenceCell="";const c=CHALLENGES[idx];
+ $("topic").textContent=c.topic;$("question").textContent=c.question;$("instruction").textContent=c.instruction;
+ $("level").textContent=`Reto ${idx+1}/${CHALLENGES.length}`;$("progress").style.width=`${idx/CHALLENGES.length*100}%`;
+ $("cellName").textContent=c.target;$("formulaInput").value=formulas[c.target]||"";
+ $("hint").className="hint";$("feedback").className="feedback";
+ renderGrid();$("formulaInput").focus();
+}
+function submitFormula(){
+ const c=CHALLENGES[idx],formula=$("formulaInput").value.trim(),fb=$("feedback");
+ if(!formula){modal("Falta la fórmula",`${playerName}, escribe una fórmula en la barra fx.`);return}
+ const checked=Core.validate(c,formula,values);
+ attempts++;
+ if(!checked.ok){
+   fb.className="feedback";
+   modal("Revisa la fórmula",checked.message,"close","Entendido","🔎");
+   return;
+ }
+ formulas[c.target]=formula;
+ values[c.target]=checked.result;
+ renderGrid();
+
+ const earned=attempts===1?100:attempts===2?80:60;
+ points+=earned;
+ $("score").textContent=`⭐ ${points} puntos`;
+
+ const body=`
+   <div style="font-size:18px;margin-bottom:10px"><b>${c.resultContext}</b></div>
+   <div style="background:#eef8f2;padding:12px;border-radius:10px;margin-top:10px">
+     <b>¿Por qué es un indicador?</b><br>${c.indicatorWhy}
+   </div>
+   <div style="margin-top:10px">⭐ +${earned} puntos</div>
+ `;
+ const last=idx===CHALLENGES.length-1;
+ modal(`¡Correcto, ${playerName}!`,body,"next",last?"Ver resultado":"Siguiente reto →","✅");
+}
+function showHint(n){const c=CHALLENGES[idx],box=$("hint");box.className="hint show";box.innerHTML=n===1?`<b>💡 ${playerName}, piensa así:</b><br>${c.hint1}`:`<b>🪜 ${playerName}, paso a paso:</b><ol class="steps">${c.steps.map(s=>`<li>${s}</li>`).join("")}</ol>`}
+function startGame(){const n=$("nameInput").value.trim();if(!n){$("nameInput").focus();return}playerName=n;idx=0;points=0;initValues();$("player").textContent="Jugador: "+n;$("score").textContent="⭐ 0 puntos";show("game");loadChallenge()}
+function nextChallenge(){idx++;if(idx>=CHALLENGES.length){$("finishTitle").textContent=`¡Terminaste, ${playerName}!`;$("finalScore").textContent=points+" pts";show("finish")}else loadChallenge()}
+function restart(){idx=0;points=0;initValues();$("score").textContent="⭐ 0 puntos";show("game");loadChallenge()}
+$("formulaInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();submitFormula()}});
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")startGame()});
+
+// AUTOPRUEBA DE LOS 10 RETOS
+(function selfTest(){
+ initValues();
+ const pruebas=[
+  [0,"=(E2*F2)",170000],
+  [1,"=SUMA(G2:G9)",1432000],
+  [2,'=SUMAR.SI(C2:C9;"Dior";G2:G9)',510000],
+  [3,'=CONTAR.SI(J2:J9;"Pepe")',3],
+  [4,"=PROMEDIO(F2:F9)",90250],
+  [5,"=MAX(G2:G9)",232000],
+  [6,"=MIN(G2:G9)",120000],
+  [7,"=CONTARA(I2:I9)",5],
+  [8,"=CONTAR.BLANCO(I2:I9)",3],
+  [9,'=CONTAR.SI.CONJUNTO(C2:C9;"Dior";H2:H9;"Tarjeta")',3]
+ ];
+ for(const [i,f,esperado] of pruebas){
+   const r=Core.validate(CHALLENGES[i],f,values);
+   if(!r.ok || Math.abs(r.result-esperado)>0.0001) throw new Error(`Autoprueba falló en reto ${i+1}: ${f}`);
+   if(i===0) values.G2=r.result;
+ }
+ initValues();
+})();
+
+</script>
+</body></html>
