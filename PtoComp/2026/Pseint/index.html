@@ -1,1 +1,916 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>PSeInt con Vivy</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: menú de temas a la izquierda; a la derecha la lección o el entorno de trabajo (editor + herramientas + aviso + consola) */
+:root{
+  --paper:#FFFBF2; --white:#FFFFFF; --ink:#1E1A17; --muted:#6B625B;
+  --yellow:#FFD166; --yellow-soft:#FFF3CC; --teal:#14D6A5; --teal-soft:#DDF8EE;
+  --sky:#E2F6FC; --title:#13A3C4; --brown:#B4644A; --red:#E0533D; --red-soft:#FFE4DE;
+  --console:#1B1B1D; --console-ink:#ECECEC; --prompt:#0B2236;
+  --kw:#1D4ED8; --ty:#0F8F84; --str:#C62828; --nm:#8E3FB0; --op:#B4644A;
+  --f:"Nunito","Segoe UI",system-ui,sans-serif; --mono:"JetBrains Mono",Consolas,ui-monospace,monospace;
+  --sh:4px 4px 0 var(--ink); color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.5;
+  background-image:radial-gradient(rgba(180,100,74,.13) 1.2px,transparent 1.2px);background-size:22px 22px;
+  padding-left:max(14px, env(safe-area-inset-left, 0px));padding-right:max(14px, env(safe-area-inset-right, 0px));padding-block:12px 24px}
+button{font:inherit;cursor:pointer;color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--title);outline-offset:2px}
+h1,h2,h3{margin:0;line-height:1.2;text-wrap:balance}
+p{margin:0}
+code{font-family:var(--mono);font-size:.9em}
+.page{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{background:var(--white);border:2.5px solid var(--ink);border-radius:999px;padding:8px 16px 8px 20px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh)}
+.logo{font-weight:900;font-size:1.25rem;letter-spacing:-.01em}
+.logo span{color:var(--brown)}
+.chip-ps{border:2px solid var(--title);color:var(--title);background:var(--sky);border-radius:999px;padding:2px 12px;font-weight:800;font-size:.85rem}
+.sp{flex:1}
+.prog{font-weight:800;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.b{border:2.5px solid var(--ink);background:var(--white);border-radius:12px;padding:7px 14px;font-weight:800;box-shadow:3px 3px 0 var(--ink);transition:transform .08s, box-shadow .08s;white-space:nowrap}
+.b:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.b:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.b.y{background:var(--yellow)} .b.t{background:var(--teal)}
+.b:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:3px 3px 0 var(--ink)}
+.b.sm{font-size:.85rem;padding:5px 11px}
 
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+.side{background:var(--white);border:2.5px solid var(--ink);border-radius:18px;box-shadow:var(--sh);padding:14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+@media (max-width:900px){.side{position:static;max-height:none}}
+.side h2{font-size:1.1rem;color:var(--title);font-weight:900;padding-bottom:8px;border-bottom:2.5px dashed var(--ink);margin-bottom:4px}
+.grp{font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:var(--brown);margin-top:8px}
+.tp{display:flex;align-items:center;gap:8px;text-align:left;border:2.5px solid var(--ink);background:var(--white);border-radius:12px;padding:6px 9px;font-weight:800;font-size:.88rem;width:100%}
+.tp:hover{background:var(--yellow-soft)}
+.tp.on{background:var(--yellow);box-shadow:3px 3px 0 var(--ink)}
+.tp .n{width:24px;height:24px;border-radius:7px;border:2px solid var(--ink);display:grid;place-items:center;font-size:.75rem;flex:0 0 auto;background:var(--white)}
+.tp .c{margin-left:auto;font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.tp .c.full{color:var(--ty)}
+@media (max-width:900px){.tps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}.grp{display:none}}
+.tps{display:flex;flex-direction:column;gap:6px}
+
+.main{display:flex;flex-direction:column;gap:18px;min-width:0}
+.card{background:var(--white);border:2.5px solid var(--ink);border-radius:20px;box-shadow:6px 6px 0 var(--ink);overflow:hidden}
+.head{background:var(--yellow);border-bottom:2.5px solid var(--ink);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.head .lab{font-weight:800;color:#5B4A1F}
+.pill{background:var(--white);border:2.5px solid var(--ink);border-radius:12px;padding:4px 14px;font-weight:800}
+
+/* lección */
+.lesson{padding:20px 22px 22px;display:flex;flex-direction:column;gap:16px}
+.lesson h1{font-size:clamp(1.6rem,4.5vw,2.3rem);font-weight:900;letter-spacing:-.02em}
+.lesson .intro{display:flex;flex-direction:column;gap:8px;max-width:68ch;font-size:1.02rem}
+.lbl{font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.keys{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);border-top:2.5px dashed var(--ink)}
+.keys>*{padding:9px 0;border-bottom:1.5px solid #EDE5DA}
+.keys .k{font-weight:900;padding-right:18px}
+.keys .k code{background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:2px 8px;white-space:nowrap;display:inline-block}
+@media (max-width:560px){.keys{grid-template-columns:minmax(0,1fr)}.keys .k{border-bottom:0;padding-bottom:0}}
+.sample{font-family:var(--mono);font-size:.85rem;background:var(--white);border:2.5px solid var(--ink);border-radius:14px;overflow-x:auto;padding:10px 0}
+.exlist{display:flex;gap:10px;flex-wrap:wrap}
+.exb{border:2.5px solid var(--ink);background:var(--sky);border-radius:14px;padding:8px 12px;text-align:left;font-weight:800;min-width:150px;flex:1 1 150px;box-shadow:3px 3px 0 var(--ink)}
+.exb small{display:block;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.exb .st{color:#D9A400;letter-spacing:1px}
+
+/* entorno */
+.lv{display:flex;gap:6px}
+.lvb{width:32px;height:32px;border-radius:10px;border:2.5px solid var(--ink);background:var(--white);font-weight:900;font-size:.85rem}
+.lvb.on{background:var(--ink);color:var(--yellow)}
+.lvb.done{background:var(--teal)}
+.aviso{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;padding:12px 16px;border-bottom:2.5px solid var(--ink);background:var(--white);align-items:start}
+.aviso .paso{background:var(--ink);color:var(--yellow);border-radius:12px;padding:6px 10px;font-weight:900;font-size:.82rem;text-align:center;line-height:1.15;min-width:66px}
+.aviso .paso b{display:block;font-size:1.2rem}
+.aviso .goal{font-weight:800;font-size:1.02rem}
+.aviso .fb{font-size:.95rem;border-radius:10px;padding:6px 10px;background:var(--paper)}
+.aviso .fb.ok{background:var(--teal-soft)} .aviso .fb.bad{background:var(--yellow-soft)} .aviso .fb.tip{background:var(--yellow-soft)}
+.aviso .fb b{margin-right:4px}
+.aviso .enun{grid-column:1 / -1;font-size:.88rem;color:var(--muted);border-top:1.5px dashed #D9CFC2;padding-top:6px;margin-top:4px}
+.aviso .tools{grid-column:1 / -1;display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.wsg{display:grid;grid-template-columns:minmax(0,1fr) 280px}
+@media (max-width:760px){.wsg{grid-template-columns:minmax(0,1fr)}}
+.code{font-family:var(--mono);font-size:.86rem;padding:10px 0;max-height:58vh;min-height:260px;overflow:auto;background:var(--white)}
+@media (max-width:600px){.code{font-size:.78rem;max-height:46vh;min-height:180px}}
+.ln{display:grid;grid-template-columns:40px 1fr;padding:1px 12px 1px 0;min-height:24px;align-items:center}
+.ln .n{color:#9A9A9A;text-align:right;padding-right:14px;user-select:none;font-variant-numeric:tabular-nums}
+.ln .t{white-space:pre}
+.ln.new{animation:flash .9s ease}
+.ln.cur{background:var(--yellow-soft);box-shadow:inset 4px 0 0 var(--yellow)}
+@keyframes flash{from{background:var(--teal-soft)}to{background:transparent}}
+.kw{color:var(--kw)}.ty{color:var(--ty)}.str{color:var(--str)}.nm{color:var(--nm)}.op{color:var(--op);font-weight:600}
+.drop{border:2.5px dashed #C9A23E;background:var(--yellow-soft);border-radius:10px;padding:4px 12px;font-family:var(--f);font-weight:700;color:#7A6320;font-size:.85rem;transition:background .15s,border-color .15s}
+.drop.over{background:var(--teal-soft);border-color:var(--teal);color:var(--ink)}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.tools-p{background:var(--sky);border-left:2.5px solid var(--ink);padding:12px;display:flex;flex-direction:column;gap:10px}
+@media (max-width:760px){.tools-p{border-left:0;border-top:2.5px solid var(--ink)}}
+.tools-p h3{font-size:.95rem;font-weight:900;color:var(--title)}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:760px){.tg{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
+.tool{display:flex;align-items:center;gap:8px;border:2.5px solid var(--ink);background:var(--white);border-radius:12px;padding:6px 8px;font-weight:800;font-size:.85rem;text-align:left;box-shadow:2px 2px 0 var(--ink)}
+.tool .ic{width:28px;height:28px;flex:0 0 auto;border-radius:8px;border:2px solid var(--ink);background:var(--yellow);display:grid;place-items:center;font-size:.78rem;font-weight:900}
+.tool:hover{transform:translate(-1px,-1px)}
+.tool.sel{background:var(--ink);color:var(--white)}
+
+.tool.glow,.opt.glow{box-shadow:0 0 0 4px var(--teal)}
+.tool:disabled{cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;background:var(--white);border:2.5px solid var(--ink);border-radius:12px;padding:8px 10px;font-family:var(--mono);font-size:.8rem;box-shadow:2px 2px 0 var(--ink);touch-action:none;user-select:none;overflow-x:auto;white-space:nowrap}
+.opt.txt{font-family:var(--f);font-weight:700;font-size:.9rem;white-space:normal}
+.opt:hover{transform:translate(-1px,-1px)}
+
+.blank{font:inherit;font-family:var(--mono);border:0;border-bottom:2px dashed #9A8F84;background:#F4EFE7;color:#8A7F74;font-style:italic;padding:0 6px;border-radius:4px 4px 0 0;cursor:pointer}
+.blank.act{background:var(--yellow);color:var(--ink);border-bottom-color:var(--ink);font-style:normal;font-weight:600}
+.blank.ok{background:transparent;border-bottom:0;font-style:normal;color:inherit;padding:0;cursor:default}
+.ac{margin:4px 0 8px 40px;display:flex;flex-direction:column;gap:6px;max-width:520px}
+.ac .lbl{font-family:var(--f)}
+.aco{text-align:left;font-family:var(--mono);font-size:.82rem;background:var(--white);border:2.5px solid var(--ink);border-radius:10px;padding:6px 10px;box-shadow:2px 2px 0 var(--ink);overflow-x:auto;white-space:pre}
+.aco:hover{background:var(--yellow-soft)}
+.aco{color:var(--ink)}
+.aco.glow{box-shadow:0 0 0 4px var(--teal)}
+.ln.edit{background:#FFFCEF}
+.waitln{color:#9A8F84;font-family:var(--f);font-weight:700;font-style:italic}
+.endc{align-items:center;text-align:center}
+.endc .logro{font-size:1.15rem;font-weight:800}
+.endc .medal{width:64px;height:64px;border-radius:50%;background:var(--yellow);border:2.5px solid var(--ink);display:grid;place-items:center;font-size:1.8rem;box-shadow:3px 3px 0 var(--ink)}
+.blank .car{display:inline-block;width:16px;height:16px;margin-left:4px;vertical-align:-3px;border:1.5px solid currentColor;border-radius:4px;background:var(--white);color:var(--ink)}
+.blank .car svg{display:block;width:100%;height:100%}
+.blank.open .car svg{transform:rotate(180deg)}
+.typebtn{font-family:var(--mono);font-size:.85rem;border:2.5px solid var(--ink);background:var(--white);border-radius:10px;padding:3px 10px;box-shadow:2px 2px 0 var(--ink);margin-left:8px}
+.typebtn:hover{background:var(--yellow-soft)}
+.typebtn.glow{box-shadow:0 0 0 4px var(--teal)}
+.guide{display:flex;gap:10px;align-items:flex-end;margin:10px 14px 10px 40px;font-family:var(--f);max-width:620px}
+.guide .owl{width:64px;height:68px;flex:0 0 auto}
+.bub{position:relative;border:2.5px solid var(--ink);border-radius:16px;padding:8px 12px;background:var(--white);font-weight:600;font-size:.92rem;box-shadow:3px 3px 0 var(--ink);white-space:normal}
+.bub::before{content:"";position:absolute;left:-11px;bottom:14px;border:8px solid transparent;border-right-color:var(--ink)}
+.guide.ok .bub{background:var(--teal-soft)} .guide.bad .bub{background:var(--sky)} .guide.tip .bub{background:var(--yellow-soft)}
+.bub b{margin-right:3px}
+.gbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,251,242,.96);border-top:2.5px solid var(--ink);padding:8px max(14px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));box-shadow:0 -4px 0 rgba(30,26,23,.08)}
+.gin{max-width:1240px;margin:0 auto;display:flex;align-items:flex-end;gap:12px}
+.gin .owl{width:64px;height:68px;flex:0 0 auto}
+.gin .bub{flex:1;min-width:0;max-height:7.5em;overflow:auto}
+.bub.ok{background:var(--teal-soft)} .bub.bad{background:var(--sky)} .bub.tip{background:var(--yellow-soft)}
+body.hasguide{padding-bottom:150px}
+@media (max-width:600px){.gin .owl{width:48px;height:51px}.gin .bub{font-size:.86rem}body.hasguide{padding-bottom:170px}}
+.ghost{position:fixed;z-index:60;pointer-events:none;transform:rotate(-2deg);opacity:.95;width:auto!important}
+.steps-l{padding:12px 16px;display:flex;flex-direction:column;gap:8px;font-weight:700}
+.steps-l .s{display:flex;gap:10px;align-items:center}
+.steps-l .s b{width:28px;height:28px;border-radius:8px;border:2px solid var(--ink);display:grid;place-items:center;background:var(--yellow);flex:0 0 auto}
+.flow{padding:16px;display:flex;flex-direction:column;align-items:center;gap:0}
+.arrow{width:2.5px;height:20px;background:var(--ink);position:relative}
+.arrow::after{content:"";position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.frow{display:flex;align-items:center;gap:8px;max-width:100%}
+.brt{font-weight:900;font-size:.8rem;border:2px solid var(--ink);border-radius:8px;padding:0 6px;background:var(--white)}
+.shp{min-width:150px;max-width:280px;min-height:44px;display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:.8rem;padding:8px 16px;border:2.5px solid var(--ink);background:var(--white)}
+.shp.T{border-radius:999px;background:var(--teal-soft)}
+.shp.ES{transform:skewX(-14deg);background:var(--sky)}
+.shp.ES>span{transform:skewX(14deg)}
+.shp.P{background:var(--white)}
+.shp.D{border:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 80' preserveAspectRatio='none'%3E%3Cpolygon points='100,2 198,40 100,78 2,40' fill='%23FFF3CC' stroke='%231E1A17' stroke-width='2.5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center/100% 100% no-repeat;min-height:78px;min-width:240px;padding:10px 56px}
+.shp.slot{border-style:dashed;border-color:#C9A23E;background:var(--yellow-soft);font-family:var(--f);font-weight:700;color:#7A6320;transform:none}
+.msym{display:block;width:52px;height:30px}
+.flow.center{align-items:center;width:fit-content;max-width:100%;padding:4px 0}
+
+/* consola */
+.con{padding:16px;display:flex;flex-direction:column;gap:12px}
+.con-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:2.5px dashed var(--ink);padding-bottom:8px}
+.con-h h3{color:var(--title);font-weight:900;font-size:1.1rem}
+.con-h span{font-size:.82rem;color:var(--muted)}
+.screen{background:var(--console);color:var(--console-ink);border-radius:14px;padding:14px;font-family:var(--mono);font-size:.85rem;min-height:120px;max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.screen .in{color:#7DD3FC}.screen .dim{color:#7C7C84}.screen .er{color:#FF9B8A}
+.ask{background:var(--prompt);border:2.5px solid #2CC4E8;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.ask .q{display:flex;justify-content:space-between;color:#5EE0FF;font-weight:800;font-size:.9rem}
+.ask .q small{color:#7C93A8;font-family:var(--mono);font-weight:400}
+.ask .r{display:flex;gap:8px;align-items:center}
+.ask .r b{color:#5EE0FF;font-family:var(--mono)}
+.ask input{flex:1;min-width:0;background:#0F2D45;border:2px solid #2CC4E8;border-radius:10px;color:#fff;font-family:var(--mono);font-size:.95rem;padding:8px 10px}
+.ask .err{color:#FFB4A6;font-size:.85rem;font-weight:700}
+.sug{display:flex;gap:6px;flex-wrap:wrap;align-items:center;color:#9FB6C9;font-size:.8rem;font-weight:700}
+.sug button{border:1.5px solid #2CC4E8;background:transparent;color:#BFF3FF;border-radius:999px;padding:2px 12px;font-family:var(--mono);font-size:.82rem}
+.vars{display:flex;gap:8px;flex-wrap:wrap}
+.var{font-family:var(--mono);font-size:.82rem;border:2px solid var(--ink);border-radius:10px;padding:3px 10px;background:var(--paper);font-variant-numeric:tabular-nums}
+.var.chg{background:var(--teal);font-weight:600}
+
+.veil{position:fixed;inset:0;background:rgba(30,26,23,.45);display:grid;place-items:center;z-index:50;
+  padding:max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));overflow:auto}
+.endc{max-width:560px;width:100%;padding:22px;display:flex;flex-direction:column;gap:12px;animation:up .35s ease}
+@keyframes up{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.endc h2{font-size:1.6rem;font-weight:900}
+.bigst{font-size:2.4rem;letter-spacing:6px;color:#E5DED5}
+.bigst .on{color:#F2B705;text-shadow:2px 2px 0 var(--ink)}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.bdg{font-size:.78rem;font-weight:800;border:2px dashed #BDB3A9;color:#9C9188;border-radius:999px;padding:2px 10px}
+.bdg.on{border:2px solid var(--ink);background:var(--teal-soft);color:var(--ink)}
+.nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.nav{grid-template-columns:repeat(2,minmax(0,1fr))}}
+footer{text-align:center;font-weight:800;color:var(--brown);font-size:.9rem}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="page">
+  <header class="top"><span class="logo">PSeInt <span>Didáctico</span></span><span class="sp"></span><span class="prog" id="prog"></span></header>
+  <div class="layout"><aside class="side" id="side"></aside><main class="main" id="main"></main></div>
+  <footer>Aprendiendo con @LaProfeVivy</footer>
+</div>
+<div id="veil"></div>
+<div id="guide" aria-live="polite"></div>
+
+<script>
+/* ================= INTÉRPRETE PSEINT (subconjunto didáctico) ================= */
+const norm = s => s.trim().replace(/;$/,'').trim();
+const fmtv = v => v===undefined ? '?' : typeof v==='number' ? String(Math.round(v*1e6)/1e6) : typeof v==='boolean' ? (v?'VERDADERO':'FALSO') : String(v);
+function splitArgs(s){const out=[];let d=0,q=false,cur='';for(const ch of s){if(ch==='"')q=!q;if(!q){if(ch==='(')d++;if(ch===')')d--;if(ch===','&&d===0){out.push(cur.trim());cur='';continue}}cur+=ch}if(cur.trim())out.push(cur.trim());return out}
+const isStr = a => /^"[^"]*"$/.test(a);
+
+function evalExpr(src, V, T){
+  const toks=[];const re=/\s*(?:(\d+(?:\.\d+)?)|("[^"]*")|([A-Za-zÁÉÍÓÚáéíóúñÑ_][A-Za-z0-9ÁÉÍÓÚáéíóúñÑ_]*)|(<=|>=|<>|[-+*\/^%()=<>,&|~]))/y;
+  let m,pos=0;src=src.trim();
+  while(pos<src.length){re.lastIndex=pos;m=re.exec(src);if(!m){if(/^\s*$/.test(src.slice(pos)))break;throw new Error('No entiendo la expresión: '+src)}pos=re.lastIndex;
+    if(m[1])toks.push({t:'n',v:parseFloat(m[1])});else if(m[2])toks.push({t:'s',v:m[2].slice(1,-1)});else if(m[3])toks.push({t:'id',v:m[3]});else toks.push({t:'op',v:m[4]})}
+  let i=0;const peek=()=>toks[i],isOp=(v)=>toks[i]&&((toks[i].t==='op'&&toks[i].v===v)||(toks[i].t==='id'&&toks[i].v.toUpperCase()===v));
+  const take=()=>toks[i++];
+  function or(){let a=and();while(isOp('O')||isOp('|')){take();const b=and();a=a||b}return a}
+  function and(){let a=not();while(isOp('Y')||isOp('&')){take();const b=not();a=a&&b}return a}
+  function not(){if(isOp('NO')||isOp('~')){take();return !not()}return cmp()}
+  function cmp(){let a=add();const o=peek();if(o&&o.t==='op'&&['=','<>','<','>','<=','>='].includes(o.v)){take();const b=add();
+    switch(o.v){case'=':return a===b;case'<>':return a!==b;case'<':return a<b;case'>':return a>b;case'<=':return a<=b;case'>=':return a>=b}}return a}
+  function add(){let a=mul();while(isOp('+')||isOp('-')){const o=take().v,b=mul();if(o==='+')a=(typeof a==='string'||typeof b==='string')?fmtv(a)+fmtv(b):a+b;else a=a-b}return a}
+  function mul(){let a=pow();while(isOp('*')||isOp('/')||isOp('MOD')||isOp('%')){const o=take().v.toUpperCase(),b=pow();
+    if(o==='*')a=a*b;else if(o==='/'){if(b===0)throw new Error('No se puede dividir entre cero.');a=a/b}else{if(b===0)throw new Error('No se puede calcular MOD 0.');a=a%b}}return a}
+  function pow(){const a=unary();if(isOp('^')){take();return Math.pow(a,pow())}return a}
+  function unary(){if(isOp('-')){take();return -unary()}if(isOp('+')){take();return unary()}return prim()}
+  function prim(){const k=take();if(!k)throw new Error('Expresión incompleta: '+src);
+    if(k.t==='n'||k.t==='s')return k.v;
+    if(k.t==='op'&&k.v==='('){const v=or();if(!isOp(')'))throw new Error('Falta cerrar un paréntesis.');take();return v}
+    if(k.t==='id'){const up=k.v.toUpperCase();
+      if(up==='VERDADERO')return true;if(up==='FALSO')return false;
+      if(isOp('(')){take();const args=[];if(!isOp(')')){args.push(or());while(isOp(',')){take();args.push(or())}}take();
+        const F={TRUNC:x=>Math.trunc(x),REDON:x=>Math.round(x),RAIZ:x=>Math.sqrt(x),RC:x=>Math.sqrt(x),ABS:x=>Math.abs(x),LONGITUD:x=>String(x).length};
+        if(!F[up])throw new Error('No conozco la función '+k.v);return F[up](...args)}
+      if(!(k.v in V))throw new Error('La variable «'+k.v+'» no existe. ¿La definiste?');
+      if(V[k.v]===undefined)throw new Error('La variable «'+k.v+'» todavía no tiene valor.');
+      return V[k.v]}
+    throw new Error('No entiendo «'+k.v+'» en: '+src)}
+  const r=or();if(i<toks.length)throw new Error('Sobra algo en la expresión: '+src);return r;
+}
+
+function analyze(P){
+  const info={},st=[];
+  P.forEach((raw,i)=>{const l=norm(raw);
+    if(/^Si .+ Entonces$/.test(l))st.push({k:'si',i});
+    else if(l==='SiNo'){const s=st[st.length-1];s.els=i}
+    else if(l==='FinSi'){const s=st.pop();info[s.i]={els:s.els,end:i};if(s.els!==undefined)info[s.els]={end:i}}
+    else if(/^Mientras .+ Hacer$/.test(l))st.push({k:'mi',i});
+    else if(l==='FinMientras'){const s=st.pop();info[s.i]={end:i};info[i]={start:s.i}}
+    else if(l==='Repetir')st.push({k:'re',i});
+    else if(/^Hasta Que /.test(l)){const s=st.pop();info[i]={start:s.i}}
+    else if(/^Para /.test(l))st.push({k:'pa',i});
+    else if(l==='FinPara'){const s=st.pop();info[s.i]={end:i};info[i]={start:s.i}}
+    else if(/^Segun .+ Hacer$/.test(l))st.push({k:'se',i,cases:[]});
+    else if(l==='FinSegun'){const s=st.pop();info[s.i]={cases:s.cases,other:s.other,end:i};s.cases.forEach(c=>info[c]={end:i});if(s.other!==undefined)info[s.other]={end:i}}
+    else if(/^De Otro Modo:?$/.test(l)){st[st.length-1].other=i}
+    else if(/:$/.test(l)&&!/^(Escribir|Leer)/.test(l)){st[st.length-1].cases.push(i)}
+  });
+  return info;
+}
+
+function* execute(P, V, T){
+  const info=analyze(P);let pc=0,guard=0,back={};
+  const ev=s=>evalExpr(s,V,T);
+  try{
+  while(pc<P.length){
+    if(++guard>4000)throw new Error('El programa no termina: parece un ciclo infinito.');
+    const l=norm(P[pc]);let m;
+    if(/^Algoritmo/.test(l)){yield{l:pc};pc++;continue}
+    if(l==='FinAlgoritmo'){yield{l:pc};return}
+    if((m=l.match(/^Definir (.+) Como (\w+)$/))){splitArgs(m[1]).forEach(v=>{V[v]=undefined;T[v]=m[2]});yield{l:pc};pc++;continue}
+    if((m=l.match(/^Escribir (.+)$/))){const out=splitArgs(m[1]).map(a=>fmtv(ev(a))).join('');yield{l:pc,out};pc++;continue}
+    if((m=l.match(/^Leer (.+)$/))){const vs=splitArgs(m[1]),got=[];for(const v of vs){if(!(v in V))throw new Error('La variable «'+v+'» no existe. ¿La definiste?');const x=yield{ask:v,l:pc,type:T[v]};V[v]=x;got.push(fmtv(x))}yield{l:pc,inp:got.join(' ')};pc++;continue}
+    if((m=l.match(/^Si (.+) Entonces$/))){const c=!!ev(m[1]),I=info[pc];yield{l:pc,note:`¿${m[1]}? → ${c?'VERDADERO: entra al Si.':(I.els!==undefined?'FALSO: salta al SiNo.':'FALSO: se salta el bloque.')}`};pc=c?pc+1:(I.els!==undefined?I.els+1:I.end);continue}
+    if(l==='SiNo'){pc=info[pc].end;continue}
+    if(l==='FinSi'){yield{l:pc};pc++;continue}
+    if((m=l.match(/^Segun (.+) Hacer$/))){const v=ev(m[1]),I=info[pc];let tgt=null,lab='';
+      for(const c of I.cases){const vals=splitArgs(norm(P[c]).replace(/:$/,'')).map(ev);if(vals.some(x=>x===v)){tgt=c;lab=norm(P[c]).replace(/:$/,'');break}}
+      if(tgt===null&&I.other!==undefined){tgt=I.other;lab='De Otro Modo'}
+      yield{l:pc,note:`${m[1]} vale ${fmtv(v)}: ${tgt===null?'ningún caso coincide.':'entra al caso '+lab+'.'}`};pc=tgt===null?I.end:tgt+1;continue}
+    if(info[pc]&&info[pc].end!==undefined&&(/:$/.test(l))&&!/^(Escribir|Leer)/.test(l)){pc=info[pc].end;continue}
+    if(l==='FinSegun'){yield{l:pc};pc++;continue}
+    if((m=l.match(/^Mientras (.+) Hacer$/))){const c=!!ev(m[1]);yield{l:pc,note:`¿${m[1]}? → ${c?'VERDADERO: entra al ciclo.':'FALSO: sale del ciclo.'}`};pc=c?pc+1:info[pc].end+1;continue}
+    if(l==='FinMientras'){yield{l:pc,note:'Vuelve arriba a revisar la condición.'};pc=info[pc].start;continue}
+    if(l==='Repetir'){yield{l:pc};pc++;continue}
+    if((m=l.match(/^Hasta Que (.+)$/))){const c=!!ev(m[1]);yield{l:pc,note:`¿${m[1]}? → ${c?'VERDADERO: sale del ciclo.':'FALSO: vuelve a repetir.'}`};pc=c?pc+1:info[pc].start+1;continue}
+    if((m=l.match(/^Para (\w+) <- (.+?) Hasta (.+?)(?: Con Paso (.+))? Hacer$/))){const v=m[1],p=m[4]?ev(m[4]):1;
+      if(back[pc]){V[v]+=p}else{V[v]=ev(m[2])}
+      const lim=ev(m[3]),inside=p>0?V[v]<=lim:V[v]>=lim;back[pc]=false;
+      yield{l:pc,note:inside?`${v} vale ${fmtv(V[v])}: entra al ciclo.`:`${v} vale ${fmtv(V[v])} y pasó de ${fmtv(lim)}: el ciclo termina.`};
+      pc=inside?pc+1:info[pc].end+1;continue}
+    if(l==='FinPara'){const s=info[pc].start;back[s]=true;yield{l:pc,note:'Vuelve al Para con el siguiente valor.'};pc=s;continue}
+    if((m=l.match(/^(\w+)\s*(?:<-|=)\s*(.+)$/))){if(!(m[1] in V))throw new Error('La variable «'+m[1]+'» no existe. ¿La definiste?');const val=ev(m[2]);V[m[1]]=T[m[1]]==='Entero'&&typeof val==='number'?Math.trunc(val):val;yield{l:pc,note:`${m[1]} ahora vale ${fmtv(V[m[1]])}.`};pc++;continue}
+    throw new Error('No entiendo la instrucción: '+l);
+  }}catch(e){yield{l:pc,err:e.message};}
+}
+
+/* ================= HERRAMIENTAS, VARIANTES Y EXPLICACIONES ================= */
+const TOOLS=[['Escribir','""','Escribir'],['Leer','⌨','Leer'],['Asignar','←','Asignar'],['Si','Si','Si-Entonces'],['Segun','≡','Según'],['Mientras','↻','Mientras'],['Repetir','⟲','Repetir'],['Para','⇢','Para']];
+const TOOLDESC={Definir:'crear variables y decir su tipo',Escribir:'mostrar mensajes o resultados en pantalla',Leer:'recibir un dato que escribe el usuario',Asignar:'guardar un valor o el resultado de una operación en una variable',Si:'tomar una decisión con una condición',Segun:'elegir entre varias opciones según el valor de una variable',Mientras:'repetir mientras una condición sea verdadera',Repetir:'repetir hasta que una condición se cumpla',Para:'repetir un número conocido de veces'};
+const AUTO=l=>/^(SiNo|FinSi|FinSegun|FinMientras|FinPara)$/.test(l)||/^De Otro Modo:?$/.test(l)||(/:$/.test(l)&&!/^(Escribir|Leer)/.test(l));
+function toolOf(c){if(/^Definir /.test(c))return'Definir';if(/^Escribir /.test(c))return'Escribir';if(/^Leer /.test(c))return'Leer';if(/^Si /.test(c))return'Si';if(/^Segun /.test(c))return'Segun';if(/^Mientras /.test(c))return'Mientras';if(/^(Repetir|Hasta Que )/.test(c))return'Repetir';if(/^Para /.test(c))return'Para';return'Asignar'}
+const TYPEINFO={Entero:'números sin decimales',Real:'números con decimales',Caracter:'texto'};
+const CMPN={'>':'mayor que','>=':'mayor o igual que','<':'menor que','<=':'menor o igual que','=':'igual a','<>':'diferente de'};
+const FLIP={'>':'>=','>=':'>','<':'<=','<=':'<','=':'<>','<>':'='};
+const OPN={'+':'una suma','-':'una resta','*':'una multiplicación','/':'una división'};
+function flipCmp(cond){const m=cond.match(/<=|>=|<>|=|<|>/);if(!m)return null;const n=FLIP[m[0]];
+  return[cond.slice(0,m.index)+n+cond.slice(m.index+m[0].length),`«${n}» significa «${CMPN[n]}», y aquí se necesita «${CMPN[m[0]]}». Revisa el enunciado.`]}
+function variants(c){
+  const t=toolOf(c),W=[];let m;
+  const add=(code,why)=>{if(code&&code!==c&&!W.some(w=>w[0]===code))W.push([code,why])};
+  if(t==='Escribir'){m=c.match(/^Escribir (.+)$/);const a=splitArgs(m[1]),hasS=a.some(isStr),hasV=a.some(x=>!isStr(x));
+    if(hasS&&hasV)add('Escribir "'+a.map(x=>isStr(x)?x.slice(1,-1):x).join('')+'"','Si la variable va dentro de las comillas, se muestra su nombre y no su valor.');
+    if(!hasS)add('Escribir "'+a.join(', ')+'"','Con comillas se mostraría el nombre de la variable como texto, no su valor.');
+    if(hasS&&!hasV)add('Escribir '+a.map(x=>x.slice(1,-1)).join(', '),'Los textos van entre comillas.');
+    add('Leer '+m[1],'Leer recibe datos; para mostrar en pantalla se usa Escribir.')}
+  else if(t==='Leer'){m=c.match(/^Leer (.+)$/);const a=splitArgs(m[1]);
+    add('Leer '+a.map(x=>'"'+x+'"').join(', '),'Las variables van sin comillas.');
+    add('Escribir '+m[1],'Escribir muestra; aquí hay que recibir el dato del usuario.');
+    if(a.length>1)add('Leer '+a.join(' '),'Las variables se separan con comas.');else add(a[0]+' <- Leer','Leer es una instrucción propia: se escribe Leer '+a[0]+'.')}
+  else if(t==='Definir'){m=c.match(/^Definir (.+) Como (\w+)$/);const a=splitArgs(m[1]),ty=m[2];
+    const sw={Real:['Entero','Entero no guarda decimales y aquí puede haberlos.'],Entero:['Real','Estos valores no llevan decimales: lo correcto es Entero.'],Caracter:['Entero','Un nombre o una letra es texto: se usa Caracter.']}[ty];
+    if(sw)add(`Definir ${m[1]} Como ${sw[0]}`,sw[1]);
+    if(a.length>1)add(`Definir ${a.slice(0,-1).join(', ')} Como ${ty}`,`Falta crear la variable ${a[a.length-1]}.`);
+    add(`Definir ${m[1]}`,'Falta decir el tipo de dato: Como '+ty+'.')}
+  else if(t==='Asignar'){m=c.match(/^(\w+) <- (.+)$/);const v=m[1],e=m[2];
+    add(`${e} <- ${v}`,'Al revés: la variable que recibe el valor va a la izquierda de la flecha.');
+    if(e.includes('('))add(`${v} <- ${e.replace(/[()]/g,'')}`,'Sin paréntesis cambia el orden de las operaciones y el resultado sale distinto.');
+    const om=e.match(/ ([+\-*\/]) /);
+    if(om){const n={'+':'-','-':'+','*':'+','/':'*'}[om[1]];add(`${v} <- ${e.slice(0,om.index)} ${n} ${e.slice(om.index+3)}`,`Revisa la operación: aquí va ${OPN[om[1]]}, no ${OPN[n]}.`)}
+    if(/^[\w.]+$/.test(e))add(`${v} <- "${e}"`,'Con comillas sería un texto, no '+(/^\d/.test(e)?'un número.':'el valor de la variable.'))}
+  else if(t==='Si'){m=c.match(/^Si (.+) Entonces$/);const cond=m[1];
+    if(/ Y /.test(cond))add(`Si ${cond.replace(' Y ',' O ')} Entonces`,'Con O bastaría que se cumpla una sola condición; aquí deben cumplirse las dos (Y).');
+    if(/ O /.test(cond))add(`Si ${cond.replace(' O ',' Y ')} Entonces`,'Con Y tendrían que cumplirse las dos a la vez; aquí basta con una (O).');
+    const f=flipCmp(cond);if(f)add(`Si ${f[0]} Entonces`,f[1]);
+    add(`Si ${cond}`,'Al Si le falta la palabra Entonces.')}
+  else if(t==='Mientras'){m=c.match(/^Mientras (.+) Hacer$/);const cond=m[1];
+    if(/ O /.test(cond))add(`Mientras ${cond.replace(' O ',' Y ')} Hacer`,'Con Y tendrían que cumplirse las dos a la vez; aquí basta con que se cumpla una (O).');
+    const f=flipCmp(cond);if(f)add(`Mientras ${f[0]} Hacer`,f[1]);
+    add(`Mientras ${cond}`,'Al Mientras le falta la palabra Hacer.')}
+  else if(t==='Repetir'&&c!=='Repetir'){m=c.match(/^Hasta Que (.+)$/);const f=flipCmp(m[1]);if(f)add(`Hasta Que ${f[0]}`,f[1]);add(`Hasta ${m[1]}`,'Se escribe Hasta Que.')}
+  else if(t==='Para'){m=c.match(/^Para (\w+) <- (\S+) Hasta (\S+) Con Paso (\S+) Hacer$/);
+    if(m[2]==='1')add(`Para ${m[1]} <- 0 Hasta ${m[3]} Con Paso ${m[4]} Hacer`,'Empezaría en 0 y daría una vuelta de más.');
+    else if(m[4]!=='1')add(`Para ${m[1]} <- ${m[2]} Hasta ${m[3]} Con Paso 1 Hacer`,`Con Paso 1 avanzaría de 1 en 1, no de ${m[4]} en ${m[4]}.`);
+    add(`Para ${m[1]} <- ${m[2]} Hasta ${m[3]} Con Paso ${m[4]}`,'Falta la palabra Hacer al final.')}
+  else if(t==='Segun'){m=c.match(/^Segun (.+) Hacer$/);add(`Si ${m[1]} Entonces`,'Si necesita una condición; para elegir entre varias opciones se usa Según.');add(`Segun ${m[1]}`,'Al Según le falta la palabra Hacer.')}
+  return W.slice(0,2);
+}
+function okText(c){try{return okText_(c)}catch(err){return ''}}
+function okText_(c){
+  const t=toolOf(c);let m;
+  if(t==='Definir'){m=c.match(/^Definir (.+) Como (\w+)$/);return `Definir crea ${m[1]}. ${m[2]} sirve para ${TYPEINFO[m[2]]||'ese tipo de dato'}.`}
+  if(t==='Escribir')return 'Escribir muestra en pantalla los textos entre comillas y el valor de las variables.';
+  if(t==='Leer'){m=c.match(/^Leer (.+)$/);return `Leer detiene el programa, espera el dato y lo guarda en ${m[1]}.`}
+  if(t==='Asignar'){m=c.match(/^(\w+) <- (.+)$/);return new RegExp('\\b'+m[1]+'\\b').test(m[2])?`${m[1]} toma el valor que ya tenía y lo actualiza. Así funciona un contador o un acumulador.`:`Se calcula ${m[2]} y el resultado se guarda en ${m[1]}.`}
+  if(t==='Si'){m=c.match(/^Si (.+) Entonces$/);return `El Si pregunta «${m[1]}». Si es verdadero, ejecuta lo que está dentro.`}
+  if(t==='Segun'){m=c.match(/^Segun (.+) Hacer$/);return `Según mira el valor de ${m[1]} y salta al caso que coincide.`}
+  if(t==='Mientras'){m=c.match(/^Mientras (.+) Hacer$/);return `Mientras «${m[1]}» sea verdadero, se repite lo que está dentro.`}
+  if(c==='Repetir')return 'Repetir abre el ciclo. Lo de adentro se ejecuta al menos una vez.';
+  if(t==='Repetir'){m=c.match(/^Hasta Que (.+)$/);return `El ciclo se repite hasta que «${m[1]}» sea verdadero.`}
+  if(t==='Para'){m=c.match(/^Para (\w+) <- (\S+) Hasta (\S+) Con Paso (\S+) Hacer$/);return `${m[1]} empieza en ${m[2]} y llega hasta ${m[3]}, de ${m[4]} en ${m[4]}.`}
+  return '';
+}
+function autoText(l){
+  if(l==='SiNo')return 'Se agregó SiNo: aquí empieza lo que pasa cuando la condición es falsa.';
+  if(l==='FinSi')return 'Se agregó FinSi: cierra el Si.';
+  if(l==='FinSegun')return 'Se agregó FinSegun: cierra el Según.';
+  if(l==='FinMientras')return 'Se agregó FinMientras: cierra el ciclo y vuelve a revisar la condición.';
+  if(l==='FinPara')return 'Se agregó FinPara: cierra el ciclo y vuelve al Para con el siguiente valor.';
+  if(/^De Otro Modo/.test(l))return 'Se agregó De Otro Modo: se ejecuta si ningún caso coincide.';
+  return `Se agregó el caso ${l} Lo que va debajo se ejecuta cuando la variable vale ${l.replace(/:$/,'')}.`;
+}
+function indents(P){const out=[];let d=0;for(const raw of P){const l=norm(raw);let r=d;
+  if(l==='FinAlgoritmo'){d=0;r=0}
+  else if(/^(FinSi|FinMientras|FinPara)$/.test(l)||/^Hasta Que /.test(l)){d--;r=d}
+  else if(l==='FinSegun'){d-=2;r=d}
+  else if(l==='SiNo')r=d-1;
+  else if(/^De Otro Modo/.test(l)||(/:$/.test(l)&&!/^(Escribir|Leer)/.test(l)))r=d-1;
+  out.push(Math.max(0,r));
+  if(/^Algoritmo/.test(l))d=1;else if(/^Si .+ Entonces$/.test(l)||/^Mientras /.test(l)||/^Para /.test(l)||l==='Repetir')d++;else if(/^Segun /.test(l))d+=2;}
+ return out}
+
+/* ================= ESPACIOS PARA COMPLETAR (estilo plantilla PSeInt) ================= */
+const POOL=['nombre','edad','curso','precio','dato','valor','total'];
+const OPP={'>':'<','<':'>','>=':'<=','<=':'>=','=':'<>','<>':'='};
+const TYPES=['Entero','Real','Caracter','Logico'];
+function typeWhy(ch,ans){
+  if(ch==='Logico')return 'Logico solo guarda VERDADERO o FALSO.';
+  if(ans==='Caracter')return 'Un nombre o una letra es texto: se usa Caracter.';
+  if(ch==='Caracter')return 'Caracter es para texto, y aquí se guardan números.';
+  if(ch==='Entero')return 'Entero no guarda decimales y aquí puede haberlos.';
+  return 'Aquí los valores no llevan decimales: lo correcto es Entero.';
+}
+const FALLBACK={lista_de_variables:'Los nombres de variables van sin comillas.',variable:'La variable va sin comillas.',variable_numerica:'La variable va sin comillas.',expresion:'Entre comillas sería un texto, no una operación.',expresion_logica:'Entre comillas sería un texto, no una condición.',lista_de_expresiones:'Revisa las comillas.',valor_inicial:'Entre comillas sería un texto, no un número.',valor_final:'Entre comillas sería un texto, no un número.',paso:'Entre comillas sería un texto, no un número.',tipo:'Ese tipo no existe.'};
+function mkBlank(ph,ans,W){const out=[],seen=new Set([ans]);for(const w of W){if(w&&w[0]&&!seen.has(w[0])){seen.add(w[0]);out.push(w)}if(out.length===2)break}
+  if(out.length<2&&!seen.has('"'+ans+'"'))out.push(['"'+ans+'"',FALLBACK[ph]||'Revisa el aviso.']);
+  return{ph,ans,opts:[{v:ans,ok:true},...out.map(([v,why])=>({v,why}))],val:null}}
+function condW(cond){const W=[];const m=cond.match(/<=|>=|<>|=|<|>/);
+  if(/ Y /.test(cond))W.push([cond.replace(' Y ',' O '),'Con O bastaría que se cumpla una sola condición; aquí deben cumplirse las dos (Y).']);
+  if(/ O /.test(cond))W.push([cond.replace(' O ',' Y '),'Con Y tendrían que cumplirse las dos a la vez; aquí basta con que se cumpla una (O).']);
+  if(m)for(const n of (m[0]==='='?['<>','>']:[FLIP[m[0]],OPP[m[0]]])){W.push([cond.slice(0,m.index)+n+cond.slice(m.index+m[0].length),`«${n}» significa «${CMPN[n]}», y aquí se necesita «${CMPN[m[0]]}». Revisa el aviso.`])}
+  return W}
+function blanksOf(c,vars){
+  const t=toolOf(c);let m;
+  const other=ex=>vars.find(v=>!ex.includes(v))||POOL.find(v=>!ex.includes(v));
+  if(t==='Definir'){m=c.match(/^Definir (.+) Como (\w+)$/);const L=splitArgs(m[1]);
+    const W0=[[[...L.slice(0,-1),other(L)].join(', '),'Esa no es la variable que pide este paso. Lee el aviso.'],[L.map(v=>`"${v}"`).join(', '),'Los nombres de variables van sin comillas.']];
+    if(L.length>1)W0.push([L.join(' '),'Las variables se separan con comas.']);
+    const pref={Real:['Entero','Caracter'],Entero:['Real','Caracter'],Caracter:['Entero','Real'],Logico:['Entero','Caracter']}[m[2]]||['Entero','Real'];
+    return{parts:['Definir ',0,' Como ',1],blanks:[mkBlank('lista_de_variables',m[1],W0),mkBlank('tipo',m[2],pref.map(x=>[x,typeWhy(x,m[2])]))]}}
+  if(t==='Escribir'){m=c.match(/^Escribir (.+)$/);const a=splitArgs(m[1]),hasS=a.some(isStr),hasV=a.some(x=>!isStr(x)),W=[];
+    if(hasS&&hasV)W.push(['"'+a.map(x=>isStr(x)?x.slice(1,-1):x).join('')+'"','Si la variable va dentro de las comillas, se muestra su nombre y no su valor.']);
+    if(hasS)W.push([a.map(x=>isStr(x)?x.slice(1,-1).replace(/[,:\s]+$/,''):x).join(', '),'Los textos van entre comillas.']);
+    if(!hasS){W.push(['"'+a.join(', ')+'"','Con comillas se mostraría el nombre de la variable como texto, no su valor.']);if(a.length===1&&/^\w+$/.test(a[0]))W.push([other([a[0]]),'Esa no es la variable que se debe mostrar.'])}
+    if(hasS&&!hasV&&a.length===1)W.push([a[0].replace(/^"/,"'").replace(/"$/,"'")+'"','Las comillas deben abrir y cerrar con el mismo signo: "…".']);
+    return{parts:['Escribir ',0],blanks:[mkBlank('lista_de_expresiones',m[1],W)]}}
+  if(t==='Leer'){m=c.match(/^Leer (.+)$/);const L=splitArgs(m[1]),W=[[[...L.slice(0,-1),other(L)].join(', '),'Esa no es la variable donde se debe guardar el dato.'],[L.map(v=>`"${v}"`).join(', '),'Las variables van sin comillas.']];
+    if(L.length>1)W.splice(1,0,[L.join(' '),'Las variables se separan con comas.']);
+    return{parts:['Leer ',0],blanks:[mkBlank('lista_de_variables',m[1],W)]}}
+  if(t==='Asignar'){m=c.match(/^(\w+) <- (.+)$/);const v=m[1],e=m[2],W1=[];
+    if(e.includes('('))W1.push([e.replace(/[()]/g,''),'Sin paréntesis cambia el orden de las operaciones y el resultado sale distinto.']);
+    const om=e.match(/ ([+\-*\/]) /);if(om){const n={'+':'-','-':'+','*':'+','/':'*'}[om[1]];W1.push([`${e.slice(0,om.index)} ${n} ${e.slice(om.index+3)}`,`Revisa la operación: aquí va ${OPN[om[1]]}, no ${OPN[n]}.`])}
+    if(/^\d+(\.\d+)?$/.test(e))W1.push([String(+e+1),`Revisa el aviso: el valor debe ser ${e}.`]);
+    if(/^[A-Za-z]\w*$/.test(e))W1.push([other([v,e]),'Esa no es la variable que se debe copiar.']);
+    return{parts:[0,' <- ',1],blanks:[mkBlank('variable',v,[[other([v]),'Esa no es la variable que debe guardar el resultado.'],[`"${v}"`,'La variable va sin comillas.']]),mkBlank('expresion',e,W1)]}}
+  if(t==='Si'){m=c.match(/^Si (.+) Entonces$/);return{parts:['Si ',0,' Entonces'],blanks:[mkBlank('expresion_logica',m[1],condW(m[1]))]}}
+  if(t==='Mientras'){m=c.match(/^Mientras (.+) Hacer$/);return{parts:['Mientras ',0,' Hacer'],blanks:[mkBlank('expresion_logica',m[1],condW(m[1]))]}}
+  if(t==='Repetir'&&c!=='Repetir'){m=c.match(/^Hasta Que (.+)$/);return{parts:['Hasta Que ',0],blanks:[mkBlank('expresion_logica',m[1],condW(m[1]))]}}
+  if(t==='Para'){m=c.match(/^Para (\w+) <- (\S+) Hasta (\S+) Con Paso (\S+) Hacer$/);const a=m[2],f=m[3],p=m[4];
+    const Wa=/^\d+$/.test(a)?[[String(+a-1),`Empezaría en ${+a-1}. Debe empezar en ${a}.`],[String(+a+1),`Empezaría en ${+a+1} y se saltaría el ${a}.`]]:[];
+    const Wf=/^\d+$/.test(f)?[[String(+f-1),`Se quedaría corto: no llegaría hasta ${f}.`],[String(+f+1),`Daría una vuelta de más: debe llegar hasta ${f}.`]]:[[f+' - 1',`Se quedaría corto: no llegaría hasta ${f}.`],[f+' + 1',`Daría una vuelta de más: debe llegar hasta ${f}.`]];
+    const Wp=p==='1'?[['2','Avanzaría de 2 en 2 y se saltaría números.'],['0','Con Paso 0 nunca avanza: sería un ciclo infinito.']]:[['1',`Con Paso 1 avanzaría de 1 en 1, no de ${p} en ${p}.`],[String(+p+1),`Avanzaría de ${+p+1} en ${+p+1}.`]];
+    return{parts:[`Para ${m[1]} <- `,0,' Hasta ',1,' Con Paso ',2,' Hacer'],blanks:[mkBlank('valor_inicial',a,Wa),mkBlank('valor_final',f,Wf),mkBlank('paso',p,Wp)]}}
+  if(t==='Segun'){m=c.match(/^Segun (.+) Hacer$/);return{parts:['Segun ',0,' Hacer'],blanks:[mkBlank('variable_numerica',m[1],[[other([m[1]]),'Esa no es la variable que decide la opción.'],[`"${m[1]}"`,'La variable va sin comillas.']])]}}
+  return null;
+}
+function progVars(lines){const out=[];lines.forEach(c=>{const m=c.match(/^Definir (.+) Como/);if(m)splitArgs(m[1]).forEach(v=>out.push(v))});return out}
+
+/* ================= TEMAS, LECCIONES Y EJERCICIOS ================= */
+const TOPICS = [
+/* 1 */ { group:'Bases', t:'Fundamentos de algoritmos', kind:'order',
+  intro:['Un <b>algoritmo</b> es una lista de pasos <b>ordenados</b> y <b>finitos</b> que resuelve un problema.','Los usamos todo el tiempo: una receta de cocina o las indicaciones para llegar a un lugar son algoritmos. Si cambias el orden de los pasos, el resultado sale mal.'],
+  keys:[['Preciso','Cada paso dice exactamente qué hacer.'],['Definido','Con los mismos datos, siempre da el mismo resultado.'],['Finito','Tiene un inicio y un fin: no sigue para siempre.'],['Entrada','Los datos que recibe (por ejemplo, dos números).'],['Proceso','Lo que hace con esos datos (sumarlos).'],['Salida','El resultado que entrega (mostrar la suma).']],
+  example:'1. Inicio\n2. Pedir el primer número\n3. Pedir el segundo número\n4. Sumar los dos números\n5. Mostrar la suma\n6. Fin', exTitle:'Ejemplo: algoritmo para sumar dos números',
+  exercises:[
+   {t:'Preparar una limonada',g:'Ordena los pasos para preparar una limonada.',steps:['Conseguir limones, agua y azúcar','Partir y exprimir los limones','Mezclar el jugo con el agua','Agregar azúcar al gusto','Revolver y servir']},
+   {t:'Cambiar un bombillo',g:'Ordena los pasos para cambiar un bombillo dañado de forma segura.',steps:['Apagar el interruptor','Esperar a que el bombillo se enfríe','Quitar el bombillo dañado','Poner el bombillo nuevo','Encender el interruptor para probar']},
+   {t:'Enviar un mensaje',g:'Ordena los pasos para enviar un mensaje de texto desde el celular.',steps:['Desbloquear el celular','Abrir la aplicación de mensajes','Elegir el contacto','Escribir el mensaje','Tocar el botón de enviar']},
+   {t:'Sumar dos números',g:'Ordena el algoritmo. Fíjate en la entrada, el proceso y la salida.',steps:['Inicio','Pedir el primer número','Pedir el segundo número','Sumar los dos números','Mostrar el resultado','Fin']},
+   {t:'¿Aprobaste?',g:'Ordena el algoritmo que dice si un estudiante aprobó (nota de 3 o más).',steps:['Inicio','Pedir la nota','Preguntar: ¿la nota es mayor o igual a 3?','Si la respuesta es sí, mostrar «Aprobaste»','Si la respuesta es no, mostrar «Debes reforzar»','Fin']}
+  ]},
+/* 2 */ { group:'Bases', t:'Diagrama de flujo', kind:'flow',
+  intro:['Un <b>diagrama de flujo</b> dibuja el algoritmo con <b>símbolos</b> unidos por <b>flechas</b>. Se lee de arriba hacia abajo.','Cada tipo de paso tiene su propio símbolo. Así, con solo mirar la forma, sabes si el paso recibe datos, calcula o toma una decisión.'],
+  keys:[['T','Terminal (óvalo): marca el Inicio y el Fin.'],['ES','Entrada / Salida (paralelogramo): leer un dato o mostrar un resultado.'],['P','Proceso (rectángulo): un cálculo o una asignación.'],['D','Decisión (rombo): una pregunta que se responde Sí o No.']],
+  symbols:true, example:null,
+  exercises:[
+   {t:'Saludar',g:'Arma el diagrama de un programa que pide el nombre y saluda.',steps:[['Inicio','T'],['Leer nombre','ES'],['Escribir "Hola, ", nombre','ES'],['Fin','T']]},
+   {t:'Suma de dos números',g:'Arma el diagrama que suma dos números.',steps:[['Inicio','T'],['Leer a, b','ES'],['suma ← a + b','P'],['Escribir suma','ES'],['Fin','T']]},
+   {t:'Área de un rectángulo',g:'Arma el diagrama que calcula el área de un rectángulo.',steps:[['Inicio','T'],['Leer base, altura','ES'],['area ← base * altura','P'],['Escribir area','ES'],['Fin','T']]},
+   {t:'¿Mayor de edad?',g:'Arma el diagrama que dice si una persona es mayor de edad.',steps:[['Inicio','T'],['Leer edad','ES'],['¿edad >= 18?','D'],['Escribir "Mayor de edad"','ES','Sí'],['Escribir "Menor de edad"','ES','No'],['Fin','T']]},
+   {t:'Precio con descuento',g:'Arma el diagrama: si la compra pasa de $100000, se descuenta el 10 %.',steps:[['Inicio','T'],['Leer compra','ES'],['¿compra > 100000?','D'],['total ← compra * 0.9','P','Sí'],['total ← compra','P','No'],['Escribir total','ES'],['Fin','T']]}
+  ]},
+/* 3 */ { group:'Bases', t:'Pseudocódigo', kind:'code',
+  intro:['El <b>pseudocódigo</b> es escribir el algoritmo con palabras en español parecidas a un lenguaje de programación. PSeInt lo entiende y lo ejecuta.','Todo programa empieza con <code>Algoritmo</code> y un nombre, y termina con <code>FinAlgoritmo</code>. En medio van las instrucciones, una por línea.'],
+  keys:[['Variable','Una cajita con nombre que guarda un dato. Su valor puede cambiar.'],['Definir x Como Tipo','Crea la variable y dice qué tipo de dato guarda.'],['Entero','Números sin decimales: 5, -3, 120.'],['Real','Números con decimales: 3.5, 0.75.'],['Caracter','Texto: "Ana", "a".'],['Escribir','Muestra un mensaje o un valor en la pantalla.'],['Leer','Espera un dato del usuario y lo guarda en una variable.'],['<-','Asigna: guarda en la variable de la izquierda el valor de la derecha.']],
+  example:'Algoritmo Saludo\n\tDefinir nombre Como Caracter\n\tEscribir "Por favor, indique su nombre:"\n\tLeer nombre\n\tEscribir "Hola, ", nombre\nFinAlgoritmo',
+  exercises:[
+   {t:'Hola, mundo',name:'HolaMundo',g:'Haz que el programa muestre dos mensajes en pantalla.',steps:[['Escribir "Hola, mundo"','Muestra el mensaje «Hola, mundo».'],['Escribir "Estoy aprendiendo PSeInt"','Muestra un segundo mensaje: «Estoy aprendiendo PSeInt».']]},
+   {t:'Saludo personalizado',name:'Saludo',g:'Pide el nombre del usuario y salúdalo.',steps:[['Definir nombre Como Caracter','Crea la variable nombre para guardar texto.'],['Escribir "Por favor, indique su nombre:"','Pregúntale al usuario su nombre.'],['Leer nombre','Recibe el nombre y guárdalo.'],['Escribir "Hola, ", nombre','Saluda mostrando «Hola, » y el nombre.']]},
+   {t:'Edad en meses',name:'EdadMeses',g:'Pide la edad en años y muestra cuántos meses ha vivido (aproximado).',steps:[['Definir edad, meses Como Entero','Crea edad y meses. Son números sin decimales.'],['Escribir "Por favor, indique su edad en años:"','Pregunta la edad.'],['Leer edad','Recibe la edad.'],['meses <- edad * 12','Calcula los meses: cada año tiene 12.'],['Escribir "Has vivido unos ", meses, " meses"','Muestra el resultado.']]},
+   {t:'Doble y triple',name:'DobleTriple',g:'Pide un número y muestra su doble y su triple.',steps:[['Definir n, doble, triple Como Real','Crea las tres variables. Pueden tener decimales.'],['Escribir "Por favor, ingrese un número:"','Pide el número.'],['Leer n','Recibe el número.'],['doble <- n * 2','Calcula el doble.'],['triple <- n * 3','Calcula el triple.'],['Escribir "Doble: ", doble','Muestra el doble.'],['Escribir "Triple: ", triple','Muestra el triple.']]},
+   {t:'Ficha del estudiante',name:'Ficha',g:'Pide nombre, edad y nota, y muestra una ficha con los tres datos.',steps:[['Definir nombre Como Caracter','Crea la variable para el nombre (texto).'],['Definir edad Como Entero','Crea la variable para la edad (sin decimales).'],['Definir nota Como Real','Crea la variable para la nota (con decimales).'],['Escribir "Por favor, indique el nombre del estudiante:"','Pide el nombre.'],['Leer nombre','Recibe el nombre.'],['Escribir "Por favor, indique la edad:"','Pide la edad.'],['Leer edad','Recibe la edad.'],['Escribir "Por favor, indique la nota (de 0 a 5):"','Pide la nota.'],['Leer nota','Recibe la nota.'],['Escribir nombre, " tiene ", edad, " años y su nota es ", nota','Muestra la ficha completa.']]}
+  ]},
+/* 4 */ { group:'Estructuras', t:'Estructura secuencial', kind:'code',
+  intro:['En una <b>estructura secuencial</b> las instrucciones se ejecutan <b>una tras otra</b>, de arriba hacia abajo, sin saltarse ninguna.','Casi siempre siguen el patrón <b>entrada → proceso → salida</b>: pedir datos, calcular y mostrar el resultado.'],
+  keys:[['+  -','Suma y resta.'],['*  /','Multiplicación y división.'],['^','Potencia: 2 ^ 3 = 8.'],['MOD','Residuo de una división: 7 MOD 2 = 1.'],['( )','Lo que va entre paréntesis se calcula primero.']],
+  example:'Algoritmo Suma\n\tDefinir a, b, suma Como Real\n\tEscribir "Por favor, ingrese dos números:"\n\tLeer a, b\n\tsuma <- a + b\n\tEscribir "La suma es: ", suma\nFinAlgoritmo',
+  exercises:[
+   {t:'Suma de dos números',name:'Suma',g:'Pide dos números, súmalos y muestra el resultado.',steps:[['Definir a, b, suma Como Real','Crea a, b y suma.'],['Escribir "Por favor, ingrese el primer número:"','Pide el primer número.'],['Leer a','Recibe el primer número en a.'],['Escribir "Por favor, ingrese el segundo número:"','Pide el segundo número.'],['Leer b','Recibe el segundo número en b.'],['suma <- a + b','Calcula la suma.'],['Escribir "La suma es: ", suma','Muestra el resultado.']]},
+   {t:'Área del rectángulo',name:'Rectangulo',g:'Pide la base y la altura de un rectángulo y muestra su área.',steps:[['Definir base, altura, area Como Real','Crea las tres variables.'],['Escribir "Por favor, indique la base del rectángulo:"','Pide la base.'],['Leer base','Recibe la base.'],['Escribir "Por favor, indique la altura del rectángulo:"','Pide la altura.'],['Leer altura','Recibe la altura.'],['area <- base * altura','Calcula el área: base por altura.'],['Escribir "El área es: ", area','Muestra el área.']]},
+   {t:'Celsius a Fahrenheit',name:'Temperatura',g:'Convierte grados Celsius a Fahrenheit con la fórmula F = C × 9 / 5 + 32.',steps:[['Definir c, f Como Real','Crea c (Celsius) y f (Fahrenheit).'],['Escribir "Por favor, indique la temperatura en grados Celsius:"','Pide la temperatura.'],['Leer c','Recibe los grados Celsius.'],['f <- c * 9 / 5 + 32','Aplica la fórmula.'],['Escribir c, " °C son ", f, " °F"','Muestra la conversión.']]},
+   {t:'Promedio de tres notas',name:'Promedio3',g:'Pide tres notas y muestra el promedio.',steps:[['Definir n1, n2, n3, prom Como Real','Crea las tres notas y el promedio.'],['Escribir "Por favor, ingrese las tres notas (de 0 a 5):"','Pide las notas.'],['Leer n1, n2, n3','Recibe las tres notas en una sola línea.'],['prom <- (n1 + n2 + n3) / 3','Suma las notas y divide entre 3. ¡Ojo con los paréntesis!'],['Escribir "Promedio: ", prom','Muestra el promedio.']],s:{n1:[4,3.5],n2:[3,4.5],n3:[5,2.5]}},
+   {t:'Salario con descuento',name:'Salario',g:'Calcula el salario neto. Regla del ejercicio: al salario bruto se le descuenta el 8 %.',steps:[['Definir horas, valorHora, bruto, descuento, neto Como Real','Crea las cinco variables.'],['Escribir "Por favor, indique las horas trabajadas:"','Pide las horas.'],['Leer horas','Recibe las horas.'],['Escribir "Por favor, indique el valor de la hora:"','Pide el valor de la hora.'],['Leer valorHora','Recibe el valor de la hora.'],['bruto <- horas * valorHora','Calcula el salario bruto.'],['descuento <- bruto * 0.08','Calcula el 8 % del bruto.'],['neto <- bruto - descuento','Resta el descuento.'],['Escribir "Salario neto: $", neto','Muestra el salario neto.']],s:{horas:[40,36],valorHora:[15000,20000]}}
+  ]},
+/* 5 */ { group:'Decisiones', t:'Decisión simple', kind:'code',
+  intro:['Con la <b>decisión simple</b> el programa hace una pregunta (la <b>condición</b>). Si la respuesta es <b>verdadera</b>, ejecuta un bloque de instrucciones. Si es <b>falsa</b>, se lo salta y sigue.','Lo que va dentro del Si se escribe con sangría (corrido a la derecha) y se cierra con <code>FinSi</code>.'],
+  keys:[['Si … Entonces','Abre la decisión con una condición.'],['FinSi','Cierra la decisión.'],['=  <>','Igual a, diferente de.'],['>  <','Mayor que, menor que.'],['>=  <=','Mayor o igual que, menor o igual que.']],
+  example:'Si edad >= 18 Entonces\n\tEscribir "Eres mayor de edad"\nFinSi',
+  exercises:[
+   {t:'Mayor de edad',name:'MayorEdad',g:'Pide la edad. Si tiene 18 o más, muestra «Eres mayor de edad».',steps:[['Definir edad Como Entero','Crea la variable edad.'],['Escribir "Por favor, indique su edad en años:"','Pregunta la edad.'],['Leer edad','Recibe la edad.'],['Si edad >= 18 Entonces','Pregunta si la edad es 18 o más.'],['Escribir "Eres mayor de edad"','Lo que pasa si la condición es verdadera.'],'FinSi'],s:{edad:[20,15,18]}},
+   {t:'Número positivo',name:'Positivo',g:'Pide un número. Si es mayor que cero, muestra «El número es positivo».',steps:[['Definir n Como Real','Crea la variable n.'],['Escribir "Por favor, ingrese un número:"','Pide el número.'],['Leer n','Recibe el número.'],['Si n > 0 Entonces','Pregunta si n es mayor que cero.'],['Escribir "El número es positivo"','Mensaje cuando es positivo.'],'FinSi'],s:{n:[7,-2,0]}},
+   {t:'¿Aprobó?',name:'Aprobo',g:'Pide la nota (0 a 5). Si es 3 o más, muestra «¡Aprobaste!». Al final, siempre muestra «Fin del programa».',steps:[['Definir nota Como Real','Crea la variable nota.'],['Escribir "Por favor, indique su nota (de 0 a 5):"','Pide la nota.'],['Leer nota','Recibe la nota.'],['Si nota >= 3 Entonces','Pregunta si la nota es 3 o más.'],['Escribir "¡Aprobaste!"','Mensaje para quien aprueba.'],'FinSi',['Escribir "Fin del programa"','Este mensaje va fuera del Si: se muestra siempre.']],s:{nota:[4.2,2.5,3]}},
+   {t:'Descuento por compra',name:'Descuento',g:'Si la compra supera $100000, se aplica un 10 % de descuento. Muestra el total a pagar.',steps:[['Definir compra, total Como Real','Crea compra y total.'],['Escribir "Por favor, indique el valor de la compra:"','Pide el valor.'],['Leer compra','Recibe el valor.'],['total <- compra','Por defecto, el total es igual a la compra.'],['Si compra > 100000 Entonces','Pregunta si la compra pasa de 100000.'],['total <- compra * 0.9','Aplica el descuento: se paga el 90 %.'],'FinSi',['Escribir "Total a pagar: $", total','Muestra el total.']],s:{compra:[150000,80000]}},
+   {t:'Bono de ventas',name:'Bono',g:'El sueldo base es $1500000. Si las ventas llegan a $5000000 o más, se suma un bono de $200000.',steps:[['Definir ventas, sueldo Como Real','Crea ventas y sueldo.'],['sueldo <- 1500000','Guarda el sueldo base.'],['Escribir "Por favor, indique el valor de las ventas del mes:"','Pide las ventas.'],['Leer ventas','Recibe las ventas.'],['Si ventas >= 5000000 Entonces','Pregunta si llegó a la meta.'],['sueldo <- sueldo + 200000','Suma el bono al sueldo.'],['Escribir "¡Ganaste el bono!"','Felicita al vendedor.'],'FinSi',['Escribir "Sueldo: $", sueldo','Muestra el sueldo final.']],s:{ventas:[6000000,3000000]}}
+  ]},
+/* 6 */ { group:'Decisiones', t:'Decisión doble', kind:'code',
+  intro:['La <b>decisión doble</b> elige entre <b>dos caminos</b>: uno cuando la condición es verdadera y otro cuando es falsa. Siempre se ejecuta uno de los dos, nunca ambos.','El camino falso empieza con <code>SiNo</code>.'],
+  keys:[['Si … Entonces','Camino cuando la condición es verdadera.'],['SiNo','Camino cuando la condición es falsa.'],['FinSi','Cierra la decisión.'],['MOD','Residuo. Si n MOD 2 = 0, el número es par.']],
+  example:'Si nota >= 3 Entonces\n\tEscribir "Aprobaste"\nSiNo\n\tEscribir "Debes reforzar"\nFinSi',
+  exercises:[
+   {t:'Par o impar',name:'ParImpar',g:'Pide un número entero y di si es par o impar.',steps:[['Definir n Como Entero','Crea la variable n.'],['Escribir "Por favor, ingrese un número entero:"','Pide el número.'],['Leer n','Recibe el número.'],['Si n MOD 2 = 0 Entonces','Pregunta si el residuo entre 2 es cero.'],['Escribir n, " es par"','Mensaje para los pares.'],'SiNo',['Escribir n, " es impar"','Mensaje para los impares.'],'FinSi'],s:{n:[8,7]}},
+   {t:'El mayor de dos',name:'MayorDos',g:'Pide dos números y muestra cuál es el mayor.',steps:[['Definir a, b Como Real','Crea a y b.'],['Escribir "Por favor, ingrese dos números:"','Pide los números.'],['Leer a, b','Recibe los dos números.'],['Si a > b Entonces','Pregunta si a es mayor que b.'],['Escribir "El mayor es ", a','Muestra a.'],'SiNo',['Escribir "El mayor es ", b','Muestra b.'],'FinSi'],s:{a:[9,3],b:[4,10]}},
+   {t:'División segura',name:'Division',g:'Divide dos números. Si el divisor es 0, avisa que no se puede.',steps:[['Definir a, b, cociente Como Real','Crea a, b y cociente.'],['Escribir "Por favor, ingrese el dividendo y el divisor:"','Pide los dos números.'],['Leer a, b','Recibe dividendo y divisor.'],['Si b = 0 Entonces','Pregunta si el divisor es cero.'],['Escribir "No se puede dividir entre cero"','Avisa del problema.'],'SiNo',['cociente <- a / b','Ahora sí, divide.'],['Escribir "Resultado: ", cociente','Muestra el resultado.'],'FinSi'],s:{a:[20,9],b:[4,0]}},
+   {t:'Aprobó o reprobó',name:'Nota',g:'Pide la nota (0 a 5). Muestra «Aprobaste» si es 3 o más, o «Debes reforzar» si no.',steps:[['Definir nota Como Real','Crea la variable nota.'],['Escribir "Por favor, indique su nota (de 0 a 5):"','Pide la nota.'],['Leer nota','Recibe la nota.'],['Si nota >= 3 Entonces','Pregunta si aprobó.'],['Escribir "Aprobaste"','Mensaje de aprobado.'],'SiNo',['Escribir "Debes reforzar"','Mensaje para reforzar.'],'FinSi'],s:{nota:[3.8,2.4]}},
+   {t:'Salario con horas extra',name:'HorasExtra',g:'Regla del ejercicio: las primeras 40 horas se pagan normal y cada hora extra vale 1.5 veces.',steps:[['Definir horas, valor, salario Como Real','Crea las tres variables.'],['Escribir "Por favor, indique las horas trabajadas y el valor de la hora:"','Pide los datos.'],['Leer horas, valor','Recibe horas y valor.'],['Si horas > 40 Entonces','¿Trabajó más de 40 horas?'],['salario <- 40 * valor + (horas - 40) * valor * 1.5','40 horas normales más las extra a 1.5.'],'SiNo',['salario <- horas * valor','Sin extras: horas por valor.'],'FinSi',['Escribir "Salario: $", salario','Muestra el salario.']],s:{horas:[45,38],valor:[15000,20000]}}
+  ]},
+/* 7 */ { group:'Decisiones', t:'Decisión anidada', kind:'code',
+  intro:['Una <b>decisión anidada</b> es un Si dentro de otro Si. Sirve cuando hay <b>más de dos caminos</b>.','Cada Si tiene su propio <code>FinSi</code>. La sangría te ayuda a ver qué está dentro de qué.'],
+  keys:[['Anidar','Poner un Si dentro del SiNo (o del Entonces) de otro Si.'],['Y','Verdadero solo si se cumplen las dos condiciones.'],['O','Verdadero si se cumple al menos una.'],['FinSi','Uno por cada Si que abras.']],
+  example:'Si n > 0 Entonces\n\tEscribir "Positivo"\nSiNo\n\tSi n < 0 Entonces\n\t\tEscribir "Negativo"\n\tSiNo\n\t\tEscribir "Cero"\n\tFinSi\nFinSi',
+  exercises:[
+   {t:'Positivo, negativo o cero',name:'Signo',g:'Pide un número y di si es positivo, negativo o cero.',steps:[['Definir n Como Real','Crea n.'],['Escribir "Por favor, ingrese un número:"','Pide el número.'],['Leer n','Recibe el número.'],['Si n > 0 Entonces','Primera pregunta: ¿es mayor que cero?'],['Escribir "Positivo"','Camino positivo.'],'SiNo',['Si n < 0 Entonces','Segunda pregunta, dentro del SiNo: ¿es menor que cero?'],['Escribir "Negativo"','Camino negativo.'],'SiNo',['Escribir "Cero"','Si no es positivo ni negativo, es cero.'],'FinSi','FinSi'],s:{n:[5,-3,0]}},
+   {t:'El mayor de tres',name:'MayorTres',g:'Pide tres números y muestra el mayor.',steps:[['Definir a, b, c Como Real','Crea a, b y c.'],['Escribir "Por favor, ingrese tres números:"','Pide los números.'],['Leer a, b, c','Recibe los tres.'],['Si a > b Y a > c Entonces','¿a es mayor que b y también que c?'],['Escribir "El mayor es ", a','a es el mayor.'],'SiNo',['Si b > c Entonces','Si no es a, compara b con c.'],['Escribir "El mayor es ", b','b es el mayor.'],'SiNo',['Escribir "El mayor es ", c','c es el mayor.'],'FinSi','FinSi'],s:{a:[9,2,4],b:[3,8,1],c:[5,6,7]}},
+   {t:'Desempeño por nota',name:'Desempeno',g:'Regla del ejercicio: 4.5 o más es Superior, 4 o más es Alto, 3 o más es Básico y menos de 3 es Bajo.',steps:[['Definir nota Como Real','Crea nota.'],['Escribir "Por favor, indique la nota (de 0 a 5):"','Pide la nota.'],['Leer nota','Recibe la nota.'],['Si nota >= 4.5 Entonces','¿Es 4.5 o más?'],['Escribir "Superior"','Desempeño superior.'],'SiNo',['Si nota >= 4 Entonces','¿Es 4 o más?'],['Escribir "Alto"','Desempeño alto.'],'SiNo',['Si nota >= 3 Entonces','¿Es 3 o más?'],['Escribir "Básico"','Desempeño básico.'],'SiNo',['Escribir "Bajo"','Desempeño bajo.'],'FinSi','FinSi','FinSi'],s:{nota:[4.7,4.1,3.2,2]}},
+   {t:'Tarifa de cine',name:'Cine',g:'Menores de 12 pagan $8000, desde 60 años pagan $7000 y los demás $12000.',steps:[['Definir edad Como Entero','Crea edad.'],['Escribir "Por favor, indique la edad:"','Pide la edad.'],['Leer edad','Recibe la edad.'],['Si edad < 12 Entonces','¿Es menor de 12?'],['Escribir "Tarifa niño: $8000"','Tarifa para niños.'],'SiNo',['Si edad >= 60 Entonces','¿Tiene 60 o más?'],['Escribir "Tarifa adulto mayor: $7000"','Tarifa adulto mayor.'],'SiNo',['Escribir "Tarifa general: $12000"','Tarifa general.'],'FinSi','FinSi'],s:{edad:[8,65,30]}},
+   {t:'¿Qué tal el clima?',name:'Clima',g:'Pide la temperatura: menos de 10 °C es Frío, hasta 24 °C es Templado y más es Caliente.',steps:[['Definir t Como Real','Crea t.'],['Escribir "Por favor, indique la temperatura en grados Celsius:"','Pide la temperatura.'],['Leer t','Recibe la temperatura.'],['Si t < 10 Entonces','¿Es menor que 10?'],['Escribir "Frío"','Hace frío.'],'SiNo',['Si t <= 24 Entonces','¿Es 24 o menos?'],['Escribir "Templado"','Clima templado.'],'SiNo',['Escribir "Caliente"','Hace calor.'],'FinSi','FinSi'],s:{t:[8,18,30]}}
+  ]},
+/* 8 */ { group:'Decisiones', t:'Decisión múltiple (Según)', kind:'code',
+  intro:['<b>Según</b> compara una variable con <b>varios valores</b> y ejecuta solo el caso que coincide. Es más ordenado que muchos Si anidados.','Cada caso empieza con su valor y dos puntos. <code>De Otro Modo</code> se ejecuta si ningún caso coincide.'],
+  keys:[['Segun x Hacer','Abre la decisión múltiple con la variable x.'],['1:','Caso: lo que sigue se ejecuta cuando x vale 1.'],['1, 2, 3:','Un caso puede tener varios valores separados por coma.'],['De Otro Modo:','Cuando ningún caso coincide.'],['FinSegun','Cierra el Según.']],
+  example:'Segun op Hacer\n\t1:\n\t\tEscribir "Sumar"\n\t2:\n\t\tEscribir "Restar"\n\tDe Otro Modo:\n\t\tEscribir "Opción no válida"\nFinSegun',
+  exercises:[
+   {t:'¿Día de estudio?',name:'Dia',g:'Pide el número del día (1 a 7). Del 1 al 5 es día de estudio, 6 y 7 fin de semana.',steps:[['Definir d Como Entero','Crea d.'],['Escribir "Por favor, indique el número del día de la semana (1 a 7):"','Pide el día.'],['Leer d','Recibe el día.'],['Segun d Hacer','Abre el Según con d.'],'1, 2, 3, 4, 5:',['Escribir "Día de estudio"','Mensaje para lunes a viernes.'],'6, 7:',['Escribir "Fin de semana"','Mensaje para sábado y domingo.'],'De Otro Modo:',['Escribir "Ese día no existe"','Mensaje si el número no está entre 1 y 7.'],'FinSegun'],s:{d:[3,6,9]}},
+   {t:'Calculadora',name:'Calculadora',g:'Pide dos números y una opción: 1 sumar, 2 restar, 3 multiplicar, 4 dividir.',steps:[['Definir a, b, r Como Real','Crea a, b y el resultado r.'],['Definir op Como Entero','Crea op para la opción.'],['Escribir "Por favor, ingrese dos números:"','Pide los números.'],['Leer a, b','Recibe los dos números.'],['Escribir "Por favor, elija una opción: 1 Sumar, 2 Restar, 3 Multiplicar, 4 Dividir"','Muestra el menú.'],['Leer op','Recibe la opción.'],['Segun op Hacer','Elige según op.'],'1:',['r <- a + b','Opción 1: suma.'],'2:',['r <- a - b','Opción 2: resta.'],'3:',['r <- a * b','Opción 3: multiplicación.'],'4:',['r <- a / b','Opción 4: división.'],'FinSegun',['Escribir "Resultado: ", r','Muestra el resultado.']],s:{a:[6,10],b:[3,4],op:[1,2,3,4]}},
+   {t:'Cafetería',name:'Cafeteria',g:'Muestra el menú y el precio del producto elegido.',steps:[['Definir op Como Entero','Crea op.'],['Definir precio Como Real','Crea precio.'],['Escribir "Por favor, elija un producto: 1 Empanada, 2 Jugo, 3 Sándwich"','Muestra el menú.'],['Leer op','Recibe la opción.'],['Segun op Hacer','Elige según op.'],'1:',['precio <- 3000','La empanada vale 3000.'],'2:',['precio <- 2500','El jugo vale 2500.'],'3:',['precio <- 4000','El sándwich vale 4000.'],'De Otro Modo:',['precio <- 0','Opción inválida: precio 0.'],'FinSegun',['Escribir "Precio: $", precio','Muestra el precio.']],s:{op:[1,2,3,5]}},
+   {t:'¿Es vocal?',name:'Vocal',g:'Pide una letra minúscula y di si es vocal.',steps:[['Definir letra Como Caracter','Crea letra (texto).'],['Escribir "Por favor, ingrese una letra en minúscula:"','Pide la letra.'],['Leer letra','Recibe la letra.'],['Segun letra Hacer','Elige según la letra.'],'"a", "e", "i", "o", "u":',['Escribir "Es vocal"','Mensaje para las vocales.'],'De Otro Modo:',['Escribir "No es vocal"','Mensaje para las demás letras.'],'FinSegun'],s:{letra:['a','m','u']}},
+   {t:'Conversor de medidas',name:'Conversor',g:'1 convierte centímetros a metros, 2 metros a kilómetros y 3 kilómetros a metros.',steps:[['Definir v, r Como Real','Crea el valor v y el resultado r.'],['Definir op Como Entero','Crea op.'],['Escribir "Por favor, elija una conversión: 1 cm a m, 2 m a km, 3 km a m"','Muestra el menú.'],['Leer op','Recibe la opción.'],['Escribir "Por favor, indique el valor que desea convertir:"','Pide el valor.'],['Leer v','Recibe el valor.'],['Segun op Hacer','Elige según op.'],'1:',['r <- v / 100','100 cm son 1 m.'],'2:',['r <- v / 1000','1000 m son 1 km.'],'3:',['r <- v * 1000','1 km son 1000 m.'],'FinSegun',['Escribir "Resultado: ", r','Muestra el resultado.']],s:{op:[1,2,3],v:[250,1500,3]}}
+  ]},
+/* 9 */ { group:'Ciclos', t:'Contadores y acumuladores', kind:'code',
+  intro:['Antes de los ciclos necesitas dos herramientas clave: el <b>contador</b> y el <b>acumulador</b>. Los dos son variables que se actualizan usando su propio valor.','Siempre deben empezar con un valor inicial, casi siempre 0. Si no, el programa no sabe desde dónde contar o sumar.'],
+  keys:[['c <- c + 1','Contador: aumenta siempre la misma cantidad (de 1 en 1, de 2 en 2…).'],['total <- total + x','Acumulador: suma valores que cambian (las compras, las notas…).'],['c <- 0','Inicializar: darle el valor de partida antes de usarlo.'],['Uso','En los ciclos sirven para contar vueltas y sumar datos.']],
+  example:'Definir c, total Como Real\nc <- 0\ntotal <- 0\nc <- c + 1\ntotal <- total + 5000\nEscribir "Llevo ", c, " compras por $", total',
+  exercises:[
+   {t:'Contador básico',name:'Contador',g:'Crea un contador, auméntalo tres veces de 1 en 1 y muestra su valor.',steps:[['Definir c Como Entero','Crea el contador c.'],['c <- 0','El contador empieza en 0.'],['c <- c + 1','Aumenta el contador en 1.'],['c <- c + 1','Auméntalo otra vez.'],['c <- c + 1','Y una vez más.'],['Escribir "El contador vale: ", c','Muestra el valor final.']]},
+   {t:'Puntos de un juego',name:'Puntos',g:'Empiezas con 0 puntos, ganas 10, luego 25 y pierdes 5. Muestra los puntos finales.',steps:[['Definir puntos Como Entero','Crea la variable puntos.'],['puntos <- 0','Empiezas con 0 puntos.'],['puntos <- puntos + 10','Ganas 10 puntos.'],['puntos <- puntos + 25','Ganas 25 puntos más.'],['puntos <- puntos - 5','Pierdes 5 puntos.'],['Escribir "Puntos finales: ", puntos','Muestra los puntos.']]},
+   {t:'Total de dos compras',name:'Compras',g:'Pide el valor de dos compras y acumúlalas en total.',steps:[['Definir total, compra Como Real','Crea total y compra.'],['total <- 0','El acumulador empieza en 0.'],['Escribir "Por favor, indique el valor de la compra 1:"','Pide la primera compra.'],['Leer compra','Recibe la compra.'],['total <- total + compra','Súmala al total.'],['Escribir "Por favor, indique el valor de la compra 2:"','Pide la segunda compra.'],['Leer compra','Recibe la compra.'],['total <- total + compra','Súmala al total.'],['Escribir "Total: $", total','Muestra el total.']],s:{compra:[12000,8500]}},
+   {t:'Contar aprobados',name:'Aprobados',g:'Pide dos notas y cuenta cuántas son de 3 o más.',steps:[['Definir nota Como Real','Crea nota.'],['Definir aprobados Como Entero','Crea el contador aprobados.'],['aprobados <- 0','El contador empieza en 0.'],['Escribir "Por favor, indique la nota 1 (de 0 a 5):"','Pide la primera nota.'],['Leer nota','Recibe la nota.'],['Si nota >= 3 Entonces','¿Aprobó?'],['aprobados <- aprobados + 1','Cuenta un aprobado.'],'FinSi',['Escribir "Por favor, indique la nota 2 (de 0 a 5):"','Pide la segunda nota.'],['Leer nota','Recibe la nota.'],['Si nota >= 3 Entonces','¿Aprobó?'],['aprobados <- aprobados + 1','Cuenta otro aprobado.'],'FinSi',['Escribir "Aprobados: ", aprobados','Muestra cuántos aprobaron.']],s:{nota:[4,2.5]}},
+   {t:'Ahorro de tres semanas',name:'Ahorro',g:'Pide lo que ahorraste cada semana (3 semanas), acumúlalo y muestra el total y el promedio.',steps:[['Definir ahorro, semana Como Real','Crea ahorro y semana.'],['ahorro <- 0','El acumulador empieza en 0.'],['Escribir "Por favor, indique lo que ahorró en la semana 1:"','Pide la semana 1.'],['Leer semana','Recibe el valor.'],['ahorro <- ahorro + semana','Acumula.'],['Escribir "Por favor, indique lo que ahorró en la semana 2:"','Pide la semana 2.'],['Leer semana','Recibe el valor.'],['ahorro <- ahorro + semana','Acumula.'],['Escribir "Por favor, indique lo que ahorró en la semana 3:"','Pide la semana 3.'],['Leer semana','Recibe el valor.'],['ahorro <- ahorro + semana','Acumula.'],['Escribir "Ahorro total: $", ahorro','Muestra el total.'],['Escribir "Promedio por semana: $", ahorro / 3','Muestra el promedio.']],s:{semana:[10000,15000,20000]}}
+  ]},
+/* 9 */ { group:'Ciclos', t:'Ciclo Mientras', kind:'code',
+  intro:['<b>Mientras</b> repite un bloque de instrucciones <b>mientras la condición sea verdadera</b>.','Revisa la condición <b>antes</b> de cada vuelta: si al principio es falsa, el bloque no se ejecuta ni una vez. Dentro del ciclo hay que cambiar la variable de la condición; si no, el ciclo nunca termina (ciclo infinito).'],
+  keys:[['Mientras … Hacer','Abre el ciclo con su condición.'],['FinMientras','Cierra el ciclo y vuelve a revisar la condición.'],['Contador','i <- i + 1: suma 1 en cada vuelta.'],['Acumulador','suma <- suma + n: va guardando un total.']],
+  example:'i <- 1\nMientras i <= 5 Hacer\n\tEscribir i\n\ti <- i + 1\nFinMientras',
+  exercises:[
+   {t:'Contar del 1 al 5',name:'Contar',g:'Muestra los números del 1 al 5 usando Mientras.',steps:[['Definir i Como Entero','Crea el contador i.'],['i <- 1','El contador empieza en 1.'],['Mientras i <= 5 Hacer','Repite mientras i sea 5 o menos.'],['Escribir i','Muestra el valor de i.'],['i <- i + 1','Aumenta i en 1. ¡Sin esto no termina!'],'FinMientras']},
+   {t:'Cuenta regresiva',name:'Regresiva',g:'Pide un número y cuenta hacia atrás hasta 1. Luego muestra «¡Despegue!».',steps:[['Definir n Como Entero','Crea n.'],['Escribir "Por favor, indique desde qué número quiere contar:"','Pregunta desde dónde contar.'],['Leer n','Recibe el número.'],['Mientras n > 0 Hacer','Repite mientras n sea mayor que 0.'],['Escribir n','Muestra n.'],['n <- n - 1','Resta 1 a n.'],'FinMientras',['Escribir "¡Despegue!"','Mensaje final, fuera del ciclo.']],s:{n:[5,3]}},
+   {t:'Validar una nota',name:'Validar',g:'Pide una nota y, mientras no esté entre 0 y 5, vuelve a pedirla.',steps:[['Definir nota Como Real','Crea nota.'],['Escribir "Por favor, indique la nota (de 0 a 5):"','Pide la nota.'],['Leer nota','Recibe la nota.'],['Mientras nota < 0 O nota > 5 Hacer','Repite mientras la nota esté fuera del rango.'],['Escribir "La nota no es válida. Por favor, ingrésela de nuevo:"','Avisa del error.'],['Leer nota','Vuelve a pedir la nota.'],'FinMientras',['Escribir "Nota guardada: ", nota','Muestra la nota válida.']],s:{nota:[7,-1,4.5]}},
+   {t:'Sumar hasta el cero',name:'SumarCero',g:'Suma los números que escriba el usuario hasta que escriba 0.',steps:[['Definir n, suma Como Real','Crea n y suma.'],['suma <- 0','El acumulador empieza en 0.'],['Escribir "Por favor, ingrese un número (0 para terminar):"','Pide el primer número.'],['Leer n','Recibe el número.'],['Mientras n <> 0 Hacer','Repite mientras n sea diferente de 0.'],['suma <- suma + n','Acumula n en suma.'],['Escribir "Por favor, ingrese un número (0 para terminar):"','Pide otro número.'],['Leer n','Recibe el siguiente número.'],'FinMientras',['Escribir "La suma es: ", suma','Muestra el total.']],s:{n:[4,6,0]}},
+   {t:'Tabla de multiplicar',name:'Tabla',g:'Pide un número y muestra su tabla de multiplicar del 1 al 10.',steps:[['Definir t, i Como Entero','Crea la tabla t y el contador i.'],['Escribir "Por favor, indique qué tabla de multiplicar desea ver:"','Pregunta la tabla.'],['Leer t','Recibe la tabla.'],['i <- 1','El contador empieza en 1.'],['Mientras i <= 10 Hacer','Repite mientras i sea 10 o menos.'],['Escribir t, " x ", i, " = ", t * i','Muestra una línea de la tabla.'],['i <- i + 1','Aumenta el contador.'],'FinMientras'],s:{t:[7,3]}}
+  ]},
+/* 10 */ { group:'Ciclos', t:'Ciclo Repetir', kind:'code',
+  intro:['<b>Repetir</b> ejecuta un bloque y lo repite <b>hasta que</b> la condición sea verdadera.','La condición se revisa <b>al final</b>, por eso el bloque se ejecuta <b>al menos una vez</b>. Es ideal para validar datos y para menús.'],
+  keys:[['Repetir','Abre el ciclo.'],['Hasta Que …','Cierra el ciclo: sale cuando la condición es verdadera.'],['Mientras vs Repetir','Mientras puede no ejecutarse nunca; Repetir siempre se ejecuta al menos una vez.']],
+  example:'Repetir\n\tEscribir "Por favor, ingrese un número positivo:"\n\tLeer n\nHasta Que n > 0',
+  exercises:[
+   {t:'Saludar tres veces',name:'Saludar',g:'Muestra «¡Hola!» tres veces usando Repetir.',steps:[['Definir i Como Entero','Crea el contador i.'],['i <- 0','El contador empieza en 0.'],['Repetir','Abre el ciclo Repetir.'],['Escribir "¡Hola!"','Lo que se repite.'],['i <- i + 1','Cuenta una vuelta más.'],['Hasta Que i = 3','Sale cuando i llegue a 3.']]},
+   {t:'Número positivo',name:'PedirPositivo',g:'Pide un número hasta que sea positivo.',steps:[['Definir n Como Real','Crea n.'],['Repetir','Abre el ciclo.'],['Escribir "Por favor, ingrese un número positivo:"','Pide el número.'],['Leer n','Recibe el número.'],['Hasta Que n > 0','Sale cuando n sea mayor que 0.'],['Escribir "Gracias, escribiste ", n','Mensaje final.']],s:{n:[-4,0,8]}},
+   {t:'Clave de acceso',name:'Clave',g:'Pide el PIN hasta que escriban el correcto: 1234.',steps:[['Definir pin Como Entero','Crea pin.'],['Repetir','Abre el ciclo.'],['Escribir "Por favor, ingrese su PIN:"','Pide el PIN.'],['Leer pin','Recibe el PIN.'],['Hasta Que pin = 1234','Sale cuando el PIN sea 1234.'],['Escribir "Acceso concedido"','Mensaje final.']],s:{pin:[1111,1234]}},
+   {t:'Sumar hasta el cero',name:'SumaRepetir',g:'Suma números hasta que el usuario escriba 0.',steps:[['Definir n, suma Como Real','Crea n y suma.'],['suma <- 0','El acumulador empieza en 0.'],['Repetir','Abre el ciclo.'],['Escribir "Por favor, ingrese un número (0 para terminar):"','Pide un número.'],['Leer n','Recibe el número.'],['suma <- suma + n','Acumula n.'],['Hasta Que n = 0','Sale cuando escriban 0.'],['Escribir "Suma: ", suma','Muestra el total.']],s:{n:[5,2,0]}},
+   {t:'Menú hasta salir',name:'Menu',g:'Muestra un menú y repítelo hasta que el usuario elija 0.',steps:[['Definir op Como Entero','Crea op.'],['Repetir','Abre el ciclo.'],['Escribir "Por favor, elija una opción: 1 Saludar, 2 Despedirse, 0 Salir"','Muestra el menú.'],['Leer op','Recibe la opción.'],['Segun op Hacer','Elige según op.'],'1:',['Escribir "¡Hola!"','Opción 1.'],'2:',['Escribir "¡Chao!"','Opción 2.'],'FinSegun',['Hasta Que op = 0','Sale cuando op sea 0.'],['Escribir "Programa terminado"','Mensaje final.']],s:{op:[1,2,0]}}
+  ]},
+/* 11 */ { group:'Ciclos', t:'Ciclo Para', kind:'code',
+  intro:['<b>Para</b> repite un bloque un <b>número conocido de veces</b>. La variable de control cambia sola en cada vuelta.','Se escribe desde qué valor empieza, hasta cuál llega y de cuánto en cuánto avanza (Con Paso).'],
+  keys:[['Para i <- 1 Hasta 10','i empieza en 1 y llega hasta 10.'],['Con Paso 2','Avanza de 2 en 2.'],['Hacer','Indica dónde empieza el bloque.'],['FinPara','Cierra el ciclo.']],
+  example:'Para i <- 1 Hasta 5 Con Paso 1 Hacer\n\tEscribir i\nFinPara',
+  exercises:[
+   {t:'Del 1 al 10',name:'UnoDiez',g:'Muestra los números del 1 al 10 con Para.',steps:[['Definir i Como Entero','Crea i.'],['Para i <- 1 Hasta 10 Con Paso 1 Hacer','i va de 1 a 10, de 1 en 1.'],['Escribir i','Muestra i.'],'FinPara']},
+   {t:'Números pares',name:'Pares',g:'Muestra los números pares del 2 al 20.',steps:[['Definir i Como Entero','Crea i.'],['Para i <- 2 Hasta 20 Con Paso 2 Hacer','i va de 2 a 20, de 2 en 2.'],['Escribir i','Muestra i.'],'FinPara']},
+   {t:'Tabla con Para',name:'TablaPara',g:'Pide un número y muestra su tabla del 1 al 10 usando Para.',steps:[['Definir t, i Como Entero','Crea t e i.'],['Escribir "Por favor, indique qué tabla de multiplicar desea ver:"','Pregunta la tabla.'],['Leer t','Recibe la tabla.'],['Para i <- 1 Hasta 10 Con Paso 1 Hacer','Repite 10 veces.'],['Escribir t, " x ", i, " = ", t * i','Muestra una línea de la tabla.'],'FinPara'],s:{t:[9,4]}},
+   {t:'Suma del 1 al N',name:'SumaN',g:'Pide N y suma todos los números del 1 al N.',steps:[['Definir n, i, suma Como Entero','Crea n, i y suma.'],['Escribir "Por favor, indique hasta qué número desea sumar:"','Pide N.'],['Leer n','Recibe N.'],['suma <- 0','El acumulador empieza en 0.'],['Para i <- 1 Hasta n Con Paso 1 Hacer','i va de 1 hasta n.'],['suma <- suma + i','Acumula i.'],'FinPara',['Escribir "La suma es: ", suma','Muestra el total.']],s:{n:[5,10]}},
+   {t:'Promedio de N notas',name:'PromedioN',g:'Pide cuántas notas son, léelas con Para y muestra el promedio.',steps:[['Definir n, i Como Entero','Crea n e i.'],['Definir nota, suma, prom Como Real','Crea nota, suma y prom.'],['Escribir "Por favor, indique cuántas notas va a ingresar:"','Pregunta cuántas.'],['Leer n','Recibe la cantidad.'],['suma <- 0','El acumulador empieza en 0.'],['Para i <- 1 Hasta n Con Paso 1 Hacer','Repite n veces.'],['Escribir "Por favor, indique la nota ", i, ":"','Pide la nota número i.'],['Leer nota','Recibe la nota.'],['suma <- suma + nota','Acumula la nota.'],'FinPara',['prom <- suma / n','Calcula el promedio, fuera del ciclo.'],['Escribir "Promedio: ", prom','Muestra el promedio.']],s:{n:[3,2],nota:[4,3.5,4.5]}}
+  ]}
+];
+
+
+/* ================= APP ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const PRAISE=['¡Muy bien!','¡Exacto!','¡Eso es!','¡Vas volando!','¡Excelente!','¡Correcto!'];
+const RETRY=['Casi.','Todavía no.','Revisa esto:'];
+const RX=/("[^"]*")|(<-)|\b(Real|Entero|Caracter|Logico)\b|\b(Algoritmo|FinAlgoritmo|Definir|Como|Escribir|Leer|Si|Entonces|SiNo|FinSi|Segun|Hacer|FinSegun|De|Otro|Modo|Mientras|FinMientras|Repetir|Hasta|Que|Para|Con|Paso|FinPara|MOD|Y|O|NO)\b|(\b\d+(?:\.\d+)?\b)/g;
+function hl(code){let o='',last=0,m;RX.lastIndex=0;while((m=RX.exec(code))){o+=esc(code.slice(last,m.index));const c=m[1]?'str':m[2]?'op':m[3]?'ty':m[4]?'kw':'nm';o+=`<span class="${c}">${esc(m[0])}</span>`;last=RX.lastIndex}return o+esc(code.slice(last))}
+const SYM={T:['Terminal','Inicio y Fin del algoritmo'],ES:['Entrada / Salida','leer un dato o mostrar un resultado'],P:['Proceso','un cálculo o una asignación'],D:['Decisión','una pregunta que se responde Sí o No']};
+const shape=(k,txt,cls='')=>`<div class="shp ${k} ${cls}"><span>${esc(txt)}</span></div>`;
+const OWL=`<svg class="owl" viewBox="0 0 72 76" aria-hidden="true">
+<path d="M4 70 Q36 64 68 70" fill="none" stroke="#7A4A2A" stroke-width="5" stroke-linecap="round"/>
+<path d="M17 24 L13 8 L27 18 Z M55 24 L59 8 L45 18 Z" fill="#8C5A3C" stroke="#1E1A17" stroke-width="2.2" stroke-linejoin="round"/>
+<ellipse cx="36" cy="44" rx="22" ry="24" fill="#A9714E" stroke="#1E1A17" stroke-width="2.5"/>
+<path d="M14 38 Q6 52 16 62 Q20 52 20 42 Z M58 38 Q66 52 56 62 Q52 52 52 42 Z" fill="#8C5A3C" stroke="#1E1A17" stroke-width="2.2" stroke-linejoin="round"/>
+<ellipse cx="36" cy="53" rx="12" ry="13" fill="#F3D9B1"/>
+<path d="M30 50 l3 3 l3 -3 l3 3 l3 -3 M30 57 l3 3 l3 -3 l3 3 l3 -3" fill="none" stroke="#C9A27A" stroke-width="1.6" stroke-linejoin="round"/>
+<path d="M14 32 Q24 20 36 30 Q48 20 58 32 Q50 42 36 40 Q22 42 14 32 Z" fill="#F3D9B1" stroke="#1E1A17" stroke-width="2"/>
+<circle cx="26" cy="32" r="8.5" fill="#fff" stroke="#1E1A17" stroke-width="2.2"/>
+<circle cx="46" cy="32" r="8.5" fill="#fff" stroke="#1E1A17" stroke-width="2.2"/>
+<circle cx="26" cy="32" r="5" fill="#F5A524"/><circle cx="46" cy="32" r="5" fill="#F5A524"/>
+<circle cx="26.5" cy="32.5" r="2.6" fill="#1E1A17"/><circle cx="46.5" cy="32.5" r="2.6" fill="#1E1A17"/>
+<circle cx="27.6" cy="31" r="1" fill="#fff"/><circle cx="47.6" cy="31" r="1" fill="#fff"/>
+<path d="M32.5 37 Q36 36 39.5 37 L36 44 Z" fill="#FFB020" stroke="#1E1A17" stroke-width="1.8" stroke-linejoin="round"/>
+<path d="M29 67 v3 M33 67 v3 M39 67 v3 M43 67 v3" stroke="#F5A524" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M18 13 L36 6 L54 13 L36 20 Z" fill="#1E1A17"/><rect x="28" y="15" width="16" height="6" rx="1.5" fill="#1E1A17"/>
+<path d="M54 13 V22" stroke="#FFD166" stroke-width="2"/><circle cx="54" cy="23.5" r="2" fill="#FFD166"/>
+</svg>`;
+const CARET='<span class="car" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 6 L8 10 L12 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+const ENC=['¡Tú puedes!','No te preocupes, así se aprende.','¡Casi lo tienes!','No pasa nada, inténtalo otra vez.'];
+const PHHELP={lista_de_variables:'las variables que pide el aviso',tipo:'el tipo de dato',lista_de_expresiones:'lo que se debe mostrar',expresion:'la operación correcta',expresion_logica:'la condición correcta',variable:'la variable que guarda el resultado',variable_numerica:'la variable que decide',valor_inicial:'desde dónde empieza',valor_final:'hasta dónde llega',paso:'de cuánto en cuánto avanza'};
+function stepWhy(){const C=codes(),c=C[B.k],t=toolOf(c),prev=B.placed[B.placed.length-1]||'',nxt=C[B.k+1]||'';let ctx='',w='';
+  if(prev==='SiNo')ctx='Ahora va el camino del SiNo: lo que pasa cuando la condición es falsa. ';
+  else if(/^Si .+ Entonces$/.test(prev))ctx='Ahora va lo que pasa cuando la condición es verdadera. ';
+  else if(/^(Mientras|Para) /.test(prev)||prev==='Repetir')ctx='Ahora va lo que se repite dentro del ciclo. ';
+  else if(/:$/.test(prev)&&!/^(Escribir|Leer)/.test(prev))ctx='Ahora va lo que hace este caso. ';
+  if(t==='Definir')w=B.placed.some(x=>/^Definir/.test(x))?'Falta definir otra variable: cada dato necesita su cajita y su tipo.':'Lo primero es definir las variables: son las cajitas donde el programa guarda los datos que va a usar.';
+  else if(t==='Escribir')w=/^Leer /.test(nxt)?'Antes de pedir un dato hay que avisarle al usuario qué debe escribir. Eso se hace con Escribir.':B.placed.some(x=>/^Leer |<-/.test(x))?'Ya tienes los datos: ahora hay que mostrar el resultado en pantalla con Escribir.':'Para mostrar un mensaje en pantalla se usa Escribir.';
+  else if(t==='Leer')w='Ahora el programa debe esperar el dato que escribe el usuario y guardarlo en su variable. Eso lo hace Leer.';
+  else if(t==='Asignar'){const m=c.match(/^(\w+) <- (.+)$/);w=new RegExp('\\b'+m[1]+'\\b').test(m[2])?`Hay que actualizar ${m[1]} usando su propio valor: así funciona un contador o un acumulador. Se hace con Asignar.`:/^[\d.]+$/.test(m[2])?`Antes de usar ${m[1]} hay que darle un valor inicial con Asignar.`:'Con los datos guardados ya se puede calcular. El resultado se guarda en una variable con Asignar (la flecha ←).'}
+  else if(t==='Si')w='Ahora el programa debe tomar una decisión: hace una pregunta con Si-Entonces.';
+  else if(t==='Segun')w='Hay varias opciones posibles. Para elegir entre ellas se usa Según.';
+  else if(t==='Mientras')w='Hay que repetir algo mientras se cumpla una condición: para eso está Mientras.';
+  else if(c==='Repetir')w='Hay que repetir algo al menos una vez: el ciclo se abre con Repetir.';
+  else if(t==='Repetir')w='Ahora hay que decir cuándo deja de repetirse: Hasta Que y la condición (está en Repetir).';
+  else if(t==='Para')w='Hay que repetir un número conocido de veces: para eso está Para.';
+  return ctx+w}
+function guideMsg(){
+  if(S.view!=='ws')return null;
+  if(R)return{type:R.err?'bad':'tip',html:esc(R.note)};
+  const isCode=B.kind==='code',bad=B.fb&&B.fb.type==='bad',head=B.fb?B.fb.html+' ':'',type=B.fb?B.fb.type:'tip';
+  if(B.complete)return{type:'ok',html:head+(isCode?'<b>¡Programa completo!</b> Ahora pulsa <b>Ejecutar</b>, arriba, para ver cómo funciona.':'')};
+  if(bad)return{type,html:head};
+  if(isCode){
+    if(B.stage==='tool'){const isDef=toolOf(codes()[B.k])==='Definir';return{type,html:head+esc(stepWhy())+' '+(isDef?'Toca <b>Definir … Como …</b> en la línea.':'Búscala en <b>Herramientas</b>, a la derecha.')}}
+    const F=B.fill;return{type,html:head+`Toca <b>${F.blanks[F.idx].ph}</b> ▾ y elige ${PHHELP[F.blanks[F.idx].ph]||'la opción correcta'}.`}}
+  return{type,html:head+(B.kind==='flow'?'Mira el paso que sigue y elige su símbolo a la derecha.':(B.k===0?'Piensa qué debe pasar antes que todo y toca ese paso.':'Piensa qué debe pasar justo después y tócalo.'))}}
+function guideBar(){const g=guideMsg();if(!g)return'';return`<div class="gbar"><div class="gin">${OWL}<div class="bub ${g.type}">${g.html}</div></div></div>`}
+const guideHtml=()=>{const g=guideMsg();return`<div class="guide ${g.type}" role="status">${OWL}<div class="bub">${g.html}</div></div>`};
+const MS={T:'<rect x="2" y="4" width="48" height="22" rx="11"/>',ES:'<polygon points="10,4 50,4 42,26 2,26"/>',P:'<rect x="4" y="4" width="44" height="22"/>',D:'<polygon points="26,2 50,15 26,28 2,15"/>'};
+const MSF={T:'#DDF8EE',ES:'#E2F6FC',P:'#FFFFFF',D:'#FFF3CC'};
+const msym=k=>`<svg class="msym" viewBox="0 0 52 30" aria-hidden="true"><g fill="${MSF[k]}" stroke="#1E1A17" stroke-width="2.5">${MS[k]}</g></svg>`;
+
+/* progreso */
+const KEY='pseintDidactico.v1';let P={};try{P=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){}};
+const pk=(t,e)=>t+'-'+e;
+const doneIn=t=>TOPICS[t].exercises.filter((_,e)=>P[pk(t,e)]).length;
+const starsOf=(e,h)=>e===0&&h===0?3:e+h<=3?2:1;
+const stars=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+
+/* voz */
+function speak(t){try{const s=speechSynthesis;if(s.speaking){s.cancel();return}const u=new SpeechSynthesisUtterance(t.replace(/<-/g,' se guarda ').replace(/["«»]/g,''));u.lang='es-CO';u.rate=.95;s.speak(u)}catch(e){}}
+const hush=()=>{try{speechSynthesis.cancel()}catch(e){}};
+
+/* estado */
+let S={t:0,view:'lesson',e:0},B=null,R=null;
+function goLesson(t){stopRun();hush();S={t,view:'lesson',e:0};R=null;draw();window.scrollTo(0,0)}
+function goEx(t,e){stopRun();hush();S={t,view:'ws',e};R=null;B=newB();autoAdvance();draw();window.scrollTo(0,0)}
+const T_=()=>TOPICS[S.t],E_=()=>TOPICS[S.t].exercises[S.e];
+function draw(){document.body.classList.toggle('hasguide',S.view==='ws');drawSide();S.view==='lesson'?drawLesson():drawWS();$('#veil').innerHTML=S.done?endHtml():'';wireEnd();$('#guide').innerHTML=S.done?'':guideBar();
+  const tot=TOPICS.length*5,d=Object.keys(P).length;$('#prog').textContent=`${d} de ${tot} ejercicios`}
+
+function drawSide(){
+  let h='<h2>Temas</h2>',g='';
+  h+='<div class="tps">';
+  TOPICS.forEach((tp,t)=>{if(tp.group!==g){g=tp.group;h+=`<span class="grp">${g}</span>`}const d=doneIn(t);
+    h+=`<button class="tp ${S.t===t?'on':''}" data-t="${t}"><span class="n">${t+1}</span>${tp.t}<span class="c ${d===5?'full':''}">${d}/5</span></button>`});
+  h+='</div>';
+  $('#side').innerHTML=h;$('#side').querySelectorAll('.tp').forEach(b=>b.onclick=()=>goLesson(+b.dataset.t));
+}
+
+/* ---------- lección ---------- */
+function codeLines(text,plain){return text.split('\n').map((l,i)=>{const ind=(l.match(/^\t*/)[0].length),x=l.replace(/^\t*/,'');return`<div class="ln"><span class="n">${i+1}</span><span class="t">${'  '.repeat(ind)}${plain?esc(x):hl(x)}</span></div>`}).join('')}
+function drawLesson(){
+  const tp=T_(),t=S.t,next=tp.exercises.findIndex((_,e)=>!P[pk(t,e)]);
+  const keys=tp.symbols?tp.keys.map(([k,d])=>`<div class="k">${msym(k)}</div><div><b>${SYM[k][0]}:</b> ${d.split(': ')[1]||d}</div>`).join('')
+    :tp.keys.map(([k,d])=>`<div class="k"><code>${hl(k)}</code></div><div>${d}</div>`).join('');
+  $('#main').innerHTML=`<section class="card">
+    <div class="head"><span class="lab">Tema ${t+1}</span><span class="pill">${tp.group}</span><span class="sp"></span>
+      <button class="b sm" id="sayL">Escuchar</button><button class="b t" id="goE">${next<0?'Repasar ejercicios':next===0?'Ejercicio 1':'Seguir: ejercicio '+(next+1)}</button></div>
+    <div class="lesson">
+      <h1>${tp.t}</h1>
+      <div class="intro">${tp.intro.map(p=>`<p>${p}</p>`).join('')}</div>
+      <span class="lbl">${tp.symbols?'Los símbolos':'Lo que necesitas saber'}</span>
+      <div class="keys">${keys}</div>
+      ${tp.example?`<span class="lbl">${tp.exTitle||'Así se escribe en PSeInt'}</span><div class="sample">${tp.kind==='order'?codeLines(tp.example,true).replace(/class="t"/g,'class="t" style="font-family:var(--f);font-weight:700"'):codeLines(tp.example)}</div>`:''}
+      ${tp.symbols?`<span class="lbl">Ejemplo: diagrama para sumar dos números</span><div class="flow center">${flowHtml([['Inicio','T'],['Leer a, b','ES'],['suma ← a + b','P'],['Escribir suma','ES'],['Fin','T']],99,true)}</div>`:''}
+      <span class="lbl">Ejercicios (de menor a mayor dificultad)</span>
+      <div class="exlist">${tp.exercises.map((x,e)=>`<button class="exb" data-e="${e}"><small>Ejercicio ${e+1}</small>${x.t}${P[pk(t,e)]?` <span class="st">${stars(P[pk(t,e)].stars)}</span>`:''}</button>`).join('')}</div>
+    </div></section>`;
+  $('#goE').onclick=()=>goEx(t,next<0?0:next);
+  $('#main').querySelectorAll('.exb').forEach(b=>b.onclick=()=>goEx(t,+b.dataset.e));
+  $('#sayL').onclick=()=>speak(tp.t+'. '+tp.intro.join(' ').replace(/<[^>]+>/g,'')+' '+tp.keys.map(k=>(tp.symbols?SYM[k[0]][0]:k[0])+': '+k[1]).join('. '));
+}
+
+/* ---------- entorno de trabajo ---------- */
+function newB(){const e=E_(),kind=T_().kind;
+  return{kind,k:0,placed:[],errors:0,hints:0,hl:0,stage:'tool',tool:null,opts:null,wrong:new Set(),wrongTools:new Set(),fb:null,added:-1,complete:false,
+    pool:kind==='order'?shuffle(e.steps.map((s,i)=>i)):null}}
+const codes=()=>E_().steps.map(s=>typeof s==='string'?s:s[0]);
+const fullProg=()=>['Algoritmo '+E_().name,...codes(),'FinAlgoritmo'];
+function autoAdvance(){ // inserta solas las líneas de cierre y casos
+  if(B.kind!=='code')return;const C=codes(),notes=[];
+  while(B.k<C.length&&AUTO(C[B.k])){B.placed.push(C[B.k]);notes.push(autoText(C[B.k]));B.added=B.placed.length-1;B.k++}
+  if(B.k>=C.length)B.complete=true;
+  if(notes.length)B.autoNote=notes.join(' ');
+}
+function stepGoal(){const e=E_();if(B.kind==='code'){const s=e.steps[B.k];return s?`Línea ${B.placed.length+2}: ${s[1]}`:''}
+  if(B.kind==='flow'){const s=e.steps[B.k];return s?`¿Qué símbolo lleva «${s[0]}»?`:''}
+  return B.k<e.steps.length?`¿Cuál es el paso ${B.k+1}?`:''}
+function totalSteps(){const e=E_();return B.kind==='code'?e.steps.filter(s=>typeof s!=='string').length:e.steps.length}
+function doneSteps(){const e=E_();return B.kind==='code'?e.steps.slice(0,B.k).filter(s=>typeof s!=='string').length:B.k}
+
+function drawWS(){
+  const tp=T_(),e=E_(),t=S.t;const isCode=B.kind==='code';
+  const fin=B.complete;
+  const goal=fin?(isCode?'¡Programa completo! Pulsa Ejecutar para probarlo con tus datos.':'¡Terminaste!'):stepGoal();
+  const fb=B.fb||(fin?null:{type:'',html:isCode?(B.stage==='tool'?'Elige la herramienta correcta en el panel <b>Herramientas</b> de la derecha.':'Toca el espacio resaltado en la línea y elige la opción correcta.'):B.kind==='flow'?'Elige el símbolo en el panel de la derecha.':'Toca el paso que va ahora, o arrástralo al recuadro.'});
+  const run=R&&!R.done;
+  $('#main').innerHTML=`<section class="card">
+    <div class="head"><button class="b sm" id="backL">Lección</button><span class="pill">${esc(e.t)}</span>
+      <div class="lv" aria-label="Ejercicios">${tp.exercises.map((_,i)=>`<button class="lvb ${i===S.e?'on':P[pk(t,i)]?'done':''}" data-e="${i}" title="Ejercicio ${i+1}">${i+1}</button>`).join('')}</div>
+      <span class="sp"></span>
+      ${isCode?`<button class="b t" id="runB" ${fin&&!(R&&R.waiting)?'':'disabled'}>Ejecutar</button><button class="b" id="stepB" ${fin&&!(R&&R.waiting)?'':'disabled'}>Paso a paso</button><button class="b" id="clrB" ${R?'':'disabled'}>Limpiar salida</button>`:''}
+    </div>
+    <div class="aviso">
+      <div class="paso">Paso<b>${Math.min(doneSteps()+(fin?0:1),totalSteps())}/${totalSteps()}</b></div>
+      <div class="goal">${R?(R.cur>=0?'Ejecutando la línea '+(R.cur+1):'Ejecución'):esc(goal)}</div>
+      
+      <div class="tools">${R?`<button class="b sm" id="editB">Volver al armado</button>`:`${fin?'':`<button class="b sm y" id="hintB" ${B.hl>=2?'disabled':''}>${B.hl===0?'Pista':'Mostrar respuesta'}</button>`}
+        <button class="b sm" id="undoB" ${(B.kind==='code'?(doneSteps()===0&&B.stage!=='fill'):B.k===0)?'disabled':''}>Deshacer</button><button class="b sm" id="resetB">Reiniciar</button>`}
+        <button class="b sm" id="sayB">Escuchar</button></div>
+      <div class="enun"><b>Enunciado:</b> ${esc(e.g)}</div>
+    </div>
+    <div class="wsg">${workHtml()}${panelHtml()}</div>
+  </section>
+  ${isCode?consoleHtml():''}`;
+  wireWS();
+}
+function workHtml(){
+  const e=E_();
+  if(B.kind==='code'){
+    const full=fullProg(),ind=indents(full);
+    const cur=R&&R.cur>=0?R.cur:-1;let h='';
+    const rows=[];rows.push([0,full[0]]);B.placed.forEach((c,j)=>rows.push([j+1,c]));
+    rows.forEach(([i,c])=>{h+=`<div class="ln ${i-1===B.added?'new':''} ${i===cur?'cur':''}"><span class="n">${i+1}</span><span class="t">${'  '.repeat(ind[i]||0)}${hl(c)}</span></div>`});
+    if(!B.complete){const di=ind[B.placed.length+1]||1,pad='  '.repeat(di);
+      if(B.stage==='tool'){const isDef=toolOf(codes()[B.k])==='Definir';h+=`<div class="ln edit" id="drop"><span class="n">${B.placed.length+2}</span><span class="t">${pad}<span class="waitln">${isDef?'Define las variables:':'Usa una instrucción de Herramientas →'}</span>${isDef?`<button class="typebtn ${B.hl===2?'glow':''}" id="typeDef">Definir … Como …</button>`:''}</span></div>`;}
+      else{const F=B.fill;h+=`<div class="ln edit" id="drop"><span class="n">${B.placed.length+2}</span><span class="t">${pad}${F.parts.map(p=>{if(typeof p==='string')return hl(p);const b=F.blanks[p];return b.val!==null?`<span class="blank ok">${hl(b.val)}</span>`:`<button class="blank ${p===F.idx?'act':''} ${p===F.idx&&F.open?'open':''}" data-b="${p}" aria-expanded="${p===F.idx&&F.open}">${b.ph}${CARET}</button>`}).join('')}</span></div>`;
+        const b=F.blanks[F.idx];if(F.open)h+=`<div class="ac" role="listbox" style="margin-left:${40+di*16}px"><span class="lbl">Opciones para ${b.ph}</span>${F.order.map(i=>{const o=b.opts[i];return`<button class="aco ${B.hl===2&&o.ok?'glow':''}" role="option" data-o="${i}">${esc(o.v)}</button>`}).join('')}</div>`}}
+    const fi=rows.length+(B.complete?0:1);h+=`<div class="ln ${B.complete&&cur===full.length-1?'cur':''}"><span class="n">${fi+1}</span><span class="t">${hl('FinAlgoritmo')}</span></div>`;
+    return `<div class="code" id="code">${h}</div>`}
+  if(B.kind==='order'){
+    return `<div class="code" id="code" style="font-family:var(--f)"><div class="steps-l"><span class="lbl">Algoritmo: ${esc(e.t)}</span>
+      ${B.placed.map((i,j)=>`<div class="s ${j===B.added?'ln new':''}"><b>${j+1}</b> ${esc(e.steps[i])}</div>`).join('')}
+      ${B.complete?'':`<div class="s"><b>${B.placed.length+1}</b><div class="drop" id="drop" style="flex:1">Arrastra o toca el paso ${B.placed.length+1}</div></div>`}</div></div>`}
+  return `<div class="code" id="code" style="font-family:var(--f)">${'<div class="flow">'+flowHtml(e.steps.slice(0,B.k),B.complete?99:B.k)+'</div>'}</div>`;
+}
+function flowHtml(steps,k,static_){
+  let h='';steps.forEach((s,i)=>{if(i)h+='<div class="arrow"></div>';h+=`<div class="frow">${s[2]?`<span class="brt">${s[2]}</span>`:''}${shape(s[1],s[0])}</div>`});
+  if(!static_&&B&&!B.complete){if(steps.length)h+='<div class="arrow"></div>';const s=E_().steps[B.k];h+=`<div class="frow">${s[2]?`<span class="brt">${s[2]}</span>`:''}<div class="shp slot" id="drop"><span>${esc(s[0])}</span></div></div>`}
+  return h}
+function panelHtml(){
+  const e=E_();
+  if(B.complete)return `<div class="tools-p"><h3>¡Listo!</h3><p>${B.kind==='code'?'Tu programa está completo. Pulsa <b>Ejecutar</b> (todo seguido) o <b>Paso a paso</b> (línea por línea).':'Muy bien.'}</p></div>`;
+  if(B.kind==='code'){
+    const right=toolOf(codes()[B.k]);
+    let h=`<div class="tools-p"><h3>Herramientas</h3><div class="tg">${TOOLS.map(([id,ic,lab])=>{const w=B.wrongTools.has(id),sel=B.stage==='fill'&&B.tool===id;
+      return `<button class="tool ${sel?'sel':''} ${B.hl===2&&B.stage==='tool'&&id===right?'glow':''}" data-tool="${id}" ${B.stage==='fill'?'disabled':''}><span class="ic">${esc(ic)}</span>${lab}</button>`}).join('')}</div>`;
+    if(B.stage==='fill')h+=`<p style="font-size:.88rem;font-weight:700">Completa la línea en el área de trabajo. Si te equivocaste de herramienta, pulsa Deshacer.</p>`;
+    return h+'</div>'}
+  if(B.kind==='order')return `<div class="tools-p"><h3>Pasos disponibles</h3>${B.pool.map(i=>`<button class="opt txt ${B.hl===2&&i===B.k?'glow':''}" data-i="${i}">${esc(e.steps[i])}</button>`).join('')}</div>`;
+  return `<div class="tools-p"><h3>Símbolos</h3>${Object.entries(SYM).map(([k,[n,d]])=>`<button class="tool ${B.hl===2&&k===e.steps[B.k][1]?'glow':''}" data-sym="${k}" style="flex-direction:column;align-items:flex-start">${msym(k)}<span>${n}</span><small style="font-weight:600;color:var(--muted)">${d}</small></button>`).join('')}</div>`;
+}
+function consoleHtml(){
+  return `<section class="card con"><div class="con-h"><h3>Consola / Salida</h3><span>Ejecución interactiva de pseudocódigo</span></div>
+  <div class="screen" id="screen">${R?R.log.map(x=>x.t==='in'?`<span class="in">&gt; ${esc(x.v)}</span>`:x.t==='dim'?`<span class="dim">${esc(x.v)}</span>`:x.t==='er'?`<span class="er">${esc(x.v)}</span>`:esc(x.v)).join('\n'):'<span class="dim">Cuando completes el programa, pulsa Ejecutar y aquí verás lo que muestra.</span>'}</div>
+  ${R&&R.waiting?askHtml():''}
+  ${R&&Object.keys(R.vars).length?`<div><span class="lbl">Variables</span><div class="vars">${Object.entries(R.vars).map(([k,v])=>`<span class="var ${R.prev&&R.prev[k]!==v?'chg':''}">${k} = ${esc(fmtv(v))}</span>`).join('')}</div></div>`:''}
+  </section>`}
+const DEFS={Entero:[5,12,0],Real:[4.5,10,2],Caracter:['Ana','Luis']};
+function askHtml(){const w=R.waiting,e=E_();const s=(e.s&&e.s[w.ask])||DEFS[w.type]||[];
+  return `<form class="ask" id="askF"><div class="q"><span>Ingrese ${w.ask}:</span><small>(línea ${w.l+1} · ${w.type||''})</small></div>
+  <div class="r"><b>&gt;</b><input id="askI" ${w.type==='Caracter'?'':'inputmode="decimal"'} autocomplete="off" placeholder="Escribe el valor y presiona Enter…"><button class="b t" type="submit">Ingresar</button></div>
+  ${R.err2?`<span class="err">${esc(R.err2)}</span>`:''}
+  <div class="sug">Ejemplos: ${s.map(v=>`<button type="button" data-v="${esc(v)}">${esc(v)}</button>`).join('')}</div></form>`}
+
+function wireWS(){
+  const on=(id,f)=>{const el=$(id);if(el)el.onclick=f};
+  on('#backL',()=>goLesson(S.t));
+  document.querySelectorAll('.lvb').forEach(b=>b.onclick=()=>goEx(S.t,+b.dataset.e));
+  on('#hintB',hint);on('#undoB',undo);on('#resetB',()=>goEx(S.t,S.e));
+  on('#sayB',()=>speak($('.aviso .goal').innerText+'. '+$('.aviso .fb').innerText));
+  on('#editB',()=>{stopRun();R=null;draw()});
+  on('#runB',()=>startRun(true));on('#stepB',()=>{if(!R||R.done)startRun(false);else{R.auto=false;advance()}});on('#clrB',()=>{stopRun();R=null;draw()});
+  const drop=$('#drop'),code=$('#code');
+  if(code){const c=code.querySelector('.cur')||drop;if(c)code.scrollTop=c.offsetTop-code.clientHeight/2;else code.scrollTop=code.scrollHeight}
+  const sc=$('#screen');if(sc)sc.scrollTop=sc.scrollHeight;
+  B.added=-1;
+  document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>chooseTool(b.dataset.tool));
+  document.querySelectorAll('[data-sym]').forEach(b=>b.onclick=()=>chooseSym(b.dataset.sym));
+  document.querySelectorAll('.opt').forEach(b=>wireDrag(b,drop,()=>chooseOrder(+b.dataset.i)));
+  document.querySelectorAll('.aco').forEach(b=>b.onclick=()=>chooseFill(+b.dataset.o));
+  document.querySelectorAll('button.blank').forEach(b=>b.onclick=()=>{const F=B.fill,k=+b.dataset.b;if(k!==F.idx){F.idx=k;F.order=shuffle(F.blanks[k].opts.map((_,i)=>i));F.open=true}else F.open=!F.open;B.fb=null;draw()});
+  const td=$('#typeDef');if(td)td.onclick=()=>chooseTool('Definir');
+  const f=$('#askF');if(f){const i=$('#askI');i.focus({preventScroll:true});f.onsubmit=ev=>{ev.preventDefault();submitAsk(i.value)};f.querySelectorAll('.sug button').forEach(b=>b.onclick=()=>submitAsk(b.dataset.v))}
+}
+function wireDrag(el,drop,act){let st=null,g=null;
+  el.addEventListener('pointerdown',ev=>{st={x:ev.clientX,y:ev.clientY};el.setPointerCapture(ev.pointerId)});
+  el.addEventListener('pointermove',ev=>{if(!st)return;if(!g&&Math.hypot(ev.clientX-st.x,ev.clientY-st.y)>8){g=el.cloneNode(true);g.classList.add('ghost');document.body.appendChild(g)}
+    if(g){g.style.left=(ev.clientX-30)+'px';g.style.top=(ev.clientY-20)+'px';drop&&drop.classList.toggle('over',inside(drop,ev))}});
+  el.addEventListener('pointerup',ev=>{if(g){g.remove();g=null;el._d=true;const hit=drop&&inside(drop,ev);drop&&drop.classList.remove('over');if(hit)act()}st=null});
+  el.addEventListener('pointercancel',()=>{if(g){g.remove();g=null}st=null});
+  el.addEventListener('click',()=>{if(el._d){el._d=false;return}act()})}
+function inside(el,ev){const r=el.getBoundingClientRect();return ev.clientX>=r.left-14&&ev.clientX<=r.right+14&&ev.clientY>=r.top-18&&ev.clientY<=r.bottom+18}
+const shakeDrop=()=>{const d=$('#drop');if(d){d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake')}};
+
+function chooseTool(id){
+  const c=codes()[B.k],right=toolOf(c);
+  if(right==='Definir'&&id!=='Definir'){B.fb={type:'bad',html:`<b>${pick(ENC)}</b> En este paso hay que crear variables, y en PSeInt eso no está en Herramientas: se escribe. Toca <b>Definir … Como …</b> en la línea.`};draw();return}
+  if(id!==right){B.errors++;B.fb={type:'bad',html:`<b>${pick(ENC)}</b> ${(TOOLS.find(x=>x[0]===id)||[0,0,'Definir'])[2]} sirve para ${TOOLDESC[id]}. ${esc(stepWhy())}`};draw();shakeDrop();return}
+  const F=blanksOf(c,progVars(codes()));
+  if(!F){placeCode(`<b>${pick(PRAISE)}</b> ${esc(okText(c))}`);return}
+  F.idx=0;F.open=false;F.order=shuffle(F.blanks[0].opts.map((_,i)=>i));
+  B.stage='fill';B.tool=id;B.fill=F;B.hl=0;
+  B.fb={type:'ok',html:`<b>¡Muy bien!</b> ${(TOOLS.find(x=>x[0]===id)||[0,0,'Definir'])[2]} es la instrucción correcta.`};draw();
+}
+function chooseFill(i){
+  const F=B.fill,b=F.blanks[F.idx],o=b.opts[i];
+  if(!o.ok){B.errors++;B.fb={type:'bad',html:`<b>${pick(ENC)}</b> ${esc(o.why)} Prueba otra opción.`};draw();return}
+  b.val=o.v;B.hl=0;const next=F.blanks.findIndex(x=>x.val===null);
+  if(next<0){const c=codes()[B.k],s=E_().steps[B.k];placeCode(`<b>${pick(PRAISE)}</b> ${esc(s[2]||okText(c))}`);return}
+  F.idx=next;F.open=false;F.order=shuffle(F.blanks[next].opts.map((_,i)=>i));
+  B.fb={type:'ok',html:`<b>¡Bien!</b>`};draw();
+}
+function placeCode(html){
+  const C=codes();B.placed.push(C[B.k]);B.added=B.placed.length-1;B.k++;B.stage='tool';B.tool=null;B.fill=null;B.opts=null;B.wrong=new Set();B.wrongTools=new Set();B.hl=0;B.autoNote='';
+  autoAdvance();B.fb={type:'ok',html:html+(B.autoNote?' '+esc(B.autoNote):'')};draw();
+}
+function chooseOrder(i){
+  const e=E_();
+  if(i!==B.k){B.errors++;B.fb={type:'bad',html:`<b>${pick(ENC)}</b>«${esc(e.steps[i])}» todavía no va. ¿Qué tiene que pasar antes?`};draw();shakeDrop();return}
+  B.placed.push(i);B.pool=B.pool.filter(x=>x!==i);B.added=B.placed.length-1;B.k++;B.hl=0;
+  B.complete=B.k>=e.steps.length;B.fb={type:'ok',html:`<b>${pick(PRAISE)}</b> ${B.complete?'¡El algoritmo quedó en orden!':'Ese es el paso '+B.k+'.'}`};draw();if(B.complete)setTimeout(finish,900);
+}
+function chooseSym(k){
+  const e=E_(),s=e.steps[B.k];
+  if(k!==s[1]){B.errors++;B.wrongTools.add(k);B.fb={type:'bad',html:`<b>${pick(ENC)}</b>El símbolo ${SYM[k][0]} es para ${SYM[k][1]}. «${esc(s[0])}» es ${SYM[s[1]][1]}.`};draw();shakeDrop();return}
+  B.k++;B.wrongTools=new Set();B.hl=0;B.complete=B.k>=e.steps.length;
+  B.fb={type:'ok',html:`<b>${pick(PRAISE)}</b> ${SYM[k][0]}: ${SYM[k][1]}.${B.complete?' ¡Diagrama completo!':''}`};draw();if(B.complete)setTimeout(finish,900);
+}
+function hint(){B.hints++;const e=E_();
+  if(B.hl===0){B.hl=1;let h='';
+    if(B.kind==='code'){const c=codes()[B.k];h=B.stage==='tool'?`Necesitas una instrucción para ${TOOLDESC[toolOf(c)]}.`:({tipo:'¿Los datos son números enteros, con decimales o texto?',lista_de_variables:'Lee el aviso: ahí dice qué variables van. Recuerda: sin comillas.',lista_de_expresiones:'Los textos van entre comillas y las variables fuera de ellas.',expresion_logica:'Revisa el signo: > mayor, >= mayor o igual, < menor, <= menor o igual, = igual, <> diferente.',expresion:'Revisa la operación y los paréntesis.',variable:'¿Qué variable debe guardar el resultado?',variable_numerica:'¿Qué variable decide la opción?',valor_inicial:'¿Desde qué número empieza?',valor_final:'¿Hasta qué número llega?',paso:'¿De cuánto en cuánto avanza?'})[B.fill.blanks[B.fill.idx].ph]||'Lee el aviso con atención.'}
+    else if(B.kind==='flow')h=`«${e.steps[B.k][0]}» es ${SYM[e.steps[B.k][1]][1]}.`;
+    else h=B.k===0?'¿Qué se hace antes que todo lo demás?':`Acabas de poner «${e.steps[B.k-1]}». ¿Qué sigue justo después?`;
+    B.fb={type:'tip',html:'<b>Pista:</b> '+esc(h)}}
+  else{B.hl=2;if(B.fill)B.fill.open=true;B.fb={type:'tip',html:'<b>Mira el resaltado en verde.</b> Antes de elegirlo, piensa por qué es el correcto.'}}
+  draw()}
+function undo(){stopRun();R=null;const e=E_();
+  if(B.kind==='code'&&B.stage==='fill'){B.stage='tool';B.fill=null;B.tool=null;B.hl=0;B.fb={type:'',html:'Se borró la línea. Elige otra vez la herramienta.'};draw();return}
+  if(B.kind==='code'){while(B.placed.length&&AUTO(B.placed[B.placed.length-1])){B.placed.pop();B.k--}if(B.placed.length){B.placed.pop();B.k--}B.complete=false;B.stage='tool';B.opts=null;B.wrong=new Set();B.wrongTools=new Set();B.hl=0}
+  else if(B.kind==='order'){const i=B.placed.pop();B.pool.push(i);B.k--;B.complete=false}
+  else{B.k--;B.complete=false}
+  B.fb={type:'',html:'Se quitó el último paso. Vuelve a intentarlo.'};draw()}
+
+/* ---------- ejecución ---------- */
+function startRun(auto){stopRun();const V={},Ty={};R={V,G:execute(fullProg(),V,Ty),log:[{t:'dim',v:'*** Ejecución iniciada ***'}],vars:{},prev:null,cur:-1,note:'Empieza la ejecución.',waiting:null,auto,done:false,err:false,err2:''};advance()}
+function stopRun(){if(R&&R.timer){clearTimeout(R.timer);R.timer=null}}
+function advance(input){
+  if(!R||R.done)return;const r=R.G.next(input);
+  if(r.done){R.done=true;R.cur=-1;R.log.push({t:'dim',v:'*** Ejecución finalizada ***'});R.note='¡Tu programa funcionó de principio a fin!';draw();setTimeout(finish,1000);return}
+  const s=r.value;
+  if(s.err){R.done=true;R.err=true;R.cur=s.l;R.log.push({t:'er',v:'Error en la línea '+(s.l+1)+': '+s.err});R.note=s.err+' Corrige los datos y vuelve a pulsar Ejecutar.';draw();return}
+  if(s.ask){R.waiting=s;R.cur=s.l;R.err2='';R.note=`Leer detiene el programa hasta que escribas un valor. Se guardará en ${s.ask}. Escríbelo o toca un ejemplo.`;draw();return}
+  R.prev=R.vars;R.vars={...R.V};R.cur=s.l;
+  if(s.out!==undefined)R.log.push({t:'out',v:s.out});if(s.inp!==undefined)R.log.push({t:'in',v:s.inp});
+  const c=norm(fullProg()[s.l]);R.note=s.note||(/^Algoritmo/.test(c)?'Empieza el programa.':c==='FinAlgoritmo'?'FinAlgoritmo: el programa termina.':AUTO(c)?autoText(c).replace('Se agregó ',''):okText(c))||'Línea ejecutada.';draw();
+  if(R.auto)R.timer=setTimeout(()=>advance(),700);
+}
+function submitAsk(raw){
+  const w=R.waiting;raw=String(raw).trim();
+  if(raw===''){R.err2='Escribe un valor.';draw();return}
+  let x=raw;
+  if(w.type!=='Caracter'){x=Number(raw.replace(',','.'));if(!isFinite(x)){R.err2=w.ask+' guarda números: escribe un número.';draw();return}
+    if(w.type==='Entero'&&!Number.isInteger(x)){R.err2=w.ask+' es Entero: escribe un número sin decimales.';draw();return}}
+  R.waiting=null;R.err2='';advance(x);
+}
+
+/* ---------- cierre ---------- */
+const LOGRO=['ordenar los pasos de un algoritmo','usar los símbolos del diagrama de flujo','escribir pseudocódigo','armar programas secuenciales','usar la decisión simple','usar la decisión doble','anidar decisiones','usar Según para varias opciones','usar contadores y acumuladores','usar el ciclo Mientras','usar el ciclo Repetir','usar el ciclo Para'];
+function finish(){if(S.done||S.view!=='ws')return;const st=starsOf(B.errors,B.hints),k=pk(S.t,S.e),o=P[k];if(!o||st>=o.stars)P[k]={stars:st,errors:B.errors,hints:B.hints};save();S.done=true;draw()}
+function nextTarget(){const lastEx=S.e===T_().exercises.length-1;if(!lastEx)return()=>goEx(S.t,S.e+1);if(S.t<TOPICS.length-1)return()=>goLesson(S.t+1);return()=>goLesson(S.t)}
+function endHtml(){const tp=T_(),full=doneIn(S.t)===5;
+  return `<div class="veil"><section class="card endc" role="dialog" aria-label="Logro obtenido">
+  <div class="medal" aria-hidden="true">★</div>
+  <h2>¡Logro obtenido!</h2>
+  <p class="logro">${full?`Completaste el tema «${esc(tp.t)}».`:`Aprendiste a ${LOGRO[S.t]}.`}</p>
+  <button class="b t" id="nx">Siguiente</button></section></div>`}
+function wireEnd(){const g=document.getElementById('nx');if(!g)return;g.onclick=nextTarget();g.focus()}
+
+draw();
+</script>
+
+</body></html>
