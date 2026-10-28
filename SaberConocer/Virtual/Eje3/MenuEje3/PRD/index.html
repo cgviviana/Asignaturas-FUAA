@@ -1,1 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRD de una app | Ejemplo</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#152039;--hud:#0f1830;--yellow:#ffc83d;--teal:#14b39a;--coral:#ff6b57;--muted:#5a6683;--line:#dfe4ef;--blue:#1a73e8;--paper:#fffdf8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--hud);color:var(--ink);font:17px/1.5 Rubik,Arial,sans-serif}
+button{font:inherit;cursor:pointer}
+header{height:64px;display:flex;align-items:center;gap:14px;padding:9px 20px;background:var(--hud);color:#fff;border-bottom:3px solid #000}
+.brand{font-weight:800;font-size:30px;line-height:1}
+.brand span{color:var(--yellow)}
+.counter{margin-left:auto;color:#c7d2ee;font-weight:700;font-size:14px}
+.shell{height:calc(100dvh - 143px);min-height:520px;position:relative;overflow:auto;background:linear-gradient(165deg,#7cc8f7,#d8f5f0 73%,#b0e2b6)}
+.shell.night{background:linear-gradient(150deg,#192752,#5d58ab 70%,#b686d2)}
+.shell.sunset{background:linear-gradient(145deg,#ffa46f,#fbc38d 55%,#ffdcca)}
+.slide{display:none;max-width:1080px;min-height:100%;margin:auto;padding:34px 28px 26px;align-content:center}
+.slide.active{display:grid;gap:16px;animation:enter .24s ease}
+@keyframes enter{from{opacity:.25;transform:translateY(8px)}to{opacity:1;transform:none}}
+.eyebrow{justify-self:start;background:var(--ink);border:2px solid #000;color:var(--yellow);padding:5px 13px;border-radius:11px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.panel{background:#fff;border:3px solid var(--ink);border-radius:23px;box-shadow:0 7px 0 var(--ink);padding:24px 28px}
+.panel h1{font-size:clamp(31px,5.2vw,56px);line-height:1.08;margin:0 0 14px}
+.panel h2{font-size:clamp(24px,3.6vw,39px);line-height:1.15;margin:0 0 12px}
+.lead{font-size:clamp(18px,2.4vw,24px);margin:0;line-height:1.5}
+.sub{color:var(--muted);font-size:16px;margin:7px 0 0}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.cols.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tile{background:#fff;border:3px solid var(--ink);border-radius:18px;box-shadow:0 5px 0 var(--ink);padding:18px 20px}
+.tile h3{font-size:20px;margin:0 0 8px}.tile p,.tile ul{margin:0}.tile ul{padding-left:20px}
+.num{display:inline-grid;place-items:center;background:var(--yellow);border:2px solid var(--ink);border-radius:11px;width:43px;height:39px;font-weight:800;margin-bottom:9px}
+.tag{display:inline-block;border-radius:9px;background:#e4f8f2;color:#075a4b;font-weight:800;font-size:13px;padding:4px 10px;margin-bottom:8px}
+.tag.orange{background:#fff0ea;color:#a93827}.tag.blue{background:#e8f0fe;color:#185abc}
+.flow{display:flex;gap:9px;align-items:stretch;flex-wrap:wrap}.step{flex:1;min-width:130px;background:#fff;border:3px solid var(--ink);border-radius:15px;padding:14px 12px;text-align:center;font-weight:700}.arrow{font-size:31px;font-weight:800;align-self:center}
+.highlight{background:#fff6d8;border-left:5px solid #e8ac00;border-radius:10px;padding:12px 16px;font-weight:600}
+.ask{background:var(--yellow);border:3px solid var(--ink);border-radius:15px;padding:12px 17px;font-weight:800}
+.examples{margin:6px 0 0;padding-left:21px}.examples li{margin:6px 0}
+.table{width:100%;border-collapse:collapse;font-size:15px}.table th,.table td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}.table th{background:#f2f5fb}
+.chips{display:flex;gap:9px;flex-wrap:wrap}.chip{border:2px solid var(--ink);padding:7px 13px;border-radius:11px;background:#fff;font-weight:700}
+.example-pill{justify-self:start;background:#e8f0fe;border:2px solid #8ab4f8;color:#123c7a;border-radius:999px;padding:8px 14px;font-weight:700}
+.controls{min-height:48px;display:flex;align-items:center;justify-content:center;gap:12px;background:var(--hud);color:#fff;border-top:3px solid #000;padding:6px 18px}.controls button{background:var(--yellow);border:2px solid #000;border-radius:10px;font-weight:800;padding:5px 16px}.controls button:disabled{opacity:.38}.progress{width:min(220px,28vw);height:11px;border-radius:12px;border:1px solid #000;background:#26365f;overflow:hidden}.progress div{height:100%;background:var(--teal);transition:width .2s}
+.sitefoot{text-align:center;background:var(--hud);color:#c7d2ee;font-size:13px;padding:6px;border-top:1px solid #31406b}.sitefoot b{color:var(--yellow)}
+.doc-panel{background:#fff;border:3px solid var(--ink);border-radius:23px;box-shadow:0 7px 0 var(--ink);padding:18px}
+.doc-frame{background:var(--paper);border:2.5px solid #7d8aa5;border-radius:14px;box-shadow:inset 0 0 0 5px #f3f5fa;padding:24px 24px 18px;max-width:920px;margin:auto}
+.doc-title{text-align:center;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:16px}
+.doc-title h2{margin:0;font-size:30px}.doc-title p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.doc-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}.doc-meta .box{background:#fff;border:1.5px solid #c9d3e5;border-radius:10px;padding:8px 10px}.doc-meta b{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.doc-meta span{display:block;font-size:14px;font-weight:600;margin-top:2px}
+.doc-section{border:1.5px solid #d9e1ef;border-radius:12px;padding:12px 14px;margin-bottom:11px;background:#fff}.doc-section h3{margin:0 0 6px;font-size:17px;color:var(--ink)}.doc-section p,.doc-section ul{margin:0;font-size:14px;line-height:1.5}.doc-section ul{padding-left:18px}.doc-section li{margin:3px 0}
+.doc-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.note{font-size:12px;color:var(--muted);text-align:right;margin-top:6px}
+@media(max-width:820px){.cols,.cols.three,.doc-grid2,.doc-meta{grid-template-columns:1fr}.arrow{display:none}.step{min-width:calc(50% - 10px)}}
+@media(max-width:750px){header{height:55px}.brand{font-size:24px}.shell{height:calc(100dvh - 132px)}.slide{padding:20px 13px 26px;align-content:start}.panel,.doc-panel{padding:18px}.tile{padding:14px 17px}.panel h2{font-size:25px}.table{font-size:12px}.table th,.table td{padding:6px}}
+@media print{header,.controls,.sitefoot{display:none}.shell{height:auto;background:#fff!important;overflow:visible}.slide{display:grid!important;min-height:95vh;page-break-after:always;align-content:center;padding:25px}.panel,.tile,.doc-panel{box-shadow:none}}
+
+/* Navigation on same header line, rather than at slide bottom */
+header{height:74px;gap:14px;flex-wrap:wrap}.counter{margin-left:auto}.controls{border:0;padding:0;background:transparent;gap:8px;min-height:0}.controls button{font-size:14px;padding:7px 11px;white-space:nowrap}.controls #printDoc{background:#14b39a;color:#081f27}.controls #printDoc:disabled{display:none}.shell{height:calc(100dvh - 108px)}
+.editable{outline:1px dashed #9baad0;min-width:80px;display:block;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:6px;padding:3px 5px;cursor:text;min-height:26px}.editable:focus{outline:2px solid #1a73e8;background:#f0f7ff}.editable:empty:before{content:attr(data-placeholder);color:#8792a9;font-weight:400}.doc-edit{font-size:14px;line-height:1.5}.doc-edit p,.doc-edit ul{margin:0}.doc-meta .editable{font-size:14px}
+@media(max-width:970px){header{height:auto;min-height:74px}.controls{width:100%;justify-content:center}.shell{height:calc(100dvh - 162px)}}
+@media print{ @page{size:A4 portrait;margin:12mm} html,body{background:white!important;color:#152039!important}header,.controls,.sitefoot{display:none!important}.shell{display:block;height:auto!important;min-height:0!important;background:white!important;overflow:visible!important}.slide,.slide.active{display:none!important}.slide.active{display:block!important;min-height:0!important;padding:0!important;max-width:none!important}.slide.active>.eyebrow{display:none!important}.slide.active>.doc-panel{padding:0!important;border:0!important;box-shadow:none!important}.slide.active .doc-frame{border:1.5px solid #7d8aa5;box-shadow:none!important;padding:14px!important;max-width:none!important}.editable{outline:0!important;background:transparent!important}.doc-section{break-inside:avoid}.doc-title h2{font-size:25px}.doc-meta{grid-template-columns:repeat(2,1fr)}.doc-grid2{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Aprende <span>App</span></div>
+  <div class="counter" id="count">01 / 12</div><nav class="controls"><button id="prev" aria-label="Diapositiva anterior">← Anterior</button><div class="progress"><div id="bar"></div></div><button id="next" aria-label="Siguiente diapositiva">Siguiente →</button><button id="printDoc" type="button" title="Imprime la plantilla actual o guarda como PDF">Imprimir / PDF</button></nav>
+</header>
+<main class="shell" id="shell">
+
+<section class="slide active" data-bg="day">
+  <span class="eyebrow">Misión previa · Planificación</span>
+  <div class="panel">
+    <h1>Primero el PRD.<br>Después, la app.</h1>
+    <p class="lead">Antes de construir cualquier aplicación, necesitamos decidir <b>qué problema resolveremos, para quién y cómo funcionará</b>.</p>
+  </div>
+  <div class="ask">Pregunta inicial: ¿qué puede salir mal si construimos una app sin planearla?</div>
+  <div class="highlight">Un PRD nos ayuda a convertir una idea en una propuesta clara, organizada y verificable.</div>
+  
+</section>
+
+<section class="slide" data-bg="day">
+  <span class="eyebrow">1 · ¿Qué es?</span>
+  <div class="panel">
+    <h2>¿Qué es un PRD?</h2>
+    <p class="lead">Es un <b>Documento de Requisitos del Producto</b>. Sirve para dejar por escrito qué hará la app, quién la usará, qué datos necesita y cómo sabremos si funciona bien.</p>
+  </div>
+  <div class="flow">
+    <div class="step">Idea</div><div class="arrow">→</div>
+    <div class="step">Problema claro</div><div class="arrow">→</div>
+    <div class="step">Requisitos</div><div class="arrow">→</div>
+    <div class="step">Construcción</div>
+  </div>
+</section>
+
+<section class="slide" data-bg="day">
+  <span class="eyebrow">2 · El ejemplo</span>
+  <div class="panel">
+    <h2>Ejemplo: RetardosApp</h2>
+    <p class="sub">Aplicación pensada para registrar llegadas a clase y detectar retardos.</p>
+  </div>
+  <div class="cols">
+    <div class="tile"><div class="num">1</div><h3>Problema</h3><p>El control manual de llegadas puede ser lento, confuso y poco útil para identificar reincidencias.</p></div>
+    <div class="tile"><div class="num">2</div><h3>Objetivo</h3><p>Registrar las llegadas, calcular el retardo y permitir consultar la información de forma organizada.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-bg="sunset">
+  <span class="eyebrow">3 · Usuarios</span>
+  <div class="cols three">
+    <div class="tile"><span class="tag">Usuario 1</span><h3>Estudiante</h3><p>Registra su llegada y consulta su resultado.</p></div>
+    <div class="tile"><span class="tag blue">Usuario 2</span><h3>Docente</h3><p>Crea la sesión de clase y revisa las llegadas de su grupo.</p></div>
+    <div class="tile"><span class="tag orange">Usuario 3</span><h3>Coordinación</h3><p>Consulta consolidados, casos críticos y reincidencias.</p></div>
+  </div>
+  <div class="highlight">Cuando hacemos un PRD, debemos identificar claramente quién usa la app y qué necesita hacer cada uno.</div>
+</section>
+
+<section class="slide" data-bg="sunset">
+  <span class="eyebrow">4 · Requisitos</span>
+  <div class="panel">
+    <h2>¿Qué debe poder hacer la app?</h2>
+    <table class="table">
+      <thead><tr><th>Requisito</th><th>Ejemplo verificable</th></tr></thead>
+      <tbody>
+        <tr><td>Crear sesiones de clase</td><td>El docente registra fecha y hora de inicio.</td></tr>
+        <tr><td>Registrar la llegada del estudiante</td><td>La app guarda quién llegó y a qué hora.</td></tr>
+        <tr><td>Calcular el retardo</td><td>La app obtiene automáticamente los minutos de diferencia.</td></tr>
+        <tr><td>Mostrar resultados según el usuario</td><td>Cada persona ve solo la información que le corresponde.</td></tr>
+        <tr><td>Consultar reportes</td><td>Se pueden revisar casos repetidos o cursos con más tardanzas.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="slide" data-bg="day">
+  <span class="eyebrow">5 · Datos</span>
+  <div class="panel">
+    <h2>¿Qué información necesita?</h2>
+    <p class="sub">Un PRD también debe aclarar qué datos necesita la app para funcionar.</p>
+  </div>
+  <div class="chips">
+    <span class="chip">Estudiantes</span>
+    <span class="chip">Cursos</span>
+    <span class="chip">Sesiones de clase</span>
+    <span class="chip">Llegadas registradas</span>
+    <span class="chip">Usuarios y roles</span>
+    <span class="chip">Minutos de retardo</span>
+  </div>
+</section>
+
+<section class="slide" data-bg="day">
+  <span class="eyebrow">6 · Reglas</span>
+  <div class="cols">
+    <div class="tile"><h3>Reglas del ejemplo</h3><ul><li>Un estudiante solo registra una llegada por sesión.</li><li>La hora de la sesión sirve como referencia para calcular el retardo.</li><li>La información visible depende del tipo de usuario.</li></ul></div>
+    <div class="tile"><h3>Preguntas útiles</h3><ul><li>¿Cuántos minutos cuentan como retardo?</li><li>¿Qué pasa si un estudiante no registra su llegada?</li><li>¿Quién puede ver reportes generales?</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" data-bg="night">
+  <span class="eyebrow">7 · Evidencias</span>
+  <div class="panel">
+    <h2>¿Cómo comprobamos que sí funciona?</h2>
+    <ul class="examples">
+      <li>Si la clase inicia a las 7:00 y el estudiante llega a las 7:08, la app debe mostrar <b>8 minutos</b>.</li>
+      <li>Si entra un estudiante, no debe poder ver información de otros cursos que no le corresponden.</li>
+      <li>Si coordinación consulta el consolidado, debe ver los casos reincidentes.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-bg="night">
+  <span class="eyebrow">8 · Estructura</span>
+  <div class="panel">
+    <h2>Partes que puede tener el PRD</h2>
+  </div>
+  <div class="cols">
+    <div class="tile"><ol class="examples"><li>Nombre de la app</li><li>Equipo desarrollador</li><li>Problema</li><li>Objetivo</li><li>Usuarios</li></ol></div>
+    <div class="tile"><ol class="examples" start="6"><li>Funcionalidades</li><li>Datos necesarios</li><li>Reglas o condiciones</li><li>Cómo se comprobará</li><li>Observaciones</li></ol></div>
+  </div>
+</section>
+
+<section class="slide" data-bg="day">
+  <span class="eyebrow">9 · Plantilla</span>
+  <div class="doc-panel">
+    
+    <div class="doc-frame">
+      <div class="doc-title">
+        <h2>PRD · Documento de Requisitos del Producto</h2>
+        <p>Modelo base para diligenciar</p>
+      </div>
+      <div class="doc-meta">
+        <div class="box"><b>Nombre de la app</b><span class="editable" contenteditable="true" data-placeholder="Escribir aquí"></span></div>
+        <div class="box"><b>Equipo desarrollador (nombres de estudiantes)</b><span class="editable" contenteditable="true" data-placeholder="Escribir aquí"></span></div>
+        <div class="box"><b>NRC</b><span class="editable" contenteditable="true" data-placeholder="Escribir aquí"></span></div>
+        <div class="box"><b>Fecha</b><span class="editable" contenteditable="true" data-placeholder="Escribir aquí"></span></div>
+      </div>
+      <div class="doc-grid2">
+        <div class="doc-section"><h3>1. Problema</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><p>¿Qué situación se quiere resolver?</p></div></div>
+        <div class="doc-section"><h3>2. Objetivo</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><p>¿Qué se espera lograr con la app?</p></div></div>
+        <div class="doc-section"><h3>3. Usuarios</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><p>¿Quiénes la usarán?</p></div></div>
+        <div class="doc-section"><h3>4. Funcionalidades</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><p>¿Qué debe hacer?</p></div></div>
+        <div class="doc-section"><h3>5. Datos necesarios</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><p>¿Qué información requiere?</p></div></div>
+        <div class="doc-section"><h3>6. Reglas</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><p>¿Qué condiciones deben cumplirse?</p></div></div>
+      </div>
+      <div class="doc-section"><h3>7. Comprobación</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><p>¿Cómo sabremos que la app sí cumple lo esperado?</p></div></div>
+      <div class="note"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-bg="sunset">
+  <span class="eyebrow">10 · Ejemplo resumido</span>
+  <div class="cols">
+    <div class="tile"><h3>Nombre y equipo</h3><p><b>App:</b> RetardosApp<br><b>Equipo:</b> Nombres de estudiantes<br><b>Curso:</b> ________</p></div>
+    <div class="tile"><h3>Idea central</h3><p>Registrar llegadas a clase, calcular retardo y facilitar el seguimiento.</p></div>
+  </div>
+  <div class="cols">
+    <div class="tile"><h3>Usuarios</h3><p>Estudiantes, docentes y coordinación.</p></div>
+    <div class="tile"><h3>Datos</h3><p>Estudiantes, cursos, sesiones, llegadas, usuarios y roles.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-bg="sunset">
+  <span class="eyebrow">11 · PRD desarrollado</span>
+  <div class="doc-panel">
+    <div class="doc-frame">
+      <div class="doc-title">
+        <h2>PRD · RetardosApp</h2>
+        <p>Ejemplo desarrollado</p>
+      </div>
+      <div class="doc-meta">
+        <div class="box"><b>Nombre de la app</b><span class="editable" contenteditable="true">RetardosApp</span></div>
+        <div class="box"><b>Equipo desarrollador (nombres de estudiantes)</b><span class="editable" contenteditable="true">Nombres de estudiantes</span></div>
+        <div class="box"><b>NRC</b><span>________</span></div>
+        <div class="box"><b>Fecha</b><span>________</span></div>
+      </div>
+      <div class="doc-grid2">
+        <div class="doc-section"><h3>1. Problema</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><p>El control manual de llegadas dificulta identificar retardos y reincidencias de manera oportuna.</p></div></div>
+        <div class="doc-section"><h3>2. Objetivo</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><p>Registrar las llegadas a clase, calcular los minutos de retardo y permitir la consulta organizada de la información.</p></div></div>
+        <div class="doc-section"><h3>3. Usuarios</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><ul><li>Estudiantes</li><li>Docentes</li><li>Coordinación</li></ul></div></div>
+        <div class="doc-section"><h3>4. Funcionalidades</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><ul><li>Crear sesiones de clase</li><li>Registrar llegadas</li><li>Calcular retardo</li><li>Consultar resultados y reportes</li></ul></div></div>
+        <div class="doc-section"><h3>5. Datos necesarios</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><ul><li>Estudiantes</li><li>Cursos</li><li>Sesiones</li><li>Llegadas</li><li>Usuarios y roles</li></ul></div></div>
+        <div class="doc-section"><h3>6. Reglas</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><ul><li>Una llegada por estudiante y sesión</li><li>El retardo se calcula con la hora programada</li><li>La consulta depende del usuario</li></ul></div></div>
+      </div>
+      <div class="doc-section"><h3>7. Comprobación</h3><div class="editable doc-edit" contenteditable="true" data-placeholder="Escribe aquí"><ul><li>Si la clase inicia a las 7:00 y el estudiante llega a las 7:08, el sistema debe mostrar 8 minutos.</li><li>El estudiante solo puede ver su información.</li><li>Coordinación puede revisar consolidados y reincidencias.</li></ul></div></div>
+      <div class="note"></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-bg="day">
+  <span class="eyebrow">12 · Cierre</span>
+  <div class="panel">
+    <h2>Ahora sí: a plantear su PRD</h2>
+    <p class="lead">Antes de construir, cada equipo debe dejar clara su idea en un documento como el ejemplo que acabamos de ver.</p>
+  </div>
+  <div class="highlight">Empiecen por: nombre de la app, equipo desarrollador, problema, objetivo, usuarios y funcionalidades.</div>
+</section>
+
+</main>
+<footer class="sitefoot">Aprendiendo con <b>@LaProfeVivy</b></footer>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const shell=document.getElementById('shell');
+const count=document.getElementById('count');
+const bar=document.getElementById('bar');
+const prev=document.getElementById('prev');
+const next=document.getElementById('next');
+let i=0;
+function paint(){
+  slides.forEach((s,idx)=>s.classList.toggle('active',idx===i));
+  const bg=slides[i].dataset.bg||'day';
+  shell.className='shell'+(bg==='night'?' night':bg==='sunset'?' sunset':'');
+  count.textContent=String(i+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  bar.style.width=((i+1)/slides.length*100)+'%';
+  prev.disabled=i===0; next.disabled=i===slides.length-1;
+}
+prev.onclick=()=>{if(i>0){i--;paint();}};
+next.onclick=()=>{if(i<slides.length-1){i++;paint();}};
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight' || e.key==='PageDown'){if(i<slides.length-1){i++;paint();}}
+  if(e.key==='ArrowLeft' || e.key==='PageUp'){if(i>0){i--;paint();}}
+});
+document.getElementById('printDoc').addEventListener('click',()=>window.print());
+const oldPaint=paint;
+paint=()=>{oldPaint();document.getElementById('printDoc').disabled=!slides[i].querySelector('.doc-frame')};
+paint();
+</script>
+</body>
+</html>
 
