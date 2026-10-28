@@ -1,1 +1,1495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aprende AppSheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#152039;--hud:#0f1830;--y:#ffc83d;--y2:#f0a800;--teal:#14b39a;--coral:#ff6b57;--ok:#1f9d55;--ok-soft:#e3f6ea;--bad:#d9472f;--bad-soft:#fff0ea;--muted:#5a6683;--line:#dfe4ef;--g:#1a73e8}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Rubik,system-ui,Arial,sans-serif;color:var(--ink);background:var(--hud);font-size:16px;line-height:1.5;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+code{font-family:ui-monospace,Consolas,monospace}
+.app{height:100vh;height:100dvh;display:flex;flex-direction:column}
 
+/* HUD */
+.hud{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--hud);color:#fff;border-bottom:3px solid #000}
+.hb{display:flex;align-items:center;gap:8px;background:#1d2a4d;border:2px solid #31406b;border-radius:12px;padding:6px 12px;color:#fff;font-weight:600;font-size:14px;white-space:nowrap}
+.hb:hover{background:#26365f}
+.hb svg{width:20px;height:20px;flex:0 0 auto}
+.hb.ic{padding:6px 8px}
+.hinfo{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.hinfo b{font-weight:800;font-size:16px;letter-spacing:.01em;white-space:nowrap}
+.hinfo small{color:#9fb0d8;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xpw{margin-left:auto;display:flex;align-items:center;gap:10px}
+.xpbar{width:180px;height:14px;background:#22305a;border:2px solid #000;border-radius:99px;overflow:hidden}
+.xpbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--y));transition:width .7s}
+.xp{position:relative;font-weight:800;color:var(--y);font-size:15px;white-space:nowrap}
+.xpf{position:absolute;right:0;top:-16px;color:var(--y);font-weight:800;animation:xpf 1s forwards;pointer-events:none}
+@keyframes xpf{to{transform:translateY(-26px);opacity:0}}
+.chatb{padding:3px 12px 3px 3px;background:var(--y);border-color:#000;color:var(--ink)}
+.chatb:hover{background:#ffd666}
+.chatb svg{width:32px;height:32px}
+
+main{flex:1;min-height:0;position:relative;overflow:hidden}
+.foot{flex:0 0 auto;text-align:center;font-size:13px;color:#9fb0d8;background:var(--hud);padding:6px 12px;border-top:3px solid #000}
+.foot b{color:var(--y)}
+
+/* Escenarios */
+.sky1{background:linear-gradient(180deg,#7cc8f7 0%,#bfe6ff 55%,#e6f7ec 100%)}
+.sky2{background:linear-gradient(180deg,#ff9f68 0%,#ff7f7a 40%,#8a63c9 100%)}
+.sky3{background:linear-gradient(180deg,#0a1130 0%,#1a2759 60%,#2a3d78 100%)}
+.scene{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.scene svg{width:100%;height:100%;display:block}
+.cloud{animation:drift 40s linear infinite}
+.cloud.b{animation-duration:65s}
+@keyframes drift{from{transform:translateX(-300px)}to{transform:translateX(1300px)}}
+.tw{animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25}}
+
+/* Mapa */
+.mapv{overflow-y:auto;height:100%}
+.zone{position:relative;padding:34px 16px 120px;min-height:480px}
+.zin{position:relative;max-width:760px;margin:auto}
+.mhero{display:flex;gap:20px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:18px 22px;margin-bottom:34px}
+.mhero .av{width:104px;height:104px;flex:0 0 auto}
+.mhero h1{margin:0;font-size:clamp(28px,4.5vw,40px);line-height:1.05;font-weight:800;letter-spacing:-.01em}
+.mhero p{margin:6px 0 12px;color:var(--muted);font-size:15.5px}
+.mhero .row2{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ztitle{display:inline-flex;flex-direction:column;background:var(--ink);color:#fff;border-radius:14px;padding:8px 16px;border:3px solid #000;box-shadow:0 4px 0 #000;margin-bottom:22px}
+.ztitle b{font-size:18px;font-weight:800;color:var(--y);letter-spacing:.04em;text-transform:uppercase}
+.ztitle small{color:#c7d2ee;font-size:13px}
+.path{display:flex;flex-direction:column;align-items:center;gap:6px}
+.node{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0;transform:translateX(var(--x));position:relative}
+.nb{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:26px;font-weight:800;background:#fff;color:var(--ink);border:4px solid var(--ink);box-shadow:0 6px 0 var(--ink);transition:transform .15s}
+.node:hover:not(:disabled) .nb{transform:translateY(-3px)}
+.node.done .nb{background:var(--teal);color:#fff}
+.node.cur .nb{background:var(--y);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 6px 0 var(--ink),0 0 0 0 rgba(255,200,61,.7)}50%{box-shadow:0 6px 0 var(--ink),0 0 0 14px rgba(255,200,61,0)}}
+.node:disabled{cursor:not-allowed}
+.node:disabled .nb{background:#cfd6e6;color:#8590ab;border-color:#55617f;box-shadow:0 6px 0 #55617f}
+.nl{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 10px;font-weight:700;font-size:14px;margin-top:6px}
+.node:disabled .nl{opacity:.75}
+.ns{color:#ffb800;font-size:14px;letter-spacing:2px;height:18px;text-shadow:0 1px 0 #00000040}
+.dots3{display:flex;flex-direction:column;gap:6px;align-items:center;padding:4px 0}
+.dots3 i{width:8px;height:8px;border-radius:50%;background:#ffffffcc;border:2px solid var(--ink)}
+.sky3 .dots3 i{background:#ffffff55}
+.trophy .nb{width:86px;height:86px;font-size:34px;background:#fff6d6}
+.resetl{display:block;margin:26px auto 0;background:none;border:0;color:#c7d2ee;text-decoration:underline;font-size:14px}
+
+/* Botones tipo juego */
+.gbtn{background:var(--y);border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);font-weight:800;font-size:15.5px;padding:9px 18px;transition:transform .08s,box-shadow .08s;white-space:nowrap}
+.gbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.gbtn.w{background:#fff}
+.gbtn.t{background:var(--teal);color:#fff}
+.lbtn{background:none;border:0;padding:6px 4px;color:var(--muted);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+
+/* Etapa */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 410px}
+.simarea{position:relative;overflow:auto;padding:24px;display:flex;min-height:0}
+.device{margin:auto;width:100%;min-width:0;max-width:860px;background:#1b2440;border:3px solid #000;border-radius:24px;padding:10px;box-shadow:0 22px 50px rgba(5,10,30,.35)}
+.simwrap{min-width:0;position:relative;overflow:hidden;border-radius:14px;background:#fff}
+.spot{position:absolute;border-radius:12px;pointer-events:none;opacity:0;box-shadow:0 0 0 4px var(--y),0 0 0 9999px rgba(8,14,34,.55);transition:left .45s,top .45s,width .45s,height .45s,opacity .3s;z-index:5}
+.spot.on{opacity:1}
+.ptr{position:absolute;width:34px;height:40px;z-index:6;pointer-events:none;opacity:0;transition:left .45s,top .45s,opacity .3s}
+.ptr.on{opacity:1}
+.ptr svg{width:100%;height:100%;animation:tap 1s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+@keyframes tap{50%{transform:translate(-7px,-7px)}}
+.card{position:absolute;inset:0;z-index:7;background:#fff;padding:22px 24px;overflow:auto;animation:cardin .35s}
+@keyframes cardin{from{transform:translateY(16px);opacity:0}}
+.card h3{margin:0 0 4px;font-size:20px;font-weight:800}
+.card .sub{margin:0 0 14px;color:var(--muted);font-size:14px}
+.card table{border-collapse:collapse;width:100%;font-size:14px}
+.card th,.card td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.card th{background:#f2f5fb;font-weight:700;font-size:13px;color:var(--muted)}
+.card td:first-child{font-weight:700;min-width:96px}
+.card code{background:#f1effd;color:#3c2fb8;padding:1px 6px;border-radius:5px;font-size:13px}
+
+.comp{position:relative;overflow-y:auto;padding:20px 20px 22px 4px;display:flex;flex-direction:column;justify-content:flex-end;gap:14px;min-height:0}
+.portrait{width:128px;height:128px;align-self:flex-start;margin-left:14px;margin-bottom:-26px;position:relative;z-index:2;flex:0 0 auto}
+.portrait svg{width:100%;height:100%;border-radius:50%;border:4px solid var(--ink);background:#fff;box-shadow:0 5px 0 var(--ink)}
+.portrait.hop{animation:hop .5s}
+.portrait.no{animation:no .4s}
+@keyframes hop{40%{transform:translateY(-14px)}}
+@keyframes no{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.dlg{position:relative;background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);padding:26px 20px 16px;flex:0 0 auto}
+.tag{position:absolute;top:-17px;right:16px;display:flex;align-items:center;gap:6px;background:var(--y);border:3px solid var(--ink);border-radius:12px;padding:2px 12px;font-weight:800;font-size:14px}
+.tag svg{display:none;width:24px;height:24px;margin-left:-6px}
+.say{margin:0;font-size:17px;line-height:1.55;min-height:3.1em}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.45}
+.ctrl{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.ctrl .sp{flex:1}
+.dots{display:flex;gap:5px;flex-basis:100%;margin-bottom:4px}
+.dots i{width:8px;height:8px;border-radius:50%;background:#d5dbea}
+.dots i.on{background:var(--ink);width:20px;border-radius:99px}
+.spk{width:40px;height:40px;border-radius:12px;border:2px solid var(--line);background:#fff;display:grid;place-items:center;padding:0}
+.spk svg{width:20px;height:20px}
+.spk.on{background:var(--y);border-color:var(--ink)}
+.fb{font-size:15.5px;line-height:1.5;border-radius:12px;margin-top:10px}
+.fb:empty{display:none}
+.fb{padding:10px 12px}
+.fb.good{background:var(--ok-soft);color:#16653a}
+.fb.bad{background:var(--bad-soft);color:#9c2e1a}
+.fb.tip{background:#fff6d8;color:#6e5100}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:#fff;border:3px solid #cfd6e6;border-radius:14px;box-shadow:0 3px 0 #cfd6e6;padding:11px 14px;font-weight:600;font-size:15.5px;transition:border-color .12s,transform .08s}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:active:not(:disabled){transform:translateY(2px)}
+.opt:disabled{cursor:default}
+.opt.code{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;font-weight:500;word-break:break-word}
+.opt.right{border-color:var(--ok);background:var(--ok-soft);box-shadow:0 3px 0 var(--ok)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 3px 0 var(--bad);opacity:.85}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.rel{display:grid;grid-template-columns:1fr auto 1.2fr;gap:14px;align-items:center;padding:22px 20px;background:#f6f8fc;font-size:13px}
+.rt{background:#fff;border:2px solid #dfe4ef;border-radius:12px;padding:10px 12px;overflow-x:auto}
+.rt h5{margin:0 0 6px;font-size:15px}
+.rt h5 small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+.rt table{border-collapse:collapse;width:100%}
+.rt th,.rt td{padding:6px 6px;border-bottom:1px solid #eef1f6;text-align:left;white-space:nowrap}
+.rt th{font-size:11px;color:var(--muted);font-weight:600}
+.rt th em{font-style:normal;background:#152039;color:#fff;border-radius:4px;padding:0 4px;font-size:10px}
+.rchip{display:inline-block;color:#fff;font-weight:700;border-radius:6px;padding:2px 7px;font-size:12px}
+.rchip.glow{animation:glow 1.2s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 5px rgba(124,108,255,.35);transform:scale(1.08)}}
+.rmid{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;padding:6px}
+.rmid svg{width:56px;height:20px}
+.rmid b{background:var(--y);border:2px solid var(--ink);border-radius:8px;padding:0 8px}
+.card .rule{margin:14px 0 0;background:#fff6d8;border-radius:10px;padding:10px 12px;font-size:14px}
+.dd{border:1.5px solid #1a73e8;border-radius:6px;margin-top:3px;overflow:hidden}
+.dd div{padding:4px 6px;border-bottom:1px solid #eee;font-size:10.5px}
+.dd div:first-child{background:#e8f0fe;font-weight:700}
+.hunt .rt tr[data-hot]:hover td{background:#fff4cc;cursor:pointer}
+@media (max-width:640px){.rel{grid-template-columns:1fr;padding:12px}.rmid{flex-direction:row;justify-content:center}.rmid svg{transform:rotate(90deg);width:40px}}
+.ph-body{position:relative}
+.plus{position:absolute;right:8px;bottom:8px;width:30px;height:30px;border-radius:50%;background:#1a73e8;color:#fff;display:grid;place-items:center;font-size:20px;font-weight:700;box-shadow:0 3px 8px rgba(0,0,0,.25);z-index:2}
+.flow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px;padding:20px;background:#f6f8fc}
+.fcol{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px;border-radius:14px}
+.fname{background:var(--ink);color:#fff;font-weight:700;font-size:12px;border-radius:8px;padding:2px 10px}
+.flab{display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--muted)}
+.flab svg{width:40px;height:16px}
+.ebtns{display:flex;gap:4px;border:0!important}
+.ebtns span{flex:1;text-align:center;border:1.5px solid #1a73e8;border-radius:6px;padding:4px 2px;color:#1a73e8;font-weight:600;font-size:10px}
+.ebtns span.on{background:#1a73e8;color:#fff}
+.turnos{display:flex;gap:12px;justify-content:center;margin:4px 0 16px}
+.turnos div{display:flex;flex-direction:column;align-items:center;gap:4px}
+.tk{background:#fff6d8;border:2px dashed var(--ink);border-radius:8px;padding:8px 14px;font-weight:800;font-size:18px}
+.turnos small{color:var(--muted)}
+.resta{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:10px 0}
+.resta div{display:flex;flex-direction:column;align-items:center;background:#f2f5fb;border-radius:12px;padding:10px 16px}
+.resta div.r{background:var(--y);border:2px solid var(--ink)}
+.resta b{font-size:28px;font-weight:800}
+.resta small{color:var(--muted);font-size:12px}
+.resta div.r small{color:var(--ink)}
+.resta span{font-size:28px;font-weight:800}
+.who{display:block;margin:6px 0 0;color:var(--muted);font-size:15px}
+.nm{display:block;margin:6px auto 0 0;font:inherit;font-size:16px;padding:9px 12px;border:3px solid var(--ink);border-radius:12px;width:min(280px,100%)}
+.mhero .nm{margin:6px 0 0}
+.gbtn:disabled{opacity:.5;cursor:not-allowed}
+.ruta,.qrflow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px 0}
+.ruta div,.qrflow>div{display:flex;flex-direction:column;align-items:center;background:#f2f5fb;border-radius:12px;padding:10px 12px;text-align:center;gap:2px}
+.ruta div.r{background:var(--y);border:2px solid var(--ink)}
+.ruta small,.qrflow small{color:var(--muted);font-size:11.5px}
+.ruta b{font-size:18px}
+.ruta i,.qrflow i{font-style:normal;font-size:24px;font-weight:800}
+.qrflow span{font-size:12.5px}
+.qr{width:96px;height:96px;margin:4px 0}
+code.c1{background:#e3f6ea!important;color:#16653a!important}
+code.c2{background:#e8f0fe!important;color:#1967d2!important}
+code.c3{background:#fff0ea!important;color:#c2410c!important}
+code.c4{background:#f1effd!important;color:#5b3fd1!important}
+code.c5{background:#fde8e4!important;color:#c5221f!important}
+.ifd{display:flex;flex-direction:column;align-items:center;margin:6px 0 16px}
+.ifd .q{background:var(--y);border:3px solid var(--ink);border-radius:14px;padding:10px 16px;font-weight:800;text-align:center;position:relative}
+.ifd .br{display:flex;gap:40px;margin-top:22px;position:relative}
+.ifd .br:before{content:"";position:absolute;top:-22px;left:25%;right:25%;height:18px;border:3px solid var(--ink);border-bottom:0;border-radius:10px 10px 0 0}
+.ifd .br div{display:flex;flex-direction:column;align-items:center;border-radius:12px;padding:8px 18px;border:3px solid}
+.ifd .si{background:#fde8e4;border-color:#c5221f!important;color:#c5221f}
+.ifd .no{background:#e3f6ea;border-color:#16653a!important;color:#16653a}
+.ifd small{font-weight:800}
+.ctrls{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.ctrls>div{display:flex;flex-direction:column;align-items:center;gap:8px;background:#f2f5fb;border-radius:12px;padding:12px;text-align:center}
+.ctrls span{font-size:13px;color:var(--muted)}
+.clk{width:64px;height:64px}
+.cal2{display:grid;grid-template-columns:repeat(7,18px);gap:3px}
+.cal2 i{font-style:normal;font-size:10px;background:#fff;border-radius:4px;padding:2px 0}
+.cal2 i.on{background:#1a73e8;color:#fff;font-weight:700}
+.kp{display:grid;grid-template-columns:repeat(5,22px);gap:3px}
+.kp i{font-style:normal;font-size:12px;background:#fff;border:1px solid #dadce0;border-radius:4px;padding:2px 0;font-weight:700}
+.ebtns.big span{font-size:12px;padding:6px 8px}
+.two{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.mt{background:#f6f8fc;border-radius:12px;padding:8px 10px}
+.mt table{font-size:12.5px}
+.mt td,.mt th{padding:5px 8px!important;white-space:nowrap}
+.mt tr.hl td{background:#fff6d8}
+.tn{display:inline-block;border-radius:6px;padding:2px 8px;font-size:13px;margin-bottom:4px}
+.tn.lg{background:#e3f6ea;color:#16653a}.tn.ss{background:#e8f0fe;color:#1967d2}
+.st{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px;font-weight:800;margin-right:5px}
+.arr{font-style:normal;font-size:26px;font-weight:800}
+.pasos{margin:12px 0 0;padding-left:22px;font-size:14px}
+.pasos li{margin:3px 0}
+code.lg{background:#e3f6ea!important;color:#16653a!important}
+code.ss{background:#e8f0fe!important;color:#1967d2!important}
+code.op{background:#fff0ea!important;color:#c2410c!important}
+code.fn{background:#f1effd!important;color:#5b3fd1!important}
+code.tx{background:#fde8e4!important;color:#c5221f!important}
+.ley{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;margin:-4px 0 10px;color:var(--muted)}
+.sw{display:inline-block;width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #dadce0}
+.sw.on{box-shadow:0 0 0 3px var(--ink)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vs>div{border-radius:12px;padding:12px 14px;font-size:14px}
+.vs ul{margin:8px 0 0;padding-left:18px}.vs li{margin:4px 0}
+.malo{background:#fde8e4;color:#7a1d10}.bueno{background:#e3f6ea;color:#14532d}
+.fecha{display:inline-block;margin-top:10px!important;background:#fff6d8;border:2px solid var(--ink);border-radius:10px;padding:4px 12px;font-weight:700;color:var(--ink)!important}
+.chk{text-align:left;max-width:560px;margin:4px auto 20px;border:2px solid var(--ink);border-radius:14px;padding:4px 14px}
+.chk summary{cursor:pointer;font-weight:800;padding:8px 0}
+.chk label{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);font-size:15px;cursor:pointer}
+.chk input{width:18px;height:18px;margin-top:2px;accent-color:var(--teal)}
+@media (max-width:640px){.vs{grid-template-columns:1fr}}
+.ed-bar{gap:6px!important}
+.aslogo{width:20px;height:20px;display:block}
+.ed-app{font-size:14px;color:#202124!important}
+.tb{width:26px;height:26px;display:grid;place-items:center;color:#5f6368;border-radius:50%}
+.tb svg{width:17px;height:17px}.tb.ok{color:#188038}
+.ed-btn.pri{font-weight:700;letter-spacing:.03em}
+.pvt{display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:8px;color:#5f6368;font-size:11px}
+.pvd{display:flex;gap:4px}.pvd svg{width:16px;height:16px}
+.pve{display:flex;align-items:center;gap:4px}
+.pva{width:100%;margin-top:8px;font-size:10.5px;color:#5f6368}
+.pva div{display:flex;gap:4px;margin-top:3px}
+.pva span{flex:1;background:#fff;border:1px solid #dadce0;border-radius:6px;padding:4px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pva b{background:#e8eaed;border-radius:6px;padding:4px 8px}
+.ed-prev{display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start!important}
+.tbh{display:flex;align-items:center;gap:8px;margin-bottom:4px}.tbh .sp{flex:1}
+.vds{border:1px solid #dadce0;border-radius:99px;padding:2px 10px;color:#1a73e8;font-size:11.5px;white-space:nowrap}
+.tic{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;color:#5f6368;font-size:15px}
+.tbs{background:#f1f5fb;border-radius:4px;padding:5px 8px;font-size:10.5px;color:#5f6368;margin-bottom:8px}
+.cg-wrap{overflow-x:auto}
+.cg{border-collapse:collapse;font-size:11.5px;min-width:760px}
+.cg th{font-size:10px;color:#5f6368;font-weight:600;text-align:left;padding:6px 5px;white-space:nowrap;border-bottom:1px solid #e8eaed}
+.cg td{padding:5px;border-bottom:1px solid #f1f3f4;vertical-align:middle}
+.cg td:first-child{white-space:nowrap}
+.cg tr.sys td{color:#9aa0a6}
+.cg tr.virt td{background:#f6faff}
+.pen{color:#5f6368;margin-right:4px}
+.sel{display:inline-block;background:#f1f3f4;border-radius:4px;padding:3px 7px;white-space:nowrap}
+.sel.q{background:#fef7e0;color:#b06000;font-weight:700}.sel.new{background:#e6f4ea;color:#137333;font-weight:700}
+.fx{display:block;min-width:90px;max-width:230px;background:#f1f3f4;border-radius:4px;padding:3px 6px;color:#80868b;font-family:ui-monospace,Consolas,monospace;font-size:10.5px;word-break:break-word}
+.fx.set{color:#1a73e8;background:#e8f0fe}.fx.q{background:#fef7e0;color:#b06000}
+.cdlg{border:1px solid #dadce0;border-radius:10px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.1)}
+.cdh{display:flex;justify-content:space-between;margin-bottom:10px}.cdh span{color:#5f6368;font-size:12px}
+.cdf{display:flex;justify-content:flex-end;gap:14px;margin-top:6px;color:#1a73e8;font-size:12px}
+.dl{border:1px solid #e8eaed;border-radius:8px;overflow:hidden}
+.dlh{display:flex;align-items:center;gap:4px;padding:6px 10px;background:#f8f9fa}.dlh .sp{flex:1}
+.plusb{font-size:18px;color:#1a73e8;font-weight:700}
+.dli{padding:8px 12px;border-top:1px solid #f1f3f4}.dli.on{background:#e8f0fe;color:#1a73e8;font-weight:600}
+.add{margin-top:10px;border:1px solid #dadce0;border-radius:10px;padding:12px;box-shadow:0 8px 22px rgba(0,0,0,.14);background:#fff}
+.adh{display:flex;justify-content:space-between;font-size:15px;margin-bottom:8px}
+.add small{display:block;font-size:9.5px;color:#5f6368;font-weight:700;margin:6px 0}
+.sugs{display:flex;flex-wrap:wrap;gap:5px}
+.sugs span{background:#e8f0fe;border-radius:6px;padding:5px 8px;font-size:11px}
+.sugs span.bad{background:#fde8e4;text-decoration:line-through;color:#c5221f}
+.srcs{display:grid;gap:4px;font-size:11.5px}.srcs span{padding:3px 0;border-bottom:1px solid #f1f3f4}
+.nsrc{margin-top:6px;color:#1a73e8;font-size:11.5px}
+.shin{border-bottom:2px solid #1a73e8;padding:6px 2px;font-size:12px;margin-bottom:4px}
+.shu{display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 0}.shu i{margin-left:auto;color:#5f6368}
+.shf{display:flex;gap:14px;align-items:center;font-size:12px;color:#1a73e8}.shf b{margin-left:auto;background:#1a73e8;color:#fff;border-radius:4px;padding:4px 12px}
+.sub{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.sub span{background:#f1f3f4;border-radius:99px;padding:3px 9px;font-size:11px;color:#3c4043}
+.sub span.on{background:#e8f0fe;color:#1a73e8;font-weight:700}
+.cards{display:grid;gap:6px}
+.sfc{border:1px solid #e8eaed;border-radius:8px;padding:8px 10px}.sfc small{display:block;color:#5f6368;font-size:10.5px;word-break:break-word}
+.sfc.set{border-color:#ceead6;background:#e6f4ea}
+.mu{display:inline-block;border:1px solid #dadce0;border-radius:6px;padding:4px 10px;color:#1a73e8;font-size:12px;margin-top:4px}
+.mc{border:1px solid #e8eaed;border-radius:8px;padding:7px 10px;margin-bottom:6px}.mc small{display:block;color:#5f6368;font-size:10.5px}
+.mrow{display:flex;gap:8px;margin-bottom:8px}.mrow span{border:1px solid #dadce0;border-radius:6px;padding:3px 8px;color:#1a73e8;font-size:11px}
+.cert{background:#fff;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:10px}
+.cin{border:3px double #d9b44a;border-radius:16px;padding:22px 24px;text-align:center;background:linear-gradient(#fffdf5,#fff)}
+.cav{width:80px;height:80px;margin:0 auto 6px}
+.ck{letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:#b08a1e;font-size:12px}
+.cin h1{margin:6px 0 2px;font-size:clamp(26px,4vw,36px)}
+.cin h2{margin:4px 0;font-size:clamp(24px,4vw,34px);color:#14806e}
+.cin p{margin:2px 0;color:var(--muted)}
+.cin h3{margin:16px 0 6px;font-size:16px}
+.cmeta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}
+.cmeta span{background:#fff6d8;border:2px solid var(--ink);border-radius:10px;padding:3px 10px;font-weight:700;font-size:14px}
+.cap{text-align:left;max-width:520px;margin:0 auto;padding-left:20px}
+.cap li{margin:5px 0}
+.cfirma{margin-top:18px;display:inline-flex;flex-direction:column;border-top:2px solid var(--ink);padding-top:6px;min-width:200px}
+.cfirma small{color:var(--muted)}
+.cbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.cerr{color:#c2410c!important;font-weight:700;min-height:1.4em}
+.code{margin:12px auto 0!important;text-align:center;letter-spacing:.2em}
+.crb{display:inline-block;margin-top:6px;background:#1a73e8;color:#fff;border-radius:4px;padding:3px 12px;font-size:12px}
+.ib{display:flex;flex-direction:column;align-items:center;gap:6px;margin:10px 0}
+.ib span{background:#1a73e8;color:#fff;border-radius:99px;padding:5px 14px;font-size:12px;font-weight:700}
+.mc b{display:block}
+.zlock{display:inline-block;margin:-10px auto 18px;background:#fff;border:3px solid var(--ink);border-radius:12px;padding:6px 14px;font-weight:800;box-shadow:0 4px 0 var(--ink)}
+@media print{
+ body{overflow:visible;background:#fff}
+ .app{height:auto}
+ body *{visibility:hidden}
+ #cert,#cert *{visibility:visible}
+ #cert{position:absolute;left:0;top:0;width:100%;box-shadow:none}
+}
+.rdlg{border:1px solid #dadce0;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.12);overflow:hidden;background:#fff}
+.rdh{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8f9fa;border-bottom:1px solid #e8eaed}
+.rdh small{display:block;color:#5f6368;font-size:10.5px}
+.done{border:1px solid #dadce0;border-radius:4px;padding:2px 8px;color:#1a73e8;font-size:11px}
+.rbody{max-height:330px;overflow-y:auto;padding:6px 12px}
+.rr{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:6px 0}
+.rr b{display:block;font-size:12px}.rr small{display:block;font-size:10px;color:#5f6368}
+.rr>div:last-child{flex:0 0 52%;display:flex;justify-content:flex-start}
+.rin{display:block;width:100%;background:#f1f3f4;border-radius:4px;padding:4px 7px;font-size:11.5px;min-height:24px;font-family:ui-monospace,Consolas,monospace;color:#3c4043;word-break:break-word}
+.rin.set{background:#e6f4ea;color:#137333;font-weight:700}
+.rs{border-top:1px solid #e8eaed;padding:4px 0}
+.rsh{display:flex;justify-content:space-between;font-weight:700;font-size:12.5px;padding:6px 0}
+.rs .rr{padding-left:8px}
+.seg{display:flex;border:1px solid #dadce0;border-radius:4px;overflow:hidden}
+.seg i{font-style:normal;font-size:10px;padding:4px 6px;border-right:1px solid #dadce0}
+.seg i.on{background:#e8f0fe;color:#1a73e8;font-weight:700}
+.rnone{display:block;color:#5f6368;font-size:11px;padding:4px 8px}
+.huntm{display:flex;align-items:center;gap:10px;background:#ffffffe6;border:3px dashed var(--ink);border-radius:14px;padding:10px 14px;font-weight:600;font-size:15px}
+.huntm svg{width:26px;height:30px;flex:0 0 auto;animation:tap 1s infinite}
+.slots{display:grid;gap:7px}
+.slot{display:flex;gap:10px;align-items:center;min-height:42px;border:2px dashed #b9c2d8;border-radius:12px;padding:7px 10px;background:#ffffffd9;color:var(--muted);font-size:14px}
+.slot.f{border-style:solid;border-color:var(--ok);background:var(--ok-soft);color:#16653a;font-weight:600}
+.slot i{font-style:normal;flex:0 0 24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pool .opt{padding:8px 12px;font-size:14px}
+.stars{font-size:38px;letter-spacing:4px;color:#ffb800;line-height:1;text-shadow:0 3px 0 var(--ink)}
+.stars s{color:#d5dbea;text-decoration:none}
+.badge-l{font-weight:800;font-size:18px;margin:10px 0 2px}
+
+.banner{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:30}
+.banner div{background:var(--y);border:4px solid var(--ink);box-shadow:0 8px 0 var(--ink);border-radius:22px;padding:18px 34px;text-align:center;animation:pop 1.5s forwards}
+.banner b{display:block;font-size:clamp(28px,5vw,44px);font-weight:800;line-height:1.1}
+.banner small{font-size:16px;font-weight:600}
+@keyframes pop{0%{transform:scale(.3) rotate(-6deg);opacity:0}18%{transform:scale(1.08) rotate(2deg);opacity:1}28%{transform:scale(1) rotate(0)}82%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:0}}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:29}
+.confetti i{position:absolute;top:-20px;width:10px;height:14px;border-radius:2px;animation:fall 2.2s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* Hunt */
+.hunt [data-hot]{cursor:pointer}
+.hunt [data-hot]:hover{outline:3px dashed var(--y2);outline-offset:2px}
+.hunt tr[data-hot]:hover td:not(.n){background:#fff4cc}
+.flashbad{animation:sh .35s}
+
+/* Editor AppSheet simulado */
+.ed{font-size:13px;background:#fff}
+.ed-bar{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #e8eaed}
+.ed-logo{font-weight:800;color:var(--g)}
+.ed-app{color:#5f6368}
+.ed-sp{flex:1}
+.ed-btn{border:1px solid #dadce0;border-radius:6px;padding:2px 10px;font-size:12px;color:#3c4043}
+.ed-btn.pri{background:var(--g);border-color:var(--g);color:#fff}
+.ed-main{display:grid;grid-template-columns:78px minmax(0,1fr) 210px;min-height:470px}
+.ed-rail{display:flex;flex-direction:column;gap:2px;padding:8px 5px;background:#f8f9fa;border-right:1px solid #e8eaed}
+.ed-rail button{border:0;background:none;border-radius:8px;padding:4px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;color:#5f6368}
+.ed-rail button svg{width:20px;height:20px}
+.ed-rail button.on{background:#e8f0fe;color:var(--g);font-weight:700}
+.ed-panel{padding:14px 16px;border-right:1px solid #e8eaed;min-width:0}
+.ed-panel h4{margin:0 0 10px;font-size:14px}
+.ed-prev{background:#f1f3f4;display:grid;place-items:center;padding:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:1px solid #e8eaed;border-radius:8px;margin-bottom:6px}
+.row small{color:#5f6368}
+.addt{border:1.5px dashed #9aa0a6;border-radius:8px;padding:8px;text-align:center;color:var(--g);font-weight:700;margin-top:4px}
+.coltab{width:100%;border-collapse:collapse;font-size:12px}
+.coltab th,.coltab td{border-bottom:1px solid #eee;padding:7px 5px;text-align:left}
+.coltab th{color:#5f6368;font-weight:600}
+.coltab small{color:#5f6368}
+.ty{display:inline-block;padding:2px 7px;border-radius:5px;background:#f1f3f4;font-size:11.5px}
+.ty.new{background:#e6f4ea;color:#137333;font-weight:700}
+.ty.q{background:#fef7e0;color:#b06000;font-weight:700}
+.kbox{width:18px;height:18px;border:1.5px solid #9aa0a6;border-radius:4px;display:inline-grid;place-items:center;font-size:11px}
+.kbox.on{background:var(--g);border-color:var(--g);color:#fff}
+.fld{margin-bottom:10px}
+.fld label{display:block;font-size:11px;color:#5f6368;font-weight:600;margin-bottom:3px}
+.fld .v{border:1px solid #dadce0;border-radius:6px;padding:6px 8px;font-family:ui-monospace,Consolas,monospace;font-size:12px;word-break:break-word}
+.fld .v.empty{color:#b06000;background:#fef7e0;border-color:#fde293}
+.fld .v.set{color:#137333;background:#e6f4ea;border-color:#ceead6}
+.typs{display:flex;flex-wrap:wrap;gap:4px}
+.tog{display:inline-block;width:32px;height:18px;border-radius:99px;background:#dadce0;position:relative;flex:0 0 auto}
+.tog:after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s}
+.tog.on{background:var(--g)}
+.tog.on:after{left:16px}
+.phone{width:172px;height:326px;border-radius:24px;background:#fff;border:6px solid #1f2235;overflow:hidden;display:flex;flex-direction:column;font-size:11px;box-shadow:0 10px 24px rgba(0,0,0,.14)}
+.ph-top{background:var(--g);color:#fff;font-weight:700;padding:9px 10px;font-size:12px}
+.ph-body{flex:1;overflow:hidden;padding:6px}
+.ph-nav{display:flex;justify-content:space-around;border-top:1px solid #eee;padding:5px 0;font-size:9px;color:#5f6368}
+.ph-nav span.on{color:var(--g);font-weight:700}
+.it{display:flex;gap:7px;align-items:center;padding:6px 3px;border-bottom:1px solid #f0f0f0;line-height:1.3}
+.it b{display:block;font-size:11px}
+.avs{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:9px;flex:0 0 auto}
+.bd{font-size:9px;border-radius:5px;padding:1px 5px;font-weight:700;white-space:nowrap}
+.bd.r{background:#fce8e6;color:#c5221f}.bd.a{background:#e6f4ea;color:#137333}.bd.j{background:#e8f0fe;color:#1967d2}
+.bars{display:flex;align-items:flex-end;gap:14px;height:180px;padding:18px 8px 0;border-bottom:1px solid #ddd;justify-content:center;margin-bottom:22px}
+.bars div{width:28px;background:var(--g);border-radius:5px 5px 0 0;position:relative}
+.bars span{position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);font-size:9px;color:#5f6368}
+.bars em{position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-style:normal;font-size:10px;font-weight:700}
+.cal{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:4px}
+.cal div{aspect-ratio:1;border-radius:5px;background:#f1f3f4;font-size:9px;padding:2px 3px;position:relative}
+.cal div.s:after{content:"";position:absolute;bottom:3px;left:50%;width:5px;height:5px;border-radius:50%;background:var(--g);transform:translateX(-50%)}
+.pf{margin:6px 2px}
+.pf label{font-size:9px;color:#5f6368;display:block}
+.pf div{border-bottom:1.5px solid #dadce0;padding:3px 0;min-height:19px;font-size:11px}
+.pf div.auto{color:#137333;font-weight:600}
+.phbtn{display:block;margin:10px auto 0;background:var(--g);color:#fff;border-radius:7px;padding:6px 10px;font-weight:700;text-align:center}
+.login{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;text-align:center}
+.gsb{border:1px solid #dadce0;border-radius:99px;padding:6px 10px;font-weight:600}
+.sh{font-size:13px;background:#fff}
+.sh-bar{display:flex;align-items:center;gap:10px;padding:9px 14px 6px;flex-wrap:wrap}
+.sh-ico{width:20px;height:26px;background:#0f9d58;border-radius:3px;position:relative}
+.sh-ico:after{content:"";position:absolute;inset:8px 4px;border:2px solid #fff;border-radius:1px}
+.sh-name{font-weight:600}
+.sh-menu{display:flex;gap:12px;font-size:12px;color:#3c4043;width:100%;overflow-x:auto;padding:2px 0 6px;border-bottom:1px solid #e8eaed}
+.sh-menu span{white-space:nowrap}
+.sh-menu span.hl{background:#e8f0fe;color:var(--g);border-radius:4px;padding:0 6px;font-weight:700}
+.sh-drop{margin:6px 12px 6px auto;width:230px;border:1px solid #dadce0;border-radius:8px;box-shadow:0 6px 16px rgba(0,0,0,.12);font-size:12px;overflow:hidden}
+.sh-drop div{padding:7px 12px}
+.sh-drop .hl{background:#e8f0fe;color:var(--g);font-weight:700}
+.sh-wrap{overflow-x:auto}
+.sh-grid{border-collapse:collapse;font-size:12px;min-width:470px;width:100%}
+.sh-grid td,.sh-grid th{border:1px solid #e2e3e3;padding:7px 8px;white-space:nowrap}
+.sh-grid th{background:#f8f9fa;color:#5f6368;font-weight:500;text-align:center}
+.sh-grid td.n{background:#f8f9fa;color:#5f6368;text-align:center;width:32px}
+.sh-grid tr.h td:not(.n){font-weight:700;background:#f1f8f4}
+.sh-grid td.title{text-align:center;font-weight:700;font-size:14px;background:#fff7e0}
+.sh-tabs{display:flex;gap:2px;background:#f8f9fa;border-top:1px solid #e8eaed;padding:4px 8px;overflow-x:auto}
+.sh-tabs span{padding:4px 10px;font-size:12px;border-radius:6px 6px 0 0;color:#5f6368;white-space:nowrap;cursor:pointer}
+.sh-tabs span.on{background:#fff;color:#137333;font-weight:700;box-shadow:inset 0 -2px #137333}
+
+/* Final */
+.fin{position:relative;max-width:760px;margin:auto;background:#fff;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:26px 24px;text-align:center}
+.fin h1{margin:6px 0 6px;font-size:clamp(28px,4.5vw,40px);font-weight:800}
+.fin p{color:var(--muted);margin:0}
+.badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:20px 0}
+.bdg{border:2px solid var(--ink);border-radius:12px;padding:6px 12px;font-size:13px;font-weight:600;background:#fff}
+.bdg em{display:block;font-style:normal;color:#ffb800;letter-spacing:2px}
+.check{text-align:left;max-width:520px;margin:6px auto 20px;padding:0;list-style:none}
+.check li{padding:9px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;font-size:15px}
+.check li:before{content:"✓";color:var(--ok);font-weight:800}
+
+/* Chat */
+.veil{position:fixed;inset:0;background:rgba(8,14,34,.5);z-index:50;display:none}
+.veil.open{display:block}
+.chat{position:fixed;top:0;right:0;bottom:0;width:min(400px,100vw);background:#fff;z-index:51;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .3s;border-left:3px solid var(--ink)}
+.chat.open{transform:none}
+.chat-h{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--hud);color:#fff}
+.chat-h svg{width:46px;height:46px;flex:0 0 auto;border-radius:50%;border:3px solid var(--y)}
+.chat-h div{flex:1;line-height:1.25}
+.chat-h small{color:#9fb0d8}
+.chat-x{background:#1d2a4d;border:2px solid #31406b;color:#fff;width:36px;height:36px;border-radius:10px;font-size:20px;line-height:1}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f6f8fc}
+.m{max-width:86%;padding:10px 13px;border-radius:16px;font-size:14.5px;line-height:1.5}
+.m.p{background:#fff;border:2px solid var(--line);border-bottom-left-radius:4px}
+.m.u{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+.m code{background:#f0eefc;padding:1px 4px;border-radius:4px;font-size:12.5px;color:#3b2fc0;word-break:break-word}
+.sugg{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-top:1px solid var(--line)}
+.sugg button{flex:0 0 auto;border:2px solid var(--ink);background:#fff;border-radius:99px;padding:5px 11px;font-size:13px;font-weight:600}
+.chat-in{display:flex;gap:8px;padding:10px 12px 14px;border-top:1px solid var(--line)}
+.chat-in input{flex:1;border:2px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:15px;min-width:0}
+.chat-in input:focus{outline:none;border-color:var(--ink)}
+
+@media (max-width:980px){
+ .stage{display:flex;flex-direction:column}
+ .simarea{flex:1;padding:12px}
+ .device{padding:6px;border-radius:18px}
+ .comp{flex:0 0 auto;max-height:62%;padding:20px 12px 12px;justify-content:flex-start;background:linear-gradient(180deg,transparent,rgba(15,24,48,.25) 30%)}
+ .portrait{display:none}
+ .tag{left:14px;right:auto}
+ .tag svg{display:block;background:#fff;border-radius:50%}
+ .say,.qq{font-size:15.5px}
+ .say{min-height:2.6em}
+}
+@media (max-width:640px){
+ .hud{gap:8px;padding:7px 10px}
+ .hb span,.chatb span{display:none}
+ .chatb{padding:3px}
+ .hinfo b{font-size:14.5px}
+ .xpbar{display:none}
+ .hinfo small{max-width:150px}
+ .ed-main{grid-template-columns:1fr;min-height:0}
+ .ed-rail{display:grid;grid-template-columns:repeat(5,1fr);border-right:0;border-bottom:1px solid #e8eaed;padding:4px}
+ .ed-rail button{font-size:8.5px;padding:4px 0}
+ .ed-rail button svg{width:18px;height:18px}
+ .ed-panel{border-right:0;border-bottom:1px solid #e8eaed}
+ .mhero{flex-direction:column;text-align:center;padding:16px}
+ .mhero .row2{justify-content:center}
+ .card{padding:16px}
+ .card table{font-size:13px}
+ .zone{padding:24px 14px 100px}
+ .nb{width:64px;height:64px;font-size:23px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <header class="hud">
+  <button class="hb" id="toMap" type="button" aria-label="Mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7z"/><path d="M9 4v13M15 7v13"/></svg><span>Mapa</span></button>
+  <div class="hinfo"><b>Aprende AppSheet</b><small id="hsub">Elige tu etapa</small></div>
+  <div class="xpw"><div class="xpbar" aria-label="Progreso"><i id="bar"></i></div><span class="xp" id="xp">0 XP</span></div>
+  <button class="hb ic" id="snd" type="button" aria-label="Sonido"></button>
+  <button class="hb chatb" id="chatBtn" type="button" aria-label="Pregúntale a la profe"></button>
+ </header>
+ <main id="main"></main>
+ <footer class="foot">Aprendiendo con <b>@LaProfeVivy</b></footer>
+</div>
+<div class="veil" id="veil"></div>
+<section class="chat" id="chat" aria-label="Chat con la profe">
+ <div class="chat-h" id="chatHead"></div>
+ <div class="msgs" id="msgs"></div>
+ <div class="sugg" id="sugg"></div>
+ <form class="chat-in" id="chatForm"><input id="chatIn" placeholder="Escribe tu pregunta…" autocomplete="off"><button class="gbtn" type="submit">Enviar</button></form>
+</section>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const clone=o=>JSON.parse(JSON.stringify(o||{}));
+const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2);
+
+/* ---------- Avatar de la profe ---------- */
+let avn=0;
+function avatar(){const id='avc'+(++avn);return `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><clipPath id="${id}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#${id})"><rect width="120" height="120" fill="#ffe9e4"/><path d="M27 66C22 32 42 16 61 16c22 0 37 17 32 50-2 13 1 23 6 32H21c5-9 8-20 6-32z" fill="#7d1a35"/><rect x="52" y="74" width="16" height="20" rx="6" fill="#ecc3a8"/><path d="M18 126c2-23 18-34 42-34s40 11 42 34z" fill="#2f8f83"/><path d="M50 92l10 12 10-12z" fill="#ecc3a8"/><ellipse cx="60" cy="58" rx="21" ry="24" fill="#f5d5bf"/><circle cx="39" cy="61" r="4" fill="#ecc3a8"/><circle cx="81" cy="61" r="4" fill="#ecc3a8"/><path d="M37 60c-3-22 9-33 25-33 16 0 26 11 23 28-4-8-10-11-17-12-3 4-9 7-16 8-6 1-11 4-15 9z" fill="#9b2445"/><path d="M47 32c9-5 22-4 30 4-9-2-19-2-30-4z" fill="#c4456a" opacity=".85"/><path d="M38 57c-4 10-4 20 1 30-7-6-10-18-8-30z" fill="#8a1f3d"/><path d="M83 52c4 11 4 22-1 33 7-8 10-20 7-33z" fill="#8a1f3d"/><path d="M45 51q5-2.5 10 0M65 51q5-2.5 10 0" stroke="#5a2a28" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M45 58q5-3 10 0M65 58q5-3 10 0" stroke="#2b1b1b" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="46" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><circle cx="74" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><path d="M53 70q7 5 14 0" stroke="#a8384a" stroke-width="2.4" fill="none" stroke-linecap="round"/><g transform="translate(78 88)"><path d="M4 10 7 0l7 7h8l7-7 3 10c2 4 2 9 0 13H2c-2-4-2-9 2-13z" fill="#8b7b68"/><path d="M8 9l3-5M28 9l-3-5" stroke="#5e5143" stroke-width="1.5"/><path d="M18 14c-5 0-8 3-8 7h16c0-4-3-7-8-7z" fill="#fff"/><path d="M11 13q2-1.5 4 0M21 13q2-1.5 4 0" stroke="#2b2b2b" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M17 16h2l-1 1.2z" fill="#e89aa2"/></g></g></svg>`}
+const PTR='<svg viewBox="0 0 22 28"><path d="M1 1v21l6-6 4 10 4-2-4-10h8z" fill="#fff" stroke="#152039" stroke-width="2" stroke-linejoin="round"/></svg>';
+
+/* ---------- Escenarios ---------- */
+function scene(n){
+ let seed=n*137;const r=()=>(seed=(seed*9301+49297)%233280)/233280;
+ let s='';
+ if(n===1){
+  s+=`<g class="cloud" fill="#fff" opacity=".9"><ellipse cx="0" cy="60" rx="70" ry="20"/><ellipse cx="35" cy="45" rx="40" ry="22"/></g><g class="cloud b" fill="#fff" opacity=".75" style="animation-delay:-30s"><ellipse cx="0" cy="105" rx="60" ry="16"/><ellipse cx="-25" cy="94" rx="32" ry="17"/></g><g class="cloud" fill="#fff" opacity=".8" style="animation-delay:-18s"><ellipse cx="0" cy="30" rx="50" ry="14"/></g>`;
+  s+=`<path d="M0 205 Q160 150 340 190 T680 178 T1000 168 T1200 182 V300 H0Z" fill="#a9de9b"/>`;
+  s+=`<g transform="translate(870 128)"><rect x="0" y="40" width="210" height="92" fill="#fff4dc" stroke="#152039" stroke-width="3"/><path d="M-12 44 L105 0 L222 44Z" fill="#ff6b57" stroke="#152039" stroke-width="3" stroke-linejoin="round"/><circle cx="105" cy="26" r="9" fill="#fff" stroke="#152039" stroke-width="2.5"/><rect x="88" y="84" width="34" height="48" fill="#5a6683" stroke="#152039" stroke-width="3"/>${[18,52,140,174].map(x=>`<rect x="${x}" y="60" width="22" height="20" fill="#7cc8f7" stroke="#152039" stroke-width="2.5"/>`).join('')}<path d="M105 0V-34" stroke="#152039" stroke-width="3"/><path d="M105 -34h24l-6 7 6 7h-24z" fill="#ffc83d" stroke="#152039" stroke-width="2"/></g>`;
+  s+=`<path d="M0 238 Q220 198 440 232 T860 228 T1200 222 V300H0Z" fill="#6cc070"/>`;
+  [[90,232],[180,226],[1120,224],[640,236]].forEach(([x,y])=>{s+=`<rect x="${x-3}" y="${y-8}" width="6" height="18" fill="#7a4d2b"/><circle cx="${x}" cy="${y-20}" r="16" fill="#3f9d4f" stroke="#152039" stroke-width="2.5"/>`});
+ } else if(n===2){
+  s+=`<circle cx="230" cy="150" r="70" fill="#ffd27a" opacity=".85"/>`;
+  for(let x=-10;x<1210;x+=40+r()*30){const h=70+r()*110,w=36+r()*30;s+=`<rect x="${x}" y="${300-h-40}" width="${w}" height="${h+40}" fill="#6a4fb0" opacity=".65"/>`}
+  for(let x=-20;x<1220;x+=55+r()*35){const h=50+r()*80,w=50+r()*30;s+=`<rect x="${x}" y="${300-h}" width="${w}" height="${h}" fill="#3a2c78" stroke="#152039" stroke-width="2"/>`;for(let wy=300-h+12;wy<290;wy+=18)for(let wx=x+8;wx<x+w-10;wx+=14)if(r()>.55)s+=`<rect x="${wx}" y="${wy}" width="7" height="8" fill="#ffc83d"/>`}
+ } else {
+  for(let i=0;i<70;i++)s+=`<circle class="tw" style="animation-delay:${(r()*3).toFixed(2)}s" cx="${(r()*1200).toFixed(0)}" cy="${(r()*170).toFixed(0)}" r="${(r()*1.6+.6).toFixed(1)}" fill="#fff"/>`;
+  s+=`<circle cx="1010" cy="62" r="26" fill="#f6f1c7"/><circle cx="1000" cy="55" r="26" fill="#14204a" opacity=".0"/>`;
+  for(let x=-10;x<1210;x+=38+r()*28){const h=80+r()*120,w=34+r()*26;s+=`<rect x="${x}" y="${300-h-30}" width="${w}" height="${h+30}" fill="#1b285a"/>`}
+  for(let x=-20;x<1220;x+=52+r()*36){const h=60+r()*90,w=48+r()*30;s+=`<rect x="${x}" y="${300-h}" width="${w}" height="${h}" fill="#0a1029" stroke="#000" stroke-width="2"/>`;for(let wy=300-h+12;wy<290;wy+=17)for(let wx=x+8;wx<x+w-10;wx+=13)if(r()>.6)s+=`<rect x="${wx}" y="${wy}" width="6" height="7" fill="${r()>.3?'#ffc83d':'#5fe0d0'}"/>`}
+ }
+ return `<svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice">${s}</svg>`;
+}
+
+/* ---------- Simulador ---------- */
+const IC={
+ data:'<path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+ views:'<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+ actions:'<path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z"/>',
+ automation:'<rect x="4.5" y="8" width="15" height="11" rx="3"/><path d="M12 4v4M9.5 13.5h.01M14.5 13.5h.01M2.5 13v2M21.5 13v2"/>',
+ chat:'<path d="M4 4.5h16v11.5H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/>',
+ intel:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>',
+ security:'<path d="M12 3 4.5 6v5.5c0 4.8 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.7 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/>',
+ settings:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
+ manage:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M6 13h3l2-4 3 7 2-3h2"/>',
+ learn:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>'
+};
+const svgI=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>`;
+const ICT={eye:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.5M12 17h.01"/>',share:'<circle cx="10" cy="8" r="3.5"/><path d="M3 20c.5-4 3.5-6 7-6s6.5 2 7 6M19 8v6M16 11h6"/>',undo:'<path d="M9 7 4 12l5 5M4 12h11a5 5 0 0 1 0 10h-2"/>',redo:'<path d="m15 7 5 5-5 5M20 12H9a5 5 0 0 0 0 10h2"/>',ok:'<path d="m5 12 5 5 9-10"/>',ph:'<rect x="7" y="3" width="10" height="18" rx="2"/>',tab:'<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 5v14"/>',pc:'<rect x="3" y="5" width="18" height="12" rx="1.5"/><path d="M2 19h20"/>'};
+const svgT=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICT[k]}</svg>`;
+const RAIL=[['data','Data'],['views','Views'],['actions','Actions'],['automation','Automation'],['chat','Chat apps'],['intel','Intelligence'],['security','Security'],['settings','Settings'],['manage','Manage'],['learn','Learn']];
+const ASLOGO='<svg viewBox="0 0 24 24" class="aslogo"><path d="M3 5h18l-7 7-2 7-3-7z" fill="#1a73e8"/><path d="M14 12 21 5l-5 9z" fill="#4285f4"/></svg>';
+function editor(active,panel,ph,o={}){
+ return `<div class="ed"><div class="ed-bar"><span>${ASLOGO}</span><b class="ed-app">BD Retardos</b><span class="ed-sp"></span><span class="tb" data-t="tb-eye">${svgT('eye')}</span><span class="tb" data-t="tb-help">${svgT('help')}</span><span class="tb" data-t="share" data-hot="share">${svgT('share')}</span><span class="tb" data-t="tb-undo">${svgT('undo')}</span><span class="tb">${svgT('redo')}</span><span class="tb ok">${svgT('ok')}</span><span class="ed-btn pri" data-t="save" data-hot="save">SAVE</span></div><div class="ed-main"><nav class="ed-rail" data-t="rail">${RAIL.map(r=>`<button type="button" data-hot="rail-${r[0]}" class="${active===r[0]?'on':''}">${svgI(r[0])}<span>${r[1]}</span></button>`).join('')}</nav><div class="ed-panel" data-t="panel">${panel}</div><div class="ed-prev" data-t="prev"><div class="pvt" data-t="pvt"><span class="pvd">${svgT('ph')}${svgT('tab')}${svgT('pc')}</span><span class="pve">Edit <i class="tog on"></i></span></div>${ph}<div class="pva" data-t="prevas"><small>Preview app as</small><div><span>${o.pva||'tu correo'}</span><b>Apply</b></div></div></div></div></div>`;
+}
+/* Tabla de columnas como en el editor real */
+function colGrid(title,rows,o={}){
+ const box=(on,t)=>`<span class="kbox ${on?'on':''}" ${t?`data-t="${t}"`:''}>${on?'✓':''}</span>`;
+ const all=[{n:'_RowNumber',type:'Number',sys:1}].concat(rows);
+ return `<div class="tbh"><b>Table: ${title}</b><span class="sp"></span><span class="vds">View data source</span><span class="tic" data-t="regen" title="Regenerate schema">⟳</span><span class="tic">+</span></div><div class="tbs">Source: BD Retardos · Data Source: google · Source Type: Sheets · Columns: ${all.length}</div><div class="cg-wrap"><table class="cg" data-t="coltab"><tr><th>NAME</th><th>TYPE</th><th data-t="keyth">KEY?</th><th data-t="lblth">LABEL?</th><th data-t="fth">FORMULA</th><th data-t="showth">SHOW?</th><th>EDITABLE?</th><th data-t="reqth">REQUIRE?</th><th data-t="initth">INITIAL VALUE</th></tr>${all.map(r=>`<tr data-t="row-${r.n}" class="${r.sys?'sys':''} ${r.virt?'virt':''}"><td><span class="pen">✎</span>${r.n}</td><td><span class="sel ${r.type==='?'?'q':''} ${r.newt?'new':''}">${r.type}${r.ref?` → ${r.ref}`:''}</span></td><td>${box(r.key,'k-'+r.n)}</td><td>${box(r.label,'l-'+r.n)}</td><td><span class="fx ${r.formula==='?'?'q':r.formula?'set':''}" data-t="f-${r.n}">= ${r.formula||''}</span></td><td>${box(!r.sys&&r.show!==false,'s-'+r.n)}</td><td>${box(!r.sys&&!r.virt&&!r.formula,'')}</td><td>${box(r.req,'r-'+r.n)}</td><td><span class="fx ${r.init==='?'?'q':r.init?'set':''}" data-t="i-${r.n}">= ${r.init||''}</span></td></tr>`).join('')}</table></div>`;
+}
+function llegRows(o={}){
+ const t=o.t||{ID_Estudiante:1,hora_llegada:1,estado:1,registrado_por:1};const G='Text';
+ return [
+  {n:'ID_Llegada',type:'Text',key:true,init:o.uid?'UNIQUEID()':'',show:!o.hide},
+  {n:'ID_Sesion',type:'Ref',ref:'Sesiones',req:o.req},
+  {n:'ID_Estudiante',type:t.ID_Estudiante?'Ref':G,ref:t.ID_Estudiante?'Estudiantes':'',newt:o.mark&&t.ID_Estudiante,init:o.est?'LOOKUP(USEREMAIL(), "Estudiantes", "correo", "ID_Estudiante")':''},
+  {n:'hora_llegada',type:t.hora_llegada?'Time':G,newt:o.mark&&t.hora_llegada,init:o.hora?'TIMENOW()':''},
+  {n:'minutos_retraso',type:'Number',formula:o.f1?'TOTALMINUTES([hora_llegada] - [ID_Sesion].[hora_inicio])':''},
+  {n:'estado',type:t.estado?'Enum':G,newt:o.mark&&t.estado,formula:o.f2?'IF([minutos_retraso] > 5, "Retardo", "A tiempo")':''},
+  {n:'registrado_por',type:t.registrado_por?'Email':G,newt:o.mark&&t.registrado_por,init:o.mail?'USEREMAIL()':''}
+ ];
+}
+function estRows(o={}){
+ const r=[{n:'ID_Estudiante',type:'Text',key:true,label:!o.lbl,init:'UNIQUEID()'},{n:'nombre',type:'Name',label:!!o.lbl},{n:'correo',type:'Email',req:true},{n:'ID_Curso',type:'Ref',ref:'Cursos'}];
+ if(o.rel)r.push({n:'Related Llegadas',type:'List',formula:'REF_ROWS("Llegadas", "ID_Estudiante")',virt:1});
+ return r;
+}
+function realDlg(tbl,name,type,o={}){
+ const sec=(t,id,body,open=true)=>`<div class="rs" data-t="${id}"><div class="rsh">${t}<span>${open?'⌃':'⌄'}</span></div>${open?body:''}</div>`;
+ const row=(l,d,ctrl,t='')=>`<div class="rr" ${t?`data-t="${t}"`:''}><div><b>${l}</b><small>${d}</small></div><div>${ctrl}</div></div>`;
+ const cb=on=>`<span class="kbox ${on?'on':''}">${on?'✓':''}</span>`;
+ const inp=(v,cls='')=>`<span class="rin ${cls}">${v||''}</span>`;
+ let det='';
+ if(type==='Enum')det=row('Values','Las opciones permitidas',`<span class="typs">${(o.values||[]).map(v=>`<span class="ty new">${v}</span>`).join('')}<span class="ty">Add</span></span>`,'d-values')+row('Allow other values','Aceptar otras opciones',cb(false))+row('Base type','Tipo de cada opción',inp('Text'))+row('Input mode','Cómo se eligen',`<span class="seg">${['Auto','Buttons','Stack','Dropdown'].map(m=>`<i class="${m===(o.mode||'Auto')?'on':''}">${m}</i>`).join('')}</span>`,'d-mode');
+ else if(type==='Ref')det=row('Source table','Tabla de origen',inp(o.src||'',o.src?'set':''),'d-src')+row('Is a part of?','¿Es parte de otro registro?',cb(false));
+ else if(type==='Number')det=row('Numeric digits','Cifras',inp(''))+row('Display mode','Cómo se muestra',`<span class="seg"><i class="on">Auto</i><i>Standard</i><i>Range</i><i>Label</i></span>`);
+ else det='<small class="rnone">Este tipo no tiene detalles extra.</small>';
+ return `<div class="rdlg"><div class="rdh"><div><b>${tbl} : ${name}</b><small>type: ${type}</small></div><span class="done">Done</span></div><div class="rbody">
+ <div data-t="d-top">${row('Column name','Nombre de la columna',inp(name))}${row('Show?','¿Se ve en la app?',cb(o.show!==false))}${row('Type','Tipo de dato',inp(type,o.newt?'set':''),'d-type')}</div>
+ ${sec('Type Details · detalles del tipo','d-details',det)}
+ ${sec('Data Validity · validación','d-valid',row('Valid If','Regla para que el dato sea válido',inp('='))+row('Require?','¿Es obligatorio?',cb(o.req),'d-req'))}
+ ${sec('Auto Compute · cálculo automático','d-auto',row('App formula','Fórmula que calcula el dato',inp('= '+(o.formula||'')))+row('Initial value','Valor inicial',inp('= '+(o.init||''))))}
+ ${sec('Update Behavior · edición','d-upd',row('Editable?','¿Se puede editar?',cb(true)),false)}
+ ${sec('Display · cómo se muestra','d-display',row('Label','Nombre visible de cada registro',cb(o.label),'d-label')+row('Display name','Nombre a mostrar',inp('='))+row('Description','Descripción',inp('=')))}
+ ${sec('Other Properties','d-other','',false)}
+ </div></div>`;
+}
+function colDlg(name,fields){return `<div class="cdlg"><div class="cdh"><b>Column: ${name}</b><span>Llegadas</span></div>${fields}<div class="cdf"><span>Cancel</span><b>Done</b></div></div>`}
+function dataList(tables,o={}){
+ return `<div class="dl"><div class="dlh"><b>Data</b><span class="sp"></span><span class="tic">🔍</span><span class="tic plusb" data-hot="add-table" data-t="add-table">+</span></div><div data-t="tlist">${tables.map((t,i)=>`<div class="dli ${i===0?'on':''}">${t}</div>`).join('')}</div></div>`;
+}
+function addDataDlg(left){
+ return `<div class="add" data-t="adddlg"><div class="adh"><b>Add data</b><span>✕</span></div><small>SUGGESTIONS: ADD MORE DATA FROM CONNECTED SOURCES</small><div class="sugs" data-t="sugg">${left.map(t=>`<span class="${t==='Instrucciones'?'bad':''}">Add Table "${t}"</span>`).join('')}</div><small>Select the datasource:</small><div class="srcs"><span>AppSheet Database</span><span>Google Sheets</span><span>Google Forms</span><span>Google Drive Documents</span></div><div class="nsrc">+ New source</div></div>`;
+}
+function secPanel(ms){
+ const menu=`<div class="sub" data-t="secmenu">${[['sign','Require sign-in'],['filt','Security Filters'],['dom','Domain Authentication'],['opt','Options']].map(m=>`<span class="${ms.sec===m[0]?'on':''}">${m[1]}</span>`).join('')}</div>`;
+ let c='';
+ if(ms.sec==='filt')c=`<div class="cards">${['Cursos','Estudiantes'].map(t=>`<div class="sfc"><b>${t}</b><small>filter: none</small></div>`).join('')}<div class="sfc ${ms.s2?'set':''}" data-t="filter"><b>Llegadas</b><small>filter: ${ms.full?'OR(LOOKUP(USEREMAIL(), "Usuarios_Roles", "correo", "rol") <> "Estudiante", [ID_Estudiante].[correo] = USEREMAIL())':ms.s2?'[ID_Estudiante].[correo] = USEREMAIL()':'none'}</small></div></div>`;
+ else c=`<div class="row" data-t="signin"><span>Require user sign-in?</span><span class="tog ${ms.s1?'on':''}"></span></div>${fld('Authentication provider','Google')}<div class="row" data-t="allowall"><span>Allow all signed-in users</span><span class="tog ${ms.all?'on':''}"></span></div><div class="mu" data-t="musers">👥 Manage users</div>`;
+ return `<h4>Security</h4>${menu}${c}`;
+}
+function setPanel(ms){
+ const menu=`<div class="sub" data-t="setmenu">${[['info','Information'],['theme','Theme & Brand'],['data','Data · Relationships'],['loc','Views · Localization'],['perf','Performance'],['off','Offline mode'],['int','Integrations']].map(m=>`<span class="${ms.sv===m[0]?'on':''}">${m[1]}</span>`).join('')}</div>`;
+ let c='';
+ if(ms.sv==='theme')c=`<div class="fld" data-t="theme"><label>Primary color · Logo</label><div class="typs"><span class="sw" style="background:#1a73e8"></span><span class="sw ${ms.color?'on':''}" style="background:#0f9d8a"></span><span class="sw" style="background:#e8710a"></span><span class="ty">Logo: reloj</span></div></div>`;
+ else if(ms.sv==='loc')c=`<div data-t="locale">${fld('Save','Guardar','set')}${fld('Cancel','Cancelar','set')}${fld('Search','Buscar','set')}</div>`;
+ else if(ms.sv==='off')c=`<div class="row" data-t="offline"><span>The app can start offline</span><span class="tog on"></span></div>`;
+ else c=`${fld('Short Name (nombre corto)','BD Retardos','set','appname')}${fld('Short Description (descripción corta)','Registro de llegadas tarde con QR','')}`;
+ return `<h4>Settings</h4>${menu}${c}`;
+}
+function manPanel(ms){
+ const menu=`<div class="sub" data-t="manmenu">${[['deploy','Deploy'],['versions','Versions'],['monitor','Monitor'],['collab','Collaborate & Publish']].map(m=>`<span data-t="man-${m[0]}" class="${ms.mv===m[0]?'on':''}">${m[1]}</span>`).join('')}</div>`;
+ const C={deploy:[['Deployment Check','Revisa si la app está lista para uso real'],['Branded Apps','Publicar en tiendas de apps (pago)'],['Plan requirements','Qué plan pide tu app'],['Broadcast Notifications','Enviar avisos a todos']],versions:[['Version History','Versiones anteriores de la app'],['App Upgrade','Actualizar la app'],['Stable Version','Fijar una versión estable']],monitor:[['Automation Monitor','Ver cómo corren las automatizaciones'],['Usage Statistics','Cuánto se usa la app'],['Audit History','Quién hizo qué']],collab:[['Transfer','Pasar la app a otra cuenta'],['Team Work','Agregar coautores para construir juntos']]};
+ const c=(C[ms.mv]||C.deploy).map(x=>`<div class="mc" ${x[0]==='Team Work'?'data-t="teamwork"':''}><b>${x[0]}</b><small>${x[1]}</small></div>`).join('')+(ms.mv==='collab'?'<div class="mrow"><span>Copy App</span><span>Delete App</span></div>':'');
+ return `<h4>Manage</h4>${menu}${c}<div class="row" data-t="status"><span>App status</span><span class="ty ${ms.proto?'new':''}">Prototype${ms.proto?' ✓ entrega':''}</span></div>`;
+}
+function shareDlg(){return `<div class="add" data-t="sharedlg"><div class="adh"><b>Share "BD Retardos"</b><span>⚙</span></div><div class="shin">profe@colegio.edu.co</div><small>Auth provider for app access: Google</small><div class="shu"><span class="avs" style="background:#1a73e8">C</span> tu correo (you) <i>Owner</i></div><div class="shf"><span>Share links</span><span>Copy users</span><b>Done</b></div></div>`}
+
+const fld=(l,v,s='',t='')=>`<div class="fld" ${t?`data-t="${t}"`:''}><label>${l}</label><div class="v ${s}">${v==='?'?'&nbsp;':esc(v)}</div></div>`;
+const LLEG=[['Camila Torres','07:08',8,'#7c6cff','Retardo'],['Daniel Ruiz','06:57',0,'#0f9d58','A tiempo'],['Laura Peña','07:03',3,'#f29900','A tiempo'],['Mateo Gil','07:12',12,'#e8710a','Retardo']];
+const STU=[['Camila Torres','7B','#7c6cff'],['Daniel Ruiz','7B','#0f9d58'],['Laura Peña','8A','#f29900'],['Mateo Gil','6A','#e8710a']];
+const pf=(l,v,auto)=>`<div class="pf"><label>${l}</label><div class="${auto&&v?'auto':''}">${v||''}</div></div>`;
+function phone(kind,o={}){
+ let t=o.who?'BD Retardos · '+o.who:'BD Retardos',b='',nav=o.panel?['Llegadas','Estudiantes','Panel']:['Llegadas','Estudiantes','Gráfico'],on=0;
+ if(kind==='llegadas'){
+  const list=o.only?LLEG.slice(0,1):LLEG;
+  b=(o.plus?'<span class="plus" data-t="plus">+</span>':'')+list.map(l=>`<div class="it"><span class="avs" style="background:${l[3]}">${ini(l[0])}</span><div style="flex:1;min-width:0"><b>${l[0]}</b>${l[1]}${o.min===false?'':' · '+l[2]+' min'}</div>${o.est===false?'':`<span class="bd ${l[4]==='Retardo'?'r':'a'}">${l[4]}</span>`}</div>`).join('');
+ } else if(kind==='deck'){
+  t='Estudiantes';on=1;
+  b=STU.map(s=>`<div class="it"><span class="avs" style="background:${s[2]};width:30px;height:30px">${ini(s[0])}</span><div><b>${s[0]}</b>Curso ${s[1]}</div></div>`).join('');
+ } else if(kind==='chart'){
+  t='Retardos por curso';on=2;
+  b=`<div class="bars">${[['6A',2],['7B',5],['8A',3]].map(([c,v])=>`<div style="height:${v*28}px"><em>${v}</em><span>${c}</span></div>`).join('')}</div>`;
+ } else if(kind==='calendar'){
+  t='Sesiones · octubre';on=2;
+  const s=[0,2,3,5,7,8,10,12,13,15,17,18];
+  b=`<b style="display:block;margin:2px">Lun a vie</b><div class="cal">${Array.from({length:20},(_,i)=>`<div class="${s.includes(i)?'s':''}">${i+1}</div>`).join('')}</div>`;
+ } else if(kind==='form'){
+  t='Nueva llegada';nav=[];
+  b=pf('ID_Sesion'+(o.req?' *':''),o.qr?'<span style="color:#1a73e8;font-weight:700">▣ Escanear QR</span> · S001':'')+pf('ID_Estudiante',o.est?'Camila Torres':'',1)+pf('hora_llegada',o.hora?'07:08':'',1)+pf('registrado_por',o.mail?'camila@colegio.edu.co':'',1)+pf('ID_Llegada',o.id?'a7f3c1e9':'',1)+'<span class="phbtn">Save</span>';
+ } else if(kind==='detail'){
+  t='Llegada';
+  b=pf('Estudiante','Camila Torres')+pf('Hora de llegada','07:08')+pf('Minutos de retraso','8')+`<div class="pf"><label>Estado</label><div><span class="bd ${o.just?'j':'r'}">${o.just?'Justificado':'Retardo'}</span></div></div>`+(o.btn?'<span class="phbtn" data-t="jbtn">Justificar</span>':'');
+ } else if(kind==='enumform'){
+  t='Nueva llegada';nav=[];
+  b=pf('ID_Estudiante','Camila Torres')+pf('hora_llegada','07:08',1)+(o.dd?'<div class="pf"><label>estado</label><div>Retardo ▾</div><div class="dd"><div>A tiempo</div><div>Retardo</div></div></div>':'<div class="pf"><label>estado</label><div class="ebtns"><span>A tiempo</span><span class="on">Retardo</span></div></div>')+'<span class="phbtn">Save</span>';
+ } else if(kind==='keyform'){
+  t='Nueva llegada';nav=[];
+  b=(o.hide?'':pf('ID_Llegada',o.uid?'a7f3c1e9':'<span style="color:#b06000">¿? escribir a mano</span>',1))+pf('ID_Estudiante','Camila Torres')+pf('hora_llegada','07:08',1)+'<span class="phbtn">Save</span>'+(o.uid?'<div style="margin-top:10px;font-size:9.5px;color:#5f6368;text-align:center">Siguiente registro: <b style="color:#137333">f29b04c1</b></div>':'');
+ } else if(kind==='reflist'){
+  t='Llegadas';
+  b=[['EST001','Camila Torres','07:08'],['EST002','Daniel Ruiz','06:57'],['EST001','Camila Torres','07:10'],['EST003','Laura Peña','07:03']].map(r=>`<div class="it"><div style="flex:1"><b>${o.ok?`<span style="color:#1a73e8">${o.lbl?r[1]:r[0]} ›</span>`:`<span style="color:#80868b">${r[0]}</span>`}</b>${r[2]}</div></div>`).join('');
+ } else if(kind==='refform'){
+  t='Nueva llegada';nav=[];
+  const names=o.lbl?['Camila Torres','Daniel Ruiz','Laura Peña']:['EST001','EST002','EST003'];
+  b=pf('ID_Sesion','S001')+`<div class="pf"><label>ID_Estudiante</label><div>${o.ok?names[0]+' ▾':'<span style="color:#b06000">EST001 (texto)</span>'}</div>${o.ok?`<div class="dd">${names.map(n=>`<div>${n}</div>`).join('')}</div>`:''}</div>`+pf('hora_llegada','07:08',1)+'<span class="phbtn">Save</span>';
+ } else if(kind==='student'){
+  t='Camila Torres';on=1;
+  b=pf('ID_Estudiante','EST001')+pf('Curso','7B')+`<div class="pf"><label>Related Llegadas (3)</label></div>`+[['20/10','07:08','Retardo'],['21/10','07:10','Retardo'],['22/10','06:59','A tiempo']].map(l=>`<div class="it"><div style="flex:1"><b>${l[0]}</b>${l[1]}</div><span class="bd ${l[2]==='Retardo'?'r':'a'}">${l[2]}</span></div>`).join('');
+ } else if(kind==='login'){
+  nav=[];
+  b='<div class="login"><span class="avs" style="width:44px;height:44px;background:#1a73e8;font-size:14px">RA</span><b>Inicia sesión</b><span class="gsb">Continuar con Google</span></div>';
+ } else if(kind==='install'){
+  nav=[];
+  b='<div class="login"><span class="avs" style="width:54px;height:54px;border-radius:14px;background:#1a73e8;font-size:16px">RA</span><b>BD Retardos</b><span class="phbtn" style="margin:0">Instalar</span><small style="color:#137333;font-weight:700">Deployed</small></div>';
+ }
+ return `<div class="phone" data-hot="phone"><div class="ph-top">${t}</div><div class="ph-body">${b}</div>${nav.length?`<div class="ph-nav" ${o.plus?'data-t="fNav"':''}>${nav.map((n,i)=>`<span class="${i===on?'on':''}">${n}</span>`).join('')}</div>`:''}</div>`;
+}
+const SHEETS={
+ Estudiantes:[['ID_Estudiante','nombre','correo','ID_Curso'],[['EST001','Camila Torres','camila@colegio.edu.co','7B'],['EST002','Daniel Ruiz','daniel@colegio.edu.co','7B'],['EST003','Laura Peña','laura@colegio.edu.co','8A']]],
+ Cursos:[['ID_Curso','grado','grupo','jornada'],[['7B','7','B','Mañana'],['8A','8','A','Mañana'],['6A','6','A','Tarde']]],
+ Sesiones:[['ID_Sesion','ID_Curso','asignatura','fecha','hora_inicio'],[['S001','7B','Matemáticas','20/10/2026','07:00'],['S002','8A','Ciencias','20/10/2026','07:00']]],
+ Llegadas:[['ID_Llegada','ID_Sesion','ID_Estudiante','hora_llegada','minutos_retraso','estado','registrado_por'],[['L001','S001','EST001','07:08','8','Retardo','camila@colegio.edu.co'],['L002','S001','EST002','06:57','0','A tiempo','daniel@colegio.edu.co']]],
+ Usuarios_Roles:[['correo','rol'],[['camila@colegio.edu.co','Estudiante'],['profe@colegio.edu.co','Docente'],['coord@colegio.edu.co','Coordinación']]]
+};
+function sheet(fixed,menu,tab='Estudiantes'){
+ const [H,R]=SHEETS[tab];
+ let n=1;const rows=[];
+ if(!fixed&&tab==='Estudiantes')rows.push(`<tr data-hot="row-title"><td class="n">${n++}</td><td class="title" colspan="${H.length}">Lista de estudiantes 2026</td></tr>`);
+ rows.push(`<tr class="h" data-t="hdr" data-hot="row-hdr"><td class="n">${n++}</td>${H.map((h,i)=>`<td ${i===0?'data-t="idcell"':''}>${h}</td>`).join('')}</tr>`);
+ R.forEach((r,k)=>rows.push(`<tr ${k===0?'data-t="r1"':''}><td class="n">${n++}</td>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`));
+ const target=(!fixed&&tab==='Estudiantes')?6:5;while(n<=target){rows.push(`<tr><td class="n">${n++}</td>${H.map(()=>'<td></td>').join('')}</tr>`)}
+ const menuItems=['Archivo','Editar','Ver','Insertar','Formato','Datos','Herramientas','Extensiones','Ayuda'];
+ return `<div class="sh"><div class="sh-bar"><span class="sh-ico"></span><span class="sh-name">BD Retardos</span><div class="sh-menu">${menuItems.map(m=>`<span class="${menu&&m==='Extensiones'?'hl':''}" ${m==='Extensiones'?'data-t="ext"':''}>${m}</span>`).join('')}</div></div>${menu?'<div class="sh-drop" data-t="drop"><div>Complementos</div><div>Apps Script</div><div class="hl">AppSheet › Crear una app</div></div>':''}<div class="sh-wrap"><table class="sh-grid"><tr><th></th>${H.map((_,i)=>`<th>${'ABCDEFG'[i]}</th>`).join('')}</tr>${rows.join('')}</table></div><div class="sh-tabs" data-t="tabs">${Object.keys(SHEETS).map(t=>`<span class="${t===tab?'on':''}" data-tab="${t}">${t}</span>`).join('')}</div></div>`;
+}
+const TABLES=Object.keys(SHEETS).map(t=>[t,SHEETS[t][0].length]);
+function tablesPanel(all,addable,regen){
+ return `<h4>Data · Tables</h4>${regen?'<div class="row" style="background:#e8f0fe;border-color:#c6dafc"><span><b>Llegadas</b> · columnas</span><span class="ty new" data-t="regen">⟳ Regenerate schema</span></div>':''}<div data-t="tlist">${(all?TABLES:TABLES.slice(0,1)).map(t=>`<div class="row"><span>${t[0]}</span><small>${t[1]} columnas</small></div>`).join('')}</div>${addable?'<div class="addt" data-hot="add-table">+ Add table</div>':''}`;
+}
+const COLS=[['ID_Llegada','Text'],['ID_Sesion','Ref','a Sesiones'],['ID_Estudiante','Ref','a Estudiantes',1],['hora_llegada','Time','',1],['minutos_retraso','Number'],['estado','Enum','',1],['registrado_por','Email','',1]];
+function colsPanel(ms){
+ return `<h4>Llegadas · Columns</h4><table class="coltab" data-t="coltab"><tr><th>Name</th><th>Type</th><th data-t="keyth">Key</th></tr>${COLS.map(c=>{
+  const known=!c[3]||ms.t[c[0]];
+  const ty=known?`<span class="ty ${c[3]?'new':''}">${c[1]}</span> <small>${c[2]||''}</small>`:'<span class="ty q">?</span>';
+  const k=ms.key&&c[0]==='ID_Llegada';
+  return `<tr data-t="row-${c[0]}"><td>${c[0]}</td><td>${ty}</td><td><span class="kbox ${k?'on':''}" data-hot="key-${c[0]}">${k?'✓':''}</span></td></tr>`}).join('')}</table>`;
+}
+const VTYPES=['deck','table','gallery','detail','form','chart','calendar','map'];
+
+/* ---------- Fichas ---------- */
+const CARD_TABLAS=`<h3>Las 5 tablas del ejemplo</h3><p class="sub">Cada una es una pestaña. La fila 1 tiene estos encabezados.</p><table><tr><th>Pestaña</th><th>Columnas</th></tr>${Object.keys(SHEETS).map(t=>`<tr><td>${t}</td><td>${SHEETS[t][0].join(', ')}</td></tr>`).join('')}</table>`;
+const CARD_TIPOS=`<h3>Tipos de datos</h3><p class="sub">El tipo de dato dice qué clase de información guarda la columna.</p><table><tr><th>Tipo</th><th>Sirve para</th><th>Ejemplo</th></tr><tr><td>Text</td><td>Palabras o códigos</td><td>EST001</td></tr><tr><td>Number</td><td>Cantidades para operar</td><td>8 minutos</td></tr><tr><td>Date</td><td>Día, mes y año</td><td>20/10/2026</td></tr><tr><td>Time</td><td>Hora del día</td><td>07:08</td></tr><tr><td>Email</td><td>Correos</td><td>camila@…</td></tr><tr><td>Enum</td><td>Lista cerrada: se elige una opción</td><td>A tiempo / Retardo</td></tr><tr><td>Yes/No</td><td>Solo sí o no</td><td>¿Trajo excusa?</td></tr><tr><td>Image</td><td>Fotos</td><td>Foto del estudiante</td></tr><tr><td>Ref</td><td>Enlace a otra tabla</td><td>ID_Estudiante</td></tr></table>`;
+const CARD_FORM=`<h3>Cómo se escribe una fórmula</h3><p class="sub">Va en App formula de la columna, siempre empieza con =.</p><table><tr><th>Escribes</th><th>Significa</th></tr><tr><td><code>[hora_llegada]</code></td><td>El valor de esa columna, entre corchetes</td></tr><tr><td><code>[ID_Sesion].[hora_inicio]</code></td><td>Un dato de otra tabla, a través de la Ref</td></tr><tr><td><code>TOTALMINUTES( )</code></td><td>Convierte una diferencia de horas en minutos</td></tr><tr><td><code>IF(condición, sí, no)</code></td><td>Elige un valor según se cumpla o no</td></tr></table>`;
+const CARD_VISTAS=`<h3>Tipos de vista</h3><p class="sub">Elige según lo que necesita ver tu usuario.</p><table><tr><th>Vista</th><th>Úsala para</th><th>Ejemplo</th></tr><tr><td>deck</td><td style="font-weight:400">Tarjetas con foto y título</td><td style="font-weight:400">Lista de estudiantes con su foto</td></tr><tr><td>table</td><td style="font-weight:400">Muchos datos en filas y columnas</td><td style="font-weight:400">Todas las llegadas del día</td></tr><tr><td>gallery</td><td style="font-weight:400">Cuadrícula de imágenes grandes</td><td style="font-weight:400">Fotos de los cursos</td></tr><tr><td>detail</td><td style="font-weight:400">Todos los datos de un solo registro</td><td style="font-weight:400">La llegada de Camila del 20/10</td></tr><tr><td>form</td><td style="font-weight:400">Llenar o editar datos</td><td style="font-weight:400">Registrar una llegada</td></tr><tr><td>chart</td><td style="font-weight:400">Gráficos para comparar cantidades</td><td style="font-weight:400">Cuántos retardos tiene cada curso</td></tr><tr><td>calendar</td><td style="font-weight:400">Registros ubicados por fecha</td><td style="font-weight:400">Las clases del mes</td></tr><tr><td>map</td><td style="font-weight:400">Puntos en un mapa</td><td style="font-weight:400">Sedes del colegio</td></tr></table>`;
+const CARD_CTRL=`<h3>Cada tipo de dato se llena distinto</h3><p class="sub">AppSheet elige la forma de llenarlo según el tipo.</p><div class="ctrls"><div><b>Time (hora)</b><svg viewBox="0 0 60 60" class="clk"><circle cx="30" cy="30" r="26" fill="#fff" stroke="#152039" stroke-width="3"/><path d="M30 30V14M30 30l9 6" stroke="#152039" stroke-width="3" stroke-linecap="round"/><circle cx="30" cy="30" r="3" fill="#ff6b57"/></svg><span>Un reloj para elegir la hora</span></div><div><b>Date (fecha)</b><div class="cal2">${Array.from({length:14},(_,i)=>`<i class="${i===9?'on':''}">${i+14}</i>`).join('')}</div><span>Un calendario para tocar el día</span></div><div><b>Number (número)</b><div class="kp">${[1,2,3,4,5,6,7,8,9,0].map(n=>`<i>${n}</i>`).join('')}</div><span>Un teclado solo de números</span></div><div><b>Enum (opciones)</b><div class="ebtns big"><span>A tiempo</span><span class="on">Retardo</span></div><span>Botones para tocar una opción</span></div></div>`;
+const CARD_CHOQUE=`<h3>¿Qué pasa si los códigos van en orden?</h3><p class="sub">Último código usado: 3</p><div class="ruta"><div><small>Celular de Camila</small><b>Siguiente: 4</b></div><i>+</i><div><small>Celular de Mateo</small><b>Siguiente: 4</b></div><i>=</i><div class="r" style="background:#fde8e4;border-color:#c5221f"><small>Resultado</small><b>¡Dos llegadas con 4!</b></div></div>`;
+const CARD_CHOQUE2=`<h3>Con UNIQUEID() no hay choque</h3><p class="sub">Cada celular inventa un código mezclado de 8 caracteres.</p><div class="ruta"><div><small>Celular de Camila</small><b>a7f3c1e9</b></div><i>+</i><div><small>Celular de Mateo</small><b>f29b04c1</b></div><i>=</i><div class="r" style="background:#e3f6ea;border-color:#16653a"><small>Resultado</small><b>Dos códigos distintos</b></div></div>`;
+const LVINTRO=[
+ {say:'¡Bienvenida al Nivel Básico{n}! Antes de construir, hay que conocer el taller y preparar los ingredientes, como en la cocina. Mira lo que vas a lograr.',rows:[['Interfaz','Conocer el editor de AppSheet','Saber dónde está cada herramienta antes de usarla'],['Sheets','Organizar los datos en tablas','Los datos son la base de toda app'],['Conectar','Unir la hoja con AppSheet','Así nace tu app']]},
+ {say:'¡Subiste al Nivel Intermedio{n}! Ahora le enseñas a la app a entender sus datos. Este es el corazón de tu app.',rows:[['Columnas','Darle a cada dato su tipo','Que la app sepa si es una hora, un número o una opción'],['Key','Darle a cada registro su código único','Que la app nunca confunda un registro con otro'],['Relaciones','Conectar las tablas','Que la app sepa de quién es cada llegada'],['Fórmulas','Hacer que la app calcule','Que los retardos se calculen solos'],['Vistas','Diseñar las pantallas','Que cada usuario vea lo que necesita'],['Formularios','Registrar datos fácil','Que registrar una llegada sea solo escanear']]},
+ {say:'¡Llegaste al Nivel Avanzado{n}! Aquí tu app cobra vida y sale al mundo.',rows:[['Acciones','Crear botones que hacen cambios','Que las decisiones se apliquen con un toque'],['Seguridad','Proteger los datos','Que cada persona vea solo lo que le corresponde'],['Chat e IA','Conocer Chat apps e Intelligence','Que la app llegue al chat y sea más inteligente'],['Publicar','Configurar, probar y compartir la app','Que tu profe y tus compañeros la usen en su celular']]}
+];
+const lvCard=l=>`<h3>Nivel ${LEVELS[l][0]}</h3><p class="sub">${LEVELS[l][3]}</p><table><tr><th>Etapa</th><th>Qué vas a lograr</th><th>¿Por qué importa para la app?</th></tr>${LVINTRO[l].rows.map(r=>`<tr><td>${r[0]}</td><td style="font-weight:400">${r[1]}</td><td style="font-weight:400">${r[2]}</td></tr>`).join('')}</table>`;
+const CARD_REGLAS=`<h3>Reglas para escribir fórmulas</h3><p class="sub">Son pocas. Con estas puedes leer casi cualquier fórmula.</p><table><tr><th>Regla</th><th>Se escribe</th><th>Ejemplo</th></tr><tr><td style="font-weight:400">Una columna va entre corchetes</td><td><code>[columna]</code></td><td><code>[hora_llegada]</code></td></tr><tr><td style="font-weight:400">El punto salta a otra tabla (gracias a la Ref)</td><td><code>[columna].[columna]</code></td><td><code>[ID_Sesion].[hora_inicio]</code></td></tr><tr><td style="font-weight:400">Una función es una herramienta lista: su nombre y paréntesis</td><td><code>NOMBRE( )</code></td><td><code>TOTALMINUTES( )</code></td></tr><tr><td style="font-weight:400">Las comas separan los datos que recibe una función</td><td><code>( a, b, c )</code></td><td><code>IF(pregunta, sí, no)</code></td></tr><tr><td style="font-weight:400">Los textos van entre comillas</td><td><code>"texto"</code></td><td><code>"Retardo"</code></td></tr><tr><td style="font-weight:400">Operadores para calcular y comparar</td><td><code>- + * / &gt; &lt; =</code></td><td><code>[minutos_retraso] &gt; 5</code></td></tr></table><p class="rule">En AppSheet la fórmula se escribe sin el signo = al principio.</p>`;
+const CARD_FUNC=`<h3>Funciones: la caja de herramientas de AppSheet</h3><p class="sub">AppSheet trae funciones propias, ya listas. Cada una hace una tarea. Estas son las básicas.</p><table><tr><th>Tipo</th><th>Funciones</th><th>Para qué</th></tr><tr><td>Tiempo</td><td><code>NOW()</code> <code>TODAY()</code> <code>TIMENOW()</code> <code>TOTALMINUTES()</code></td><td style="font-weight:400">Fechas, horas y duraciones</td></tr><tr><td>Decisión</td><td><code>IF()</code></td><td style="font-weight:400">Elegir un valor según una pregunta</td></tr><tr><td>Búsqueda</td><td><code>LOOKUP()</code></td><td style="font-weight:400">Traer un dato de otra tabla</td></tr><tr><td>Usuario</td><td><code>USEREMAIL()</code></td><td style="font-weight:400">Saber quién usa la app</td></tr><tr><td>Códigos</td><td><code>UNIQUEID()</code></td><td style="font-weight:400">Crear un código que no se repite</td></tr><tr><td>Texto</td><td><code>CONCATENATE()</code></td><td style="font-weight:400">Unir textos</td></tr></table><p class="rule">Hay muchas más. Cuando escribes una fórmula, AppSheet abre un asistente (Expression Assistant) que muestra las funciones con ejemplos. Explóralo según lo que necesite tu app.</p>`;
+const CARD_PUNTO=`<h3>¿Cómo encuentra la app la hora de inicio?</h3><p class="sub">En tres pasos, saltando de una tabla a otra.</p><div class="two"><div class="mt"><b class="tn lg">Tabla “Llegadas”</b><table><tr><th>ID_Llegada</th><th>ID_Estudiante</th><th>ID_Sesion</th><th>hora_llegada</th></tr><tr class="hl"><td>L001</td><td>EST001 (Camila)</td><td><span class="st">1</span>S001</td><td>07:08</td></tr><tr><td>L002</td><td>EST002 (Daniel)</td><td>S002</td><td>06:57</td></tr></table></div><i class="arr">→</i><div class="mt"><b class="tn ss">Tabla “Sesiones”</b><table><tr><th>ID_Sesion</th><th>asignatura</th><th>hora_inicio</th></tr><tr class="hl"><td><span class="st">2</span>S001</td><td>Matemáticas</td><td><span class="st">3</span>07:00</td></tr><tr><td>S002</td><td>Ciencias</td><td>07:00</td></tr></table></div></div><ol class="pasos"><li>En “Llegadas”, la llegada L001 es de Camila (EST001). En su columna ID_Sesion dice: <b>S001</b>.</li><li>La app busca <b>S001</b> en la tabla “Sesiones”.</li><li>En esa fila lee hora_inicio: <b>07:00</b>.</li></ol><p class="rule">Esos tres pasos se escriben así: <code class="lg">[ID_Sesion]</code><b> . </b><code class="ss">[hora_inicio]</code>. Primero la columna de “Llegadas” que conecta, luego un punto, luego la columna que quieres de “Sesiones”.</p>`;
+const CARD_DUR=`<h3>Restar horas da un tiempo, no un número</h3><p class="sub">Si solo restas, el resultado sale en formato horas:minutos:segundos.</p><div class="ruta"><div><small>Resta</small><b>07:08 − 07:00</b></div><i>=</i><div><small>Resultado (HH:MM:SS)</small><b>00:08:00</b></div><i>→</i><div><small>Función</small><b>TOTALMINUTES( )</b></div><i>=</i><div class="r"><small>Número de minutos</small><b>8</b></div></div><p class="rule">Por eso usamos la función TOTALMINUTES: convierte ese tiempo en un número que se puede comparar con 5.</p>`;
+const LEYENDA=`<div class="ley"><span><code class="lg">verde</code> dato de “Llegadas”</span><span><code class="ss">azul</code> dato de “Sesiones”</span><span><code class="op">naranja</code> operador</span><span><code class="fn">morado</code> función</span></div>`;
+const CARD_TRAD=`<h3>De la vida real a AppSheet</h3><p class="sub">Lo que hiciste con lápiz, pieza por pieza. El color dice de dónde sale cada pieza.</p>${LEYENDA}<table><tr><th>En la vida real</th><th>En AppSheet</th><th>Qué significa</th></tr><tr><td style="font-weight:400">La hora en que llegó Camila: 07:08</td><td><code class="lg">[hora_llegada]</code></td><td style="font-weight:400">Columna de la tabla “Llegadas”</td></tr><tr><td style="font-weight:400">La hora en que empezó su clase: 07:00</td><td><code class="lg">[ID_Sesion]</code>.<code class="ss">[hora_inicio]</code></td><td style="font-weight:400">Va por ID_Sesion (de “Llegadas”) y trae hora_inicio (de “Sesiones”)</td></tr><tr><td style="font-weight:400">Restar</td><td><code class="op">-</code></td><td style="font-weight:400">Operador: el signo menos</td></tr><tr><td style="font-weight:400">Decirlo en minutos</td><td><code class="fn">TOTALMINUTES( )</code></td><td style="font-weight:400">Función: convierte 00:08:00 en 8</td></tr></table><p class="rule">Todo junto: <code class="fn">TOTALMINUTES(</code><code class="lg">[hora_llegada]</code> <code class="op">-</code> <code class="lg">[ID_Sesion]</code>.<code class="ss">[hora_inicio]</code><code class="fn">)</code><br>Con los datos de Camila: TOTALMINUTES( 07:08 − 07:00 ) = TOTALMINUTES( 00:08:00 ) = <b>8</b></p>`;
+const CARD_IF=`<h3>IF: una pregunta, dos caminos</h3><p class="sub">IF significa si. La app hace una pregunta y, según la respuesta, escribe una cosa u otra.</p><div class="ifd"><div class="q">¿minutos_retraso es más de 5?</div><div class="br"><div class="si"><small>Sí</small><b>"Retardo"</b></div><div class="no"><small>No</small><b>"A tiempo"</b></div></div></div><table><tr><th>En la vida real</th><th>En AppSheet</th></tr><tr><td style="font-weight:400">Si llega más de 5 minutos tarde…</td><td><code class="ss">IF([minutos_retraso] &gt; 5,</code></td></tr><tr><td style="font-weight:400">…es Retardo…</td><td><code class="tx">"Retardo",</code></td></tr><tr><td style="font-weight:400">…si no, A tiempo.</td><td><code class="lg">"A tiempo")</code></td></tr></table><p class="rule">Camila: 8 &gt; 5 → Sí → <b>Retardo</b>. Laura: 3 &gt; 5 → No → <b>A tiempo</b>.</p>`;
+const CARD_RESUMEN=`<h3>Resumen: las dos columnas calculadas</h3><p class="sub">Así quedan en la tabla “Llegadas”.</p><table><tr><th></th><th>minutos_retraso</th><th>estado</th></tr><tr><td>Tipo de dato</td><td style="font-weight:400">Number</td><td style="font-weight:400">Enum</td></tr><tr><td>App formula</td><td><code>TOTALMINUTES([hora_llegada] - [ID_Sesion].[hora_inicio])</code></td><td><code>IF([minutos_retraso] &gt; 5, "Retardo", "A tiempo")</code></td></tr><tr><td>¿Qué hace?</td><td style="font-weight:400">Resta las horas y da el número de minutos, por ejemplo 8</td><td style="font-weight:400">Mira la columna anterior: si es más de 5, pone "Retardo"; si no, "A tiempo"</td></tr></table>`;
+const CARD_DO=`<h3>Do this: opciones que ya trae AppSheet</h3><p class="sub">No se escribe nada: se escoge una opción de la lista.</p><table><tr><th>Opción (en inglés)</th><th>Qué hace</th></tr><tr><td>Data: set the values of some columns in this row</td><td style="font-weight:400">Cambia el valor de una columna en este registro</td></tr><tr><td>App: go to another view</td><td style="font-weight:400">Abre otra pantalla</td></tr><tr><td>Data: delete this row</td><td style="font-weight:400">Borra el registro</td></tr><tr><td>External: send an email</td><td style="font-weight:400">Envía un correo</td></tr></table>`;
+const CARD_ROLES=`<h3>Los roles de este proyecto</h3><p class="sub">Rol es el papel que cumple cada persona en la app.</p><table><tr><th>Rol</th><th>Qué hace</th><th>Qué ve</th></tr><tr><td>Estudiante</td><td style="font-weight:400">Escanea el QR al llegar</td><td style="font-weight:400">Solo sus propias llegadas</td></tr><tr><td>Docente</td><td style="font-weight:400">Proyecta el QR y revisa quién llegó</td><td style="font-weight:400">Todas las llegadas</td></tr><tr><td>Coordinación</td><td style="font-weight:400">Justifica retardos y revisa reportes</td><td style="font-weight:400">Todas las llegadas, el Panel coordinación y el botón Justificar</td></tr></table>`;
+const CARD_PORROL=`<h3>Cómo se aplica a cada rol</h3><p class="sub">La app pregunta el rol de quien entra con LOOKUP en “Usuarios_Roles”, y según eso decide.</p><table><tr><th>Rol</th><th>Qué ve</th><th>Dónde se configura</th></tr><tr><td>Estudiante</td><td style="font-weight:400">Solo sus llegadas</td><td style="font-weight:400">Security filter: la llegada es suya si <code>[ID_Estudiante].[correo] = USEREMAIL()</code></td></tr><tr><td>Docente</td><td style="font-weight:400">Todas las llegadas</td><td style="font-weight:400">Security filter: como no es estudiante, ve todo</td></tr><tr><td>Coordinación</td><td style="font-weight:400">Todo, más el panel y el botón Justificar</td><td style="font-weight:400">Show if del panel y condición del botón: rol = "Coordinación"</td></tr></table><p class="rule">El filtro completo une las dos ideas con OR (o): <code>OR(rol &lt;&gt; "Estudiante", [ID_Estudiante].[correo] = USEREMAIL())</code>. Se lee: muestra la fila si quien entra no es estudiante, o si la llegada es suya.</p>`;
+const CARD_ENTREGA=`<h3>Para tu entrega de clase</h3><p class="sub">Tu app es un ejercicio académico: usa solo datos de prueba, nunca datos reales de personas. Elige una de estas formas.</p><table><tr><th>Forma</th><th>Cómo</th><th>¿Para la entrega?</th></tr><tr><td>A. Privada con usuario de prueba</td><td style="font-weight:400">Dejas Require user sign-in encendido, creas un correo de Google de prueba, lo agregas en Share y entregas a tu profe ese usuario y su contraseña</td><td style="font-weight:400"><b>✓ Sí.</b> Tu profe puede probar cada rol</td></tr><tr><td>B. Con cualquier cuenta de Google</td><td style="font-weight:400">Dejas Require user sign-in encendido y enciendes Allow all signed-in users. Tu profe entra con su propio correo</td><td style="font-weight:400"><b>✓ Sí.</b> Para que tenga un rol, agrega su correo en “Usuarios_Roles”</td></tr><tr><td>C. Pública</td><td style="font-weight:400">Apagas Require user sign-in y compartes el enlace</td><td style="font-weight:400"><b>✓ Sí.</b> Cualquiera con el enlace entra, hasta 10 usuarios de prueba en el plan gratis</td></tr><tr><td>D. Privada con correos reales</td><td style="font-weight:400">Agregas en Share el correo de cada persona que la usará</td><td style="font-weight:400">Es la forma de una app real, en un colegio</td></tr></table>`;
+const CARD_ESTADOS=`<h3>Prototype o Deployed</h3><p class="sub">El estado de la app (App status) dice en qué etapa está.</p><table><tr><th></th><th>Prototype (prototipo)</th><th>Deployed (publicada)</th></tr><tr><td>Qué significa</td><td style="font-weight:400">En desarrollo y pruebas</td><td style="font-weight:400">Terminada, para uso real en un colegio o empresa</td></tr><tr><td>Costo</td><td style="font-weight:400">Gratis</td><td style="font-weight:400">Se paga por cada usuario. Sin pago, se bloquea</td></tr><tr><td>Usuarios</td><td style="font-weight:400">Hasta 10 usuarios de prueba</td><td style="font-weight:400">Los que se paguen</td></tr><tr><td>Para tu entrega</td><td style="font-weight:400"><b>✓ Déjala aquí</b></td><td style="font-weight:400">No hace falta</td></tr></table>`;
+const CARD_BARRA=`<h3>La barra de herramientas</h3><p class="sub">Arriba a la derecha del editor.</p><table><tr><th>Botón</th><th>Qué hace</th></tr><tr><td>Ojo</td><td style="font-weight:400">Muestra u oculta la vista previa del celular</td></tr><tr><td>?</td><td style="font-weight:400">Ayuda: documentación, AppSheet 101, foro de la comunidad y videos</td></tr><tr><td>Persona con +</td><td style="font-weight:400">Share: compartir la app</td></tr><tr><td>Flechas</td><td style="font-weight:400">Deshacer y rehacer el último cambio</td></tr><tr><td>✓ verde</td><td style="font-weight:400">Indica que la app no tiene errores</td></tr><tr><td>SAVE</td><td style="font-weight:400">Guarda tus cambios</td></tr><tr><td>⋮</td><td style="font-weight:400">Más opciones: plantillas, ayuda y precios</td></tr></table>`;
+const CARD_IA=`<h3>Chat apps e Intelligence</h3><p class="sub">Dos formas de llevar tu app más lejos.</p><table><tr><th>Herramienta</th><th>Qué hace</th><th>Ejemplo en la app de retardos</th></tr><tr><td>Chat apps</td><td style="font-weight:400">Usa la app desde Google Chat</td><td style="font-weight:400">Escribir /retardos y ver los del día</td></tr><tr><td>Predictive Model</td><td style="font-weight:400">Calcula un resultado probable con tus datos</td><td style="font-weight:400">Riesgo de que un estudiante llegue tarde</td></tr><tr><td>OCR Model</td><td style="font-weight:400">Lee texto de una foto</td><td style="font-weight:400">Copiar el texto de una excusa escrita</td></tr><tr><td>Smart Assistant</td><td style="font-weight:400">Busca con frases o con la voz</td><td style="font-weight:400">“Retardos de hoy”</td></tr></table><p class="rule">Los modelos necesitan bastantes datos para funcionar bien, y algunas de estas funciones pueden pedir un plan de pago.</p>`;
+function chatPanel(){return `<h4>Chat apps · Setup</h4><div class="mc" data-t="chatcreate"><b>Chat app</b><small>Create a Chat app to connect to Google Chat. Add slash commands, automations, and embedded views.</small><span class="crb">Create</span></div><div data-t="chatsteps">${['Enable','Customize','Test','Share'].map((x,i)=>`<div class="mc"><b>${i+1}. ${x}</b></div>`).join('')}</div>`}
+function intelPanel(){return `<h4>Intelligence</h4><div class="mc"><small>No models have been created yet</small><b>PREDICTIVE MODELS +</b><b>OCR MODELS (BETA) +</b></div><div class="ib"><span data-t="pred">+ Add Predictive Model</span><span data-t="ocr">+ Add OCR Model</span></div><div class="mc" data-t="smart"><small>OPTIONS</small><b>🎤 Smart Assistant</b></div>`}
+function learnPanel(){return `<h4>Learning center</h4><div class="mc" data-t="learnc"><b>Suggested next steps</b><small>Explore your app · Apply a theme · View data</small></div><div class="mc"><b>Video tutorials</b><small>Preparing your Google Sheet · Building UIs · Sharing and deploying your app</small></div><div class="mc"><b>Articles</b><small>App creation tutorial · Help articles · Community</small></div>`}
+const CODEH={1:2088171797,2:193361109};
+const hcode=t=>{let x=5381;for(const c of t.trim().toLowerCase())x=((x*33)^c.charCodeAt(0))>>>0;return x};
+const needCode=i=>{const l=lvl(i);return l>0&&i===LEVELS[l][1]&&!(S.unlock&&S.unlock[l])};
+const APRENDE=[
+ ['Reconocer la interfaz del editor de AppSheet y para qué sirve cada parte del menú','Organizar datos en Google Sheets: entidades, encabezados, registros e ID','Conectar Google Sheets con AppSheet y agregar tablas con Add data','Actualizar la estructura con Regenerate schema'],
+ ['Asignar tipos de dato: Text, Number, Time, Email, Enum, Yes/No y Ref','Definir la Key de cada tabla y usar UNIQUEID()','Relacionar tablas uno a muchos con Ref y mostrar nombres con Label','Escribir fórmulas con corchetes, punto, funciones e IF','Diseñar vistas y conectar Table, Detail y Form','Configurar formularios con valores iniciales, campos obligatorios y escaneo QR'],
+ ['Crear acciones (botones) con condiciones','Configurar roles, inicio de sesión y filtros de seguridad','Conocer Chat apps e Intelligence','Configurar Settings, probar con Preview app as y compartir la app','Diferenciar Prototype y Deployed para la entrega académica']
+];
+const fechaHora=()=>{const d=new Date();return d.toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'})+' · '+d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})};
+function certificate(l){
+ cur=-1;stopVoice();clearInterval(tw);
+ if(!S.cert)S.cert={};if(!S.cert[l]){S.cert[l]=fechaHora();save()}
+ const L=LEVELS[l];let st=0,mx=0;for(let i=L[1];i<=L[2];i++){st+=S.stars[i]||0;mx+=3}
+ const last=l===LEVELS.length-1;
+ const main=$('#main');main.className='';
+ main.innerHTML=`<div class="mapv"><section class="zone sky${l+1}" style="min-height:100%"><div class="scene">${scene(l+1)}</div><div class="zin"><div class="cert" id="cert"><div class="cin"><div class="cav">${avatar()}</div><small class="ck">Aprende AppSheet · Certificado de logro</small><h1>Nivel ${L[0]}</h1><p>Se certifica que</p><h2>${esc(S.name||'Estudiante')}</h2><p>completó el Nivel ${L[0]}${last?' y terminó todo el recorrido de Aprende AppSheet':''}.</p><div class="cmeta"><span>★ ${st} de ${mx} estrellas</span><span>${S.xp} XP</span><span>🗓 ${S.cert[l]}</span></div><h3>Aprendizajes obtenidos</h3><ul class="cap">${APRENDE[l].map(a=>`<li>${a}</li>`).join('')}</ul>${last?`<div class="badges">${M.map((m,i)=>`<div class="bdg"><em>${'★'.repeat(S.stars[i]||0)}</em>${m.badge}</div>`).join('')}</div>`:''}<div class="cfirma"><b>Profe Vivy</b><small>Aprendiendo con @LaProfeVivy</small></div></div></div>${last?`<details class="chk"><summary>Lista de chequeo para tu proyecto</summary>${CHECK.map((c,k)=>`<label><input type="checkbox" data-c="${k}" ${S.chk&&S.chk[k]?'checked':''}> ${c}</label>`).join('')}</details>`:''}<div class="cbtns"><button class="gbtn w" id="cprint" type="button">Imprimir o guardar PDF</button><button class="gbtn w" id="cmap" type="button">Mapa</button>${last?'':`<button class="gbtn" id="cnext" type="button">Seguir al Nivel ${LEVELS[l+1][0]}</button>`}</div></div></section></div>`;
+ $('#cprint').onclick=()=>window.print();$('#cmap').onclick=home;
+ const n=$('#cnext');if(n)n.onclick=()=>codeScreen(l+1);
+ document.querySelectorAll('.chk input').forEach(x=>x.onchange=()=>{S.chk=S.chk||{};S.chk[x.dataset.c]=x.checked;save()});
+ confetti2();sfx.win();
+ hud(`Certificado · Nivel ${L[0]}`);
+}
+function confetti2(){const c=document.createElement('div');c.className='confetti';c.style.position='fixed';const cols=['#ffc83d','#14b39a','#ff6b57','#7c6cff','#fff'];c.innerHTML=Array.from({length:50},()=>`<i style="left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*5)]};animation-delay:${(Math.random()*.8).toFixed(2)}s"></i>`).join('');document.body.appendChild(c);setTimeout(()=>c.remove(),3200)}
+function codeScreen(l){
+ if(S.unlock&&S.unlock[l])return go(LEVELS[l][1]);
+ cur=-1;stopVoice();clearInterval(tw);
+ const L=LEVELS[l];const main=$('#main');main.className='';
+ main.innerHTML=`<div class="mapv"><section class="zone sky${l+1}" style="min-height:100%"><div class="scene">${scene(l+1)}</div><div class="zin"><div class="fin"><div style="width:90px;height:90px;margin:auto">${avatar()}</div><h1>🔒 Nivel ${L[0]}</h1><p>Para entrar, escribe el código que te dará tu profe.</p><input id="code" class="nm code" type="password" autocomplete="off" placeholder="Código"><p class="cerr" id="cerr"></p><div class="cbtns"><button class="gbtn w" id="cmap" type="button">Mapa</button><button class="gbtn" id="cok" type="button">Entrar</button></div></div></div></section></div>`;
+ const inp=$('#code');setTimeout(()=>inp.focus(),50);
+ const tryIt=()=>{if(hcode(inp.value)===CODEH[l]){S.unlock=S.unlock||{};S.unlock[l]=true;save();sfx.win();go(LEVELS[l][1])}else{sfx.bad();$('#cerr').textContent='Ese código no es. Pídeselo a tu profe.';inp.classList.remove('shake');void inp.offsetWidth;inp.classList.add('shake')}};
+ $('#cok').onclick=tryIt;inp.onkeydown=e=>{if(e.key==='Enter')tryIt()};$('#cmap').onclick=home;
+ hud(`Nivel ${L[0]} · código`);
+}
+const CARD_ENT=`<h3>¿Qué guarda cada tabla?</h3><p class="sub">Cada tabla es una entidad. Cada fila es un registro de esa entidad.</p><table><tr><th>Tabla</th><th>Cada fila es…</th><th>¿Para qué está?</th></tr><tr><td>Estudiantes</td><td style="font-weight:400">Un estudiante: código, nombre, correo y curso</td><td style="font-weight:400">Saber quién es quién</td></tr><tr><td>Cursos</td><td style="font-weight:400">Un grupo, como 7B: grado, grupo y jornada</td><td style="font-weight:400">Agrupar estudiantes y clases</td></tr><tr><td>Sesiones</td><td style="font-weight:400">Una clase dictada: curso, materia, fecha y hora de inicio</td><td style="font-weight:400">Saber a qué hora empezaba cada clase. Cada sesión tendrá su propio QR</td></tr><tr><td>Llegadas</td><td style="font-weight:400">La llegada de un estudiante a una clase, con su hora</td><td style="font-weight:400">Es el registro principal: de aquí salen los retardos</td></tr><tr><td>Usuarios_Roles</td><td style="font-weight:400">Una persona que usa la app y su rol</td><td style="font-weight:400">Decidir qué puede ver y hacer cada uno</td></tr></table>`;
+const CARD_POS=`<h3>Position: ¿dónde aparece el botón de la vista?</h3><p class="sub">No tiene nada que ver con la llave primaria.</p><table><tr><th>Position</th><th>Dónde aparece</th><th>Úsala para</th></tr><tr><td>primary (principal)</td><td style="font-weight:400">En la barra de abajo</td><td style="font-weight:400">Las pantallas que más se usan</td></tr><tr><td>menu</td><td style="font-weight:400">En el menú lateral ☰</td><td style="font-weight:400">Las que se usan poco</td></tr><tr><td>ref</td><td style="font-weight:400">Sin botón: solo se abre desde otra pantalla</td><td style="font-weight:400">Pantallas como Detail</td></tr></table>`;
+const CARD_QR=`<h3>Así se registra una llegada</h3><p class="sub">Cada clase (cada fila de Sesiones) tiene su propio código, ID_Sesion. Ese código va dentro del QR.</p><div class="qrflow"><div><small>Tablero del salón</small>${fakeQR()}<b>Clase S001</b><span>Matemáticas 7B · 07:00</span></div><i>→</i><div><small>Celular de Camila</small><b>Escanea el QR</b><span>ID_Sesion: S001</span><span>Estudiante: Camila (por su correo)</span><span>Hora: 07:08</span></div></div><p class="rule">La app puede mostrar el QR de cada clase en la pantalla de la sesión, para que el docente lo proyecte.</p>`;
+function fakeQR(){let seed=7;const r=()=>(seed=(seed*9301+49297)%233280)/233280;let s='';const fin=(x,y)=>`<rect x="${x}" y="${y}" width="7" height="7" fill="#152039"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3" fill="#152039"/>`;for(let y=0;y<21;y++)for(let x=0;x<21;x++){if((x<8&&y<8)||(x>12&&y<8)||(x<8&&y>12))continue;if(r()>.5)s+=`<rect x="${x}" y="${y}" width="1" height="1" fill="#152039"/>`}return `<svg class="qr" viewBox="-1 -1 23 23"><rect x="-1" y="-1" width="23" height="23" fill="#fff"/>${s}${fin(0,0)}${fin(14,0)}${fin(0,14)}</svg>`}
+const CARD_INIT=`<h3>Campos que se llenan solos</h3><p class="sub">Se configuran en cada columna de la tabla.</p><table><tr><th>Ajuste</th><th>Qué hace</th></tr><tr><td><code>USEREMAIL()</code></td><td style="font-weight:400">Correo de quien usa la app</td></tr><tr><td><code>TIMENOW()</code></td><td style="font-weight:400">Hora exacta del momento</td></tr><tr><td><code>TODAY()</code></td><td style="font-weight:400">Fecha de hoy</td></tr><tr><td><code>UNIQUEID()</code></td><td style="font-weight:400">Código que nunca se repite</td></tr><tr><td><code>LOOKUP( )</code></td><td style="font-weight:400">Busca un dato en otra tabla. Ej.: busca el correo en Estudiantes y trae el código</td></tr><tr><td>Require</td><td style="font-weight:400">Campo obligatorio</td></tr><tr><td>Scannable</td><td style="font-weight:400">Permite escanear un QR con la cámara</td></tr></table>`;
+
+const CARD_POR_QUE=`<h3>¿Por qué el código y no el nombre?</h3><p class="sub">Piensa en la placa de un carro: en un parqueadero anotan solo la placa. Con ella buscan en el registro la marca, el modelo y el color. La placa no se repite; el color sí.</p><div class="vs"><div class="malo"><b>✗ Si escribes el nombre en cada llegada</b><ul><li>El nombre de Camila se escribe en cada llegada, ¡50 veces en el año! Alguien puede escribir "camila torres" o "Camila Tores".</li><li>Si Camila cambia de correo, hay que corregir 50 filas.</li><li>Dos estudiantes llamadas Camila se confunden.</li></ul></div><div class="bueno"><b>✓ Si escribes solo el código</b><ul><li>EST001 siempre se escribe igual.</li><li>Sus datos se corrigen una sola vez, en “Estudiantes”.</li><li>Cada Camila tiene su propio código.</li></ul></div></div>`;
+const CARD_MAPA=`<h3>Mapa de relaciones del ejemplo</h3><p class="sub">Cada fila es una columna Ref. Se lee: un registro del lado uno tiene muchos registros del lado muchos.</p><table><tr><th>Lado uno</th><th>Lado muchos</th><th>Columna Ref</th><th>Ejemplo</th></tr><tr><td>Cursos</td><td>Estudiantes</td><td style="font-weight:400"><code>ID_Curso</code></td><td style="font-weight:400">Un curso (7B) tiene muchos estudiantes: Camila, Daniel…</td></tr><tr><td>Cursos</td><td>Sesiones</td><td style="font-weight:400"><code>ID_Curso</code></td><td style="font-weight:400">Un curso (7B) tiene muchas sesiones: Matemáticas del 20/10, del 21/10…</td></tr><tr><td>Sesiones</td><td>Llegadas</td><td style="font-weight:400"><code>ID_Sesion</code></td><td style="font-weight:400">Una sesión (Matemáticas 7B del 20/10) tiene muchas llegadas: la de Camila, la de Daniel…</td></tr><tr><td>Estudiantes</td><td>Llegadas</td><td style="font-weight:400"><code>ID_Estudiante</code></td><td style="font-weight:400">Un estudiante (Camila) tiene muchas llegadas: una por cada clase</td></tr></table><p class="rule"><b>Regla:</b> la Ref va en la tabla del lado muchos y apunta a la tabla del lado uno, donde ese código es la Key. Recuerda: una sesión es una clase dictada en una fecha.</p>`;
+const RC={EST001:'#7c6cff',EST002:'#0f9d58',EST003:'#f29900'};
+const RSTU=[['EST001','Camila Torres','7B'],['EST002','Daniel Ruiz','7B'],['EST003','Laura Peña','8A']];
+const RLLEG=[['L001','EST001','20/10','07:08'],['L002','EST002','20/10','06:57'],['L003','EST001','21/10','07:10'],['L004','EST003','21/10','07:03'],['L005','EST001','22/10','06:59']];
+const chip=(id,g)=>`<span class="rchip ${g&&id==='EST001'?'glow':''}" style="background:${RC[id]}">${id}</span>`;
+function relDiagram(ms){
+ return `<div class="rel"><div class="rt" data-t="estT"><h5>Estudiantes <small>cada uno aparece 1 vez</small></h5><table><tr><th>ID_Estudiante <em>Key</em></th><th>nombre</th></tr>${RSTU.map(s=>`<tr><td>${chip(s[0],ms.glow)}</td><td>${s[1]}</td></tr>`).join('')}</table></div><div class="rmid" data-t="relb"><b>1</b><svg viewBox="0 0 60 20"><path d="M2 10h50M44 3l9 7-9 7" fill="none" stroke="#152039" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><b>muchos</b></div><div class="rt" data-t="llegT"><h5>Llegadas <small>se repite muchas veces</small></h5><table><tr><th>ID_Llegada</th><th>ID_Estudiante <em>Ref</em></th><th>fecha</th></tr>${RLLEG.map(l=>`<tr data-hot="lleg-${l[1]}"><td>${l[0]}</td><td>${chip(l[1],ms.glow)}</td><td>${l[2]}</td></tr>`).join('')}</table></div></div>`;
+}
+function relSim(ms){
+ if(ms.view==='diagram')return relDiagram(ms);
+ if(ms.view==='col')return editor('data',realDlg('Llegadas','ID_Estudiante',ms.type?'Ref':'Text',{src:ms.src?'Estudiantes':'',newt:ms.type,req:true}),phone('reflist',{lbl:ms.lbl,ok:ms.src}));
+ if(ms.view==='label')return editor('data',colGrid('Estudiantes',estRows({lbl:ms.lbl})),phone('reflist',{lbl:ms.lbl,ok:true}));
+ return editor('data',colGrid('Estudiantes',estRows({lbl:true,rel:true})),phone('student'));
+}
+
+const CARD_KEY=`<h3>Las 3 reglas de la Key</h3><p class="sub">Cada tabla tiene una sola Key.</p><table><tr><th>Regla</th><th>Por qué</th></tr><tr><td>1. Nunca se repite</td><td style="font-weight:400">Así la app sabe exactamente qué fila abrir, editar o borrar.</td></tr><tr><td>2. Nunca queda vacía</td><td style="font-weight:400">Una fila sin Key no se puede identificar.</td></tr><tr><td>3. Nunca cambia</td><td style="font-weight:400">Otras tablas la usan para conectarse (Ref). Si cambia, se rompe la conexión.</td></tr></table><p class="rule"><b>El nombre no sirve como Key:</b> dos estudiantes pueden llamarse igual y alguien puede escribirlo distinto.</p>`;
+const CARD_UID=`<h3>¿Código propio o UNIQUEID?</h3><p class="sub">Las dos formas son válidas. Depende de quién llena la tabla.</p><table><tr><th>Tabla</th><th>Quién la llena</th><th>Key</th></tr><tr><td>Estudiantes</td><td style="font-weight:400">Coordinación, en Sheets, una vez al año</td><td>Código propio: <code>EST001</code></td></tr><tr><td>Cursos</td><td style="font-weight:400">Coordinación, en Sheets</td><td>Código propio: <code>7B</code></td></tr><tr><td>Llegadas</td><td style="font-weight:400">Estudiantes, desde el celular, todos los días</td><td><code>UNIQUEID()</code></td></tr></table><p class="rule"><b>Regla:</b> si la tabla se llena desde la app, su Key debe ser UNIQUEID().</p>`;
+const CARD_TURNO=`<h3>La máquina de turnos</h3><p class="sub">Así funciona UNIQUEID().</p><div class="turnos"><div><span class="tk">A-27</span><small>Ana</small></div><div><span class="tk">A-28</span><small>Luis</small></div><div><span class="tk">A-29</span><small>Sara</small></div></div><table><tr><th>En el banco</th><th>En AppSheet</th></tr><tr><td style="font-weight:400">Llegas y la máquina te da un turno</td><td style="font-weight:400">Se crea una llegada y UNIQUEID() le da un código</td></tr><tr><td style="font-weight:400">Nadie escribe su turno a mano</td><td style="font-weight:400">Nadie escribe la Key a mano</td></tr><tr><td style="font-weight:400">Nunca hay dos turnos iguales</td><td style="font-weight:400">Nunca hay dos Key iguales</td></tr></table>`;
+const CARD_RESTA=`<h3>Piensa como calculadora</h3><p class="sub">Así lo harías tú con papel y lápiz.</p><div class="resta"><div><small>Llegó</small><b>07:08</b></div><span>−</span><div><small>Empezó la clase</small><b>07:00</b></div><span>=</span><div class="r"><small>Minutos tarde</small><b>8</b></div></div><p class="rule">La app hará exactamente esta resta, en cada llegada, sin que nadie la escriba.</p>`;
+function keySheet(dup){
+ const R=[['L001','EST001','07:08'],['L002','EST002','06:57'],[dup?'L002':'L003','EST001','07:10'],['L004','EST003','07:03']];
+ const H=['ID_Llegada','ID_Estudiante','hora_llegada'];
+ return `<div class="sh"><div class="sh-bar"><span class="sh-ico"></span><span class="sh-name">BD Retardos</span></div><div class="sh-wrap"><table class="sh-grid"><tr><th></th><th>A</th><th>B</th><th>C</th></tr><tr class="h"><td class="n">1</td>${H.map((h,i)=>`<td ${i?'':'data-t="keycol"'}>${h}${i?'':' <span class="ty new">Key</span>'}</td>`).join('')}</tr>${R.map((r,k)=>{const d=dup&&r[0]==='L002';return `<tr data-hot="${d?'dup':'ok'+k}" ${d&&k===2?'data-t="duprows"':''}><td class="n">${k+2}</td>${r.map((c,i)=>`<td ${i===0&&d?'style="background:#fde8e4;color:#c5221f;font-weight:700"':''}>${c}</td>`).join('')}</tr>`}).join('')}</table></div><div class="sh-tabs">${Object.keys(SHEETS).map(t=>`<span class="${t==='Llegadas'?'on':''}">${t}</span>`).join('')}</div></div>`;
+}
+
+function flowSim(){
+ const lab=(t,a)=>`<div class="flab"><b>${t}</b><svg viewBox="0 0 40 16"><path d="M2 8h30M26 2l7 6-7 6" fill="none" stroke="#152039" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+ return `<div class="flow" data-t="flow"><div class="fcol" data-t="fTable"><span class="fname">Table / Deck</span>${phone('llegadas',{plus:1})}</div>${lab('toca una fila')}<div class="fcol" data-t="fDetail"><span class="fname">Detail</span>${phone('detail')}</div><div class="fcol" data-t="fForm"><span class="fname">Form · botón +</span>${phone('form',{id:1})}</div></div>`;
+}
+/* ---------- Etapas ---------- */
+const LEVELS=[['Básico',0,2,'Interfaz, tablas y conexión'],['Intermedio',3,8,'Tipos, Key, relaciones, fórmulas y pantallas'],['Avanzado',9,12,'Botones, seguridad, chat e inteligencia, y publicación']];
+const lvl=i=>LEVELS.findIndex(l=>i>=l[1]&&i<=l[2]);
+const M=[
+{short:'Interfaz',badge:'Mapa del editor',title:'Conoce la interfaz',ask:['appsheet','ingles','gratis'],
+ init:{},
+ tour:[
+  {s:'¡Hola{n}! Soy la profe Vivy. Este es el editor de AppSheet: el taller donde vas a construir tu app sin programar.'},
+  {s:'A la izquierda está el menú lateral. Cada ícono abre una parte de tu app. Está en inglés, pero te lo explico con ejemplos.',t:'rail'},
+  {s:'Data es el archivador: ahí se guardan tus datos. Aquí llegan las tablas de Google Sheets con sus columnas.',t:'rail-data'},
+  {s:'Views son las pantallas que ve el usuario, como las páginas de una revista. Adentro también está Format rules: reglas para dar color, por ejemplo pintar los retardos de rojo.',t:'rail-views'},
+  {s:'Actions son botones que hacen un cambio cuando alguien los toca. La persona decide y el botón hace el trabajo.',t:'rail-actions'},
+  {s:'Ejemplo: Camila llegó tarde y trajo una excusa. La coordinadora la revisa, decide aprobarla y toca el botón Justificar. La app cambia sola el estado de Retardo a Justificado.',t:'rail-actions'},
+  {s:'Automation es como el timbre automático del colegio: se programa una vez y suena solo a la hora indicada.',t:'rail-automation'},
+  {s:'Ejemplo: se configura una vez según las normas del colegio. Al primer retardo, la app envía un correo de notificación al estudiante y al acudiente. Al segundo, un correo de citación al acudiente. Al tercero, avisa a coordinación para la medida disciplinaria.',t:'rail-automation'},
+  {s:'Chat apps conecta tu app con Google Chat, para usarla desde un chat. Así se ve su pantalla. Lo aprenderás en el Nivel Avanzado.',set:ms=>ms.p='chat',t:'rail-chat'},
+  {s:'Intelligence (inteligencia) trae funciones de inteligencia artificial: predecir datos o leer texto de una foto. También lo aprenderás en el Nivel Avanzado.',set:ms=>ms.p='intel',t:'rail-intel'},
+  {s:'Security es el vigilante de la puerta: decide quién puede entrar a la app y qué puede ver cada persona.',set:ms=>ms.p='security',t:'rail-security'},
+  {s:'Settings es como los ajustes de tu celular: nombre de la app, colores y textos.',set:ms=>ms.p='settings',t:'rail-settings'},
+  {s:'Manage es la sala de control: ahí revisas, guardas versiones y compartes el trabajo con tu equipo.',set:ms=>ms.p='manage',t:'rail-manage'},
+  {s:'Learn es el centro de aprendizaje: videos y tutoriales oficiales de AppSheet. Úsalo para repasar.',set:ms=>ms.p='learn',t:'rail-learn'},
+  {s:'En el centro está el panel. Muestra lo que elijas en el menú. Ahora está abierto Data, por eso ves la lista de tablas.',t:'panel'},
+  {s:'A la derecha, la vista previa: así se ve tu app. Cambia en vivo con cada ajuste que hagas.',t:'phone'},
+  {s:'Arriba del celular eliges cómo verla: celular, tablet o computador. Edit permite hacer cambios desde la vista previa.',t:'pvt'},
+  {s:'Debajo está Preview app as (ver la app como): para verla como si fueras otra persona. Lo usarás al final.',t:'prevas'},
+  {s:'Y arriba de todo está la barra de herramientas. Este cuadro te dice qué hace cada botón.',card:CARD_BARRA},
+  {s:'El botón más importante: SAVE guarda tus cambios. ¡Guarda seguido, como en un videojuego!',t:'save'},
+  {s:'Para tu proyecto entras a appsheet.com con tu cuenta de Google. Ahora te toca a ti: ¿recuerdas dónde está cada cosa?'}
+ ],
+ sim:ms=>{const P={chat:chatPanel,intel:intelPanel,learn:learnPanel,security:()=>secPanel({}),settings:()=>setPanel({sv:'info'}),manage:()=>manPanel({mv:'deploy'})};return editor(ms.p||'data',P[ms.p]?P[ms.p]():dataList(['Estudiantes','Cursos','Sesiones','Llegadas','Usuarios_Roles']),phone('llegadas'))},
+ steps:[
+  {t:'hot',q:'Toca la zona donde ves cómo queda tu app en el celular.',ok:'phone',hint:'Busca algo con forma de teléfono.',good:'Esa es la vista previa.'},
+  {t:'hot',q:'Toca el archivador: donde están las tablas que llegan de Google Sheets.',ok:'rail-data',hint:'Datos en inglés es Data.',good:'En Data están tus tablas y sus columnas.'},
+  {t:'hot',q:'¿Dónde diseñas las pantallas de la app?',ok:'rail-views',hint:'Una pantalla en AppSheet se llama vista: View.',good:'En Views creas cada pantalla.'},
+  {t:'hot',q:'Toca el timbre automático: donde programas tareas que se hacen solas.',ok:'rail-automation',hint:'Busca el robot.',good:'Automation hace tareas solas cuando pasa algo.'},
+  {t:'hot',q:'Toca el vigilante: donde decides quién puede entrar.',ok:'rail-security',hint:'Busca el escudo.',good:'Security protege la app y los datos.'},
+  {t:'hot',q:'¿Dónde encuentras videos y tutoriales de AppSheet?',ok:'rail-learn',hint:'Busca el birrete de graduación.',good:'Learn es el centro de aprendizaje.'},
+  {t:'hot',q:'Hiciste cambios. ¿Qué botón los guarda?',ok:'save',hint:'Está arriba a la derecha.',good:'SAVE guarda. ¡Hazlo seguido!'},
+  {t:'choice',q:'La coordinadora aprueba una excusa y toca Justificar. ¿Quién decide que el retardo queda justificado?',opts:['La coordinadora; el botón solo hace el cambio','La app decide sola','Nadie, pasa por sorteo'],ok:0,hint:'Recuerda: la persona decide y el botón hace el trabajo.',good:'Exacto. El botón (Action) solo ejecuta lo que la persona decidió.'}
+ ]},
+{short:'Sheets',badge:'Datos en orden',title:'Tablas en Google Sheets',ask:['fila1','key','miapp'],
+ tourInit:{fixed:true,tab:'Estudiantes'},init:{fixed:false,tab:'Estudiantes'},
+ tour:[
+  {s:'Tu app necesita datos, y los guardamos en Google Sheets: la hoja será la base de datos de tu app.'},
+  {s:'Cada tabla representa una entidad: una cosa de la vida real de la que queremos guardar datos, como los estudiantes o las clases.'},
+  {s:'Cada pestaña de abajo es una tabla. En el ejemplo hay cinco. Puedes tocarlas para verlas.',t:'tabs'},
+  {s:'Este cuadro explica qué guarda cada tabla y para qué está en la app.',card:CARD_ENT},
+  {s:'La fila 1 lleva solo los nombres de los encabezados de las columnas (campos). AppSheet los usa para saber qué guarda cada columna.',t:'hdr'},
+  {s:'Cada fila de abajo es un registro de la entidad. En “Estudiantes”, cada fila es un estudiante: su código (identificador), su nombre, su correo y su curso.',t:'r1'},
+  {s:'La primera columna es un código único, llamado ID, como el documento de identidad: nunca se repite. Así la app distingue a dos estudiantes que se llamen igual.',t:'idcell'},
+  {s:'Las tablas se conectan con esos códigos. En “Llegadas” no se escribe el nombre de Camila: se escribe su código, EST001.',set:ms=>ms.tab='Llegadas',t:'hdr'},
+  {s:'En tu proyecto: piensa qué entidades tiene tu app y crea una pestaña por cada una, con su ID y dos o tres filas con datos de prueba.'}
+ ],
+ sim:ms=>sheet(ms.fixed,false,ms.tab),
+ steps:[
+  {t:'choice',tab:'Estudiantes',q:'¿Qué va en la fila 1 de cada pestaña?',opts:['Los nombres de las columnas','Un título para la hoja','El primer registro'],ok:0,hint:'AppSheet usa la fila 1 para nombrar los campos.',good:'Correcto: la fila 1 son los encabezados.'},
+  {t:'hot',tab:'Estudiantes',q:'Indica el error en esta hoja.',ok:'row-title',hint:'Revisa qué hay en la fila 1.',good:'El título ocupaba la fila 1. Lo quitamos y los encabezados quedaron en su lugar.',bad:'Esa fila está bien. Mira la fila 1.',apply:ms=>ms.fixed=true},
+  {t:'choice',q:'¿Qué columna es el código único de cada estudiante, como su documento de identidad?',opts:['nombre','ID_Estudiante','ID_Curso'],ok:1,hint:'Dos estudiantes pueden llamarse igual.',good:'Es la clave primaria: puede haber dos Camilas, pero nunca dos EST001.',why:{0:'Dos estudiantes pueden tener el mismo nombre.',2:'Muchos estudiantes comparten curso.'}},
+  {t:'choice',q:'Cada día se anota a qué hora llegó cada estudiante. ¿En qué pestaña (tabla) va la columna hora_llegada?',opts:['Llegadas','Estudiantes','Cursos'],ok:0,hint:'Pasa todos los días; no es un dato fijo de la persona.',good:'En “Llegadas”: una fila por cada llegada.',why:{1:'Tendrías que repetir a Camila cada día.'},apply:ms=>ms.tab='Llegadas'},
+  {t:'choice',q:'¿Dónde guardas si alguien es estudiante, docente o coordinación?',opts:['Usuarios_Roles','Sesiones','Llegadas'],ok:0,hint:'Es una tabla de correos y permisos.',good:'“Usuarios_Roles” guarda correo y rol.',apply:ms=>ms.tab='Usuarios_Roles'}
+ ]},
+{short:'Conectar',badge:'Conexión lista',title:'Conecta Sheets con AppSheet',ask:['empezar','tabla','regen'],
+ tourInit:{stage:1,added:false},init:{stage:1,added:false},
+ tour:[
+  {s:'Con tus tablas listas, creas la app desde la misma hoja de Google Sheets.'},
+  {s:'Abre el menú Extensiones.',t:'ext'},
+  {s:'Elige AppSheet y luego Crear una app. AppSheet lee tus pestañas y arma una primera app sola.',t:'drop'},
+  {s:'Se abre el editor. Ojo: al inicio solo trae la primera pestaña, es decir, la primera tabla.',set:ms=>ms.stage=2,t:'tlist'},
+  {s:'Para traer las demás, toca el botón + que está junto a Data.',set:ms=>ms.stage=2,t:'add-table'},
+  {s:'Se abre Add data (agregar datos). AppSheet ya sugiere las pestañas de tu hoja: tocas Add Table en cada una.',set:ms=>{ms.stage=2;ms.dlg=true},t:'sugg'},
+  {s:'¡Listo! Ya están las cinco tablas. Desde ahora la hoja y la app están conectadas: lo que se registre en la app queda guardado en la hoja.',set:ms=>{ms.stage=2;ms.added=true},t:'tlist'},
+  {s:'Pero hay un caso especial: si después agregas una columna nueva en la hoja, por ejemplo observaciones, o le cambias el nombre a una, AppSheet no se entera solo.',set:ms=>{ms.stage=2;ms.added=true}},
+  {s:'Para que la vea, en Data abres esa tabla y tocas el botón ⟳ Regenerate schema (volver a leer la estructura). AppSheet lee otra vez los encabezados de la fila 1.',set:ms=>{ms.stage=2;ms.added=true;ms.grid=true},t:'regen'}
+ ],
+ sim:ms=>ms.stage===1?sheet(true,true):editor('data',ms.grid?colGrid('Llegadas',llegRows()):dataList(ms.added?['Estudiantes','Cursos','Sesiones','Llegadas','Usuarios_Roles']:['Estudiantes'])+(ms.dlg?addDataDlg(['Cursos','Sesiones','Llegadas','Usuarios_Roles']):''),phone('deck')),
+ steps:[
+  {t:'order',q:'Ordena los pasos para crear la app desde tu hoja.',items:['Abrir tu archivo de Google Sheets','Menú Extensiones','AppSheet','Crear una app','Esperar a que lea los datos'],hint:'Todo empieza dentro de la hoja, en el menú de arriba.',good:'¡App creada! Ya estás en el editor.',apply:ms=>ms.stage=2},
+  {t:'hot',q:'Solo llegó la primera pestaña. Toca dónde agregas las demás.',ok:'add-table',hint:'Busca el botón + junto a Data.',good:'Se abre Add data y agregas cada tabla sugerida.',apply:ms=>ms.added=true},
+  {t:'choice',q:'En tu hoja de Google Sheets, en la pestaña “Llegadas”, agregaste la columna observaciones, pero no aparece en la app. ¿Qué haces?',opts:['Abrir la tabla en Data y tocar Regenerate schema','Borrar la app y empezar de nuevo','Esperar un día'],ok:0,hint:'Hay que pedirle a AppSheet que vuelva a leer los encabezados.',good:'Regenerate schema vuelve a leer la estructura de la hoja.'}
+ ]},
+{short:'Columnas',badge:'Arquitectura de datos',title:'Columnas y tipos de datos',ask:['tipos','enum','key','ref'],
+ init:{t:{},key:false,enumv:false},
+ tour:[
+  {s:'Estando en cada tabla, por ejemplo “Llegadas”, se observa que cada columna guarda un tipo de dato. El tipo de dato le dice a la app qué clase de información es: texto, número, hora, correo…',t:'coltab'},
+  {s:'Según el tipo, la app muestra la forma adecuada de llenar el dato. Mira cómo se ve cada uno en el celular.',card:CARD_CTRL},
+  {s:'Esta es la tabla “Llegadas” abierta en Data. En NAME está el nombre de cada columna (campo); en TYPE, su tipo de dato; en KEY?, la casilla de la llave primaria. Las demás columnas las irás conociendo en las próximas etapas.',t:'coltab'},
+  {s:'La primera fila, _RowNumber, la crea AppSheet sola: es el número de fila en la hoja. No la toques.',t:'row-_RowNumber'},
+  {s:'AppSheet adivina el tipo de cada columna mirando tus datos. Casi siempre acierta, pero no siempre: por eso hay que revisarlas todas, una por una.',t:'coltab'},
+  {s:'Para revisar o cambiar una columna, tocas su lápiz ✎. Se abre su ventana de configuración: ahí está todo lo que se puede ajustar de esa columna.',set:ms=>{ms.enumv=true},t:'d-top'},
+  {s:'Arriba: Column name (nombre), Show? (si se ve en la app) y Type (tipo de dato).',set:ms=>{ms.enumv=true},t:'d-top'},
+  {s:'Type Details: los detalles del tipo. Cambian según el tipo que elijas.',set:ms=>{ms.enumv=true},t:'d-details'},
+  {s:'Data Validity (validación): reglas para que el dato sea correcto. Aquí está Require? (obligatorio).',set:ms=>{ms.enumv=true},t:'d-valid'},
+  {s:'Auto Compute (cálculo automático): App formula e Initial value, para que la app llene o calcule el dato sola. Lo verás en las próximas etapas.',set:ms=>{ms.enumv=true},t:'d-auto'},
+  {s:'Display (cómo se muestra): aquí está Label, el nombre visible de cada registro.',set:ms=>{ms.enumv=true},t:'d-display'},
+  {s:'Este cuadro muestra los tipos de dato más usados. Léelo con calma.',card:CARD_TIPOS},
+  {s:'Vamos con uno especial: Enum. Es un tipo de dato que significa lista de opciones fijas. Sirve cuando la respuesta solo puede ser una entre pocas opciones.',t:'row-estado'},
+  {s:'Ejemplo: el estado de una llegada solo puede ser A tiempo o Retardo. Por eso la columna estado es Enum.',t:'row-estado'},
+  {s:'Volvamos a la columna estado. AppSheet le puso Text, pero debe ser Enum. En su ventana, en Type eliges Enum.',set:ms=>{ms.enumv=true;ms.t.estado=1},t:'d-type'},
+  {s:'En Values (valores) escribes las opciones permitidas, una por una. En esta app solo se necesitan dos: “A tiempo” y “Retardo”. Por eso la app no acepta ninguna otra respuesta.',set:ms=>{ms.enumv=true;ms.t.estado=1},t:'d-values'},
+  {s:'En Input mode (modo de entrada) eliges cómo verá el usuario las opciones. Elige Buttons (botones) para que se vean una al lado de la otra. Stack las pone una debajo de la otra y Auto deja que AppSheet decida.',set:ms=>{ms.enumv=true;ms.t.estado=1},t:'d-mode'},
+  {s:'Así se ve en el celular: el usuario toca una opción. Nadie escribe, nadie se equivoca y los reportes quedan correctos.',set:ms=>{ms.enumv=true;ms.t.estado=1},t:'phone'},
+  {s:'Con Dropdown (lista desplegable) las opciones aparecen en una lista que se abre al tocar. Sirve cuando hay muchas opciones.',set:ms=>{ms.enumv=true;ms.t.estado=1;ms.dd=true},t:'phone'},
+  {s:'Si hay solo dos opciones de respuesta, sí o no, hay un tipo de dato más simple: Yes/No.'},
+  {s:'En la tabla también ves la casilla Key. Se marca únicamente en la columna que identifica a cada fila de la tabla: es su llave primaria, como el documento de identidad. La próxima etapa es solo para ella.',t:'keyth'},
+  {s:'Las columnas que guardan el código de otra tabla, como ID_Sesion, no identifican esta tabla: la conectan con otra. Se llaman llaves foráneas y usan otro tipo de dato, llamado Ref. Lo verás en la etapa Relaciones.',t:'row-ID_Sesion'},
+  {s:'En este proyecto, ahora te toca a ti corregir los tipos de dato que AppSheet adivinó mal. ¡Vamos a los retos!'}
+ ],
+ sim:ms=>ms.enumv?editor('data',realDlg('Llegadas','estado',ms.t.estado?'Enum':'Text',{values:ms.t.estado?['A tiempo','Retardo']:[],mode:ms.t.estado?(ms.dd?'Dropdown':'Buttons'):'Auto',newt:ms.t.estado}),phone(ms.t.estado?'enumform':'llegadas',{dd:ms.dd})):editor('data',colGrid('Llegadas',llegRows({t:ms.t,mark:1})),phone('llegadas')),
+ steps:[
+  {t:'choice',q:'hora_llegada guarda valores como 07:08. ¿Qué tipo de dato le pones?',opts:['Time','Text','Date'],ok:0,hint:'Es una hora del día. Time significa hora.',good:'Con Time la app muestra un reloj y puede restar horas.',apply:ms=>ms.t.hora_llegada=1},
+  {t:'choice',q:'estado solo puede ser A tiempo o Retardo. ¿Qué tipo de dato le pones?',opts:['Enum','LongText','Number'],ok:0,hint:'Es una lista de opciones fijas.',good:'Enum da una lista fija: nadie escribe "tarde" o "retrazo".',apply:ms=>ms.t.estado=1},
+  {t:'choice',q:'En una columna Enum, ¿dónde escribes las opciones permitidas?',opts:['En Values','En el nombre de la columna','En la fila 1 de la hoja'],ok:0,hint:'Values significa valores.',good:'En Values agregas cada opción.'},
+  {t:'choice',q:'Quieres preguntar ¿Trajo excusa? y la respuesta es Sí o No. ¿Qué tipo de dato?',opts:['Yes/No','Enum','Text'],ok:0,hint:'Solo hay dos respuestas posibles.',good:'Yes/No es el tipo justo para preguntas de sí o no.',why:{1:'Funcionaría, pero Yes/No es más simple para esto.'}},
+  {t:'choice',q:'registrado_por guarda un correo, como camila@colegio.edu.co. ¿Qué tipo de dato?',opts:['Email','Text','Ref'],ok:0,hint:'Email significa correo.',good:'Email revisa que el correo esté bien escrito.',apply:ms=>ms.t.registrado_por=1}
+ ]},
+{short:'Key',badge:'Guardiana de la Key',title:'La Key y UNIQUEID',ask:['key','uniqueid','initial'],
+ init:{view:'sheet',dup:true,uid:false,hide:false},tourInit:{view:'sheet',dup:false,uid:false,hide:false},
+ tour:[
+  {s:'Cada fila de una tabla necesita un código único, como el documento de identidad de una persona. En AppSheet ese código se llama Key (llave). Por eso cada tabla tiene una columna identificadora, donde va ese código.'},
+  {s:'En “Llegadas”, la Key es la columna ID_Llegada: L001, L002, L003… Ninguno se repite.',t:'keycol'},
+  {s:'La Key tiene tres reglas. Léelas en este cuadro.',card:CARD_KEY},
+  {s:'Mira qué pasa si dos filas tienen el mismo código: la app no sabe cuál abrir ni cuál editar, y una llegada puede borrar a la otra.',set:ms=>ms.dup=true,t:'duprows'},
+  {s:'Ahora piensa: cuando alguien registra una llegada desde el celular, ¿quién le pone el código? No puede ser una persona: tendría que saber qué códigos ya se usaron.'},
+  {s:'Es como la máquina de turnos del banco: tú no escribes tu número, la máquina te lo da y nunca le da el mismo a dos personas.',card:CARD_TURNO},
+  {s:'En AppSheet esa máquina se llama UNIQUEID(). En un momento te muestro cómo se configura. Una diferencia con el banco: no da números en orden (1, 2, 3), sino códigos mezclados como a7f3c1e9.'},
+  {s:'¿Por qué mezclados? Imagina que el último código usado fue el 3, y Camila y Mateo escanean al mismo tiempo. Cada celular piensa: el siguiente es el 4. ¡Los dos quedarían con el 4!',card:CARD_CHOQUE},
+  {s:'Con códigos mezclados de 8 letras y números, cada celular inventa uno distinto, como a7f3c1e9 y f29b04c1. Es casi imposible que coincidan.',card:CARD_CHOQUE2},
+  {s:'Se configura así: abres la columna Key y en Initial value (valor inicial) escribes UNIQUEID(). Initial value es lo que la columna toma sola apenas se crea un registro.',set:ms=>{ms.view='keyset';ms.uid=true},t:'i-ID_Llegada'},
+  {s:'Mira el formulario: el código aparece solo, y el siguiente registro tendrá otro distinto.',set:ms=>{ms.view='keyset';ms.uid=true},t:'phone'},
+  {s:'Como nadie necesita ver ese código, quitas el check de SHOW? (mostrar) y queda oculto en el formulario.',set:ms=>{ms.view='keyset';ms.uid=true;ms.hide=true},t:'s-ID_Llegada'},
+  {s:'Dato curioso: muchas veces AppSheet pone UNIQUEID() solo en la Key de cada tabla. Revísalo siempre. Si los códigos los escribes tú, como EST001, puedes dejarlo así: solo se usa en registros nuevos.',set:ms=>{ms.view='keyset';ms.uid=true;ms.hide=true},t:'i-ID_Llegada'},
+  {s:'¿Cuándo usar un código propio como EST001 y cuándo UNIQUEID? Este cuadro te lo dice.',card:CARD_UID},
+  {s:'En tu proyecto: revisa que cada tabla tenga su Key, y usa UNIQUEID() en las tablas que se llenan desde la app.'}
+ ],
+ sim:ms=>ms.view==='sheet'?keySheet(ms.dup):editor('data',colGrid('Llegadas',llegRows({uid:ms.uid,uidq:!ms.uid,hide:ms.hide})),phone('keyform',{uid:ms.uid,hide:ms.hide})),
+ steps:[
+  {t:'choice',q:'¿Qué es la Key de una tabla?',opts:['El código único de cada fila, como un documento de identidad','La contraseña de la app','La fila de los encabezados'],ok:0,hint:'Piensa en el documento de identidad.',good:'La Key identifica cada fila.'},
+  {t:'hot',q:'En esta hoja hay dos llegadas con la misma Key. Toca una de ellas.',ok:'dup',hint:'Lee la columna ID_Llegada fila por fila.',good:'¡Encontrada! L002 estaba repetida. La app no sabría cuál es cuál.',bad:'Esa Key no se repite. Sigue buscando.',apply:ms=>ms.dup=false},
+  {t:'choice',q:'¿Cuál es una regla de la Key?',opts:['Nunca se repite y nunca cambia','Puede quedar vacía','Puede repetirse en días distintos'],ok:0,hint:'Recuerda las tres reglas del cuadro.',good:'Única, nunca vacía y nunca cambia.'},
+  {t:'choice',code:1,q:'Las llegadas se registran desde el celular. ¿Qué escribes en Initial value de ID_Llegada?',opts:['UNIQUEID()','"L001"','NOW()'],ok:0,hint:'Necesitas la máquina de turnos que nunca repite.',good:'UNIQUEID() da un código nuevo en cada registro.',why:{1:'Todas las llegadas tendrían el mismo código.',2:'NOW() da la fecha y hora, no un código.'},apply:ms=>{ms.view='keyset';ms.uid=true}},
+  {t:'choice',q:'¿Quien registra la llegada debe ver y escribir ID_Llegada?',opts:['No: se oculta apagando Show','Sí, y debe escribirlo'],ok:0,hint:'El código ya se genera solo.',good:'Oculto y automático: menos trabajo y cero errores.',apply:ms=>ms.hide=true},
+  {t:'choice',q:'Dos estudiantes escanean el QR en el mismo segundo. ¿Se puede repetir el código?',opts:['No, UNIQUEID() da códigos distintos','Sí, si registran al tiempo'],ok:0,hint:'Unique significa único.',good:'Cada registro tiene su código, aunque se creen al mismo tiempo.'}
+ ]},
+{short:'Relaciones',badge:'Maestra de relaciones',title:'Relaciones entre tablas',ask:['relacion','ref','label','related'],
+ tourInit:{view:'diagram',type:false,src:false,lbl:false,glow:false},init:{view:'diagram',type:false,src:false,lbl:false,glow:false},
+ tour:[
+  {s:'Las tablas no viven solas: se conectan. Es el tema más importante de tu app, así que vamos despacio.'},
+  {s:'En “Estudiantes”, cada estudiante aparece una sola vez, con su código único (su Key). EST001 es Camila.',t:'estT'},
+  {s:'En “Llegadas”, Camila aparece muchas veces: una por cada día que llega. Pero no se escribe su nombre: se escribe su código, EST001.',t:'llegT'},
+  {s:'Mira los colores: cada llegada de Camila lleva el mismo código. Ese código es el puente entre las dos tablas.',set:ms=>ms.glow=true,t:'llegT'},
+  {s:'Esto se llama relación uno a muchos: un estudiante tiene muchas llegadas, y cada llegada es de un solo estudiante.',set:ms=>ms.glow=true,t:'relb'},
+  {s:'¿Por qué escribir el código y no el nombre? Este cuadro lo explica.',card:CARD_POR_QUE},
+  {s:'Ahora la parte clave. Para nosotros es obvio que EST001 es Camila. Pero AppSheet no lo sabe: para él, EST001 es solo un texto, como cualquier palabra.',set:ms=>ms.glow=true,t:'llegT'},
+  {s:'Hay que decirle: este código pertenece a la tabla “Estudiantes”. Para eso existe un tipo de dato llamado Ref, de referencia. Significa: este valor es el código de otra tabla.',set:ms=>ms.glow=true,t:'relb'},
+  {s:'Esa conexión entre tablas se hace en dos pasos. Paso 1: en Data abres la tabla “Llegadas” y tocas el lápiz ✎ de la columna ID_Estudiante, que es la llave foránea. En Type (tipo de dato) eliges Ref, porque ese tipo es el que se encarga de conectar tablas.',set:ms=>{ms.view='col';ms.type=true},t:'d-type'},
+  {s:'Paso 2: en Source table (tabla de origen) eliges “Estudiantes”, la tabla donde está guardado ese código con todos sus datos. Así AppSheet sabe de qué tabla es el código.',set:ms=>{ms.view='col';ms.type=true;ms.src=true},t:'d-src'},
+  {s:'¡Ya están conectadas! Mira el celular: el código ahora es un enlace azul; si lo tocas, abre la pantalla del estudiante. Pero sale el código, y nadie se sabe los códigos de memoria.',set:ms=>{ms.view='col';ms.type=true;ms.src=true},t:'phone'},
+  {s:'Mira la tabla “Estudiantes”: AppSheet marcó LABEL? en el código, ID_Estudiante. Por eso en todas partes sale EST001.',set:ms=>{ms.view='label';ms.type=true;ms.src=true},t:'l-ID_Estudiante'},
+  {s:'Para eso existe Label (etiqueta): es la columna que la app muestra como nombre visible de cada registro. En la tabla “Estudiantes” quitas LABEL? del código y lo marcas en la columna nombre. Así la app muestra el nombre de la persona y no su código.',set:ms=>{ms.view='label';ms.type=true;ms.src=true;ms.lbl=true},t:'l-nombre'},
+  {s:'Ahora, en todas las pantallas aparece Camila Torres en vez de EST001: en las listas, en los detalles y en los reportes.',set:ms=>{ms.view='label';ms.type=true;ms.src=true;ms.lbl=true},t:'phone'},
+  {s:'Y hay un regalo extra. Como “Llegadas” apunta a “Estudiantes”, AppSheet crea sola, en “Estudiantes”, una columna llamada Related Llegadas (llegadas relacionadas).',set:ms=>{ms.view='related'},t:'row-Related Llegadas'},
+  {s:'¿Para qué sirve? Al abrir la pantalla de Camila ves todo su historial de llegadas, sin buscarlas una por una.',set:ms=>{ms.view='related'},t:'phone'},
+  {s:'¿Por qué en “Estudiantes” y no en otra tabla? AppSheet la crea siempre en la tabla a la que apunta la Ref. “Llegadas” también apunta a “Sesiones”, porque cada llegada es a una clase (columna ID_Sesion). Así que “Sesiones” también tendrá su propia lista: todos los que llegaron a esa clase.',set:ms=>{ms.view='related'}},
+  {s:'Este es el mapa de relaciones de la app del ejemplo. Fíjate en la regla de abajo.',card:CARD_MAPA},
+  {s:'En tu proyecto: busca qué se repite muchas veces y, en esa tabla, pon una columna Ref hacia la tabla donde el dato aparece una sola vez.'}
+ ],
+ sim:ms=>relSim(ms),
+ steps:[
+  {t:'choice',q:'Un estudiante puede tener muchas llegadas. ¿Qué tipo de relación es?',opts:['Uno a muchos','Uno a uno','No hay relación'],ok:0,hint:'Un estudiante, ¿cuántas llegadas puede tener?',good:'Uno a muchos: un estudiante, muchas llegadas.'},
+  {t:'hot',q:'Toca en “Llegadas” una llegada de Camila (EST001).',ok:'lleg-EST001',hint:'Busca el código del mismo color que Camila.',good:'Esa es de Camila: tiene su código, EST001.',bad:'Esa llegada es de otra persona. Busca EST001.'},
+  {t:'choice',q:'¿Qué significa el tipo de dato Ref?',opts:['Que el valor es el código de otra tabla','Que el valor es un número','Que la columna es obligatoria'],ok:0,hint:'Ref viene de referencia.',good:'Ref dice: este valor es el código de otra tabla.'},
+  {t:'choice',q:'¿En qué tabla va la columna Ref?',opts:['En Llegadas, donde el código se repite','En Estudiantes, donde el código aparece una vez','En las dos tablas'],ok:0,hint:'¿Dónde se repite EST001 muchas veces?',good:'La Ref va donde el código se repite: en “Llegadas”.',why:{1:'En Estudiantes está la Key, no la Ref.',2:'Basta con una Ref. AppSheet crea el camino de regreso sola.'}},
+  {t:'choice',q:'En la tabla “Llegadas”, la columna ID_Estudiante guarda el código de Camila. ¿Cómo la configuras para conectarla con “Estudiantes”?',opts:['Type: Ref y Source table: Estudiantes','Type: Text y Source table: Llegadas','Type: Ref y Source table: Llegadas'],ok:0,hint:'El tipo es Ref y la tabla de origen es donde está Camila con sus datos.',good:'Listo: “Llegadas” quedó conectada con “Estudiantes”.',why:{1:'Como Text no queda conectada con nada.',2:'No apunta a sí misma: apunta a la tabla de los estudiantes.'},apply:ms=>{ms.view='col';ms.type=true;ms.src=true}},
+  {t:'choice',q:'La lista muestra EST001 en vez de Camila Torres. ¿Qué arreglas?',opts:['Marcar Label en la columna nombre de Estudiantes','Cambiar ID_Estudiante a Text','Borrar la columna ID'],ok:0,hint:'Label es el nombre visible de cada registro.',good:'Ahora la lista muestra nombres.',apply:ms=>{ms.view='label';ms.lbl=true}},
+  {t:'choice',q:'¿Para qué sirve Related Llegadas en “Estudiantes”?',opts:['Para ver todas las llegadas de un estudiante en su pantalla','Para borrar llegadas','Para cambiar el código'],ok:0,hint:'Es el camino de regreso: de Camila a sus llegadas.',good:'Es el historial de llegadas de cada estudiante.',apply:ms=>ms.view='related'}
+ ]},
+{short:'Fórmulas',badge:'Modo cálculo',title:'Fórmulas que calculan solas',ask:['formula','if','ref'],
+ init:{f1:false,f2:false},tourInit:{f1:false,f2:false},
+ tour:[
+  {s:'Algunos datos no los escribe nadie: la app los calcula, como una calculadora. Eso se llama fórmula.'},
+  {s:'Mira la lista: no dice cuántos minutos tarde llegó cada uno, ni si fue retardo. Vamos a hacer que la app lo calcule.',t:'phone'},
+  {s:'Primero, piensa como persona. Camila llegó a las 07:08 y la clase empezaba a las 07:00. Restas y te da 8 minutos.',card:CARD_RESTA},
+  {s:'Para decirle eso a la app hay que escribirlo en su idioma. Estas son las reglas para escribir fórmulas. Son pocas.',card:CARD_REGLAS},
+  {s:'AppSheet trae funciones propias, ya listas, como las herramientas de una caja. Estas son las básicas.',card:CARD_FUNC},
+  {s:'¿Dónde está cada dato? La hora de llegada está en la tabla “Llegadas”. La hora de inicio está en otra tabla, “Sesiones”. Mira cómo la app la encuentra en tres pasos.',card:CARD_PUNTO},
+  {s:'Si solo restas las dos horas, el resultado sale como un tiempo: 00:08:00. Para tener solo el número 8, usamos la función TOTALMINUTES.',card:CARD_DUR},
+  {s:'Ahora traducimos lo que hiciste con lápiz al idioma de AppSheet, pieza por pieza. El color dice de qué tabla sale cada dato.',card:CARD_TRAD},
+  {s:'¿Dónde se escribe? En Data, tabla “Llegadas”, en la columna FORMULA de la fila minutos_retraso. El signo = ya aparece: tú escribes lo que va después.',set:ms=>ms.f1=true,t:'f-minutos_retraso'},
+  {s:'Mira el celular: ya aparecen los minutos de cada llegada.',set:ms=>ms.f1=true,t:'phone'},
+  {s:'Ahora el estado. Piensa como persona: si llega más de 5 minutos tarde, es Retardo; si no, A tiempo. Mira el diagrama: una pregunta y dos caminos.',card:CARD_IF},
+  {s:'Esa fórmula va en la columna FORMULA de la fila estado.',set:ms=>{ms.f1=true;ms.f2=true},t:'f-estado'},
+  {s:'Mira el celular: los minutos y el estado aparecen solos en cada llegada.',set:ms=>{ms.f1=true;ms.f2=true},t:'phone'},
+  {s:'Este cuadro resume las dos columnas calculadas. Tenlo a la mano para los retos.',card:CARD_RESUMEN},
+  {s:'En tu proyecto: busca qué datos se pueden calcular en vez de escribirse, como totales, días o estados.'}
+ ],
+ sim:ms=>editor('data',colGrid('Llegadas',llegRows({f1:ms.f1,f2:ms.f2,fq:true})),phone('llegadas',{min:ms.f1,est:ms.f2})),
+ steps:[
+  {t:'choice',q:'Laura llegó a las 07:03 y la clase empezaba a las 07:00. ¿Cuántos minutos tarde?',opts:['3','7','0'],ok:0,hint:'Resta: 07:03 menos 07:00.',good:'3 minutos.'},
+  {t:'choice',q:'Con 5 minutos de tolerancia, ¿qué estado tiene Laura?',opts:['A tiempo','Retardo'],ok:0,hint:'¿3 es más que 5?',good:'3 no es más que 5: A tiempo.'},
+  {t:'choice',code:1,q:'¿Cómo se escribe en AppSheet la hora en que llegó el estudiante?',opts:['[hora_llegada]','hora_llegada()','"07:08"'],ok:0,hint:'El nombre de una columna va entre corchetes.',good:'Los corchetes encierran el nombre de la columna.'},
+  {t:'choice',code:1,q:'La hora de inicio está en la tabla “Sesiones”. ¿Cómo la traes?',opts:['[ID_Sesion].[hora_inicio]','[hora_inicio]','TOTALMINUTES([hora_inicio])'],ok:0,hint:'El punto trae un dato de otra tabla, pasando por la clase de la llegada.',good:'Ve a la sesión de esta llegada y trae su hora de inicio.',why:{1:'Llegadas no tiene esa columna: está en Sesiones.'}},
+  {t:'choice',q:'Si solo restas las horas, el resultado sale como 00:08:00. ¿Qué función lo convierte en el número 8?',opts:['TOTALMINUTES()','IF()','LOOKUP()'],ok:0,hint:'Mira la caja de herramientas: funciones de tiempo.',good:'TOTALMINUTES convierte un tiempo en minutos.'},
+  {t:'choice',code:1,q:'Junta las piezas. ¿Cuál es la fórmula de minutos_retraso?',opts:['TOTALMINUTES([hora_llegada] - [ID_Sesion].[hora_inicio])','[hora_llegada] + [hora_inicio]','SUM(hora_llegada)'],ok:0,hint:'Llegada menos inicio, y todo en minutos.',good:'¡Esa es! La app ya calcula los minutos.',apply:ms=>ms.f1=true},
+  {t:'choice',code:1,q:'Si pasa de 5 minutos es Retardo; si no, A tiempo. ¿Qué fórmula lo dice?',opts:['IF([minutos_retraso] > 5, "Retardo", "A tiempo")','IF([minutos_retraso] < 5, "Retardo", "A tiempo")','IF([estado] > 5, "A tiempo")'],ok:0,hint:'Primero la pregunta, luego el camino del sí y al final el del no.',good:'¡Perfecto! El estado se calcula solo.',why:{1:'Así marcaría Retardo a quien llega a tiempo.',2:'estado no se calcula a partir de sí mismo.'},apply:ms=>ms.f2=true}
+ ]},
+{short:'Vistas',badge:'Diseño de pantallas',title:'Diseña las vistas',ask:['vista','position','slice'],
+ init:{view:'',vl:['Llegadas · deck'],pos:false,flow:false},
+ tour:[
+  {s:'Una vista (View) es una pantalla de tu app. Ojo: una vista no es una tabla. La tabla guarda los datos; la vista es la pantalla que los muestra.'},
+  {s:'Una misma tabla se puede mostrar de varias formas: como tarjetas, como filas, como gráfico o en un calendario. Cada forma es un tipo de vista.'},
+  {s:'Este cuadro muestra los tipos de vista, para qué sirven y un ejemplo de nuestra app. Léelo con calma: lo vas a necesitar en los retos.',card:CARD_VISTAS},
+  {s:'Las vistas trabajan en equipo. Mira el recorrido de la tabla “Llegadas” en el celular.',set:ms=>ms.flow=true,t:'flow'},
+  {s:'Primero, una lista (tipo table o deck) con varias llegadas.',set:ms=>ms.flow=true,t:'fTable'},
+  {s:'Al tocar una fila se abre una pantalla con todos los datos de esa llegada. AppSheet la llama Detail (detalle) y la crea sola.',set:ms=>ms.flow=true,t:'fDetail'},
+  {s:'Al tocar el botón + se abre Form (formulario), para registrar una nueva llegada. También la crea AppSheet sola.',set:ms=>ms.flow=true,t:'fForm'},
+  {s:'Ojo: cuando creas una vista de una tabla, como este deck, AppSheet crea solas las pantallas Detail y Form y las conecta. Pero solo crea las pantallas: las columnas y las fórmulas las configuras tú. El Form lo configuraremos en la etapa Formularios.',set:ms=>ms.flow=true,t:'flow'},
+  {s:'La barra de abajo tiene botones para saltar de una pantalla a otra, como las pestañas de abajo en WhatsApp. Eso se llama navegación.',set:ms=>ms.flow=true,t:'fNav'},
+  {s:'Las vistas se crean y se ajustan en Views.',t:'rail-views'},
+  {s:'Al crear una vista eliges qué tabla muestra y su tipo de vista.',t:'vtypes'},
+  {s:'Position (posición) decide dónde aparece el botón para abrir esa vista.',t:'pos'},
+  {s:'Ojo: aquí primary significa principal. No tiene nada que ver con la llave primaria.',card:CARD_POS},
+  {s:'En tu proyecto: crea una vista por cada cosa que necesite tu usuario, y comprueba que al tocar un registro se abra su Detail.'}
+ ],
+ sim:ms=>ms.flow?flowSim():editor('views',`<h4>Views</h4>${ms.vl.map((v,i)=>`<div class="row"><span>${v}</span><small>${i&&i===ms.vl.length-1?'nueva':''}</small></div>`).join('')}<div class="fld" data-t="vtypes"><label>View type</label><div class="typs">${VTYPES.map(t=>`<span class="ty ${ms.view===t?'new':''}">${t}</span>`).join('')}</div></div>${fld('Position',ms.pos?'primary':'?',ms.pos?'set':'empty','pos')}`,phone({deck:'deck',chart:'chart',calendar:'calendar'}[ms.view]||'llegadas')),
+ steps:[
+  {t:'choice',q:'¿Qué vista se usa para registrar una nueva llegada?',opts:['form','table','detail'],ok:0,hint:'Registrar es llenar un formulario.',good:'Form captura los datos nuevos.'},
+  {t:'choice',q:'Tocas una llegada en la lista. ¿Qué vista se abre?',opts:['detail','form','chart'],ok:0,hint:'Muestra todo sobre un solo registro.',good:'Detail muestra el registro completo.'},
+  {t:'choice',q:'Coordinación quiere ver a los estudiantes en tarjetas con foto. ¿Qué vista?',opts:['deck','chart','form'],ok:0,hint:'Tarjetas con imagen y título.',good:'Deck muestra una tarjeta por registro.',apply:ms=>{ms.view='deck';ms.vl.push('Estudiantes · deck')}},
+  {t:'choice',q:'Necesitas ver cuántos retardos tiene cada curso.',opts:['chart','detail','map'],ok:0,hint:'Quieres comparar cantidades.',good:'Chart resume los datos en un gráfico.',apply:ms=>{ms.view='chart';ms.vl.push('Retardos · chart')}},
+  {t:'choice',q:'El docente quiere ver las clases por día del mes.',opts:['calendar','gallery','form'],ok:0,hint:'Fechas organizadas por día.',good:'Calendar ubica cada registro en su fecha.',apply:ms=>{ms.view='calendar';ms.vl.push('Sesiones · calendar')}},
+  {t:'choice',q:'Quieres el gráfico en la barra de abajo. ¿Qué Position?',opts:['primary','ref','menu'],ok:0,hint:'Es la posición principal.',good:'primary la pone en la barra inferior.',why:{1:'ref solo se abre desde otra vista.',2:'menu la pone en el menú lateral.'},apply:ms=>{ms.pos=true;ms.view='chart'}}
+ ]},
+{short:'Formularios',badge:'Formularios pro',title:'Formularios inteligentes',ask:['initial','qr','tipos'],
+ init:{iv:{id:1}},
+ tour:[
+  {s:'¿Recuerdas que AppSheet creó solo el formulario (Form) en la etapa Vistas? Ahora lo vamos a configurar. Un formulario es una pantalla con espacios para llenar, como uno de papel.'},
+  {s:'Este es el formulario de una llegada. Si todo se llenara a mano, sería lento y con errores.',t:'phone'},
+  {s:'En nuestro ejemplo, el docente proyecta en el tablero el QR de la clase y el estudiante lo escanea con su celular. Mira cómo funciona.',card:CARD_QR},
+  {s:'¿Y cómo sabe la app qué estudiante es? Por el correo con el que inició sesión: lo busca en la tabla “Estudiantes” y trae su código. Eso lo hace la función LOOKUP (buscar).'},
+  {s:'Si en tu app ese dato lo escribe una persona a mano, no necesitas ninguna función: el campo queda vacío para llenarlo.'},
+  {s:'¿Dónde se configura? En Data, en las columnas de “Llegadas”: REQUIRE? (obligatorio) e INITIAL VALUE (valor inicial). Scannable está dentro del lápiz ✎ de la columna. La meta: que el estudiante solo escanee.',t:'panel'},
+  {s:'Este cuadro muestra las funciones que llenan campos solas. Son tu caja de herramientas.',card:CARD_INIT},
+  {s:'ID_Llegada ya se llena solo con UNIQUEID(), como viste en la etapa Key. Ahora te toca a ti con lo demás.'}
+ ],
+ sim:ms=>editor('data',colGrid('Llegadas',llegRows({uid:true,hide:true,req:ms.iv.req,est:ms.iv.est,hora:ms.iv.hora,mail:ms.iv.mail}))+`<div class="row" data-t="scan" style="margin-top:8px"><span>✎ ID_Sesion · Scannable (se puede escanear)</span>${ms.iv.qr?'<span class="ty new">Sí</span>':'<span class="ty">No</span>'}</div>`,phone('form',ms.iv)),
+ steps:[
+  {t:'choice',q:'El estudiante escanea el QR que proyecta el docente. ¿Qué activas en la columna ID_Sesion?',opts:['Scannable','Hidden','Read-only'],ok:0,hint:'Scannable significa que se puede escanear con la cámara.',good:'Scannable agrega el botón para escanear.',apply:ms=>ms.iv.qr=1},
+  {t:'choice',q:'¿Qué campo debe ser obligatorio (Require)?',opts:['ID_Sesion','Un comentario opcional'],ok:0,hint:'Sin él no se sabe a qué clase llegó.',good:'Sin la clase, la llegada no sirve: Require.',apply:ms=>ms.iv.req=1},
+  {t:'choice',q:'¿Cómo sabe la app qué estudiante escaneó?',opts:['Busca su correo en Estudiantes con LOOKUP','El estudiante escribe su código','La app lo adivina'],ok:0,hint:'Usa el correo con el que inició sesión.',good:'LOOKUP busca el correo y trae el código del estudiante.',apply:ms=>ms.iv.est=1},
+  {t:'choice',code:1,q:'hora_llegada debe guardar la hora exacta del escaneo.',opts:['TIMENOW()','TODAY()','USEREMAIL()'],ok:0,hint:'TODAY() da la fecha, no la hora.',good:'TIMENOW() registra la hora exacta.',apply:ms=>ms.iv.hora=1},
+  {t:'choice',code:1,q:'registrado_por guarda el correo de quien registra la llegada.',opts:['USEREMAIL()','NOW()','UNIQUEID()'],ok:0,hint:'Email significa correo.',good:'USEREMAIL() toma el correo de quien inició sesión.',apply:ms=>ms.iv.mail=1}
+ ]},
+{short:'Acciones',badge:'Botones con poder',title:'Acciones: botones que hacen cosas',ask:['accion','bot','roles'],
+ tourInit:{a1:false,a2:false,a3:false,demo:true},init:{a1:false,a2:false,a3:false},
+ tour:[
+  {s:'Una acción es un botón que hace un cambio cuando alguien lo toca. La persona decide; el botón hace el trabajo.'},
+  {s:'Mira: así se verá una llegada con el botón Justificar. La coordinadora revisa la excusa y, si la aprueba, toca el botón.',t:'jbtn'},
+  {s:'En Do this (haz esto) eliges qué hará el botón. No se escribe: se escoge de una lista de opciones que AppSheet ya trae.',set:ms=>{ms.demo=true;ms.a1=true},t:'do'},
+  {s:'Estas son algunas de esas opciones. Para Justificar elegimos la primera: cambiar el valor de una columna en este registro.',card:CARD_DO},
+  {s:'En Set these columns (columnas que cambia) dices qué valor pone el botón. Aquí: estado = "Justificado".',set:ms=>{ms.demo=true;ms.a1=true},t:'setc'},
+  {s:'En Only if this condition is true (solo si se cumple) se escribe una fórmula que decide cuándo aparece el botón. Para que salga solo en llegadas con retardo: [estado] = "Retardo".',set:ms=>{ms.demo=true;ms.a1=true;ms.a2=true},t:'cond'},
+  {s:'Ojo: “Justificado” debe estar en las opciones (Values) del Enum de la columna estado. Si no está, la app no lo acepta.',set:ms=>{ms.demo=true;ms.a1=true;ms.a2=true;ms.a3=true},t:'enum'},
+  {s:'Rol es el papel que cumple cada persona en la app: estudiante, docente o coordinación. En este proyecto, el botón Justificar es para coordinación.'},
+  {s:'En tu proyecto: piensa qué decisión toma cada rol y conviértela en un botón.'}
+ ],
+ sim:ms=>editor('actions',`<h4>Actions · Justificar</h4>${fld('For a record of this table (tabla)','Llegadas')}${fld('Do this (haz esto)',ms.a1?'Data: set the values of some columns in this row':'?',ms.a1?'set':'empty','do')}${fld('Set these columns (columnas que cambia)',ms.a1?'estado = "Justificado"':'?',ms.a1?'set':'empty','setc')}${fld('Only if this condition is true (solo si se cumple)',ms.a2?'[estado] = "Retardo"':'?',ms.a2?'set':'empty','cond')}${fld('estado · Values del Enum','A tiempo, Retardo'+(ms.a3?', Justificado':''),ms.a3?'set':'','enum')}`,phone('detail',{btn:ms.a2||ms.demo,just:ms.a3})),
+ steps:[
+  {t:'choice',q:'En Do this, ¿cuál opción cambia el estado de la llegada a "Justificado"?',opts:['Data: set the values of some columns in this row','App: go to another view','Data: delete this row'],ok:0,hint:'Quieres cambiar el valor de una columna en este registro.',good:'Esa opción cambia columnas del registro.',why:{1:'Esa abre otra pantalla.',2:'Esa borraría la llegada.'},apply:ms=>ms.a1=true},
+  {t:'choice',code:1,q:'El botón solo debe salir en llegadas con retardo. ¿Qué fórmula va en Only if this condition is true?',opts:['[estado] = "Retardo"','[estado] = "A tiempo"','TRUE'],ok:0,hint:'No tiene sentido justificar una llegada puntual.',good:'Ahora el botón sale solo donde hay retardo.',why:{2:'TRUE lo mostraría en todas las llegadas.'},apply:ms=>ms.a2=true},
+  {t:'choice',q:'Para que la columna estado acepte "Justificado", ¿qué cambias?',opts:['Agregar Justificado a las opciones (Values) del Enum','Cambiar el tipo a Number','Nada'],ok:0,hint:'El Enum solo acepta las opciones de su lista.',good:'¡Funciona! El retardo quedó justificado.',apply:ms=>ms.a3=true},
+  {t:'choice',q:'¿Qué es un rol?',opts:['El papel que cumple cada persona en la app','Un tipo de dato','Una pantalla'],ok:0,hint:'Estudiante, docente, coordinación…',good:'Cada rol hace y ve cosas distintas.'}
+ ]},
+{short:'Seguridad',badge:'Datos protegidos',title:'Roles y seguridad',ask:['seguridad','roles','previa'],
+ init:{s1:false,s2:false,s3:false},
+ tour:[
+  {s:'Security es el vigilante de la app: decide quién entra y qué puede ver cada persona. Tu app guarda datos de personas, por eso importa.',t:'rail-security'},
+  {s:'Primero, los roles. Rol es el papel que cumple cada persona en la app. En este proyecto hay tres.',card:CARD_ROLES},
+  {s:'Los roles se guardan en la tabla “Usuarios_Roles”: el correo de cada persona y su rol. Las contraseñas nunca van en una tabla.'},
+  {s:'Security tiene cuatro secciones. Empecemos por Require sign-in (exigir inicio de sesión).',t:'secmenu'},
+  {s:'Require user sign-in: si está encendido, solo entra quien inicia sesión con su cuenta de Google. Así la app sabe quién es y cuál es su rol.',set:ms=>ms.s1=true,t:'signin'},
+  {s:'Allow all signed-in users (dejar entrar a cualquier cuenta): si lo enciendes, entra cualquier persona con cuenta de Google, sin lista. Si está apagado, solo entran los que agregues.',set:ms=>ms.s1=true,t:'allowall'},
+  {s:'Manage users es donde agregas los correos de quienes pueden entrar.',set:ms=>ms.s1=true,t:'musers'},
+  {s:'En Security Filters (filtros de seguridad) cada tabla tiene su filtro. Para un estudiante: [ID_Estudiante].[correo] = USEREMAIL(). Se lee: muéstrale solo las llegadas cuyo estudiante tenga el mismo correo de quien inició sesión.',set:ms=>{ms.s1=true;ms.s2=true;ms.sec='filt'},t:'filter'},
+  {s:'Mira el celular de Camila (estudiante): solo ve sus llegadas.',set:ms=>{ms.s1=true;ms.s2=true;ms.sec='filt'},t:'phone'},
+  {s:'Pero el docente y coordinación sí deben ver todas. Este cuadro muestra cómo se aplica a cada rol.',card:CARD_PORROL},
+  {s:'Así queda el filtro completo, para los tres roles.',set:ms=>{ms.s1=true;ms.s2=true;ms.full=true;ms.rv='doc';ms.sec='filt'},t:'filter'},
+  {s:'Mira el celular del docente: ve todas las llegadas.',set:ms=>{ms.s1=true;ms.s2=true;ms.full=true;ms.rv='doc';ms.sec='filt'},t:'phone'},
+  {s:'Para que el Panel coordinación solo lo vea coordinación, se usa Show if (mostrar si), que está en la vista, dentro de Views. LOOKUP busca el rol de quien entra en “Usuarios_Roles”.',set:ms=>{ms.s1=true;ms.s2=true;ms.full=true;ms.s3=true;ms.rv='coord';ms.sec='view'},t:'showif'},
+  {s:'Mira el celular de coordinación: ve todas las llegadas y, abajo, la pestaña Panel.',set:ms=>{ms.s1=true;ms.s2=true;ms.full=true;ms.s3=true;ms.rv='coord';ms.sec='view'},t:'phone'},
+  {s:'Domain Authentication es para empresas (plan pago) y Options trae protecciones avanzadas. Para tu proyecto déjalos como vienen.',set:ms=>ms.s1=true,t:'secmenu'},
+  {s:'¿Y para tu entrega de clase? Hay varias formas de compartir la app. Para el ejercicio sirven las marcadas con ✓.',card:CARD_ENTREGA},
+  {s:'En tu proyecto: define los roles de tu app y qué debe ver cada uno.'}
+ ],
+ sim:ms=>{const ph=!ms.s1?phone('llegadas'):ms.rv?phone('llegadas',{panel:ms.rv==='coord',who:ms.rv==='coord'?'Coordinación':'Docente'}):ms.s2?phone('llegadas',{only:1,who:'Camila'}):phone('login');return ms.sec==='view'?editor('views',`<h4>View: Panel coordinación</h4>${fld('For this data','Llegadas')}${fld('View type','chart')}${fld('Show if (mostrar si)',ms.s3?'LOOKUP(USEREMAIL(), "Usuarios_Roles", "correo", "rol") = "Coordinación"':'?',ms.s3?'set':'empty','showif')}`,ph):editor('security',secPanel(ms),ph)},
+ steps:[
+  {t:'choice',q:'¿Qué es un rol en la app?',opts:['El papel que cumple cada persona: estudiante, docente o coordinación','Una contraseña','Un tipo de vista'],ok:0,hint:'Mira el cuadro de los roles.',good:'Cada rol hace y ve cosas distintas.'},
+  {t:'choice',q:'La app guarda datos de estudiantes. ¿Qué activas para saber quién entra?',opts:['Require user sign-in','Dejar que cualquiera con el enlace entre','Nada, es una app escolar'],ok:0,hint:'Primero hay que saber quién es cada persona.',good:'Ahora solo entra quien inicia sesión.',apply:ms=>ms.s1=true},
+  {t:'choice',code:1,q:'Camila solo debe ver sus propias llegadas. ¿Qué fórmula va en Security filter?',opts:['[ID_Estudiante].[correo] = USEREMAIL()','TRUE','[estado] = "Retardo"'],ok:0,hint:'Compara el correo del estudiante de cada llegada con el correo de quien inició sesión.',good:'Camila ahora ve solo sus registros.',why:{1:'TRUE deja ver todas las llegadas.',2:'Eso mostraría los retardos de todos.'},apply:ms=>{ms.s2=true;ms.sec='filt'}},
+  {t:'choice',code:1,q:'El Panel coordinación solo debe aparecer para coordinación. ¿Qué fórmula va en Show if?',opts:['LOOKUP(USEREMAIL(), "Usuarios_Roles", "correo", "rol") = "Coordinación"','USEREMAIL() = "Coordinación"','[rol] = TRUE'],ok:0,hint:'Busca el rol de quien entra en la tabla “Usuarios_Roles”.',good:'LOOKUP busca el correo y trae el rol.',why:{1:'USEREMAIL() da un correo, nunca la palabra Coordinación.'},apply:ms=>{ms.s3=true;ms.sec='view'}},
+  {t:'choice',q:'Con el filtro completo, ¿qué llegadas ve el docente?',opts:['Todas las llegadas','Solo las suyas','Ninguna'],ok:0,hint:'El filtro muestra la fila si quien entra no es estudiante.',good:'Como no es estudiante, ve todas.'},
+  {t:'choice',q:'Para tu entrega de clase, ¿qué formas de compartir la app sirven?',opts:['Privada con usuario de prueba, o pública, con datos de prueba','Con datos reales de tus compañeros','No compartirla'],ok:0,hint:'Mira el cuadro Para tu entrega de clase.',good:'Así tu profe puede probarla sin exponer datos reales.'}
+ ]},
+{short:'Chat e IA',badge:'App inteligente',title:'Chat apps e Intelligence',ask:['appsheet','bot','miapp'],
+ init:{p:'chat'},
+ tour:[
+  {s:'Tu app ya funciona. Ahora conoce dos herramientas para que llegue a más lugares y sea más inteligente. Empecemos por Chat apps.',t:'rail-chat'},
+  {s:'Chat apps conecta tu app con Google Chat, el chat de Google. Con Create creas un Chat app: un ayudante que vive dentro del chat.',t:'chatcreate'},
+  {s:'Se configura en cuatro pasos: Enable (activar), Customize (personalizar), Test (probar) y Share (compartir).',t:'chatsteps'},
+  {s:'Ejemplo: el docente escribe /retardos en Google Chat y la app le responde con los retardos del día, sin abrir la app. Los avisos de Automation también pueden llegar al chat.',t:'chatcreate'},
+  {s:'Ahora Intelligence (inteligencia): funciones de inteligencia artificial para tu app.',set:ms=>ms.p='intel',t:'rail-intel'},
+  {s:'Predictive Model (modelo predictivo): aprende de tus datos y calcula un resultado probable. Ejemplo: según su historial, qué estudiantes tienen más riesgo de llegar tarde.',set:ms=>ms.p='intel',t:'pred'},
+  {s:'OCR Model (lector de texto): lee el texto que aparece en una foto. Ejemplo: tomas una foto de una excusa escrita y la app copia el texto en un campo.',set:ms=>ms.p='intel',t:'ocr'},
+  {s:'Smart Assistant (asistente): permite buscar en la app escribiendo o hablando frases como retardos de hoy.',set:ms=>ms.p='intel',t:'smart'},
+  {s:'Este cuadro resume las dos herramientas.',card:CARD_IA},
+  {s:'En tu proyecto: piensa en qué caso tu app puede usar un chat o la inteligencia artificial.'}
+ ],
+ sim:ms=>ms.p==='intel'?editor('intel',intelPanel(),phone('llegadas')):editor('chat',chatPanel(),phone('llegadas')),
+ steps:[
+  {t:'choice',q:'¿Qué hace Chat apps?',opts:['Conecta la app con Google Chat','Traduce la app','Borra registros'],ok:0,hint:'Chat significa conversación.',good:'Así la app responde dentro de Google Chat.'},
+  {t:'order',q:'Ordena los pasos para crear un Chat app.',items:['Enable (activar)','Customize (personalizar)','Test (probar)','Share (compartir)'],hint:'Primero se activa, al final se comparte.',good:'¡Chat app listo!'},
+  {t:'hot',q:'Toca dónde están las funciones de inteligencia artificial.',ok:'rail-intel',hint:'Busca el bombillo.',good:'Intelligence: modelos predictivos y lectores de texto.',apply:ms=>ms.p='intel'},
+  {t:'choice',q:'Quieres saber qué estudiantes tienen más riesgo de llegar tarde. ¿Qué usas?',opts:['Predictive Model','OCR Model','Chat apps'],ok:0,hint:'Predecir es adivinar con datos.',good:'El modelo predictivo aprende del historial.'},
+  {t:'choice',q:'Quieres que la app lea el texto de la foto de una excusa. ¿Qué usas?',opts:['OCR Model','Predictive Model','Smart Assistant'],ok:0,hint:'OCR lee texto en imágenes.',good:'OCR copia el texto de la foto.'}
+ ]},
+{short:'Publicar',badge:'App lista',title:'Configura, prueba y comparte',ask:['publicar','gratis','offline'],
+ init:{view:'set',sv:'info',color:false,pva:'',share:false,mv:'deploy',proto:false},
+ tour:[
+  {s:'Último paso: dejar la app lista para que otros la usen. Primero le das identidad en Settings (configuración).',t:'rail-settings'},
+  {s:'Settings tiene varias secciones. Vamos a las más útiles.',t:'setmenu'},
+  {s:'En Information, Short Name es el nombre de la app. Abajo puedes escribir una descripción corta.',t:'appname'},
+  {s:'En Theme & Brand eliges el color principal y el logo. Mira cómo cambia el celular.',set:ms=>{ms.sv='theme';ms.color=true},t:'theme'},
+  {s:'En Views › Localization traduces al español los textos que trae la app, como Save (Guardar) o Cancel (Cancelar).',set:ms=>{ms.sv='loc';ms.color=true},t:'locale'},
+  {s:'Offline mode deja que la app funcione sin internet y guarde cuando vuelva la señal. Performance e Integrations son avanzados: déjalos como vienen.',set:ms=>{ms.sv='off';ms.color=true},t:'offline'},
+  {s:'Ahora pruébala. Debajo del celular, en Preview app as, escribes el correo de otra persona y tocas Apply. Así ves la app como la vería, por ejemplo, el docente.',set:ms=>{ms.color=true;ms.pva='profe@colegio.edu.co'},t:'prevas'},
+  {s:'Para compartirla, tocas el botón de compartir de arriba: la persona con el signo +.',set:ms=>{ms.color=true},t:'share'},
+  {s:'Se abre Share. En Add emails escribes los correos, según la forma que elegiste en Seguridad. Si la app es pública, solo copias el enlace en Share links. En prototipo, hasta 10 usuarios de prueba, gratis.',set:ms=>{ms.color=true;ms.share=true},t:'sharedlg'},
+  {s:'Por último, Manage: la sala de control. Tiene cuatro secciones.',set:ms=>{ms.view='man';ms.color=true},t:'manmenu'},
+  {s:'Deploy tiene el Deployment Check: revisa si la app está lista para uso real. Para tu entrega no lo necesitas.',set:ms=>{ms.view='man';ms.color=true;ms.mv='deploy'},t:'man-deploy'},
+  {s:'Este cuadro explica el estado de la app: Prototype o Deployed.',card:CARD_ESTADOS},
+  {s:'Versions guarda el historial: si algo se daña, puedes volver a una versión anterior.',set:ms=>{ms.view='man';ms.color=true;ms.mv='versions'},t:'man-versions'},
+  {s:'Monitor muestra cuánto se usa la app y cómo corren las automatizaciones.',set:ms=>{ms.view='man';ms.color=true;ms.mv='monitor'},t:'man-monitor'},
+  {s:'En Collaborate & Publish, Team Work agrega a tus compañeros de grupo como coautores, para construir la app juntos.',set:ms=>{ms.view='man';ms.color=true;ms.mv='collab'},t:'teamwork'},
+  {s:'Para tu entrega, la app se queda en Prototype. Tu profe y tus compañeros pueden abrirla, usarla y calificarla sin problema.',set:ms=>{ms.view='man';ms.color=true;ms.mv='deploy';ms.proto=true},t:'status'},
+  {s:'¡Lo lograste! Ya sabes construir una app completa en AppSheet. Ahora hazlo con la app de tu proyecto.'}
+ ],
+ sim:ms=>{const ph=`<div style="--g:${ms.color?'#0f9d8a':'#1a73e8'}">${phone('llegadas')}</div>`;return ms.view==='man'?editor('manage',manPanel(ms),ph,{pva:ms.pva}):editor('settings',setPanel(ms)+(ms.share?shareDlg():''),ph,{pva:ms.pva})},
+ steps:[
+  {t:'hot',q:'¿Dónde cambias el nombre, el color y los textos de la app?',ok:'rail-settings',hint:'Busca el engranaje: configuración.',good:'En Settings está todo lo general de la app.'},
+  {t:'choice',q:'Quieres que el botón de la app diga Guardar en vez de Save. ¿Dónde lo cambias?',opts:['Settings › Views › Localization','Settings › Theme & Brand','Security'],ok:0,hint:'Localization significa traducir.',good:'Localization traduce los textos de la app.',apply:ms=>ms.sv='loc'},
+  {t:'choice',q:'¿Cómo ves la app como la vería el docente?',opts:['Preview app as, debajo del celular, con el correo del docente','Publicándola de una vez','Mirando solo la hoja'],ok:0,hint:'Está debajo de la vista previa.',good:'Así compruebas que cada rol vea lo que debe.',apply:ms=>ms.pva='profe@colegio.edu.co'},
+  {t:'hot',q:'Toca el botón para compartir la app.',ok:'share',hint:'Arriba, la persona con el signo +.',good:'Ahí se abre Share para agregar correos o copiar el enlace.',apply:ms=>ms.share=true},
+  {t:'choice',q:'Tu grupo quiere construir la app juntos. ¿Dónde agregas a tus compañeros?',opts:['Manage › Collaborate & Publish › Team Work','Security › Options','Learn'],ok:0,hint:'Es trabajo en equipo: Team Work.',good:'Team Work los agrega como coautores.',apply:ms=>{ms.view='man';ms.mv='collab';ms.share=false}},
+  {t:'choice',q:'Para tu entrega de clase, ¿en qué estado dejas la app?',opts:['Prototype: gratis y con hasta 10 usuarios de prueba','Deployed: hay que pagar por usuario'],ok:0,hint:'Mira el cuadro Prototype o Deployed.',good:'Prototype es justo lo que necesitas para la entrega.',apply:ms=>{ms.mv='deploy';ms.proto=true}},
+  {t:'order',q:'Ordena los pasos para entregar tu app.',items:['Configurar nombre, color y textos en Settings','Probar con Preview app as','Compartir con el botón Share','Dejar la app en Prototype','Enviar el enlace a tu profe'],hint:'Primero se configura, luego se prueba y al final se comparte.',good:'¡Tu app está lista para entregar!'}
+ ]}
+];
+
+/* ---------- Estado ---------- */
+const KEY='aprende-appsheet-v10';
+const def=()=>({xp:0,done:{},stars:{},mute:false});
+function load(){try{return Object.assign(def(),JSON.parse(localStorage.getItem(KEY))||{})}catch(e){return def()}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load(),cur=-1,ms=null,tw=null;
+const unlocked=i=>i===0||!!S.done[i]||(!!S.done[i-1]&&!needCode(i));
+const doneCount=()=>Object.keys(S.done).length;
+
+/* ---------- Sonido ---------- */
+let AC=null;
+function tone(f,d,when=0,type='triangle',vol=.12){if(S.mute)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+when;o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d)}catch(e){}}
+const sfx={ok:()=>{tone(660,.12);tone(990,.18,.1)},bad:()=>tone(170,.25,0,'square',.06),win:()=>[523,659,784,1046].forEach((f,i)=>tone(f,.22,i*.11)),next:()=>tone(520,.06,0,'sine',.06)};
+const ICS={on:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',off:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="m17 9 5 6M22 9l-5 6"/>'};
+function drawSnd(){$('#snd').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${S.mute?ICS.off:ICS.on}</svg>`}
+$('#snd').onclick=()=>{S.mute=!S.mute;save();drawSnd()};
+
+/* ---------- HUD ---------- */
+const nameIn=t=>t.replace('{n}',S.name?', '+S.name:'');
+function hud(sub){
+ $('#bar').style.width=(doneCount()/M.length*100)+'%';
+ $('#xp').firstChild.textContent=(S.name?S.name+' · ':'')+S.xp+' XP';
+ if(sub!==undefined)$('#hsub').textContent=sub;
+}
+function xpFloat(n){const s=document.createElement('span');s.className='xpf';s.textContent='+'+n;$('#xp').appendChild(s);setTimeout(()=>s.remove(),1000)}
+
+/* ---------- Mapa ---------- */
+function home(){
+ cur=-1;stopVoice();clearInterval(tw);
+ const next=M.findIndex((_,i)=>!S.done[i]);
+ const started=doneCount()>0;
+ const offs=[0,-80,0,80];
+ let k=0;
+ const node=i=>{const m=M[i];const st=S.done[i]?'done':i===next?'cur':'';const x=offs[(k++)%4];return `<button type="button" class="node ${st}" data-i="${i}" style="--x:${x}px" ${unlocked(i)?'':'disabled'}><span class="nb">${S.done[i]?'✓':i+1}</span><span class="nl">${m.short}</span><span class="ns">${S.stars[i]?'★'.repeat(S.stars[i])+'☆'.repeat(3-S.stars[i]):''}</span></button>`};
+ const dots='<div class="dots3"><i></i><i></i></div>';
+ const zone=(z)=>{const L=LEVELS[z];const ids=[];for(let i=L[1];i<=L[2];i++)ids.push(i);
+  return `<section class="zone sky${z+1}"><div class="scene">${scene(z+1)}</div><div class="zin">${z===0?`<div class="mhero"><div class="av">${avatar()}</div><div><h1>Aprende AppSheet</h1>${S.name?`<p class="who">Jugador: <b>${esc(S.name)}</b> · ${S.xp} XP</p>`:`<label class="who" for="nm">¿Cómo te llamas?</label><input id="nm" class="nm" maxlength="20" autocomplete="off" placeholder="Escribe tu nombre">`}<div class="row2"><button class="gbtn" id="start" type="button">${next<0?'Ver mi certificado':started?(needCode(next)?'Ingresar código':'Continuar etapa '+(next+1)):'Empezar'}</button></div></div></div>`:''}<div style="text-align:center"><span class="ztitle"><b>Nivel ${L[0]}</b><small>${L[3]}</small></span>${z>0&&S.done[L[1]-1]&&!(S.unlock&&S.unlock[z])?`<br><button type="button" class="zlock" data-code="${z}">🔒 Ingresar código</button>`:''}</div><div class="path">${ids.map(node).join(dots)}${z===2?dots+`<button type="button" class="node trophy" id="trophy" style="--x:0px" ${next<0?'':'disabled'}><span class="nb">🏆</span><span class="nl">Tu app</span></button>`:''}</div>${S.done[L[2]]?`<div style="text-align:center;margin-top:16px"><button type="button" class="zlock" data-cert="${z}">📜 Ver certificado</button></div>`:''}${z===2&&started?'<button class="resetl" id="reset" type="button">Reiniciar progreso</button>':''}</div></section>`};
+ const main=$('#main');main.className='';
+ main.innerHTML=`<div class="mapv" id="mapv">${[0,1,2].map(zone).join('')}</div>`;
+ main.querySelectorAll('.node[data-i]').forEach(b=>b.onclick=()=>go(+b.dataset.i));
+ const nm=$('#nm');if(nm){$('#start').disabled=true;nm.oninput=()=>{$('#start').disabled=!nm.value.trim()}}
+ $('#start').onclick=()=>{if(nm){S.name=nm.value.trim().slice(0,20);save();hud()}next<0?certificate(2):needCode(next)?codeScreen(lvl(next)):go(next)};
+ $('#trophy').onclick=()=>certificate(2);
+ main.querySelectorAll('[data-cert]').forEach(b=>b.onclick=()=>certificate(+b.dataset.cert));
+ main.querySelectorAll('[data-code]').forEach(b=>b.onclick=()=>codeScreen(+b.dataset.code));
+ const r=$('#reset');if(r)r.onclick=()=>{if(confirm('¿Borrar tu progreso y empezar de cero?')){const mu=S.mute,nn=S.name;S=def();S.mute=mu;S.name=nn;save();home()}};
+ hud(started?`${doneCount()} de ${M.length} etapas`:'Elige tu etapa');setSugg(['appsheet','miapp','gratis']);
+ if(next>2){const n=main.querySelector('.node.cur');if(n)n.scrollIntoView({block:'center'})}
+}
+
+/* ---------- Etapa ---------- */
+function go(i){
+ if(!unlocked(i))return;
+ cur=i;stopVoice();
+ const m=M[i],z=lvl(i)+1;
+ const main=$('#main');main.className='stage sky'+z;
+ main.innerHTML=`<div class="scene">${scene(z)}</div>
+ <div class="simarea" id="simarea"><div class="device"><div class="simwrap" id="simwrap"><div id="simc"></div><div class="spot" id="spot"></div><div class="ptr" id="ptr">${PTR}</div><div class="card" id="card" hidden></div></div></div></div>
+ <aside class="comp" id="comp"><div class="portrait" id="portrait">${avatar()}</div><div class="dlg" id="dlg"><span class="tag" id="tag"></span><div id="dbody"></div></div><div id="dextra"></div></aside>
+ <div class="banner" id="banner"></div><div class="confetti" id="conf"></div>`;
+ $('#simwrap').addEventListener('click',onSimClick);
+ $('#dlg').addEventListener('click',e=>{if(e.target.id==='say'||e.target.closest('#say'))finishType()});
+ hud(`Nivel ${LEVELS[lvl(i)][0]} · Etapa ${i+1}: ${m.title}`);setSugg(m.ask);
+ ms={phase:'tour',line:0};
+ if(i===LEVELS[lvl(i)][1]&&!S.done[i])levelIntro(lvl(i));else showLine(0);
+ const L0=LEVELS[lvl(i)];if(ms.phase==='intro')sfx.win();else banner(`Nivel ${L0[0]}`,`Etapa ${i+1} de ${M.length} · ${L0[3]}`,1800);
+}
+function levelIntro(l){
+ ms=Object.assign(stateFor(0),{phase:'intro',line:0});
+ drawSim();spot(null);
+ const card=$('#card');card.innerHTML=lvCard(l);card.hidden=false;card.scrollTop=0;
+ $('#tag').innerHTML=tagHTML('Profe Vivy');
+ $('#dbody').innerHTML=`<p class="say" id="say"></p><div class="ctrl"><span class="sp"></span>${speakBtn()}<button class="gbtn" id="next" type="button">¡Empecemos!</button></div>`;
+ $('#dextra').innerHTML='';
+ typeText(LVINTRO[l].say);bindSpeak(()=>nameIn(LVINTRO[l].say));
+ $('#next').onclick=()=>{sfx.next();showLine(0)};
+}
+function stateFor(k){const m=M[cur];const st=clone(m.tourInit||m.init);const L=m.tour[k];if(L.set)L.set(st);return st}
+const tagHTML=t=>avatar()+'<span>'+t+'</span>';
+function drawSim(){
+ const st=ms.phase==='play'?M[cur].steps[ms.step]:null;
+ $('#simc').innerHTML=M[cur].sim(ms);
+ $('#simwrap').classList.toggle('hunt',!!st&&st.t==='hot'&&!ms.lock);
+}
+function showLine(k){
+ const m=M[cur],L=m.tour[k];
+ ms=Object.assign(stateFor(k),{phase:'tour',line:k});
+ drawSim();
+ const card=$('#card');
+ if(L.card){card.innerHTML=L.card;card.hidden=false;card.scrollTop=0}else card.hidden=true;
+ requestAnimationFrame(()=>spot(L.card?null:L.t));
+ const last=k===m.tour.length-1;
+ $('#tag').innerHTML=tagHTML('Profe Vivy');
+ $('#dbody').innerHTML=`<p class="say" id="say"></p><div class="ctrl"><div class="dots">${m.tour.map((_,j)=>`<i class="${j===k?'on':''}"></i>`).join('')}</div><span class="sp"></span>${speakBtn()}${k>0?'<button class="gbtn w" id="back" type="button">Atrás</button>':''}<button class="gbtn" id="next" type="button">${last?'¡A los retos!':'Siguiente'}</button></div>`;
+ $('#dextra').innerHTML='';
+ typeText(L.s);
+ bindSpeak(()=>nameIn(L.s));
+ if(k>0)$('#back').onclick=()=>{sfx.next();showLine(k-1)};
+ $('#next').onclick=()=>{sfx.next();last?startPlay():showLine(k+1)};
+}
+function typeText(t){
+ t=nameIn(t);
+ clearInterval(tw);const el=$('#say');let i=0;el.textContent='';el.dataset.full=t;
+ tw=setInterval(()=>{i+=2;el.textContent=t.slice(0,i);if(i>=t.length)clearInterval(tw)},18);
+}
+function finishType(){const el=$('#say');if(el&&el.dataset.full){clearInterval(tw);el.textContent=el.dataset.full}}
+function spot(t){
+ const wrap=$('#simwrap'),s=$('#spot'),p=$('#ptr');if(!wrap)return;
+ const el=t&&(wrap.querySelector(`[data-t="${t}"]`)||wrap.querySelector(`[data-hot="${t}"]`));
+ if(!el){s.classList.remove('on');p.classList.remove('on');return}
+ el.scrollIntoView({block:'nearest',inline:'nearest'});
+ const wr=wrap.getBoundingClientRect(),r=el.getBoundingClientRect(),pad=5;
+ Object.assign(s.style,{left:(r.left-wr.left-pad)+'px',top:(r.top-wr.top-pad)+'px',width:(r.width+pad*2)+'px',height:(r.height+pad*2)+'px'});
+ const px=Math.min(r.right-wr.left-12,wr.width-36),py=Math.min(r.bottom-wr.top-10,wr.height-42);
+ Object.assign(p.style,{left:px+'px',top:py+'px'});
+ s.classList.add('on');p.classList.add('on');
+}
+addEventListener('resize',()=>{if(ms&&ms.phase==='tour'&&cur>=0){const L=M[cur].tour[ms.line];spot(L.card?null:L.t)}});
+
+function banner(t,sub,ms_=1500){const b=$('#banner');if(!b)return;b.innerHTML=`<div><b>${t}</b><small>${sub}</small></div>`;setTimeout(()=>{if(b.isConnected)b.innerHTML=''},ms_)}
+function startPlay(){
+ const m=M[cur];
+ spot(null);$('#card').hidden=true;
+ ms=Object.assign(clone(m.init),{phase:'play',step:0,errs:0,se:0,lock:false});
+ banner('¡Hora de los retos!',`${m.steps.length} retos · gana XP y estrellas`);
+ sfx.win();
+ drawTask();
+}
+function drawTask(){
+ const m=M[cur],st=m.steps[ms.step];
+ if(!st)return finish();
+ ms.se=0;ms.lock=false;
+ if(st.tab)ms.tab=st.tab;
+ $('#tag').innerHTML=tagHTML(`Reto ${ms.step+1} de ${m.steps.length}`);
+ $('#dbody').innerHTML=`<p class="qq">${esc(st.q)}</p><div class="fb" id="fb" aria-live="polite"></div><div class="ctrl" id="acts"><button class="gbtn w" id="hint" type="button">Pista</button><span class="sp"></span><button class="lbtn" id="rev" type="button">Repasar explicación</button></div>`;
+ let x='';
+ if(st.t==='choice')x=`<div class="opts">${shuffle(st.opts.map((_,k)=>k)).map(k=>`<button type="button" class="opt ${st.code?'code':''}" data-k="${k}">${esc(st.opts[k])}</button>`).join('')}</div>`;
+ else if(st.t==='hot')x=`<div class="huntm">${PTR}<span>Toca la respuesta directamente en la pantalla.</span></div>`;
+ else if(st.t==='order'){ms.ord=0;x=`<div class="slots">${st.items.map((_,k)=>`<div class="slot" data-s="${k}"><i>${k+1}</i><span></span></div>`).join('')}</div><div class="pool">${shuffle(st.items.map((_,k)=>k)).map(k=>`<button type="button" class="opt" data-o="${k}">${esc(st.items[k])}</button>`).join('')}</div>`}
+ $('#dextra').innerHTML=x;
+ drawSim();
+ $('#hint').onclick=()=>setFb('tip','Pista: '+st.hint);
+ $('#rev').onclick=()=>showLine(0);
+ if(st.t==='choice')document.querySelectorAll('.opt[data-k]').forEach(b=>b.onclick=()=>{
+  if(ms.lock)return;const k=+b.dataset.k;
+  if(k===st.ok){b.classList.add('right');document.querySelectorAll('.opt[data-k]').forEach(o=>o.disabled=true);right(st)}
+  else{b.classList.add('wrong','shake');b.disabled=true;wrong(st.why&&st.why[k])}
+ });
+ if(st.t==='order')document.querySelectorAll('.opt[data-o]').forEach(b=>b.onclick=()=>{
+  if(ms.lock)return;const k=+b.dataset.o;
+  if(k===ms.ord){const s=document.querySelector(`.slot[data-s="${k}"]`);s.classList.add('f');s.querySelector('span').textContent=st.items[k];b.remove();ms.ord++;sfx.next();setFb('','');if(ms.ord===st.items.length)right(st)}
+  else{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');wrong('Ese paso va después. ¿Qué tiene que pasar antes?')}
+ });
+}
+function onSimClick(e){
+ const tb=e.target.closest('[data-tab]');
+ if(tb&&ms&&ms.tab!==undefined&&!(ms.phase==='play'&&M[cur].steps[ms.step]&&M[cur].steps[ms.step].t==='hot'&&!ms.lock)){ms.tab=tb.dataset.tab;drawSim();if(ms.phase==='tour'){const L=M[cur].tour[ms.line];requestAnimationFrame(()=>spot(L.card?null:L.t))}return}
+ if(!ms||ms.phase!=='play'||ms.lock)return;
+ const st=M[cur].steps[ms.step];if(!st||st.t!=='hot')return;
+ const h=e.target.closest('[data-hot]');if(!h)return;
+ if(h.dataset.hot===st.ok)right(st);
+ else{h.classList.add('flashbad');setTimeout(()=>h.classList.remove('flashbad'),400);wrong(st.bad||'Ese no es. Mira de nuevo o pide una pista.')}
+}
+function setFb(c,t){const f=$('#fb');f.className='fb '+c;f.textContent=t}
+function react(c){const p=$('#portrait');p.classList.remove('hop','no');void p.offsetWidth;p.classList.add(c)}
+function right(st){
+ ms.lock=true;const g=ms.se?5:10;S.xp+=g;save();hud();xpFloat(g);sfx.ok();react('hop');
+ if(st.apply)st.apply(ms);
+ drawSim();
+ setFb('good','¡Bien! '+st.good);
+ const last=ms.step===M[cur].steps.length-1;
+ $('#acts').innerHTML=`<span class="sp"></span><button class="gbtn t" id="cont" type="button">${last?'Terminar etapa':'Continuar'}</button>`;
+ $('#cont').onclick=()=>{ms.step++;drawTask()};
+}
+function wrong(msg){ms.errs++;ms.se++;sfx.bad();react('no');setFb('bad',msg||'No es esa. Piénsalo de nuevo o toca Pista.')}
+function confetti(){const c=$('#conf');const cols=['#ffc83d','#14b39a','#ff6b57','#7c6cff','#fff'];c.innerHTML=Array.from({length:40},()=>`<i style="left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*5)]};animation-delay:${(Math.random()*.6).toFixed(2)}s"></i>`).join('');setTimeout(()=>c.innerHTML='',3000)}
+function finish(){
+ const stars=ms.errs===0?3:ms.errs<=2?2:1;
+ S.stars[cur]=Math.max(S.stars[cur]||0,stars);S.done[cur]=true;
+ if(doneCount()===M.length&&!S.fin){const d=new Date();S.fin='Terminado el '+d.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'})+' a las '+d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})}
+ save();hud();
+ ms.phase='done';$('#simwrap').classList.remove('hunt');
+ confetti();sfx.win();react('hop');
+ const last=cur===M.length-1,endLv=cur===LEVELS[lvl(cur)][2];
+ $('#tag').innerHTML=tagHTML('¡Etapa completa!');
+ $('#dbody').innerHTML=`<div class="stars">${'★'.repeat(stars)}<s>${'★'.repeat(3-stars)}</s></div><p class="badge-l">Insignia: ${M[cur].badge}</p>${cur===LEVELS[lvl(cur)][2]?`<p class="say" style="min-height:0;font-weight:700;color:#14806e">¡Completaste el Nivel ${LEVELS[lvl(cur)][0]}! Ganaste tu certificado.</p>`:''}<p class="say" style="min-height:0">${stars===3?'Sin errores. ¡Impecable!':'Lo lograste. Si quieres repasar o sacar 3 estrellas, toca Repetir.'}</p><div class="ctrl"><button class="gbtn w" id="tomap2" type="button">Mapa</button><button class="gbtn w" id="rep" type="button">Repetir</button><span class="sp"></span><button class="gbtn" id="nx" type="button">${endLv?'Ver mi certificado':'Siguiente etapa'}</button></div>`;
+ $('#dextra').innerHTML='';
+ $('#tomap2').onclick=home;const ci=cur;$('#rep').onclick=()=>go(ci);
+ const lv=lvl(cur);$('#nx').onclick=()=>endLv?certificate(lv):go(cur+1);
+}
+const CHECK=['Tablas en Google Sheets con encabezados en la fila 1 y un ID por tabla','Tipos de dato correctos en cada columna','Una Key en cada tabla (UNIQUEID si se llena desde la app)','Columnas Ref para conectar las tablas','Al menos una fórmula que calcule un dato','Una vista para cada necesidad de tus usuarios','Formulario con campos que se llenan solos','Un botón (acción) útil para un rol','Roles y filtros de seguridad','Settings: nombre, color e idioma','App en Prototype y compartida con tu profe'];
+function final(){
+ cur=-1;stopVoice();clearInterval(tw);
+ const all=doneCount()===M.length;
+ const main=$('#main');main.className='';
+ main.innerHTML=`<div class="mapv"><section class="zone sky3" style="min-height:100%"><div class="scene">${scene(3)}</div><div class="zin"><div class="fin"><div style="width:96px;height:96px;margin:auto">${avatar()}</div><h1>${all?`¡Felicitaciones${S.name?', '+esc(S.name):''}!`:'Vas muy bien'}</h1><p>${all?'Recorriste todo AppSheet. Ahora aplícalo a la app de tu proyecto.':'Completa las etapas que faltan para terminar tu app.'}</p>${all&&S.fin?`<p class="fecha">🗓 ${S.fin}</p>`:''}<div class="badges">${M.map((m,i)=>`<div class="bdg" style="${S.done[i]?'':'opacity:.4'}"><em>${S.stars[i]?'★'.repeat(S.stars[i]):'☆'}</em>${m.badge}</div>`).join('')}</div><details class="chk"><summary>Lista de chequeo para tu proyecto</summary>${CHECK.map((c,k)=>`<label><input type="checkbox" data-c="${k}" ${S.chk&&S.chk[k]?'checked':''}> ${c}</label>`).join('')}</details><button class="gbtn" id="again" type="button">Volver al mapa</button></div></div></section></div>`;
+ $('#again').onclick=home;
+ document.querySelectorAll('.chk input').forEach(x=>x.onchange=()=>{S.chk=S.chk||{};S.chk[x.dataset.c]=x.checked;save()});
+ if(all)setTimeout(()=>{sfx.win()},200);
+ hud(all?'¡Recorrido completo!':`${doneCount()} de ${M.length} etapas`);setSugg(['miapp','publicar','bot']);
+}
+
+/* ---------- Voz ---------- */
+let speaking=false;
+const speakBtn=()=>'speechSynthesis' in window?`<button class="spk" id="spk" type="button" aria-label="Escuchar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICS.on}</svg></button>`:'';
+function bindSpeak(get){const b=$('#spk');if(!b)return;b.onclick=()=>{if(speaking){stopVoice();return}const u=new SpeechSynthesisUtterance(get());setVoice(u);u.onend=stopVoice;speechSynthesis.cancel();speechSynthesis.speak(u);speaking=true;b.classList.add('on')}}
+let VOICE=null,VFEM=false;
+function pickVoice(){
+ if(!('speechSynthesis' in window))return;
+ const vs=speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang));
+ const fem=/salome|salomé|dalia|sabina|paloma|paulina|m[oó]nica|helena|laura|elvira|elena|luc[ií]a|ximena|marisol|esperanza|conchita|lupe|pen[eé]lope|mia\b|female|mujer|google espa/i;
+ const male=/pablo|ra[uú]l|jorge|diego|[aá]lvaro|gonzalo|carlos|juan|enrique|miguel|andr[eé]s|gerardo|tom[aá]s|alonso|jos[eé]|male\b|hombre/i;
+ let best=null,bs=-99;
+ vs.forEach(v=>{let sc=0;if(fem.test(v.name))sc+=10;if(male.test(v.name))sc-=20;if(/es-CO/i.test(v.lang))sc+=4;else if(/es-(MX|US|419)/i.test(v.lang))sc+=3;if(/natural|online|neural/i.test(v.name))sc+=2;if(sc>bs){bs=sc;best=v}});
+ VOICE=best;VFEM=bs>=10;
+}
+function setVoice(u){if(!VOICE)pickVoice();if(VOICE){u.voice=VOICE;u.lang=VOICE.lang}else u.lang='es-CO';u.pitch=VFEM?1.05:1.35;u.rate=1}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function stopVoice(){if('speechSynthesis' in window)speechSynthesis.cancel();speaking=false;const b=$('#spk');if(b)b.classList.remove('on')}
+
+/* ---------- Chat de la profe ---------- */
+const KB={
+ appsheet:{q:'¿Qué es AppSheet?',k:['que es appsheet','appsheet','para que sirve'],a:`Es una herramienta de Google para crear apps sin programar. Tomas datos de Google Sheets y AppSheet arma pantallas, formularios y botones que funcionan en celular y computador.`},
+ gratis:{q:'¿Es gratis?',k:['gratis','pagar','precio','cuesta','costo','licencia','usuarios'],a:`Crear y probar es gratis: en modo prototipo puedes compartir la app con hasta 10 usuarios de prueba. Para usarla con más personas se necesita una licencia; algunas instituciones la tienen incluida en Google Workspace.`},
+ ingles:{q:'¿Por qué está en inglés?',k:['ingles','idioma','espanol','traducir'],a:`El editor de AppSheet está en inglés, pero la app que construyes puede ir toda en español: los nombres de tablas, columnas, vistas y botones los escribes tú.`},
+ empezar:{q:'¿Cómo creo la app?',k:['crear','empezar','iniciar','nueva app','extensiones','comenzar'],a:`Desde tu hoja: <b>Extensiones › AppSheet › Crear una app</b>. También puedes entrar a appsheet.com, tocar <b>Create › App › Start with existing data</b> y elegir tu archivo.`},
+ fila1:{q:'¿Qué va en la fila 1?',k:['fila 1','encabezado','titulo','primera fila','combinad'],a:`Solo los nombres de las columnas. Sin títulos, sin celdas combinadas y sin filas vacías arriba: AppSheet lee la fila 1 como encabezados.`},
+ tabla:{q:'No aparece mi tabla',k:['no aparece','agregar tabla','add table','add data','pestana','otra tabla','falta una tabla'],a:`Al crear la app, AppSheet trae la primera pestaña. En <b>Data</b> toca el botón <b>+</b>: se abre <b>Add data</b> con las pestañas sugeridas. Toca <b>Add Table</b> en cada una.`},
+ regen:{q:'Agregué una columna y no sale',k:['columna nueva','regenerate','no sale','cambie la hoja','agregue una columna','schema'],a:`En <b>Data</b> abre esa tabla y usa <b>Regenerate schema</b>. AppSheet vuelve a leer los encabezados de la hoja.`},
+ uniqueid:{q:'¿Qué es UNIQUEID()?',k:['uniqueid','unique','codigo automatico','codigo unico','id automatico'],a:`Es una función que crea un código al azar que nunca se repite, como <code>a7f3c1e9</code>. Se pone como <b>Initial value</b> de la columna Key en las tablas que se llenan desde la app. Luego apagas <b>Show</b> para ocultarla.`},
+ label:{q:'¿Qué es Label?',k:['label','etiqueta','nombre visible','sale el codigo'],a:`Es la columna que la app muestra como nombre visible de cada registro. Si marcas Label en <code>nombre</code> de Estudiantes, la app muestra "Camila Torres" y no "EST001".`},
+ key:{q:'¿Qué es la Key?',k:['key','clave primaria','pk','identificador','unico','no se repite'],a:`Es la columna que identifica cada fila sin repetirse, como <code>ID_Estudiante</code>. Es la clave primaria (PK) que viste en bases de datos.`},
+ ref:{q:'¿Qué es Ref?',k:['ref','referencia','foranea','fk','enlazar','source table'],a:`Es el tipo de columna que enlaza con otra tabla. En Llegadas, <code>ID_Estudiante</code> es Ref con Source table = Estudiantes: cada llegada queda conectada con su estudiante. Es la clave foránea (FK).`},
+ relacion:{q:'¿Cómo hago una relación?',k:['relacion','relaciones','relacionar','conectar tablas','uno a muchos','donde va la ref'],a:`1) Busca el dato que se repite muchas veces (Camila en Llegadas). 2) En esa tabla, la columna con el ID es tipo <b>Ref</b>. 3) En <b>Source table</b> eliges la tabla donde ese ID es la Key (Estudiantes). 4) Marca el nombre como <b>Label</b>. AppSheet crea solo <code>Related Llegadas</code>.`},
+ related:{q:'¿Qué es Related…?',k:['related','columna virtual','virtual'],a:`Cuando creas una Ref, AppSheet agrega una columna virtual en la otra tabla, por ejemplo <code>Related Llegadas</code> en Estudiantes. Muestra todas las llegadas de ese estudiante.`},
+ enum:{q:'¿Qué es Enum?',k:['enum','lista de opciones','opciones fijas','desplegable'],a:`Es una lista cerrada: el usuario elige una opción y no escribe. Ejemplo: <code>estado</code> solo puede ser "A tiempo", "Retardo" o "Justificado". Así nadie escribe "tarde" o "retrazo". Las opciones las agregas en <b>Values</b> de la columna.`},
+ tipos:{q:'Tipos de columna',k:['tipo','tipos','time','date','text','number','yes/no'],a:`Los más usados: Text, Number, Date, Time, Email, Enum (lista de opciones), Yes/No, Image y Ref. El tipo define el control que ve el usuario: reloj, calendario, lista o cámara.`},
+ formula:{q:'¿Cómo se escriben fórmulas?',k:['formula','expresion','corchete','app formula','calcular','punto'],a:`Las columnas van entre corchetes: <code>[hora_llegada]</code>. Para traer un dato de otra tabla por la Ref usas punto: <code>[ID_Sesion].[hora_inicio]</code>. El editor te avisa si hay errores.`},
+ if:{q:'¿Cómo funciona IF?',k:['if','condicion','si entonces','tolerancia'],a:`<code>IF(condición, si_es_verdad, si_es_falso)</code>. Ejemplo: <code>IF([minutos_retraso] > 5, "Retardo", "A tiempo")</code>.`},
+ vista:{q:'¿Qué vista uso?',k:['vista','view','deck','table','gallery','chart','calendar','map','dashboard','detail','pantalla'],a:`Deck o Gallery para listas con foto, Table para muchos datos, Chart para gráficos, Calendar para fechas, Map para ubicaciones, Form para registrar y Dashboard para juntar varias vistas.`},
+ position:{q:'¿Qué es Position?',k:['position','barra inferior','menu','primary'],a:`Define dónde aparece la vista: <b>primary</b> en la barra inferior, <b>menu</b> en el menú lateral y <b>ref</b> solo cuando se abre desde otra vista.`},
+ slice:{q:'¿Qué es un Slice?',k:['slice','subconjunto','filtrar','solo los'],a:`Es una parte filtrada de una tabla, por ejemplo solo las llegadas con estado "Retardo". Puedes crear vistas o acciones sobre un slice.`},
+ initial:{q:'¿Qué es Initial value?',k:['initial','valor inicial','automatico','useremail','timenow','uniqueid','today','se llene solo'],a:`Es el valor que la columna toma sola al crear una fila: <code>USEREMAIL()</code> correo de quien usa la app, <code>TIMENOW()</code> hora actual, <code>TODAY()</code> fecha y <code>UNIQUEID()</code> código único.`},
+ qr:{q:'¿Cómo leo un QR?',k:['qr','escanear','codigo de barras','camara','scannable'],a:`En la columna que recibe el código, por ejemplo <code>ID_Sesion</code>, activa <b>Scannable</b>. En el formulario aparece un botón para escanear con la cámara.`},
+ accion:{q:'¿Qué es una acción?',k:['accion','boton','action','justificar'],a:`Es un botón que hace algo: cambiar un dato de la fila, abrir otra vista, llamar, enviar correo o crear un registro. Con "Only if this condition is true" decides en qué filas aparece.`},
+ bot:{q:'¿Puedo enviar avisos automáticos?',k:['correo','automatico','bot','automation','avisar','acudiente','notificacion','aviso'],a:`Sí. En <b>Automation</b> creas un bot: cuando pasa algo, ejecuta una tarea sola. En el ejemplo, según las normas del colegio: al 1.er retardo envía un correo de notificación al estudiante y al acudiente; al 2.º, un correo de citación al acudiente; al 3.º, avisa a coordinación para la medida disciplinaria.`},
+ seguridad:{q:'¿Cómo protejo los datos?',k:['seguridad','proteger','sign','iniciar sesion','permiso','security filter','privacidad'],a:`Activa <b>Require user sign-in</b> para que solo entren usuarios con cuenta. Con <b>Security filter</b> cada persona descarga solo las filas que le corresponden. Las contraseñas nunca van en las tablas.`},
+ roles:{q:'¿Cómo manejo roles?',k:['rol','roles','coordinacion','docente','show if','lookup'],a:`Guarda correo y rol en Usuarios_Roles. Luego usa <code>LOOKUP(USEREMAIL(), "Usuarios_Roles", "correo", "rol")</code> en Show if o en filtros para decidir qué ve cada rol.`},
+ previa:{q:'¿Cómo pruebo como otro usuario?',k:['probar','preview','vista previa','otro usuario','view as','como lo ve'],a:`Debajo del celular de la vista previa está <b>Preview app as</b>: escribe el correo de otra persona y toca <b>Apply</b>.`},
+ publicar:{q:'¿Cómo comparto mi app?',k:['publicar','deploy','desplegar','compartir','share','instalar','celular','entregar'],a:`Toca el botón de compartir de arriba (persona con +). En <b>Share</b> agregas correos o copias el enlace en <b>Share links</b>. Para la entrega de clase deja la app en <b>Prototype</b>: es gratis, hasta 10 usuarios de prueba.`},
+ offline:{q:'¿Funciona sin internet?',k:['internet','offline','sin conexion','sincroniz','sync','wifi'],a:`Sí. La app guarda los cambios en el celular y los sincroniza cuando vuelve la conexión, como el registro pendiente del diagrama de flujo.`},
+ imagen:{q:'¿Dónde quedan las fotos?',k:['foto','imagen','image','drive'],a:`Con una columna tipo Image, la foto se guarda en una carpeta de tu Google Drive y en la hoja queda la ruta del archivo.`},
+ miapp:{q:'¿Y si mi app es de otro tema?',k:['mi proyecto','otro tema','mi app','mi tema','otra app'],a:`Los pasos son los mismos: tablas en Sheets, conectar, tipos y Ref, fórmulas, vistas, formularios, acciones, seguridad y publicar. Solo cambia el contenido de tus tablas.`}
+};
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function reply(text){
+ const n=norm(text);let best=null,score=0;
+ for(const id in KB){let sc=0;KB[id].k.forEach(k=>{if(n.includes(norm(k)))sc+=k.length});if(sc>score){score=sc;best=id}}
+ return best?KB[best].a:'Esa no la tengo clara todavía. Prueba con una de las preguntas de abajo o llévala a clase y la resolvemos juntos.';
+}
+function addMsg(html,who){const d=document.createElement('div');d.className='m '+who;d.innerHTML=html;$('#msgs').appendChild(d);$('#msgs').scrollTop=$('#msgs').scrollHeight}
+function ask(text,html){addMsg(esc(text),'u');setTimeout(()=>addMsg(html||reply(text),'p'),350)}
+function setSugg(ids){$('#sugg').innerHTML=ids.map(id=>`<button type="button" data-id="${id}">${esc(KB[id].q)}</button>`).join('');$('#sugg').querySelectorAll('button').forEach(b=>b.onclick=()=>ask(KB[b.dataset.id].q,KB[b.dataset.id].a))}
+let greeted=false;
+function openChat(){$('#chat').classList.add('open');$('#veil').classList.add('open');if(!greeted){greeted=true;addMsg('Hola, soy la profe Vivy. Escríbeme tu duda o toca una de las preguntas de abajo.','p')}setTimeout(()=>$('#chatIn').focus(),250)}
+function closeChat(){$('#chat').classList.remove('open');$('#veil').classList.remove('open')}
+$('#chatBtn').innerHTML=avatar()+'<span>Pregúntale a la profe</span>';
+$('#chatHead').innerHTML=avatar()+'<div><b>Profe Vivy</b><br><small>Dudas sobre AppSheet</small></div><button class="chat-x" id="chatX" type="button" aria-label="Cerrar">×</button>';
+$('#chatBtn').onclick=openChat;$('#chatX').onclick=closeChat;$('#veil').onclick=closeChat;
+$('#chatForm').onsubmit=e=>{e.preventDefault();const v=$('#chatIn').value.trim();if(!v)return;$('#chatIn').value='';ask(v)};
+$('#toMap').onclick=home;
+drawSnd();
+home();
+</script>
+</body>
+</html>
