@@ -189,6 +189,8 @@ button{font:inherit;color:inherit}
 .stable tr.hf td:first-child{border-left-color:var(--vfalse)} .stable tr.hf td:last-child{color:var(--vfalse)}
 .stable tr.new td{animation:slideIn .45s ease-out}
 @media(max-width:560px){.stable tr:first-child{display:none}.stable tr{display:block;border-top:1px solid #1c2348}.stable td{display:block;border-top:0;padding:6px 12px}.stable td:first-child{padding-bottom:0}.stable td:last-child{padding-top:2px;border-left:4px solid transparent;font-size:13px}.stable tr.hl td:last-child{border-left-color:var(--gold)}.stable tr.hv td:last-child{border-left-color:var(--vtrue)}.stable tr.hf td:last-child{border-left-color:var(--vfalse)}}
+.locker.sm{max-width:120px}
+.lockrow{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);font-weight:700}
 .locker{width:100%;max-width:210px;height:auto}
 .op{color:var(--sky);font-weight:700}
 .insp{display:flex;align-items:center;gap:12px;width:100%;max-width:600px}
@@ -196,7 +198,7 @@ button{font:inherit;color:inherit}
 .insp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:15px}
 .stamp{font-family:var(--f-disp);font-size:13px;color:var(--err);border:3px solid var(--err);padding:3px 8px;border-radius:6px;transform:rotate(-8deg);flex:none}
 .stamp.ok{color:var(--vtrue);border-color:var(--vtrue)}
-.irep{font-family:var(--f-code);font-size:14px;font-weight:700;color:var(--err);background:rgba(255,77,109,.12);padding:6px 14px;border-radius:10px;max-width:600px}
+.irep{font-size:15px;color:#ffb3c1;background:rgba(255,77,109,.12);padding:6px 14px;border-radius:10px;max-width:600px}
 .daybar{display:flex;align-items:center;gap:12px;width:100%;max-width:600px}
 .daybar .hpl{flex:none}
 .hp i.day{background:linear-gradient(90deg,var(--gold),var(--vfalse),#8b5cf6)}
@@ -371,7 +373,7 @@ function legend(on){on=[].concat(on);const items=[['oval','Inicio / Fin',52],['p
     else g=`<path class="s" d="M${x} 18V66" style="fill:none"/><path d="M${x-8} 60L${x} 72L${x+8} 60" style="fill:none;stroke:${o?'#ffc93c':'#a3abd3'};stroke-width:3;stroke-linejoin:round"/>`;
     return`<g class="${o?'on':''}">${g}<text x="${x}" y="98" text-anchor="middle">${l}</text></g>`}).join('')+'</svg>'}
 function norm(n,t,term){return`<div class="norm"><span class="nlbl">NORMA ${n} · CIUDAD DECISIÓN</span><h3 class="ntitle">${t}</h3>${term?`<span class="term">En programación: <b>${esc(term)}</b></span>`:''}</div>`}
-function locker(name,val){return`<svg class="locker" viewBox="0 0 220 150" role="img" aria-label="Variable ${name} con valor ${val}"><rect x="40" y="34" width="140" height="100" rx="10" fill="#1c2348" stroke="#62c7ff" stroke-width="3"/><rect x="66" y="16" width="88" height="32" rx="8" fill="#62c7ff"/><text x="110" y="38" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700" font-size="17" fill="#12172e">${name}</text><text x="110" y="100" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700" font-size="30" fill="#ffc93c">${val}</text></svg>`}
+function locker(name,val,sm){return`<svg class="locker${sm?' sm':''}" viewBox="0 0 220 150" role="img" aria-label="Variable ${name} con valor ${val}"><rect x="40" y="34" width="140" height="100" rx="10" fill="#1c2348" stroke="#62c7ff" stroke-width="3"/><rect x="66" y="16" width="88" height="32" rx="8" fill="#62c7ff"/><text x="110" y="38" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700" font-size="17" fill="#12172e">${name}</text><text x="110" y="100" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700" font-size="30" fill="#ffc93c">${val}</text></svg>`}
 
 /* ---------- Código ---------- */
 function hiCode(s){return s.split(/("[^"]*")/).map((p,i)=>i%2?`<span class="str">${esc(p)}</span>`:esc(p).replace(/\b(FinAlgoritmo|Algoritmo|FinSi|SiNo|Si|Entonces|Leer|Escribir|Definir|Como|Entero|Real)\b/g,'<span class="kw">$1</span>').replace(/&lt;-/g,'<span class="op">&lt;-</span>')).join('')}
@@ -393,7 +395,7 @@ const MIS={
 cafe:{name:'Cafetería',label:'CAFETERÍA',type:'scene',nodes:nCafe,
  learn:[
   {norm:[1,'Todo lo que empiezas, lo terminas','Inicio y Fin · óvalo'],say:'En Ciudad Decisión se trabaja con gente seria: todo lo que empieza, termina. Por eso cada programa abre con <b>Inicio</b> y cierra con <b>Fin</b>. En el diagrama, los dos van en un óvalo.',show:()=>diagram(nCafe,{vis:['start','end'],hl:['start','end']})},
-  {norm:[2,'Todo lo que te entregan se guarda en un casillero marcado','Variable y Leer · paralelogramo'],say:'Aquí nada se deja suelto. Cada dato que llega se guarda en un casillero con su nombre: eso es una <b>variable</b>. Cuando la caja recibe el saldo, lo guarda con <b>Leer saldo</b>, que va en un paralelogramo.',show:()=>`<div class="duo">${locker('saldo','5000')}${diagram(nCafe,{vis:['start','read'],hl:['read']})}</div>`},
+  {norm:[2,'Cada dato que llega se guarda en un casillero con nombre','Variable y Leer · paralelogramo'],say:'En esta ciudad nada se pierde. Cuando llega un dato, como el dinero que tienes en la billetera, se guarda en un casillero con nombre: eso es una <b>variable</b>. La instrucción que recibe el dato y lo guarda es <b>Leer</b>, y en el diagrama va en un paralelogramo.',show:()=>`<div class="duo">${locker('saldo','5000')}${diagram(nCafe,{vis:['start','read'],hl:['read']})}</div>`},
   {norm:[3,'Antes de actuar, se pregunta','Condición · rombo'],say:'En esta ciudad nadie actúa sin preguntar primero. La pregunta solo se responde <b class="tv">Verdadero</b> o <b class="tf">Falso</b>, y por eso el rombo tiene dos salidas. Ahora sí, a la caja.',show:()=>diagram(nCafe,{vis:['start','read','cond'],hl:['cond']})}],
  rounds:[
   {saldo:'5.000',n:5000,ans:false,guide:true,screen:['SALDO','INSUFICIENTE'],talk:'Uy, no me alcanza.\nHoy no almuerzo.',
@@ -435,64 +437,66 @@ tm:{name:'Estación TransMilenio',label:'ESTACIÓN',type:'run',
 parque:{name:'Parque de diversiones',label:'PARQUE',type:'build',
  learn:[
   {norm:[10,'El óvalo abre y cierra la jornada','Inicio / Fin'],say:'En el Parque vas a construir diagramas, y cada figura tiene su oficio. El <b>óvalo</b> solo se usa para empezar y para terminar.',show:()=>legend(0)},
-  {norm:[11,'El paralelogramo recibe y entrega','Leer / Escribir'],say:'El <b>paralelogramo</b> recibe datos con Leer y entrega resultados con Escribir.',show:()=>legend(1)},
+  {norm:[11,'El paralelogramo es la ventanilla: por ahí entra y sale información','Leer (entra) / Escribir (sale)'],say:'El <b>paralelogramo</b> funciona como la ventanilla de un banco. Por ahí <b>entran</b> datos con Leer: <i>Leer estatura</i> recibe la estatura del visitante. Y por ahí <b>salen</b> mensajes con Escribir: <i>Escribir "Puede subir"</i> lo muestra en la pantalla.',show:()=>legend(1)},
   {norm:[12,'El rectángulo hace las cuentas','Proceso · variable <- cálculo'],say:'Cuando hay que calcular, se usa un <b>rectángulo</b> y la flecha <b>&lt;-</b>, que guarda el resultado en un casillero. Ejemplo: total &lt;- 8000 * 2 guarda 16000 en total.',show:()=>legend(2)+`<div class="expr">total &lt;- 8000 * 2 → total = 16000</div>`},
   {norm:[13,'El rombo pregunta y las flechas mandan el orden','Decisión y flujo'],say:'El <b>rombo</b> hace la pregunta y tiene dos salidas. Las <b>flechas</b> mandan el orden: todo se lee de arriba hacia abajo.',show:()=>legend([3,4])},
   {norm:[14,'En el parque no sobra nada','Solo instrucciones necesarias'],say:'Te daremos instrucciones sueltas y algunas <b>no pertenecen</b> al programa. Toca una figura vacía y luego la instrucción que va en ella. Las que sobran se quedan por fuera.',show:()=>diagram({},{empty:ORDER})}],
  rounds:[
-  {say:'Montaña rusa: suben quienes miden 140 cm o más. Toca una figura y luego la instrucción que va en ella. Ojo: 2 instrucciones sobran.',
+  {scene:'ride',say:'Montaña rusa: suben quienes miden 140 cm o más. Toca una figura y luego la instrucción que va en ella. Ojo: 2 instrucciones sobran.',
    pieces:[{t:'Inicio',k:'start'},{t:'Fin',k:'end'},{t:'Leer estatura',k:'read'},{t:'estatura >= 140',k:'cond'},{t:'Escribir\n"Puede subir"',k:'v'},{t:'Escribir\n"Aún no puede"',k:'f'},{t:'Leer edad',k:null},{t:'estatura < 140',k:null}],
    ok:'¡Atracción segura! "Leer edad" y "estatura < 140" sobraban: la norma pide 140 o más.',
    hints:['El óvalo de arriba es Inicio y el de abajo es Fin.','Para decidir se necesita la estatura, no la edad.','"140 o más" es estatura >= 140. El camino V lleva a "Puede subir".']},
-  {say:'Ascensor del centro comercial: si la carga pasa de 600 kg, suena la alarma. Ojo: el camino V no siempre es la buena noticia y 2 instrucciones sobran.',
+  {scene:'elev',say:'Ascensor del centro comercial: si la carga pasa de 600 kg, suena la alarma. Ojo: el camino V no siempre es la buena noticia y 2 instrucciones sobran.',
    pieces:[{t:'Inicio',k:'start'},{t:'Fin',k:'end'},{t:'Leer peso',k:'read'},{t:'peso > 600',k:'cond'},{t:'Escribir\n"Exceso de carga"',k:'v'},{t:'Escribir\n"Puede subir"',k:'f'},{t:'Leer pisos',k:null},{t:'peso < 600',k:null}],
    ok:'¡Bien pensado! V significa "la condición se cumple", y aquí cumplirse es tener exceso de carga.',
    hints:['"Pasa de 600" se escribe peso > 600.','Si peso > 600 es Verdadero, ¿qué debe pasar?','Camino V: "Exceso de carga". Camino F: "Puede subir".']}]},
 
 taller:{name:'Oficina del Inspector',label:'INSPECTOR',type:'bug',
  learn:[
-  {norm:[15,'Ningún programa funciona sin revisión','Depuración'],say:'Él es el <b>Inspector PSeInt</b>. Antes de que un negocio use un programa, él lo revisa. Si encuentra un error, lo devuelve con el sello RECHAZADO. Hoy tú eres su ayudante.',show:()=>`<div class="insp" style="justify-content:center">${inspector(110)}<span class="stamp">RECHAZADO</span></div>`},
-  {norm:[16,'Se cumple exactamente lo que se pide','Condición correcta'],say:'Una discoteca pidió "solo mayores de edad" y escribieron edad &lt; 18. El inspector lo rechazó porque dejaba entrar a los menores. Debía ser edad &gt;= 18.',show:()=>codeHTML(['Si edad < 18 Entonces','  Escribir "Puede entrar"','FinSi'],{lineCls:{0:'bad'}})},
-  {norm:[17,'Cada mensaje va por su camino','V y F no se cruzan'],say:'Aquí la pregunta está bien, pero los mensajes quedaron cruzados: lo del camino V quedó en el F, y al revés.',show:()=>codeHTML(['Si llueve = "si" Entonces','  Escribir "Deja la sombrilla"','SiNo','  Escribir "Lleva la sombrilla"','FinSi'],{lineCls:{1:'bad',3:'bad'}})},
-  {norm:[18,'Un Si, un FinSi','Estructura completa'],say:'El inspector siempre cuenta las puertas: cada Si que se abre necesita su FinSi. Si falta uno, el programa no arranca.',show:()=>codeHTML(['Si puntos >= 100 Entonces','  Escribir "Subes de nivel"','FinAlgoritmo'],{lineCls:{2:'bad'}})}],
+  {norm:[15,'Ningún programa se usa sin revisión','Depuración'],say:'Él es el <b>Inspector de la ciudad</b>. Antes de que un negocio use un programa, él lo prueba con datos de ejemplo y mira qué responde. Si la respuesta está mal, devuelve el programa con el sello RECHAZADO. Hoy tú eres su ayudante: tu trabajo es corregirlo.',show:()=>`<div class="insp" style="justify-content:center">${inspector(110)}<span class="stamp">RECHAZADO</span></div>`},
+  {norm:[16,'La pregunta dice exactamente lo que pide el negocio','Condición correcta'],say:'La discoteca pidió: "que solo entren los mayores de edad". Su programador escribió edad &lt; 18. El inspector probó con edad = 15 y el programa respondió "Puede entrar". ¡Rechazado! La pregunta correcta era edad &gt;= 18.',show:()=>codeHTML(['Si edad < 18 Entonces','  Escribir "Puede entrar"','FinSi'],{lineCls:{0:'bad'}})},
+  {norm:[17,'Cada mensaje va por su camino','V y F no se cruzan'],say:'El colegio pidió: "si llueve, que lleven sombrilla". La pregunta quedó bien, pero los mensajes quedaron cambiados de camino: cuando llueve, el programa dice "Deja la sombrilla".',show:()=>codeHTML(['Si llueve = "si" Entonces','  Escribir "Deja la sombrilla"','SiNo','  Escribir "Lleva la sombrilla"','FinSi'],{lineCls:{1:'bad',3:'bad'}})},
+  {norm:[18,'Un Si, un FinSi','Estructura completa'],say:'El inspector cuenta las puertas: cada Si que se abre necesita su FinSi. Aquí falta el FinSi y el programa ni siquiera arranca.',show:()=>codeHTML(['Si puntos >= 100 Entonces','  Escribir "Subes de nivel"','FinAlgoritmo'],{lineCls:{2:'bad'}})}],
  rounds:[
-  {biz:'Tienda Don Pepe',req:'Domicilio gratis en compras de $50.000 o más',say:'El inspector rechazó este programa. Toca la línea donde está el error.',
+  {biz:'Tienda Don Pepe',req:'Domicilio gratis si la compra es de $50.000 o más',say:'El inspector probó el programa de la tienda y falló. Lee su reporte y elige qué cambio lo arregla.',
+   test:'Probé con compra = 80000. Respondió "Domicilio $5.000", pero debía responder "Domicilio gratis".',
    lines:['Algoritmo Domicilio','  Definir compra Como Entero','  Leer compra','  Si compra < 50000 Entonces','    Escribir "Domicilio gratis"','  SiNo','    Escribir "Domicilio $5.000"','  FinSi','FinAlgoritmo'],
-   bad:[3],fixes:['Si compra >= 50000 Entonces','Si compra = 50000 Entonces','Si compra < 5000 Entonces'],fix:0,
+   fixes:['En la línea 4, cambiar < por >=','En la línea 4, cambiar 50000 por 5000','Borrar la línea 6 (SiNo)'],fix:0,
    fixed:['Algoritmo Domicilio','  Definir compra Como Entero','  Leer compra','  Si compra >= 50000 Entonces','    Escribir "Domicilio gratis"','  SiNo','    Escribir "Domicilio $5.000"','  FinSi','FinAlgoritmo'],good:[3],
-   ok:'¡Aprobado! "50.000 o más" se escribe compra >= 50000.',
-   hints:['Lee lo que pide la tienda: "$50.000 o más". Busca la línea de la pregunta.','La línea 4 dice menor que (<). ¿Eso es "o más"?','Debe ser compra >= 50000.']},
-  {biz:'Universidad',req:'Se aprueba la materia con 3.0 o más',say:'Los estudiantes se quejan: el programa les dice lo contrario. Toca la línea con el error.',
+   ok:'¡Aprobado! Con compra = 80000, la pregunta 80000 >= 50000 es Verdadera y ahora sí sale "Domicilio gratis".',
+   hints:['80000 es más que 50000, así que debía salir por el camino V: "Domicilio gratis".','Revisa la pregunta de la línea 4: ¿80000 < 50000 es Verdadero o Falso?','Es Falso, por eso salió por SiNo. La pregunta debe ser compra >= 50000.']},
+  {biz:'Universidad',req:'Se aprueba la materia con nota de 3.0 o más',say:'Los estudiantes se quejan del programa de notas. Lee el reporte del inspector y elige qué cambio lo arregla.',
+   test:'Probé con nota = 4.5. Respondió "Reprobó", pero debía responder "Aprobó".',
    lines:['Algoritmo Nota','  Definir nota Como Real','  Leer nota','  Si nota >= 3.0 Entonces','    Escribir "Reprobó"','  SiNo','    Escribir "Aprobó"','  FinSi','FinAlgoritmo'],
-   bad:[4,6],fixes:['Cambiar los mensajes de lugar: "Aprobó" en V y "Reprobó" en F','Cambiar >= por <=','Borrar la línea SiNo'],fix:0,
+   fixes:['Cambiar de lugar los mensajes de las líneas 5 y 7','En la línea 4, cambiar >= por <=','Borrar la línea 6 (SiNo)'],fix:0,
    fixed:['Algoritmo Nota','  Definir nota Como Real','  Leer nota','  Si nota >= 3.0 Entonces','    Escribir "Aprobó"','  SiNo','    Escribir "Reprobó"','  FinSi','FinAlgoritmo'],good:[4,6],
-   ok:'¡Aprobado! La condición estaba bien; los mensajes estaban cruzados.',
-   hints:['La condición nota >= 3.0 está bien. Revisa qué se escribe en cada camino.','Con nota 4.5 la condición es Verdadera. ¿Qué escribe la línea 5?','Los mensajes están cruzados: toca la línea 5 o la 7.']},
-  {biz:'Parqueadero La 80',req:'Las primeras 2 horas cuestan $5.000 y cada hora extra, $2.000',skipLine:true,insp:'Línea 9: la decisión Si de la línea 4 nunca se cierra.',
-   say:'El inspector ya encontró el problema y dejó su reporte. Elige cómo arreglarlo.',
+   ok:'¡Aprobado! La pregunta estaba bien; los mensajes estaban cambiados de camino.',
+   hints:['Con nota 4.5, la pregunta 4.5 >= 3.0 es Verdadera: la pregunta funciona.','Por el camino V se ejecuta la línea 5. ¿Qué mensaje escribe?','Escribe "Reprobó": los mensajes están cambiados. Hay que intercambiarlos.']},
+  {biz:'Parqueadero La 80',req:'Las primeras 2 horas cuestan $5.000 y cada hora extra, $2.000',say:'Este programa ni siquiera arranca. Lee el reporte del inspector y elige qué cambio lo arregla.',
+   test:'No pude probarlo: la decisión Si de la línea 4 nunca se cierra.',mark:{3:'bad'},
    lines:['Algoritmo Parqueadero','  Definir horas, cobro Como Entero','  Leer horas','  Si horas > 2 Entonces','    cobro <- 5000 + (horas - 2) * 2000','  SiNo','    cobro <- 5000','  Escribir "Total: ", cobro','FinAlgoritmo'],
-   bad:[3,7],fixes:['Agregar FinSi entre la línea 7 y la línea 8','Cambiar SiNo por FinSi','Agregar FinSi después de FinAlgoritmo'],fix:0,
+   fixes:['Agregar FinSi entre la línea 7 y la línea 8','Cambiar SiNo por FinSi','Agregar FinSi después de FinAlgoritmo'],fix:0,
    fixed:['Algoritmo Parqueadero','  Definir horas, cobro Como Entero','  Leer horas','  Si horas > 2 Entonces','    cobro <- 5000 + (horas - 2) * 2000','  SiNo','    cobro <- 5000','  FinSi','  Escribir "Total: ", cobro','FinAlgoritmo'],good:[7],
-   ok:'¡Aprobado! FinSi va justo después del camino F. Así el total se escribe en los dos casos.',
-   hints:['La norma 18 dice: un Si, un FinSi.','FinSi debe cerrar la decisión antes de escribir el total.','Va entre "cobro <- 5000" y "Escribir".']}]},
+   ok:'¡Aprobado! FinSi cierra la decisión justo después del camino F. Así el total se escribe en los dos casos.',
+   hints:['Norma 18: un Si, un FinSi. ¿Ves algún FinSi?','FinSi debe cerrar la decisión antes de escribir el total.','Va entre "cobro <- 5000" y "Escribir".']}]},
 
 boss:{name:'Un día en la ciudad',label:'RETO FINAL',type:'boss',
  learn:[{norm:[19,'Antes de responder, se lee todo','Prueba de escritorio'],say:'Reto final: un día completo en la ciudad. En cada lugar funciona un programa. Cambia cada casillero por su valor, haz las cuentas y descubre qué muestra la máquina. Tienes 3 vidas.',show:()=>dayBar(0,'6:00 a. m.')+vign('home')}],
  rounds:[
-  {time:'7:00 a. m. · Casa',scene:'home',q:'Mamá le toma la temperatura a Juan. El termómetro marca 38. ¿Qué aparece en su pantalla?',
+  {time:'7:00 a. m. · Casa',scene:'home',q:'Mamá le toma la temperatura a Juan. El termómetro tiene este programa y marca 38 °C. ¿Qué mensaje muestra el termómetro?',
    code:['Definir temp Como Real','Leer temp','Si temp > 38 Entonces','  Escribir "Ir al médico"','SiNo','  Escribir "Reposo y líquidos"','FinSi'],val:'temp = 38',opts:['Ir al médico','Reposo y líquidos'],ans:1,
    ok:'El signo > no incluye el igual: 38 > 38 es Falso. El termómetro dice "Reposo y líquidos".',no:'Lee el signo con cuidado: es >, no >=.',hints:['Reemplaza temp por 38.','¿38 es mayor que 38?','No: 38 es igual, no mayor. Es Falso.']},
-  {time:'9:00 a. m. · Avenida',scene:'road',q:'La cámara de la avenida mide un carro a 62 km/h. El límite es 50. ¿Qué escribe la cámara?',
+  {time:'9:00 a. m. · Avenida',scene:'road',q:'La cámara de la avenida tiene este programa. Un carro pasa a 62 km/h y el límite es 50. ¿Qué mensaje escribe la cámara?',
    code:['Definir velocidad Como Entero','Definir exceso Como Entero','Leer velocidad','exceso <- velocidad - 50','Si exceso > 10 Entonces','  Escribir "Multa"','SiNo','  Escribir "Advertencia"','FinSi'],val:'velocidad = 62',opts:['Multa','Advertencia'],ans:0,
    ok:'Primero se calcula: exceso <- 62 - 50, entonces exceso = 12. Como 12 > 10 es Verdadero, la cámara escribe "Multa".',no:'Primero calcula cuánto vale exceso.',hints:['La línea 4 calcula exceso: 62 - 50.','exceso = 12. Ahora, ¿12 > 10?','Es Verdadero: "Multa".']},
-  {time:'12:00 m. · Cajero',scene:'atm',q:'Andrea quiere retirar $100.000 y en su cuenta hay $80.000. ¿Qué muestra el cajero?',
+  {time:'12:00 m. · Cajero',scene:'atm',q:'Andrea quiere retirar $100.000 y en su cuenta hay $80.000. ¿Qué mensaje muestra el cajero?',
    code:['Definir saldo Como Entero','Definir retiro Como Entero','saldo <- 80000','Leer retiro','Si retiro <= saldo Entonces','  saldo <- saldo - retiro','  Escribir "Nuevo saldo: ", saldo','SiNo','  Escribir "Fondos insuficientes"','FinSi'],val:'retiro = 100000',opts:['Nuevo saldo: -20000','Fondos insuficientes','Nuevo saldo: 80000'],ans:1,
    ok:'100000 <= 80000 es Falso, así que la resta nunca se hace. El cajero escribe "Fondos insuficientes".',no:'Revisa la condición antes de hacer la resta.',hints:['La resta solo se hace si la condición es Verdadera.','¿100000 es menor o igual que 80000?','Es Falso: se ejecuta el SiNo.']},
-  {time:'3:00 p. m. · Tienda',scene:'shop',q:'Carlos compra $120.000 en la tienda. Hay 10% de descuento desde $100.000. ¿Cuánto paga?',
+  {time:'3:00 p. m. · Tienda',scene:'shop',q:'Carlos compra $120.000. La tienda da 10% de descuento en compras desde $100.000. ¿Cuánto paga Carlos?',
    code:['Definir compra, total Como Real','Leer compra','Si compra >= 100000 Entonces','  total <- compra - compra * 0.1','SiNo','  total <- compra','FinSi','Escribir "Pague: ", total'],val:'compra = 120000',opts:['Pague: 108000','Pague: 120000','Pague: 12000'],ans:0,
    ok:'120000 >= 100000 es Verdadero. total <- 120000 - 12000, entonces total = 108000.',no:'Revisa el camino y luego haz la cuenta completa.',hints:['¿120000 >= 100000? Eso decide el camino.','El 10% de 120000 es 12000.','total = 120000 - 12000.']},
-  {time:'7:00 p. m. · Parqueadero',scene:'park',q:'Un carro estuvo 4 horas en el parqueadero. Sigue el diagrama: ¿cuánto vale cobro?',
-   nodes:{start:'Inicio',read:'Leer horas',cond:'horas > 2',v:'cobro <- 5000 +\n(horas-2)*2000',f:'cobro <- 5000',end:'Fin'},shapes:{v:'rect',f:'rect'},val:'horas = 4',opts:['9000','5000','13000'],ans:0,branch:'V',
+  {time:'7:00 p. m. · Parqueadero',scene:'park',q:'Un carro estuvo 4 horas en el parqueadero. Sigue el diagrama: ¿cuánto debe pagar el conductor?',
+   nodes:{start:'Inicio',read:'Leer horas',cond:'horas > 2',v:'cobro <- 5000 +\n(horas-2)*2000',f:'cobro <- 5000',end:'Fin'},shapes:{v:'rect',f:'rect'},val:'horas = 4',opts:['$9.000','$5.000','$13.000'],ans:0,branch:'V',
    ok:'4 > 2 es Verdadero. cobro <- 5000 + (4 - 2) * 2000 = 5000 + 4000 = 9000. ¡Superaste el día en la ciudad!',no:'Sigue el camino y haz la cuenta con paréntesis primero.',hints:['¿4 > 2? Eso decide el camino.','Primero el paréntesis: 4 - 2 = 2. Luego 2 * 2000.','5000 + 4000 = 9000.']}]}
 };
 const MORDER=['cafe','tm','parque','taller','boss'];
@@ -547,10 +551,10 @@ function renderMap(){const r=lcg(11);let s=`<defs><linearGradient id="skyg" x1="
       <g fill="${ic}" stroke="${ic}" stroke-width="0">${open?ICON[k]:ICON.lock}</g>
       <text class="pinlbl" y="${R+18}" text-anchor="middle">${MIS[k].label}</text>
       ${done?`<g transform="translate(-27 ${R+24})">${[0,1,2].map(j=>`<g transform="translate(${j*19} 0) scale(.75)">${star(j<S.stars[k]).replace(/<\/?svg[^>]*>/g,'')}</g>`).join('')}</g>`:''}</g>`});
-  [[112,268,'w2'],[300,150,'w3']].forEach(([x,y,id])=>s+=`<g class="pin" id="pin-${id}" data-w="${id}" role="button" tabindex="0" aria-label="Mundo bloqueado" transform="translate(${x} ${y})" opacity=".8"><circle r="30" fill="#0a0e20"/><circle r="26" fill="#2b3366"/><g fill="#5d6590" stroke="#5d6590" stroke-width="0">${ICON.lock}</g></g>`);
+  [[112,268,'w2','#62c7ff'],[300,150,'w3','#c49cff']].forEach(([x,y,id,c])=>s+=`<g class="pin" id="pin-${id}" data-w="${id}" role="button" tabindex="0" aria-label="${S[id]?'Mundo desbloqueado':'Mundo bloqueado: pide código'}" transform="translate(${x} ${y})"><circle r="30" fill="#0a0e20"/><circle r="26" fill="${S[id]?c:'#2b3366'}"/>${S[id]?'':`<g fill="#5d6590" stroke="#5d6590" stroke-width="0">${ICON.lock}</g>`}</g>`);
   $('#mapSvg').innerHTML=s}
 $('#mapSvg').addEventListener('click',e=>{const p=e.target.closest('.pin');if(!p)return;
-  if(p.dataset.w){sfx('tap');modal('<h3>En construcción</h3><p>'+(p.dataset.w==='w2'?'Aquí vendrán las decisiones con Y, O y NO.':'Aquí vendrán las decisiones anidadas.')+'</p>',[['Entendido',null,'go']]);return}
+  if(p.dataset.w){sfx('tap');askCode(p.dataset.w);return}
   const k=p.dataset.m,i=MORDER.indexOf(k);
   if(!unlocked(i)){sfx('bad');modal('<h3>Misión bloqueada</h3><p>Primero completa la misión anterior.</p>',[['Entendido',null,'go']]);return}
   sfx('tap');startMission(k)});
@@ -631,7 +635,7 @@ function drawScene(r){const st=C.sub.st,g=r.guide,price='10000';
     say=g?'Todo algoritmo empieza en <b>Inicio</b>. El almuerzo cuesta $10.000. Toca la billetera para ver cuánto saldo tienes.':'Llega otro cliente. Toca la billetera para ver su saldo.'}
   if(st>=1){sc.open=true;vis.push('read');pop='read'}
   if(st===1){sc.tap='dat';sc.bubble=`Tengo $${r.saldo}.`;
-    say=g?'Eso es <b>Leer saldo</b>: el programa recibe el dato. Ahora toca el datáfono para pagar.':'<b>Leer saldo</b> listo. Toca el datáfono para pagar.'}
+    say=g?'Eso es <b>Leer saldo</b>: los $'+r.saldo+' quedaron guardados en el casillero <b>saldo</b> (norma 2). Ahora toca el datáfono para pagar.':'El dato quedó en el casillero <b>saldo</b>. Toca el datáfono para pagar.'}
   if(st>=2){vis.push('cond');pop='cond';sc.screen=['VALIDANDO','...'];sc.tcol='#ffc93c';sc.scol='#2a230b'}
   if(st===2){sc.bubble=`Tengo $${r.saldo}.`;
     say=(g?'El datáfono hace una pregunta: ¿el saldo alcanza? En el diagrama, toda pregunta va en un <b>rombo</b>. ':'')+`¿${r.n} >= ${price} es Verdadero o Falso?`;
@@ -640,7 +644,7 @@ function drawScene(r){const st=C.sub.st,g=r.guide,price='10000';
     sc.scol=r.ans?'#0d2a22':'#3a0d16';sc.tcol=r.ans?'#38d996':'#ff4d6d';
     bottom=`<div class="expr">${r.n} >= ${price} → <b class="${r.ans?'tv':'tf'}">${r.ans?'Verdadero':'Falso'}</b></div>`}
   if(say)setSay(say);
-  work.innerHTML=bottom;stage.innerHTML=`<div class="duo"><div class="scol">${sceneSVG(sc)}</div><div class="scol">${st>=1?`<div class="val">saldo = ${r.n}</div>`:''}${diagram(C.M.nodes,{vis,pop,hl:st===2?['cond']:[]})}</div></div>`}
+  work.innerHTML=bottom;stage.innerHTML=`<div class="duo"><div class="scol">${sceneSVG(sc)}</div><div class="scol">${st>=1?`<div class="lockrow">${locker('saldo',r.n,1)}<span>Casillero<br>guardado</span></div>`:''}${diagram(C.M.nodes,{vis,pop,hl:st===2?['cond']:[]})}</div></div>`}
 
 /* Estación: usuarios en el torniquete */
 const SL=[['Si saldo >= 3200 Entonces','Abre la puerta de la pregunta','hl'],['  Escribir "Puede pasar"','Lo que hace si la respuesta es sí','hv'],['SiNo','Abre la otra puerta','hf'],['  Escribir "Recargue su tarjeta"','Lo que hace si la respuesta es no','hf'],['FinSi','Cierra la puerta','hl']];
@@ -679,7 +683,7 @@ function playRun(r){C.sub={st:0,trail:{},expr:'',res:false};drawRun(r);main(null
   play.onclick=e=>{if(C.lock)return;const sub=C.sub;
     if(sub.st===0&&e.target.closest('#card')){sfx('tap');sub.st=1;sub.trail={0:'hl',1:'hl'};drawRun(r);setSay('El torniquete está leyendo la tarjeta…');
       setTimeout(()=>{if(C.sub!==sub)return;sub.st=2;sub.trail={0:'hl',1:'hl',2:'hl'};drawRun(r);
-        setSay((r.guide?'Por dentro, el torniquete ejecutó <b>Leer saldo</b>: ahora sabe que saldo = '+r.n+'. ':'Leyó saldo = '+r.n+'. ')+'¿Qué va a mostrar en la pantalla?')},1100)}
+        setSay((r.guide?'El torniquete ejecutó <b>Leer saldo</b> y guardó '+r.n+' en el casillero <b>saldo</b>. ':'Guardó '+r.n+' en el casillero saldo. ')+'¿Qué va a mostrar en la pantalla?')},1100)}
     else if(sub.st===2){const b=e.target.closest('[data-o]');if(!b)return;const pick=b.dataset.o==='1';
       if(pick!==r.pass){bad(r.no);return}
       C.lock=true;sfx('ok');S.stats.ok++;save();setSay('¡Bien! Mira cómo lo ejecuta el torniquete por dentro.','ok');sub.st=3;
@@ -694,7 +698,7 @@ function drawRun(r){const sub=C.sub,st=sub.st;
   if(st===1){o.screen=['LEYENDO','...'];o.scol='#2a230b';o.tcol='#ffc93c'}
   if(st>=2&&!sub.res){o.screen=['SALDO','$'+r.saldo];o.scol='#2a230b';o.tcol='#ffc93c'}
   if(sub.res){o.screen=r.pass?['PUEDE','PASAR']:['RECARGUE SU','TARJETA'];o.scol=r.pass?'#0d2a22':'#3a0d16';o.tcol=r.pass?'#38d996':'#ff4d6d'}
-  stage.innerHTML=`<div class="duo"><div class="scol">${tmScene(o)}</div><div class="scol"><span class="cap">POR DENTRO DEL TORNIQUETE</span>${st>=2?`<div class="val">saldo = ${r.n}</div>`:''}${codeHTML(tmCode,{lineCls:sub.trail})}</div></div>`;
+  stage.innerHTML=`<div class="duo"><div class="scol">${tmScene(o)}</div><div class="scol"><span class="cap">POR DENTRO DEL TORNIQUETE</span>${st>=2?`<div class="lockrow">${locker('saldo',r.n,1)}<span>Casillero<br>guardado</span></div>`:''}${codeHTML(tmCode,{lineCls:sub.trail})}</div></div>`;
   work.innerHTML=st===2?`<span class="qlbl">¿Qué mostrará la pantalla?</span><div class="row"><button class="btn v" data-o="1">Puede pasar</button><button class="btn f" data-o="0">Recargue su tarjeta</button></div>`
     :sub.expr?`<div class="expr">${sub.expr}</div>`:''}
 
@@ -731,7 +735,7 @@ function playBuild(r){C.sub={fill:{},cur:'start',stack:[],wrong:[],bank:shuffle(
 function drawBuild(r){const sub=C.sub,n={},shapes={},empty=[];
   ORDER.forEach(k=>{const p=sub.fill[k];if(p==null)empty.push(k);else n[k]=r.pieces[p].t});
   const used=Object.values(sub.fill);
-  stage.innerHTML=diagram(n,{empty,cur:C.lock?null:sub.cur,wrong:sub.wrong,shapes,click:!C.lock,show:C.lock?'VF':''});
+  stage.innerHTML=`<div class="duo"><div class="scol">${vign(r.scene)}</div>${diagram(n,{empty,cur:C.lock?null:sub.cur,wrong:sub.wrong,shapes,click:!C.lock,show:C.lock?'VF':''})}</div>`;
   work.innerHTML=(C.lock?'':`<div class="bank">${sub.bank.filter(i=>!used.includes(i)).map(i=>`<button class="chip" data-p="${i}">${esc(r.pieces[i].t.replace('\n',' '))}</button>`).join('')}</div>`);
   if(!C.lock){btn('#btnUndo','Deshacer',true,sub.stack.length>0);main('Comprobar',()=>checkBuild(r),empty.length===0)}}
 function checkBuild(r){const sub=C.sub;const wrong=ORDER.filter(k=>r.pieces[sub.fill[k]].k!==k);
@@ -740,18 +744,14 @@ function checkBuild(r){const sub=C.sub;const wrong=ORDER.filter(k=>r.pieces[sub.
   if(C.hearts>0)setTimeout(()=>{wrong.forEach(k=>delete sub.fill[k]);sub.stack=sub.stack.filter(k=>sub.fill[k]!=null);sub.cur=ORDER.find(k=>sub.fill[k]==null);drawBuild(r)},1200)}
 
 /* Cazar el error */
-function playBug(r){C.sub={st:r.skipLine?'fix':'line',lines:r.lines,mark:r.skipLine?Object.fromEntries(r.bad.map(j=>[j,'bad'])):{}};setSay(r.say);drawBug(r);main(null);
-  play.onclick=e=>{if(C.lock)return;const sub=C.sub,ln=e.target.closest('[data-i]'),fx=e.target.closest('[data-f]');
-    if(ln&&sub.st==='line'){const i=+ln.dataset.i;
-      if(r.bad.includes(i)){sfx('ok');sub.mark={};r.bad.forEach(j=>sub.mark[j]='bad');sub.st='fix';setSay('¡Lo encontraste! Ahora elige cómo arreglarlo.','ok');drawBug(r)}
-      else{sub.mark={[i]:'hl'};drawBug(r);bad('Esa línea está bien. Vuelve a leer lo que pide el problema.')}}
-    else if(fx&&sub.st==='fix'){const i=+fx.dataset.f;
-      if(i===r.fix){C.lock=true;good(r.ok);sub.lines=r.fixed;sub.mark={};r.good.forEach(j=>sub.mark[j]='good');sub.st='done';drawBug(r);main('Siguiente',nextRound)}
-      else bad('Ese cambio no resuelve el problema. Piensa qué pide el enunciado.')}};
-  play.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-i]')){e.preventDefault();e.target.click()}}}
+function playBug(r){C.sub={st:'fix',lines:r.lines,mark:r.mark||{}};setSay(r.say);drawBug(r);main(null);
+  play.onclick=e=>{if(C.lock)return;const sub=C.sub,fx=e.target.closest('[data-f]');if(!fx)return;const i=+fx.dataset.f;
+    if(i===r.fix){C.lock=true;good(r.ok);sub.lines=r.fixed;sub.mark={};r.good.forEach(j=>sub.mark[j]='good');sub.st='done';drawBug(r);main('Siguiente',nextRound)}
+    else{fx.disabled=true;bad('Con ese cambio el programa sigue fallando. Vuelve a leer el reporte del inspector.')}}}
 function drawBug(r){const sub=C.sub,done=sub.st==='done';
-  stage.innerHTML=`<div class="insp">${inspector(64)}<div class="insp-t"><span class="cap">PROGRAMA DE: ${esc(r.biz.toUpperCase())}</span><span>${esc(r.req)}</span></div><span class="stamp ${done?'ok':''}">${done?'APROBADO':'RECHAZADO'}</span></div>`+
-    (r.insp&&!done?`<div class="irep">Inspector: ${esc(r.insp)}</div>`:'')+codeHTML(sub.lines,{tap:sub.st==='line',lineCls:sub.mark});work.innerHTML=(sub.st==='fix'?`<div class="opts">${r.fixes.map((f,i)=>`<button class="btn opt" data-f="${i}">${esc(f)}</button>`).join('')}</div>`:'')}
+  stage.innerHTML=`<div class="insp">${inspector(64)}<div class="insp-t"><span class="cap">PROGRAMA DE: ${esc(r.biz.toUpperCase())}</span><span>Pidió: ${esc(r.req)}</span></div><span class="stamp ${done?'ok':''}">${done?'APROBADO':'RECHAZADO'}</span></div>`+
+    (done?'':`<div class="irep"><b>Reporte del inspector:</b> ${esc(r.test)}</div>`)+codeHTML(sub.lines,{lineCls:sub.mark});
+  work.innerHTML=done?'':`<span class="qlbl">¿Qué cambio arregla el programa?</span><div class="opts">${r.fixes.map((f,i)=>`<button class="btn opt" data-f="${i}">${esc(f)}</button>`).join('')}</div>`}
 
 /* Reto final */
 function dayBar(pct,t){return`<div class="daybar"><span class="hpl">${esc(t)}</span><div class="hp"><i class="day" id="hpI" style="width:${pct}%"></i></div></div>`}
@@ -774,6 +774,14 @@ function vign(k){const P={mom:{skin:'#d9a07c',hair:'#5a2e17',shirt:'#e21d38',lon
      <g transform="translate(110 40) scale(.55)">${person(P.carlos,'neutral')}</g><rect y="120" width="360" height="50" fill="#2b3366"/><rect y="116" width="360" height="8" fill="#3d478a"/>
      <rect x="214" y="62" width="104" height="58" rx="8" fill="#3a3f55" stroke="#0a0e20" stroke-width="3"/><rect x="224" y="72" width="84" height="30" rx="3" fill="#0d2a22"/>${T(266,93,'$120.000',14,'#38d996')}
      <path d="M150 96h36l-4 22h-28z" fill="#ff8f3c"/><path d="M158 96q10-14 20 0" stroke="#ff8f3c" stroke-width="3" fill="none"/>`,
+   ride:`<rect width="360" height="170" fill="#1c2348"/><path d="M0 150Q60 30 130 80T260 40T360 70" stroke="#e21d38" stroke-width="5" fill="none"/><path d="M20 150V112M70 150V62M120 150V80M200 150V66M290 150V44" stroke="#5d6590" stroke-width="3"/><rect y="150" width="360" height="20" fill="#2b3366"/>
+     <rect x="236" y="40" width="28" height="112" fill="#ffc93c"/>${[0,1,2,3,4,5].map(i=>`<path d="M236 ${150-i*20}h10" stroke="#2b1c00" stroke-width="2"/>`).join('')}<path d="M226 74h48" stroke="#e21d38" stroke-width="4"/>${T(250,32,'140 cm',11,'#ffc93c')}
+     <g transform="translate(206 52) scale(.5)">${person({skin:'#d9a07c',hair:'#2b1a12',shirt:'#38a169'},'happy')}</g>
+     <rect x="282" y="96" width="70" height="40" rx="6" fill="#f3f1ff"/>${T(317,112,'ALTURA',10,'#12172e','Atkinson Hyperlegible,sans-serif')}${T(317,127,'MÍN. 140 cm',10,'#e21d38','Atkinson Hyperlegible,sans-serif')}`,
+   elev:`<rect width="360" height="170" fill="#232a55"/><rect y="150" width="360" height="20" fill="#2b3366"/><rect x="110" y="20" width="140" height="130" rx="4" fill="#3a3f55" stroke="#0a0e20" stroke-width="3"/><path d="M180 20v130" stroke="#0a0e20" stroke-width="3"/>
+     <rect x="140" y="30" width="80" height="26" rx="4" fill="#0a0e20"/>${T(180,48,'MÁX. 600 kg',11,'#ffc93c')}
+     <g transform="translate(150 58) scale(.36)">${person({skin:'#c98d6a',hair:'#3a2a1a',shirt:'#8b5cf6'},'neutral')}</g><g transform="translate(184 58) scale(.36)">${person({skin:'#8d5a3b',hair:'#1a1a1a',shirt:'#e21d38'},'neutral')}</g><g transform="translate(214 60) scale(.34)">${person({skin:'#d9a07c',hair:'#c9c9c9',shirt:'#38a169'},'neutral')}</g>
+     <rect x="268" y="70" width="70" height="40" rx="6" fill="#0a0e20"/>${T(303,95,'¿PESO?',12,'#62c7ff')}`,
    park:`<rect width="360" height="170" fill="#1c2348"/><rect y="110" width="360" height="60" fill="#2b3366"/><path d="M150 110v60M250 110v60" stroke="#f3f1ff" stroke-width="3" opacity=".5"/>
      <rect x="20" y="16" width="40" height="40" rx="6" fill="#2563eb"/>${T(40,46,'P',28,'#f3f1ff','Atkinson Hyperlegible,sans-serif')}${car(160,112,'#38d996')}
      <rect x="262" y="30" width="84" height="84" rx="8" fill="#3a3f55" stroke="#0a0e20" stroke-width="3"/><rect x="272" y="42" width="64" height="34" rx="4" fill="#0a0e20"/>${T(304,64,'4 horas',13,'#ffc93c')}<rect x="270" y="86" width="68" height="8" rx="4" fill="#5d6590"/>`};
@@ -801,6 +809,11 @@ $('#btnUndo').onclick=()=>{const sub=C.sub;if(!sub.stack||!sub.stack.length||C.l
 $('#btnBack').onclick=()=>show('map');
 $('#sayBtn').onclick=speak;
 
+function askCode(w,err){const W={w2:['Mundo 2 · Avenida Booleana','vivy','Y, O y NO'],w3:['Mundo 3 · Torre Anidada','vr','decisiones anidadas']}[w];
+  if(S[w]){modal(`<h3>${W[0]}</h3><p>Ya está desbloqueado. Sus misiones de ${W[2]} se están construyendo.</p>`,[['Entendido',null,'go']]);return}
+  modal(`<h3>${W[0]}</h3><p>Escribe el código para pasar de nivel. Lo encuentras en tu certificado o te lo da tu profesora.</p><input class="name-in" id="codeIn" maxlength="20" placeholder="Código" autocomplete="off">${err?'<p style="color:var(--err)">Ese código no es. Revisa tu certificado.</p>':''}`,
+    [['Entrar',()=>{const v=(window._code||'').trim().toLowerCase();if(v===W[1]){S[w]=true;save();sfx('win');renderMap();modal(`<h3>¡Mundo desbloqueado!</h3><p>${W[0]}. Sus misiones de ${W[2]} se están construyendo.</p>`,[['Entendido',null,'go']])}else{sfx('bad');askCode(w,true)}},'go'],['Cancelar',null]]);
+  setTimeout(()=>{const i=$('#codeIn');if(!i)return;window._code='';i.oninput=()=>window._code=i.value;i.onkeydown=e=>{if(e.key==='Enter')$('#modal .btn.go').click()};i.focus()},60)}
 /* Fin de misión */
 function finish(){const st=Math.max(1,3-(C.errors>=1)-(C.errors>=3)-(C.hints>=3));const earned=C.M.rounds.length*10+st*5;
   S.coins+=earned;S.stars[C.id]=Math.max(S.stars[C.id]||0,st);S.log.push({m:C.id,e:C.errors,h:C.hints,s:st,t:Date.now()});save();sfx('win');
@@ -834,6 +847,7 @@ async function showCert(){show('cert');try{await document.fonts.ready}catch(e){}
   const tot=MORDER.reduce((a,k)=>a+(S.stars[k]||0),0);
   g.textAlign='center';g.fillStyle='#f3f1ff';g.font=`bold 28px ${F}`;g.fillText(`${tot} de 15 estrellas · ${S.coins} monedas`,700,790);
   g.fillStyle='#a3abd3';g.font=`24px ${F}`;g.fillText(`Aciertos ${S.stats.ok} · Errores ${S.stats.bad} · Pistas usadas ${S.stats.hints} · ${new Date().toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'})}`,700,834);
+  g.fillStyle='#ffc93c';g.font='26px Bungee, Impact, sans-serif';g.fillText('CÓDIGO PARA EL MUNDO 2: VIVY',700,890);
   g.fillStyle='#0a0e20';g.fillRect(48,H-150,W-96,102);g.fillStyle='#f3f1ff';g.font=`bold 26px ${F}`;
   g.textAlign='left';g.fillText('Aprendiendo con @LaProfeVivy',90,H-90);g.textAlign='right';g.fillStyle='#a3abd3';g.fillText('Fundación Universitaria del Área Andina',W-90,H-90);
   const url=cv.toDataURL('image/png');$('#certImg').src=url;$('#certDl').href=url}
