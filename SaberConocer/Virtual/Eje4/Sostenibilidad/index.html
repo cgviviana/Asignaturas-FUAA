@@ -1,1 +1,260 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sostenibilidad de la app</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: misma guía de taller que Criterios de originalidad. Pestañas por dimensión (E, T, S, A) con fichas indexadas que comparan ejemplo general y app de retardos; plantilla al final. */
+:root{
+  --paper:#F4F5F2; --sheet:#FFFFFF; --ink:#1B2430; --muted:#5B6573; --rule:#D8DCD6;
+  --green:#1E6B4F; --green-soft:#E3EEE8;
+  --display:'Bricolage Grotesque', 'Segoe UI', Arial, sans-serif;
+  --body:'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+  --mono:'IBM Plex Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#12171F; --sheet:#19202B; --ink:#E9ECEF; --muted:#9AA4B1; --rule:#2C3542;
+  --green:#6CC9A1; --green-soft:#16302A; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#12171F; --sheet:#19202B; --ink:#E9ECEF; --muted:#9AA4B1; --rule:#2C3542;
+  --green:#6CC9A1; --green-soft:#16302A; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:40px 48px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:22px}
+@media (max-width:720px){header{grid-template-columns:1fr}}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,5vw,52px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.def{margin:0;border-left:3px solid var(--green);padding-left:14px}
+.def dt{font-family:var(--display);font-weight:700;font-size:20px}
+.def dt small{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--muted);margin-left:6px}
+.def dd{margin:2px 0 0;color:var(--muted)}
+[role="tablist"]{display:flex;gap:28px;border-bottom:1px solid var(--rule);overflow-x:auto}
+[role="tab"]{font:inherit;font-weight:600;font-size:16px;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;padding:0 0 10px;cursor:pointer;white-space:nowrap;margin-bottom:-1px}
+[role="tab"] span{font-family:var(--mono);font-size:12px;margin-left:4px}
+[role="tab"][aria-selected="true"]{color:var(--ink);border-bottom-color:var(--green)}
+[role="tab"]:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+[role="tabpanel"]{display:flex;flex-direction:column;gap:16px}
+.lede{margin:0;color:var(--muted);max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+@media (max-width:600px){.grid{grid-template-columns:1fr}}
+details{background:var(--sheet);border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);min-width:0}
+details[open]{grid-column:1 / -1}
+summary{list-style:none;cursor:pointer;padding:18px 20px 20px;display:grid;grid-template-columns:1fr auto;gap:6px 12px}
+summary::-webkit-details-marker{display:none}
+summary:hover .t{color:var(--green)}
+.code{font-family:var(--mono);font-size:12px;color:var(--green)}
+.chev{grid-column:2;grid-row:1 / span 3;font-family:var(--mono);font-size:18px;color:var(--muted);transition:transform .2s}
+details[open] .chev{transform:rotate(45deg);color:var(--green)}
+.t{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.15;letter-spacing:-.01em}
+.d{font-size:15px;color:var(--muted)}
+.compare{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--rule);margin:0 20px 20px}
+.compare > div{padding:14px 18px 2px 0;min-width:0}
+.compare > div + div{border-left:1px solid var(--rule);padding-left:18px}
+h4{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.ret h4{color:var(--green)}
+.compare p{margin:0}
+@media (max-width:600px){.compare{grid-template-columns:1fr}.compare > div + div{border-left:none;border-top:1px solid var(--rule);padding-left:0}}
+/* Plantilla */
+.tpl-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.tpl-head .lede{flex:1 1 320px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:600;font-size:14px;color:var(--ink);background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:8px 14px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--green);border-color:var(--green);color:var(--sheet)}
+.status{margin:-6px 0 0;min-height:1.2em;font-size:14px;color:var(--green)}
+.tpl{background:var(--sheet);border:1px solid var(--rule);display:flex;flex-direction:column}
+fieldset{border:none;border-bottom:1px solid var(--rule);margin:0;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+fieldset:last-child{border-bottom:none}
+legend{font-family:var(--display);font-weight:700;font-size:18px;padding:0;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.n{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--green);border:1px solid var(--green);border-radius:4px;padding:1px 6px}
+label{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:600;color:var(--muted);min-width:0}
+input[type="text"],textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--green);outline-offset:0;border-color:var(--green)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.row2{grid-template-columns:1fr}}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.chev{transition:none}}
+</style>
 
+<div class="wrap">
+  <header>
+    <div>
+      <p class="kicker">Diseño del producto · Después de la entrega</p>
+      <h1>Sostenibilidad de la app</h1>
+    </div>
+    <dl class="def">
+      <dt>Sostenible <small>adjetivo</small></dt>
+      <dd>Una app que puede seguir funcionando, pagándose y siendo útil después de la entrega.</dd>
+    </dl>
+  </header>
+
+  <div role="tablist" aria-label="Dimensiones de la sostenibilidad">
+    <button role="tab" id="tab-e" aria-controls="panel-e" aria-selected="true">Económica<span>04</span></button>
+    <button role="tab" id="tab-t" aria-controls="panel-t" aria-selected="false" tabindex="-1">Técnica<span>05</span></button>
+    <button role="tab" id="tab-s" aria-controls="panel-s" aria-selected="false" tabindex="-1">Social<span>04</span></button>
+    <button role="tab" id="tab-a" aria-controls="panel-a" aria-selected="false" tabindex="-1">Ambiental<span>04</span></button>
+    <button role="tab" id="tab-p" aria-controls="panel-p" aria-selected="false" tabindex="-1">Plantilla</button>
+  </div>
+
+  <section role="tabpanel" id="panel-e" aria-labelledby="tab-e">
+    <p class="lede">¿Cuánto cuesta mantenerla y quién paga? Abre cada ficha para ver los ejemplos.</p>
+    <div class="grid">
+      <details><summary><span class="code">E1</span><span class="chev" aria-hidden="true">+</span><span class="t">Calcula los costos</span><span class="d">Lo que cuesta mantenerla cada mes.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Cuenta de desarrollador, servidor, base de datos e IA que cobra por uso.</p></div><div class="ret"><h4>App de retardos</h4><p>Base de datos en plan gratuito al inicio; el costo sube con cada colegio nuevo.</p></div></div></details>
+      <details><summary><span class="code">E2</span><span class="chev" aria-hidden="true">+</span><span class="t">Define quién paga</span><span class="d">El modelo de negocio.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Suscripción, anuncios o versión gratis con funciones de pago.</p></div><div class="ret"><h4>App de retardos</h4><p>El colegio paga una licencia; docentes y estudiantes la usan gratis.</p></div></div></details>
+      <details><summary><span class="code">E3</span><span class="chev" aria-hidden="true">+</span><span class="t">Controla el costo de la IA</span><span class="d">El pago por uso crece con los usuarios.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Limitar los mensajes diarios del chatbot.</p></div><div class="ret"><h4>App de retardos</h4><p>Calcular la predicción una vez por semana, no en cada registro.</p></div></div></details>
+      <details><summary><span class="code">E4</span><span class="chev" aria-hidden="true">+</span><span class="t">Crece paso a paso</span><span class="d">Primero un piloto, luego más clientes.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Probar con un curso antes de abrirla a todos.</p></div><div class="ret"><h4>App de retardos</h4><p>Un colegio piloto; después se ofrece a otros colegios.</p></div></div></details>
+    </div>
+  </section>
+
+  <section role="tabpanel" id="panel-t" aria-labelledby="tab-t" hidden>
+    <p class="lede">¿Quién la mantiene funcionando? Abre cada ficha para ver los ejemplos.</p>
+    <div class="grid">
+      <details><summary><span class="code">T1</span><span class="chev" aria-hidden="true">+</span><span class="t">Mantenimiento</span><span class="d">Quién la actualiza y cada cuánto.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Un responsable y un calendario: Android y iOS cambian cada año.</p></div><div class="ret"><h4>App de retardos</h4><p>Revisión al inicio de cada periodo académico.</p></div></div></details>
+      <details><summary><span class="code">T2</span><span class="chev" aria-hidden="true">+</span><span class="t">No dependas de una sola herramienta</span><span class="d">Qué pasa si cambia de precio o cierra.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Exportar el código y poder cambiar de proveedor.</p></div><div class="ret"><h4>App de retardos</h4><p>Código guardado en GitHub y datos exportables.</p></div></div></details>
+      <details><summary><span class="code">T3</span><span class="chev" aria-hidden="true">+</span><span class="t">Copias de seguridad</span><span class="d">Que un error no borre todo.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Copia automática diaria de la base de datos.</p></div><div class="ret"><h4>App de retardos</h4><p>Respaldo del historial de llegadas y justificaciones.</p></div></div></details>
+      <details><summary><span class="code">T4</span><span class="chev" aria-hidden="true">+</span><span class="t">Documentación</span><span class="d">Que otra persona pueda continuarla.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Un documento que explique cómo funciona y cómo se instala.</p></div><div class="ret"><h4>App de retardos</h4><p>PRD, MVP y diseño UX ya documentados.</p></div></div></details>
+      <details><summary><span class="code">T5</span><span class="chev" aria-hidden="true">+</span><span class="t">Seguridad</span><span class="d">Proteger datos y accesos.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>No dejar claves de la API dentro del código de la app.</p></div><div class="ret"><h4>App de retardos</h4><p>Permisos por rol: docente, estudiante y coordinación.</p></div></div></details>
+    </div>
+  </section>
+
+  <section role="tabpanel" id="panel-s" aria-labelledby="tab-s" hidden>
+    <p class="lede">¿La gente la sigue usando y le sirve? Abre cada ficha para ver los ejemplos.</p>
+    <div class="grid">
+      <details><summary><span class="code">S1</span><span class="chev" aria-hidden="true">+</span><span class="t">Que la sigan usando</span><span class="d">Mide el uso real.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Usuarios activos mes a mes.</p></div><div class="ret"><h4>App de retardos</h4><p>Docentes que abren sesión cada día.</p></div></div></details>
+      <details><summary><span class="code">S2</span><span class="chev" aria-hidden="true">+</span><span class="t">Que sea inclusiva</span><span class="d">Que nadie quede por fuera.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Funciona en celulares básicos y con lenguaje sencillo.</p></div><div class="ret"><h4>App de retardos</h4><p>Registro sin QR para quien no tiene celular.</p></div></div></details>
+      <details><summary><span class="code">S3</span><span class="chev" aria-hidden="true">+</span><span class="t">Impacto real</span><span class="d">Mide si resuelve el problema.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Comparar un indicador antes y después.</p></div><div class="ret"><h4>App de retardos</h4><p>Menos retardos de primera hora después de tres meses.</p></div></div></details>
+      <details><summary><span class="code">S4</span><span class="chev" aria-hidden="true">+</span><span class="t">Escucha a los usuarios</span><span class="d">Mejora con sus aportes.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Encuesta corta dentro de la app.</p></div><div class="ret"><h4>App de retardos</h4><p>Coordinación propone mejoras cada periodo.</p></div></div></details>
+    </div>
+  </section>
+
+  <section role="tabpanel" id="panel-a" aria-labelledby="tab-a" hidden>
+    <p class="lede">¿Cuánto consume? Abre cada ficha para ver los ejemplos.</p>
+    <div class="grid">
+      <details><summary><span class="code">A1</span><span class="chev" aria-hidden="true">+</span><span class="t">IA solo cuando suma</span><span class="d">Cada consulta en la nube gasta energía.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Usar un modelo que corra en el celular.</p></div><div class="ret"><h4>App de retardos</h4><p>Una regla simple cuenta los retardos; la IA solo para predecir.</p></div></div></details>
+      <details><summary><span class="code">A2</span><span class="chev" aria-hidden="true">+</span><span class="t">Datos livianos</span><span class="d">Guarda solo lo necesario.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Comprimir imágenes y borrar lo que ya no sirve.</p></div><div class="ret"><h4>App de retardos</h4><p>Guarda fecha y hora, no fotos.</p></div></div></details>
+      <details><summary><span class="code">A3</span><span class="chev" aria-hidden="true">+</span><span class="t">Menos papel</span><span class="d">Reemplaza procesos impresos.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>Formularios digitales en lugar de fotocopias.</p></div><div class="ret"><h4>App de retardos</h4><p>Adiós a las planillas impresas de llegadas.</p></div></div></details>
+      <details><summary><span class="code">A4</span><span class="chev" aria-hidden="true">+</span><span class="t">Funciona en celulares viejos</span><span class="d">Nadie tiene que cambiar de equipo.</span></summary>
+        <div class="compare"><div><h4>En general</h4><p>App liviana que no exige el último modelo.</p></div><div class="ret"><h4>App de retardos</h4><p>Leer un QR funciona con cualquier cámara.</p></div></div></details>
+    </div>
+  </section>
+
+  <section role="tabpanel" id="panel-p" aria-labelledby="tab-p" hidden>
+    <div class="tpl-head">
+      <p class="lede">Plan de sostenibilidad para la entrega: responde una o dos líneas por dimensión.</p>
+      <div class="actions">
+        <button type="button" class="btn" id="btn-ejemplo">Ver ejemplo: app de retardos</button>
+        <button type="button" class="btn" id="btn-limpiar">Limpiar</button>
+        <button type="button" class="btn primary" id="btn-copiar">Copiar plantilla</button>
+      </div>
+    </div>
+    <p class="status" id="status" aria-live="polite"></p>
+    <form class="tpl" id="tpl" onsubmit="return false">
+      <fieldset><legend><span class="n">1</span>Proyecto</legend>
+        <div class="row2"><label>Nombre de la app<input id="f-app" type="text"></label><label>Problema que resuelve<input id="f-problema" type="text"></label></div>
+      </fieldset>
+      <fieldset><legend><span class="n">2</span>Económica</legend>
+        <div class="row2"><label>Costos para mantenerla<textarea id="f-costos" rows="2"></textarea></label><label>Quién paga y cómo<textarea id="f-paga" rows="2"></textarea></label></div>
+      </fieldset>
+      <fieldset><legend><span class="n">3</span>Técnica</legend>
+        <div class="row2"><label>Quién la mantiene y cada cuánto<textarea id="f-mant" rows="2"></textarea></label><label>Plan si una herramienta falla o cierra<textarea id="f-planb" rows="2"></textarea></label></div>
+      </fieldset>
+      <fieldset><legend><span class="n">4</span>Social</legend>
+        <div class="row2"><label>Cómo medimos que la usan<textarea id="f-uso" rows="2"></textarea></label><label>Cómo medimos que resuelve el problema<textarea id="f-impacto" rows="2"></textarea></label></div>
+      </fieldset>
+      <fieldset><legend><span class="n">5</span>Ambiental</legend>
+        <label>Cómo reduce su consumo<textarea id="f-amb" rows="2"></textarea></label>
+      </fieldset>
+      <fieldset><legend><span class="n">6</span>Riesgo principal</legend>
+        <div class="row2"><label>¿Qué podría hacer que la app deje de funcionar?<textarea id="f-riesgo" rows="2"></textarea></label><label>¿Qué haremos para evitarlo?<textarea id="f-accion" rows="2"></textarea></label></div>
+      </fieldset>
+    </form>
+  </section>
+
+  <footer><span>Aprendiendo con @LaProfeVivy</span><span>Saber Conocer</span></footer>
+</div>
+
+<script>
+(function(){
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function select(tab, focus){
+    tabs.forEach(function(t){ var on = t===tab; t.setAttribute('aria-selected', on?'true':'false'); t.tabIndex = on?0:-1; document.getElementById(t.getAttribute('aria-controls')).hidden = !on; });
+    if (focus) tab.focus();
+  }
+  tabs.forEach(function(t, i){
+    t.addEventListener('click', function(){ select(t); });
+    t.addEventListener('keydown', function(e){
+      var n = null;
+      if (e.key==='ArrowRight') n = tabs[(i+1)%tabs.length];
+      if (e.key==='ArrowLeft') n = tabs[(i-1+tabs.length)%tabs.length];
+      if (n){ e.preventDefault(); select(n, true); }
+    });
+  });
+
+  var form = document.getElementById('tpl'), KEY = 'sostenibilidad-plantilla', status = document.getElementById('status');
+  function fields(){ return Array.prototype.slice.call(form.querySelectorAll('input,textarea')); }
+  function save(){ var d = {}; fields().forEach(function(f){ d[f.id] = f.value; }); try{ localStorage.setItem(KEY, JSON.stringify(d)); }catch(e){} }
+  function load(d){ fields().forEach(function(f){ if (f.id in d) f.value = d[f.id]; }); }
+  function clear(){ fields().forEach(function(f){ f.value = ''; }); }
+  form.addEventListener('input', save);
+  try{ var s = localStorage.getItem(KEY); if (s) load(JSON.parse(s)); }catch(e){}
+  var EJ = {
+    'f-app':'App de retardos','f-problema':'El registro manual dificulta saber quién llega tarde y consultar su historial.',
+    'f-costos':'Base de datos en plan gratuito al inicio; cuenta de desarrollador; costo de la IA de predicción.',
+    'f-paga':'El colegio paga una licencia anual; docentes y estudiantes la usan gratis.',
+    'f-mant':'El equipo desarrollador revisa la app al inicio de cada periodo académico.',
+    'f-planb':'Código en GitHub y datos exportables para cambiar de proveedor si es necesario.',
+    'f-uso':'Número de docentes que abren sesión cada día.',
+    'f-impacto':'Comparar los retardos de primera hora antes y después de tres meses de uso.',
+    'f-amb':'Reemplaza planillas impresas, guarda solo fecha y hora, y usa IA una vez por semana.',
+    'f-riesgo':'Que los docentes dejen de abrir la sesión.',
+    'f-accion':'Hacer el registro en dos pasos y escuchar sus sugerencias cada periodo.'
+  };
+  document.getElementById('btn-ejemplo').addEventListener('click', function(){ clear(); load(EJ); save(); status.textContent = 'Ejemplo cargado. Reemplázalo con los datos de tu app.'; });
+  var armed = false;
+  document.getElementById('btn-limpiar').addEventListener('click', function(){
+    var b = this;
+    if (!armed){ armed = true; b.textContent = 'Confirmar limpiar'; status.textContent = 'Toca de nuevo para borrar todo.'; setTimeout(function(){ armed = false; b.textContent = 'Limpiar'; }, 4000); return; }
+    armed = false; b.textContent = 'Limpiar'; clear(); save(); status.textContent = 'Plantilla vacía.';
+  });
+  function asText(){
+    var g = function(id){ return document.getElementById(id).value.trim() || '—'; };
+    return ['PLAN DE SOSTENIBILIDAD','','1. Proyecto','App: '+g('f-app'),'Problema: '+g('f-problema'),'',
+      '2. Económica','Costos: '+g('f-costos'),'Quién paga: '+g('f-paga'),'',
+      '3. Técnica','Mantenimiento: '+g('f-mant'),'Plan si una herramienta falla: '+g('f-planb'),'',
+      '4. Social','Uso: '+g('f-uso'),'Impacto: '+g('f-impacto'),'',
+      '5. Ambiental', g('f-amb'),'',
+      '6. Riesgo principal','Riesgo: '+g('f-riesgo'),'Acción: '+g('f-accion')].join('\n');
+  }
+  document.getElementById('btn-copiar').addEventListener('click', function(){
+    var text = asText();
+    var fallback = function(){
+      var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('aria-label','Texto de la plantilla'); ta.style.cssText = 'width:100%;min-height:200px;margin-top:8px';
+      status.textContent = 'No se pudo copiar automáticamente. Selecciona y copia este texto:'; status.appendChild(ta); ta.select();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function(){ status.textContent = 'Plantilla copiada. Pégala en tu documento de entrega.'; }, fallback);
+    else fallback();
+  });
+})();
+</script>
+
+</body></html>
