@@ -1,1 +1,447 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Tipos de IA para apps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: guía de taller. Pestañas principales (Tipos, Elige tu IA, Para construir, Plantilla). En Tipos, sub-pestañas por lo que hace la app y fichas indexadas que se abren con ejemplo general y app de retardos. */
+:root{
+  --paper:#F4F5F2; --sheet:#FFFFFF; --ink:#1B2430; --muted:#5B6573; --rule:#D8DCD6;
+  --green:#1E6B4F; --green-soft:#E3EEE8; --blue:#1F5F8B; --blue-soft:#E2EDF5; --alert:#A3261C; --alert-soft:#F8E4E1;
+  --display:'Bricolage Grotesque', 'Segoe UI', Arial, sans-serif;
+  --body:'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+  --mono:'IBM Plex Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#12171F; --sheet:#19202B; --ink:#E9ECEF; --muted:#9AA4B1; --rule:#2C3542;
+  --green:#6CC9A1; --green-soft:#16302A; --blue:#7CB8E6; --blue-soft:#172B3D; --alert:#FF8A80; --alert-soft:#3A1E1C; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#12171F; --sheet:#19202B; --ink:#E9ECEF; --muted:#9AA4B1; --rule:#2C3542;
+  --green:#6CC9A1; --green-soft:#16302A; --blue:#7CB8E6; --blue-soft:#172B3D; --alert:#FF8A80; --alert-soft:#3A1E1C; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:40px 48px}
+.wrap{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+header{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:22px}
+@media (max-width:720px){header{grid-template-columns:1fr}}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,5vw,52px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.def{margin:0;border-left:3px solid var(--green);padding-left:14px;color:var(--muted)}
+.def b{color:var(--ink)}
+.tabs-main,.tabs-sub{display:flex;overflow-x:auto}
+.tabs-main{gap:28px;border-bottom:1px solid var(--rule)}
+.tabs-main [role="tab"]{font:inherit;font-weight:600;font-size:16px;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;padding:0 0 10px;cursor:pointer;white-space:nowrap;margin-bottom:-1px}
+.tabs-main [role="tab"][aria-selected="true"]{color:var(--ink);border-bottom-color:var(--green)}
+.split{display:grid;grid-template-columns:220px 1fr;gap:28px;align-items:start}
+.index{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 16px);display:flex;flex-direction:column;gap:8px}
+.index-h{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.tabs-sub{flex-direction:column;border-left:1px solid var(--rule)}
+.tabs-sub [role="tab"]{font:inherit;font-weight:600;font-size:15px;color:var(--muted);background:none;border:none;border-left:3px solid transparent;margin-left:-2px;padding:7px 12px;cursor:pointer;text-align:left;display:flex;justify-content:space-between;gap:8px}
+.tabs-sub [role="tab"] span{font-family:var(--mono);font-size:11px;padding-top:3px}
+.tabs-sub [role="tab"]:hover{color:var(--ink)}
+.tabs-sub [role="tab"][aria-selected="true"]{color:var(--ink);border-left-color:var(--green)}
+@media (max-width:760px){.split{grid-template-columns:1fr}.index{position:static}.tabs-sub{flex-direction:row;border-left:none;border-bottom:1px solid var(--rule);overflow-x:auto}.tabs-sub [role="tab"]{border-left:none;border-bottom:3px solid transparent;margin:0 0 -1px;white-space:nowrap}.tabs-sub [role="tab"][aria-selected="true"]{border-bottom-color:var(--green)}}
+[role="tab"]:focus-visible,summary:focus-visible,.btn:focus-visible,.opt:focus-within{outline:2px solid var(--green);outline-offset:3px}
+[role="tabpanel"]{display:flex;flex-direction:column;gap:16px}
+.lede{margin:0;color:var(--muted);max-width:64ch}
+.lede b{color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--rule);border-radius:4px;padding:1px 6px;color:var(--muted);white-space:nowrap}
+.chip.cel{color:var(--green);border-color:var(--green)}
+.chip.nube{color:var(--blue);border-color:var(--blue)}
+.chip.alert{color:var(--alert);border-color:var(--alert)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--rule);border-left:1px solid var(--rule);min-width:0}
+@media (max-width:520px){.grid{grid-template-columns:1fr}}
+details{background:var(--sheet);border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);min-width:0}
+details[open]{grid-column:1 / -1}
+summary{list-style:none;cursor:pointer;padding:18px 20px 18px;display:grid;grid-template-columns:1fr auto;gap:6px 12px}
+summary::-webkit-details-marker{display:none}
+summary:hover .t{color:var(--green)}
+.code{font-family:var(--mono);font-size:12px;color:var(--green)}
+.code em{font-style:normal;color:var(--alert);margin-left:8px;letter-spacing:.06em;text-transform:uppercase}
+.chev{grid-column:2;grid-row:1 / span 3;font-family:var(--mono);font-size:18px;color:var(--muted);transition:transform .2s}
+details[open] .chev{transform:rotate(45deg);color:var(--green)}
+.t{font-family:var(--display);font-weight:700;font-size:20px;line-height:1.15;letter-spacing:-.01em}
+.d{font-size:15px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.open{padding:0 20px 20px;display:flex;flex-direction:column;gap:14px}
+.compare{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--rule)}
+.compare > div{padding:12px 18px 0 0;min-width:0}
+.compare > div + div{border-left:1px solid var(--rule);padding-left:18px}
+h4{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.ret h4{color:var(--green)}
+.compare p,.facts p{margin:0}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid var(--rule)}
+.facts > div{padding:12px 18px 0 0;min-width:0}
+.facts > div + div{border-left:1px solid var(--rule);padding-left:18px}
+@media (max-width:640px){.compare,.facts{grid-template-columns:1fr}.compare > div + div,.facts > div + div{border-left:none;border-top:1px solid var(--rule);padding-left:0}}
+.meta{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0;font-size:14px;color:var(--muted);border-top:1px solid var(--rule);padding-top:10px}
+.meta dt{display:inline;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.meta dd{display:inline;margin:0 0 0 6px;color:var(--ink)}
+.legal{display:flex;gap:12px;align-items:baseline;border-top:1px solid var(--rule);padding-top:10px;font-size:15px}
+.legal b{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);white-space:nowrap;padding-top:3px}
+.legal.alert b{color:var(--alert)}
+.legal p{margin:0}
+/* Elige tu IA */
+.quiz{background:var(--sheet);border:1px solid var(--rule)}
+.q{border:none;border-bottom:1px solid var(--rule);margin:0;padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.q legend{font-family:var(--display);font-weight:700;font-size:18px;padding:0;display:flex;gap:10px;align-items:center;margin-bottom:4px}
+.n{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--green);border:1px solid var(--green);border-radius:4px;padding:1px 6px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{position:relative;display:inline-flex}
+.opt input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.opt span{border:1px solid var(--rule);border-radius:6px;padding:7px 12px;font-size:15px;background:var(--paper)}
+.opt input:checked + span{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.result{padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.result h3{font-family:var(--display);font-weight:700;font-size:18px;margin:0}
+.sugs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.sug{font:inherit;text-align:left;background:var(--green-soft);border:1px solid transparent;border-radius:8px;padding:12px 14px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;gap:2px}
+.sug:hover{border-color:var(--green)}
+.sug b{font-family:var(--display);font-size:17px}
+.sug small{color:var(--muted);font-size:14px}
+.empty{color:var(--muted);margin:0}
+/* Construir */
+.build{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+@media (max-width:640px){.build{grid-template-columns:1fr}}
+.build > div{background:var(--sheet);border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:18px 20px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.build h3{font-family:var(--display);font-weight:700;font-size:20px;margin:0}
+.build ul{margin:0;padding-left:18px}
+.build .wide{grid-column:1 / -1}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--sheet);border:1px solid var(--rule)}
+.vs > div{padding:16px 20px}
+.vs > div + div{border-left:1px solid var(--rule)}
+@media (max-width:640px){.vs{grid-template-columns:1fr}.vs > div + div{border-left:none;border-top:1px solid var(--rule)}}
+.vs h3{font-family:var(--display);font-weight:700;font-size:19px;margin:0 0 4px}
+.vs p{margin:0}
+/* Plantilla */
+.tpl-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.tpl-head .lede{flex:1 1 320px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:600;font-size:14px;color:var(--ink);background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:8px 14px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--green);border-color:var(--green);color:var(--sheet)}
+.status{margin:-6px 0 0;min-height:1.2em;font-size:14px;color:var(--green)}
+.tpl{background:var(--sheet);border:1px solid var(--rule);display:flex;flex-direction:column}
+.tpl fieldset{border:none;border-bottom:1px solid var(--rule);margin:0;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.tpl fieldset:last-child{border-bottom:none}
+.tpl legend{font-family:var(--display);font-weight:700;font-size:18px;padding:0;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+label{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:600;color:var(--muted);min-width:0}
+input[type="text"],textarea,select{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical}
+input[type="text"]:focus,textarea:focus,select:focus{outline:2px solid var(--green);outline-offset:0;border-color:var(--green)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:720px){.row2,.row3{grid-template-columns:1fr}}
+.radios{display:flex;gap:16px;flex-wrap:wrap;font-weight:400;color:var(--ink)}
+.radios label{flex-direction:row;align-items:center;gap:6px;color:var(--ink);font-weight:400;font-size:16px}
+.radios input{accent-color:var(--green)}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.chev{transition:none}}
+</style>
 
+<div class="wrap">
+  <header>
+    <div>
+      <p class="kicker">Diseño del producto · IA en tu app</p>
+      <h1>Tipos de IA para apps</h1>
+    </div>
+    <p class="def">Primero define <b>qué tiene que hacer tu app</b>. Después elige la IA que lo resuelve con la herramienta más simple.</p>
+  </header>
+
+  <div class="tabs-main" role="tablist" aria-label="Secciones">
+    <button role="tab" id="m-tipos" aria-controls="p-tipos" aria-selected="true">Tipos de IA</button>
+    <button role="tab" id="m-elige" aria-controls="p-elige" aria-selected="false" tabindex="-1">Elige tu IA</button>
+    <button role="tab" id="m-construir" aria-controls="p-construir" aria-selected="false" tabindex="-1">IA para construir</button>
+    <button role="tab" id="m-plantilla" aria-controls="p-plantilla" aria-selected="false" tabindex="-1">Plantilla</button>
+  </div>
+
+  <!-- TIPOS -->
+  <section role="tabpanel" id="p-tipos" aria-labelledby="m-tipos">
+    <div class="split">
+      <nav class="index">
+        <p class="index-h">¿Qué tiene que hacer tu app?</p>
+        <div class="tabs-sub" role="tablist" aria-orientation="vertical" aria-label="¿Qué tiene que hacer tu app?" id="subtabs"></div>
+      </nav>
+      <div class="grid" id="fichas"></div>
+    </div>
+  </section>
+
+  <!-- ELIGE -->
+  <section role="tabpanel" id="p-elige" aria-labelledby="m-elige" hidden>
+    <p class="lede">Responde tres preguntas y te sugerimos qué tipo de IA revisar.</p>
+    <form class="quiz" id="quiz" onsubmit="return false">
+      <fieldset class="q">
+        <legend><span class="n">1</span>¿Qué recibe tu app?</legend>
+        <div class="opts" id="q1"></div>
+      </fieldset>
+      <fieldset class="q">
+        <legend><span class="n">2</span>¿Qué debe hacer con eso?</legend>
+        <div class="opts" id="q2"></div>
+      </fieldset>
+      <fieldset class="q">
+        <legend><span class="n">3</span>¿Debe funcionar sin internet?</legend>
+        <div class="opts" id="q3"></div>
+      </fieldset>
+      <div class="result" id="result" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <!-- CONSTRUIR -->
+  <section role="tabpanel" id="p-construir" aria-labelledby="m-construir" hidden>
+    <div class="vs">
+      <div><h3>IA dentro de la app</h3><p>La usa el usuario final. El estudiante toma una foto y la app reconoce el tipo de basura. <b>Se avisa al usuario.</b></p></div>
+      <div><h3>IA para construir la app</h3><p>La usas tú para diseñar y programar. El usuario nunca la ve. <b>No se declara legalmente;</b> en la entrega, si el docente lo pide.</p></div>
+    </div>
+    <div class="build">
+      <div><h3>Crear la app con instrucciones</h3><p>Describes lo que quieres y la herramienta arma pantallas y lógica.</p><ul><li>Lovable</li><li>Bolt</li><li>Google AI Studio</li></ul></div>
+      <div><h3>Escribir y corregir código</h3><p>Explica errores, propone código y revisa lo que ya tienes.</p><ul><li>ChatGPT, Claude o Gemini</li><li>GitHub Copilot</li></ul></div>
+      <div><h3>Diseñar pantallas</h3><p>Genera bocetos y variantes de interfaz.</p><ul><li>Figma con IA</li><li>Uizard</li></ul></div>
+      <div><h3>Entrenar tu propio modelo</h3><p>Creas la IA que luego vive dentro de la app.</p><ul><li>Google Teachable Machine</li><li>Orange Data Mining</li></ul></div>
+      <div class="wide"><h3>App de retardos</h3><p>Las pantallas se pueden prototipar en Lovable usando el PRD y el MVP como instrucciones: “Crea una app con tres roles: docente abre sesión y muestra un QR, estudiante registra su llegada, coordinación consulta retardos”.</p></div>
+      <div class="wide"><h3>Reglas al construir con IA</h3><ul><li>Revisa y prueba todo lo que genera: puede equivocarse.</li><li>No pegues datos personales reales en los prompts.</li><li>Pídele lo legal: autorización de datos, aviso de IA, borrar cuenta.</li><li>Guarda tus prompts: prueban tu trabajo y tu autoría.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- PLANTILLA -->
+  <section role="tabpanel" id="p-plantilla" aria-labelledby="m-plantilla" hidden>
+    <div class="tpl-head">
+      <p class="lede">Plantilla para la entrega: explica qué IA usa tu app, para qué y con qué cuidados.</p>
+      <div class="actions">
+        <button type="button" class="btn" id="btn-ejemplo">Ver ejemplo: app de retardos</button>
+        <button type="button" class="btn" id="btn-limpiar">Limpiar</button>
+        <button type="button" class="btn primary" id="btn-copiar">Copiar plantilla</button>
+      </div>
+    </div>
+    <p class="status" id="status" aria-live="polite"></p>
+    <form class="tpl" id="tpl" onsubmit="return false">
+      <fieldset>
+        <legend><span class="n">1</span>Proyecto</legend>
+        <div class="row2">
+          <label>Nombre de la app<input id="f-app" type="text"></label>
+          <label>Problema que resuelve<input id="f-problema" type="text"></label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><span class="n">2</span>La IA dentro de la app</legend>
+        <div class="row2">
+          <label>Tipo de IA<select id="f-tipo"></select></label>
+          <label>Herramienta<input id="f-herr" type="text" placeholder="Ej.: Teachable Machine"></label>
+        </div>
+        <label>¿Para qué la usa la app?<textarea id="f-para" rows="2"></textarea></label>
+        <label>¿Qué datos usa?<textarea id="f-datos" rows="2"></textarea></label>
+        <div><span class="lblr" id="donde-lbl" style="font-size:14px;font-weight:600;color:var(--muted)">¿Dónde corre?</span>
+          <div class="radios" role="radiogroup" aria-labelledby="donde-lbl">
+            <label><input type="radio" name="donde" id="d-cel" value="En el celular">En el celular</label>
+            <label><input type="radio" name="donde" id="d-nube" value="En la nube">En la nube</label>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend><span class="n">3</span>Cuidados</legend>
+        <div class="row2">
+          <label>Riesgos o errores posibles<textarea id="f-riesgos" rows="2"></textarea></label>
+          <label>Plan B si la IA falla<textarea id="f-planb" rows="2"></textarea></label>
+        </div>
+        <label>Aviso que verá el usuario<input id="f-aviso" type="text" placeholder="Estás usando una función con IA. Puede equivocarse."></label>
+      </fieldset>
+      <fieldset>
+        <legend><span class="n">4</span>IA usada para construir la app</legend>
+        <label>Herramientas y para qué<textarea id="f-construir" rows="2"></textarea></label>
+      </fieldset>
+    </form>
+  </section>
+
+  <footer><span>Aprendiendo con @LaProfeVivy</span><span>Saber Conocer</span></footer>
+</div>
+
+<script>
+(function(){
+var CATS = [
+  ['ver','Ver'],['oir','Escuchar y hablar'],['leer','Leer y escribir'],['conv','Conversar'],
+  ['crear','Crear'],['buscar','Buscar y recomendar'],['pred','Predecir y detectar'],['auto','Automatizar']
+];
+/* id, cat, nombre, qué hace, ej. general, ej. retardos, herramientas, nivel, costo, dónde (cel|nube|ambos), bueno, cuidado, legal, alerta */
+var T = [
+ ['img','ver','Clasificación de imágenes','Dice a qué grupo pertenece una foto.','Reconocer el tipo de basura: plástico, papel u orgánico.','No es la mejor opción: para saber quién llegó basta el QR.','Teachable Machine, ML Kit, TensorFlow Lite','Sin código','Gratis','ambos','Se entrena con tus fotos en minutos y puede funcionar sin internet.','Necesita muchas fotos variadas; falla con otra luz o fondo.','Si las fotos muestran personas, pide autorización.',0],
+ ['obj','ver','Detección de objetos','Encuentra y ubica varios objetos en una imagen.','Contar productos en un estante.','No aplica en la primera versión.','ML Kit, Roboflow','Poco código','Gratis con límite','ambos','Dice dónde está cada cosa, no solo qué es.','Marcar los objetos en cada foto de entrenamiento toma tiempo.','Si detecta personas, aplica la ley de datos personales.',0],
+ ['pose','ver','Reconocimiento de poses','Detecta la posición del cuerpo con la cámara.','Corregir la postura en pausas activas.','No aplica.','Teachable Machine, ML Kit, MediaPipe','Sin código','Gratis','cel','Solo necesita la cámara.','Graba imágenes de personas.','Pide permiso de cámara y no guardes video si no es necesario.',0],
+ ['ocr','ver','Texto en fotos (OCR)','Convierte el texto de una foto en texto editable.','Escanear facturas o apuntes.','Leer el código impreso del carné para registrar sin QR.','ML Kit, Google Cloud Vision','Poco código','Gratis con límite','ambos','Muy preciso con texto impreso.','La letra a mano cuesta más.','Los documentos pueden tener datos personales: guárdalos con cuidado.',0],
+ ['ar','ver','Realidad aumentada con IA','Reconoce el entorno con la cámara y muestra información encima.','Señalar en la cámara dónde queda cada salón.','No aplica.','ARCore, ARKit, Unity','Con código','Gratis','cel','Experiencias muy llamativas.','Exige más programación y un celular compatible.','Pide permiso de cámara; si graba personas, aplica la ley de datos.',0],
+ ['face','ver','Reconocimiento facial','Identifica a una persona por su cara.','Control de acceso a un edificio.','Registrar la llegada con la cara: no recomendado. El QR resuelve lo mismo sin datos biométricos.','ML Kit (solo detecta caras, no identifica), servicios en la nube','Con código','Pago por uso','ambos','Registro sin tocar nada.','Errores con ciertos rostros y alto riesgo de mal uso.','Datos biométricos: son sensibles. Con menores de edad exige autorización de sus representantes y mucho cuidado. Evítalo en proyectos de clase.',1],
+ ['sound','oir','Reconocimiento de sonidos','Identifica qué tipo de sonido se escucha.','Avisar a una persona sorda que suena el timbre.','No aplica.','Teachable Machine (audio), TensorFlow Lite','Sin código','Gratis','cel','Muy útil para accesibilidad.','El ruido del ambiente lo confunde.','Usa el micrófono: pide permiso y no guardes grabaciones sin necesidad.',0],
+ ['stt','oir','Voz a texto','Convierte lo que dices en texto.','Dictar notas de clase.','Coordinación dicta la nota de seguimiento de un caso.','Reconocimiento de voz del celular, Google Speech-to-Text, Whisper','Poco código','Gratis o pago por uso','ambos','Más rápido que escribir.','Le cuestan los acentos y el ruido.','La voz es un dato personal; si va a la nube, pide permiso.',0],
+ ['tts','oir','Voz sintética','Lee textos en voz alta con voz natural.','Leer contenidos a personas con baja visión.','Decir en voz alta: “Registro guardado. Llegaste puntual”.','Texto a voz del celular, Google Text-to-Speech, ElevenLabs','Poco código','Gratis o pago por uso','ambos','Hace la app accesible.','Algunas voces suenan artificiales.','No clones la voz de una persona real sin su permiso.',0],
+ ['text','leer','Análisis de texto','Detecta temas, emociones u opiniones en textos.','Analizar reseñas de clientes.','Clasificar justificaciones por motivo: transporte, salud u otro.','Google Cloud Natural Language, Hugging Face, API de un modelo de lenguaje','Poco código','Pago por uso','nube','Procesa cientos de textos en segundos.','Falla con el sarcasmo y la jerga.','Las justificaciones pueden tener datos de salud, que son sensibles.',0],
+ ['sum','leer','Resumen de textos','Resume textos largos en pocas líneas.','Resumir lecturas o actas.','Resumen semanal de retardos para coordinación.','API de Gemini, OpenAI o Claude','Poco código','Pago por uso','nube','Ahorra tiempo de lectura.','Puede omitir detalles importantes.','Envía a la IA solo los datos necesarios.',0],
+ ['write','leer','Redacción de textos','Escribe borradores de textos.','Redactar correos o descripciones.','Borrador del mensaje al acudiente, que coordinación revisa antes de enviar.','API de Gemini, OpenAI o Claude','Poco código','Pago por uso','nube','Textos claros en segundos.','Puede inventar datos o sonar impersonal.','Una persona revisa antes de enviar.',0],
+ ['trad','leer','Traducción','Traduce textos entre idiomas.','App de turismo que traduce menús.','No aplica.','ML Kit (sin internet), Google Cloud Translation','Poco código','Gratis','ambos','Con ML Kit funciona sin conexión.','Menos calidad con modismos e idiomas poco comunes.','Sin riesgo especial si no traduce datos personales.',0],
+ ['extr','leer','Extracción de datos de documentos','Saca campos específicos de formularios o documentos.','Leer los datos de una factura.','Leer fecha y motivo de una excusa escaneada.','Google Document AI, API de un modelo con imágenes','Poco código','Pago por uso','nube','Evita digitar a mano.','Documentos borrosos producen errores.','Una excusa médica tiene datos de salud: pide autorización expresa.',0],
+ ['chat','conv','Chatbot o asistente','Conversa y responde preguntas.','Tutor que explica un tema.','Asistente que explica a los docentes cómo abrir una sesión.','API de Gemini, OpenAI o Claude; Botpress o Voiceflow','Sin código','Pago por uso','nube','Muy flexible.','Se equivoca e inventa; cobra por uso.','Aviso “Estás hablando con una IA” y permiso antes de enviar datos.',0],
+ ['docs','conv','Respuestas sobre tus documentos','Responde solo con documentos que tú le das.','Asistente del reglamento estudiantil.','Responde dudas del manual de convivencia sobre retardos.','API con archivos, Supabase con búsqueda vectorial','Poco código','Pago por uso','nube','Más confiable que un chatbot general.','Hay que mantener los documentos al día.','Aviso de IA; no cargues documentos con datos personales.',0],
+ ['gimg','crear','Generación de imágenes','Crea imágenes a partir de texto.','Ilustrar cuentos infantiles.','Bocetos para el logo de reloj de la app.','API de imágenes de OpenAI, Imagen en Gemini, Stable Diffusion','Poco código','Pago por uso','nube','Contenido visual único.','Autoría dudosa.','Márcalas como hechas con IA; Google Play exige botón para reportar.',0],
+ ['vid','crear','Generación de video','Crea clips cortos desde texto o imágenes.','Videos promocionales cortos.','Tutorial corto para docentes.','Google Veo, Runway','Sin código','Pago por uso','nube','Video sin cámara ni edición.','Resultados variables y costosos.','Márcalo como hecho con IA; nunca imites personas reales.',0],
+ ['music','crear','Música y efectos de sonido','Crea melodías o sonidos.','Música de fondo para un juego.','Sonido de confirmación al registrar.','Generadores de música con IA (revisa su licencia)','Sin código','Gratis con límite','nube','Sonido propio sin pagar a un músico.','La licencia de uso comercial varía.','Lee la licencia antes de usarlo en una app comercial.',0],
+ ['search','buscar','Búsqueda inteligente','Encuentra por significado, no solo por palabra exacta.','Buscar recetas “para algo rápido y barato”.','Buscar “casos de llegadas tarde por transporte”.','Supabase con búsqueda vectorial, API de embeddings','Con código','Pago por uso','nube','Encuentra aunque el usuario no use la palabra exacta.','Requiere preparar los datos.','Protege los registros: cada rol ve solo lo suyo.',0],
+ ['rec','buscar','Recomendador','Sugiere lo que más le sirve a cada usuario.','Recomendar cursos o ejercicios.','Sugerir a coordinación una acción según la reincidencia.','Reglas en tu base de datos, TensorFlow Recommenders, API de un modelo','Poco código','Gratis','nube','Personaliza la experiencia.','Necesita datos de uso; puede encerrar en una burbuja.','La decisión final la toma una persona.',0],
+ ['pred','pred','Predicción con datos','Anticipa un resultado con datos del pasado.','Avisar riesgo de deserción.','Anticipar qué estudiantes van camino a reincidir.','Orange Data Mining, Vertex AI AutoML, scikit-learn','Sin código','Gratis','nube','Ayuda a actuar a tiempo.','Datos sesgados dan predicciones injustas.','Decide sobre menores: revisión humana obligatoria y explicar el criterio.',0],
+ ['anom','pred','Detección de anomalías','Avisa cuando algo se sale de lo normal.','Detectar un gasto inusual.','Alertar si un curso dispara retardos un día (por ejemplo, falló el bus).','Orange Data Mining, scikit-learn, reglas simples','Poco código','Gratis','nube','Detecta problemas que nadie está mirando.','Da falsas alarmas al inicio.','Usa datos agregados cuando sea posible.',0],
+ ['auto','auto','Automatización con IA','Hace tareas en cadena: lee, decide y actúa.','Resumir mensajes y crear recordatorios.','Al tercer retardo, crear el caso y avisar a coordinación.','n8n, Make, Zapier','Sin código','Gratis con límite','nube','Ahorra trabajo repetitivo.','Si se equivoca, el error se repite solo.','Actúa en tu nombre: revisa permisos y deja que una persona confirme lo importante.',0]
+];
+var byId = {}; T.forEach(function(x){ byId[x[0]] = x; });
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+var WHERE = {cel:'el celular', nube:'la nube', ambos:'el celular o la nube'};
+function whereChips(w){ return w==='cel' ? '<span class="chip cel">Celular</span>' : w==='nube' ? '<span class="chip nube">Nube</span>' : '<span class="chip cel">Celular</span><span class="chip nube">Nube</span>'; }
+
+/* Sub-pestañas y fichas */
+var sub = document.getElementById('subtabs'), fichas = document.getElementById('fichas');
+CATS.forEach(function(c, i){
+  var n = T.filter(function(x){ return x[1]===c[0]; }).length;
+  var b = document.createElement('button');
+  b.setAttribute('role','tab'); b.id = 's-'+c[0]; b.setAttribute('aria-selected', i===0 ? 'true':'false'); b.tabIndex = i===0 ? 0 : -1;
+  b.setAttribute('aria-controls','fichas'); b.dataset.cat = c[0];
+  b.innerHTML = esc(c[1])+'<span>'+n+'</span>';
+  sub.appendChild(b);
+});
+function render(cat, openId){
+  fichas.innerHTML = '';
+  fichas.setAttribute('aria-labelledby','s-'+cat);
+  T.filter(function(x){ return x[1]===cat; }).forEach(function(x){
+    var num = ('0'+(T.indexOf(x)+1)).slice(-2);
+    var d = document.createElement('details'); d.id = 'ficha-'+x[0];
+    if (x[13]) d.className = 'is-alert';
+    d.innerHTML =
+      '<summary><span class="code">'+num+(x[13]?'<em>Alerta</em>':'')+'</span><span class="chev" aria-hidden="true">+</span>'+
+      '<span class="t">'+esc(x[2])+'</span><span class="d">'+esc(x[3])+'</span></summary>'+
+      '<div class="open">'+
+        '<div class="compare"><div><h4>Ejemplo general</h4><p>'+esc(x[4])+'</p></div><div class="ret"><h4>App de retardos</h4><p>'+esc(x[5])+'</p></div></div>'+
+        '<div class="facts"><div><h4>Lo bueno</h4><p>'+esc(x[10])+'</p></div><div><h4>Lo malo</h4><p>'+esc(x[11])+'</p></div></div>'+
+        '<dl class="meta"><div><dt>Herramientas</dt><dd>'+esc(x[6])+'</dd></div><div><dt>Dificultad</dt><dd>'+esc(x[7])+'</dd></div><div><dt>Costo</dt><dd>'+esc(x[8])+'</dd></div><div><dt>Corre en</dt><dd>'+WHERE[x[9]]+'</dd></div></dl>'+
+        '<div class="legal'+(x[13]?' alert':'')+'"><b>'+(x[13]?'Alerta legal':'Cuidado legal')+'</b><p>'+esc(x[12])+'</p></div>'+
+      '</div>';
+    if (x[0]===openId) d.open = true;
+    fichas.appendChild(d);
+  });
+}
+function selectSub(cat, focus, openId){
+  Array.prototype.forEach.call(sub.children, function(b){ var on = b.dataset.cat===cat; b.setAttribute('aria-selected', on?'true':'false'); b.tabIndex = on?0:-1; if(on&&focus) b.focus(); });
+  render(cat, openId);
+}
+tabKeys(Array.prototype.slice.call(sub.children), function(b, f){ selectSub(b.dataset.cat, f); });
+render('ver');
+
+/* Pestañas principales */
+var mains = Array.prototype.slice.call(document.querySelectorAll('.tabs-main [role="tab"]'));
+function selectMain(tab, focus){
+  mains.forEach(function(t){ var on = t===tab; t.setAttribute('aria-selected', on?'true':'false'); t.tabIndex = on?0:-1; document.getElementById(t.getAttribute('aria-controls')).hidden = !on; });
+  if (focus) tab.focus();
+}
+tabKeys(mains, selectMain);
+function tabKeys(list, onSelect){
+  list.forEach(function(t, i){
+    t.addEventListener('click', function(){ onSelect(t, false); });
+    t.addEventListener('keydown', function(e){
+      var n = null;
+      if (e.key==='ArrowRight') n = list[(i+1)%list.length];
+      if (e.key==='ArrowLeft') n = list[(i-1+list.length)%list.length];
+      if (n){ e.preventDefault(); onSelect(n, true); }
+    });
+  });
+}
+
+/* Elige tu IA */
+var Q1 = [['fotos','Fotos o cámara'],['sonido','Sonido o voz'],['texto','Textos o documentos'],['datos','Datos guardados en tablas'],['preg','Preguntas del usuario']];
+var Q2 = [['reconocer','Reconocer o clasificar'],['crear','Crear algo nuevo'],['responder','Responder o buscar'],['anticipar','Anticipar o sugerir'],['tareas','Hacer tareas solo']];
+var Q3 = [['si','Sí'],['no','No importa']];
+var MAP = {
+  fotos:{reconocer:['img','ocr','obj','pose'],crear:['gimg','vid'],responder:['chat'],anticipar:[],tareas:['auto']},
+  sonido:{reconocer:['sound','stt'],crear:['tts','music'],responder:['chat','tts'],anticipar:[],tareas:['auto']},
+  texto:{reconocer:['text','extr','ocr'],crear:['write','sum','trad'],responder:['docs','search'],anticipar:['rec'],tareas:['auto']},
+  datos:{reconocer:['anom'],crear:['sum'],responder:['search'],anticipar:['pred','rec','anom'],tareas:['auto']},
+  preg:{reconocer:['text'],crear:['write','gimg'],responder:['chat','docs','search'],anticipar:['rec'],tareas:['auto']}
+};
+function opts(el, name, list){
+  list.forEach(function(o){
+    var l = document.createElement('label'); l.className = 'opt';
+    l.innerHTML = '<input type="radio" name="'+name+'" id="'+name+'-'+o[0]+'" value="'+o[0]+'"><span>'+esc(o[1])+'</span>';
+    el.appendChild(l);
+  });
+}
+opts(document.getElementById('q1'),'q1',Q1); opts(document.getElementById('q2'),'q2',Q2); opts(document.getElementById('q3'),'q3',Q3);
+var quiz = document.getElementById('quiz'), result = document.getElementById('result');
+function val(n){ var c = quiz.querySelector('input[name="'+n+'"]:checked'); return c ? c.value : null; }
+function showResult(){
+  var a = val('q1'), b = val('q2'), c = val('q3');
+  if (!a || !b){ result.innerHTML = '<p class="empty">Elige una opción en las preguntas 1 y 2.</p>'; return; }
+  var ids = (MAP[a][b] || []).slice(), note = '';
+  if (c === 'si'){
+    var off = ids.filter(function(id){ return byId[id][9] !== 'nube'; });
+    if (off.length) ids = off; else if (ids.length) note = 'Ninguna opción funciona del todo sin internet; tu app necesitará conexión para esta función.';
+  }
+  if (!ids.length){ result.innerHTML = '<h3>Combinación poco común</h3><p class="empty">Revisa la pestaña Tipos de IA o replantea qué debe hacer tu app.</p>'; return; }
+  result.innerHTML = '<h3>Te sugerimos revisar</h3><div class="sugs">'+ids.map(function(id){ var x = byId[id];
+    return '<button type="button" class="sug" data-id="'+id+'"><b>'+esc(x[2])+'</b><small>'+esc(x[6].split(',')[0])+' · '+esc(x[7])+'</small></button>'; }).join('')+'</div>'+(note?'<p class="empty">'+esc(note)+'</p>':'');
+}
+quiz.addEventListener('change', showResult);
+result.addEventListener('click', function(e){
+  var s = e.target.closest('.sug'); if (!s) return;
+  var x = byId[s.dataset.id];
+  selectMain(document.getElementById('m-tipos'));
+  selectSub(x[1], false, x[0]);
+  var f = document.getElementById('ficha-'+x[0]); if (f){ f.scrollIntoView({block:'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); f.querySelector('summary').focus({preventScroll:true}); }
+});
+showResult();
+
+/* Plantilla */
+var sel = document.getElementById('f-tipo');
+sel.innerHTML = '<option value="">Elige un tipo</option>'+CATS.map(function(c){
+  return '<optgroup label="'+esc(c[1])+'">'+T.filter(function(x){return x[1]===c[0];}).map(function(x){ return '<option value="'+x[0]+'">'+esc(x[2])+'</option>'; }).join('')+'</optgroup>';
+}).join('');
+var form = document.getElementById('tpl'), KEY = 'ia-plantilla', status = document.getElementById('status');
+function fields(){ return Array.prototype.slice.call(form.querySelectorAll('input,textarea,select')); }
+function save(){ var d = {}; fields().forEach(function(f){ d[f.id] = (f.type==='radio') ? f.checked : f.value; }); try{ localStorage.setItem(KEY, JSON.stringify(d)); }catch(e){} }
+function load(d){ fields().forEach(function(f){ if (f.id in d){ if (f.type==='radio') f.checked = !!d[f.id]; else f.value = d[f.id]; } }); }
+function clear(){ fields().forEach(function(f){ if (f.type==='radio') f.checked = false; else f.value = ''; }); }
+form.addEventListener('input', save); form.addEventListener('change', save);
+try{ var s = localStorage.getItem(KEY); if (s) load(JSON.parse(s)); }catch(e){}
+var EJ = {
+  'f-app':'App de retardos','f-problema':'El registro manual dificulta saber quién llega tarde y consultar su historial.',
+  'f-tipo':'pred','f-herr':'Orange Data Mining para entrenar el modelo',
+  'f-para':'Anticipar qué estudiantes van camino a reincidir, para que coordinación intervenga a tiempo.',
+  'f-datos':'Historial de llegadas: fecha, hora programada, hora real y curso. Sin datos de salud.',
+  'd-nube':true,
+  'f-riesgos':'Sesgo: marcar injustamente a un estudiante. Datos de menores de edad.',
+  'f-planb':'Regla simple: al tercer retardo se abre un caso. Coordinación revisa cada alerta.',
+  'f-aviso':'Esta alerta la genera una IA y la revisa coordinación antes de tomar decisiones.',
+  'f-construir':'Lovable para prototipar las pantallas a partir del PRD y el MVP; ChatGPT para redactar los mensajes de la app.'
+};
+document.getElementById('btn-ejemplo').addEventListener('click', function(){ clear(); load(EJ); save(); status.textContent = 'Ejemplo cargado. Reemplázalo con los datos de tu app.'; });
+var armed = false;
+document.getElementById('btn-limpiar').addEventListener('click', function(){
+  var b = this;
+  if (!armed){ armed = true; b.textContent = 'Confirmar limpiar'; status.textContent = 'Toca de nuevo para borrar todo.'; setTimeout(function(){ armed = false; b.textContent = 'Limpiar'; }, 4000); return; }
+  armed = false; b.textContent = 'Limpiar'; clear(); save(); status.textContent = 'Plantilla vacía.';
+});
+function asText(){
+  var g = function(id){ var el = document.getElementById(id); return (el.value || '').trim() || '—'; };
+  var tipo = sel.value ? byId[sel.value][2] : '—';
+  var donde = document.getElementById('d-cel').checked ? 'En el celular' : document.getElementById('d-nube').checked ? 'En la nube' : '—';
+  return ['LA IA EN MI PROYECTO','','1. Proyecto','App: '+g('f-app'),'Problema: '+g('f-problema'),'',
+    '2. La IA dentro de la app','Tipo de IA: '+tipo,'Herramienta: '+g('f-herr'),'Para qué: '+g('f-para'),'Datos que usa: '+g('f-datos'),'Dónde corre: '+donde,'',
+    '3. Cuidados','Riesgos: '+g('f-riesgos'),'Plan B: '+g('f-planb'),'Aviso al usuario: '+g('f-aviso'),'',
+    '4. IA usada para construir la app', g('f-construir')].join('\n');
+}
+document.getElementById('btn-copiar').addEventListener('click', function(){
+  var text = asText();
+  var fallback = function(){
+    var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('aria-label','Texto de la plantilla'); ta.style.cssText = 'width:100%;min-height:200px;margin-top:8px';
+    status.textContent = 'No se pudo copiar automáticamente. Selecciona y copia este texto:'; status.appendChild(ta); ta.select();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function(){ status.textContent = 'Plantilla copiada. Pégala en tu documento de entrega.'; }, fallback);
+  else fallback();
+});
+})();
+</script>
+
+</body></html>
