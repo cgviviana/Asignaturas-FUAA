@@ -1,1 +1,405 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Criterios de originalidad</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: guía de taller tipo lienzo de estrategia. Pestañas subrayadas; fichas indexadas (V = vacío, J = jugada) que al abrirse comparan "En general" y "App de retardos" en dos columnas. */
+:root{
+  --paper:#F4F5F2; --sheet:#FFFFFF; --ink:#1B2430; --muted:#5B6573; --rule:#D8DCD6;
+  --green:#1E6B4F; --green-soft:#E3EEE8;
+  --display:'Bricolage Grotesque', 'Segoe UI', Arial, sans-serif;
+  --body:'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+  --mono:'IBM Plex Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#12171F; --sheet:#19202B; --ink:#E9ECEF; --muted:#9AA4B1; --rule:#2C3542;
+  --green:#6CC9A1; --green-soft:#16302A; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#12171F; --sheet:#19202B; --ink:#E9ECEF; --muted:#9AA4B1; --rule:#2C3542;
+  --green:#6CC9A1; --green-soft:#16302A; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:40px 48px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:22px}
+@media (max-width:720px){header{grid-template-columns:1fr}}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,5vw,52px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.def{margin:0;border-left:3px solid var(--green);padding-left:14px}
+.def dt{font-family:var(--display);font-weight:700;font-size:20px}
+.def dt small{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--muted);margin-left:6px}
+.def dd{margin:2px 0 0;color:var(--muted)}
+[role="tablist"]{display:flex;gap:28px;border-bottom:1px solid var(--rule);overflow-x:auto}
+[role="tab"]{font:inherit;font-weight:600;font-size:16px;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;padding:0 0 10px;cursor:pointer;white-space:nowrap;margin-bottom:-1px}
+[role="tab"] span{font-family:var(--mono);font-size:12px;margin-left:4px}
+[role="tab"][aria-selected="true"]{color:var(--ink);border-bottom-color:var(--green)}
+[role="tab"]:focus-visible,summary:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+[role="tabpanel"]{display:flex;flex-direction:column;gap:16px}
+.lede{margin:0;color:var(--muted);max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+@media (max-width:820px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.grid{grid-template-columns:1fr}}
+details{background:var(--sheet);border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);min-width:0}
+details[open]{grid-column:1 / -1}
+summary{list-style:none;cursor:pointer;padding:18px 20px 20px;display:grid;grid-template-columns:1fr auto;gap:6px 12px}
+summary::-webkit-details-marker{display:none}
+summary:hover .t{color:var(--green)}
+.code{font-family:var(--mono);font-size:12px;color:var(--green);grid-column:1}
+.chev{grid-column:2;grid-row:1 / span 3;align-self:start;font-family:var(--mono);font-size:18px;color:var(--muted);transition:transform .2s}
+details[open] .chev{transform:rotate(45deg);color:var(--green)}
+.t{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.15;letter-spacing:-.01em}
+.d{font-size:15px;color:var(--muted)}
+.compare{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--rule);margin:0 20px 20px}
+.compare > div{padding:14px 18px 2px 0}
+.compare > div + div{border-left:1px solid var(--rule);padding-left:18px}
+.compare h4{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.compare .ret h4{color:var(--green)}
+.compare p{margin:0}
+@media (max-width:600px){.compare{grid-template-columns:1fr}.compare > div + div{border-left:none;border-top:1px solid var(--rule);padding-left:0}}
+.tbl{margin:0 20px 20px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:520px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--rule)}
+th{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.c,th.c{text-align:center}
+th.mine,td.mine{background:var(--green-soft)}
+th.mine{color:var(--green)}
+tr.gap td:first-child::after{content:"vacío";font-family:var(--mono);font-size:11px;color:var(--green);margin-left:8px;text-transform:uppercase;letter-spacing:.06em}
+.note{font-size:13px;color:var(--muted);margin:-8px 20px 18px}
+.formula{font-family:var(--display);font-weight:500;font-size:clamp(22px,3.2vw,30px);line-height:1.25;letter-spacing:-.01em;margin:0;max-width:30ch}
+.formula u{text-decoration:none;border-bottom:2px solid var(--green);color:var(--green)}
+.final{background:var(--sheet);border:1px solid var(--rule)}
+.final .compare{margin:0 20px 20px;border-top:none}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.chev{transition:none}}
+.tpl-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.tpl-head .lede{flex:1 1 320px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:600;font-size:14px;color:var(--ink);background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:8px 14px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--green);border-color:var(--green);color:var(--sheet)}
+.btn:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.status{margin:-6px 0 0;min-height:1.2em;font-size:14px;color:var(--green)}
+.tpl{background:var(--sheet);border:1px solid var(--rule);display:flex;flex-direction:column}
+fieldset{border:none;border-bottom:1px solid var(--rule);margin:0;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+fieldset:last-child{border-bottom:none}
+legend{font-family:var(--display);font-weight:700;font-size:18px;padding:0;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.n{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--green);border:1px solid var(--green);border-radius:4px;padding:1px 6px}
+label{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:600;color:var(--muted);min-width:0}
+input[type="text"],textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--green);outline-offset:0;border-color:var(--green)}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:720px){.row3{grid-template-columns:1fr}}
+.comp{display:grid;grid-template-columns:1fr 2fr;gap:8px}
+.comp .h{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.crit{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--rule)}
+.crit .item{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start;padding:10px 0;border-bottom:1px solid var(--rule)}
+.crit .item input[type="checkbox"]{width:18px;height:18px;margin-top:3px;accent-color:var(--green)}
+.crit .item .lbl{font-weight:600;color:var(--ink);font-size:16px}
+.crit .item .lbl b{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--green);margin-right:8px}
+.crit .item textarea{grid-column:2}
+.sentence{margin:0;font-family:var(--display);font-weight:500;font-size:19px;line-height:1.35;color:var(--ink);background:var(--green-soft);border-radius:6px;padding:12px 14px}
+</style>
 
+<div class="wrap">
+  <header>
+    <div>
+      <p class="kicker">Diseño del producto · Después del benchmarking</p>
+      <h1>Criterios de originalidad</h1>
+    </div>
+    <dl class="def">
+      <dt>Vacío <small>sustantivo</small></dt>
+      <dd>Lo que les falta a las demás apps y puede ser tu diferenciador.</dd>
+    </dl>
+  </header>
+
+  <div role="tablist" aria-label="Técnicas de originalidad">
+    <button role="tab" id="tab-vacio" aria-controls="panel-vacio" aria-selected="true">Busca el vacío<span>05</span></button>
+    <button role="tab" id="tab-jugada" aria-controls="panel-jugada" aria-selected="false" tabindex="-1">Cambia la jugada<span>06</span></button>
+    <button role="tab" id="tab-plantilla" aria-controls="panel-plantilla" aria-selected="false" tabindex="-1">Plantilla</button>
+    <button role="tab" id="tab-prueba" aria-controls="panel-prueba" aria-selected="false" tabindex="-1">Prueba final</button>
+  </div>
+
+  <section role="tabpanel" id="panel-vacio" aria-labelledby="tab-vacio">
+    <p class="lede">Encuentra lo que la competencia no resuelve. Abre cada ficha para ver un ejemplo general y uno de la app de retardos.</p>
+    <div class="grid">
+      <details>
+        <summary><span class="code">V1</span><span class="chev" aria-hidden="true">+</span><span class="t">Matriz del vacío</span><span class="d">Funciones contra competidores.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>Apps de reciclaje: ninguna reconoce el residuo con una foto.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>Ninguna valida justificaciones ni sigue reincidencias.</p></div>
+        </div>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Función</th><th class="c">Lista en papel</th><th class="c">App A</th><th class="c">App B</th><th class="c mine">Retardos</th></tr></thead>
+            <tbody>
+              <tr><td>Marcar presente o ausente</td><td class="c">Sí</td><td class="c">Sí</td><td class="c">Sí</td><td class="c mine">Sí</td></tr>
+              <tr><td>Minutos de retardo</td><td class="c">No</td><td class="c">No</td><td class="c">Sí</td><td class="c mine">Sí</td></tr>
+              <tr class="gap"><td>Justificación validada</td><td class="c">No</td><td class="c">No</td><td class="c">No</td><td class="c mine">Sí</td></tr>
+              <tr class="gap"><td>Seguimiento de reincidencias</td><td class="c">No</td><td class="c">No</td><td class="c">No</td><td class="c mine">Sí</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Apps A y B: ejemplo ilustrativo. Usa las apps reales de tu benchmarking.</p>
+      </details>
+      <details>
+        <summary><span class="code">V2</span><span class="chev" aria-hidden="true">+</span><span class="t">Lee las quejas</span><span class="d">Reseñas de 1 a 3 estrellas.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>“Me avisa tomar agua en plena clase” → avisos según tu horario.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>“Pasar lista quita tiempo” → QR proyectado; cada estudiante se registra.</p></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="code">V3</span><span class="chev" aria-hidden="true">+</span><span class="t">Achica el público</span><span class="d">Mismo problema, usuario más concreto.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>Finanzas → finanzas para estudiantes que trabajan.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>Asistencia → retardos de primera hora en colegios.</p></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="code">V4</span><span class="chev" aria-hidden="true">+</span><span class="t">Piensa en tu contexto</span><span class="d">Condiciones reales de tus usuarios.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>Pagos con Nequi o Daviplata.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>Sin celular → el docente registra sin QR.</p></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="code">V5</span><span class="chev" aria-hidden="true">+</span><span class="t">Valida con usuarios</span><span class="d">Confirma que la diferencia importa.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>Cinco entrevistas: ¿qué app dejaste y por qué?</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>Un docente registra tres llegadas de prueba y encuentra el historial.</p></div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section role="tabpanel" id="panel-jugada" aria-labelledby="tab-jugada" hidden>
+    <p class="lede">Toma una idea conocida y transfórmala. Abre cada ficha para ver los ejemplos.</p>
+    <div class="grid">
+      <details>
+        <summary><span class="code">J1</span><span class="chev" aria-hidden="true">+</span><span class="t">Método ERIC</span><span class="d">Eliminar, reducir, incrementar, crear.</span></summary>
+        <div class="compare">
+          <div><h4>En general · tareas en grupo</h4><p>Eliminar registro largo, reducir menús, incrementar avisos, crear reparto justo.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>Eliminar pasar lista, reducir pasos, incrementar datos para coordinación, crear justificación validada.</p></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="code">J2</span><span class="chev" aria-hidden="true">+</span><span class="t">Quita en vez de agregar</span><span class="d">Más simple también es original.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>Meditación → un botón, dos minutos antes de un parcial.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>MVP: abrir sesión, registrar llegada y ver historial.</p></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="code">J3</span><span class="chev" aria-hidden="true">+</span><span class="t">Combina soluciones</span><span class="d">Une lo que hoy está separado.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>Clasificar basura + mapa + puntos canjeables.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>Registro + justificaciones + panel de coordinación.</p></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="code">J4</span><span class="chev" aria-hidden="true">+</span><span class="t">IA con sentido</span><span class="d">Algo que antes no se podía.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>Foto de la nevera → recetas con lo que tienes.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>Anticipar quién va a reincidir, con revisión de coordinación.</p></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="code">J5</span><span class="chev" aria-hidden="true">+</span><span class="t">Fácil y accesible</span><span class="d">Para quien hoy queda por fuera.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>Leer en voz alta cuándo llega el bus.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>Resultado claro: “Tarde · 12 minutos”.</p></div>
+        </div>
+      </details>
+      <details>
+        <summary><span class="code">J6</span><span class="chev" aria-hidden="true">+</span><span class="t">Cambia quién paga</span><span class="d">Gratis para el usuario.</span></summary>
+        <div class="compare">
+          <div><h4>En general</h4><p>Paga la universidad, no el estudiante.</p></div>
+          <div class="ret"><h4>App de retardos</h4><p>La contrata el colegio.</p></div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section role="tabpanel" id="panel-prueba" aria-labelledby="tab-prueba" hidden>
+    <p class="formula">A diferencia de <u>[competidor]</u>, mi app <u>[diferencia]</u> para <u>[usuario]</u>.</p>
+    <div class="final">
+      <div class="compare">
+        <div><h4>En general</h4><p>A diferencia de las apps de reciclaje que solo muestran mapas, mi app reconoce el residuo con una foto, para estudiantes de la universidad.</p></div>
+        <div class="ret"><h4>App de retardos</h4><p>A diferencia de las listas que solo marcan presente o ausente, mi app registra la hora con QR y gestiona justificaciones, para colegios.</p></div>
+      </div>
+    </div>
+    <p class="lede">Si no puedes completar la frase, tu app todavía no es original.</p>
+  </section>
+
+  <section role="tabpanel" id="panel-plantilla" aria-labelledby="tab-plantilla" hidden>
+    <div class="tpl-head">
+      <p class="lede">Plantilla para la entrega: registra qué criterios de originalidad usó tu grupo y cómo los aplicó. Usa al menos tres.</p>
+      <div class="actions">
+        <button type="button" class="btn" id="btn-ejemplo">Ver ejemplo: app de retardos</button>
+        <button type="button" class="btn" id="btn-limpiar">Limpiar</button>
+        <button type="button" class="btn primary" id="btn-copiar">Copiar plantilla</button>
+      </div>
+    </div>
+    <p class="status" id="status" aria-live="polite"></p>
+
+    <form class="tpl" id="tpl" onsubmit="return false">
+      <fieldset>
+        <legend><span class="n">1</span>Datos del proyecto</legend>
+        <div class="row3">
+          <label>Integrantes<input id="f-grupo" type="text" placeholder="Nombres del grupo"></label>
+          <label>Nombre de la app<input id="f-app" type="text" placeholder="Nombre"></label>
+          <label>Problema que resuelve<input id="f-problema" type="text" placeholder="En una frase"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">2</span>Competidores analizados en el benchmarking</legend>
+        <div class="comp">
+          <span class="h">Competidor</span><span class="h">Qué le falta</span>
+          <input id="f-c1" type="text" aria-label="Competidor 1"><input id="f-f1" type="text" aria-label="Qué le falta al competidor 1">
+          <input id="f-c2" type="text" aria-label="Competidor 2"><input id="f-f2" type="text" aria-label="Qué le falta al competidor 2">
+          <input id="f-c3" type="text" aria-label="Competidor 3"><input id="f-f3" type="text" aria-label="Qué le falta al competidor 3">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">3</span>Criterios de originalidad usados</legend>
+        <div class="crit" id="crit"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">4</span>Vacío encontrado</legend>
+        <label>¿Qué les falta a las demás y será nuestro diferenciador?<textarea id="f-vacio" rows="2"></textarea></label>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">5</span>Frase de originalidad</legend>
+        <div class="row3">
+          <label>Competidor<input id="f-p1" type="text" placeholder="las apps que…"></label>
+          <label>Diferencia<input id="f-p2" type="text" placeholder="mi app…"></label>
+          <label>Usuario<input id="f-p3" type="text" placeholder="para…"></label>
+        </div>
+        <p class="sentence" id="sentence">A diferencia de [competidor], mi app [diferencia] para [usuario].</p>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">6</span>Evidencia</legend>
+        <label>¿Cómo lo comprobamos? (reseñas, matriz, entrevistas, prueba con usuarios)<textarea id="f-evid" rows="2"></textarea></label>
+      </fieldset>
+    </form>
+  </section>
+
+  <footer><span>Aprendiendo con @LaProfeVivy</span><span>Saber Conocer</span></footer>
+</div>
+
+<script>
+(function(){
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function select(tab, focus){
+    tabs.forEach(function(t){
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (focus) tab.focus();
+  }
+  /* Plantilla */
+  var CRIT = [
+    ['V1','Matriz del vacío'],['V2','Lee las quejas'],['V3','Achica el público'],['V4','Piensa en tu contexto'],['V5','Valida con usuarios'],
+    ['J1','Método ERIC'],['J2','Quita en vez de agregar'],['J3','Combina soluciones'],['J4','IA con sentido'],['J5','Fácil y accesible'],['J6','Cambia quién paga']
+  ];
+  var crit = document.getElementById('crit');
+  CRIT.forEach(function(c){
+    var id = c[0].toLowerCase();
+    var d = document.createElement('div'); d.className = 'item';
+    d.innerHTML = '<input type="checkbox" id="k-'+id+'"><label class="lbl" for="k-'+id+'"><span><b>'+c[0]+'</b>'+c[1]+'</span></label>'+
+      '<textarea id="t-'+id+'" rows="2" aria-label="Cómo aplicamos '+c[1]+'" placeholder="¿Cómo lo aplicamos en nuestra app?" hidden></textarea>';
+    crit.appendChild(d);
+    var k = d.querySelector('input'), ta = d.querySelector('textarea');
+    k.addEventListener('change', function(){ ta.hidden = !k.checked; save(); });
+  });
+  var form = document.getElementById('tpl');
+  var KEY = 'originalidad-plantilla';
+  function fields(){ return Array.prototype.slice.call(form.querySelectorAll('input,textarea')); }
+  function sync(){
+    CRIT.forEach(function(c){ var id=c[0].toLowerCase(); document.getElementById('t-'+id).hidden = !document.getElementById('k-'+id).checked; });
+    var v = function(id, ph){ var x = document.getElementById(id).value.trim(); return x || ph; };
+    document.getElementById('sentence').textContent = 'A diferencia de ' + v('f-p1','[competidor]') + ', mi app ' + v('f-p2','[diferencia]') + ' para ' + v('f-p3','[usuario]') + '.';
+  }
+  function save(){
+    var data = {}; fields().forEach(function(f){ data[f.id] = f.type === 'checkbox' ? f.checked : f.value; });
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e) {}
+  }
+  function load(data){
+    fields().forEach(function(f){ if (f.id in data){ if (f.type === 'checkbox') f.checked = !!data[f.id]; else f.value = data[f.id]; } });
+    sync();
+  }
+  form.addEventListener('input', function(){ sync(); save(); });
+  try { var s = localStorage.getItem(KEY); if (s) load(JSON.parse(s)); } catch(e) {}
+  sync();
+  var status = document.getElementById('status');
+  function say(m){ status.textContent = m; }
+  var EJ = {
+    'f-grupo':'Grupo de ejemplo', 'f-app':'App de retardos', 'f-problema':'El registro manual dificulta saber quién llega tarde y consultar su historial.',
+    'f-c1':'Lista en papel o Excel', 'f-f1':'No guarda la hora exacta ni permite consultar el historial.',
+    'f-c2':'App de asistencia A', 'f-f2':'Solo marca presente o ausente; no gestiona justificaciones.',
+    'f-c3':'App de asistencia B', 'f-f3':'Calcula el retardo, pero no hace seguimiento de reincidencias.',
+    'k-v1':true, 't-v1':'Comparamos funciones: nadie valida justificaciones ni sigue reincidencias.',
+    'k-v2':true, 't-v2':'Queja frecuente: pasar lista quita tiempo. Respuesta: QR proyectado por el docente.',
+    'k-v4':true, 't-v4':'No todos tienen celular: el docente puede registrar sin QR.',
+    'k-j1':true, 't-j1':'Eliminamos pasar lista, reducimos pasos, incrementamos datos para coordinación y creamos la justificación validada.',
+    'k-j2':true, 't-j2':'MVP: abrir sesión, registrar llegada y consultar historial. Alertas y predicciones, después.',
+    'f-vacio':'Gestión de justificaciones y seguimiento de reincidencias en un solo lugar.',
+    'f-p1':'las listas que solo marcan presente o ausente', 'f-p2':'registra la hora con QR y gestiona justificaciones y reincidencias', 'f-p3':'colegios que controlan la puntualidad de primera hora',
+    'f-evid':'Matriz de competidores y prueba con un docente: tres llegadas ficticias registradas y encontradas en el historial.'
+  };
+  document.getElementById('btn-ejemplo').addEventListener('click', function(){
+    fields().forEach(function(f){ if (f.type === 'checkbox') f.checked = false; else f.value = ''; });
+    load(EJ); save(); say('Ejemplo cargado. Reemplázalo con los datos de tu app.');
+  });
+  var armed = false;
+  document.getElementById('btn-limpiar').addEventListener('click', function(){
+    if (!armed){ armed = true; this.textContent = 'Confirmar limpiar'; say('Toca de nuevo para borrar todo.'); var b=this; setTimeout(function(){ armed=false; b.textContent='Limpiar'; }, 4000); return; }
+    armed = false; this.textContent = 'Limpiar';
+    fields().forEach(function(f){ if (f.type === 'checkbox') f.checked = false; else f.value = ''; });
+    sync(); save(); say('Plantilla vacía.');
+  });
+  function asText(){
+    var g = function(id){ return document.getElementById(id).value.trim() || '—'; };
+    var out = ['CRITERIOS DE ORIGINALIDAD', '', '1. Datos del proyecto', 'Integrantes: '+g('f-grupo'), 'App: '+g('f-app'), 'Problema: '+g('f-problema'), '', '2. Competidores analizados'];
+    [1,2,3].forEach(function(i){ out.push('- '+g('f-c'+i)+': '+g('f-f'+i)); });
+    out.push('', '3. Criterios usados');
+    var any = false;
+    CRIT.forEach(function(c){ var id=c[0].toLowerCase(); if (document.getElementById('k-'+id).checked){ any = true; out.push('- '+c[0]+' '+c[1]+': '+g('t-'+id)); } });
+    if (!any) out.push('- —');
+    out.push('', '4. Vacío encontrado', g('f-vacio'), '', '5. Frase de originalidad', document.getElementById('sentence').textContent, '', '6. Evidencia', g('f-evid'));
+    return out.join('\n');
+  }
+  document.getElementById('btn-copiar').addEventListener('click', function(){
+    var text = asText();
+    var fallback = function(){
+      var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('aria-label','Texto de la plantilla');
+      ta.style.cssText = 'width:100%;min-height:200px;margin-top:8px'; status.textContent=''; status.appendChild(document.createTextNode('No se pudo copiar automáticamente. Selecciona y copia este texto:')); status.appendChild(ta); ta.select();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ say('Plantilla copiada. Pégala en tu documento de entrega.'); }, fallback);
+    } else fallback();
+  });
+
+  tabs.forEach(function(t, i){
+    t.addEventListener('click', function(){ select(t); });
+    t.addEventListener('keydown', function(e){
+      var n = null;
+      if (e.key === 'ArrowRight') n = tabs[(i + 1) % tabs.length];
+      if (e.key === 'ArrowLeft') n = tabs[(i - 1 + tabs.length) % tabs.length];
+      if (n){ e.preventDefault(); select(n, true); }
+    });
+  });
+})();
+</script>
+
+</body></html>
