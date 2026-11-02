@@ -1,1 +1,230 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Guía rápida de Lovable</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: reproductor tipo e-learning (marco gris, escenario azul, tarjeta con barra de título). Izquierda: portapapeles con los pasos; derecha: panel que muestra el bloque elegido. Estilo único y claro, a propósito. */
+:root{
+  --frame:#d6d6d6; --page:#e9e9e9; --stage:#9cc8ef; --card:#ffffff; --line:#c8c8c8; --ink:#1d1d1d; --soft:#555555;
+  --bar1:#4a4a4a; --bar2:#2b2b2b; --hover:#e8f1fb; --active:#d9e8f7; --blue:#2f78c4;
+  --board:#c8955a; --board-dark:#a8763f; --clip:#9aa3ad; --paper:#fffef9; --rule:#dfe7f1;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font-family:"Segoe UI",Calibri,Arial,sans-serif;display:flex;justify-content:center;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:16px}
+.player{width:100%;max-width:900px;background:var(--frame);border-radius:8px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.stage{background:var(--stage);padding:12px;border-radius:4px}
+.card{background:var(--card);border:1px solid #8fb3d6;border-radius:3px;overflow:hidden}
+.titlebar{background:linear-gradient(var(--bar1),var(--bar2));color:#fff;font-weight:600;letter-spacing:.5px;padding:10px 16px;font-size:17px}
+.body{display:flex;gap:22px;padding:18px;align-items:stretch}
+.clip{flex:0 0 38%;position:relative;background:var(--board);border-radius:14px;padding:44px 16px 18px;box-shadow:inset 0 0 0 3px var(--board-dark)}
+.clip::before{content:"";position:absolute;top:10px;left:50%;transform:translateX(-50%);width:42%;height:30px;background:linear-gradient(#c3cad1,var(--clip));border-radius:8px 8px 4px 4px;box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.sheet{background:var(--paper);border-radius:4px;padding:16px 12px 14px;min-height:100%;;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sheet h3{margin:0 0 10px;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.list button{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:8px;border-radius:4px;font-size:16px;color:#333;box-sizing:border-box}
+.list button:hover{background:var(--hover)}
+.list button.active{background:var(--active)}
+.list button:focus-visible{outline:2px solid var(--blue)}
+.list small{display:block;font-size:12.5px;color:var(--soft)}
+.box{width:24px;height:24px;border:2px solid #b9b9b9;border-radius:4px;background:linear-gradient(#fafafa,#dcdcdc);display:grid;place-items:center;flex:none}
+.box svg{width:18px;height:18px;opacity:0;transition:opacity .2s}
+.done .box svg{opacity:1}
+.panel{flex:1;position:relative;border:1px solid var(--line);border-radius:6px;padding:16px 16px 12px;display:flex;flex-direction:column;min-height:420px;min-width:0}
+.panel h2{font-weight:400;font-size:21px;margin:0 0 4px}
+.lead{margin:0 0 12px;color:var(--soft);font-size:15px}
+.text{overflow-y:auto;flex:1;max-height:470px;padding-right:4px}
+.intro{display:flex;gap:14px;align-items:flex-start}
+.intro p{margin:0 0 12px;font-size:15px;line-height:1.4}
+.intro svg{width:120px;flex:none}
+.tip{background:#fff7e0;border:1px solid #ecd89a;border-radius:6px;padding:10px 12px;font-size:14px}
+.type{border-top:1px solid #e3e3e3;padding:11px 0}
+.type:first-child{border-top:none;padding-top:2px}
+.type h4{margin:0;font-size:16px}
+.type h4 em{font-style:normal;font-size:12px;color:#b3261e;margin-left:6px;font-weight:600}
+.type p{margin:2px 0 0;font-size:15px;line-height:1.35}
+.type .ej{color:var(--soft);font-size:14px}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tools a{font-size:13px;color:#174f86;background:#eef5fc;border:1px solid #c9dcef;border-radius:999px;padding:2px 10px;text-decoration:none}
+.tools a:hover{background:#dcebf9}
+.tools a:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.tools small{font-size:12.5px;color:var(--soft);align-self:center}
+.arrow{position:absolute;height:14px;pointer-events:none;display:none}
+.controls{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px}
+.btn{border:1px solid #aaa;background:linear-gradient(#f7f7f7,#dadada);border-radius:4px;padding:7px 14px;font-weight:700;font-size:13px;cursor:pointer;color:#333}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.counter{font-size:13px;color:var(--soft);text-align:center}
+footer{text-align:center;padding:10px 6px 2px;color:#343434;font-size:13px;font-weight:600}
+.mini{width:34px;height:34px;flex:none}
+.phead{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.phead svg{width:58px;height:58px;flex:none}
+.phead h2{margin:0}
+.phead .lead{margin:2px 0 0}
+.cover{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:26px 12px 18px}
+.cover .tag{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin:0}
+.cover h1{margin:0;font-size:clamp(28px,4.4vw,40px);line-height:1.1;font-weight:700}
+.cover p{margin:0;max-width:52ch;color:var(--soft);font-size:16px}
+.crew{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin:8px 0 4px}
+.crew figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#333}
+.crew svg{width:92px;height:92px}
+.start{border:none;background:linear-gradient(#3d8ad6,#2a6bb0);color:#fff;font-weight:700;font-size:15px;letter-spacing:.04em;border-radius:6px;padding:11px 26px;cursor:pointer;box-shadow:0 2px 0 #1d4f85}
+.start:hover{background:linear-gradient(#4a96e0,#2f74bd)}
+.start:focus-visible{outline:3px solid #1d4f85;outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.crew svg{animation:bob 3s ease-in-out infinite}.crew figure:nth-child(2) svg{animation-delay:.4s}.crew figure:nth-child(3) svg{animation-delay:.8s}.crew figure:nth-child(4) svg{animation-delay:1.2s}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@media (max-width:680px){
+  .body{flex-direction:column}
+  .clip{flex:none}
+  .arrow{display:none!important}
+  .panel{min-height:0}
+  .text{max-height:none}
+  .intro svg{width:84px}
+}
+@media (prefers-reduced-motion:reduce){.box svg{transition:none}}
 
+.steps-list button{font-size:15px;padding:6px 8px}
+.panel ul.do{margin:0 0 12px;padding-left:20px;font-size:15px;line-height:1.45}
+.panel ul.do li{margin-bottom:6px}
+.prompt{position:relative;background:#14203a;color:#e8eef9;border-radius:6px;padding:12px 12px 12px;font-family:Consolas,monospace;font-size:13px;line-height:1.5;white-space:pre-wrap;margin:0 0 12px}
+.prompt .copy{position:absolute;top:8px;right:8px;font:inherit;font-family:"Segoe UI",Arial,sans-serif;font-weight:700;font-size:12px;background:#2f78c4;color:#fff;border:none;border-radius:4px;padding:4px 10px;cursor:pointer}
+.prompt .copy:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.prompt span{display:block;padding-right:70px}
+.ui{font-family:Consolas,monospace;font-size:.88em;background:#eef5fc;border:1px solid #c9dcef;border-radius:4px;padding:0 5px;white-space:nowrap}
+.tip{margin:0}
+</style>
+<div class="player">
+  <div class="stage">
+    <div class="card">
+      <div class="titlebar">Tu app con Lovable</div>
+      <div class="body cover" id="cover">
+        <p class="tag">Proyecto app móvil</p>
+        <h1>Crea tu app con Lovable</h1>
+        <div class="crew" id="crew"></div>
+        <button class="start" id="start" type="button">COMENZAR ›</button>
+      </div>
+      <div class="body" id="main" hidden>
+        <div class="clip">
+          <div class="sheet">
+            <h3>Los pasos</h3>
+            <ul class="list steps-list" id="list"></ul>
+          </div>
+        </div>
+        <div class="panel" id="panel" aria-live="polite">
+          <svg class="arrow" id="arrow" viewBox="0 0 80 14" preserveAspectRatio="none" aria-hidden="true"><path d="M78 7H12" stroke="#fff" stroke-width="6"/><path d="M78 7H12" stroke="#c9c9c9" stroke-width="3"/><path d="M2 7l12-6v12z" fill="#fff" stroke="#bbb"/></svg>
+          <div class="phead"><span id="pmascot"></span><div><h2 id="ptitle"></h2><p class="lead" id="plead"></p></div></div>
+          <div class="text" id="ptext"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn" id="prev" type="button">‹ ANTERIOR</button>
+    <span class="counter" id="counter"></span>
+    <button class="btn" id="next" type="button">SIGUIENTE ›</button>
+  </div>
+  <footer>Aprendiendo con @LaProfeVivy · Saber Conocer</footer>
+</div>
+
+<script>
+var PASOS = [
+ {t:'Prepara tus archivos', d:'Lo que ya hiciste es tu punto de partida.', m:0,
+  li:['Ten a la mano tu <b>PRD</b> y tu <b>MVP</b>.','Exporta las pantallas de tu <b>mockup</b> como imágenes PNG.','Ten tu <b>logo</b> y tu <b>paleta de colores</b> con sus códigos.'],
+  tip:'En PowerPoint: <span class="ui">Archivo › Exportar › PNG</span>.'},
+ {t:'Pide los prompts a una IA', d:'ChatGPT, Gemini u otra. No gasta créditos de Lovable.', m:2,
+  li:['Abre una conversación nueva y adjunta tus archivos.','Pega este prompt y cambia lo que está entre corchetes.','La IA te devuelve <b>varios prompts numerados</b>. Los pegarás en Lovable <b>de a uno</b>, en los pasos 4 a 7.'],
+  tip:'Guarda la respuesta en un documento para copiar cada prompt cuando toque.',
+  prompt:'Lee mis archivos (PRD, MVP y mockup) de la app [nombre]. Sin inventar nada, dame en orden:\n1. Un prompt para crear solo las pantallas, con mi logo, colores y letra.\n2. Un prompt para conectar la app a Lovable Cloud con sus tablas.\n3. Un prompt corto por cada función del MVP.\n4. Un prompt para crear datos de prueba ficticios.\n5. Una lista de pruebas.'},
+ {t:'Entra a Lovable', d:'Con tu cuenta de Google.', m:1,
+  li:['Ve a <b>lovable.dev</b> y pulsa <span class="ui">Get started</span>.','Elige <span class="ui">Continuar con Google</span>.','Llegarás a un cuadro grande para escribir.'],
+  tip:'El plan gratuito da <b>5 créditos al día</b>. Cada mensaje a Lovable gasta créditos.'},
+ {t:'Crea las pantallas', d:'Primero solo lo visual.', m:0,
+  li:['Pulsa <span class="ui">+</span> y <span class="ui">Attach</span> para subir mockup, logo y paleta.','Pega el <b>prompt 1</b> y espera unos minutos.','Compara la vista previa con tu mockup.'],
+  tip:'Pega los prompts <b>de a uno</b>, nunca todos juntos.'},
+ {t:'Conecta la nube', d:'Para que los usuarios se registren y los datos se guarden.', m:3,
+  li:['Pega el <b>prompt 2</b>: conecta la app a Lovable Cloud y crea las tablas.','Si Lovable pide permiso, acéptalo.','Revisa tus tablas en <span class="ui">More › Database</span>.'],
+  tip:'Database es como una hoja de cálculo dentro de la nube. Tus hojas de Sheets te sirven de guía.'},
+ {t:'Agrega las funciones', d:'Una por una, en el orden de tu MVP.', m:2,
+  li:['Pega <b>uno</b> de los prompts de funciones (los del punto 3) y espera.','Pruébala haciendo clic en los botones.','Si funciona, sigue con la siguiente.'],
+  prompt:'En la pantalla [nombre], cuando [acción], pasa [lo que ocurre]. Debería [lo que esperas]. Corrige solo eso.',
+  tip:'Si algo se daña, abre <span class="ui">History</span> y vuelve a la versión anterior.'},
+ {t:'Prueba con datos ficticios', d:'Demuestra que todo se guarda.', m:0,
+  li:['Pega el <b>prompt 4</b>: crea usuarios y datos de prueba ficticios.','Regístrate o inicia sesión con un usuario de prueba de cada rol.','Registra datos en la app (por ejemplo, una llegada), recarga y revisa que sigan ahí y en <span class="ui">Database</span>.','Usa la <b>lista de pruebas</b> (punto 5) para revisar todo.']},
+ {t:'Trabaja en grupo', d:'Todos en el mismo proyecto.', m:1,
+  li:['Pulsa <span class="ui">Share</span>, escribe el correo y deja el rol <b>Editor</b>.','Los 5 créditos diarios se comparten entre todos.','Uno escribe en Lovable; los demás preparan los prompts y prueban.'],
+  tip:'Repartan el trabajo en varios días: los créditos se recargan cada día.'},
+ {t:'Publica y entrega', d:'Tu app con un enlace público.', m:3,
+  li:['Pulsa <span class="ui">Publish</span>, elige la dirección y el acceso <b>Public</b>.','Abre el enlace en una ventana privada para probarlo.','Entrega el enlace y los usuarios de prueba.'],
+  tip:'Si cambias algo después, pulsa <span class="ui">Publish changes</span>.'}
+];
+var COLORS = ['#9cc8ef','#b9e4c9','#ffd9a8','#e3c8f2'];
+var NAMES = ['Ver','Escuchar y hablar','Leer y conversar','Crear y predecir'];
+function mascot(k){
+  var c = COLORS[k], st = '#2f5f8f';
+  var head = '<rect x="22" y="30" width="76" height="60" rx="18" fill="'+c+'" stroke="'+st+'" stroke-width="4"/>';
+  var eyes = '<circle cx="46" cy="58" r="8" fill="#fff"/><circle cx="74" cy="58" r="8" fill="#fff"/><circle cx="47" cy="59" r="4" fill="#1d1d1d"/><circle cx="75" cy="59" r="4" fill="#1d1d1d"/>';
+  var mouth = '<path d="M48 76q12 8 24 0" fill="none" stroke="'+st+'" stroke-width="4" stroke-linecap="round"/>';
+  var ant = '<line x1="60" y1="14" x2="60" y2="30" stroke="'+st+'" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="12" r="6" fill="#f2a23a"/>';
+  var extra = '';
+  if (k===0){ eyes = '<circle cx="46" cy="58" r="11" fill="#fff" stroke="'+st+'" stroke-width="3"/><circle cx="74" cy="58" r="11" fill="#fff" stroke="'+st+'" stroke-width="3"/><line x1="57" y1="58" x2="63" y2="58" stroke="'+st+'" stroke-width="3"/><circle cx="47" cy="59" r="5" fill="#1d1d1d"/><circle cx="75" cy="59" r="5" fill="#1d1d1d"/>'; }
+  if (k===1){ extra = '<path d="M20 60a40 40 0 0 1 80 0" fill="none" stroke="'+st+'" stroke-width="5"/><rect x="10" y="52" width="14" height="26" rx="6" fill="#2fa52f" stroke="'+st+'" stroke-width="3"/><rect x="96" y="52" width="14" height="26" rx="6" fill="#2fa52f" stroke="'+st+'" stroke-width="3"/>'; ant=''; }
+  if (k===2){ extra = '<path d="M84 6h28a6 6 0 0 1 6 6v14a6 6 0 0 1-6 6h-18l-8 7v-7h-2a6 6 0 0 1-6-6V12a6 6 0 0 1 6-6z" fill="#fff" stroke="'+st+'" stroke-width="3"/><circle cx="92" cy="19" r="2.5" fill="'+st+'"/><circle cx="100" cy="19" r="2.5" fill="'+st+'"/><circle cx="108" cy="19" r="2.5" fill="'+st+'"/>'; }
+  if (k===3){ ant = '<line x1="60" y1="20" x2="60" y2="30" stroke="'+st+'" stroke-width="4"/><path d="M60 0a11 11 0 0 1 6 20h-12a11 11 0 0 1 6-20z" fill="#ffd54a" stroke="'+st+'" stroke-width="3"/><path d="M50 4l-6-4M70 4l6-4M48 12h-7M72 12h7" stroke="#f2a23a" stroke-width="3" stroke-linecap="round"/>'; }
+  return '<svg viewBox="0 0 120 100" aria-hidden="true">'+ant+extra+head+eyes+mouth+'</svg>';
+}
+var CHECK = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10.5l4.5 4.5L17 4.5" fill="none" stroke="#2fb52f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var NAMES = ['Diseñar','Conectar','Preparar','Crear'];
+var list = document.getElementById('list'), arrow = document.getElementById('arrow'), panel = document.getElementById('panel');
+var cur = -1, vistos = new Set();
+PASOS.forEach(function(p, i){
+  var li = document.createElement('li');
+  li.innerHTML = '<button type="button" aria-controls="panel"><span class="box">'+CHECK+'</span><span class="mini">'+mascot(p.m)+'</span><span>'+(i+1)+'. '+p.t+'</span></button>';
+  li.firstChild.addEventListener('click', function(){ show(i); });
+  list.appendChild(li);
+});
+function show(i){
+  cur = i;
+  var btns = list.querySelectorAll('button'), p = PASOS[i];
+  btns.forEach(function(b){ b.classList.remove('active'); b.removeAttribute('aria-current'); });
+  vistos.add(i); btns[i].classList.add('active'); btns[i].setAttribute('aria-current','true');
+  vistos.forEach(function(k){ btns[k].classList.add('done'); });
+  document.getElementById('pmascot').innerHTML = mascot(p.m);
+  document.getElementById('ptitle').textContent = (i+1)+'. '+p.t;
+  document.getElementById('plead').textContent = p.d;
+  var h = '<ul class="do">'+p.li.map(function(x){ return '<li>'+x+'</li>'; }).join('')+'</ul>';
+  if (p.prompt) h += '<div class="prompt"><button class="copy" type="button">Copiar</button><span>'+p.prompt.replace(/</g,'&lt;')+'</span></div>';
+  if (p.tip) h += '<p class="tip">'+p.tip+'</p>';
+  var x = document.getElementById('ptext'); x.innerHTML = h; x.scrollTop = 0;
+  var c = x.querySelector('.copy');
+  if (c) c.addEventListener('click', function(){
+    var t = x.querySelector('.prompt span');
+    var ok = function(){ c.textContent = 'Copiado'; setTimeout(function(){ c.textContent = 'Copiar'; }, 1800); };
+    var fail = function(){ var r = document.createRange(); r.selectNodeContents(t); var s = getSelection(); s.removeAllRanges(); s.addRange(r); c.textContent = 'Selecciona y copia'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.textContent).then(ok, fail); else fail();
+  });
+  placeArrow(btns[i]);
+  document.getElementById('prev').disabled = false;
+  document.getElementById('next').disabled = (i === PASOS.length - 1);
+  document.getElementById('counter').textContent = 'Paso '+(i+1)+' de '+PASOS.length;
+}
+function placeArrow(btn){
+  if (window.innerWidth <= 680){ arrow.style.display = 'none'; return; }
+  var pr = panel.getBoundingClientRect(), br = btn.getBoundingClientRect();
+  var start = br.right - 6;
+  arrow.style.display = 'block';
+  arrow.style.left = (start - pr.left) + 'px';
+  arrow.style.width = Math.max(10, pr.left - start + 8) + 'px';
+  arrow.style.top = (br.top + br.height/2 - pr.top - 7) + 'px';
+}
+var cover = document.getElementById('cover'), main = document.getElementById('main'), onCover = true;
+document.getElementById('crew').innerHTML = NAMES.map(function(n, k){ return '<figure>'+mascot(k)+'<figcaption>'+n+'</figcaption></figure>'; }).join('');
+function showCover(){ onCover = true; cover.hidden = false; main.hidden = true; arrow.style.display = 'none'; document.getElementById('prev').disabled = true; document.getElementById('next').disabled = false; document.getElementById('counter').textContent = 'Presentación'; }
+function start(){ onCover = false; cover.hidden = true; main.hidden = false; show(0); }
+document.getElementById('start').addEventListener('click', start);
+document.getElementById('prev').addEventListener('click', function(){ if (cur > 0) show(cur - 1); else showCover(); });
+document.getElementById('next').addEventListener('click', function(){ if (onCover){ start(); return; } if (cur < PASOS.length - 1) show(cur + 1); });
+window.addEventListener('resize', function(){ if (!onCover && cur >= 0) placeArrow(list.querySelectorAll('button')[cur]); });
+showCover();
+</script>
+
+</body></html>
