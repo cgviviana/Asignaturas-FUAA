@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mi primera app en AppSheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#152039;--y:#ffc83d;--teal:#14b39a;--muted:#5a6683;--g:#1a73e8;--ok:#137333}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0f1830;overflow:hidden}
+body{font-family:Rubik,system-ui,Arial,sans-serif;color:var(--ink)}
+button{font:inherit;cursor:pointer;color:inherit}
+#view{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{width:1280px;height:720px;position:relative;flex:0 0 auto;transform-origin:center;background:linear-gradient(180deg,#8fd0f8,#d4efff 70%,#e9f8ee);overflow:hidden;border-radius:4px}
+#stage:after{content:"";position:absolute;left:-40px;right:-40px;bottom:-60px;height:130px;background:#6cc070;border-radius:50%;z-index:0}
+.sl{position:absolute;inset:0;padding:40px 64px 90px;display:none;z-index:1}
+.sl.on{display:flex;animation:in .4s}
+@keyframes in{from{opacity:0;transform:translateX(30px)}}
+/* portada */
+.cover{flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.cover .av{width:190px;height:190px;margin-bottom:22px}
+.av svg{width:100%;height:100%;border-radius:50%;border:5px solid var(--ink);background:#fff;box-shadow:0 7px 0 var(--ink)}
+.cover h1{font-size:72px;line-height:1;margin:0 0 16px;font-weight:800}
+.cover p{font-size:30px;margin:0;color:#24345e}
+.pill{display:inline-block;background:var(--y);border:4px solid var(--ink);border-radius:16px;padding:6px 20px;font-weight:800;font-size:24px;margin-bottom:22px}
+/* pasos */
+.two{gap:56px;align-items:center}
+.txt{flex:0 0 430px}
+.img{min-width:0}
+.num{display:inline-flex;align-items:center;justify-content:center;width:76px;height:76px;border-radius:50%;background:var(--y);border:5px solid var(--ink);box-shadow:0 5px 0 var(--ink);font-size:38px;font-weight:800;margin-bottom:22px}
+.txt h2{font-size:52px;line-height:1.08;margin:0 0 20px;font-weight:800}
+.txt p{font-size:28px;line-height:1.4;margin:0}
+.txt p b,.txt h2 u{text-decoration:none;background:linear-gradient(transparent 58%,#ffd95c 58%);-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 2px}
+.code{display:inline-block;font-family:ui-monospace,Consolas,monospace;font-size:30px;font-weight:700;background:#fff;border:4px solid var(--ink);border-radius:14px;padding:8px 18px;margin-top:6px;color:#3c2fb8}
+.img{flex:1;display:flex;align-items:center;justify-content:center}
+.win{width:100%;overflow:visible!important;background:#fff;border:4px solid var(--ink);border-radius:20px;box-shadow:0 10px 0 var(--ink);overflow:hidden;font-size:22px}
+.wtop{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:2px solid #e8eaed;font-size:20px}
+.wtop .brand{color:var(--g);font-weight:800}
+.wtop .sp{flex:1}
+.btn{background:var(--g);color:#fff;border-radius:8px;padding:6px 18px;font-weight:700}
+.mark{outline:6px solid var(--y);outline-offset:4px;border-radius:10px;position:relative;animation:pul 1.3s infinite}
+@keyframes pul{50%{outline-color:#ff6b57}}
+.mark:after{content:"👈";position:absolute;right:-62px;top:50%;transform:translateY(-50%);font-size:40px;animation:tap 1s infinite}
+@keyframes tap{50%{right:-70px}}
+.menu{display:flex;flex-direction:column;gap:6px;padding:18px}
+.menu div{padding:14px 20px;border-radius:12px;color:#5f6368;font-size:26px}
+.menu div.a{background:#e8f0fe;color:var(--g);font-weight:700;width:max-content}
+.list{padding:10px 20px 18px}
+.list div{display:flex;justify-content:space-between;align-items:center;padding:16px 10px;border-bottom:2px solid #f1f3f4;font-size:26px}
+.list small{color:#5f6368;font-size:20px;background:#f1f3f4;border-radius:8px;padding:2px 12px}
+.list .pen{width:max-content}
+.field{padding:20px 24px}
+.field label{display:block;font-weight:700;font-size:24px;margin-bottom:10px}
+.field .box{background:#f1f3f4;border-radius:10px;padding:14px 18px;font-family:ui-monospace,Consolas,monospace;font-size:26px;color:#80868b;width:85%}
+.field .box.ok{background:#e6f4ea;color:var(--ok);font-weight:700}
+.field+.field{border-top:2px solid #f1f3f4}
+.write{margin:22px 24px 10px;border:4px solid var(--g);border-radius:12px;padding:20px;font-family:ui-monospace,Consolas,monospace;font-size:32px;min-height:90px}
+.okmsg{margin:0 24px 16px;color:var(--ok);font-weight:700;font-size:24px}
+.foot2{display:flex;justify-content:flex-end;gap:24px;align-items:center;padding:16px 24px 22px;border-top:2px solid #e8eaed}
+.foot2 span{color:var(--g)}
+.foot2 span.btn{color:#fff}
+.mark.l:after{content:"👆";right:auto;left:50%;top:auto;bottom:-58px;transform:translateX(-50%);animation:tapl 1s infinite}
+@keyframes tapl{50%{bottom:-64px}}
+.code{white-space:nowrap}
+/* hoja */
+.grid{border-collapse:collapse;width:100%;font-size:24px}
+.grid td{border:2px solid #e2e3e3;padding:14px 16px}
+.grid tr:first-child td{font-weight:800;background:#f1f8f4}
+.grid td.t{background:#fff6d8}
+/* celular */
+.phone{width:380px;border:12px solid #1f2235;border-radius:44px;overflow:hidden;background:#fff;box-shadow:0 10px 0 #0b0f1d}
+.ph{background:var(--g);color:#fff;font-weight:800;font-size:26px;padding:20px 24px}
+.it{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:2px solid #f0f0f0;font-size:24px}
+.it small{display:block;color:#5f6368;font-size:18px}
+.it b.t{color:var(--ok);font-size:28px}
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:14px;display:flex;justify-content:center;align-items:center;gap:14px;z-index:5}
+.gbtn{background:var(--y);border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);font-weight:800;font-size:17px;padding:10px 22px}
+.gbtn.w{background:#fff}.gbtn:disabled{opacity:.4;cursor:default}
+.gbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.cnt{background:#fff;border:3px solid var(--ink);border-radius:99px;padding:6px 14px;font-weight:800}
+.brandv{position:absolute;right:28px;bottom:26px;z-index:2;font-weight:700;color:#fff;font-size:18px;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+
+.sec{flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.sec .big{font-size:120px;line-height:1}
+.sec h1{font-size:70px;margin:10px 0 12px;font-weight:800}
+.sec p{font-size:30px;margin:0;color:#24345e}
+.calc{width:270px;background:#2b3553;border:5px solid var(--ink);border-radius:30px;padding:22px;box-shadow:0 10px 0 var(--ink)}
+.cd{background:#d7f0c8;border-radius:12px;padding:10px 14px;text-align:right;font-family:ui-monospace,Consolas,monospace;font-size:34px;font-weight:700;margin-bottom:16px}
+.cd small{display:block;font-size:20px;color:#456}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.keys span{background:#fff;border-radius:10px;padding:7px 0;text-align:center;font-weight:800;font-size:22px}
+.keys span.o{background:var(--y)}
+.vs{display:flex;flex-direction:column;align-items:center;gap:10px}
+.vs .arrow{transform:rotate(90deg);font-size:44px;line-height:1}
+.arrow{font-size:60px;font-weight:800}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%}
+.tile{background:#fff;border:4px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);padding:18px 22px}
+.tile .s{font-size:52px;font-weight:800;line-height:1;color:#c2410c;font-family:ui-monospace,Consolas,monospace}
+.tile .n{font-size:22px;font-weight:700;margin:6px 0}
+.tile .f{font-family:ui-monospace,Consolas,monospace;font-size:20px;color:#3c2fb8}
+.tile .r{font-size:20px;color:var(--muted)}
+.tile .r b{color:var(--ok)}
+.rows{display:flex;flex-direction:column;gap:12px;width:100%}
+.rw{display:flex;align-items:center;gap:18px;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 5px 0 var(--ink);padding:14px 22px;font-size:24px}
+.rw .k{font-family:ui-monospace,Consolas,monospace;font-weight:800;font-size:26px;min-width:200px;white-space:nowrap;color:#3c2fb8}
+.rw .k.s{color:#c2410c;min-width:80px;font-size:36px}
+.rw .d{flex:1}
+.rw .e{font-family:ui-monospace,Consolas,monospace;color:var(--muted);font-size:21px}
+.rw .e b{color:var(--ok)}
+.c-col{color:#16653a}.c-txt{color:#c5221f}.c-num{color:#c2410c}.c-fn{color:#5b3fd1}
+.formula{font-family:ui-monospace,Consolas,monospace;font-size:34px;font-weight:700;background:#fff;border:4px solid var(--ink);border-radius:16px;padding:14px 22px;box-shadow:0 6px 0 var(--ink);text-align:center;white-space:nowrap}
+.res{display:flex;flex-direction:column;gap:12px;width:100%;margin-top:26px}
+.res div{display:flex;justify-content:space-between;background:#fff;border-radius:14px;padding:12px 20px;font-size:24px;border:3px solid #cfd6e6}
+.res b{color:var(--ok)}
+.col{display:flex;flex-direction:column;align-items:center;width:100%}
+.tree{display:flex;flex-direction:column;align-items:center;width:100%}
+.tq{background:var(--y);border:4px solid var(--ink);border-radius:18px;padding:14px 26px;font-size:28px;font-weight:800;box-shadow:0 5px 0 var(--ink)}
+.tb{display:flex;gap:70px;margin-top:44px;position:relative}
+.tb:before{content:"";position:absolute;top:-36px;left:22%;right:22%;height:30px;border:4px solid var(--ink);border-bottom:0;border-radius:14px 14px 0 0}
+.tb div{border:4px solid;border-radius:16px;padding:12px 28px;font-size:28px;font-weight:800;text-align:center;background:#fff}
+.tb small{display:block;font-size:20px}
+.tb .si{border-color:#16653a;color:#16653a;background:#e6f4ea}.tb .no{border-color:#c5221f;color:#c5221f;background:#fde8e4}
+.blend{display:flex;align-items:center;gap:12px}
+.blend .arrow{font-size:40px}
+.blend>div{background:#fff;border:4px solid var(--ink);border-radius:18px;padding:16px 20px;text-align:center;font-size:22px;box-shadow:0 5px 0 var(--ink)}
+.blend>div b{display:block;font-size:30px}
+.blend .mid{background:#f1effd}
+.blend .out{background:var(--y)}
+.tables{display:flex;align-items:center;gap:20px}
+.tbl{background:#fff;border:4px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 5px 0 var(--ink);font-size:20px}
+.tbl h5{margin:0;padding:10px 14px;background:#0f1830;color:#fff;font-size:20px}
+.tbl table{border-collapse:collapse}
+.tbl td{padding:9px 14px;border-top:2px solid #eef}
+.tbl td.h{font-weight:800;background:#f1f8f4}
+.tbl td.m{background:#fff6d8;font-weight:800}
+.small{font-size:22px!important;color:var(--muted)}
+.where{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;font-size:26px;font-weight:800}
+.where span{background:#fff;border:4px solid var(--ink);border-radius:14px;padding:10px 18px;box-shadow:0 5px 0 var(--ink)}
+.where i{font-style:normal;font-size:34px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:22px;width:100%}
+.cmp .tile h3{margin:0 0 8px;font-size:28px}
+.cmp .tile p{font-size:21px;margin:0 0 10px}
+.err{display:flex;flex-direction:column;gap:14px;width:100%}
+.err{gap:12px!important}
+.err div{display:grid;grid-template-columns:1fr;gap:2px;background:#fff;border:4px solid var(--ink);border-radius:16px;padding:12px 18px;font-family:ui-monospace,Consolas,monospace;font-size:22px;box-shadow:0 4px 0 var(--ink)}
+.err .bad{color:#c5221f}.err .good{color:var(--ok)}
+.err small{font-family:Rubik,sans-serif;color:var(--muted);font-size:19px}
+
+.tight{gap:8px!important}.tight .rw{padding:8px 22px}
+.stack{display:flex;flex-direction:column;align-items:center;gap:22px;width:100%}
+.mt{background:#fff;border:4px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink);font-size:21px}
+.mt h5{margin:0;padding:8px 16px;background:#0f1830;color:#fff;font-size:18px;font-weight:700}
+.mt table{border-collapse:collapse}
+.mt td{padding:9px 16px;border-top:2px solid #eef;white-space:nowrap}
+.mt tr.h td{font-weight:800;background:#f1f8f4;border-top:0}
+.mt td.n{background:#fff3c4;font-weight:700;color:#137333}
+.mt tr.h td.n{background:#ffd95c;color:var(--ink)}
+.form{width:330px;border:12px solid #1f2235;border-radius:40px;overflow:hidden;background:#fff;box-shadow:0 10px 0 #0b0f1d}
+.form .ph{font-size:22px;padding:14px 20px}
+.fl{padding:9px 20px}
+.fl small{display:block;color:#5f6368;font-size:16px}
+.fl div{border-bottom:3px solid #1a73e8;font-size:22px;padding:2px 0}
+.fl.auto div{border-bottom:3px dashed #b0b8c8;color:#137333;font-weight:800;background:#f1f8f4}
+.fl.init div{color:#1a73e8;font-weight:700}
+.tagr{display:inline-block;background:#e6f4ea;color:#137333;font-size:13px;border-radius:6px;padding:0 6px;margin-left:6px;font-weight:700}
+.tagb{display:inline-block;background:#e8f0fe;color:#1a73e8;font-size:13px;border-radius:6px;padding:0 6px;margin-left:6px;font-weight:700}
+.sbtn{display:inline-block;background:#fff;border:3px solid var(--ink);border-radius:12px;padding:6px 16px;box-shadow:0 4px 0 var(--ink);font-weight:800;font-size:28px;margin:4px}
+.sbtn.o{background:var(--y)}
+.keyrow{display:flex;align-items:center;gap:12px;font-size:30px;font-weight:800}
+
+.ag{width:100%;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 8px 0 var(--ink);overflow:visible;font-size:19px}
+.ag .bar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:2px solid #e8eaed;font-size:18px}
+.ag .bar b{color:#1a73e8}.ag .bar .sp{flex:1}
+.ag table{border-collapse:collapse;width:100%}
+.ag th{font-size:13px;color:#5f6368;text-align:left;padding:8px 10px;font-weight:700;letter-spacing:.03em}
+.ag td{padding:7px 10px;border-top:2px solid #f1f3f4;white-space:nowrap}
+.ag .c{background:#f1f3f4;border-radius:6px;padding:5px 10px;display:inline-block;min-width:90px}
+.ag .c.f{font-family:ui-monospace,Consolas,monospace;color:#1a73e8;min-width:190px}
+.ag .c.sel{min-width:80px}
+.ag .c.sel:after{content:" ▾";color:#80868b}
+.side{display:flex;width:100%;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 8px 0 var(--ink);font-size:22px;overflow:visible}
+.side .l{width:260px;border-right:2px solid #e8eaed;padding:16px}
+.side .l .h{display:flex;justify-content:space-between;align-items:center;font-weight:800;margin-bottom:12px}
+.side .l .it2{padding:8px 12px;border-radius:10px;color:#3c4043}
+.side .l .it2.a{background:#e8f0fe;color:#1a73e8}
+.side .r{flex:1;padding:16px;color:#80868b;font-size:18px}
+.gmenu{width:100%;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 8px 0 var(--ink);font-size:22px;overflow:visible}
+.gmenu .mb{display:flex;gap:14px;font-size:19px;padding:12px 18px;border-bottom:2px solid #e8eaed;color:#3c4043}
+.gmenu .dd{margin:0 0 16px 210px;width:330px;background:#fff;border:2px solid #dadce0;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.15);padding:6px 0}
+.gmenu .dd div{padding:10px 18px}
+.gmenu .sub{margin:-8px 0 18px 430px;width:300px;background:#fff;border:2px solid #dadce0;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,.15);padding:6px 0}
+.gmenu .sub div{padding:10px 18px}
+.pnl{width:100%;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 8px 0 var(--ink);font-size:21px;overflow:visible}
+.pnl .ph2{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:2px solid #e8eaed;font-weight:800}
+.pnl .rowp{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;gap:16px}
+.pnl .rowp small{display:block;font-size:15px;color:#5f6368;font-weight:400}
+.pnl .seg{display:flex;border:2px solid #dadce0;border-radius:8px;overflow:visible}
+.pnl .seg span{padding:6px 14px;font-size:17px;color:#5f6368}
+.ea2{width:100%;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 8px 0 var(--ink);font-size:20px;overflow:visible}
+.ea2 .t{padding:12px 18px;font-weight:800;border-bottom:2px solid #e8eaed}
+.ea2 .sub2{padding:10px 18px 0;color:#3c4043;font-size:18px}
+.ea2 .box2{margin:10px 18px;background:#f1f3f4;border-radius:8px;padding:16px;font-family:ui-monospace,Consolas,monospace;font-size:28px;color:#c2185b}
+.ea2 .ok2{margin:0 18px 12px;color:#137333;font-weight:800}
+.ea2 .bad2{margin:0 18px 12px;background:#fde8e4;color:#9c2e1a;border-radius:8px;padding:8px 12px;font-size:17px}
+.ea2 .ft{display:flex;justify-content:flex-end;gap:22px;align-items:center;padding:12px 18px;border-top:2px solid #e8eaed}
+.ea2 .ft span{color:#1a73e8}
+.ea2 .ft .sv{background:#1a73e8;color:#fff;border-radius:99px;padding:6px 22px;font-weight:700}
+.savebar{display:flex;align-items:center;gap:22px;justify-content:flex-end;width:100%;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 8px 0 var(--ink);padding:18px 24px;font-size:22px}
+.savebar .g{background:#e8eaed;color:#9aa0a6;border-radius:6px;padding:6px 18px;font-weight:700}
+.savebar .chk{color:#137333;font-size:34px;font-weight:800}
+.note2{background:#fff;border:4px solid var(--ink);border-radius:16px;box-shadow:0 5px 0 var(--ink);padding:14px 20px;font-size:22px;margin-top:4px}
+
+.gs{width:100%;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 8px 0 var(--ink);overflow:visible;font-size:20px}
+.gs .gt{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:2px solid #e8eaed;font-weight:700}
+.gs .gt i{width:18px;height:22px;background:#0f9d58;border-radius:3px;display:inline-block}
+.gs table{border-collapse:collapse;width:100%}
+.gs td{border:1px solid #e2e3e3;padding:8px 10px;white-space:nowrap;height:40px}
+.gs td.l{background:#f8f9fa;color:#5f6368;text-align:center;font-size:15px;width:34px;padding:4px}
+.gs tr.hd td:not(.l){font-weight:800;background:#e6f4ea}
+.gs .tabs{display:flex;gap:4px;align-items:center;padding:6px 10px;background:#f8f9fa;border-top:2px solid #e8eaed;font-size:17px}
+.gs .tabs span{padding:4px 14px;border-radius:6px 6px 0 0;color:#5f6368}
+.gs .tabs span.on{background:#e8f0fe;color:#1a73e8;font-weight:700}
+.vc{width:100%;background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 8px 0 var(--ink);font-size:21px;overflow:visible}
+.vc .ph2{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:2px solid #e8eaed;font-weight:800}
+.vc .rowp{padding:12px 18px}
+.vc .rowp small{display:block;font-size:15px;color:#5f6368;margin-bottom:6px}
+.vc .in2{background:#f1f3f4;border-radius:8px;padding:8px 12px;font-family:ui-monospace,Consolas,monospace;font-size:20px}
+.vc .in2.f{color:#1a73e8}
+.ck{display:inline-block;width:22px;height:22px;border:2px solid #5f6368;border-radius:4px;vertical-align:middle}
+.ck.on{background:#1a73e8;border-color:#1a73e8;position:relative}
+.ck.on:after{content:"✓";color:#fff;position:absolute;left:3px;top:-3px;font-size:17px;font-weight:800}
+.det{width:340px;border:12px solid #1f2235;border-radius:40px;overflow:hidden;background:#fff;box-shadow:0 10px 0 #0b0f1d;font-size:20px}
+.det .dl{padding:8px 18px}.det .dl small{display:block;color:#5f6368;font-size:14px}
+.det table{border-collapse:collapse;width:100%;font-size:16px;margin:4px 0}
+.det td{padding:6px 10px;border-top:1px solid #e8eaed}
+.det tr:first-child td{font-weight:800}
+</style>
+</head>
+<body>
+<div id="view"><div id="stage"></div></div>
+<div class="nav"><button class="gbtn w" id="prev" type="button">← Atrás</button><span class="cnt" id="cnt"></span><button class="gbtn" id="next" type="button">Siguiente →</button></div>
+<script>
+const $=s=>document.querySelector(s);
+let avn=0;
+function avatar(){const id='a'+(++avn);return `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><clipPath id="${id}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#${id})"><rect width="120" height="120" fill="#ffe9e4"/><path d="M27 66C22 32 42 16 61 16c22 0 37 17 32 50-2 13 1 23 6 32H21c5-9 8-20 6-32z" fill="#7d1a35"/><rect x="52" y="74" width="16" height="20" rx="6" fill="#ecc3a8"/><path d="M18 126c2-23 18-34 42-34s40 11 42 34z" fill="#2f8f83"/><path d="M50 92l10 12 10-12z" fill="#ecc3a8"/><ellipse cx="60" cy="58" rx="21" ry="24" fill="#f5d5bf"/><circle cx="39" cy="61" r="4" fill="#ecc3a8"/><circle cx="81" cy="61" r="4" fill="#ecc3a8"/><path d="M37 60c-3-22 9-33 25-33 16 0 26 11 23 28-4-8-10-11-17-12-3 4-9 7-16 8-6 1-11 4-15 9z" fill="#9b2445"/><path d="M38 57c-4 10-4 20 1 30-7-6-10-18-8-30z" fill="#8a1f3d"/><path d="M83 52c4 11 4 22-1 33 7-8 10-20 7-33z" fill="#8a1f3d"/><path d="M45 51q5-2.5 10 0M65 51q5-2.5 10 0" stroke="#5a2a28" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M45 58q5-3 10 0M65 58q5-3 10 0" stroke="#2b1b1b" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="46" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><circle cx="74" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><path d="M53 70q7 5 14 0" stroke="#a8384a" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></svg>`}
+const top_=(r='')=>`<div class="wtop"><span class="brand">AppSheet</span><span>Mi tienda</span><span class="sp"></span>${r||'<span class="btn">SAVE</span>'}</div>`;
+const step=(n,h,p,img)=>`<section class="sl two"><div class="txt"><div class="num">${n}</div><h2>${h}</h2>${p}</div><div class="img">${img}</div></section>`;
+const sec=(e,h,p)=>`<section class="sl sec"><div class="big">${e}</div><h1>${h}</h1><p>${p}</p></section>`;
+const lr=(tag,h,p,img)=>`<section class="sl two"><div class="txt">${tag?`<span class="pill">${tag}</span>`:''}<h2>${h}</h2>${p}</div><div class="img">${img}</div></section>`;
+const calc=(top,res)=>`<div class="calc"><div class="cd"><small>${top}</small>${res}</div><div class="keys">${['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','=','+'].map(k=>`<span class="${'÷×−+='.includes(k)?'o':''}">${k}</span>`).join('')}</div></div>`;
+const V=[['Cuaderno',2500,3,'C01'],['Lápiz',800,5,'C02'],['Borrador',1000,2,'C01']];
+/* mt: título, encabezados, filas, índice de columna nueva */
+const mt=(t,h,rows,ni)=>`<div class="mt"><h5>${t}</h5><table><tr class="h">${h.map((x,i)=>`<td class="${i===ni?'n':''}">${x}</td>`).join('')}</tr>${rows.map(r=>`<tr>${r.map((x,i)=>`<td class="${i===ni?'n':''}">${x}</td>`).join('')}</tr>`).join('')}</table></div>`;
+const ventas=(extra,vals)=>mt('Tabla: Ventas',['producto','precio','cantidad',...(extra?[extra]:[])],V.map((r,i)=>[r[0],r[1],r[2],...(extra?[vals[i]]:[])]),extra?3:-1);
+const F=(t,fs)=>`<div class="formula" style="${fs?'font-size:'+fs+'px':''}">${t}</div>`;
+const tot=r=>r[1]*r[2];
+const P=[['Cuaderno',2500],['Lápiz',800],['Borrador',1000],['Colores',6500],['Regla',1200],['Tajalápiz',700]];
+const L='ABCDEF';
+const gsheet=(title,head,rows,tab,markTab,nrows)=>{const n=head.length;const body=[head,...rows];while(body.length<(nrows||4))body.push(Array(n).fill(''));return `<div class="gs"><div class="gt"><i></i>${title}</div><table><tr><td class="l"></td>${head.map((_,i)=>`<td class="l">${L[i]}</td>`).join('')}</tr>${body.map((r,i)=>`<tr class="${i===0?'hd':''}"><td class="l">${i+1}</td>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table><div class="tabs"><span>+</span>${(tab==='Hoja 1'?['Hoja 1']:['Ventas','Productos']).map(t=>`<span class="${t===tab?'on':''} ${t===markTab?'mark l':''}">${t}</span>`).join('')}</div></div>`};
+const grid=(rows,m)=>`<div class="ag"><div class="bar"><b>Data</b><span>Table: Ventas</span><span class="sp"></span><span class="btn">SAVE</span></div><table><tr><th>NAME</th><th>TYPE</th><th>FORMULA</th></tr>${rows.map((r,i)=>`<tr><td>${r[0]}</td><td><span class="c sel ${m&&m.r===i&&m.c==='tipo'?'mark l':''}">${r[1]}</span></td><td><span class="c f ${m&&m.r===i&&m.c==='formula'?'mark l':''}">= ${r[2]||''}</span></td></tr>`).join('')}</table></div>`;
+const R0=[['id_venta','Text'],['producto','Ref'],['cantidad','Number'],['precio','Price','[producto].[precio]'],['total','Price','[precio]*[cantidad]']];
+const labelGrid=()=>`<div class="ag"><div class="bar"><b>Data</b><span>Table: Ventas</span></div><table><tr><th>NAME</th><th>KEY?</th><th>LABEL?</th><th>SHOW?</th></tr><tr><td>id_venta</td><td><span class="ck on"></span></td><td><span class="ck mark l"></span> <small style="color:#c5221f">quitar</small></td><td><span class="ck"></span> <small style="color:#c5221f">quitar</small></td></tr><tr><td>producto</td><td><span class="ck"></span></td><td><span class="ck on mark l"></span> <small style="color:#137333">poner</small></td><td><span class="ck on"></span></td></tr><tr><td>cantidad</td><td><span class="ck"></span></td><td><span class="ck"></span></td><td><span class="ck on"></span></td></tr></table></div>`;
+const ea=(f,ok,col,bad)=>`<div class="ea2"><div class="t">Expression Assistant</div><div class="sub2">App Formula for column <b>${col}</b></div><div class="box2">${f}</div>${bad?`<div class="bad2">⚠ ${bad}</div>`:`<div class="ok2">✓</div>`}<div class="ft"><span>Cancel</span><span class="sv ${ok?'mark l':''}">Save</span></div></div>`;
+const vcol=(name,f,tbl)=>`<div class="vc"><div class="ph2"><span>${tbl} : ${name}</span><span class="btn mark l">Done</span></div><div class="rowp"><small>Column name</small><div class="in2">${name}</div></div><div class="rowp"><small>App formula</small><div class="in2 f">= ${f}</div></div></div>`;
+const sideP=(active,mark)=>`<div class="side"><div class="l"><div class="h"><span>Data</span><span class="${mark==='+'?'mark':''}">+</span></div>${['Productos','Ventas'].filter(t=>t==='Ventas'||active!=='solo').map(t=>`<div class="it2 ${t===active?'a':''}">${t}</div>`).join('')}</div><div class="r"><div style="display:flex;justify-content:flex-end;gap:18px;font-size:26px;color:#5f6368">↻ <span class="${mark==='col'?'mark l':''}" style="display:inline-block;color:#1a73e8;font-weight:800;padding:0 8px">+</span></div><div style="margin-top:14px">Table: ${active==='solo'?'Ventas':active}</div></div></div>`;
+const formV=(cant,tot,env)=>`<div class="form"><div class="ph">Ventas</div><div class="fl"><small>producto</small><div>Cuaderno ▾</div></div><div class="fl"><small>cantidad</small><div>${cant}</div></div><div class="fl auto"><small>precio <span class="tagr">lo trae la app</span></small><div>$2,500.00</div></div><div class="fl auto"><small>total <span class="tagr">lo calcula la app</span></small><div>$${tot}</div></div>${env?`<div class="fl auto"><small>envio <span class="tagr">IF</span></small><div>${env}</div></div>`:''}<div class="fl" style="text-align:right;color:#1a73e8;font-weight:800">Save</div></div>`;
+const SL=[
+`<section class="sl cover"><div class="av">${avatar()}</div><span class="pill">Paso a paso</span><h1>Mi primera app<br>en AppSheet</h1></section>`,
+lr('El ejercicio','La app de una tienda','<p>El vendedor registra cada venta <b>en el celular</b>: escoge el producto y escribe la cantidad.</p><p style="margin-top:14px">La app pone el precio, saca el total, decide si el envío es gratis según el valor de la compra y cuenta lo vendido.</p>',formV(3,'7,500.00','Gratis')),
+lr('Las partes','Hoja + App','<p><b>La hoja de Google</b> es la bodega: ahí se guardan los datos.</p><p style="margin-top:14px"><b>AppSheet</b> es la app: ahí se registran las ventas y se hacen las fórmulas. La app guarda todo en la hoja.</p>',`<div class="blend"><div><span>Bodega</span><b>Google Sheets</b></div><span class="arrow">⇄</span><div class="out"><span>App</span><b>AppSheet</b></div></div>`),
+
+/* 1 */
+sec('🧮','1. Como una calculadora','Una fórmula es una cuenta que la app hace sola.'),
+lr('La idea','Tú ya sabes hacer fórmulas','<p>En la calculadora escribes los números: <b>2500 × 3</b>.</p><p style="margin-top:16px">En AppSheet escribes el <b>nombre de la columna</b>, y la app pone el número de cada venta.</p>',`<div class="vs">${calc('2500 × 3','7500')}<span class="arrow">→</span>${F('[precio] * [cantidad]')}</div>`),
+lr('Las piezas','Cada cosa se escribe distinto','<p>Solo hay tres formas de escribir algo en una fórmula.</p>',`<div class="rows"><div class="rw"><span class="k c-col">[precio]</span><span class="d">Una <b>columna</b> va entre corchetes</span></div><div class="rw"><span class="k c-num">5000</span><span class="d">Un <b>número</b> va solo</span></div><div class="rw"><span class="k c-txt">"Gratis"</span><span class="d">Un <b>texto</b> va entre comillas</span></div></div>`),
+lr('Los signos','Para hacer cuentas','<p>Igual que en la calculadora. La <b>×</b> se escribe con asterisco <b>*</b>.</p>',`<div class="tiles"><div class="tile"><div class="s">+</div><div class="n">Sumar</div></div><div class="tile"><div class="s">-</div><div class="n">Restar</div></div><div class="tile"><div class="s">*</div><div class="n">Multiplicar</div></div><div class="tile"><div class="s">/</div><div class="n">Dividir</div></div></div>`),
+
+/* 2 */
+sec('📄','2. Crear la hoja','Primero la bodega, con todas sus columnas.'),
+step(1,'Crea una hoja nueva','<p>En Google Drive toca <b>Nuevo</b> y luego <b>Hojas de cálculo de Google</b>.</p><p style="margin-top:14px">Ponle de nombre <b>La tiendita del barrio</b>.</p>',gsheet('La tiendita del barrio',['','','','',''],[],'Hoja 1')),
+step(2,'Pestaña Ventas','<p>Abajo, cambia el nombre de <b>Hoja 1</b> a <b>Ventas</b>.</p><p style="margin-top:14px">En la fila 1 escribe estos 5 títulos. Las ventas las registra la app.</p>',gsheet('La tiendita del barrio',['id_venta','producto','cantidad','precio','total'],[],'Ventas','Ventas')),
+step(3,'Pestaña Productos','<p>Toca el <b>+</b> de abajo para crear otra pestaña y llámala <b>Productos</b>.</p><p style="margin-top:14px">Escribe los títulos y los productos con su precio.</p>',gsheet('La tiendita del barrio',['producto','precio'],P,'Productos','Productos',7)),
+lr('Regla de oro','Antes de crear la app','<p><b>Ventas</b> debe ser la <b>primera</b> pestaña.</p><p style="margin-top:14px">Todas las columnas deben estar escritas. Así AppSheet las reconoce todas.</p>',`<div class="err"><div><span class="good">✓ Ventas: id_venta, producto, cantidad, precio, total</span><small>Solo títulos, sin datos.</small></div><div><span class="good">✓ Productos: producto, precio</span><small>Con los 6 productos y sus precios.</small></div></div>`),
+
+/* 3 */
+sec('📱','3. Crear la app','AppSheet arma la app desde la hoja.'),
+step(4,'Crea la app','<p>En la hoja, toca <b>Extensiones</b>, luego <b>AppSheet</b> y luego <b>Crear una aplicación</b>.</p><p class="small" style="margin-top:14px">AppSheet se abre en otra pestaña.</p>',`<div class="gmenu"><div class="mb"><span>Archivo</span><span>Editar</span><span>Ver</span><span>Insertar</span><span>Formato</span><span>Datos</span><span><b>Extensiones</b></span></div><div class="dd" style="margin-left:250px;width:260px"><div>Complementos</div><div>Apps Script</div><div><b>AppSheet ▸</b></div></div><div class="sub" style="margin-left:330px;width:260px"><div class="mark l">Crear una aplicación</div></div></div>`),
+step(5,'Agrega Productos','<p>La app trae la primera pestaña: Ventas.</p><p style="margin-top:14px">Para sumar Productos: en <b>Data</b>, toca el <b>+</b> y elige la pestaña <b>Productos</b>.</p>',sideP('solo','+')),
+step(6,'Conecta las tablas','<p>En <b>Data › Ventas</b>, fila <b>producto</b>: en <b>TYPE</b> elige <b>Ref</b>.</p><p class="small" style="margin-top:14px">Ref quiere decir: “este dato viene de otra tabla”.</p>',grid([['id_venta','Text'],['producto','Ref'],['cantidad','Number'],['precio','Text'],['total','Number']],{r:1,c:'tipo'})),
+step(7,'Elige la fuente','<p><b>Source table</b> es la fuente: la tabla de donde viene el dato. Elige <b>Productos</b>.</p><p style="margin-top:12px"><b>Input mode</b> es la forma de escoger. <b>Dropdown</b> muestra una lista desplegable con todos los productos.</p><p style="margin-top:12px"><b>Done</b> guarda y cierra la ventana.</p>',`<div class="pnl"><div class="ph2"><span>Ventas : producto</span><span class="btn">Done</span></div><div class="rowp"><div>Type</div><span style="background:#f1f3f4;border-radius:6px;padding:5px 12px">Ref ▾</span></div><div class="rowp"><div>Source table<small>¿De qué tabla viene?</small></div><span class="mark l" style="background:#f1f3f4;border-radius:6px;padding:5px 12px">Productos ▾</span></div><div class="rowp"><div>Input mode</div><div class="seg"><span>Auto</span><span>Buttons</span><span style="background:#e8f0fe;color:#1a73e8;font-weight:700">Dropdown</span></div></div></div>`),
+
+/* 4 */
+sec('✍️','4. Las primeras fórmulas','Traer el precio y sacar el total.'),
+step(8,'Trae el precio','<p>Fila <b>precio</b>: en <b>TYPE</b> elige <b>Price</b> (tipo dinero, con signo $). En la casilla <b>FORMULA</b> escribe:</p><span class="code" style="margin-top:12px">[producto].[precio]</span><p style="margin-top:12px;font-size:23px">El <b>punto</b> se lee “de”: el precio <b>de</b> el producto.</p><p style="margin-top:10px;font-size:23px">Con el <b>✓ verde</b>, toca <b>Save</b>.</p>',ea('[producto].[precio]',true,'precio')),
+step(9,'Saca el total','<p>Fila <b>total</b>: <b>TYPE</b> en <b>Price</b>. En <b>FORMULA</b> escribe:</p><span class="code" style="margin-top:12px">[precio]*[cantidad]</span>',grid(R0,{r:4,c:'formula'})),
+step(10,'Muestra el producto','<p><b>LABEL</b> es el nombre que se ve en la lista. Marca <b>LABEL</b> en <b>producto</b> y desmárcalo en id_venta.</p><p style="margin-top:14px"><b>SHOW</b> decide qué columnas se ven. Desmarca <b>SHOW</b> en id_venta.</p>',labelGrid()),
+step(11,'Guarda','<p>Arriba a la derecha toca <b>SAVE</b>.</p><p style="margin-top:14px">Cuando queda gris con un <b>✓</b> verde al lado, ya está guardado.</p>',`<div class="savebar"><span>Antes:</span><span class="btn mark l">SAVE</span><span style="margin-left:40px">Después:</span><span class="chk">✓</span><span class="g">SAVE</span></div>`),
+step(12,'Prueba como vendedor','<p>En el celular de la derecha, toca el <b>+</b> azul. Escoge <b>Cuaderno</b> y pon cantidad <b>3</b>.</p><p style="margin-top:14px">El precio y el total salen solos. Toca <b>Save</b> del formulario.</p>',formV(3,'7,500.00')),
+
+/* 5 */
+sec('⚖️','5. Decidir con IF','Una pregunta y dos caminos.'),
+lr('Comparar','Preguntas de Sí o No','<p>Una comparación responde <b>Sí</b> o <b>No</b>.</p>',`<div class="rows"><div class="rw"><span class="k s">&gt;</span><span class="d">mayor que</span></div><div class="rw"><span class="k s">&lt;</span><span class="d">menor que</span></div><div class="rw"><span class="k s">=</span><span class="d">igual a</span></div><div class="rw"><span class="k s">&gt;=</span><span class="d">mayor o igual</span></div></div>`),
+lr('IF','Una pregunta, dos caminos','<p>La tienda regala el envío si la compra es de <b>5000 o más</b>.</p><p style="margin-top:14px"><b>IF</b> significa “si”: pregunta y escribe una cosa u otra.</p>',`<div class="tree"><div class="tq">¿El total es 5000 o más?</div><div class="tb"><div class="si"><small>Sí</small>"Gratis"</div><div class="no"><small>No</small>"Paga"</div></div></div>`),
+step(13,'Crea la columna envio','<p>En <b>Data › Ventas</b>, toca el <b>+</b> de arriba a la derecha (al lado de ↻).</p><p style="margin-top:14px">Esta columna vive en la app: AppSheet la calcula al momento.</p>',sideP('Ventas','col')),
+step(14,'Escribe el IF','<p>Column name: <b>envio</b>. En App formula:</p><span class="code" style="margin-top:12px;font-size:22px">IF([total] >= 5000, "Gratis", "Paga")</span><p style="margin-top:14px">Toca <b>Save</b>, <b>Done</b> y <b>SAVE</b>.</p>',vcol('envio','IF([total] >= 5000, "Gratis", "Paga")','Ventas')),
+lr('Pruébalo','El IF decide solo','<p>En el formulario, con Cuaderno:</p><p style="margin-top:12px">Cantidad <b>1</b> → total 2.500 → <b>Paga</b>.</p><p style="margin-top:8px">Cantidad <b>2</b> → total 5.000 → <b>Gratis</b>.</p>',`<div class="tiles" style="grid-template-columns:1fr 1fr;align-items:start">${formV(1,'2,500.00','Paga').replace('class="form"','class="form" style="width:100%"')}${formV(2,'5,000.00','Gratis').replace('class="form"','class="form" style="width:100%"')}</div>`),
+
+/* 6 */
+sec('📊','6. Juntar las ventas','La app suma todo lo guardado.'),
+step(15,'Crea la columna Vendidos','<p>En <b>Data › Productos</b>, toca el <b>+</b> de arriba. Column name: <b>Vendidos</b>. App formula:</p><span class="code" style="margin-top:12px;font-size:22px">SUM([Related Ventas][cantidad])</span><p style="margin-top:14px">Toca <b>Save</b>, <b>Done</b> y <b>SAVE</b>.</p>',vcol('Vendidos','SUM([Related Ventas][cantidad])','Productos')),
+lr('Resultado','Cuántos se vendieron','<p>En el celular, toca <b>Productos</b> y abre <b>Cuaderno</b>.</p><p style="margin-top:14px">Ves sus ventas y <b>Vendidos: 6</b>. Cada venta nueva lo actualiza sola.</p>',`<div class="det"><div class="ph" style="background:#1a73e8;color:#fff;font-weight:800;padding:14px 18px">Cuaderno</div><div class="dl"><small>precio</small>2,500</div><div class="dl"><small>Related Ventas</small><table><tr><td>producto</td><td>cantidad</td><td>total</td></tr><tr><td>Cuaderno</td><td>3</td><td>$7,500</td></tr><tr><td>Cuaderno</td><td>3</td><td>$7,500</td></tr></table></div><div class="dl" style="background:#fff3c4"><small>Vendidos</small><b>6</b></div></div>`),
+
+/* cierre */
+lr('Claves','Para que todo funcione','',`<div class="err"><div><span class="good">✓ Todas las columnas en la hoja antes de crear la app</span></div><div><span class="good">✓ Las columnas van entre corchetes: [precio]</span></div><div><span class="good">✓ El punto trae un dato de otra tabla: [producto].[precio]</span></div><div><span class="good">✓ Los textos van entre comillas: "Gratis"</span></div><div><span class="good">✓ SAVE gris con ✓ verde: cambios guardados</span></div></div>`),
+lr('Resumen','Las fórmulas de la tienda','',`<div class="rows" style="gap:10px"><div class="rw"><span class="k c-col" style="min-width:400px;font-size:22px">[producto].[precio]</span><span class="d">Traer de otra tabla</span></div><div class="rw"><span class="k" style="min-width:400px;font-size:22px">[precio]*[cantidad]</span><span class="d">Hacer cuentas</span></div><div class="rw"><span class="k c-fn" style="min-width:400px;font-size:22px">IF([total]>=5000,"Gratis","Paga")</span><span class="d">Decidir</span></div><div class="rw"><span class="k c-fn" style="min-width:400px;font-size:22px">SUM([Related Ventas][cantidad])</span><span class="d">Juntar ventas</span></div></div>`),
+sec('🛠️','Taller','Ahora lo construyes tú.'),
+lr('El ejercicio','Desarrolla la app de tu tienda','<p>El ejercicio consiste en desarrollar una app en AppSheet para registrar las ventas de una tienda, con sus fórmulas.</p><p style="margin-top:14px">Escoge tu propia tienda: papelería, panadería, frutería…</p>',`<div class="rows tight"><div class="rw"><span class="k s">1</span><span class="d">Hoja con <b>Ventas</b> y <b>Productos</b> (mínimo 6 productos)</span></div><div class="rw"><span class="k s">2</span><span class="d">App creada y tablas conectadas con <b>Ref</b></span></div><div class="rw"><span class="k s">3</span><span class="d"><b>precio</b> y <b>total</b> con fórmula</span></div><div class="rw"><span class="k s">4</span><span class="d"><b>envio</b> con IF</span></div><div class="rw"><span class="k s">5</span><span class="d"><b>Vendidos</b> en Productos</span></div><div class="rw"><span class="k s">6</span><span class="d">5 ventas registradas desde la app</span></div></div>`),
+lr('Entrega','Qué entregar','<p>Al terminar, comparte la evidencia de tu app funcionando.</p>',`<div class="err"><div><span class="good">✓ Enlace de la hoja de Google</span></div><div><span class="good">✓ Captura del formulario con precio, total y envio</span></div><div><span class="good">✓ Captura de un producto con su columna Vendidos</span></div></div>`)
+];
+$('#stage').innerHTML=SL.join('')+'<span class="brandv">@LaProfeVivy</span>';
+const els=[...document.querySelectorAll('.sl')
+];let k=0;
+function show(i){k=Math.max(0,Math.min(els.length-1,i));els.forEach((e,j)=>e.classList.toggle('on',j===k));$('#prev').disabled=k===0;$('#next').textContent=k===els.length-1?'Inicio ↺':'Siguiente →';$('#cnt').textContent=(k+1)+' / '+els.length}
+function fit(){const s=Math.min(innerWidth/1280,(innerHeight-70)/720);$('#stage').style.transform=`scale(${s})`;$('#stage').style.marginBottom='60px'}
+addEventListener('resize',fit);fit();
+$('#prev').onclick=()=>show(k-1);$('#next').onclick=()=>show(k===els.length-1?0:k+1);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(k+1);if(e.key==='ArrowLeft')show(k-1)});
+$('#stage').onclick=e=>{if(!e.target.closest('button'))show(k+1)};
+show(0);
+</script>
+</body>
+</html>
