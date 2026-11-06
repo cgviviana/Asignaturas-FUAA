@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AutoLab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#152039;--hud:#0f1830;--y:#ffc83d;--y2:#f0a800;--teal:#14b39a;--coral:#ff6b57;--ok:#1f9d55;--ok-soft:#e3f6ea;--bad:#d9472f;--bad-soft:#fff0ea;--muted:#5a6683;--line:#dfe4ef}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Rubik,system-ui,Arial,sans-serif;color:var(--ink);background:var(--hud);font-size:16px;line-height:1.5;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{height:100vh;height:100dvh;display:flex;flex-direction:column}
+.hud{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--hud);color:#fff;border-bottom:3px solid #000}
+.hb{display:flex;align-items:center;gap:8px;background:#1d2a4d;border:2px solid #31406b;border-radius:12px;padding:6px 12px;color:#fff;font-weight:600;font-size:14px;white-space:nowrap}
+.hb:hover{background:#26365f}
+.hb svg{width:20px;height:20px;flex:0 0 auto}
+.hb.ic{padding:6px 8px}
+.hinfo{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.hinfo b{font-weight:800;font-size:16px;white-space:nowrap}
+.hinfo small{color:#9fb0d8;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xpw{margin-left:auto;display:flex;align-items:center;gap:10px}
+.xpbar{width:180px;height:14px;background:#22305a;border:2px solid #000;border-radius:99px;overflow:hidden}
+.xpbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--y));transition:width .7s}
+.xp{position:relative;font-weight:800;color:var(--y);font-size:15px;white-space:nowrap}
+.xpf{position:absolute;right:0;top:-16px;color:var(--y);font-weight:800;animation:xpf 1s forwards;pointer-events:none}
+@keyframes xpf{to{transform:translateY(-26px);opacity:0}}
+.chatb{padding:3px 12px 3px 3px;background:var(--y);border-color:#000;color:var(--ink)}
+.chatb:hover{background:#ffd666}
+.chatb svg{width:32px;height:32px}
+main{flex:1;min-height:0;position:relative;overflow:hidden}
+.foot{flex:0 0 auto;text-align:center;font-size:13px;color:#9fb0d8;background:var(--hud);padding:6px 12px;border-top:3px solid #000}
+.foot b{color:var(--y)}
+.sky1{background:linear-gradient(180deg,#7cc8f7 0%,#bfe6ff 55%,#e6f7ec 100%)}
+.sky2{background:linear-gradient(180deg,#ff9f68 0%,#ff7f7a 40%,#8a63c9 100%)}
+.sky3{background:linear-gradient(180deg,#0a1130 0%,#1a2759 60%,#2a3d78 100%)}
+.scene{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.scene svg{width:100%;height:100%;display:block}
+.cloud{animation:drift 40s linear infinite}
+.cloud.b{animation-duration:65s}
+@keyframes drift{from{transform:translateX(-300px)}to{transform:translateX(1300px)}}
+.tw{animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25}}
+.mapv{overflow-y:auto;height:100%}
+.zone{position:relative;padding:34px 16px 120px;min-height:480px}
+.zin{position:relative;max-width:760px;margin:auto}
+.mhero{display:flex;gap:20px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:18px 22px;margin-bottom:34px}
+.mhero .av{width:104px;height:104px;flex:0 0 auto}
+.mhero h1{margin:0;font-size:clamp(28px,4.5vw,40px);line-height:1.05;font-weight:800}
+.mhero p{margin:6px 0 0;color:var(--muted);font-size:15.5px}
+.mhero .row2{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ztitle{display:inline-flex;flex-direction:column;background:var(--ink);color:#fff;border-radius:14px;padding:8px 16px;border:3px solid #000;box-shadow:0 4px 0 #000;margin-bottom:22px}
+.ztitle b{font-size:18px;font-weight:800;color:var(--y);letter-spacing:.04em;text-transform:uppercase}
+.ztitle small{color:#c7d2ee;font-size:13px}
+.path{display:flex;flex-direction:column;align-items:center;gap:6px}
+.node{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0;transform:translateX(var(--x));position:relative}
+.nb{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:26px;font-weight:800;background:#fff;color:var(--ink);border:4px solid var(--ink);box-shadow:0 6px 0 var(--ink);transition:transform .15s}
+.node:hover:not(:disabled) .nb{transform:translateY(-3px)}
+.node.done .nb{background:var(--teal);color:#fff}
+.node.cur .nb{background:var(--y);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 6px 0 var(--ink),0 0 0 0 rgba(255,200,61,.7)}50%{box-shadow:0 6px 0 var(--ink),0 0 0 14px rgba(255,200,61,0)}}
+.node:disabled{cursor:not-allowed}
+.node:disabled .nb{background:#cfd6e6;color:#8590ab;border-color:#55617f;box-shadow:0 6px 0 #55617f}
+.nl{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 10px;font-weight:700;font-size:14px;margin-top:6px}
+.ns{color:#ffb800;font-size:14px;letter-spacing:2px;height:18px;text-shadow:0 1px 0 #00000040}
+.dots3{display:flex;flex-direction:column;gap:6px;align-items:center;padding:4px 0}
+.dots3 i{width:8px;height:8px;border-radius:50%;background:#ffffffcc;border:2px solid var(--ink)}
+.trophy .nb{width:86px;height:86px;font-size:34px;background:#fff6d6}
+.resetl{display:block;margin:26px auto 0;background:none;border:0;color:#c7d2ee;text-decoration:underline;font-size:14px}
+.zlock{display:inline-block;margin:-10px auto 18px;background:#fff;border:3px solid var(--ink);border-radius:12px;padding:6px 14px;font-weight:800;box-shadow:0 4px 0 var(--ink)}
+.gbtn{background:var(--y);border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);font-weight:800;font-size:15.5px;padding:9px 18px;transition:transform .08s,box-shadow .08s;white-space:nowrap}
+.gbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.gbtn.w{background:#fff}
+.gbtn.t{background:var(--teal);color:#fff}
+.gbtn:disabled{opacity:.5;cursor:not-allowed}
+.lbtn{background:none;border:0;padding:6px 4px;color:var(--muted);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 410px}
+.simarea{position:relative;overflow:auto;padding:24px;display:flex;min-height:0}
+.device{margin:auto;width:100%;min-width:0;max-width:760px;background:#1b2440;border:3px solid #000;border-radius:24px;padding:10px;box-shadow:0 22px 50px rgba(5,10,30,.35)}
+.simwrap{min-width:0;position:relative;overflow:hidden;border-radius:14px;background:#fff}
+.spot{position:absolute;border-radius:12px;pointer-events:none;opacity:0;box-shadow:0 0 0 4px var(--y),0 0 0 9999px rgba(8,14,34,.55);transition:left .45s,top .45s,width .45s,height .45s,opacity .3s;z-index:5}
+.spot.on{opacity:1}
+.ptr{position:absolute;width:34px;height:40px;z-index:6;pointer-events:none;opacity:0;transition:left .45s,top .45s,opacity .3s}
+.ptr.on{opacity:1}
+.ptr svg{width:100%;height:100%;animation:tap 1s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+@keyframes tap{50%{transform:translate(-7px,-7px)}}
+.card{position:absolute;inset:0;z-index:7;background:#fff;padding:22px 24px;overflow:auto;animation:cardin .35s}
+@keyframes cardin{from{transform:translateY(16px);opacity:0}}
+.card h3{margin:0 0 4px;font-size:20px;font-weight:800}
+.card .sub{margin:0 0 14px;color:var(--muted);font-size:14px}
+.card table{border-collapse:collapse;width:100%;font-size:14px}
+.card th,.card td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.card th{background:#f2f5fb;font-weight:700;font-size:13px;color:var(--muted)}
+.card td:first-child{font-weight:700;min-width:96px}
+.card td+td{font-weight:400}
+.card .rule{margin:14px 0 0;background:#fff6d8;border-radius:10px;padding:10px 12px;font-size:14px}
+.comp{position:relative;overflow-y:auto;padding:20px 20px 22px 4px;display:flex;flex-direction:column;justify-content:flex-end;gap:14px;min-height:0}
+.portrait{width:128px;height:128px;align-self:flex-start;margin-left:14px;margin-bottom:-26px;position:relative;z-index:2;flex:0 0 auto}
+.portrait svg{width:100%;height:100%;border-radius:50%;border:4px solid var(--ink);background:#fff;box-shadow:0 5px 0 var(--ink)}
+.portrait.hop{animation:hop .5s}
+.portrait.no{animation:no .4s}
+@keyframes hop{40%{transform:translateY(-14px)}}
+@keyframes no{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.dlg{position:relative;background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);padding:26px 20px 16px;flex:0 0 auto}
+.tag{position:absolute;top:-17px;right:16px;display:flex;align-items:center;gap:6px;background:var(--y);border:3px solid var(--ink);border-radius:12px;padding:2px 12px;font-weight:800;font-size:14px}
+.tag svg{display:none;width:24px;height:24px;margin-left:-6px}
+.say{margin:0;font-size:17px;line-height:1.55;min-height:3.1em}
+.qq{margin:0;font-size:17px;font-weight:700;line-height:1.45}
+.ctrl{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.ctrl .sp{flex:1}
+.dots{display:flex;gap:5px;flex-basis:100%;margin-bottom:4px}
+.dots i{width:8px;height:8px;border-radius:50%;background:#d5dbea}
+.dots i.on{background:var(--ink);width:20px;border-radius:99px}
+.spk{width:40px;height:40px;border-radius:12px;border:2px solid var(--line);background:#fff;display:grid;place-items:center;padding:0}
+.spk svg{width:20px;height:20px}
+.spk.on{background:var(--y);border-color:var(--ink)}
+.fb{font-size:15.5px;line-height:1.5;border-radius:12px;margin-top:10px;padding:10px 12px}
+.fb:empty{display:none}
+.fb.good{background:var(--ok-soft);color:#16653a}
+.fb.bad{background:var(--bad-soft);color:#9c2e1a}
+.fb.tip{background:#fff6d8;color:#6e5100}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:#fff;border:3px solid #cfd6e6;border-radius:14px;box-shadow:0 3px 0 #cfd6e6;padding:11px 14px;font-weight:600;font-size:15.5px;transition:border-color .12s,transform .08s}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:active:not(:disabled){transform:translateY(2px)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft);box-shadow:0 3px 0 var(--ok)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);box-shadow:0 3px 0 var(--bad);opacity:.85}
+.shake,.flashbad{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.huntm{display:flex;align-items:center;gap:10px;background:#ffffffe6;border:3px dashed var(--ink);border-radius:14px;padding:10px 14px;font-weight:600;font-size:15px}
+.huntm svg{width:26px;height:30px;flex:0 0 auto;animation:tap 1s infinite}
+.hunt [data-hot]{cursor:pointer}
+.hunt [data-hot]:hover{outline:3px dashed var(--y2);outline-offset:2px}
+.slots{display:grid;gap:7px}
+.slot{display:flex;gap:10px;align-items:center;min-height:42px;border:2px dashed #b9c2d8;border-radius:12px;padding:7px 10px;background:#ffffffd9;color:var(--muted);font-size:14px}
+.slot.f{border-style:solid;border-color:var(--ok);background:var(--ok-soft);color:#16653a;font-weight:600}
+.slot i{font-style:normal;flex:0 0 24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pool .opt{padding:8px 12px;font-size:14px}
+.stars{font-size:38px;letter-spacing:4px;color:#ffb800;line-height:1;text-shadow:0 3px 0 var(--ink)}
+.stars s{color:#d5dbea;text-decoration:none}
+.badge-l{font-weight:800;font-size:18px;margin:10px 0 2px}
+.banner{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:30}
+.banner div{background:var(--y);border:4px solid var(--ink);box-shadow:0 8px 0 var(--ink);border-radius:22px;padding:18px 34px;text-align:center;animation:pop 1.5s forwards}
+.banner b{display:block;font-size:clamp(28px,5vw,44px);font-weight:800;line-height:1.1}
+.banner small{font-size:16px;font-weight:600}
+@keyframes pop{0%{transform:scale(.3) rotate(-6deg);opacity:0}18%{transform:scale(1.08) rotate(2deg);opacity:1}28%{transform:scale(1) rotate(0)}82%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:0}}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:29}
+.confetti i{position:absolute;top:-20px;width:10px;height:14px;border-radius:2px;animation:fall 2.2s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* Simulador AutoLab */
+.simarea,.comp{scrollbar-width:none}
+.simarea::-webkit-scrollbar,.comp::-webkit-scrollbar{display:none}
+.flow2{display:flex;flex-direction:column;max-width:540px;margin:0 auto}
+.fb2{display:flex;gap:10px;align-items:center;border:2px solid var(--line);border-radius:12px;padding:6px 12px;background:#fff}
+.fb2.hl{border-color:var(--ink);background:#fff6d8}
+.fic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto;border:2px solid var(--ink)}
+.fic svg{width:18px;height:18px}
+.fb2 b{display:block;font-size:12.5px;color:var(--muted)}
+.fb2 small{display:block;font-size:13.5px;font-weight:600;line-height:1.35}
+.fb2 small.q{color:#b06000;font-weight:500;font-style:italic}
+.k-act .fic{background:#ffc83d}.k-dat .fic{background:#cfe3ff}.k-con .fic{background:#e4dcff}.k-acc .fic{background:#bff0e4}.k-res .fic{background:#d4f5dc}.k-plan .fic{background:#ffd9cf}
+.farr{width:2px;height:10px;background:var(--ink);margin:0 auto}
+.ftitle{text-align:center;font-weight:800;margin:0 0 10px}
+.trgs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.trg{border:2px solid var(--line);border-radius:14px;padding:12px;background:#fff;display:flex;flex-direction:column;gap:4px}
+.trg.on{border-color:var(--ink);background:#fff6d8;box-shadow:0 4px 0 var(--ink)}
+.ti{width:40px;height:40px;border-radius:12px;background:var(--y);border:2px solid var(--ink);display:grid;place-items:center}
+.ti svg{width:22px;height:22px}
+.trg small{color:var(--muted)}
+.tex{font-size:13px;background:#f2f5fb;border-radius:8px;padding:6px 8px;margin-top:4px}
+.algo{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;align-items:start}
+.ps{background:#0f1830;color:#e8ecf7;border-radius:12px;padding:10px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.pl{padding:3px 6px;border-radius:6px;border-left:4px solid transparent}
+.col .pl.t-sec{border-left-color:#7cb6ff}.col .pl.t-dec{border-left-color:#b9a4ff}.col .pl.t-rep{border-left-color:#ffb36b}
+.pl.on{background:#ffc83d40}
+.lgd{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:8px;color:var(--muted)}
+.lgd i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.glog{display:grid;gap:8px}
+.gr{border:2px solid var(--line);border-radius:12px;padding:7px 12px;background:#fff;font-size:13px}
+.gr.hl{border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.gr b{display:block}
+.gr.ok{border-color:#9fdcc9}.gr.dato,.gr.falla{background:#fff6f3}.gr.per{background:#fff8ef}
+.gr .pb{display:block;margin-top:3px;color:#0f6f60;font-weight:700}
+.pend2{display:flex;align-items:center;gap:10px;margin-top:12px;border:2px solid var(--ink);border-radius:12px;padding:6px 12px;background:#fff6d8}
+.pend2 svg{width:40px;height:40px;flex:0 0 auto}
+.pend2 small{display:block;color:var(--muted)}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.tool{border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff;font-size:13px}
+.tool b{font-size:15px;display:block}
+.tool small{display:block;color:var(--muted);margin-top:4px}
+.tool.on{border-color:var(--ink);background:#fff6d8;box-shadow:0 4px 0 var(--ink)}
+.rulebox{background:#0f1830;color:#fff;border-radius:10px;padding:8px 12px;font-family:ui-monospace,Consolas,monospace;font-size:13.5px;margin-bottom:12px}
+.rulebox.fix{background:#0f6f60}
+.pass{color:var(--ok);font-weight:800}.failr{color:var(--bad);font-weight:800}
+.lst tr.bad td{background:#fff0ea}
+.lst tr.hl td{background:#fff6d8}
+.fc{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:14px;align-items:start}
+.fc svg{width:100%;height:auto;display:block}
+.fn .sh{stroke:#152039;stroke-width:2.5}
+.fn.hl .sh{stroke-width:4.5;filter:drop-shadow(0 0 7px #ffc83d)}
+.fn .tg{font-size:9.5px;font-weight:800;letter-spacing:.06em;fill:#4a5675}
+.fn .lb{font-size:12.5px;font-weight:600;fill:#152039}
+.k-act .sh{fill:#ffc83d}.k-dat .sh{fill:#cfe3ff}.k-acc .sh{fill:#bff0e4}.k-con .sh{fill:#e4dcff}.k-res .sh{fill:#d4f5dc}.k-loop .sh{fill:#ffd9a8}
+.fe path.v{stroke:#152039;stroke-width:2;fill:none}
+.fe .hit{stroke:transparent;stroke-width:18;fill:none}
+.fe text{font-size:12px;font-weight:800;fill:#152039}
+.fe.loop path.v{stroke:#e07b00;stroke-width:3.5}
+.fe.loop text{fill:#e07b00}
+.fe.hl path.v{stroke:#14b39a;stroke-width:4;stroke-dasharray:8 5;animation:dash .5s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-13}}
+.hunt .fn:hover .sh,.hunt .fe:hover path.v{stroke:#f0a800}
+.dot{fill:#ffc83d;stroke:#152039;stroke-width:2.5}
+.chips{display:grid;gap:6px}
+.chip{display:flex;justify-content:space-between;gap:8px;border:2px solid var(--line);border-radius:10px;padding:4px 10px;font-size:13px;background:#fff}
+.qans{margin-top:8px;border-radius:10px;padding:6px 10px;font-weight:600;font-size:13.5px}
+.qans.y{background:var(--ok-soft);color:#16653a}.qans.n{background:#fff0ea;color:#9c2e1a}
+.lst tr.dn td{color:var(--muted)}
+#dpanel .lst{margin-top:10px;min-width:0}
+.card td svg{display:block}
+@media (max-width:640px){.trgs,.algo,.fc{grid-template-columns:1fr}}
+.win{background:#fff;font-size:14px}
+.wbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:#f6f8fc}
+.wbar b{font-size:14px}.wsp{flex:1}.wtag{font-size:12px;color:var(--muted)}
+.wbody{padding:16px}
+.esc{display:flex;gap:16px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.who2{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);font-weight:600}
+.who2 svg{width:64px;height:64px}
+.lst{flex:1;min-width:220px;border:2px solid var(--line);border-radius:12px;overflow:hidden}
+.lst table{border-collapse:collapse;width:100%;font-size:13px}
+.lst th,.lst td{padding:6px 10px;border-bottom:1px solid #eef1f6;text-align:left}
+.lst th{background:#f2f5fb;color:var(--muted);font-size:12px}
+.bd{font-size:11px;border-radius:6px;padding:1px 6px;font-weight:700;white-space:nowrap}
+.bd.r{background:#fce8e6;color:#c5221f}.bd.a{background:#e6f4ea;color:#137333}
+.proc{display:flex;flex-direction:column;gap:7px}
+.pend{align-self:flex-start;background:var(--ink);color:#fff;border-radius:10px;padding:3px 12px;font-weight:700;font-size:13px}
+.pend.fn{background:var(--teal)}
+.paso{display:flex;align-items:center;gap:10px;border:2px solid var(--line);border-radius:12px;padding:5px 12px;background:#fff}
+.paso.hl{border-color:var(--ink);background:#fff6d8}
+.paso i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--y);border:2px solid var(--ink);display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto}
+.paso svg{width:22px;height:22px;flex:0 0 auto}
+.paso span{flex:1;font-weight:600}
+.paso small{color:var(--muted);font-weight:600}
+.paso small.au{color:#0f8a76}
+.lanes{display:grid;gap:14px}
+.lane{border:3px solid var(--line);border-radius:16px;padding:12px 14px}
+.lane.m{background:#fff8ef}.lane.a{background:#effaf6}
+.lh{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.lh svg{width:52px;height:52px;flex:0 0 auto}
+.lh small{display:block;color:var(--muted)}
+.pbar{height:16px;border:2px solid var(--ink);border-radius:99px;background:#fff;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--coral)}
+.lane.a .pbar i{background:var(--teal)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.stats span{background:#fff;border:2px solid var(--line);border-radius:10px;padding:2px 10px;font-size:13px}
+.stats b{font-size:15px}
+.stats .er b{color:var(--bad)}
+.tabs2{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tabs2 span{padding:3px 12px;border-radius:99px;border:2px solid var(--line);font-size:13px;font-weight:600;color:var(--muted)}
+.tabs2 span.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.mails{display:grid;gap:8px}
+.mail{display:grid;grid-template-columns:auto 1fr;gap:0 10px;align-items:center;border:2px solid var(--line);border-radius:12px;padding:7px 12px;background:#fff;font-size:13px}
+.mail .ic{grid-row:span 3;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;background:#8590ab;font-size:12px}
+.mail.ok .ic{background:var(--ok)}
+.mail.bad{border-color:var(--bad);background:var(--bad-soft)}
+.mail.bad .ic{background:var(--bad)}
+.mail small{color:var(--muted);word-break:break-word}
+.mail em{font-style:normal;font-weight:700;color:var(--bad);font-size:12px}
+.log{margin-top:10px;background:#f2f5fb;border-radius:10px;padding:8px 12px;font-size:13px}
+.ptitle{font-weight:800;margin:0 0 8px}
+.tasks{display:grid;gap:6px}
+.tk{border:2px solid var(--ink);border-radius:10px;padding:6px 10px;background:#fff;font-size:13px;font-weight:600}
+.tk.fo{background:var(--y);box-shadow:0 3px 0 var(--ink)}
+.bins{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.bin{border:3px dashed var(--line);border-radius:14px;padding:10px;min-height:110px}
+.bin h5{margin:0 0 8px;display:flex;align-items:center;gap:8px;font-size:14px}
+.bin h5 svg{width:34px;height:34px;flex:0 0 auto}
+.bin.a{background:#effaf6;border-color:#9fdcc9}.bin.p{background:#fff8ef;border-color:#f3c99b}
+.bin .tk{margin-bottom:6px}
+
+/* Final y certificado */
+.fin{position:relative;max-width:760px;margin:auto;background:#fff;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:26px 24px;text-align:center}
+.fin h1{margin:6px 0 6px;font-size:clamp(28px,4.5vw,40px);font-weight:800}
+.fin p{color:var(--muted);margin:0}
+.nm{display:block;margin:6px auto 0;font:inherit;font-size:16px;padding:9px 12px;border:3px solid var(--ink);border-radius:12px;width:min(280px,100%)}
+.code{margin:12px auto 0!important;text-align:center;letter-spacing:.2em}
+.cerr{color:#c2410c!important;font-weight:700;min-height:1.4em}
+.cbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.cert{background:#fff;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:10px}
+.cin{border:3px double #d9b44a;border-radius:16px;padding:22px 24px;text-align:center;background:linear-gradient(#fffdf5,#fff)}
+.cav{width:80px;height:80px;margin:0 auto 6px}
+.ck{letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:#b08a1e;font-size:12px}
+.cin h1{margin:6px 0 2px;font-size:clamp(26px,4vw,36px)}
+.cin h2{margin:4px 0;font-size:clamp(24px,4vw,34px);color:#14806e}
+.cin p{margin:2px 0;color:var(--muted)}
+.cin h3{margin:16px 0 6px;font-size:16px}
+.cmeta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}
+.cmeta span{background:#fff6d8;border:2px solid var(--ink);border-radius:10px;padding:3px 10px;font-weight:700;font-size:14px}
+.cap{text-align:left;max-width:520px;margin:0 auto;padding-left:20px}
+.cap li{margin:5px 0}
+.cfirma{margin-top:18px;display:inline-flex;flex-direction:column;border-top:2px solid var(--ink);padding-top:6px;min-width:200px}
+.cfirma small{color:var(--muted)}
+.soon{color:#fff;font-weight:700;text-align:center;margin-top:10px}
+@media print{body{overflow:visible;background:#fff}.app{height:auto}body *{visibility:hidden}#cert,#cert *{visibility:visible}#cert{position:absolute;left:0;top:0;width:100%;box-shadow:none}}
+
+/* Chat */
+.veil{position:fixed;inset:0;background:rgba(8,14,34,.5);z-index:50;display:none}
+.veil.open{display:block}
+.chat{position:fixed;top:0;right:0;bottom:0;width:min(400px,100vw);background:#fff;z-index:51;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .3s;border-left:3px solid var(--ink)}
+.chat.open{transform:none}
+.chat-h{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--hud);color:#fff}
+.chat-h svg{width:46px;height:46px;flex:0 0 auto;border-radius:50%;border:3px solid var(--y)}
+.chat-h div{flex:1;line-height:1.25}
+.chat-h small{color:#9fb0d8}
+.chat-x{background:#1d2a4d;border:2px solid #31406b;color:#fff;width:36px;height:36px;border-radius:10px;font-size:20px;line-height:1}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f6f8fc}
+.m{max-width:86%;padding:10px 13px;border-radius:16px;font-size:14.5px;line-height:1.5}
+.m.p{background:#fff;border:2px solid var(--line);border-bottom-left-radius:4px}
+.m.u{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+.sugg{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-top:1px solid var(--line)}
+.sugg button{flex:0 0 auto;border:2px solid var(--ink);background:#fff;border-radius:99px;padding:5px 11px;font-size:13px;font-weight:600}
+.chat-in{display:flex;gap:8px;padding:10px 12px 14px;border-top:1px solid var(--line)}
+.chat-in input{flex:1;border:2px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:15px;min-width:0}
+.chat-in input:focus{outline:none;border-color:var(--ink)}
+
+@media (max-width:980px){
+ .stage{display:flex;flex-direction:column}
+ .simarea{flex:1;padding:12px}
+ .device{padding:6px;border-radius:18px}
+ .comp{flex:0 0 auto;max-height:62%;padding:20px 12px 12px;justify-content:flex-start;background:linear-gradient(180deg,transparent,rgba(15,24,48,.25) 30%)}
+ .portrait{display:none}
+ .tag{left:14px;right:auto}
+ .tag svg{display:block;background:#fff;border-radius:50%}
+ .say,.qq{font-size:15.5px}
+ .say{min-height:2.6em}
+}
+@media (max-width:640px){
+ .hud{gap:8px;padding:7px 10px}
+ .hb span,.chatb span{display:none}
+ .chatb{padding:3px}
+ .hinfo b{font-size:14.5px}
+ .xpbar{display:none}
+ .hinfo small{max-width:150px}
+ .mhero{flex-direction:column;text-align:center;padding:16px}
+ .mhero .row2{justify-content:center}
+ .card{padding:16px}
+ .card table{font-size:13px}
+ .zone{padding:24px 14px 100px}
+ .nb{width:64px;height:64px;font-size:23px}
+ .wbody{padding:12px}
+ .bins{grid-template-columns:1fr}
+ .esc .who2 svg{width:52px;height:52px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <header class="hud">
+  <button class="hb" id="toMap" type="button" aria-label="Mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7z"/><path d="M9 4v13M15 7v13"/></svg><span>Mapa</span></button>
+  <div class="hinfo"><b>AutoLab</b><small id="hsub">Elige tu etapa</small></div>
+  <div class="xpw"><div class="xpbar" aria-label="Progreso"><i id="bar"></i></div><span class="xp" id="xp">0 XP</span></div>
+  <button class="hb ic" id="snd" type="button" aria-label="Sonido"></button>
+  <button class="hb chatb" id="chatBtn" type="button" aria-label="Pregúntale a la profe"></button>
+ </header>
+ <main id="main"></main>
+ <footer class="foot">Aprendiendo con <b>@LaProfeVivy</b></footer>
+</div>
+<div class="veil" id="veil"></div>
+<section class="chat" id="chat" aria-label="Chat con la profe">
+ <div class="chat-h" id="chatHead"></div>
+ <div class="msgs" id="msgs"></div>
+ <div class="sugg" id="sugg"></div>
+ <form class="chat-in" id="chatForm"><input id="chatIn" placeholder="Escribe tu pregunta…" autocomplete="off"><button class="gbtn" type="submit">Enviar</button></form>
+</section>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const clone=o=>JSON.parse(JSON.stringify(o||{}));
+const ini=n=>n.split(' ').map(p=>p[0]).join('').slice(0,2);
+
+/* ---------- Avatar de la profe ---------- */
+let avn=0;
+function avatar(){const id='avc'+(++avn);return `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><clipPath id="${id}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#${id})"><rect width="120" height="120" fill="#ffe9e4"/><path d="M27 66C22 32 42 16 61 16c22 0 37 17 32 50-2 13 1 23 6 32H21c5-9 8-20 6-32z" fill="#7d1a35"/><rect x="52" y="74" width="16" height="20" rx="6" fill="#ecc3a8"/><path d="M18 126c2-23 18-34 42-34s40 11 42 34z" fill="#2f8f83"/><path d="M50 92l10 12 10-12z" fill="#ecc3a8"/><ellipse cx="60" cy="58" rx="21" ry="24" fill="#f5d5bf"/><circle cx="39" cy="61" r="4" fill="#ecc3a8"/><circle cx="81" cy="61" r="4" fill="#ecc3a8"/><path d="M37 60c-3-22 9-33 25-33 16 0 26 11 23 28-4-8-10-11-17-12-3 4-9 7-16 8-6 1-11 4-15 9z" fill="#9b2445"/><path d="M47 32c9-5 22-4 30 4-9-2-19-2-30-4z" fill="#c4456a" opacity=".85"/><path d="M38 57c-4 10-4 20 1 30-7-6-10-18-8-30z" fill="#8a1f3d"/><path d="M83 52c4 11 4 22-1 33 7-8 10-20 7-33z" fill="#8a1f3d"/><path d="M45 51q5-2.5 10 0M65 51q5-2.5 10 0" stroke="#5a2a28" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M45 58q5-3 10 0M65 58q5-3 10 0" stroke="#2b1b1b" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="46" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><circle cx="74" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><path d="M53 70q7 5 14 0" stroke="#a8384a" stroke-width="2.4" fill="none" stroke-linecap="round"/><g transform="translate(78 88)"><path d="M4 10 7 0l7 7h8l7-7 3 10c2 4 2 9 0 13H2c-2-4-2-9 2-13z" fill="#8b7b68"/><path d="M8 9l3-5M28 9l-3-5" stroke="#5e5143" stroke-width="1.5"/><path d="M18 14c-5 0-8 3-8 7h16c0-4-3-7-8-7z" fill="#fff"/><path d="M11 13q2-1.5 4 0M21 13q2-1.5 4 0" stroke="#2b2b2b" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M17 16h2l-1 1.2z" fill="#e89aa2"/></g></g></svg>`}
+const PTR='<svg viewBox="0 0 22 28"><path d="M1 1v21l6-6 4 10 4-2-4-10h8z" fill="#fff" stroke="#152039" stroke-width="2" stroke-linejoin="round"/></svg>';
+const MARTA='<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="31" fill="#fff4dc" stroke="#152039" stroke-width="2"/><path d="M14 58c2-12 9-17 18-17s16 5 18 17z" fill="#5b3fd1"/><path d="M19 36c-2-15 5-23 13-23s15 8 13 23c-2-6-6-9-13-9s-11 3-13 9z" fill="#3b2a26"/><ellipse cx="32" cy="31" rx="10" ry="12" fill="#e9b996"/><path d="M22 27c3-6 7-8 10-8s8 2 10 8c-4-3-7-4-10-4s-7 1-10 4z" fill="#3b2a26"/><circle cx="28" cy="31" r="1.4" fill="#152039"/><circle cx="36" cy="31" r="1.4" fill="#152039"/><path d="M28.5 36q3.5 2.5 7 0" stroke="#a8384a" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>';
+const ROBOT='<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="31" fill="#e3f6ef" stroke="#152039" stroke-width="2"/><path d="M32 10v7" stroke="#152039" stroke-width="2.5"/><circle cx="32" cy="9" r="3" fill="#ff6b57" stroke="#152039" stroke-width="2"/><rect x="17" y="17" width="30" height="24" rx="7" fill="#14b39a" stroke="#152039" stroke-width="2.5"/><circle cx="26" cy="29" r="4" fill="#fff" stroke="#152039" stroke-width="2"/><circle cx="38" cy="29" r="4" fill="#fff" stroke="#152039" stroke-width="2"/><path d="M27 36h10" stroke="#152039" stroke-width="2.5" stroke-linecap="round"/><rect x="21" y="44" width="22" height="12" rx="4" fill="#ffc83d" stroke="#152039" stroke-width="2.5"/></svg>';
+
+/* ---------- Escenarios ---------- */
+function scene(n){
+ let seed=n*137;const r=()=>(seed=(seed*9301+49297)%233280)/233280;
+ let s='';
+ if(n===1){
+  s+=`<g class="cloud" fill="#fff" opacity=".9"><ellipse cx="0" cy="60" rx="70" ry="20"/><ellipse cx="35" cy="45" rx="40" ry="22"/></g><g class="cloud b" fill="#fff" opacity=".75" style="animation-delay:-30s"><ellipse cx="0" cy="105" rx="60" ry="16"/><ellipse cx="-25" cy="94" rx="32" ry="17"/></g><g class="cloud" fill="#fff" opacity=".8" style="animation-delay:-18s"><ellipse cx="0" cy="30" rx="50" ry="14"/></g>`;
+  s+=`<path d="M0 205 Q160 150 340 190 T680 178 T1000 168 T1200 182 V300 H0Z" fill="#a9de9b"/>`;
+  s+=`<g transform="translate(870 128)"><rect x="0" y="40" width="210" height="92" fill="#fff4dc" stroke="#152039" stroke-width="3"/><path d="M-12 44 L105 0 L222 44Z" fill="#ff6b57" stroke="#152039" stroke-width="3" stroke-linejoin="round"/><circle cx="105" cy="26" r="9" fill="#fff" stroke="#152039" stroke-width="2.5"/><rect x="88" y="84" width="34" height="48" fill="#5a6683" stroke="#152039" stroke-width="3"/>${[18,52,140,174].map(x=>`<rect x="${x}" y="60" width="22" height="20" fill="#7cc8f7" stroke="#152039" stroke-width="2.5"/>`).join('')}<path d="M105 0V-34" stroke="#152039" stroke-width="3"/><path d="M105 -34h24l-6 7 6 7h-24z" fill="#ffc83d" stroke="#152039" stroke-width="2"/></g>`;
+  s+=`<path d="M0 238 Q220 198 440 232 T860 228 T1200 222 V300H0Z" fill="#6cc070"/>`;
+  [[90,232],[180,226],[1120,224],[640,236]].forEach(([x,y])=>{s+=`<rect x="${x-3}" y="${y-8}" width="6" height="18" fill="#7a4d2b"/><circle cx="${x}" cy="${y-20}" r="16" fill="#3f9d4f" stroke="#152039" stroke-width="2.5"/>`});
+ } else if(n===2){
+  s+=`<circle cx="230" cy="150" r="70" fill="#ffd27a" opacity=".85"/>`;
+  for(let x=-10;x<1210;x+=40+r()*30){const h=70+r()*110,w=36+r()*30;s+=`<rect x="${x}" y="${300-h-40}" width="${w}" height="${h+40}" fill="#6a4fb0" opacity=".65"/>`}
+  for(let x=-20;x<1220;x+=55+r()*35){const h=50+r()*80,w=50+r()*30;s+=`<rect x="${x}" y="${300-h}" width="${w}" height="${h}" fill="#3a2c78" stroke="#152039" stroke-width="2"/>`;for(let wy=300-h+12;wy<290;wy+=18)for(let wx=x+8;wx<x+w-10;wx+=14)if(r()>.55)s+=`<rect x="${wx}" y="${wy}" width="7" height="8" fill="#ffc83d"/>`}
+ } else {
+  for(let i=0;i<70;i++)s+=`<circle class="tw" style="animation-delay:${(r()*3).toFixed(2)}s" cx="${(r()*1200).toFixed(0)}" cy="${(r()*170).toFixed(0)}" r="${(r()*1.6+.6).toFixed(1)}" fill="#fff"/>`;
+  s+=`<circle cx="1010" cy="62" r="26" fill="#f6f1c7"/>`;
+  for(let x=-10;x<1210;x+=38+r()*28){const h=80+r()*120,w=34+r()*26;s+=`<rect x="${x}" y="${300-h-30}" width="${w}" height="${h+30}" fill="#1b285a"/>`}
+  for(let x=-20;x<1220;x+=52+r()*36){const h=60+r()*90,w=48+r()*30;s+=`<rect x="${x}" y="${300-h}" width="${w}" height="${h}" fill="#0a1029" stroke="#000" stroke-width="2"/>`;for(let wy=300-h+12;wy<290;wy+=17)for(let wx=x+8;wx<x+w-10;wx+=13)if(r()>.6)s+=`<rect x="${wx}" y="${wy}" width="6" height="7" fill="${r()>.3?'#ffc83d':'#5fe0d0'}"/>`}
+ }
+ return `<svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice">${s}</svg>`;
+}
+
+/* ---------- Simuladores ---------- */
+const ICP={list:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',count:'<path d="M6 5v14M10 5v14M14 5v14M4 15l14-7"/>',search:'<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/>',write:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',send:'<path d="M3 11 21 3l-8 18-2-8z"/>'};
+const svgP=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICP[k]}</svg>`;
+const win=(title,body)=>`<div class="win"><div class="wbar"><b>${title}</b><span class="wsp"></span><span class="wtag">Colegio San Martín</span></div><div class="wbody">${body}</div></div>`;
+const PASOS=[['Revisar la lista de llegadas','list'],['Contar los retardos de cada estudiante','count'],['Buscar el correo del acudiente','search'],['Escribir el correo según la norma','write'],['Enviar el correo','send']];
+const LLEG=[['Camila Torres','07:08','Retardo'],['Daniel Ruiz','06:57','A tiempo'],['Mateo Gil','07:12','Retardo'],['Laura Peña','06:59','A tiempo']];
+function procSim(ms){
+ const lista=`<div class="lst" data-t="lista"><table><tr><th>Estudiante</th><th>Llegó</th><th>Estado</th></tr>${LLEG.map(l=>`<tr><td>${l[0]}</td><td>${l[1]}</td><td><span class="bd ${l[2]==='Retardo'?'r':'a'}">${l[2]}</span></td></tr>`).join('')}</table></div>`;
+ const pasos=PASOS.map((p,k)=>`<div class="paso ${ms.hl===k+1?'hl':''}" data-t="p${k+1}" data-hot="p${k+1}"><i>${k+1}</i>${svgP(p[1])}<span>${p[0]}</span><small class="${ms.auto?'au':''}">${ms.auto?'Sistema':'Marta'}</small></div>`).join('');
+ return win('Coordinación · Retardos',`<div class="esc" data-t="esc"><div class="who2">${MARTA}Marta</div>${lista}</div><div class="proc" data-t="proceso"><span class="pend" data-t="inicio">Inicio: un estudiante llega tarde</span>${pasos}<span class="pend fn" data-t="fin">Fin: la familia queda enterada</span></div>`);
+}
+const fmtMin=m=>m<60?m+' min':Math.floor(m/60)+' h'+(m%60?' '+(m%60)+' min':'');
+const laneVal=(K,n)=>K==='M'?{t:fmtMin(n*3),e:n>=21?2:n>=8?1:0}:{t:n?'menos de 1 min':'0 min',e:0};
+function lane(K,st){
+ const n=st==='done'?30:0,v=laneVal(K,n);
+ const head=K==='M'?`${MARTA}<div><b>Manual</b><small>Marta hace cada tarea, una por una</small></div>`:`${ROBOT}<div><b>Automático</b><small>Un sistema hace las tareas siguiendo reglas</small></div>`;
+ return `<div class="lane ${K==='M'?'m':'a'}" data-t="lane${K}" data-hot="lane${K}"><div class="lh">${head}</div><div class="pbar"><i id="pb${K}" style="width:${n/30*100}%"></i></div><div class="stats"><span>Correos <b id="c${K}">${n}</b>/30</span><span data-t="t${K}">Tiempo <b id="t${K}">${v.t}</b></span><span class="er" data-t="e${K}">Errores <b id="e${K}">${v.e}</b></span></div></div>`;
+}
+let ANIM=[];
+function animLane(K,speed){let n=0;const it=setInterval(()=>{n++;const v=laneVal(K,n),g=id=>document.getElementById(id);if(!g('c'+K)){clearInterval(it);return}g('c'+K).textContent=n;g('pb'+K).style.width=(n/30*100)+'%';g('t'+K).textContent=v.t;g('e'+K).textContent=v.e;if(n>=30)clearInterval(it)},speed);ANIM.push(it)}
+function laneSim(ms){return win('Lunes 7:15 a. m. · 30 avisos de retardo',`<div class="lanes">${lane('M',ms.m)}${lane('A',ms.a)}</div>`)}
+const MAILS_M=[['e1','Camila Torres','acudiente.camila@familia.co','Familia de Camila: hoy Camila llegó 8 minutos tarde.',''],['e2','Laura Peña','acudiente.laura@familia.co','Familia de Daniel: hoy Daniel llegó 6 minutos tarde.','El saludo tiene el nombre de otro estudiante'],['e3','Mateo Gil','acudiente.mateo@familai.co','Familia de Mateo: hoy Mateo llegó 12 minutos tarde.','Dirección mal escrita: el aviso nunca llegó'],['e4','Camila Torres','acudiente.camila@familia.co','Familia de Camila: hoy Camila llegó 8 minutos tarde.','Enviado dos veces a la misma familia'],['e5','Sofía Ríos','acudiente.sofia@familia.co','Familia de Sofía: hoy Sofía llegó 7 minutos tarde.','']];
+const MAILS_A=[['Camila Torres','acudiente.camila@familia.co','Familia de Camila: hoy Camila llegó 8 minutos tarde.'],['Laura Peña','acudiente.laura@familia.co','Familia de Laura: hoy Laura llegó 6 minutos tarde.'],['Mateo Gil','acudiente.mateo@familia.co','Familia de Mateo: hoy Mateo llegó 12 minutos tarde.'],['Sofía Ríos','acudiente.sofia@familia.co','Familia de Sofía: hoy Sofía llegó 7 minutos tarde.']];
+function mailSim(ms){
+ const tabs=`<div class="tabs2"><span class="${ms.mode==='m'?'on':''}">Bandeja de Marta · manual</span><span class="${ms.mode==='a'?'on':''}">Bandeja del sistema · automático</span></div>`;
+ let rows='';
+ if(ms.mode==='a')rows=MAILS_A.map(m=>`<div class="mail ok"><span class="ic">✓</span><b>Para: ${m[1]}</b><small>${m[2]}</small></div>`).join('')+'</div><div class="log" data-t="log"><b>Registro de envíos</b> · lunes 20/10 · 07:16 · 4 avisos enviados · 0 errores';
+ else rows=MAILS_M.map(m=>{const bad=ms.mk&&ms.mk[m[0]];return `<div class="mail ${bad?'bad':''}" data-t="${m[0]}" data-hot="${m[0]}"><span class="ic">${ini(m[1])}</span><b>Para: ${m[2]}</b><small>${m[3]}</small>${bad?`<em>⚠ ${m[4]}</em>`:''}</div>`}).join('');
+ return win('Correo · Bandeja de salida',tabs+`<div class="mails" data-t="mails">${rows}</div>`);
+}
+const TASKS=[['T1','Enviar el correo del 1.er retardo'],['T2','Aprobar o rechazar la excusa de Camila'],['T3','Calcular cuántos minutos tarde llegó cada estudiante'],['T4','Hablar con la familia de Mateo, que lleva 3 retardos'],['T5','Avisar a coordinación cuando hay un 3.er retardo'],['T6','Decidir la medida disciplinaria']];
+function binSim(ms){
+ const pl=ms.pl||{},tk=t=>`<div class="tk ${ms.fo===t[0]?'fo':''}">${t[1]}</div>`;
+ const pool=TASKS.filter(t=>!pl[t[0]]);
+ return win('Coordinación · Tareas de los retardos',`<div data-t="pool"><p class="ptitle">Tareas de Marta ${pool.length?'':'· ¡todas clasificadas!'}</p><div class="tasks">${pool.map(tk).join('')}</div></div><div class="bins"><div class="bin a" data-t="binA"><h5>${ROBOT}Lo hace el sistema</h5>${TASKS.filter(t=>pl[t[0]]==='a').map(tk).join('')}</div><div class="bin p" data-t="binP"><h5>${MARTA}Lo decide una persona</h5>${TASKS.filter(t=>pl[t[0]]==='p').map(tk).join('')}</div></div>`);
+}
+
+/* ---------- Fichas ---------- */
+const CARD_NORMAS=`<h3>Normas del colegio para los retardos</h3><p class="sub">Cada retardo tiene un paso distinto.</p><table><tr><th>Retardo</th><th>Qué se hace</th><th>A quién</th></tr><tr><td>1.º</td><td>Correo de notificación</td><td>Estudiante y acudiente</td></tr><tr><td>2.º</td><td>Correo de citación</td><td>Acudiente</td></tr><tr><td>3.º</td><td>Aviso para la medida disciplinaria</td><td>Coordinación</td></tr></table>`;
+const CARD_VS=`<h3>Manual o automático</h3><p class="sub">El mismo proceso, hecho de dos formas.</p><table><tr><th></th><th>Manual</th><th>Automático</th></tr><tr><td>Quién hace las tareas</td><td>Marta</td><td>El sistema</td></tr><tr><td>30 correos tardan</td><td>90 minutos</td><td>Menos de 1 minuto</td></tr><tr><td>Errores</td><td>Aparecen al repetir</td><td>Ninguno, si la regla y los datos están bien</td></tr><tr><td>Cuándo trabaja</td><td>Cuando Marta está</td><td>A cualquier hora</td></tr><tr><td>Quién decide</td><td>Marta</td><td>Nadie: el sistema sigue reglas</td></tr></table>`;
+const CARD_BENEF=`<h3>¿Para qué sirve automatizar?</h3><p class="sub">Cuatro beneficios, con el ejemplo del colegio.</p><table><tr><th>Beneficio</th><th>En el colegio</th></tr><tr><td>Ahorrar tiempo</td><td>90 minutos de correos se vuelven 1</td></tr><tr><td>Reducir errores</td><td>No copia ni pega: toma cada nombre de la lista</td></tr><tr><td>Trabajar siempre igual</td><td>Mismo aviso, a cualquier hora, para todos</td></tr><tr><td>Dejar registro</td><td>Queda la fecha y la hora de cada envío</td></tr></table>`;
+const CARD_LIM=`<h3>Los límites de automatizar</h3><p class="sub">El sistema ayuda, pero no lo hace todo.</p><table><tr><th>Límite</th><th>En el colegio</th></tr><tr><td>No tiene criterio</td><td>No sabe si una excusa es válida</td></tr><tr><td>Depende de los datos</td><td>Si un correo está mal escrito en la lista, falla siempre</td></tr><tr><td>Hay que revisarlo</td><td>Si cambia la norma, alguien debe cambiar la regla</td></tr><tr><td>Configurarlo toma tiempo</td><td>Al inicio hay que pensar bien el proceso</td></tr></table><p class="rule">Por eso una persona revisa que el sistema funcione bien. Eso se llama <b>supervisión humana</b>.</p>`;
+const CARD_CRIT=`<h3>Las cuatro preguntas</h3><p class="sub">Hazlas antes de automatizar una tarea. Ejemplo: enviar el aviso del 1.er retardo.</p><table><tr><th>Pregunta</th><th>Respuesta</th></tr><tr><td>¿Se repite muchas veces?</td><td>Sí, todos los días</td></tr><tr><td>¿Sigue siempre la misma regla?</td><td>Sí, la norma del colegio</td></tr><tr><td>¿Los datos están en digital?</td><td>Sí, en la lista de llegadas</td></tr><tr><td>¿Un error importa?</td><td>Sí, una familia se queda sin aviso</td></tr></table><p class="rule">Cuatro sí: conviene automatizar. Si la tarea pide escuchar, juzgar o decidir un caso, la hace una persona.</p>`;
+
+/* ---------- Simuladores niveles 2 y 3 ---------- */
+const ICF={act:'<path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z"/>',dat:'<path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',con:'<path d="M12 3 21 12 12 21 3 12z"/>',acc:'<path d="M7 4v16l13-8z"/>',res:'<path d="m5 12 5 5 9-10"/>',plan:'<path d="M12 3 4.5 6v5.5c0 4.8 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.7 7.5-9.5V6z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+const svgF=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICF[k]}</svg>`;
+const PARTS=[['act','Activador','¿Qué la pone en marcha?'],['dat','Datos de entrada','¿Qué información usa?'],['con','Condición','¿Qué revisa para decidir?'],['acc','Acción','¿Qué hace?'],['res','Resultado','¿Qué se logra?'],['plan','Plan B','¿Qué hace si algo falla?']];
+function flowSim(v,hl,title,plan){
+ const ps=PARTS.filter(p=>plan||p[0]!=='plan');
+ return `${title?`<p class="ftitle">${title}</p>`:''}<div class="flow2" data-t="flow">${ps.map(p=>`<div class="fb2 k-${p[0]} ${hl===p[0]?'hl':''}" data-t="f-${p[0]}" data-hot="f-${p[0]}"><span class="fic">${svgF(p[0])}</span><div><b>${p[1]}</b>${v[p[0]]?`<small>${v[p[0]]}</small>`:`<small class="q">${p[2]}</small>`}</div></div>`).join('<div class="farr"></div>')}</div>`;
+}
+const TRIG=[['ev','Evento','Algo pasa en el momento','Se registra una llegada tarde','act'],['hr','Hora programada','Llega una fecha u hora fija','Todos los viernes a las 4:00 p. m.','clock'],['co','Condición','Un dato cumple una regla','Un estudiante completa 3 retardos','con']];
+function trigSim(ms){return win('Panel de automatizaciones',`<div class="trgs">${TRIG.map(t=>`<div class="trg ${ms.on===t[0]?'on':''}" data-t="tr-${t[0]}" data-hot="tr-${t[0]}"><span class="ti">${svgF(t[4])}</span><b>${t[1]}</b><small>${t[2]}</small><div class="tex">Ej.: ${t[3]}</div></div>`).join('')}</div>`)}
+const FLOW_COLE={act:'Evento: se registra una llegada',dat:'Estudiante, minutos de retraso, número de retardos, correo del acudiente',con:'¿Llegó más de 5 minutos tarde y es su 1.er retardo?',acc:'Enviar el correo de notificación',res:'La familia queda enterada y el envío queda registrado'};
+const LINES=[['Algoritmo AvisosDeRetardo','',0],['Para cada estudiante que llegó hoy Hacer','rep',1],['Leer su hora de llegada','sec',2],['Calcular sus minutos de retraso','sec',2],['Si minutos > 5 Entonces','dec',2],['Sumar 1 a sus retardos','sec',3],['Enviar el aviso según la norma','sec',3],['FinSi','dec',2],['FinPara','rep',1],['FinAlgoritmo','',0]];
+const TRACE=[['Camila','07:08',8],['Daniel','06:57',0],['Mateo','07:12',12],['Laura','07:03',3]];
+function algoSim(ms){
+ const code=`<div><div class="ps ${ms.col?'col':''}" data-t="code">${LINES.map((l,i)=>`<div class="pl t-${l[1]} ${ms.ln===i?'on':''}" data-t="L${i}" data-hot="L${i}" style="padding-left:${6+l[2]*16}px">${l[0]}</div>`).join('')}</div>${ms.col?'<div class="lgd"><span><i style="background:#7cb6ff"></i>Secuencia</span><span><i style="background:#b9a4ff"></i>Decisión</span><span><i style="background:#ffb36b"></i>Repetición</span></div>':''}</div>`;
+ const tr=`<div class="lst" data-t="trace"><table><tr><th>Estudiante</th><th>Min.</th><th>¿&gt; 5?</th><th>Aviso</th></tr>${TRACE.map((t,i)=>i<ms.tr?`<tr><td>${t[0]}</td><td>${t[2]}</td><td>${t[2]>5?'Sí':'No'}</td><td>${t[2]>5?'<span class="bd r">Enviado</span>':'—'}</td></tr>`:`<tr><td>${t[0]}</td><td></td><td></td><td></td></tr>`).join('')}</table></div>`;
+ return win('Algoritmo del aviso de retardo',`<div class="algo">${code}${tr}</div>`);
+}
+const GLOG=[['ok','Camila Torres','✓ Correo de notificación enviado',''],['dato','Mateo Gil','⚠ Falta un dato: el acudiente no tiene correo en la lista','Plan B: pasa a Marta para que llame a la familia'],['falla','Sofía Ríos','✗ Falló la acción: el correo rebotó, la dirección no existe','Plan B: reintenta en 10 minutos y pasa a Marta'],['per','Laura Peña','👤 Trajo una excusa médica','Plan B: espera la decisión de Marta']];
+function errSim(ms){return win('Registro de la automatización · lunes 07:16',`<div class="glog" data-t="glog">${GLOG.map((g,i)=>`<div class="gr ${g[0]} ${ms.hl==='g'+i?'hl':''}" data-t="g${i}" data-hot="g${i}"><b>${g[1]}</b>${g[2]}${ms.pb&&g[3]?`<span class="pb">${g[3]}</span>`:''}</div>`).join('')}</div><div class="pend2" data-t="marta">${MARTA}<div><b>Pendientes de Marta: ${ms.pb?3:0}</b><small>${ms.pb?'Mateo · Sofía · Laura':'Sin pendientes'}</small></div></div>`)}
+const CASES={
+ hos:['Hospital','Recordatorio de cita',{act:'Hora programada: un día antes de cada cita',dat:'Paciente, fecha y hora de la cita, celular',con:'¿La cita sigue activa?',acc:'Enviar un mensaje de recordatorio',res:'Menos pacientes faltan a su cita',plan:'Si no hay celular, avisar a recepción'}],
+ sup:['Supermercado','Inventario',{act:'Evento: se registra una venta',dat:'Producto, unidades disponibles, mínimo',con:'¿Quedan menos de 10 unidades?',acc:'Avisar al jefe de bodega',res:'El producto no se acaba',plan:'Si el aviso falla, mostrar alerta en la caja'}],
+ ban:['Banco','Compra extraña',{act:'Evento: se hace una compra con la tarjeta',dat:'Monto, ciudad, hora, compras anteriores',con:'¿La compra es muy distinta a las de siempre?',acc:'Pausar la compra y preguntar al cliente',res:'Se evita un fraude',plan:'Un analista revisa si el cliente no responde'}],
+ uni:['Universidad','Notas bajas',{act:'Hora programada: cada viernes',dat:'Estudiante, notas del corte, correo',con:'¿El promedio es menor que 3,0?',acc:'Avisar al estudiante y a su tutor',res:'El estudiante recibe apoyo a tiempo',plan:'El tutor decide si lo cita'}],
+ fab:['Fábrica','Temperatura',{act:'Condición: el sensor marca más de 80 °C',dat:'Máquina, temperatura, hora',con:'¿La temperatura supera 80 °C?',acc:'Detener la máquina y avisar al técnico',res:'Se evita un daño o un accidente',plan:'El técnico revisa antes de encenderla'}]};
+function caseSim(ms){const c=CASES[ms.sec];return win('Automatizaciones en el mundo real',`<div class="tabs2" data-t="tabs">${Object.keys(CASES).map(k=>`<span class="${ms.sec===k?'on':''}">${CASES[k][0]}</span>`).join('')}</div>${flowSim(c[2],ms.hl,c[0]+' · '+c[1],true)}`)}
+const TOOLS=[['make','Make','Conecta muchas aplicaciones con un diagrama visual: cada app es un círculo y se unen con líneas. Sin código.','Llega un formulario → se guarda en una hoja → se envía un mensaje'],['n8n','n8n','Flujos visuales con nodos. Se puede instalar en un servidor propio, y los datos se quedan en la institución.','Se guarda un registro → se avisa por correo'],['pa','Power Automate','De Microsoft. Conecta Outlook, Excel, Teams y OneDrive.','Llega un correo con adjunto → se guarda en OneDrive → aviso en Teams'],['gas','Apps Script','De Google. Conecta Sheets, Gmail y Forms. Aquí sí se escribe código (JavaScript).','Cada viernes → lee la hoja → envía el informe por Gmail'],['aps','AppSheet Automation','Los bots dentro de tu app de AppSheet: evento, proceso y tarea.','Se registra un retardo → se envía el correo al acudiente']];
+function toolSim(ms){return win('Caja de herramientas',`<div class="tools">${TOOLS.map(t=>`<div class="tool ${ms.tool===t[0]?'on':''}" data-t="tool-${t[0]}"><b>${t[1]}</b>${t[2]}<small>Ej.: ${t[3]}</small></div>`).join('')}</div>`)}
+const DESIGN={act:'Evento: se registra una venta',dat:'Producto, unidades disponibles, celular de Don Pedro',con:'¿Quedan 5 unidades o menos?',acc:'Avisar a Don Pedro con el pedido sugerido',res:'El producto no se acaba en la tienda',plan:'Si el aviso falla, mostrar una alerta al abrir la app'};
+function designSim(ms){return win('Tablero de diseño · La tiendita del barrio',flowSim(ms.d,ms.hl,'Alerta de inventario',true))}
+function testSim(ms){
+ const T=[['Arroz','3','Avisa','Avisa'],['Leche','12','No avisa','No avisa'],['Pan','5','Avisa',ms.fix?'Avisa':'No avisa'],['Gaseosa','(vacío)','Plan B: avisa que falta el dato','Plan B: avisa que falta el dato']];
+ return win('Pruebas · Alerta de inventario',`<div class="rulebox ${ms.fix?'fix':''}" data-t="rule">Si unidades ${ms.fix?'≤':'&lt;'} 5 → avisar a Don Pedro</div><div class="lst" data-t="tests"><table><tr><th>Producto</th><th>Unidades</th><th>Esperado</th><th>Resultado</th><th></th></tr>${T.map((t,i)=>{const ok=t[2]===t[3];return `<tr class="${ms.run&&!ok?'bad':''} ${ms.hl==='r'+i?'hl':''}" data-t="r${i}" data-hot="r${i}"><td>${t[0]}</td><td>${t[1]}</td><td>${t[2]}</td><td>${ms.run?t[3]:''}</td><td>${ms.run?(ok?'<span class="pass">✓</span>':'<span class="failr">✗</span>'):''}</td></tr>`}).join('')}</table></div>`);
+}
+/* Diagramas de flujo */
+function shp(ty,x,y,w,h,extra=''){
+ if(ty==='term')return `<rect class="sh" ${extra} x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="${h/2}"/>`;
+ if(ty==='proc')return `<rect class="sh" ${extra} x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="6"/>`;
+ if(ty==='io')return `<polygon class="sh" ${extra} points="${x-w/2+12},${y-h/2} ${x+w/2},${y-h/2} ${x+w/2-12},${y+h/2} ${x-w/2},${y+h/2}"/>`;
+ return `<polygon class="sh" ${extra} points="${x},${y-h/2} ${x+w/2},${y} ${x},${y+h/2} ${x-w/2},${y}"/>`;
+}
+function fchart(D,f){
+ f=f||{};const [W,H]=D.vb;
+ let s=`<svg viewBox="0 0 ${W} ${H}"><defs><marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#152039"/></marker></defs>`;
+ D.edges.forEach(([id,d,lab,lx,ly,cls])=>{s+=`<g class="fe ${cls||''} ${f.e===id?'hl':''}" data-t="e-${id}" ${lab?`data-hot="e-${id}"`:''}><path class="hit" d="${d}"/><path class="v" d="${d}" marker-end="url(#fa)"/>${lab?`<text x="${lx}" y="${ly}" text-anchor="middle" ${cls==='loop'?`transform="rotate(-90 ${lx} ${ly})"`:''}>${lab}</text>`:''}</g>`});
+ for(const id in D.nodes){const [ty,x,y,w,h,tg,lb,k]=D.nodes[id];s+=`<g class="fn k-${k} ${f.n===id?'hl':''}" data-t="n-${id}" data-hot="n-${id}">${shp(ty,x,y,w,h)}<text class="tg" x="${x}" y="${y-(ty==='dec'?9:6)}" text-anchor="middle">${tg}</text><text class="lb" x="${x}" y="${y+(ty==='dec'?9:12)}" text-anchor="middle">${lb}</text></g>`}
+ return s+'</svg>';
+}
+const FC_DEC={vb:[520,440],nodes:{
+ ini:['term',190,32,240,46,'ACTIVADOR','Se registra una llegada','act'],
+ leer:['io',190,104,240,46,'DATOS DE ENTRADA','Estudiante y hora de llegada','dat'],
+ calc:['proc',190,176,240,46,'PROCESO','Calcular minutos de retraso','acc'],
+ dec:['dec',190,272,200,88,'REGLA · CONDICIÓN','¿Minutos &gt; 5?','con'],
+ aviso:['proc',420,272,160,46,'ACCIÓN','Enviar aviso','acc'],
+ fin:['term',190,404,240,46,'RESULTADO','Fin: queda registrado','res']},
+ edges:[['a1','M190 55V81'],['a2','M190 127V153'],['a3','M190 199V228'],['si','M290 272H340','Sí',315,264],['no','M190 316V381','No',206,352],['a4','M420 295V404H310']]};
+const FC_LOOP={vb:[520,506],nodes:{
+ ini:['term',190,30,240,44,'ACTIVADOR','Lunes 7:15 a. m.','act'],
+ leer:['io',190,98,240,44,'DATOS DE ENTRADA','Lista de llegadas de hoy','dat'],
+ uno:['proc',190,166,240,44,'INICIO DEL CICLO','Empezar en el estudiante 1','acc'],
+ quedan:['dec',190,256,200,88,'CONDICIÓN DEL CICLO','¿Quedan estudiantes?','con'],
+ tarde:['dec',190,372,200,88,'REGLA','¿Llegó &gt; 5 min tarde?','con'],
+ aviso:['proc',420,372,160,44,'ACCIÓN','Enviar aviso','acc'],
+ sig:['proc',190,474,240,44,'AVANCE','Pasar al siguiente','loop'],
+ fin:['term',420,256,160,44,'RESULTADO','Fin: avisos listos','res']},
+ edges:[['a1','M190 52V76'],['a2','M190 120V144'],['a3','M190 188V212'],['qsi','M190 300V328','Sí',206,318],['qno','M290 256H340','No',315,248],['tsi','M290 372H340','Sí',315,364],['tno','M190 416V452','No',206,438],['a5','M420 394V474H310'],['back','M70 474H34V256H90','Vuelta',24,365,'loop']]};
+function framesDec(nm,hora,min){const d0={Estudiante:nm},d1={...d0,Llegada:hora},d2={...d1,Minutos:min},late=min>5;const f=[{n:'ini',d:d0},{n:'leer',e:'a1',d:d1},{n:'calc',e:'a2',d:d2},{n:'dec',e:'a3',d:d2,q:late?'Sí':'No'}];if(late)f.push({n:'aviso',e:'si',d:{...d2,Aviso:'Enviado'},q:'Sí'},{n:'fin',e:'a4',d:{...d2,Aviso:'Enviado'}});else f.push({n:'fin',e:'no',d:{...d2,Aviso:'No se envía'},q:'No'});return f}
+function framesLoop(){const f=[];let av=0;f.push({n:'ini',i:-1},{n:'leer',e:'a1',i:-1},{n:'uno',e:'a2',i:0,v:1,av});TRACE.forEach((s,k)=>{const v=k+1,late=s[2]>5;f.push({n:'quedan',e:k?'back':'a3',i:k,v,av,q:'Sí'},{n:'tarde',e:'qsi',i:k,v,av,q:late?'Sí':'No'});if(late){av++;f.push({n:'aviso',e:'tsi',i:k,v,av},{n:'sig',e:'a5',i:k,v,av})}else f.push({n:'sig',e:'tno',i:k,v,av})});f.push({n:'quedan',e:'back',i:4,v:4,av,q:'No'},{n:'fin',e:'qno',i:4,v:4,av});return f}
+function panelDec(f){const d=f.d||{},ks=Object.keys(d);return `<p class="ptitle">Datos que viajan por las flechas</p><div class="chips">${ks.length?ks.map(k=>`<div class="chip"><span>${k}</span><b>${d[k]}</b></div>`).join(''):'<div class="chip"><span>Esperando una llegada…</span></div>'}</div>${f.q?`<div class="qans ${f.q==='Sí'?'y':'n'}">La regla responde: <b>${f.q}</b></div>`:''}`}
+function panelLoop(f){
+ const i=f.i==null?-1:f.i;
+ const rows=TRACE.map((s,k)=>{const seen=k<i||(k===i&&(f.n==='aviso'||f.n==='sig'));return `<tr class="${k===i?'hl':k<i?'dn':''}"><td>${k===i?'▶ ':''}${s[0]}</td><td>${s[2]}</td><td>${seen?(s[2]>5?'<span class="bd r">Enviado</span>':'—'):''}</td></tr>`}).join('');
+ return `<p class="ptitle">El ciclo en números</p><div class="chips"><div class="chip"><span>Vuelta</span><b>${f.v?f.v+' de 4':'—'}</b></div><div class="chip"><span>Avisos enviados</span><b>${f.av||0}</b></div></div>${f.q?`<div class="qans ${f.q==='Sí'?'y':'n'}">El rombo responde: <b>${f.q}</b></div>`:''}<div class="lst"><table><tr><th>Estudiante</th><th>Min.</th><th>Aviso</th></tr>${rows}</table></div>`;
+}
+const fcSim=(title,D,ms,panel)=>win(title,`<div class="fc"><div data-t="chart">${fchart(D,ms.f)}</div><div id="dpanel" data-t="panel">${panel(ms.f||{})}</div></div>`);
+function dotAlong(e){
+ const svg=e.ownerSVGElement;if(!svg)return;svg.querySelectorAll('.dot').forEach(x=>x.remove());
+ const NS='http://www.w3.org/2000/svg',c=document.createElementNS(NS,'circle'),a=document.createElementNS(NS,'animateMotion');
+ c.setAttribute('class','dot');c.setAttribute('r','8');c.setAttribute('cx','0');c.setAttribute('cy','0');
+ a.setAttribute('dur','.6s');a.setAttribute('fill','freeze');a.setAttribute('begin','indefinite');a.setAttribute('path',e.querySelector('path.v').getAttribute('d'));
+ c.appendChild(a);svg.appendChild(c);try{a.beginElement()}catch(_){}
+}
+function fcApply(f,panel){
+ const root=$('#simc');if(!root)return;
+ root.querySelectorAll('.fn.hl,.fe.hl').forEach(g=>g.classList.remove('hl'));
+ const n=root.querySelector(`[data-t="n-${f.n}"]`);if(n)n.classList.add('hl');
+ const e=f.e&&root.querySelector(`[data-t="e-${f.e}"]`);if(e){e.classList.add('hl');dotAlong(e)}
+ const p=$('#dpanel');if(p)p.innerHTML=panel(f);
+}
+const fcAfter=panel=>ms=>{if(!ms.play)return;const fr=ms.play;ms.play=null;let k=0;const step=()=>{if(k>=fr.length){clearInterval(it);return}ms.f=fr[k++];fcApply(ms.f,panel)};const it=setInterval(step,800);ANIM.push(it);step()};
+const mini=(ty,fill)=>`<svg viewBox="0 0 64 36" width="58" height="32">${shp(ty,32,18,ty==='dec'?56:54,ty==='dec'?32:26,`fill="${fill}" stroke="#152039" stroke-width="2.5"`)}</svg>`;
+const CARD_SIMB=`<h3>Figuras del diagrama de flujo</h3><p class="sub">Cada figura corresponde a una parte de la automatización.</p><table><tr><th>Figura</th><th>Significa</th><th>En la automatización</th></tr><tr><td>${mini('term','#ffc83d')}Óvalo</td><td>Inicio o fin</td><td>Activador (disparador) y resultado</td></tr><tr><td>${mini('io','#cfe3ff')}Paralelogramo</td><td>Entrada de datos</td><td>Datos de entrada</td></tr><tr><td>${mini('proc','#bff0e4')}Rectángulo</td><td>Proceso</td><td>Acción</td></tr><tr><td>${mini('dec','#e4dcff')}Rombo</td><td>Decisión: sí o no</td><td>Regla o condición</td></tr><tr><td><svg viewBox="0 0 64 36" width="58" height="32"><path d="M6 18H54" stroke="#152039" stroke-width="2.5"/><path d="M50 12l8 6-8 6z" fill="#152039"/></svg>Flecha</td><td>Camino</td><td>Flujo de datos</td></tr></table><p class="rule">Una regla se lee: <b>Si</b> pasa esto, <b>entonces</b> haz aquello.</p>`;
+const CARD_CICLO=`<h3>Las cuatro partes de un ciclo</h3><p class="sub">Todo ciclo las tiene. Al lado, cómo se ven en PSeInt.</p><table><tr><th>Parte</th><th>Qué hace</th><th>En el colegio</th><th>En PSeInt</th></tr><tr><td>Inicio</td><td>Dice por dónde empezar</td><td>Empezar en el estudiante 1</td><td>Para i ← 1</td></tr><tr><td>Condición</td><td>Decide si da otra vuelta</td><td>¿Quedan estudiantes?</td><td>Hasta 4</td></tr><tr><td>Cuerpo</td><td>Los pasos que se repiten</td><td>Revisar y avisar</td><td>Lo que va dentro del Para</td></tr><tr><td>Avance</td><td>Pasa al siguiente</td><td>Siguiente estudiante</td><td>Con Paso 1</td></tr></table><p class="rule">Una vuelta = un estudiante. Para contar las vueltas, cuenta los datos de la lista.</p>`;
+const CARD_TRIG=`<h3>Los tres activadores</h3><p class="sub">Cada uno responde una pregunta distinta.</p><table><tr><th>Activador</th><th>Pregunta</th><th>En el colegio</th></tr><tr><td>Evento</td><td>¿Pasó algo?</td><td>Se registra una llegada tarde</td></tr><tr><td>Hora programada</td><td>¿Llegó el momento?</td><td>Todos los viernes a las 4:00 p. m., informe a la rectora</td></tr><tr><td>Condición</td><td>¿Un dato cumple la regla?</td><td>Un estudiante completa 3 retardos</td></tr></table><p class="rule">Pista de palabras: “cuando pasa…” es evento; “todos los…, a las…” es hora; “cuando llega a…, más de…” es condición.</p>`;
+const CARD_PARTES=`<h3>Las cinco partes</h3><p class="sub">Toda automatización las tiene, en este orden.</p><table><tr><th>Parte</th><th>Pregunta</th><th>En el colegio</th></tr><tr><td>Activador</td><td>¿Qué la pone en marcha?</td><td>Se registra una llegada</td></tr><tr><td>Datos de entrada</td><td>¿Qué información usa?</td><td>Minutos de retraso, retardos, correo del acudiente</td></tr><tr><td>Condición</td><td>¿Qué revisa para decidir?</td><td>¿Más de 5 minutos y 1.er retardo?</td></tr><tr><td>Acción</td><td>¿Qué hace?</td><td>Envía el correo de notificación</td></tr><tr><td>Resultado</td><td>¿Qué se logra?</td><td>La familia queda enterada</td></tr></table>`;
+const CARD_PSEINT=`<h3>Lo mismo que en PSeInt</h3><p class="sub">Tres estructuras que ya conoces.</p><table><tr><th>Estructura</th><th>Idea</th><th>En PSeInt</th><th>En el colegio</th></tr><tr><td>Secuencia</td><td>Pasos en orden</td><td>Una instrucción debajo de otra</td><td>Leer la hora, luego calcular los minutos</td></tr><tr><td>Decisión</td><td>Una pregunta, dos caminos</td><td>Si … Entonces … SiNo … FinSi</td><td>Si llegó más de 5 minutos tarde, avisar</td></tr><tr><td>Repetición</td><td>Los mismos pasos varias veces</td><td>Para … Hacer … FinPara</td><td>Repetir para cada estudiante</td></tr></table>`;
+const CARD_ERR=`<h3>Cuando algo sale mal</h3><p class="sub">Cada caso necesita su plan B.</p><table><tr><th>Situación</th><th>Ejemplo</th><th>Plan B</th></tr><tr><td>Falta un dato</td><td>El acudiente de Mateo no tiene correo</td><td>Pasar el caso a una persona</td></tr><tr><td>Falla la acción</td><td>El correo de Sofía rebotó</td><td>Reintentar y avisar a una persona</td></tr><tr><td>Hace falta criterio</td><td>La excusa médica de Laura</td><td>Esperar la decisión de una persona</td></tr></table><p class="rule">Supervisión humana: una persona revisa los pendientes, decide los casos especiales y corrige los datos.</p>`;
+const CARD_TOOLS=`<h3>Herramientas para automatizar</h3><p class="sub">Todas usan activador y acciones. Cambia dónde trabajan.</p><table><tr><th>Herramienta</th><th>Úsala cuando…</th></tr><tr><td>Make</td><td>Quieres conectar muchas apps, de forma visual</td></tr><tr><td>n8n</td><td>Quieres flujos visuales en un servidor propio</td></tr><tr><td>Power Automate</td><td>Trabajas con Microsoft: Outlook, Excel, Teams</td></tr><tr><td>Apps Script</td><td>Trabajas con Google y puedes escribir código</td></tr><tr><td>AppSheet Automation</td><td>Ya tienes tu app en AppSheet</td></tr></table>`;
+const CARD_TIENDA=`<h3>El caso: La tiendita del barrio</h3><p class="sub">Don Pedro anota cada venta en su app. A veces se le acaba el arroz y lo nota tarde.</p><table><tr><th>Lo que pide Don Pedro</th></tr><tr><td>Que le avisen cuando queden 5 unidades o menos de un producto</td></tr><tr><td>El aviso le llega al celular, con el pedido sugerido</td></tr><tr><td>Él aprueba el pedido al proveedor</td></tr></table>`;
+const CARD_PASOS=`<h3>Cómo se diseña una automatización</h3><p class="sub">Siete pasos, siempre en este orden.</p><table><tr><th>Paso</th><th>Pregunta</th></tr><tr><td>1. Proceso</td><td>¿Qué tareas se hacen hoy a mano?</td></tr><tr><td>2. Activador</td><td>¿Qué la pone en marcha?</td></tr><tr><td>3. Datos</td><td>¿Qué información necesita?</td></tr><tr><td>4. Condición</td><td>¿Qué regla revisa?</td></tr><tr><td>5. Acción y resultado</td><td>¿Qué hace y qué se logra?</td></tr><tr><td>6. Plan B</td><td>¿Qué hace si algo falla?</td></tr><tr><td>7. Supervisión</td><td>¿Qué persona revisa y decide?</td></tr></table>`;
+const CARD_CASOS=`<h3>Casos de prueba</h3><p class="sub">Datos inventados con el resultado que esperas.</p><table><tr><th>Tipo</th><th>Ejemplo</th><th>Para qué</th></tr><tr><td>Normal, sí avisa</td><td>Arroz: 3 unidades</td><td>Ver que avise cuando debe</td></tr><tr><td>Normal, no avisa</td><td>Leche: 12 unidades</td><td>Ver que calle cuando debe</td></tr><tr><td>Límite</td><td>Pan: 5 unidades</td><td>Revisar el borde de la regla</td></tr><tr><td>Dato faltante</td><td>Gaseosa: sin unidades</td><td>Revisar el plan B</td></tr></table><p class="rule">Signos: &lt; es “menos que”; ≤ es “menor o igual que”.</p>`;
+
+/* ---------- Niveles ---------- */
+const LEVELS=[['Básico',0,3,'Qué es automatizar y cuándo conviene'],['Intermedio',4,9,'Cómo funciona: diagramas, decisiones y ciclos'],['Avanzado',10,13,'Casos reales, herramientas y práctica final']];
+const lvl=i=>LEVELS.findIndex(l=>i>=l[1]&&i<=l[2]);
+const LVINTRO=[
+ {say:'¡Bienvenida al Nivel Básico{n}! Antes de automatizar, hay que entender qué es y cuándo conviene. Mira lo que vas a lograr.',rows:[['Proceso','Diferenciar una tarea de un proceso','Solo se automatiza lo que se entiende paso a paso'],['Manual o auto','Comparar las dos formas de hacer un proceso','Ver qué cambia cuando lo hace un sistema'],['Beneficios','Reconocer para qué sirve y sus límites','Saber qué esperar de una automatización'],['Cuándo','Decidir qué se automatiza y qué decide una persona','No todo se debe automatizar']]},
+ {say:'¡Subiste al Nivel Intermedio{n}! Ahora vas a ver por dentro cómo funciona una automatización.',rows:[['Activadores','Reconocer qué pone en marcha una automatización','Sin activador, nada empieza'],['Partes','Identificar activador, datos, condición, acción y resultado','Son las piezas de toda automatización'],['Diagrama','Leer el flujo de datos y las decisiones en un diagrama de flujo','Ver la automatización antes de crearla'],['Ciclos','Entender cómo se repiten los pasos para cada dato','Así una regla sirve para 4 o para 400'],['Algoritmo','Leer secuencia, decisión y repetición, como en PSeInt','Una automatización es un algoritmo'],['Errores','Planear qué hacer cuando algo falla','Así nadie se queda sin aviso']]},
+ {say:'¡Llegaste al Nivel Avanzado{n}! Ahora vas a analizar casos reales, conocer herramientas y diseñar tu propia automatización.',rows:[['Casos reales','Analizar automatizaciones de cinco sectores','Las mismas partes sirven en todas partes'],['Herramientas','Conocer Make, n8n, Power Automate, Apps Script y AppSheet','Elegir la herramienta adecuada'],['Diseña','Diseñar una automatización completa','Aplicar todo lo aprendido'],['Prueba','Probar y corregir con casos de prueba','Encontrar errores antes de usarla']]}
+];
+const lvCard=l=>`<h3>Nivel ${LEVELS[l][0]}</h3><p class="sub">${LEVELS[l][3]}</p><table><tr><th>Etapa</th><th>Qué vas a lograr</th><th>¿Por qué importa?</th></tr>${LVINTRO[l].rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table>`;
+const APRENDE=[
+ ['Diferenciar una tarea de un proceso e identificar su inicio y su fin','Comparar un proceso manual con uno automático','Reconocer los beneficios y los límites de automatizar','Decidir cuándo conviene automatizar y cuándo decide una persona (supervisión humana)'],
+ ['Reconocer los activadores: evento, hora programada y condición','Identificar las partes de una automatización: activador, datos de entrada, condición, acción y resultado','Relacionar las figuras del diagrama de flujo con las partes de una automatización y seguir el flujo de datos','Explicar cómo funciona un ciclo: inicio, condición, cuerpo y avance','Leer secuencia, decisión y repetición en un algoritmo, como en PSeInt','Diseñar un plan B para datos faltantes, acciones fallidas y casos que decide una persona'],
+ ['Analizar automatizaciones de hospitales, supermercados, bancos, universidades y fábricas','Elegir entre Make, n8n, Power Automate, Apps Script y AppSheet Automation','Diseñar una automatización completa con plan B y supervisión humana','Probar una automatización con casos de prueba, encontrar el error y corregirlo']
+];
+const CODEH={1:2171208404,2:187802772};
+const hcode=t=>{let x=5381;for(const c of t.trim().toLowerCase())x=((x*33)^c.charCodeAt(0))>>>0;return x};
+
+const M=[
+{short:'Proceso',badge:'Ojo de procesos',title:'Tareas y procesos',ask:['automatizar','tarea','programar'],
+ init:{hl:0},
+ tour:[
+  {s:'¡Hola{n}! Soy la profe Vivy. Bienvenida a AutoLab. Aquí aprendes qué es automatizar, cómo funciona y cómo se diseña, paso a paso.'},
+  {s:'Estamos en el Colegio San Martín. Ella es Marta, la coordinadora. Cada mañana revisa la lista de llegadas.',t:'esc'},
+  {s:'Hoy llegaron tarde Camila y Mateo. Según las normas del colegio, Marta debe avisar a sus familias.',t:'lista'},
+  {s:'Estas son las normas del colegio para los retardos.',card:CARD_NORMAS},
+  {s:'Una tarea es una acción concreta que hace alguien. Por ejemplo: escribir el correo para la familia.',set:ms=>ms.hl=4,t:'p4'},
+  {s:'Un proceso es una serie de tareas en orden, con un fin. Este es el proceso que hace Marta para avisar un retardo.',t:'proceso'},
+  {s:'Todo proceso empieza por algo. Este empieza cuando un estudiante llega tarde.',t:'inicio'},
+  {s:'Y termina con un resultado. Aquí, que la familia quede enterada.',t:'fin'},
+  {s:'Mira quién hace cada tarea: Marta, todas, a mano. Cada día y por cada estudiante.',t:'proceso'},
+  {s:'Automatizar es hacer que un sistema haga esas tareas solo, siguiendo reglas, sin que una persona las repita cada vez.',set:ms=>ms.auto=1,t:'proceso'},
+  {s:'Para automatizar, primero hay que ver el proceso completo y en orden. ¡Ahora te toca a ti!',set:ms=>ms.auto=1}
+ ],
+ sim:ms=>procSim(ms),
+ steps:[
+  {t:'choice',q:'¿Cuál de estas es una tarea?',opts:['Escribir el correo a la familia de Camila','Avisar todos los retardos del año','El Colegio San Martín'],ok:0,hint:'Una tarea es una sola acción concreta.',good:'Es una acción concreta que hace alguien.',why:{1:'Eso es un proceso que se repite muchas veces.',2:'Eso es un lugar, no una acción.'}},
+  {t:'choice',q:'¿Qué es un proceso?',opts:['Una serie de tareas en orden, con un fin','Una sola acción','Un programa de computador'],ok:0,hint:'Piensa en los pasos que hace Marta.',good:'Tareas en orden, desde un inicio hasta un fin.'},
+  {t:'order',q:'Ordena el proceso de Marta para avisar un retardo.',items:PASOS.map(p=>p[0]),hint:'Primero hay que saber quién llegó tarde.',good:'¡Proceso en orden!'},
+  {t:'hot',q:'Marta envió el aviso de Camila al correo de otra familia. Toca la tarea donde se equivocó.',ok:'p3',hint:'¿En qué tarea consigue la dirección del correo?',good:'Al buscar el correo tomó el de otra familia.',bad:'En esa tarea no se elige a quién va el correo.',apply:ms=>ms.hl=3},
+  {t:'choice',q:'¿Qué pone en marcha este proceso?',opts:['Que un estudiante llegue tarde','Que Marta encienda el computador','Que termine el día'],ok:0,hint:'Sin esto, no hay nada que avisar.',good:'Ese es el inicio: lo que dispara el proceso.'}
+ ]},
+{short:'Manual o auto',badge:'Ahorro de tiempo',title:'Manual o automático',ask:['manual','persona','regla'],
+ tourInit:{m:'idle',a:'idle'},init:{m:'done',a:'done'},
+ tour:[
+  {s:'Lunes, 7:15 de la mañana. Llegaron tarde 30 estudiantes. Marta tiene que enviar 30 correos.',t:'laneM'},
+  {s:'Así es manual: Marta hace cada tarea ella misma, una por una. Mira el contador.',set:ms=>ms.m='run',t:'laneM'},
+  {s:'Cada correo le toma unos 3 minutos: buscar, escribir, revisar y enviar. 30 correos son 90 minutos: ¡hora y media!',set:ms=>ms.m='done',t:'tM'},
+  {s:'Y cuando algo se repite tanto, aparecen errores: un nombre cambiado, un correo mal escrito.',set:ms=>ms.m='done',t:'eM'},
+  {s:'Así es automático: un sistema hace las mismas tareas solo, siguiendo las normas del colegio. Mira.',set:ms=>{ms.m='done';ms.a='run'},t:'laneA'},
+  {s:'El sistema envía los 30 correos en menos de un minuto, sin cambiar nombres y sin olvidar ninguno.',set:ms=>{ms.m='done';ms.a='done'},t:'laneA'},
+  {s:'Este cuadro compara las dos formas.',card:CARD_VS},
+  {s:'Ojo: el sistema no piensa. Solo sigue las reglas que alguien le dio. Si una regla está mal, se equivoca 30 veces.',set:ms=>{ms.m='done';ms.a='done'},t:'laneA'},
+  {s:'Y Marta no desaparece: usa ese tiempo en lo que necesita criterio, como hablar con las familias.',set:ms=>{ms.m='done';ms.a='done'}}
+ ],
+ sim:ms=>laneSim(ms),
+ after:ms=>{if(ms.m==='run')animLane('M',100);if(ms.a==='run')animLane('A',25)},
+ steps:[
+  {t:'choice',q:'Marta tarda 3 minutos por correo. Hoy hay 20 retardos. ¿Cuánto tarda a mano?',opts:['60 minutos','20 minutos','3 minutos'],ok:0,hint:'Multiplica 20 por 3.',good:'20 × 3 = 60 minutos: una hora entera.'},
+  {t:'hot',q:'Marta está en una reunión toda la mañana. Toca quién sigue enviando los avisos.',ok:'laneA',hint:'¿Cuál no depende de que Marta esté?',good:'El sistema trabaja aunque Marta no esté.',bad:'Marta está en reunión: a mano no sale ningún aviso.'},
+  {t:'choice',q:'¿Qué cambia al automatizar el envío de avisos?',opts:['El sistema hace las tareas siguiendo reglas','Se acaban los retardos','Nadie vuelve a revisar nada'],ok:0,hint:'Automatizar cambia quién hace las tareas.',good:'Las mismas tareas, ahora las hace el sistema.',why:{1:'Los avisos ayudan, pero los retardos dependen de los estudiantes.',2:'Una persona sigue revisando que todo funcione.'}},
+  {t:'choice',q:'El colegio cambió la norma del 2.º retardo, pero nadie cambió la regla del sistema. ¿Qué pasa?',opts:['Sigue enviando el correo viejo hasta que alguien cambie la regla','El sistema se da cuenta y lo corrige','Deja de enviar correos'],ok:0,hint:'El sistema no piensa: obedece.',good:'Por eso una persona actualiza las reglas.'},
+  {t:'choice',q:'Con el tiempo libre, ¿qué tarea debe seguir haciendo Marta?',opts:['Hablar con la familia de un estudiante con muchos retardos','Escribir 30 veces el mismo correo','Contar retardos uno por uno'],ok:0,hint:'Busca la tarea que necesita escuchar y decidir.',good:'Eso necesita criterio humano.'}
+ ]},
+{short:'Beneficios',badge:'Ojo de beneficios',title:'¿Para qué sirve automatizar?',ask:['beneficio','limites','persona'],
+ tourInit:{mode:'m',mk:{}},init:{mode:'m',mk:{e2:1,e4:1}},
+ tour:[
+  {s:'Automatizar sirve para cuatro cosas. Este cuadro te las muestra.',card:CARD_BENEF},
+  {s:'Esta es la bandeja de salida de Marta, un lunes hecho a mano.',t:'mails'},
+  {s:'Mira este: el correo es para la familia de Laura, pero el saludo dice Daniel. Marta copió el correo anterior y olvidó cambiar el nombre.',set:ms=>ms.mk={e2:1},t:'e2'},
+  {s:'Y este se envió dos veces a la familia de Camila.',set:ms=>ms.mk={e2:1,e4:1},t:'e4'},
+  {s:'Ahora la bandeja del sistema. Cada correo sale con el nombre y la dirección correctos, porque los toma de la lista de estudiantes, fila por fila.',set:ms=>ms.mode='a',t:'mails'},
+  {s:'Además, cada envío queda registrado con fecha y hora. Así se puede comprobar a quién se avisó y cuándo.',set:ms=>ms.mode='a',t:'log'},
+  {s:'Pero automatizar también tiene límites. Este cuadro te los muestra.',card:CARD_LIM},
+  {s:'En resumen: el sistema hace muy bien lo repetitivo. Las decisiones siguen siendo de las personas.'}
+ ],
+ sim:ms=>mailSim(ms),
+ steps:[
+  {t:'hot',q:'En la bandeja de Marta hay otro error. Toca el correo con la dirección mal escrita.',ok:'e3',hint:'Lee con cuidado lo que va después de la @.',good:'“familai.co” no existe: ese aviso nunca llegó.',bad:'Ese no es. Busca un error en la dirección del correo.',pre:ms=>ms.mode='m',apply:ms=>ms.mk.e3=1},
+  {t:'choice',q:'¿Por qué el sistema no cambia los nombres como Marta?',opts:['Toma el nombre y el correo de la lista, fila por fila','Porque es más inteligente que Marta','Porque lee cada correo antes de enviarlo'],ok:0,hint:'Piensa de dónde saca los datos.',good:'Usa los datos de la lista: no copia ni pega.',why:{1:'No piensa: solo sigue reglas.'}},
+  {t:'choice',q:'El correo del acudiente de Mateo está mal escrito en la lista de estudiantes. ¿Qué pasa con el sistema?',opts:['Falla con Mateo cada vez, hasta que alguien corrija la lista','Lo corrige solo','Lo envía a otra familia'],ok:0,hint:'El sistema confía en los datos que le dan.',good:'Datos malos, resultados malos. Por eso hay que cuidar los datos.'},
+  {t:'choice',q:'Un acudiente dice: “A mí nunca me avisaron”. ¿Cómo lo compruebas?',opts:['Revisando el registro de envíos','Preguntándole al sistema si se acuerda','No se puede saber'],ok:0,hint:'Cada envío queda anotado.',good:'El registro muestra a quién se avisó y cuándo.',pre:ms=>ms.mode='a'},
+  {t:'choice',q:'¿Cuál es un límite de la automatización?',opts:['No tiene criterio: solo sigue reglas','Se cansa después de 30 correos','Solo trabaja en horario de oficina'],ok:0,hint:'Revisa el cuadro de límites.',good:'Por eso las decisiones las toma una persona.',why:{1:'No se cansa: eso es una ventaja.',2:'Trabaja a cualquier hora.'}}
+ ]},
+{short:'Cuándo',badge:'Buen criterio',title:'¿Cuándo conviene automatizar?',ask:['cuando','persona','limites'],
+ tourInit:{pl:{}},init:{pl:{T1:'a',T2:'p'}},
+ tour:[
+  {s:'No todo se debe automatizar. Estas son las tareas de Marta con los retardos.',t:'pool'},
+  {s:'Antes de automatizar una tarea, hazle estas cuatro preguntas.',card:CARD_CRIT},
+  {s:'Hay tareas que necesitan a una persona: cuando hay que escuchar, juzgar un caso o tomar una decisión delicada.',t:'binP'},
+  {s:'Ejemplo: enviar el correo del 1.er retardo se repite mucho, sigue una regla fija y usa datos de la lista. ¡Se automatiza!',set:ms=>{ms.pl={T1:'a'};ms.fo='T1'},t:'binA'},
+  {s:'Aprobar la excusa de Camila, no: hay que leerla y decidir si es válida. La decide una persona.',set:ms=>{ms.pl={T1:'a',T2:'p'};ms.fo='T2'},t:'binP'},
+  {s:'Muchas veces trabajan juntos: el sistema prepara y avisa; la persona decide y revisa. Eso se llama supervisión humana.',set:ms=>ms.pl={T1:'a',T2:'p'}},
+  {s:'Te toca clasificar las demás tareas del colegio.',set:ms=>ms.pl={T1:'a',T2:'p'},t:'pool'}
+ ],
+ sim:ms=>binSim(ms),
+ steps:[
+  {t:'choice',q:'“Calcular cuántos minutos tarde llegó cada estudiante.” ¿Quién lo hace?',opts:['El sistema','Una persona'],ok:0,hint:'Es una resta con la misma regla para todos.',good:'Es repetitivo y con regla fija: se automatiza.',pre:ms=>ms.fo='T3',apply:ms=>ms.pl.T3='a'},
+  {t:'choice',q:'“Hablar con la familia de Mateo, que lleva 3 retardos.” ¿Quién lo hace?',opts:['Una persona','El sistema'],ok:0,hint:'Hay que escuchar y entender el caso.',good:'Una conversación necesita escuchar y comprender.',pre:ms=>ms.fo='T4',apply:ms=>ms.pl.T4='p'},
+  {t:'choice',q:'“Avisar a coordinación cuando hay un 3.er retardo.” ¿Quién lo hace?',opts:['El sistema','Una persona'],ok:0,hint:'La norma dice exactamente cuándo avisar.',good:'La regla es clara: al 3.er retardo, avisar.',pre:ms=>ms.fo='T5',apply:ms=>ms.pl.T5='a'},
+  {t:'choice',q:'“Decidir la medida disciplinaria.” ¿Quién lo hace?',opts:['Una persona','El sistema'],ok:0,hint:'Cada caso es distinto.',good:'Es una decisión delicada: la toma una persona.',pre:ms=>ms.fo='T6',apply:ms=>ms.pl.T6='p'},
+  {t:'choice',q:'La rectora organiza la ceremonia de grado: una vez al año, y cada año es distinta. ¿Conviene automatizarla?',opts:['No: no se repite y no sigue la misma regla','Sí: todo se debe automatizar'],ok:0,hint:'Revisa las cuatro preguntas.',good:'Si no se repite ni tiene regla fija, no conviene.',pre:ms=>ms.fo=''},
+  {t:'choice',q:'El sistema ya envía la citación del 2.º retardo. ¿Qué le toca a Marta?',opts:['Revisar que los avisos salgan bien y atender a la familia','Nada: ya está automatizado','Enviar otra vez la misma citación a mano'],ok:0,hint:'Recuerda la supervisión humana.',good:'El sistema avisa; la persona supervisa y decide.'}
+ ]},
+{short:'Activadores',badge:'Chispa inicial',title:'¿Qué activa una automatización?',ask:['activador','partes','regla'],
+ init:{on:''},
+ tour:[
+  {s:'Una automatización no trabaja todo el tiempo: espera una señal para empezar. Esa señal se llama activador o disparador.'},
+  {s:'Hay tres tipos de activador. El primero es un evento: algo que pasa en el momento.',set:ms=>ms.on='ev',t:'tr-ev'},
+  {s:'Ejemplo: cuando se registra una llegada tarde, el sistema arranca de inmediato.',set:ms=>ms.on='ev',t:'tr-ev'},
+  {s:'El segundo es una hora programada: una fecha u hora fija, como la alarma del celular.',set:ms=>ms.on='hr',t:'tr-hr'},
+  {s:'Ejemplo: todos los viernes a las 4:00 p. m., el sistema envía a la rectora el informe de retardos de la semana.',set:ms=>ms.on='hr',t:'tr-hr'},
+  {s:'El tercero es una condición: un dato llega a cierto valor.',set:ms=>ms.on='co',t:'tr-co'},
+  {s:'Ejemplo: cuando un estudiante completa 3 retardos, el sistema avisa a coordinación.',set:ms=>ms.on='co',t:'tr-co'},
+  {s:'Este cuadro resume los tres activadores, con una pista para reconocerlos.',card:CARD_TRIG},
+  {s:'Ahora te toca reconocer el activador de cada situación.'}
+ ],
+ sim:ms=>trigSim(ms),
+ steps:[
+  {t:'choice',q:'Cada lunes a las 6:00 a. m., el sistema envía a los docentes la lista de clases de la semana. ¿Qué activador es?',opts:['Hora programada','Evento','Condición'],ok:0,hint:'Busca las palabras “cada lunes a las…”.',good:'Una fecha y hora fija: hora programada.',pre:ms=>ms.on=''},
+  {t:'choice',q:'Un acudiente envía el formulario de excusa y el sistema avisa a Marta. ¿Qué activador es?',opts:['Evento','Hora programada','Condición'],ok:0,hint:'Algo pasa en el momento.',good:'Enviar el formulario es un evento.'},
+  {t:'choice',q:'Cuando un curso pasa de 10 retardos en el mes, el sistema avisa al director de grupo. ¿Qué activador es?',opts:['Condición','Evento','Hora programada'],ok:0,hint:'Un dato llega a cierto valor: “pasa de 10”.',good:'Un dato cumple una regla: condición.'},
+  {t:'hot',q:'Toca el activador que usarías para enviar el informe semanal a la rectora.',ok:'tr-hr',hint:'El informe sale siempre el mismo día y a la misma hora.',good:'Todos los viernes a la misma hora: hora programada.',bad:'Piensa: el informe no depende de que pase algo, sino del día y la hora.'},
+  {t:'choice',q:'¿Qué hace la automatización mientras no llega su activador?',opts:['Espera','Envía correos sin parar','Se borra'],ok:0,hint:'El activador es la señal para empezar.',good:'Espera su señal para empezar.'}
+ ]},
+{short:'Partes',badge:'Arquitecta de flujos',title:'Las partes de una automatización',ask:['partes','condicion','activador'],
+ init:{hl:''},
+ tour:[
+  {s:'Toda automatización tiene cinco partes. Esta es la del aviso del 1.er retardo.',t:'flow'},
+  {s:'Activador: lo que la pone en marcha. Aquí, que se registre una llegada.',set:ms=>ms.hl='act',t:'f-act'},
+  {s:'Datos de entrada: la información que usa. Sin el correo del acudiente, no hay a quién avisar.',set:ms=>ms.hl='dat',t:'f-dat'},
+  {s:'Condición: la regla que revisa para decidir. Es una pregunta de sí o no.',set:ms=>ms.hl='con',t:'f-con'},
+  {s:'Es como el IF de AppSheet o el Si de PSeInt: si la respuesta es sí, sigue; si es no, se detiene.',set:ms=>ms.hl='con',t:'f-con'},
+  {s:'Acción: lo que hace el sistema. Aquí, enviar el correo.',set:ms=>ms.hl='acc',t:'f-acc'},
+  {s:'Resultado: lo que se logra al final.',set:ms=>ms.hl='res',t:'f-res'},
+  {s:'Este cuadro resume las cinco partes con su pregunta.',card:CARD_PARTES},
+  {s:'Ahora te toca a ti reconocer cada parte.'}
+ ],
+ sim:ms=>win('Automatización · Aviso del 1.er retardo',flowSim(FLOW_COLE,ms.hl)),
+ steps:[
+  {t:'order',q:'Ordena las partes de una automatización.',items:['Activador','Datos de entrada','Condición','Acción','Resultado'],hint:'Empieza por lo que la pone en marcha.',good:'¡Las cinco partes en orden!'},
+  {t:'hot',q:'Toca la parte que decide si el correo se envía o no.',ok:'f-con',hint:'Es una pregunta de sí o no.',good:'La condición decide si sigue o se detiene.',bad:'Esa parte no decide. Busca la pregunta.'},
+  {t:'choice',q:'“Correo del acudiente.” ¿Qué parte es?',opts:['Datos de entrada','Acción','Activador'],ok:0,hint:'Es información que el sistema usa.',good:'Es un dato que el sistema necesita.'},
+  {t:'choice',q:'“Enviar la citación al acudiente.” ¿Qué parte es?',opts:['Acción','Condición','Resultado'],ok:0,hint:'Es lo que hace el sistema.',good:'Es lo que hace: una acción.'},
+  {t:'choice',q:'Daniel llegó a las 06:57. ¿Qué pasa en la condición?',opts:['Responde no y el sistema no envía nada','Responde sí y envía el correo','El sistema se detiene por error'],ok:0,hint:'¿Llegó más de 5 minutos tarde?',good:'Llegó a tiempo: la condición responde no.'},
+  {t:'choice',q:'Esta automatización solo revisa el 1.er retardo. ¿Qué necesitas para avisar el 2.º retardo?',opts:['Otra condición para el 2.º retardo, con su propia acción','Borrar la condición','Cambiar el activador por una hora'],ok:0,hint:'Cada norma tiene su propia regla y su propia acción.',good:'Cada retardo tiene su condición y su acción.'}
+ ]},
+{short:'Diagrama',badge:'Ojo de diagramas',title:'El diagrama de flujo',ask:['diagrama','regla','condicion'],
+ init:{f:{}},
+ tour:[
+  {s:'Un diagrama de flujo dibuja un algoritmo con figuras y flechas. Así se ve una automatización antes de crearla.',t:'chart'},
+  {s:'Cada figura tiene un significado, y cada una corresponde a una parte de la automatización.',card:CARD_SIMB},
+  {s:'El óvalo marca el inicio. En una automatización, el inicio es el activador, también llamado disparador.',set:ms=>ms.f={n:'ini'},t:'n-ini'},
+  {s:'El paralelogramo es la entrada de datos: la información que llega para trabajar.',set:ms=>ms.f={n:'leer'},t:'n-leer'},
+  {s:'El rectángulo es un proceso: algo que el sistema hace, como calcular o enviar.',set:ms=>ms.f={n:'calc'},t:'n-calc'},
+  {s:'El rombo es la decisión. Ahí está la regla: una pregunta de sí o no, con dos salidas.',set:ms=>ms.f={n:'dec'},t:'n-dec'},
+  {s:'Las flechas muestran el flujo de datos: el camino que siguen. Mira el punto amarillo: son los datos de Camila viajando.',set:ms=>ms.play=framesDec('Camila','07:08',8),t:'chart'},
+  {s:'Camila llegó 8 minutos tarde. En el rombo la regla responde sí, y sus datos van hacia Enviar aviso.',set:ms=>ms.f=framesDec('Camila','07:08',8)[4],t:'e-si'},
+  {s:'Ahora Daniel, que llegó a las 06:57. La regla responde no, y sus datos toman el otro camino.',set:ms=>ms.play=framesDec('Daniel','06:57',0),t:'chart'},
+  {s:'Una regla se lee así: si pasa esto, entonces haz aquello. Si llegó más de 5 minutos tarde, entonces envía el aviso.',set:ms=>ms.f={n:'dec',e:'si'},t:'n-dec'},
+  {s:'¡Ahora te toca leer el diagrama!'}
+ ],
+ sim:ms=>fcSim('Diagrama de flujo · Aviso de retardo',FC_DEC,ms,panelDec),
+ after:fcAfter(panelDec),
+ steps:[
+  {t:'hot',q:'Toca la figura que representa el activador.',ok:'n-ini',hint:'Es la figura donde todo empieza.',good:'El óvalo de inicio es el activador.',bad:'Esa figura no inicia el flujo. Busca el óvalo de arriba.'},
+  {t:'hot',q:'Toca la figura donde se aplica la regla.',ok:'n-dec',hint:'Es la figura con una pregunta de sí o no.',good:'El rombo hace la pregunta de la regla.',bad:'Esa figura no pregunta nada. Busca el rombo.'},
+  {t:'choice',q:'¿Qué figura se usa para los datos de entrada?',opts:['Paralelogramo','Rombo','Óvalo'],ok:0,hint:'Revisa el cuadro de figuras.',good:'El paralelogramo es la entrada de datos.'},
+  {t:'hot',q:'Llegan los datos de Mateo: 12 minutos tarde. Toca el camino que siguen al salir del rombo.',ok:'e-si',hint:'¿12 es más que 5?',good:'12 es más que 5: la regla responde sí y va a Enviar aviso.',bad:'Ese camino no es. Responde la pregunta del rombo con los datos de Mateo.',pre:ms=>ms.f={n:'dec',d:{Estudiante:'Mateo',Llegada:'07:12',Minutos:12}},apply:ms=>ms.f=framesDec('Mateo','07:12',12)[4]},
+  {t:'hot',q:'Ahora los datos de Laura: 3 minutos tarde. Toca el camino que siguen al salir del rombo.',ok:'e-no',hint:'¿3 es más que 5?',good:'3 no es más que 5: la regla responde no y va al fin.',bad:'Ese camino no es. Responde la pregunta del rombo con los datos de Laura.',pre:ms=>ms.f={n:'dec',d:{Estudiante:'Laura',Llegada:'07:03',Minutos:3}},apply:ms=>ms.f=framesDec('Laura','07:03',3)[4]},
+  {t:'choice',q:'¿Cuál es la regla de este diagrama?',opts:['Si llegó más de 5 minutos tarde, entonces enviar el aviso','Si se envía el aviso, entonces llegó tarde','Enviar el aviso a todos'],ok:0,hint:'Si (condición), entonces (acción).',good:'Condición en el rombo, acción en el rectángulo.'},
+  {t:'choice',q:'¿Qué viaja por las flechas?',opts:['Los datos del estudiante, de una figura a otra','Los correos ya enviados','Nada: son decoración'],ok:0,hint:'Recuerda el punto amarillo.',good:'Las flechas son el flujo de datos.'}
+ ]},
+{short:'Ciclos',badge:'Maestra de ciclos',title:'Los ciclos: repetir paso a paso',ask:['ciclo','diagrama','pseint'],
+ init:{f:{i:-1}},
+ tour:[
+  {s:'Hasta ahora revisamos a un solo estudiante. Pero Marta revisa a todos, uno por uno. Repetir los mismos pasos para cada uno se llama ciclo.',set:ms=>ms.f={i:-1},t:'panel'},
+  {s:'Es como pasar lista: dices un nombre, lo revisas y pasas al siguiente. Paras cuando se acaba la lista.',set:ms=>ms.f={i:0,v:1,av:0},t:'panel'},
+  {s:'En el diagrama, el ciclo es esta flecha que vuelve hacia atrás. Por ella los datos dan otra vuelta.',set:ms=>ms.f={e:'back'},t:'e-back'},
+  {s:'Antes de cada vuelta, este rombo pregunta: ¿quedan estudiantes? Si la respuesta es sí, da la vuelta.',set:ms=>ms.f={n:'quedan'},t:'n-quedan'},
+  {s:'Dentro del ciclo están los pasos que se repiten: la regla del retardo y el aviso.',set:ms=>ms.f={n:'tarde'},t:'n-tarde'},
+  {s:'Al final de cada vuelta, el sistema pasa al siguiente estudiante. Este paso se llama avance.',set:ms=>ms.f={n:'sig'},t:'n-sig'},
+  {s:'Mira el ciclo completo con los 4 estudiantes de hoy. Cuenta las vueltas en la tabla.',set:ms=>ms.play=framesLoop(),t:'chart'},
+  {s:'Cuando ya no quedan estudiantes, el rombo responde no y el ciclo termina. Así nunca se queda dando vueltas.',set:ms=>ms.f={n:'fin',e:'qno',i:4,v:4,av:2},t:'e-qno'},
+  {s:'Todo ciclo tiene cuatro partes. Este cuadro las muestra, con su forma en PSeInt.',card:CARD_CICLO},
+  {s:'Ojo con el avance: sin él, el sistema revisaría a Camila para siempre. Eso se llama ciclo infinito.',set:ms=>ms.f={n:'sig',i:0,v:1,av:1},t:'n-sig'},
+  {s:'El ciclo se dibuja una sola vez y sirve para 4 estudiantes o para 400. Por eso automatizar ahorra tanto trabajo.'}
+ ],
+ sim:ms=>fcSim('Diagrama de flujo · Ciclo de avisos',FC_LOOP,ms,panelLoop),
+ after:fcAfter(panelLoop),
+ steps:[
+  {t:'hot',q:'Toca la flecha que hace que los pasos se repitan.',ok:'e-back',hint:'Es la flecha naranja que vuelve hacia arriba.',good:'Esa flecha devuelve los datos para otra vuelta.',bad:'Esa flecha sigue hacia adelante. Busca la que vuelve atrás.'},
+  {t:'hot',q:'Toca la pregunta que decide si se da otra vuelta.',ok:'n-quedan',hint:'Pregunta por la lista, no por los minutos.',good:'“¿Quedan estudiantes?” decide si sigue el ciclo.',bad:'Esa figura no decide las vueltas. Busca el rombo de la lista.'},
+  {t:'choice',q:'Hoy llegaron 4 estudiantes. ¿Cuántas vueltas da el ciclo?',opts:['4','1','5'],ok:0,hint:'Una vuelta por estudiante.',good:'Una vuelta por cada estudiante: 4.'},
+  {t:'choice',q:'Vuelta 3: Mateo llegó 12 minutos tarde. Al terminar esa vuelta, ¿cuántos avisos van?',opts:['2','3','1'],ok:0,hint:'Mira la tabla: Camila 8, Daniel 0, Mateo 12.',good:'Camila y Mateo: 2 avisos.',pre:ms=>ms.f={n:'tarde',i:2,v:3,av:1,q:'Sí'},apply:ms=>ms.f={n:'sig',e:'a5',i:2,v:3,av:2}},
+  {t:'choice',q:'Mañana llegan 300 estudiantes. ¿Qué cambia en el diagrama?',opts:['Nada: el mismo ciclo da 300 vueltas','Hay que dibujar 300 rombos','Hay que hacer otro diagrama'],ok:0,hint:'El ciclo se dibuja una sola vez.',good:'Mismo diagrama, más vueltas.',pre:ms=>ms.f={}},
+  {t:'choice',q:'Alguien borró “Pasar al siguiente”. ¿Qué pasa?',opts:['Revisa a Camila para siempre: ciclo infinito','Termina más rápido','Revisa a todos igual'],ok:0,hint:'Sin avance, ¿cambia el estudiante?',good:'Sin avance, el ciclo nunca termina.',pre:ms=>ms.f={n:'sig',i:0,v:1,av:1}},
+  {t:'order',q:'Ordena una vuelta del ciclo.',items:['Preguntar: ¿quedan estudiantes?','Revisar si llegó más de 5 minutos tarde','Enviar el aviso si llegó tarde','Pasar al siguiente estudiante'],hint:'Primero se pregunta si hay alguien por revisar.',good:'¡Esa es una vuelta completa!',pre:ms=>ms.f={}},
+  {t:'choice',q:'En PSeInt, ¿qué estructura hace un ciclo?',opts:['Para … Hacer … FinPara','Si … Entonces … FinSi','Leer …'],ok:0,hint:'Revisa el cuadro de las partes del ciclo.',good:'Para … Hacer repite los pasos.'}
+ ]},
+{short:'Algoritmo',badge:'Mente de algoritmo',title:'Del diagrama a PSeInt',ask:['pseint','ciclo','condicion'],
+ tourInit:{col:0,ln:-1,tr:0},init:{col:0,ln:-1,tr:4},
+ tour:[
+  {s:'Ya viste el algoritmo dibujado como diagrama. Ahora, el mismo algoritmo escrito paso a paso, como en PSeInt.',t:'code'},
+  {s:'Así se escribe, paso a paso, el aviso de retardos. Lo vas a leer, no a escribir.',t:'code'},
+  {s:'Secuencia: pasos uno tras otro, en orden. Primero lee la hora, luego calcula los minutos.',set:ms=>{ms.col=1;ms.ln=3},t:'L3'},
+  {s:'Decisión: una pregunta con dos caminos. Si los minutos son más de 5, envía el aviso; si no, sigue con el siguiente estudiante.',set:ms=>{ms.col=1;ms.ln=4},t:'L4'},
+  {s:'Repetición: los mismos pasos para cada estudiante. Escrito una vez, sirve para 3 o para 300.',set:ms=>{ms.col=1;ms.ln=1},t:'L1'},
+  {s:'Son las mismas estructuras de PSeInt. Mira el cuadro.',card:CARD_PSEINT},
+  {s:'Mira cómo lo recorre el sistema, estudiante por estudiante.',set:ms=>{ms.col=1;ms.tr=2},t:'trace'},
+  {s:'Camila: 8 es más que 5, sí: aviso. Daniel: 0, no. Mateo: 12, sí: aviso. Laura: 3, no.',set:ms=>{ms.col=1;ms.tr=4},t:'trace'},
+  {s:'Ahora te toca leer el algoritmo.'}
+ ],
+ sim:ms=>algoSim(ms),
+ steps:[
+  {t:'hot',q:'Toca la línea donde el sistema toma una decisión.',ok:'L4',hint:'Busca la pregunta con dos caminos.',good:'“Si … Entonces” es una decisión.',bad:'Esa línea no hace una pregunta. Busca el Si.'},
+  {t:'hot',q:'Toca la línea que hace que los pasos se repitan para cada estudiante.',ok:'L1',hint:'Busca “Para cada”.',good:'“Para … Hacer” repite los pasos.',bad:'Esa línea se hace una vez por estudiante, no repite. Busca el Para.'},
+  {t:'choice',q:'Laura llegó 3 minutos tarde. ¿Qué hace el algoritmo?',opts:['No envía aviso y sigue con el siguiente estudiante','Envía el aviso','Se detiene'],ok:0,hint:'¿3 es más que 5?',good:'3 no es más que 5: no hay aviso.'},
+  {t:'choice',q:'Si el aviso se envía antes de calcular los minutos, ¿qué pasa?',opts:['Avisa sin saber si hubo retardo','Funciona igual','Avisa más rápido y mejor'],ok:0,hint:'En una secuencia el orden importa.',good:'El orden de la secuencia importa.'},
+  {t:'choice',q:'En PSeInt, “Si … Entonces … FinSi” es una estructura de…',opts:['Decisión','Repetición','Secuencia'],ok:0,hint:'Hace una pregunta con dos caminos.',good:'Es una decisión.'},
+  {t:'order',q:'Ordena la secuencia para un estudiante.',items:['Leer su hora de llegada','Calcular sus minutos de retraso','Revisar si pasa de 5 minutos','Enviar el aviso'],hint:'No se puede revisar lo que aún no se ha calculado.',good:'¡Secuencia en orden!'}
+ ]},
+{short:'Errores',badge:'Plan B',title:'Errores y supervisión humana',ask:['error','persona','limites'],
+ tourInit:{pb:0,hl:''},init:{pb:0,hl:''},
+ tour:[
+  {s:'Lunes, 7:16. El sistema terminó. Este es su registro: no todo salió bien.',t:'glog'},
+  {s:'Camila: todo bien. El correo salió.',set:ms=>ms.hl='g0',t:'g0'},
+  {s:'Mateo: falta un dato. Su acudiente no tiene correo en la lista. Sin ese dato, el sistema no puede enviar.',set:ms=>ms.hl='g1',t:'g1'},
+  {s:'Sofía: falló la acción. El correo rebotó porque la dirección no existe.',set:ms=>ms.hl='g2',t:'g2'},
+  {s:'Laura: trajo una excusa médica. Eso no lo decide el sistema: lo decide una persona.',set:ms=>ms.hl='g3',t:'g3'},
+  {s:'Para esto se diseña un plan B: lo que hace el sistema cuando algo falla. Mira.',set:ms=>ms.pb=1,t:'glog'},
+  {s:'El plan B casi siempre termina en una persona: Marta recibe los casos pendientes y decide.',set:ms=>ms.pb=1,t:'marta'},
+  {s:'Este cuadro resume cada situación y su plan B.',card:CARD_ERR},
+  {s:'Automatizar es conectar acciones y también pensar qué hacer cuando algo sale mal. ¡A los retos!'}
+ ],
+ sim:ms=>errSim(ms),
+ steps:[
+  {t:'hot',q:'Toca el caso donde falta un dato.',ok:'g1',hint:'Busca el caso al que le falta información en la lista.',good:'Al acudiente de Mateo le falta el correo.',bad:'Ese caso tiene todos sus datos. Busca el que no.',apply:ms=>ms.pb=1},
+  {t:'choice',q:'El correo de Sofía rebotó. ¿Cuál es el mejor plan B?',opts:['Reintentar y pasar el caso a Marta para que llame','Enviarlo a otro acudiente','Borrar el registro'],ok:0,hint:'El aviso tiene que llegar a la familia de Sofía.',good:'Reintenta y, si sigue fallando, decide una persona.'},
+  {t:'choice',q:'Laura trajo una excusa médica. ¿Quién decide si se justifica?',opts:['Marta','El sistema','El acudiente de Laura'],ok:0,hint:'Hace falta leer y juzgar la excusa.',good:'Decidir necesita criterio: lo hace una persona.'},
+  {t:'choice',q:'¿Qué es un plan B en una automatización?',opts:['Lo que hace el sistema cuando algo falla','Una segunda automatización igual','Apagar el sistema'],ok:0,hint:'Revisa el cuadro.',good:'Es la respuesta preparada para cuando algo falla.'},
+  {t:'choice',q:'Nadie revisa los pendientes de Marta durante un mes. ¿Qué pasa?',opts:['Esas familias nunca se enteran','El sistema los resuelve solo','No pasa nada'],ok:0,hint:'El plan B termina en una persona.',good:'Por eso la supervisión humana es parte del diseño.'},
+  {t:'choice',q:'¿Cómo prevenir que falten correos de acudientes?',opts:['Pedir el correo como dato obligatorio al matricular','Esperar a que falle','Enviar a todos los correos posibles'],ok:0,hint:'Cuida los datos desde el inicio.',good:'Datos completos desde el inicio: menos errores.'}
+ ]},
+{short:'Casos reales',badge:'Ojo de experta',title:'Automatizaciones en el mundo real',ask:['activador','partes','persona'],
+ init:{sec:'hos',hl:''},
+ tour:[
+  {s:'Las automatizaciones están en todas partes. Veamos cinco lugares distintos. Todos tienen las mismas partes.',t:'tabs'},
+  {s:'Hospital: un día antes de cada cita, el sistema envía un recordatorio al paciente. El activador es una hora programada.',set:ms=>{ms.sec='hos';ms.hl='act'},t:'f-act'},
+  {s:'Supermercado: con cada venta revisa cuántas unidades quedan. Si son menos de 10, avisa al jefe de bodega.',set:ms=>{ms.sec='sup';ms.hl='con'},t:'f-con'},
+  {s:'Banco: si una compra es muy distinta a las de siempre, la pausa y le pregunta al cliente. Si no responde, un analista revisa.',set:ms=>{ms.sec='ban';ms.hl='plan'},t:'f-plan'},
+  {s:'Universidad: cada viernes revisa las notas. Si el promedio es menor que 3,0, avisa al estudiante y a su tutor.',set:ms=>{ms.sec='uni';ms.hl='acc'},t:'f-acc'},
+  {s:'Fábrica: si un sensor marca más de 80 °C, detiene la máquina y avisa al técnico. El técnico decide cuándo encenderla.',set:ms=>{ms.sec='fab';ms.hl='plan'},t:'f-plan'},
+  {s:'En todos hay activador, datos, condición, acción, resultado y una persona que supervisa.',set:ms=>{ms.sec='fab';ms.hl=''},t:'flow'},
+  {s:'Ahora analiza tú cada caso.'}
+ ],
+ sim:ms=>caseSim(ms),
+ steps:[
+  {t:'choice',q:'Hospital: “un día antes de cada cita”. ¿Qué tipo de activador es?',opts:['Hora programada','Evento','Condición'],ok:0,hint:'Depende de una fecha.',good:'Una fecha fija: hora programada.',pre:ms=>{ms.sec='hos';ms.hl=''}},
+  {t:'hot',q:'Universidad: toca la condición.',ok:'f-con',hint:'Busca la pregunta de sí o no.',good:'¿Promedio menor que 3,0? Esa es la condición.',bad:'Esa no es la pregunta. Busca la condición.',pre:ms=>{ms.sec='uni';ms.hl=''}},
+  {t:'choice',q:'Banco: “pausar la compra y preguntar al cliente”. ¿Qué parte es?',opts:['Acción','Datos de entrada','Resultado'],ok:0,hint:'Es lo que hace el sistema.',good:'Es la acción.',pre:ms=>{ms.sec='ban';ms.hl=''}},
+  {t:'choice',q:'Supermercado: quedan 7 bolsas de arroz y el mínimo es 10. ¿Qué pasa?',opts:['Avisa al jefe de bodega','No avisa','Pide el arroz solo'],ok:0,hint:'¿7 es menos que 10?',good:'7 es menos que 10: avisa.',pre:ms=>{ms.sec='sup';ms.hl='con'}},
+  {t:'choice',q:'Fábrica: ¿quién decide cuándo encender otra vez la máquina?',opts:['El técnico','El sensor','La máquina sola'],ok:0,hint:'Revisa el plan B.',good:'Una persona revisa antes de encenderla.',pre:ms=>{ms.sec='fab';ms.hl='plan'}},
+  {t:'choice',q:'Un restaurante quiere avisar al cliente cuando su pedido esté listo. ¿Qué activador usa?',opts:['Evento: el cocinero marca el pedido como listo','Hora programada: cada hora','Condición: el cliente tiene hambre'],ok:0,hint:'El aviso sale cuando pasa algo.',good:'Marcar el pedido como listo es un evento.'}
+ ]},
+{short:'Herramientas',badge:'Caja de herramientas',title:'Herramientas para automatizar',ask:['herramientas','appsheet','programar'],
+ init:{tool:''},
+ tour:[
+  {s:'Para crear automatizaciones hay herramientas. Todas usan la misma idea: un activador y una o varias acciones.'},
+  {s:'Make: conectas aplicaciones con un diagrama visual. Cada aplicación es un círculo y se unen con líneas. Sin código.',set:ms=>ms.tool='make',t:'tool-make'},
+  {s:'n8n: también es visual, con nodos. Se puede instalar en un servidor propio, así los datos se quedan en la institución.',set:ms=>ms.tool='n8n',t:'tool-n8n'},
+  {s:'Power Automate: es de Microsoft. Conecta Outlook, Excel, Teams y OneDrive.',set:ms=>ms.tool='pa',t:'tool-pa'},
+  {s:'Apps Script: es de Google. Conecta Sheets, Gmail y Forms. Aquí sí se escribe código, en JavaScript.',set:ms=>ms.tool='gas',t:'tool-gas'},
+  {s:'AppSheet Automation: los bots de tu app de AppSheet. Ya los conoces: evento, proceso y tarea.',set:ms=>ms.tool='aps',t:'tool-aps'},
+  {s:'Este cuadro te ayuda a elegir.',card:CARD_TOOLS},
+  {s:'Se elige según dónde están los datos y quién la usa. La lógica que aprendiste sirve en todas.'}
+ ],
+ sim:ms=>toolSim(ms),
+ steps:[
+  {t:'choice',q:'El colegio trabaja con Outlook, Excel y Teams. ¿Qué herramienta encaja mejor?',opts:['Power Automate','Apps Script','AppSheet Automation'],ok:0,hint:'Son aplicaciones de Microsoft.',good:'Power Automate conecta las apps de Microsoft.'},
+  {t:'choice',q:'Tus datos están en Google Sheets y quieres escribir el código. ¿Cuál usas?',opts:['Apps Script','Power Automate','Make'],ok:0,hint:'Es de Google y usa código.',good:'Apps Script trabaja con Google y se programa.'},
+  {t:'choice',q:'Ya tienes la app de retardos en AppSheet. ¿Dónde creas el bot del aviso?',opts:['AppSheet Automation','n8n','Power Automate'],ok:0,hint:'Dentro de la misma app.',good:'Los bots de AppSheet viven dentro de tu app.'},
+  {t:'choice',q:'Una empresa quiere conectar muchas aplicaciones distintas, de forma visual y sin código.',opts:['Make','Apps Script','AppSheet Automation'],ok:0,hint:'Círculos unidos con líneas.',good:'Make conecta muchas apps de forma visual.'},
+  {t:'choice',q:'La universidad quiere que los datos se queden en su propio servidor.',opts:['n8n','Make','Power Automate'],ok:0,hint:'Busca la que se puede instalar en un servidor propio.',good:'n8n se puede instalar en un servidor propio.'},
+  {t:'choice',q:'¿Qué tienen en común todas estas herramientas?',opts:['Un activador y acciones que se ejecutan solas','Todas son de Google','Todas exigen programar'],ok:0,hint:'Recuerda las partes de una automatización.',good:'Cambia la herramienta, la lógica es la misma.'}
+ ]},
+{short:'Diseña',badge:'Diseñadora de flujos',title:'Diseña una automatización',ask:['partes','error','herramientas'],
+ init:{d:{},hl:''},
+ tour:[
+  {s:'Llegó el momento de diseñar. Este es el caso.',card:CARD_TIENDA},
+  {s:'Para diseñar, sigue siempre estos siete pasos.',card:CARD_PASOS},
+  {s:'Este es el tablero de diseño. Cada parte tiene su pregunta y está vacía: tú la completas.',t:'flow'},
+  {s:'Si te pierdes, toca Pista o pregúntale a la profe. ¡A diseñar!'}
+ ],
+ sim:ms=>designSim(ms),
+ steps:[
+  {t:'choice',q:'¿Qué pone en marcha la revisión del inventario?',opts:['Evento: se registra una venta','Hora programada: cada diciembre','Condición: llega un cliente nuevo'],ok:0,hint:'Las unidades bajan cada vez que se vende.',good:'Con cada venta, se revisa.',pre:ms=>ms.hl='act',apply:ms=>ms.d.act=DESIGN.act},
+  {t:'choice',q:'¿Qué datos necesita?',opts:['Producto, unidades disponibles y celular de Don Pedro','El nombre del cliente','El clima del día'],ok:0,hint:'¿Qué necesita para revisar y para avisar?',good:'Con esos datos puede revisar y avisar.',pre:ms=>ms.hl='dat',apply:ms=>ms.d.dat=DESIGN.dat},
+  {t:'choice',q:'¿Cuál es la condición?',opts:['¿Quedan 5 unidades o menos?','¿Quedan más de 5 unidades?','¿Hoy es lunes?'],ok:0,hint:'Don Pedro pidió: 5 o menos.',good:'Esa es la regla de Don Pedro.',pre:ms=>ms.hl='con',apply:ms=>ms.d.con=DESIGN.con},
+  {t:'choice',q:'¿Qué acción hace?',opts:['Avisar a Don Pedro con el pedido sugerido','Comprar el producto solo, sin preguntar','Borrar el producto'],ok:0,hint:'Don Pedro aprueba los pedidos.',good:'El sistema avisa y Don Pedro decide.',why:{1:'Comprar necesita la aprobación de Don Pedro.'},pre:ms=>ms.hl='acc',apply:ms=>ms.d.acc=DESIGN.acc},
+  {t:'choice',q:'¿Qué resultado se logra?',opts:['El producto no se acaba en la tienda','Se venden menos productos','Don Pedro deja de revisar'],ok:0,hint:'Piensa en el problema de Don Pedro.',good:'Ese era el problema a resolver.',pre:ms=>ms.hl='res',apply:ms=>ms.d.res=DESIGN.res},
+  {t:'choice',q:'El aviso al celular no se pudo enviar. ¿Cuál es el plan B?',opts:['Mostrar una alerta al abrir la app','No hacer nada','Enviar el aviso a un cliente'],ok:0,hint:'El aviso tiene que llegarle a Don Pedro.',good:'Así Don Pedro se entera de todas formas.',pre:ms=>ms.hl='plan',apply:ms=>ms.d.plan=DESIGN.plan},
+  {t:'choice',q:'¿Quién supervisa esta automatización?',opts:['Don Pedro: aprueba los pedidos y revisa las alertas','Nadie: ya está automatizada','Los clientes'],ok:0,hint:'Recuerda la supervisión humana.',good:'¡Diseño completo!',pre:ms=>ms.hl=''}
+ ]},
+{short:'Prueba',badge:'Control de calidad',title:'Prueba y verifica',ask:['prueba','error','persona'],
+ tourInit:{run:0,fix:0,hl:''},init:{run:0,fix:0,hl:''},
+ tour:[
+  {s:'Antes de usar una automatización, se prueba. Así los errores aparecen antes de llegar a las personas.'},
+  {s:'Así quedó escrita la regla de Don Pedro. Léela con cuidado.',t:'rule'},
+  {s:'Para probar se usan casos de prueba: datos inventados con el resultado que esperas.',t:'tests'},
+  {s:'Hay cuatro tipos de casos. Mira el cuadro.',card:CARD_CASOS},
+  {s:'Ejecutemos las pruebas.',set:ms=>ms.run=1,t:'tests'},
+  {s:'El pan falló: quedan 5 y no avisó. La regla dice menos que 5, y 5 no es menos que 5. Don Pedro pidió 5 o menos.',set:ms=>{ms.run=1;ms.hl='r2'},t:'r2'},
+  {s:'Se corrige la regla: menor o igual que 5.',set:ms=>{ms.fix=1},t:'rule'},
+  {s:'Se ejecutan otra vez todas las pruebas. ¡Ahora todas pasan!',set:ms=>{ms.fix=1;ms.run=1},t:'tests'},
+  {s:'Ya funcionando, la persona sigue supervisando: revisa el registro y ajusta las reglas si algo cambia.'}
+ ],
+ sim:ms=>testSim(ms),
+ steps:[
+  {t:'choice',q:'Con la regla “unidades < 5”, quedan 4 bolsas de arroz. ¿Qué pasa?',opts:['Avisa','No avisa'],ok:0,hint:'¿4 es menos que 5?',good:'4 es menos que 5: avisa.'},
+  {t:'hot',q:'Ejecutaste las pruebas. Toca la prueba que falló.',ok:'r2',hint:'Compara el esperado con el resultado.',good:'El pan esperaba aviso y no lo tuvo.',bad:'En esa prueba el esperado y el resultado coinciden.',pre:ms=>ms.run=1},
+  {t:'choice',q:'¿Cómo se corrige la regla?',opts:['Si unidades ≤ 5 (5 o menos)','Si unidades > 5','Borrar la prueba del pan'],ok:0,hint:'Don Pedro pidió 5 o menos.',good:'Ahora el 5 también avisa.',why:{2:'Borrar la prueba esconde el error, no lo arregla.'},apply:ms=>ms.fix=1},
+  {t:'choice',q:'¿Por qué se prueba el caso de 5 unidades?',opts:['Está justo en el límite de la regla','Es el producto más vendido','Para tener más pruebas'],ok:0,hint:'Mira el cuadro de casos de prueba.',good:'En los límites aparecen muchos errores.'},
+  {t:'choice',q:'Corregiste la regla. ¿Qué haces ahora?',opts:['Ejecutar otra vez todas las pruebas','Usarla de una vez','Probar solo el pan'],ok:0,hint:'Un cambio puede dañar otra cosa.',good:'Todas otra vez, para estar segura.'},
+  {t:'order',q:'Ordena el camino completo de una automatización.',items:['Diseñar las partes','Probar con casos de prueba','Corregir los errores','Ponerla a funcionar','Supervisar y ajustar'],hint:'Se prueba antes de ponerla a funcionar.',good:'¡Ese es el camino completo!'}
+ ]}
+];
+
+/* ---------- Estado ---------- */
+const KEY='autolab-v2';
+const def=()=>({xp:0,done:{},stars:{},mute:false,unlock:{}});
+let USER=null,syncT=null;
+const GS=!!(window.google&&google.script&&google.script.run);
+function cacheKey(){return KEY+':'+(USER||'')}
+function save(){try{localStorage.setItem(cacheKey(),JSON.stringify(S))}catch(e){}clearTimeout(syncT);syncT=setTimeout(sync,1200)}
+const doneCount=()=>Object.keys(S.done).length;
+function resumen(){let st=0;for(const k in S.stars)st+=S.stars[k]||0;const n=M.findIndex((_,i)=>!S.done[i]);return {xp:S.xp,etapas:doneCount(),estrellas:st,nivel:n<0?'Nivel '+LEVELS[lvl(M.length-1)][0]+' terminado':LEVELS[lvl(n)][0]+' · etapa '+(n+1)}}
+function call(fn,...a){return new Promise((res,rej)=>{google.script.run.withSuccessHandler(res).withFailureHandler(e=>rej((e&&e.message)||'Error'))[fn](...a)})}
+function sync(){if(!GS||!USER)return;call('guardar',JSON.stringify(S),resumen()).catch(()=>{})}
+let S=def(),cur=-1,ms=null,tw=null;
+const built=l=>!!M[LEVELS[l][1]];
+const needCode=i=>{const l=lvl(i);return l>0&&i===LEVELS[l][1]&&!(S.unlock&&S.unlock[l])};
+const unlocked=i=>{if(i>=M.length)return false;if(i===0||S.done[i])return true;const l=lvl(i);if(i===LEVELS[l][1])return l===0||!!(S.unlock&&S.unlock[l]);return !!S.done[i-1]};
+
+/* ---------- Ingreso ---------- */
+function screen(inner){cur=-1;stopVoice();clearInterval(tw);const main=$('#main');main.className='';main.innerHTML=`<div class="mapv"><section class="zone sky1" style="min-height:100%"><div class="scene">${scene(1)}</div><div class="zin"><div class="fin"><div style="width:90px;height:90px;margin:auto">${avatar()}</div><h1>AutoLab</h1>${inner}</div></div></section></div>`}
+function entrar(r){
+ USER=r.correo;
+ let local=null;try{local=JSON.parse(localStorage.getItem(cacheKey()))}catch(e){}
+ let base=null;try{base=typeof r.datos==='string'?JSON.parse(r.datos):r.datos}catch(e){}
+ if(!(base&&base.done))base=null;
+ S=Object.assign(def(),(local&&(!base||(local.xp||0)>(base.xp||0)))?local:(base||{}));
+ if(r.nombre)S.name=r.nombre;
+ save();drawSnd();hud();
+ if(!GS&&!S.name)return localName();
+ home();
+}
+function localName(){
+ screen(`<p>Escribe tu nombre para tu certificado.</p><input id="lnom" class="nm" maxlength="40" autocomplete="name" placeholder="Tu nombre completo"><p class="cerr" id="lerr"></p><div class="cbtns"><button class="gbtn" id="lok" type="button">Empezar</button></div>`);
+ const ok=()=>{const n=$('#lnom').value.trim();if(!n){$('#lerr').textContent='Escribe tu nombre.';return}S.name=n;save();hud();home()};
+ $('#lok').onclick=ok;$('#lnom').onkeydown=e=>{if(e.key==='Enter')ok()};
+}
+function nameScreen(r){
+ screen(`<p>Hola, <b>${esc(r.correo)}</b>. Es tu primera vez: escribe tu nombre para tu certificado.</p><input id="lnom" class="nm" maxlength="40" autocomplete="name" placeholder="Tu nombre completo"><p class="cerr" id="lerr"></p><div class="cbtns"><button class="gbtn" id="lok" type="button">Empezar</button></div>`);
+ const go_=()=>{const n=$('#lnom').value.trim();if(!n){$('#lerr').textContent='Escribe tu nombre.';return}$('#lok').disabled=true;call('registrar',n).then(entrar).catch(e=>{$('#lerr').textContent=String(e);$('#lok').disabled=false})};
+ $('#lok').onclick=go_;$('#lnom').onkeydown=e=>{if(e.key==='Enter')go_()};
+}
+function arrancar(){
+ hud('Cargando…');
+ if(!GS){entrar({correo:'local',nombre:'',datos:null});return}
+ screen('<p>Cargando tu progreso…</p>');
+ call('cargar').then(r=>r.nuevo?nameScreen(r):entrar(r)).catch(e=>{screen(`<p class="cerr">${esc(String(e))}</p><div class="cbtns"><button class="gbtn" id="retry" type="button">Intentar de nuevo</button></div>`);$('#retry').onclick=arrancar});
+}
+
+/* ---------- Sonido ---------- */
+let AC=null;
+function tone(f,d,when=0,type='triangle',vol=.12){if(S.mute)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+when;o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d)}catch(e){}}
+const sfx={ok:()=>{tone(660,.12);tone(990,.18,.1)},bad:()=>tone(170,.25,0,'square',.06),win:()=>[523,659,784,1046].forEach((f,i)=>tone(f,.22,i*.11)),next:()=>tone(520,.06,0,'sine',.06)};
+const ICS={on:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',off:'<path d="M4 9v6h4l5 4V5L8 9z"/><path d="m17 9 5 6M22 9l-5 6"/>'};
+function drawSnd(){$('#snd').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${S.mute?ICS.off:ICS.on}</svg>`}
+$('#snd').onclick=()=>{S.mute=!S.mute;save();drawSnd()};
+
+/* ---------- HUD ---------- */
+const nameIn=t=>t.replace('{n}',S.name?', '+S.name:'');
+function hud(sub){
+ $('#bar').style.width=(doneCount()/M.length*100)+'%';
+ $('#xp').firstChild.textContent=(S.name?S.name+' · ':'')+S.xp+' XP';
+ if(sub!==undefined)$('#hsub').textContent=sub;
+}
+function xpFloat(n){const s=document.createElement('span');s.className='xpf';s.textContent='+'+n;$('#xp').appendChild(s);setTimeout(()=>s.remove(),1000)}
+
+/* ---------- Mapa ---------- */
+function home(){
+ cur=-1;stopVoice();clearInterval(tw);clearAnim();
+ const next=M.findIndex((_,i)=>!S.done[i]);
+ const started=doneCount()>0;
+ const offs=[0,-80,0,80];let k=0;
+ const node=i=>{const m=M[i];const st=S.done[i]?'done':i===next?'cur':'';const x=offs[(k++)%4];return `<button type="button" class="node ${st}" data-i="${i}" style="--x:${x}px" ${unlocked(i)?'':'disabled'}><span class="nb">${S.done[i]?'✓':i+1}</span><span class="nl">${m.short}</span><span class="ns">${S.stars[i]?'★'.repeat(S.stars[i])+'☆'.repeat(3-S.stars[i]):''}</span></button>`};
+ const dots='<div class="dots3"><i></i><i></i></div>';
+ const zone=z=>{const L=LEVELS[z];const ids=[];for(let i=L[1];i<=L[2]&&i<M.length;i++)ids.push(i);
+  const hero=z===0?`<div class="mhero"><div class="av">${avatar()}</div><div><h1>AutoLab</h1><p>Aprende a automatizar paso a paso</p><p>Jugador: <b>${esc(S.name||'')}</b> · ${S.xp} XP</p><div class="row2"><button class="gbtn" id="start" type="button">${next<0?'Ver mi certificado':started?'Continuar etapa '+(next+1):'Empezar'}</button></div></div></div>`:'';
+  const trophy=z===2&&ids.length?dots+`<button type="button" class="node trophy" id="trophy" style="--x:0px" ${next<0?'':'disabled'}><span class="nb">🏆</span><span class="nl">Experta</span></button>`:'';
+  const lock=z>0&&ids.length&&CODEH[z]&&!(S.unlock&&S.unlock[z])?`<div style="text-align:center"><button type="button" class="zlock" data-code="${z}">🔒 Entrar con código</button></div>`:'';
+  const body=ids.length?`${lock}<div class="path">${ids.map(node).join(dots)}${trophy}</div>${S.done[L[2]]?`<div style="text-align:center;margin-top:16px"><button type="button" class="zlock" data-cert="${z}">📜 Ver certificado</button></div>`:''}`:'<p class="soon">🔒 Muy pronto</p>';
+  return `<section class="zone sky${z+1}"><div class="scene">${scene(z+1)}</div><div class="zin">${hero}<div style="text-align:center"><span class="ztitle"><b>Nivel ${L[0]}</b><small>${L[3]}</small></span></div>${body}${z===2&&started?'<button class="resetl" id="reset" type="button">Reiniciar progreso</button>':''}</div></section>`};
+ const main=$('#main');main.className='';
+ main.innerHTML=`<div class="mapv">${[0,1,2].map(zone).join('')}</div>`;
+ main.querySelectorAll('.node[data-i]').forEach(b=>b.onclick=()=>go(+b.dataset.i));
+ $('#start').onclick=()=>{next<0?certificate(lvl(M.length-1)):needCode(next)?codeScreen(lvl(next)):go(next)};
+ main.querySelectorAll('[data-cert]').forEach(b=>b.onclick=()=>certificate(+b.dataset.cert));
+ main.querySelectorAll('[data-code]').forEach(b=>b.onclick=()=>codeScreen(+b.dataset.code));
+ const tr=$('#trophy');if(tr)tr.onclick=()=>certificate(2);
+ const r=$('#reset');if(r)r.onclick=()=>{if(confirm('¿Borrar tu progreso y empezar de cero?')){const mu=S.mute,nn=S.name;S=def();S.mute=mu;S.name=nn;try{localStorage.removeItem(cacheKey())}catch(e){}save();home()}};
+ hud(started?`${doneCount()} de ${M.length} etapas`:'Elige tu etapa');setSugg(['automatizar','programar','cuando']);
+}
+
+/* ---------- Certificado ---------- */
+const fechaHora=()=>{const d=new Date();return d.toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'})+' · '+d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})};
+function certificate(l){
+ cur=-1;stopVoice();clearInterval(tw);clearAnim();
+ if(!S.cert)S.cert={};if(!S.cert[l]){S.cert[l]=fechaHora();save()}
+ const L=LEVELS[l];let st=0,mx=0;for(let i=L[1];i<=L[2]&&i<M.length;i++){st+=S.stars[i]||0;mx+=3}
+ const last=l===LEVELS.length-1,nextOk=!last&&built(l+1);
+ const main=$('#main');main.className='';
+ main.innerHTML=`<div class="mapv"><section class="zone sky${l+1}" style="min-height:100%"><div class="scene">${scene(l+1)}</div><div class="zin"><div class="cert" id="cert"><div class="cin"><div class="cav">${avatar()}</div><small class="ck">AutoLab · Certificado de logro</small><h1>Nivel ${L[0]}</h1><p>Se certifica que</p><h2>${esc(S.name||'Estudiante')}</h2><p>completó el Nivel ${L[0]} de AutoLab.</p><div class="cmeta"><span>★ ${st} de ${mx} estrellas</span><span>${S.xp} XP</span><span>🗓 ${S.cert[l]}</span></div><h3>Aprendizajes obtenidos</h3><ul class="cap">${APRENDE[l].map(a=>`<li>${a}</li>`).join('')}</ul>${last?`<h3>Insignias</h3><div class="cmeta">${M.map((m,i)=>`<span>${'★'.repeat(S.stars[i]||0)} ${m.badge}</span>`).join('')}</div>`:''}<div class="cfirma"><b>Profe Vivy</b><small>Aprendiendo con @LaProfeVivy</small></div></div></div><div class="cbtns"><button class="gbtn w" id="cprint" type="button">Imprimir o guardar PDF</button><button class="gbtn w" id="cmap" type="button">Mapa</button>${nextOk?`<button class="gbtn" id="cnext" type="button">Seguir al Nivel ${LEVELS[l+1][0]}</button>`:''}</div>${!last&&!nextOk?`<p class="soon">El Nivel ${LEVELS[l+1][0]} llega muy pronto.</p>`:''}</div></section></div>`;
+ $('#cprint').onclick=()=>window.print();$('#cmap').onclick=home;
+ const n=$('#cnext');if(n)n.onclick=()=>codeScreen(l+1);
+ confetti2();sfx.win();hud(`Certificado · Nivel ${L[0]}`);
+}
+function confetti2(){const c=document.createElement('div');c.className='confetti';c.style.position='fixed';const cols=['#ffc83d','#14b39a','#ff6b57','#7c6cff','#fff'];c.innerHTML=Array.from({length:50},()=>`<i style="left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*5)]};animation-delay:${(Math.random()*.8).toFixed(2)}s"></i>`).join('');document.body.appendChild(c);setTimeout(()=>c.remove(),3200)}
+function codeScreen(l){
+ if(!built(l))return home();
+ if(!CODEH[l]||(S.unlock&&S.unlock[l]))return go(LEVELS[l][1]);
+ cur=-1;stopVoice();clearInterval(tw);
+ const L=LEVELS[l];const main=$('#main');main.className='';
+ main.innerHTML=`<div class="mapv"><section class="zone sky${l+1}" style="min-height:100%"><div class="scene">${scene(l+1)}</div><div class="zin"><div class="fin"><div style="width:90px;height:90px;margin:auto">${avatar()}</div><h1>🔒 Nivel ${L[0]}</h1><p>Para entrar, escribe el código que te dará tu profe.</p><input id="code" class="nm code" type="password" autocomplete="off" placeholder="Código"><p class="cerr" id="cerr"></p><div class="cbtns"><button class="gbtn w" id="cmap" type="button">Mapa</button><button class="gbtn" id="cok" type="button">Entrar</button></div></div></div></section></div>`;
+ const inp=$('#code');
+ const tryIt=()=>{if(hcode(inp.value)===CODEH[l]){S.unlock=S.unlock||{};S.unlock[l]=true;save();sfx.win();go(LEVELS[l][1])}else{sfx.bad();$('#cerr').textContent='Ese código no es. Pídeselo a tu profe.';inp.classList.remove('shake');void inp.offsetWidth;inp.classList.add('shake')}};
+ $('#cok').onclick=tryIt;inp.onkeydown=e=>{if(e.key==='Enter')tryIt()};$('#cmap').onclick=home;
+ hud(`Nivel ${L[0]} · código`);
+}
+
+/* ---------- Etapa ---------- */
+function clearAnim(){ANIM.forEach(clearInterval);ANIM=[]}
+function go(i){
+ if(!unlocked(i))return;
+ cur=i;stopVoice();clearAnim();
+ const m=M[i],z=lvl(i)+1;
+ const main=$('#main');main.className='stage sky'+z;
+ main.innerHTML=`<div class="scene">${scene(z)}</div>
+ <div class="simarea"><div class="device"><div class="simwrap" id="simwrap"><div id="simc"></div><div class="spot" id="spot"></div><div class="ptr" id="ptr">${PTR}</div><div class="card" id="card" hidden></div></div></div></div>
+ <aside class="comp"><div class="portrait" id="portrait">${avatar()}</div><div class="dlg" id="dlg"><span class="tag" id="tag"></span><div id="dbody"></div></div><div id="dextra"></div></aside>
+ <div class="banner" id="banner"></div><div class="confetti" id="conf"></div>`;
+ $('#simwrap').addEventListener('click',onSimClick);
+ $('#dlg').addEventListener('click',e=>{if(e.target.closest('#say'))finishType()});
+ hud(`Nivel ${LEVELS[lvl(i)][0]} · Etapa ${i+1}: ${m.title}`);setSugg(m.ask);
+ if(i===LEVELS[lvl(i)][1]&&!S.done[i]&&LVINTRO[lvl(i)]){levelIntro(lvl(i));sfx.win()}
+ else{showLine(0);const L0=LEVELS[lvl(i)];banner(`Nivel ${L0[0]}`,`Etapa ${i+1} · ${m.title}`,1800)}
+}
+function levelIntro(l){
+ ms=Object.assign(stateFor(0),{phase:'intro',line:0});
+ drawSim();spot(null);
+ const card=$('#card');card.innerHTML=lvCard(l);card.hidden=false;card.scrollTop=0;
+ $('#tag').innerHTML=tagHTML('Profe Vivy');
+ $('#dbody').innerHTML=`<p class="say" id="say"></p><div class="ctrl"><span class="sp"></span>${speakBtn()}<button class="gbtn" id="next" type="button">¡Empecemos!</button></div>`;
+ $('#dextra').innerHTML='';
+ typeText(LVINTRO[l].say);bindSpeak(()=>nameIn(LVINTRO[l].say));
+ $('#next').onclick=()=>{sfx.next();showLine(0)};
+}
+function stateFor(k){const m=M[cur];const st=clone(m.tourInit||m.init);const L=m.tour[k];if(L.set)L.set(st);return st}
+const tagHTML=t=>avatar()+'<span>'+t+'</span>';
+function drawSim(){
+ clearAnim();
+ const st=ms.phase==='play'?M[cur].steps[ms.step]:null;
+ $('#simc').innerHTML=M[cur].sim(ms);
+ $('#simwrap').classList.toggle('hunt',!!st&&st.t==='hot'&&!ms.lock);
+ if(M[cur].after)M[cur].after(ms);
+}
+function showLine(k){
+ const m=M[cur],L=m.tour[k];
+ ms=Object.assign(stateFor(k),{phase:'tour',line:k});
+ drawSim();
+ const card=$('#card');
+ if(L.card){card.innerHTML=L.card;card.hidden=false;card.scrollTop=0}else card.hidden=true;
+ requestAnimationFrame(()=>spot(L.card?null:L.t));
+ const last=k===m.tour.length-1;
+ $('#tag').innerHTML=tagHTML('Profe Vivy');
+ $('#dbody').innerHTML=`<p class="say" id="say"></p><div class="ctrl"><div class="dots">${m.tour.map((_,j)=>`<i class="${j===k?'on':''}"></i>`).join('')}</div><span class="sp"></span>${speakBtn()}${k>0?'<button class="gbtn w" id="back" type="button">Atrás</button>':''}<button class="gbtn" id="next" type="button">${last?'¡A los retos!':'Siguiente'}</button></div>`;
+ $('#dextra').innerHTML='';
+ typeText(L.s);bindSpeak(()=>nameIn(L.s));
+ if(k>0)$('#back').onclick=()=>{sfx.next();showLine(k-1)};
+ $('#next').onclick=()=>{sfx.next();last?startPlay():showLine(k+1)};
+}
+function typeText(t){
+ t=nameIn(t);
+ clearInterval(tw);const el=$('#say');let i=0;el.textContent='';el.dataset.full=t;
+ tw=setInterval(()=>{i+=2;el.textContent=t.slice(0,i);if(i>=t.length)clearInterval(tw)},18);
+}
+function finishType(){const el=$('#say');if(el&&el.dataset.full){clearInterval(tw);el.textContent=el.dataset.full}}
+function spot(t){
+ const wrap=$('#simwrap'),s=$('#spot'),p=$('#ptr');if(!wrap)return;
+ const el=t&&(wrap.querySelector(`[data-t="${t}"]`)||wrap.querySelector(`[data-hot="${t}"]`));
+ if(!el){s.classList.remove('on');p.classList.remove('on');return}
+ if(el.scrollIntoView)el.scrollIntoView({block:'nearest',inline:'nearest'});
+ const wr=wrap.getBoundingClientRect(),r=el.getBoundingClientRect(),pad=5;
+ Object.assign(s.style,{left:(r.left-wr.left-pad)+'px',top:(r.top-wr.top-pad)+'px',width:(r.width+pad*2)+'px',height:(r.height+pad*2)+'px'});
+ const px=Math.min(r.right-wr.left-12,wr.width-36),py=Math.min(r.bottom-wr.top-10,wr.height-42);
+ Object.assign(p.style,{left:px+'px',top:py+'px'});
+ s.classList.add('on');p.classList.add('on');
+}
+addEventListener('resize',()=>{if(ms&&ms.phase==='tour'&&cur>=0){const L=M[cur].tour[ms.line];spot(L.card?null:L.t)}});
+function banner(t,sub,d=1500){const b=$('#banner');if(!b)return;b.innerHTML=`<div><b>${t}</b><small>${sub}</small></div>`;setTimeout(()=>{if(b.isConnected)b.innerHTML=''},d)}
+function startPlay(){
+ const m=M[cur];
+ spot(null);$('#card').hidden=true;
+ ms=Object.assign(clone(m.init),{phase:'play',step:0,errs:0,se:0,lock:false});
+ banner('¡Hora de los retos!',S.done[cur]?`Repaso · ${m.steps.length} retos · no suma XP, sí puede mejorar estrellas`:`${m.steps.length} retos · gana XP y estrellas`);
+ sfx.win();drawTask();
+}
+function drawTask(){
+ const m=M[cur],st=m.steps[ms.step];
+ if(!st)return finish();
+ ms.se=0;ms.lock=false;
+ if(st.pre)st.pre(ms);
+ $('#tag').innerHTML=tagHTML(`Reto ${ms.step+1} de ${m.steps.length}`);
+ $('#dbody').innerHTML=`<p class="qq">${esc(st.q)}</p><div class="fb" id="fb" aria-live="polite"></div><div class="ctrl" id="acts"><button class="gbtn w" id="hint" type="button">Pista</button><span class="sp"></span><button class="lbtn" id="rev" type="button">Repasar explicación</button></div>`;
+ let x='';
+ if(st.t==='choice')x=`<div class="opts">${shuffle(st.opts.map((_,k)=>k)).map(k=>`<button type="button" class="opt" data-k="${k}">${esc(st.opts[k])}</button>`).join('')}</div>`;
+ else if(st.t==='hot')x=`<div class="huntm">${PTR}<span>Toca la respuesta directamente en la pantalla.</span></div>`;
+ else if(st.t==='order'){ms.ord=0;x=`<div class="slots">${st.items.map((_,k)=>`<div class="slot" data-s="${k}"><i>${k+1}</i><span></span></div>`).join('')}</div><div class="pool">${shuffle(st.items.map((_,k)=>k)).map(k=>`<button type="button" class="opt" data-o="${k}">${esc(st.items[k])}</button>`).join('')}</div>`}
+ $('#dextra').innerHTML=x;
+ drawSim();
+ $('#hint').onclick=()=>setFb('tip','Pista: '+st.hint);
+ $('#rev').onclick=()=>showLine(0);
+ if(st.t==='choice')document.querySelectorAll('.opt[data-k]').forEach(b=>b.onclick=()=>{
+  if(ms.lock)return;const k=+b.dataset.k;
+  if(k===st.ok){b.classList.add('right');document.querySelectorAll('.opt[data-k]').forEach(o=>o.disabled=true);right(st)}
+  else{b.classList.add('wrong','shake');b.disabled=true;wrong(st.why&&st.why[k])}
+ });
+ if(st.t==='order')document.querySelectorAll('.opt[data-o]').forEach(b=>b.onclick=()=>{
+  if(ms.lock)return;const k=+b.dataset.o;
+  if(k===ms.ord){const s=document.querySelector(`.slot[data-s="${k}"]`);s.classList.add('f');s.querySelector('span').textContent=st.items[k];b.remove();ms.ord++;sfx.next();setFb('','');if(ms.ord===st.items.length)right(st)}
+  else{b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');wrong('Ese paso va después. ¿Qué tiene que pasar antes?')}
+ });
+}
+function onSimClick(e){
+ if(!ms||ms.phase!=='play'||ms.lock)return;
+ const st=M[cur].steps[ms.step];if(!st||st.t!=='hot')return;
+ const h=e.target.closest('[data-hot]');if(!h)return;
+ if(h.dataset.hot===st.ok)right(st);
+ else{h.classList.add('flashbad');setTimeout(()=>h.classList.remove('flashbad'),400);wrong(st.bad||'Ese no es. Mira de nuevo o pide una pista.')}
+}
+function setFb(c,t){const f=$('#fb');f.className='fb '+c;f.textContent=t}
+function react(c){const p=$('#portrait');p.classList.remove('hop','no');void p.offsetWidth;p.classList.add(c)}
+function right(st){
+ ms.lock=true;const g=S.done[cur]?0:(ms.se?5:10);if(g){S.xp+=g;save();hud();xpFloat(g)}sfx.ok();react('hop');
+ if(st.apply)st.apply(ms);
+ drawSim();
+ setFb('good','¡Bien! '+st.good);
+ const last=ms.step===M[cur].steps.length-1;
+ $('#acts').innerHTML=`<span class="sp"></span><button class="gbtn t" id="cont" type="button">${last?'Terminar etapa':'Continuar'}</button>`;
+ $('#cont').onclick=()=>{ms.step++;drawTask()};
+}
+function wrong(msg){ms.errs++;ms.se++;sfx.bad();react('no');setFb('bad',msg||'No es esa. Piénsalo de nuevo o toca Pista.')}
+function confetti(){const c=$('#conf');const cols=['#ffc83d','#14b39a','#ff6b57','#7c6cff','#fff'];c.innerHTML=Array.from({length:40},()=>`<i style="left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*5)]};animation-delay:${(Math.random()*.6).toFixed(2)}s"></i>`).join('');setTimeout(()=>c.innerHTML='',3000)}
+function finish(){
+ const stars=ms.errs===0?3:ms.errs<=2?2:1;
+ S.stars[cur]=Math.max(S.stars[cur]||0,stars);S.done[cur]=true;
+ save();hud();
+ ms.phase='done';$('#simwrap').classList.remove('hunt');
+ confetti();sfx.win();react('hop');
+ const lv=lvl(cur),endLv=cur===LEVELS[lv][2]||cur===M.length-1;
+ $('#tag').innerHTML=tagHTML('¡Etapa completa!');
+ $('#dbody').innerHTML=`<div class="stars">${'★'.repeat(stars)}<s>${'★'.repeat(3-stars)}</s></div><p class="badge-l">Insignia: ${M[cur].badge}</p>${endLv?`<p class="say" style="min-height:0;font-weight:700;color:#14806e">¡Completaste el Nivel ${LEVELS[lv][0]}! Ganaste tu certificado.</p>`:''}<p class="say" style="min-height:0">${stars===3?'Sin errores. ¡Impecable!':'Lo lograste. Si quieres sacar 3 estrellas, toca Repetir.'}</p><div class="ctrl"><button class="gbtn w" id="tomap2" type="button">Mapa</button><button class="gbtn w" id="rep" type="button">Repetir</button><span class="sp"></span><button class="gbtn" id="nx" type="button">${endLv?'Ver mi certificado':'Siguiente etapa'}</button></div>`;
+ $('#dextra').innerHTML='';
+ $('#tomap2').onclick=home;const ci=cur;$('#rep').onclick=()=>go(ci);
+ $('#nx').onclick=()=>endLv?certificate(lv):go(ci+1);
+}
+
+/* ---------- Voz ---------- */
+let speaking=false;
+const speakBtn=()=>'speechSynthesis' in window?`<button class="spk" id="spk" type="button" aria-label="Escuchar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICS.on}</svg></button>`:'';
+function bindSpeak(get){const b=$('#spk');if(!b)return;b.onclick=()=>{if(speaking){stopVoice();return}const u=new SpeechSynthesisUtterance(get());setVoice(u);u.onend=stopVoice;speechSynthesis.cancel();speechSynthesis.speak(u);speaking=true;b.classList.add('on')}}
+let VOICE=null,VFEM=false;
+function pickVoice(){
+ if(!('speechSynthesis' in window))return;
+ const vs=speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang));
+ const fem=/salome|salomé|dalia|sabina|paloma|paulina|m[oó]nica|helena|laura|elvira|elena|luc[ií]a|ximena|marisol|esperanza|conchita|lupe|pen[eé]lope|mia\b|female|mujer|google espa/i;
+ const male=/pablo|ra[uú]l|jorge|diego|[aá]lvaro|gonzalo|carlos|juan|enrique|miguel|andr[eé]s|gerardo|tom[aá]s|alonso|jos[eé]|male\b|hombre/i;
+ let best=null,bs=-99;
+ vs.forEach(v=>{let sc=0;if(fem.test(v.name))sc+=10;if(male.test(v.name))sc-=20;if(/es-CO/i.test(v.lang))sc+=4;else if(/es-(MX|US|419)/i.test(v.lang))sc+=3;if(/natural|online|neural/i.test(v.name))sc+=2;if(sc>bs){bs=sc;best=v}});
+ VOICE=best;VFEM=bs>=10;
+}
+function setVoice(u){if(!VOICE)pickVoice();if(VOICE){u.voice=VOICE;u.lang=VOICE.lang}else u.lang='es-CO';u.pitch=VFEM?1.05:1.35;u.rate=1}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function stopVoice(){if('speechSynthesis' in window)speechSynthesis.cancel();speaking=false;const b=$('#spk');if(b)b.classList.remove('on')}
+
+/* ---------- Chat de la profe ---------- */
+const KB={
+ automatizar:{q:'¿Qué es automatizar?',k:['que es automatizar','automatizar','automatizacion','automatico'],a:'Es hacer que un sistema haga tareas solo, siguiendo reglas, sin que una persona las repita cada vez. Ejemplo: enviar el aviso de retardo a cada familia.'},
+ programar:{q:'¿Tengo que programar?',k:['programar','codigo','pseint','programacion'],a:'No. Aquí aprendes la lógica: tareas, orden, reglas y decisiones. Las herramientas de automatización se configuran con bloques y menús.'},
+ tarea:{q:'¿Tarea o proceso?',k:['tarea','proceso','pasos','inicio','fin'],a:'Una tarea es una acción concreta, como escribir un correo. Un proceso es una serie de tareas en orden, con un inicio y un fin.'},
+ manual:{q:'¿Manual o automático?',k:['manual','diferencia','a mano'],a:'Manual: una persona hace cada tarea, una por una. Automático: un sistema hace las mismas tareas solo, siguiendo reglas.'},
+ beneficio:{q:'¿Para qué sirve?',k:['sirve','beneficio','ventaja','ahorr','registro'],a:'Para ahorrar tiempo, reducir errores, trabajar siempre igual a cualquier hora y dejar registro de cada envío.'},
+ limites:{q:'¿Qué límites tiene?',k:['limite','desventaja','falla','error','datos'],a:'No tiene criterio: solo sigue reglas. Si la regla o los datos están mal, se equivoca siempre igual. Por eso una persona lo revisa.'},
+ cuando:{q:'¿Cuándo conviene?',k:['cuando','conviene','vale la pena','preguntas'],a:'Hazle cuatro preguntas a la tarea: ¿se repite mucho? ¿sigue siempre la misma regla? ¿los datos están en digital? ¿un error importa? Si todas son sí, conviene.'},
+ persona:{q:'¿Qué hace la persona?',k:['persona','humano','supervision','decide','criterio'],a:'Decide lo que necesita criterio, como aprobar una excusa o hablar con una familia, y revisa que el sistema funcione bien. Eso es supervisión humana.'},
+ regla:{q:'¿Qué es una regla?',k:['regla','norma','condicion'],a:'Es una instrucción Si … entonces …: “si llegó más de 5 minutos tarde, entonces envía el aviso”. En el diagrama de flujo va en el rombo. Las reglas las pone una persona.'},
+ herramientas:{q:'¿Qué herramientas existen?',k:['make','n8n','power automate','apps script','herramienta'],a:'Make (visual, conecta muchas apps), n8n (visual, en servidor propio), Power Automate (Microsoft), Apps Script (Google, con código) y AppSheet Automation (bots de tu app).'},
+ activador:{q:'¿Qué es un activador?',k:['activador','disparador','evento','hora programada','empieza'],a:'Es la señal que pone en marcha la automatización. Hay tres: evento (pasó algo), hora programada (llegó el momento) y condición (un dato cumple una regla).'},
+ partes:{q:'¿Cuáles son las partes?',k:['partes','datos de entrada','accion','resultado'],a:'Activador, datos de entrada, condición, acción y resultado. Y un plan B para cuando algo falla.'},
+ condicion:{q:'¿Qué es la condición?',k:['condicion','si entonces','if','decide'],a:'Es la pregunta de sí o no que decide si la automatización sigue. Ejemplo: ¿llegó más de 5 minutos tarde?'},
+ diagrama:{q:'¿Qué es un diagrama de flujo?',k:['diagrama','flujo','rombo','ovalo','flecha','figura','paralelogramo'],a:'Es el dibujo de un algoritmo. Óvalo: inicio o fin (activador y resultado). Paralelogramo: datos de entrada. Rectángulo: proceso o acción. Rombo: decisión, donde va la regla. Flechas: el camino de los datos.'},
+ ciclo:{q:'¿Qué es un ciclo?',k:['ciclo','bucle','vuelta','repetir','infinito','mientras'],a:'Es repetir los mismos pasos para cada dato, como pasar lista. Tiene inicio, condición (¿quedan?), cuerpo (los pasos) y avance (pasar al siguiente). Sin avance, se vuelve un ciclo infinito.'},
+ pseint:{q:'¿Qué tiene que ver con PSeInt?',k:['pseint','algoritmo','secuencia','repeticion','finpara','finsi'],a:'Una automatización es un algoritmo: secuencia (pasos en orden), decisión (Si … Entonces) y repetición (Para … Hacer).'},
+ error:{q:'¿Y si algo falla?',k:['plan b','falla','rebot','falta','error'],a:'Se diseña un plan B: reintentar, avisar a una persona o esperar su decisión. Casi siempre termina en supervisión humana.'},
+ prueba:{q:'¿Cómo pruebo una automatización?',k:['prueba','probar','caso de prueba','limite','verificar'],a:'Con casos de prueba: datos inventados con el resultado esperado. Incluye un caso normal, uno que no debe activar, uno en el límite y uno con un dato faltante.'},
+ appsheet:{q:'¿Y AppSheet?',k:['appsheet','bot'],a:'AppSheet también automatiza, en su menú Automation: ahí se crean los bots que envían los avisos de retardo.'}
+};
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function reply(text){
+ const n=norm(text);let best=null,score=0;
+ for(const id in KB){let sc=0;KB[id].k.forEach(k=>{if(n.includes(norm(k)))sc+=k.length});if(sc>score){score=sc;best=id}}
+ return best?KB[best].a:'Esa no la tengo clara todavía. Prueba con una de las preguntas de abajo o llévala a clase y la resolvemos juntos.';
+}
+function addMsg(html,who){const d=document.createElement('div');d.className='m '+who;d.innerHTML=html;$('#msgs').appendChild(d);$('#msgs').scrollTop=$('#msgs').scrollHeight}
+function ask(text,html){addMsg(esc(text),'u');setTimeout(()=>addMsg(html||reply(text),'p'),350)}
+function setSugg(ids){$('#sugg').innerHTML=ids.map(id=>`<button type="button" data-id="${id}">${esc(KB[id].q)}</button>`).join('');$('#sugg').querySelectorAll('button').forEach(b=>b.onclick=()=>ask(KB[b.dataset.id].q,KB[b.dataset.id].a))}
+let greeted=false;
+function openChat(){$('#chat').classList.add('open');$('#veil').classList.add('open');if(!greeted){greeted=true;addMsg('Hola, soy la profe Vivy. Escríbeme tu duda o toca una de las preguntas de abajo.','p')}}
+function closeChat(){$('#chat').classList.remove('open');$('#veil').classList.remove('open')}
+$('#chatBtn').innerHTML=avatar()+'<span>Pregúntale a la profe</span>';
+$('#chatHead').innerHTML=avatar()+'<div><b>Profe Vivy</b><br><small>Dudas sobre automatización</small></div><button class="chat-x" id="chatX" type="button" aria-label="Cerrar">×</button>';
+$('#chatBtn').onclick=openChat;$('#chatX').onclick=closeChat;$('#veil').onclick=closeChat;
+$('#chatForm').onsubmit=e=>{e.preventDefault();const v=$('#chatIn').value.trim();if(!v)return;$('#chatIn').value='';ask(v)};
+$('#toMap').onclick=()=>USER?home():arrancar();
+drawSnd();
+arrancar();
+</script>
+</body>
+</html>
