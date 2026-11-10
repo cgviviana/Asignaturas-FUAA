@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OVA · Modelo de negocio de una app móvil</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--azul:#0b2d5b;--azul2:#1d4f91;--rojo:#c8102e;--amar:#f2a900;--verde:#1f8a4c;--fondo:#f4f6fa;--txt:#1b2333;--gris:#6b7486;--linea:#d9dee8}
+*{box-sizing:border-box}
+body{margin:0;font-family:Nunito,system-ui,sans-serif;background:var(--fondo);color:var(--txt);font-size:16px;line-height:1.4}
+header{background:var(--azul);color:#fff;padding:14px max(16px,calc((100% - 900px)/2)) 0}
+header h1{margin:0 0 10px;font-size:1.2rem;font-weight:800}
+header p{margin:2px 0 10px;font-size:.85rem;opacity:.85}
+#stepper{display:flex;gap:4px;overflow-x:auto}
+#stepper button{flex:1;min-width:80px;background:transparent;color:#fff;border:0;border-bottom:4px solid transparent;padding:8px 4px;font:600 .9rem Nunito;cursor:pointer;opacity:.7}
+#stepper button.on{border-color:var(--amar);opacity:1}
+#stepper button.ok::after{content:" ✓";color:var(--amar)}
+.wrap{max-width:900px;margin:0 auto;padding:12px 14px 24px}
+#voz{display:flex;gap:12px;align-items:flex-start;margin:12px 0}
+#voz>svg{flex:0 0 72px;height:72px}
+.burbuja{flex:1;background:#fff;border-left:5px solid var(--amar);padding:10px 12px;border-radius:0 12px 12px 12px}
+.burbuja{display:flex;gap:8px;align-items:center}.burbuja p{margin:0;flex:1}
+.fila{display:flex;gap:8px;flex-wrap:wrap}
+button.b{font:600 .85rem Nunito;padding:4px 12px;border-radius:6px;border:1.5px solid var(--azul2);background:#fff;color:var(--azul2);cursor:pointer;min-width:92px}
+button.b:disabled{opacity:.4;cursor:default}
+button.main{font:800 .95rem Nunito;padding:8px 22px;border-radius:8px;border:0;background:var(--rojo);color:#fff;cursor:pointer;min-width:220px}
+h2{font-size:1.05rem;color:var(--azul);margin:18px 0 8px}
+.preg3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.preg3 div{background:#fff;border-top:4px solid var(--azul2);padding:8px;border-radius:8px;font-size:.88rem;text-align:center}
+.preg3 b{display:block;font-size:1.3rem}
+.modelos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.modelos button{background:#fff;border:2px solid var(--linea);border-radius:10px;padding:10px 6px;font:700 .9rem Nunito;color:var(--txt);cursor:pointer}
+.modelos button span{display:block;font-size:1.6rem}
+.modelos button.on{border-color:var(--azul2);background:#eaf1fb}
+.modelos button.visto{border-style:dashed}
+.detalle{background:#fff;border-radius:10px;padding:12px 14px;margin-top:10px;min-height:70px}
+.detalle h3{margin:0 0 6px;color:var(--azul)}
+.detalle dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.92rem}
+.detalle dt{font-weight:800;color:var(--gris)}
+.detalle dd{margin:0}
+.sello{display:inline-block;padding:2px 10px;border-radius:20px;font-weight:800;font-size:.8rem;color:#fff}
+.si{background:var(--verde)}.no{background:var(--rojo)}.medio{background:var(--amar);color:#222}
+.ops{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.ops button{text-align:left;background:#fff;border:2px solid var(--linea);border-radius:10px;padding:10px 12px;font:600 .93rem Nunito;color:var(--txt);cursor:pointer}
+.ops button.bien{border-color:var(--verde);background:#e7f5ec}
+.ops button.mal{border-color:var(--rojo);background:#fdecef}
+.ops button.tachado{opacity:.35;text-decoration:line-through}
+.fb{min-height:24px;font-weight:700;margin:4px 0 10px}
+.fb.bien{color:var(--verde)}.fb.mal{color:var(--rojo)}
+/* lienzo */
+.lienzo{display:grid;grid-template-columns:repeat(5,1fr);grid-template-areas:"soc act prop rel seg" "soc rec prop can seg" "cos cos ing ing ing";gap:4px;margin-bottom:10px}
+.celda{background:#fff;border:1.5px solid var(--linea);border-radius:6px;padding:6px;font-size:.75rem;min-height:62px}
+.celda b{display:block;color:var(--azul);font-size:.72rem;text-transform:uppercase;letter-spacing:.02em}
+.celda.actual{border-color:var(--amar);box-shadow:0 0 0 2px var(--amar);cursor:pointer}
+.celda.lleno{background:#eaf1fb;border-color:var(--azul2)}
+.bloque-t{font-size:.8rem;color:var(--gris);font-weight:700}
+.registro{background:#fff;border-radius:8px;padding:8px 12px;font-size:.85rem;margin-top:10px}
+.registro ol{margin:4px 0;padding-left:20px}
+/* números */
+.ctrl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;margin-bottom:10px}
+.ctrl label{font-weight:700;font-size:.9rem}
+.ctrl output{font-weight:800;color:var(--azul)}
+.ctrl input{grid-column:1/3;width:100%;accent-color:var(--rojo)}
+.barras{background:#fff;border-radius:10px;padding:12px}
+.barra{margin:6px 0}
+.barra small{font-weight:700}
+.barra div{height:18px;border-radius:4px;transition:width .3s}
+.resul{font-size:1.1rem;font-weight:800;margin-top:8px}
+.formula{font-size:.85rem;color:var(--gris)}
+.pro{font-size:.85rem;color:var(--gris);margin-bottom:6px}
+button.ic{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--azul2);background:#fff;color:var(--azul2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;position:relative;padding:0;flex:0 0 auto}
+button.ic:disabled{opacity:.35;cursor:default}
+button.ic svg{width:20px;height:20px}
+button.ic.mini{width:26px;height:26px;margin-left:8px;vertical-align:middle}button.ic.mini svg{width:15px;height:15px}
+button.ic .n{position:absolute;top:-5px;right:-5px;background:var(--amar);color:#222;font:800 .65rem Nunito;border-radius:10px;padding:1px 5px}
+#toast{z-index:70!important;position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;background:#fff;border-radius:12px;box-shadow:0 6px 22px rgba(0,0,0,.2);padding:12px 14px;width:min(92vw,440px);display:flex;gap:10px;align-items:flex-start;z-index:40;border-left:6px solid var(--verde);font-weight:600}
+#toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#toast.mal{border-left-color:var(--rojo)}
+#toast b{font-size:1.2rem;line-height:1}
+#toast.mal b{color:var(--rojo)}#toast b{color:var(--verde)}
+#modal,#preg,#dec{position:fixed;inset:0;background:rgba(11,45,91,.45);display:none;align-items:center;justify-content:center;z-index:45}
+#modal>div,#preg>div,#dec>div{background:#fff;border-radius:12px;padding:14px 16px;width:min(92vw,480px);max-height:70vh;overflow:auto}
+#modal h3,#preg h3,#dec h3{margin:0 0 8px;color:var(--azul);display:flex;justify-content:space-between;align-items:center}
+.def{color:var(--gris);font-size:.9rem;margin:0 0 8px}
+#pops{gap:0;margin:8px 0}
+#pops button{border:0;border-bottom:1px solid #edf0f5;border-radius:0;background:none;padding:10px 4px 10px 30px;font:400 .93rem Nunito;position:relative}
+#pops button::before{content:"";position:absolute;left:6px;top:12px;width:14px;height:14px;border:1.5px solid #b9c2d3;border-radius:50%}
+#pops button:last-child{border-bottom:0}
+#pops button.bien{background:none;color:var(--verde);font-weight:700}#pops button.bien::before{background:var(--verde);border-color:var(--verde)}
+#pops button.mal{background:none;color:var(--rojo)}#pops button.mal::before{background:var(--rojo);border-color:var(--rojo)}
+#preg h3{font-size:1rem}
+#dops{gap:0;margin:8px 0}
+#dops button{border:0;border-bottom:1px solid #edf0f5;border-radius:0;background:none;padding:10px 4px 10px 30px;font:400 .93rem Nunito;position:relative}
+#dops button::before{content:"";position:absolute;left:6px;top:12px;width:14px;height:14px;border:1.5px solid #b9c2d3;border-radius:50%}
+#dops button:last-child{border-bottom:0}
+#dops button.bien{background:none;color:var(--verde);font-weight:700}#dops button.bien::before{background:var(--verde);border-color:var(--verde)}
+#dops button.mal{background:none;color:var(--rojo)}#dops button.mal::before{background:var(--rojo);border-color:var(--rojo)}
+table.t{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;font-size:.93rem;margin-bottom:12px}
+table.t td{padding:8px 12px;border-bottom:1px solid #edf0f5}
+table.t td:last-child{text-align:right;font-weight:700;white-space:nowrap}
+table.t tr.tot td{font-weight:800;color:var(--azul);border-bottom:0;background:#eef3fa}
+#modal ol{margin:0;padding-left:20px;font-size:.9rem}
+/* números */
+.datos{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.92rem;margin-bottom:10px}
+.chips{display:inline-flex;gap:4px;margin-left:4px}
+.chips button{font:700 .8rem Nunito;padding:2px 10px;border-radius:14px;border:1.5px solid var(--azul2);background:#fff;color:var(--azul2);cursor:pointer}
+.chips button.on{background:var(--azul2);color:#fff}
+.deja{font-size:1.05rem;font-weight:800;color:var(--azul)}
+.deja small{display:block;font-weight:600;color:var(--gris);font-size:.8rem}
+.pista{position:relative;height:46px;background:#e3e8f1;border-radius:8px;margin:28px 0 8px;overflow:visible}
+.seg{position:absolute;top:0;height:100%;background:var(--azul2);border-right:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:.3s}
+.seg:first-child{border-radius:8px 0 0 8px}
+.meta{position:absolute;top:-24px;bottom:-6px;border-left:3px dashed var(--rojo)}
+.meta span{position:absolute;top:0;left:6px;white-space:nowrap;font:800 .75rem Nunito;color:var(--rojo)}
+.contador{display:flex;align-items:center;gap:12px;margin:8px 0;font-weight:800}
+.contador span{font-size:1.1rem;min-width:110px;text-align:center}
+footer{text-align:center;color:var(--gris);font-size:.85rem;padding:16px}
+footer b{color:var(--rojo)}
+@media(max-width:620px){
+ .modelos{grid-template-columns:repeat(2,1fr)}
+ .lienzo{grid-template-columns:repeat(2,1fr);grid-template-areas:"seg prop" "can rel" "ing ing" "rec act" "soc soc" "cos cos"}
+ .celda{min-height:48px}
+ #voz>svg{flex-basis:56px;height:56px}
+ button.main{width:100%}
+}
+</style>
+</head>
+<body>
+<header>
+ <h1>Modelo de negocio de una app móvil</h1>
+ <nav id="stepper">
+  <button data-s="0" class="on">1. Aprende</button>
+  <button data-s="1">2. Lienzo</button>
+  <button data-s="2">3. Números</button>
+  <button data-s="3">4. Reto</button>
+ </nav>
+</header>
+
+<div class="wrap">
+ <section id="voz">
+  <svg viewBox="0 0 100 100" aria-label="Profe Vivy">
+   <circle cx="50" cy="50" r="48" fill="#eaf1fb"/>
+   <path d="M22 62c-4-30 10-46 28-46s32 16 28 46c-4-6-6-14-6-22H28c0 8-2 16-6 22z" fill="#e3824f"/>
+   <path d="M26 98c2-18 12-26 24-26s22 8 24 26z" fill="#0b2d5b"/>
+   <rect x="44" y="62" width="12" height="12" fill="#f3cfb3"/>
+   <ellipse cx="50" cy="46" rx="19" ry="22" fill="#f6d8bf"/>
+   <path d="M30 40c4-14 14-18 22-18 10 0 18 6 19 18-8-2-18-8-22-14-4 8-11 12-19 14z" fill="#e3824f"/>
+   <circle cx="43" cy="47" r="2.3" fill="#2b2b2b"/><circle cx="57" cy="47" r="2.3" fill="#2b2b2b"/>
+   <path d="M44 57q6 5 12 0" stroke="#b8454b" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+   <circle cx="38" cy="53" r="3" fill="#f2a7a0" opacity=".6"/><circle cx="62" cy="53" r="3" fill="#f2a7a0" opacity=".6"/>
+  </svg>
+  <div class="burbuja">
+   <p id="dice"></p>
+   <button class="ic" id="oir" title="Escuchar" aria-label="Escuchar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg></button><button class="ic" id="parar" title="Detener" aria-label="Detener"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg></button>
+  </div>
+ </section>
+
+ <main id="stage"></main>
+</div>
+<footer>Aprendiendo con <b>@LaProfeVivy</b></footer>
+
+<div id="toast"><b></b><span></span></div>
+<div id="preg"><div><h3><span id="pt"></span><button class="ic" id="pcerrar" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></h3><p style="margin:0"><b id="pq"></b></p><div class="ops" id="pops"></div><div class="fila"><button class="ic" id="pis" title="Pista" aria-label="Pista"></button></div></div></div>
+<div id="dec"><div><h3><span>Tu decisión</span><button class="ic" id="dcerrar" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></h3><p style="margin:0"><b>¿Qué modelo eliges para la app de retardos?</b></p><div class="ops" id="dops"></div></div></div>
+<div id="modal"><div><h3><span id="mt">Registro de decisiones</span> <button class="ic" id="cerrar" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></h3><ol id="regList"></ol><div id="mbody"></div></div></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
+const st={s:0,hechas:[false,false,false,false],vistos:new Set(),modelo:null,eleccion:false,bi:0,resp:[],pista:0,tachados:[],log:[],qi:0,score:0,qres:[],eq:null};
+
+const ICO={"oir": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linejoin=\"round\"><path d=\"M4 9h4l5-4v14l-5-4H4z\"/><path d=\"M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11\"/></svg>", "parar": "<svg viewBox=\"0 0 24 24\"><rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\" fill=\"currentColor\"/></svg>", "pista": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z\"/></svg>", "undo": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 14L4 9l5-5\"/><path d=\"M4 9h10a6 6 0 0 1 0 12h-3\"/></svg>", "reset": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 1 0 3-6.7L3 8\"/><path d=\"M3 3v5h5\"/></svg>", "lista": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01\"/></svg>", "menos": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M5 12h14\"/></svg>", "mas": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg>", "x": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg>"};
+let tt;function aviso(msg,ok){const t=$('#toast');t.className=ok?'show':'show mal';t.querySelector('b').textContent=ok?'✓':'✗';t.querySelector('span').textContent=msg;clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),5000);hablar(msg)}
+$('#toast').onclick=()=>$('#toast').classList.remove('show');
+function hablar(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='es-CO';const v=vozMujer();if(v)u.voice=v;u.pitch=1.1;speechSynthesis.speak(u)}catch(e){}}
+function ordenCon(n,ok,pos){const r=mez(n).filter(i=>i!==ok);r.splice(pos,0,ok);return r}
+function mez(n){const a=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+/* ---------- Voz ---------- */
+function decir(t){$('#dice').textContent=t}
+function vozMujer(){
+ const v=speechSynthesis.getVoices().filter(x=>x.lang&&x.lang.startsWith('es'));
+ const f=/(helena|sabina|laura|paulina|monica|mónica|elvira|dalia|paloma|lucia|lucía|marisol|female|mujer|google español)/i;
+ return v.find(x=>f.test(x.name))||v[0]||null;
+}
+$('#oir').onclick=()=>hablar($('#dice').textContent);
+$('#parar').onclick=()=>{try{speechSynthesis.cancel()}catch(e){}};
+try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
+
+/* ---------- Navegación ---------- */
+document.querySelectorAll('#stepper button').forEach(b=>b.onclick=()=>ir(+b.dataset.s));
+function ir(s){st.s=s;$('#dec').style.display='none';$('#toast').classList.remove('show');try{speechSynthesis.cancel()}catch(e){}
+ document.querySelectorAll('#stepper button').forEach((b,i)=>{b.classList.toggle('on',i===s);b.classList.toggle('ok',st.hechas[i])});
+ [e1,e2,e3,e4][s]();window.scrollTo({top:0,behavior:'smooth'})}
+function marcar(i){st.hechas[i]=true;document.querySelectorAll('#stepper button')[i].classList.add('ok')}
+
+/* ---------- Etapa 1: Aprende ---------- */
+const MODELOS=[
+ {ic:'🔁',n:'Suscripción',como:'El cliente paga cada mes o cada año mientras usa la app.',ej:'Spotify, Canva, Netflix',v:'si',vt:'Sirve',por:'El colegio paga una suscripción anual según su número de estudiantes. Ingreso estable para mantener la app.'},
+ {ic:'🎁',n:'Freemium',como:'Una versión básica gratis y funciones avanzadas pagas.',ej:'Duolingo, Zoom, Dropbox',v:'si',vt:'Sirve para empezar',por:'Un mes de prueba gratis para que el colegio conozca la app y luego pase a la suscripción.'},
+ {ic:'🔑',n:'Licencia única',como:'El cliente paga una sola vez y la app queda suya.',ej:'Minecraft, Office 2021',v:'medio',vt:'Con cuidado',por:'El colegio paga una vez, pero la nube y el soporte cuestan todos los meses. El dinero se acaba.'},
+ {ic:'🚕',n:'Pago por uso',como:'Se cobra una comisión por cada transacción.',ej:'Uber, Rappi, Mercado Libre',v:'no',vt:'No sirve',por:'Cobrar por cada QR escaneado vuelve el precio impredecible y el colegio no puede presupuestarlo.'},
+ {ic:'📢',n:'Publicidad',como:'La app es gratis y gana dinero mostrando anuncios.',ej:'Instagram, TikTok, juegos gratis',v:'no',vt:'No sirve',por:'Los usuarios son menores de edad y el aula es un espacio académico. El ingreso viene del colegio.'},
+ {ic:'🛒',n:'Compras en la app',como:'El usuario compra extras dentro de la app.',ej:'Free Fire, Candy Crush',v:'no',vt:'No sirve',por:'Cargaría costos a estudiantes y acudientes. Quien paga es el cliente: el colegio.'}
+];
+function e1(){
+ decir(st.eleccion?'¡Muy bien! Elegiste el modelo de la app. Ahora vamos a armar su lienzo de negocio, bloque por bloque.':'Un modelo de negocio explica cómo tu app crea valor y cómo gana dinero para sostenerse.');
+ $('#stage').innerHTML=`
+ <h2>Tres preguntas de todo modelo de negocio</h2>
+ <div class="preg3"><div><b>❓</b>¿Qué problema resuelve?</div><div><b>👥</b>¿Para quién?</div><div><b>💵</b>¿Quién paga y cómo?</div></div>
+ <h2>Seis modelos de negocio de apps</h2>
+ <div class="modelos">${MODELOS.map((m,i)=>`<button data-i="${i}" class="${st.modelo===i?'on':''} ${st.vistos.has(i)?'visto':''}"><span>${m.ic}</span>${m.n}</button>`).join('')}</div>
+ ${st.modelo===null?'':`<div class="detalle">${detalle(st.modelo)}</div>`}
+`;
+ document.querySelectorAll('.modelos button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;st.modelo=i;st.vistos.add(i);const m=MODELOS[i];decir(m.n+'. '+m.como+' Para la app de retardos: '+m.por);e1keep();if(st.vistos.size===6&&!st.eleccion)setTimeout(abrirDec,1800)});
+}
+function e1keep(){const keepDecir=$('#dice').textContent;e1();decir(keepDecir)}
+function detalle(i){const m=MODELOS[i];return `<h3>${m.ic} ${m.n}</h3><dl><dt>Cómo gana</dt><dd>${m.como}</dd><dt>Ejemplos</dt><dd>${m.ej}</dd><dt>En nuestra app</dt><dd>${m.por}</dd></dl>`}
+const DOPS=[{x:'Suscripción anual que paga el colegio, con un mes de prueba gratis',ok:1},{x:'App gratis con publicidad para estudiantes'},{x:'Cobro a cada estudiante por cada retardo'}];
+const DORD=ordenCon(3,0,1);
+function abrirDec(){
+ if(st.s!==0)return;
+ $('#dops').innerHTML=DORD.map(i=>`<button data-i="${i}">${DOPS[i].x}</button>`).join('');
+ document.querySelectorAll('#dops button').forEach(b=>b.onclick=()=>{
+  const o=DOPS[+b.dataset.i];
+  if(o.ok){document.querySelectorAll('#dops button').forEach(x=>{x.classList.remove('mal');x.disabled=true});b.classList.add('bien');aviso('¡Correcto! Suscripción con prueba gratis: el colegio paga y los usuarios usan la app sin costo.',true);st.eleccion=true;marcar(0);decir('¡Muy bien! Elegiste el modelo de la app. Ahora vamos a armar su lienzo de negocio, bloque por bloque.');setTimeout(()=>$('#dec').style.display='none',2200)}
+  else{b.classList.add('mal');aviso('En este caso quien paga es el colegio, y los usuarios usan la app sin costo.',false)}
+ });
+ $('#dec').style.display='flex';
+}
+$('#dcerrar').onclick=()=>$('#dec').style.display='none';$('#dec').onclick=e=>{if(e.target.id==='dec')$('#dec').style.display='none'};
+
+/* ---------- Etapa 2: Lienzo ---------- */
+const BL=[
+{k:'seg',t:'Segmentos de clientes',def:'Quién usa la app y quién paga por ella.',q:'¿Quiénes son los clientes de la app de retardos?',ops:[
+ {x:'El colegio, que paga; estudiantes, docentes y directivos, que la usan',ok:1,r:'Exacto: el cliente paga y los usuarios usan. Aquí son actores distintos.'},
+ {x:'Todos los jóvenes del país que tengan celular',r:'Es demasiado amplio. El problema ocurre en un colegio y quien decide la compra es el colegio.'},
+ {x:'Las empresas de transporte escolar',r:'Influyen en las llegadas, pero la app registra y hace seguimiento dentro del colegio.'}],
+ c:'Colegio (paga) · estudiantes, docentes, directivos (usan)',h:['Piensa en dos grupos: quien firma el contrato y quienes abren la app cada mañana.','La rectoría decide la compra; el docente proyecta el QR y el estudiante lo escanea.']},
+{k:'prop',t:'Propuesta de valor',def:'El problema que la app resuelve y por qué el cliente la elige.',q:'¿Qué valor ofrece la app al colegio?',ops:[
+ {x:'Registrar la llegada en segundos con QR y ver reportes de reincidencia para actuar a tiempo',ok:1,r:'Bien: el valor está en lo que hace la app: registrar rápido y dar datos para decidir.'},
+ {x:'Dar puntos canjeables por premios a los estudiantes puntuales',r:'Los premios generan costos al cliente. El valor sale de lo que resuelve la app.'},
+ {x:'Organizar jornadas de sensibilización sobre puntualidad',r:'Una jornada ocurre fuera de la app. La propuesta de valor describe lo que resuelve la app.'}],
+ c:'Registro QR en segundos + reportes de reincidencia',h:['Fíjate en lo que la app hace por sí sola.','El directivo necesita datos para decidir; el docente, rapidez al registrar.']},
+{k:'can',t:'Canales',def:'Cómo llega la app al cliente y a los usuarios.',q:'¿Por dónde llega la app al colegio y a sus usuarios?',ops:[
+ {x:'Demostración a rectoría y descarga desde Play Store y App Store',ok:1,r:'Correcto: la venta se hace al colegio y la instalación, en las tiendas de apps.'},
+ {x:'Anuncios en TikTok dirigidos a estudiantes',r:'Los estudiantes usan la app, pero la compra la decide el colegio.'},
+ {x:'Volantes repartidos en la entrada del colegio',r:'El volante llega a quien usa, y la venta se decide en rectoría.'}],
+ c:'Demo a rectoría · Play Store / App Store',h:['Hay dos momentos: convencer a quien compra y entregar la app a quien la usa.','¿Dónde descarga apps un estudiante? ¿Con quién se reúne quien vende software escolar?']},
+{k:'rel',t:'Relación con clientes',def:'Cómo acompañas al cliente para que siga usando la app.',q:'¿Cómo acompañas al colegio después de la venta?',ops:[
+ {x:'Capacitación inicial a docentes y soporte durante el año escolar',ok:1,r:'Así es: si los docentes la dominan, el colegio renueva.'},
+ {x:'Entregar la app y que cada docente aprenda por su cuenta',r:'Con acompañamiento el uso crece y el colegio renueva; sin él, el uso baja.'},
+ {x:'Abrir un chat para que los estudiantes discutan sus sanciones',r:'Las justificaciones las valida coordinación; la relación comercial es con el colegio.'}],
+ c:'Capacitación a docentes · soporte todo el año',h:['Piensa en qué hace que el colegio renueve el contrato el próximo año.','Los docentes proyectan el QR cada día: ellos necesitan saber usarla.']},
+{k:'ing',t:'Fuentes de ingreso',def:'De dónde sale el dinero que recibe la app.',q:'¿Cómo gana dinero la app de retardos?',ops:[
+ {x:'Suscripción anual que paga el colegio según su número de estudiantes',ok:1,r:'Correcto: ingreso que se repite, pagado por el cliente y proporcional a su tamaño.'},
+ {x:'Cobrar $1.000 al estudiante por cada retardo',r:'Esto genera costos a los usuarios. El ingreso lo paga el cliente: el colegio.'},
+ {x:'Mostrar publicidad dentro de la app',r:'Los usuarios son menores de edad. El ingreso viene del colegio.'}],
+ c:'Suscripción anual por estudiante (paga el colegio)',h:['Recuerda quién es el cliente en el bloque 1.','Busca un pago que se repita cada año y crezca con el tamaño del colegio.']},
+{k:'rec',t:'Recursos clave',def:'Lo indispensable para que la app funcione.',q:'¿Qué recursos necesita la app?',ops:[
+ {x:'Servidor en la nube, base de datos de asistencia y equipo de desarrollo',ok:1,r:'Bien: servidor, datos y equipo mantienen la app funcionando.'},
+ {x:'Torniquetes y lectores de huella en la entrada',r:'Es hardware costoso. La app usa el celular y el QR que proyecta el docente.'},
+ {x:'Un vigilante adicional en la portería',r:'Es una solución fuera de la app. Los recursos clave son los de la app.'}],
+ c:'Nube · base de datos · equipo de desarrollo',h:['Pregúntate: si falta esto, ¿la app deja de funcionar?','El registro QR guarda datos en algún lugar y alguien mantiene el código.']},
+{k:'act',t:'Actividades clave',def:'Lo que el equipo hace siempre para entregar el valor.',q:'¿Qué hace el equipo de la app de forma permanente?',ops:[
+ {x:'Mantener la app, generar reportes automáticos y dar soporte',ok:1,r:'Correcto: son las tareas que sostienen la propuesta de valor.'},
+ {x:'Llamar a cada acudiente cuando hay un retardo',r:'La app envía el correo de notificación automáticamente: esa es su ventaja.'},
+ {x:'Organizar campañas de puntualidad en el colegio',r:'Es una actividad fuera de la app. Aquí van las tareas del equipo de la app.'}],
+ c:'Mantener la app · reportes automáticos · soporte',h:['Piensa en el equipo que construyó la app.','Lo automático (correos, reportes) lo hace la app; el equipo la mantiene y da soporte.']},
+{k:'soc',t:'Socios clave',def:'Aliados externos de los que depende la app.',q:'¿Con quién se alía la app para funcionar?',ops:[
+ {x:'Proveedor de nube (p. ej. Firebase) y servicio de envío de correos',ok:1,r:'Exacto: con ellos la app guarda datos y notifica a los acudientes.'},
+ {x:'Marcas que patrocinen premios para los puntuales',r:'Los socios sostienen el funcionamiento de la app; los premios quedan por fuera.'},
+ {x:'Las empresas de buses del sector',r:'Los socios clave participan en el registro o los reportes de la app.'}],
+ c:'Proveedor de nube · servicio de correos',h:['¿Qué servicios externos usa la app para guardar datos y enviar mensajes?','El primer retardo genera un correo al acudiente: alguien entrega ese correo.']},
+{k:'cos',t:'Estructura de costos',def:'En qué gasta dinero la app para operar.',q:'¿En qué se va el dinero de la app?',ops:[
+ {x:'Nube, envío de correos, salarios de soporte y cuentas en tiendas de apps',ok:1,r:'Correcto: son los costos de lo que pusiste en recursos, actividades y socios.'},
+ {x:'Celulares para todos los estudiantes',r:'El docente marca a quien no tiene celular; así la app evita ese gasto.'},
+ {x:'Premios para los estudiantes puntuales',r:'La solución funciona con lo que resuelve la app, sin premios.'}],
+ c:'Nube · correos · soporte · tiendas de apps',h:['Mira lo que pusiste en Recursos, Actividades y Socios: todo eso cuesta.','Publicar en las tiendas de apps tiene un pago y la nube cobra por uso.']}
+];
+const ORDEN=['soc','act','prop','rel','seg','rec','can','cos','ing'];
+const POS_L=[1,2,0,2,1,2,0,1,2];const lOrd=()=>BL.map((b,i)=>ordenCon(3,b.ops.findIndex(o=>o.ok),POS_L[i]));
+st.ord=lOrd();
+function e2(){
+ const fin=st.bi>=BL.length;
+ const lienzo=`<div class="lienzo">${ORDEN.map(k=>{const i=BL.findIndex(x=>x.k===k);const bb=BL[i];const lleno=i<st.bi;return `<div class="celda ${lleno?'lleno':''} ${i===st.bi?'actual':''}" data-i="${i}" style="grid-area:${k}"><b>${i+1}. ${bb.t}</b>${lleno?bb.c:''}</div>`}).join('')}</div>`;
+ $('#stage').innerHTML=`<h2>Lienzo de modelo de negocio</h2>${lienzo}<div class="fila"><button class="ic" title="Deshacer" aria-label="Deshacer" onclick="deshacer()" ${st.bi?'':'disabled'}>${ICO.undo}</button><button class="ic" title="Reiniciar" aria-label="Reiniciar" onclick="reiniciar()">${ICO.reset}</button><button class="ic" title="Registro" aria-label="Registro" onclick="verRegistro()">${ICO.lista}</button></div>`;
+ if(fin){decir('¡Lienzo completo! Así se ve el modelo de negocio de la app de retardos.');marcar(1);return}
+ const b=BL[st.bi];
+ decir(`Bloque ${st.bi+1} de 9: ${b.t}. ${b.def}`);
+ const c=document.querySelector('.celda.actual');c.onclick=abrir;
+}
+function abrir(){
+ const b=BL[st.bi];
+ $('#pt').textContent=`${st.bi+1}. ${b.t}`;$('#pq').textContent=b.q;
+ $('#pops').innerHTML=st.ord[st.bi].map(i=>`<button data-i="${i}" class="${st.tachados.includes(i)?'tachado':''}">${b.ops[i].x}</button>`).join('');
+ document.querySelectorAll('#pops button').forEach(btn=>btn.onclick=()=>responder(+btn.dataset.i,btn));
+ $('#pis').innerHTML=ICO.pista+`<span class="n">${Math.max(3-st.pista,0)}</span>`;$('#pis').disabled=st.pista>=3;
+ $('#preg').style.display='flex';
+}
+function cerrarP(){$('#preg').style.display='none'}
+$('#pcerrar').onclick=cerrarP;$('#preg').onclick=e=>{if(e.target.id==='preg')cerrarP()};
+$('#pis').onclick=()=>pista();
+function responder(i,btn){
+ const b=BL[st.bi],o=b.ops[i];
+ st.log.push(`${b.t}: ${o.ok?'✔':'✘'} ${o.x}`);
+ if(o.ok){
+  btn.classList.add('bien');aviso(o.r,true);
+  document.querySelectorAll('#pops button').forEach(x=>x.disabled=true);
+  setTimeout(()=>{cerrarP();st.bi++;st.pista=0;st.tachados=[];e2();if(st.bi<BL.length)setTimeout(abrir,900)},1600);
+ }else{btn.classList.add('mal');aviso(o.r,false)}
+}
+function pista(){
+ const b=BL[st.bi];let m;
+ if(st.pista<2){m=b.h[st.pista];}
+ else{const malas=st.ord[st.bi].filter(i=>!b.ops[i].ok&&!st.tachados.includes(i));const t=malas[0];st.tachados.push(t);m='Descarté una opción. '+b.ops[t].r;st.log.push(`${b.t}: pista 3 (opción descartada)`)}
+ st.pista++;abrir();aviso(m,true);$('#toast b').textContent='💡';
+}
+function deshacer(){if(st.bi>0){st.bi--;st.pista=0;st.tachados=[];st.log.push(`Deshacer: vuelve a ${BL[st.bi].t}`);st.hechas[1]=false;document.querySelectorAll('#stepper button')[1].classList.remove('ok');e2()}}
+function reiniciar(){st.ord=lOrd();st.bi=0;st.pista=0;st.tachados=[];st.log=[];st.hechas[1]=false;document.querySelectorAll('#stepper button')[1].classList.remove('ok');e2()}
+function verRegistro(){$('#mt').textContent='Registro de decisiones';$('#mbody').innerHTML='';$('#regList').innerHTML=st.log.length?st.log.map(l=>`<li>${l}</li>`).join(''):'<li>Aún no hay decisiones.</li>';$('#modal').style.display='flex'}
+$('#cerrar').onclick=()=>$('#modal').style.display='none';$('#modal').onclick=e=>{if(e.target.id==='modal')$('#modal').style.display='none'};
+
+/* ---------- Etapa 3: Números ---------- */
+const COSTOS=[
+ ['Base de datos en la nube (Firebase, plan gratuito: hasta 20.000 registros al día)',0],
+ ['Correos a acudientes (Brevo, plan gratuito: hasta 300 al día)',0],
+ ['Cuenta App Store (US$99 al año)',26700],
+ ['Cuenta Play Store (US$25 una sola vez, repartido en el primer año)',6700],
+ ['Comisión de las tiendas (no aplica: el colegio paga por fuera de la app)',0],
+ ['Desarrollo inicial (10 semanas de un desarrollador junior, recuperado en 12 meses)',586000],
+ ['Registro de marca ante la SIC ($1.371.000, protege el nombre 10 años; recuperado en 12 meses)',114300],
+ ['Protección de datos (Ley 1581: política de datos y autorización de acudientes)',0],
+ ['Facturación electrónica (servicio gratuito de la DIAN)',0]];
+const MANT=['Mantenimiento: desarrollador junior de medio tiempo',1406300];
+const EST=600,IMP=0.059;let contrata=false;
+const FUENTES=['Apple Developer Program: US$99 al año. Google Play: US$25 una sola vez. Las apps que no venden productos dentro de la app no pagan comisión.','Firebase, plan Spark: 20.000 escrituras y 50.000 lecturas al día gratis.','Brevo, plan gratuito: 300 correos al día.','Salario de desarrollador junior en Colombia: $2.812.680 al mes (Indeed, septiembre 2026). Una app sencilla tarda de 6 a 10 semanas.','Registro de marca SIC 2026: $1.371.000 por clase.','Ley 1581 de 2012: las personas naturales no inscriben bases de datos en el RNBD, pero deben tener política de tratamiento y autorización.','Estatuto Tributario, art. 476 num. 21: la computación en la nube está excluida de IVA.','Régimen Simple, servicios profesionales: 5,9% para ingresos hasta 6.000 UVT. Los inscritos deben facturar electrónicamente; la DIAN ofrece un servicio gratuito.','Dólar a $3.236 (TRM noviembre 2026).'];
+function verFuentes(){$('#mt').textContent='Fuentes';$('#regList').innerHTML='';$('#mbody').innerHTML='<ul style="margin:0;padding-left:18px;font-size:.88rem">'+FUENTES.map(f=>`<li>${f}</li>`).join('')+'</ul>';$('#modal').style.display='flex'}
+function e3(){
+ const filas=[...COSTOS,contrata?MANT:['Mantenimiento: lo haces tú',0]];
+ const TOTAL=filas.reduce((s,c)=>s+c[1],0);
+ const porEst=Math.round(TOTAL/EST),min=Math.ceil(TOTAL/EST/(1-IMP)/100)*100;
+ decir('Una app es buen negocio cuando lo que paga el colegio cada mes cubre lo que cuesta mantenerla. El Colegio San Martín tiene 600 estudiantes.');
+ $('#stage').innerHTML=`<h2>Lo que cuesta mantener la app cada mes<button class="ic mini" title="Fuentes" aria-label="Fuentes" onclick="verFuentes()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></button></h2>
+ <p style="margin:0 0 6px">¿Quién mantiene la app?<span class="chips" id="quien"><button data-c="0" class="${!contrata?'on':''}">Yo</button><button data-c="1" class="${contrata?'on':''}">Contrato a alguien</button></span></p>
+ <table class="t">${filas.map(c=>`<tr><td>${c[0]}</td><td>${fmt(c[1])}</td></tr>`).join('')}<tr class="tot"><td>Total costos</td><td>${fmt(TOTAL)}</td></tr></table>
+ <h2>Precio mínimo por estudiante</h2>
+ <table class="t">
+  <tr><td>1. Costo de cada estudiante: ${fmt(TOTAL)} ÷ ${EST} estudiantes</td><td>${fmt(porEst)}</td></tr>
+  <tr><td>2. IVA: no se cobra, porque la ley excluye de IVA los servicios en la nube</td><td>$0</td></tr>
+  <tr><td>3. Impuesto de renta: en el Régimen Simple (el sistema de impuestos para pequeños negocios) se paga el 5,9% de lo que cobras. De cada $100 te quedan $94,10</td><td>5,9%</td></tr>
+  <tr class="tot"><td>4. Precio mínimo: ${fmt(porEst)} ÷ 0,941</td><td>${fmt(min)}</td></tr>
+ </table>
+ <div class="pro">Todo lo que se cobre por encima de ${fmt(min)} por estudiante al mes es ganancia.</div>`;
+ document.querySelectorAll('#quien button').forEach(b=>b.onclick=()=>{contrata=b.dataset.c==='1';e3()});
+ marcar(2);
+}
+
+/* ---------- Etapa 4: Reto ---------- */
+const Q=[
+ {q:'Un colegio pide probar la app un mes antes de pagar. ¿Qué haces?',o:['Le doy un mes de prueba gratis y luego pasa a la suscripción','Le cobro la licencia completa por adelantado','Les pido a los estudiantes que paguen la prueba'],ok:0,e:'La prueba gratis (freemium) reduce el riesgo del colegio y abre la puerta a la suscripción.'},
+ {q:'Un compañero propone cobrar $1.000 al estudiante por cada retardo. ¿Qué respondes?',o:['Lo acepto: así llegan más temprano','Lo descarto: el ingreso lo paga el colegio y los usuarios usan la app sin costo','Lo acepto solo desde el tercer retardo'],ok:1,e:'Los usuarios usan la app sin costo. La fuente de ingreso es la suscripción del colegio.'},
+ {q:'El colegio A tiene 1.500 estudiantes y el B tiene 300. ¿Cómo cobras de forma justa?',o:['El mismo precio para los dos','Gratis para el pequeño y el grande paga todo','Precio por estudiante: cada colegio paga según su tamaño'],ok:2,e:'El precio por estudiante hace que cada colegio pague en proporción a lo que usa.'},
+ {q:'Para cubrir costos, alguien sugiere anuncios de comida rápida en la app. ¿Qué decides?',o:['Lo descarto: los usuarios son menores y el ingreso viene del colegio','Lo acepto si los anuncios son pequeños','Lo acepto solo en la pantalla del docente'],ok:0,e:'La app se financia con la suscripción del colegio y protege a sus usuarios menores de edad.'},
+ {q:'"Servidor en la nube" aparece en dos bloques del lienzo. ¿En cuáles?',o:['Propuesta de valor y Canales','Recursos clave y Estructura de costos','Segmentos de clientes y Fuentes de ingreso'],ok:1,e:'Es un recurso indispensable y, a la vez, algo que se paga cada mes.'}
+];
+function e4(){
+ if(st.qi>=Q.length){
+  marcar(3);
+  decir(`Terminaste con ${st.score} de ${Q.length}. Ahora aplica lo aprendido: arma el lienzo de modelo de negocio de la app de tu grupo.`);
+  $('#stage').innerHTML=`<h2>Resultado: ${st.score} de ${Q.length}</h2>
+  <p>Para tu proyecto, responde en tu lienzo:</p>
+  <ol><li>¿Quién es el cliente que paga y quiénes son los usuarios?</li><li>¿Qué resuelve tu app, por sí sola?</li><li>¿Qué modelo de ingreso usa y por qué?</li><li>¿Cuántos clientes necesita para cubrir sus costos?</li></ol>
+  <button class="main" onclick="st.qi=0;st.score=0;e4()">Repetir el reto</button>`;return;
+ }
+ const x=Q[st.qi];
+ decir(`Pregunta ${st.qi+1} de ${Q.length}. ${x.q}`);
+ $('#stage').innerHTML=`<h2>Reto final · ${st.qi+1} de ${Q.length}</h2><p><b>${x.q}</b></p>
+ <div class="ops">${ordenCon(3,x.ok,[2,1,0,1,2][st.qi]).map(i=>`<button data-i="${i}">${x.o[i]}</button>`).join('')}</div><div id="sig4"></div>`;
+ let resp=false;
+ document.querySelectorAll('#stage .ops button').forEach(b=>b.onclick=()=>{
+  if(resp)return;resp=true;const i=+b.dataset.i;
+  document.querySelector(`#stage .ops button[data-i="${x.ok}"]`).classList.add('bien');
+  if(i===x.ok){st.score++;aviso('¡Bien! '+x.e,true)}
+  else{b.classList.add('mal');aviso(x.e,false)}
+  $('#sig4').innerHTML=`<button class="main" onclick="st.qi++;e4()">${st.qi+1<Q.length?'Siguiente pregunta':'Ver resultado'}</button>`;
+ });
+}
+
+ir(0);
+</script>
+</body>
+</html>
