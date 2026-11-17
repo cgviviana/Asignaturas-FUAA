@@ -1,1 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pistas de modelo de negocio · Saber Conocer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--marca:#86a91e;--marca2:#5f7a0f;--tinta:#1f2b3a;--suave:#5b6878;--fondo:#e9eff3;--corcho:#c99a66;--corcho2:#b6854f;--papel:#fffdf8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);font-family:Nunito,Arial,sans-serif;color:var(--tinta);line-height:1.5}
+.top{height:50px;background:#fff;display:flex;align-items:center;padding:0 26px;font-size:14px;color:#536052;border-bottom:1px solid #d9e1e7}
+.top:before{content:"";width:4px;height:22px;background:var(--marca);margin-right:12px}
+.wrap{max-width:1280px;margin:0 auto;padding:24px 20px 50px}
+h1{font-family:Fredoka,Arial,sans-serif;font-weight:700;font-size:clamp(34px,5.5vw,52px);line-height:1.05;margin:4px 0 10px;text-align:center}
+.sub{text-align:center;color:var(--suave);font-size:16px;margin:0 0 12px}
+.cabeza{display:flex;justify-content:center;margin:0 0 18px}
+.ayuda{font-family:inherit;font-weight:800;font-size:15px;background:#fff;color:var(--tinta);border:2px solid #cfd8df;border-radius:999px;padding:8px 18px;cursor:pointer}
+.ayuda:before{content:"i";display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--marca);color:#fff;font-size:13px;margin-right:8px;font-family:Fredoka,sans-serif}
+.ayuda:hover,.ayuda:focus-visible{border-color:var(--marca);outline:none}
+.juego{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:start}
+/* lista de chequeo */
+.hoja{background:var(--papel);border-radius:18px;padding:22px 22px 18px;box-shadow:0 8px 22px rgba(31,43,58,.12);position:relative}
+.hoja:before{content:"";position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:120px;height:26px;border-radius:8px;background:#9aa6b2;box-shadow:inset 0 -4px 0 #7d8894}
+.hoja h2{font-family:Fredoka,sans-serif;font-weight:600;font-size:22px;margin:4px 0 12px;text-align:center}
+.items{display:grid;grid-template-columns:1fr 1fr;column-gap:22px}
+.item{display:grid;grid-template-columns:28px 1fr;column-gap:10px;row-gap:5px;padding:12px 2px;border-bottom:2px dashed #e6e1d6;align-content:start}
+.item-top{display:contents}
+.item .num{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#eef3df;color:var(--marca2);font-family:Fredoka,sans-serif;font-weight:600;font-size:13px}
+.item.hecho .num{background:var(--marca);color:#fff}
+.item .txt{font-weight:800;font-size:14.5px;line-height:1.3;align-self:center}
+.ej{grid-column:2;margin:0;font-size:12.5px;color:var(--suave);line-height:1.35}
+.ej b{color:var(--suave)}
+.item .opts{grid-column:2;margin-top:3px;max-width:290px}
+.chip{white-space:nowrap}
+.opts{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:#eef1f4;border-radius:12px;padding:3px;gap:3px}
+.chip{font-family:inherit;cursor:pointer;border:0;background:transparent;color:var(--tinta);border-radius:9px;padding:5px 8px;font-weight:800;font-size:13.5px}
+.chip:hover{background:#fff}
+.chip:focus-visible{outline:2px solid var(--marca);outline-offset:1px}
+.chip.on{background:var(--tinta);color:#fff}
+.chip.on.si{background:var(--marca)}
+/* corcho */
+.corcho{position:sticky;top:14px;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.12) 0 2px,transparent 3px) 0 0/14px 14px,radial-gradient(circle at 70% 60%,rgba(0,0,0,.08) 0 2px,transparent 3px) 0 0/18px 18px,var(--corcho);border-radius:20px;padding:20px 16px 18px;box-shadow:inset 0 0 0 10px var(--corcho2),0 8px 22px rgba(31,43,58,.15)}
+.corcho h2{font-family:Fredoka,sans-serif;font-weight:600;font-size:20px;margin:6px 0 12px;text-align:center;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.notas{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.nota{position:relative;background:#fff;border-radius:6px;padding:12px 8px 8px;text-align:center;box-shadow:0 4px 8px rgba(0,0,0,.2);transition:transform .3s,opacity .3s,filter .3s}
+.nota:before{content:"";position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:14px;height:14px;border-radius:50%;background:var(--pin,#e06a52);box-shadow:0 2px 2px rgba(0,0,0,.3)}
+.nota:nth-child(3n+1){transform:rotate(-2deg)}.nota:nth-child(3n+2){transform:rotate(1.5deg)}.nota:nth-child(3n){transform:rotate(-1deg)}
+.nota svg{width:40px;height:40px;display:block;margin:0 auto 4px}
+.nota b{display:block;font-family:Fredoka,sans-serif;font-weight:600;font-size:14px;line-height:1.15}
+.medidor{height:8px;border-radius:4px;background:#e8ecef;margin-top:8px;overflow:hidden}
+.medidor span{display:block;height:100%;width:0;background:var(--marca);border-radius:4px;transition:width .35s}
+.nota.apagada{opacity:.35;filter:grayscale(1)}
+.nota.lider{transform:scale(1.08) rotate(0);box-shadow:0 0 0 4px var(--marca),0 8px 16px rgba(0,0,0,.25);z-index:1}
+.final{text-align:center;margin-top:16px}
+.ver{font-family:Fredoka,sans-serif;font-size:20px;font-weight:600;background:var(--tinta);color:#fff;border:0;border-radius:14px;padding:11px 26px;cursor:pointer}
+.ver[disabled]{background:rgba(255,255,255,.35);color:rgba(255,255,255,.9);cursor:not-allowed}
+.ver:focus-visible{outline:3px solid var(--marca);outline-offset:3px}
+.falta{font-size:13px;color:#fff;margin-top:6px;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+/* ventanas */
+.modal{position:fixed;inset:0;background:rgba(15,25,20,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal.visible{display:flex}
+#res{width:min(560px,100%)}
+#res .caja{width:100%}
+.caja{position:relative;width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:24px;color:var(--tinta);animation:voltea .45s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes voltea{0%{transform:rotateY(90deg) scale(.85);opacity:0}100%{transform:none;opacity:1}}
+.caja .cab{background:var(--marca);color:#fff;text-align:center;padding:18px 16px 14px}
+.caja .cab svg{width:90px;height:90px;background:#fff;border-radius:50%}
+.caja .cab small{display:block;font-weight:800;opacity:.9}
+.caja .cab h2{font-family:Fredoka,sans-serif;font-size:30px;margin:4px 0 0}
+.caja .cuerpo{padding:18px 22px 22px}
+.caja h3{font-family:Fredoka,sans-serif;font-weight:600;font-size:18px;margin:14px 0 6px}
+.caja .def{font-weight:700;font-size:16px;text-align:center;margin:0 0 6px}
+.lista{margin:0;padding:0;list-style:none}
+.lista li{background:#f4f8ec;border-radius:12px;padding:8px 12px;margin:6px 0;font-size:15px}
+.cuidado{background:#fff4e0;border-radius:12px;padding:10px 14px;font-size:15px}
+.cuidado b{color:#a86b00}
+.otros{display:flex;flex-wrap:wrap;gap:8px}
+.otros span{display:inline-flex;align-items:center;gap:6px;background:#eef2f5;border-radius:999px;padding:4px 12px 4px 4px;font-weight:800;font-size:13px}
+.otros svg{width:26px;height:26px}
+.nota-final{font-size:14px;color:var(--suave);margin:14px 0 0;text-align:center}
+.cerrar{position:absolute;top:10px;right:12px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:22px;cursor:pointer;color:var(--tinta)}
+.botones{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.btn{font-family:inherit;font-weight:800;font-size:15px;background:var(--tinta);color:#fff;border:0;border-radius:12px;padding:11px 18px;cursor:pointer}
+.btn.clara{background:#fff;color:var(--tinta);border:2px solid #cfd8df}
+.ayuda-caja{padding:26px 26px 22px}
+.ayuda-caja h2{font-family:Fredoka,sans-serif;font-size:26px;margin:0 0 10px;text-align:center}
+.ayuda-caja ol{padding-left:22px;margin:0 0 12px}.ayuda-caja li{margin:8px 0}
+.ayuda-caja .cerrar{background:#eef2f5}
+.pie{text-align:center;font-size:13px;color:#556055;margin-top:34px}
+@media(max-width:1000px){.juego{grid-template-columns:1fr}.corcho{position:static}}
+@media(max-width:640px){.items{grid-template-columns:1fr}.notas{grid-template-columns:repeat(2,1fr)}}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">Aprendiendo con @LaProfeVivy</header>
+<div class="wrap">
+  <h1>¿Qué modelo podría servirle a tu app?</h1>
+  <p class="sub">Son pistas para entender los modelos y enfocar tu decisión; la elección final es de tu equipo.</p>
+  <div class="cabeza"><button class="ayuda" id="btnAyuda">Instrucciones</button></div>
+
+  <div class="juego">
+    <div class="hoja">
+      <h2>Lista de chequeo de tu app</h2>
+      <div class="items" id="items"></div>
+    </div>
+    <div class="corcho">
+      <h2>Modelos de negocio</h2>
+      <div class="notas" id="notas"></div>
+      <div class="final"><button class="ver" id="btnVer" disabled>Ver la pista</button><div class="falta" id="falta"></div></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalAyuda" role="dialog" aria-modal="true" aria-labelledby="tAyuda"><div class="caja ayuda-caja"><button class="cerrar" id="cerrarAyuda" aria-label="Cerrar">×</button>
+    <h2 id="tAyuda">Cómo se juega</h2>
+    <ol><li>Piensa en tu app tal como la construiste.</li><li>Responde cada punto de la lista de chequeo.</li><li>Mira cómo se llenan las notas del tablero: los modelos que encajan suben y los que no se apagan.</li><li>Pulsa <b>Ver la pista</b> para conocer el modelo que podría servirle a tu app y qué debes cuidar.</li></ol>
+    <div class="botones"><button class="btn" id="okAyuda">¡A jugar!</button></div></div></div>
+  <div class="modal" id="modalRes" role="dialog" aria-modal="true"><div id="res"></div></div>
+
+  <p class="pie">Aprendiendo con @LaProfeVivy</p>
+</div>
+
+<script>
+const K='#1f2b3a',V='#86a91e',VL='#e4efc7',AM='#f2b632',AZ='#6e9ccf',RO='#e06a52',PI='#f2c9a0',GR='#c9d2da',BL='#fff',LI='#b8a3d6';
+const sv=b=>`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" stroke="${K}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${b}</svg>`;
+const MODELOS={
+ suscripcion:{n:"Suscripción",pin:AZ,i:sv(`<circle cx="32" cy="32" r="29" fill="#e0eefa" stroke="none"/><rect x="14" y="16" width="36" height="34" rx="4" fill="${BL}"/><path d="M14 25h36M22 12v8M42 12v8"/><path d="M24 38a8 8 0 0114-5M40 30v4h-4M40 38a8 8 0 01-14 5M24 46v-4h4" stroke="${AZ}"/>`),
+  d:"El cliente paga un valor fijo cada mes o cada año mientras usa la app.",c:"El cliente debe sentir que la app le sirve cada mes; si no la usa, cancela."},
+ freemium:{n:"Freemium",pin:V,i:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><rect x="14" y="28" width="36" height="24" rx="3" fill="${V}"/><rect x="11" y="21" width="42" height="9" rx="2" fill="${BL}"/><path d="M32 21v31"/><path d="M32 21c-6-10-16-4-8 0M32 21c6-10 16-4 8 0"/>`),
+  d:"La versión básica es gratis y se paga por las funciones avanzadas.",c:"La mayoría usa la versión gratis: lo que paga una minoría debe cubrir los costos de todos."},
+ licencia:{n:"Licencia única",pin:AM,i:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><circle cx="23" cy="32" r="10" fill="${AM}"/><circle cx="23" cy="32" r="3.5" fill="${BL}"/><path d="M33 32h20M46 32v7M52 32v5"/>`),
+  d:"El cliente paga una sola vez y la app queda suya.",c:"La nube y el mantenimiento se pagan cada mes; un pago único no los cubre con el tiempo."},
+ uso:{n:"Pago por uso",pin:RO,i:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><rect x="16" y="12" width="32" height="40" rx="3" fill="${BL}"/><path d="M22 22h20M22 30h20M22 38h10"/><circle cx="44" cy="44" r="9" fill="${AM}"/><path d="M44 39v10M41 42h5a2 2 0 010 3h-4a2 2 0 000 3h5" stroke-width="2"/>`),
+  d:"Se paga cada vez que se usa un servicio: una cita, un trámite, un envío.",c:"Los ingresos cambian cada mes según cuánto se use la app."},
+ publicidad:{n:"Publicidad",pin:RO,i:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><path d="M14 28v10h8l16 10V18L22 28z" fill="${RO}"/><path d="M44 26c3 3 3 9 0 12M48 22c5 5 5 15 0 20"/><path d="M22 38l3 12h6l-3-12"/>`),
+  d:"La app es gratis y los anunciantes pagan por aparecer en ella.",c:"Se necesitan muchísimos usuarios activos; con pocos usuarios casi no deja ingresos, y los anuncios pueden molestar."},
+ compras:{n:"Compras en la app",pin:V,i:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><path d="M10 16h7l6 24h24l5-16H20"/><circle cx="26" cy="47" r="3.5" fill="${K}"/><circle cx="44" cy="47" r="3.5" fill="${K}"/><path d="M28 28h16" stroke="${V}" stroke-width="4"/>`),
+  d:"La app se usa gratis y se venden extras dentro de ella: contenidos, créditos o funciones.",c:"Los extras deben valer la pena, y las tiendas de aplicaciones cobran una comisión sobre esas ventas."},
+ comision:{n:"Comisión",pin:AM,i:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><circle cx="16" cy="26" r="6" fill="${PI}"/><path d="M8 46c0-7 3-11 8-11s8 4 8 11" fill="${AZ}"/><circle cx="48" cy="26" r="6" fill="${PI}"/><path d="M40 46c0-7 3-11 8-11s8 4 8 11" fill="${V}"/><circle cx="32" cy="18" r="7" fill="${AM}"/><path d="M29 21l6-6M29.5 15.5h0M34.5 20.5h0" stroke-width="2.4"/><path d="M24 40h16"/><path d="M36 36l4 4-4 4"/>`),
+  d:"La app conecta a quien vende con quien compra y cobra un porcentaje de cada venta.",c:"Necesita vendedores y compradores al mismo tiempo: sin unos, no llegan los otros."},
+ institucional:{n:"Licencia institucional",pin:AZ,i:sv(`<circle cx="32" cy="32" r="29" fill="#e5e9ee" stroke="none"/><rect x="12" y="20" width="26" height="32" fill="${AZ}"/><path d="M18 27h3M28 27h3M18 35h3M28 35h3M18 43h3M28 43h3" stroke="${BL}" stroke-width="3"/><circle cx="46" cy="30" r="5" fill="${PI}"/><path d="M38 50c0-7 3-11 8-11s8 4 8 11" fill="${V}"/>`),
+  d:"Una organización paga por sede o por número de usuarios para que su gente use la app.",c:"Hay que convencer a quien decide la compra en la organización y dar soporte a todos sus usuarios."}
+};
+const ORDEN=Object.keys(MODELOS);
+const ITEMS=[
+ {id:"paga",t:"¿Quién pagaría tu app?",s:"Una persona desde su celular, o un colegio que la paga para sus docentes.",o:[{v:"persona",l:"Cada persona"},{v:"org",l:"Una organización"}]},
+ {id:"conecta",t:"Conecta a quien vende con quien compra.",s:"Productores que venden a compradores y el pago se hace en la app."},
+ {id:"seguido",t:"Se usa seguido.",s:"Registrar algo todos los días o revisar la agenda cada semana."},
+ {id:"evento",t:"Se usa cada vez que se necesita un servicio.",s:"Pedir una cita, hacer un trámite o pedir un envío."},
+ {id:"basico",t:"Lo básico es gratis y los extras se pagan.",s:"Gratis registrar tareas; se paga por informes o recordatorios avanzados."},
+ {id:"contenido",t:"Muchas personas pasan un buen rato viendo contenido.",s:"Videos, noticias, recetas o publicaciones."},
+ {id:"extras",t:"Vende cosas dentro de la app.",s:"Contenidos, créditos o funciones adicionales."},
+ {id:"sinNube",t:"Funciona casi sin nube ni actualizaciones.",s:"Una calculadora o una guía que no guarda datos en línea."},
+ {id:"varios",t:"La usan varias personas de una misma organización.",s:"Los docentes de un colegio o los empleados de un negocio."}
+];
+const PESOS={
+ paga:{persona:{suscripcion:1,freemium:1,licencia:1,uso:1,publicidad:1,compras:1,comision:1,institucional:-9},
+       org:{institucional:2,suscripcion:1,uso:1,comision:1,licencia:1,freemium:-1,publicidad:-9,compras:-9}},
+ conecta:{si:{comision:4},no:{comision:-9}},
+ seguido:{si:{suscripcion:2,institucional:1,publicidad:1,freemium:1},no:{suscripcion:-2,publicidad:-2}},
+ evento:{si:{uso:3},no:{uso:-3}},
+ basico:{si:{freemium:4},no:{freemium:-9}},
+ contenido:{si:{publicidad:3},no:{publicidad:-9}},
+ extras:{si:{compras:4,freemium:1},no:{compras:-9}},
+ sinNube:{si:{licencia:4},no:{licencia:-4}},
+ varios:{si:{institucional:3,suscripcion:1},no:{institucional:-3}}
+};
+const POR={ // por qué le aplica, según la respuesta
+ paga:{persona:"Quien paga es cada persona que usa la app.",org:"Quien paga es un negocio u organización."},
+ conecta:{si:"La app conecta a quien vende con quien compra."},
+ seguido:{si:"Las personas la usan seguido."},
+ evento:{si:"Se usa cada vez que se necesita un servicio."},
+ basico:{si:"Tiene una parte básica gratis y extras por los que vale la pena pagar."},
+ contenido:{si:"Muchas personas pasan un buen rato viendo contenido."},
+ extras:{si:"Ofrece cosas para comprar dentro de la app."},
+ sinNube:{si:"Funciona casi sin nube ni actualizaciones."},
+ varios:{si:"La usan varias personas de una misma organización."}
+};
+let r={};
+const $=id=>document.getElementById(id);
+function puntajes(){
+ const p={};ORDEN.forEach(m=>p[m]=0);
+ for(const id in r){const w=PESOS[id][r[id]];if(w)for(const m in w)p[m]+=w[m];}
+ return p;
+}
+function aporta(m){
+ const out=[];
+ for(const id in r){const w=PESOS[id][r[id]];if(w&&w[m]>0&&POR[id]&&POR[id][r[id]])out.push(POR[id][r[id]]);}
+ return out;
+}
+function pintarItems(){
+ $('items').innerHTML=ITEMS.map((it,k)=>{
+  const ops=it.o||[{v:"si",l:"Sí"},{v:"no",l:"No"}];
+  return `<div class="item ${r[it.id]?'hecho':''}"><div class="item-top"><span class="num">${r[it.id]?'✓':k+1}</span><div class="txt">${it.t}</div></div><p class="ej"><b>Ej.:</b> ${it.s}</p><div class="opts">${ops.map(o=>`<button class="chip ${r[it.id]===o.v?'on':''} ${o.v==='si'?'si':''}" data-id="${it.id}" data-v="${o.v}" aria-pressed="${r[it.id]===o.v}">${o.l}</button>`).join('')}</div></div>`;}).join('');
+ $('items').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{r[b.dataset.id]=b.dataset.v;todo();});
+}
+function pintarNotas(){
+ const p=puntajes(),n=Object.keys(r).length;
+ const max=Math.max(...ORDEN.map(m=>p[m]));
+ $('notas').innerHTML=ORDEN.map(m=>{
+  const M=MODELOS[m],pct=Math.max(0,Math.min(100,p[m]*100/10));
+  const cls=n&&p[m]<0?'apagada':(n===ITEMS.length&&p[m]===max&&max>0?'lider':'');
+  return `<div class="nota ${cls}" style="--pin:${M.pin}">${M.i}<b>${M.n}</b><div class="medidor"><span style="width:${pct}%"></span></div></div>`;}).join('');
+}
+function todo(){
+ pintarItems();pintarNotas();
+ const falta=ITEMS.length-Object.keys(r).length;
+ $('btnVer').disabled=falta>0;
+ $('falta').textContent=falta?`Te faltan ${falta} ${falta===1?'punto':'puntos'} de la lista.`:'¡Listo! Pulsa el botón para ver la pista.';
+}
+function resultado(){
+ const p=puntajes();
+ const orden=ORDEN.slice().sort((a,b)=>p[b]-p[a]);
+ const top=orden[0],M=MODELOS[top];
+ const combina=orden.slice(1).filter(m=>p[m]>0&&p[m]>=p[top]-2).slice(0,2);
+ if(p[top]<=0){
+  $('res').innerHTML=`<div class="caja"><button class="cerrar" aria-label="Cerrar" data-cerrar>×</button><div class="cab" style="background:#7d8894"><small>Revisa tus respuestas</small><h2>Ningún modelo encaja por ahora</h2></div><div class="cuerpo"><p class="def">Con estas respuestas ningún modelo le sirve a tu app.</p><p class="nota-final">Pregúntate quién saca el dinero y qué recibe a cambio. Si nadie pagaría por lo que hace la app, hay que revisar la propuesta de valor.</p><div class="botones"><button class="btn clara" data-cerrar>Volver a la lista</button><button class="btn" id="otra">Empezar de nuevo</button></div></div></div>`;
+ } else {
+  $('res').innerHTML=`<div class="caja"><button class="cerrar" aria-label="Cerrar" data-cerrar>×</button>
+  <div class="cab">${M.i}<small>Pista: el modelo que podría servirle a tu app</small><h2>${M.n}</h2></div>
+  <div class="cuerpo"><p class="def">${M.d}</p>
+  <h3>Podría servirte porque…</h3><ul class="lista">${aporta(top).map(x=>`<li>${x}</li>`).join('')}</ul>
+  <h3>Ten cuidado con…</h3><div class="cuidado"><b>Ojo:</b> ${M.c}</div>
+  ${combina.length?`<h3>También podrías combinarlo con</h3><div class="otros">${combina.map(m=>`<span>${MODELOS[m].i}${MODELOS[m].n}</span>`).join('')}</div>`:''}
+  <p class="nota-final">Es una sugerencia para orientarte. Compárala con los demás modelos y, con el que elija tu equipo, define cuánto cobrar frente a lo que cuesta mantener la app cada mes.</p>
+  <div class="botones"><button class="btn clara" data-cerrar>Volver a la lista</button><button class="btn" id="otra">Probar con otra app</button></div></div></div>`;
+ }
+ $('modalRes').classList.add('visible');
+ $('res').querySelectorAll('[data-cerrar]').forEach(b=>b.onclick=cerrarRes);
+ $('otra').onclick=()=>{cerrarRes();r={};todo();window.scrollTo({top:0,behavior:'smooth'});};
+ $('res').querySelector('.cerrar').focus();
+}
+const cerrarRes=()=>$('modalRes').classList.remove('visible');
+const cerrarAyuda=()=>$('modalAyuda').classList.remove('visible');
+$('btnVer').onclick=resultado;
+$('btnAyuda').onclick=()=>{$('modalAyuda').classList.add('visible');$('okAyuda').focus();};
+$('cerrarAyuda').onclick=cerrarAyuda;$('okAyuda').onclick=cerrarAyuda;
+['modalAyuda','modalRes'].forEach(id=>$(id).onclick=e=>{if(e.target.id===id)$(id).classList.remove('visible');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cerrarRes();cerrarAyuda();}});
+todo();
+</script>
+</body>
+</html>
 
