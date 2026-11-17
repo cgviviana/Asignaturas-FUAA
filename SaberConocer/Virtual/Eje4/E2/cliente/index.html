@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>¿Hay trato? · Saber Conocer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--marca:#86a91e;--marca2:#5f7a0f;--tinta:#1f2b3a;--suave:#5b6878;--mesa:#2e5e46;--mesa2:#244c38;--fondo:#e9eff3;--azul:#3d6fa6;--rojo:#c4452f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);font-family:Nunito,Arial,sans-serif;color:var(--tinta);line-height:1.5}
+.top{height:50px;background:#fff;display:flex;align-items:center;padding:0 26px;font-size:14px;color:#536052;border-bottom:1px solid #d9e1e7}
+.top:before{content:"";width:4px;height:22px;background:var(--marca);margin-right:12px}
+.wrap{max-width:960px;margin:0 auto;padding:24px 20px 50px}
+h1{font-family:Fredoka,Arial,sans-serif;font-weight:700;font-size:clamp(38px,6vw,56px);line-height:1;margin:4px 0 10px;text-align:center}
+.cabeza{display:flex;justify-content:center;margin:0 0 18px}
+.ayuda{font-family:inherit;font-weight:800;font-size:15px;background:#fff;color:var(--tinta);border:2px solid #cfd8df;border-radius:999px;padding:8px 18px;cursor:pointer}
+.ayuda:before{content:"i";display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--marca);color:#fff;font-size:13px;margin-right:8px;font-family:Fredoka,sans-serif}
+.ayuda:hover,.ayuda:focus-visible{border-color:var(--marca);outline:none}
+.ayuda-caja{position:relative;background:#fff;border-radius:24px;padding:26px 26px 22px;width:min(480px,100%);animation:voltea .4s ease-out both;color:var(--tinta)}
+.ayuda-caja h2{font-family:Fredoka,sans-serif;font-size:26px;margin:0 0 10px;text-align:center}
+.ayuda-caja ol{padding-left:22px;margin:0 0 12px}.ayuda-caja li{margin:8px 0}
+.ayuda-caja .otra{display:block;margin:14px auto 0}
+.ayuda-caja .cerrar{background:#eef2f5}
+.intro{color:var(--suave);font-size:16px;margin:0 0 18px;max-width:680px}
+.intro b{color:var(--tinta)}
+.mesa{position:relative;background:radial-gradient(ellipse at 50% 35%,var(--mesa) 0%,var(--mesa2) 100%);border-radius:28px;padding:22px 22px 24px;color:#fff;box-shadow:inset 0 0 0 10px #6b4a2f,inset 0 0 0 14px #82603f}
+.asientos{display:grid;grid-template-columns:1fr 64px 1fr;align-items:stretch;gap:10px}
+.asiento{font-family:inherit;cursor:pointer;background:rgba(255,255,255,.08);border:2px dashed rgba(255,255,255,.45);border-radius:20px;min-height:138px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px;color:#fff}
+.asiento:hover,.asiento:focus-visible{background:rgba(255,255,255,.16);outline:none}
+.asiento.abierto{border:2px solid #fff;background:rgba(255,255,255,.2)}
+.asiento.lleno{background:#fff;color:var(--tinta);border:2px solid #fff}
+.asiento .rol{font-family:Fredoka,sans-serif;font-size:15px;opacity:.85}
+.asiento .ico{margin-top:4px}.asiento .ico svg{width:72px;height:72px;display:block}
+.asiento .quien{font-weight:800;font-size:15px}
+.asiento .cambiar{font-size:12px;color:var(--suave);margin-top:4px;text-decoration:underline}
+.asiento .toca{margin-top:8px;font-weight:800;font-size:14px;background:rgba(255,255,255,.18);padding:6px 12px;border-radius:999px}
+.centro{display:grid;place-items:center}.centro svg{width:60px;height:60px}
+.menu{display:none;margin-top:14px;background:#fff;border-radius:18px;padding:14px;color:var(--tinta)}
+.menu.visible{display:block;animation:abre .2s ease-out}
+@keyframes abre{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.menu h3{font-family:Fredoka,sans-serif;font-weight:600;margin:0 0 10px;font-size:18px}
+.personajes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pj{font-family:inherit;text-align:left;cursor:pointer;border:2px solid #dbe3e9;background:#fbfcfd;border-radius:14px;padding:10px;display:grid;grid-template-columns:40px 1fr;gap:8px;align-items:center;color:var(--tinta)}
+.pj:hover,.pj:focus-visible{border-color:var(--marca);outline:none;background:#f3f8e6}
+.pj .e svg{width:40px;height:40px;display:block}.pj strong{display:block;font-size:14px;line-height:1.25}.pj small{color:var(--suave);font-size:12px;line-height:1.3;display:block}
+.preguntas{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.preg{background:rgba(255,255,255,.1);border-radius:16px;padding:12px 14px}
+.preg.oculta{display:none}
+.preg p{margin:0 0 8px;font-weight:800;font-size:15px}
+.preg .opts{display:flex;gap:8px;flex-wrap:wrap}
+.chip svg{width:24px;height:24px;vertical-align:-7px;margin-right:6px;background:#fff;border-radius:50%}
+.chip{font-family:inherit;cursor:pointer;border:2px solid rgba(255,255,255,.5);background:transparent;color:#fff;border-radius:999px;padding:6px 14px;font-weight:800;font-size:14px}
+.chip:hover,.chip:focus-visible{background:rgba(255,255,255,.15);outline:none}
+.chip.on{background:#fff;color:var(--tinta);border-color:#fff}
+.final{display:flex;justify-content:center;margin-top:18px}
+.trato{font-family:Fredoka,sans-serif;font-size:22px;font-weight:600;background:var(--marca);color:#fff;border:0;border-radius:16px;padding:12px 30px;cursor:pointer}
+.trato[disabled]{background:rgba(255,255,255,.2);color:rgba(255,255,255,.65);cursor:not-allowed}
+.trato:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.falta{text-align:center;font-size:13px;opacity:.85;margin-top:8px}
+.sello{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) rotate(-8deg);font-family:Fredoka,sans-serif;font-weight:700;font-size:clamp(26px,5vw,44px);padding:8px 26px;border:6px solid currentColor;border-radius:14px;background:rgba(255,255,255,.94);white-space:nowrap;animation:sellar .45s cubic-bezier(.2,1.6,.4,1) both;pointer-events:none}
+@keyframes sellar{0%{transform:translate(-50%,-50%) rotate(-8deg) scale(2.4);opacity:0}100%{transform:translate(-50%,-50%) rotate(-8deg) scale(1);opacity:1}}
+.real{color:var(--marca2)}.condicion{color:#b07a06}.futuro{color:var(--azul)}.no{color:var(--rojo)}
+.modal{position:fixed;inset:0;background:rgba(15,25,20,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal.visible{display:flex}
+#carta{width:min(520px,100%)}
+.carta-res{position:relative;width:100%;max-height:90vh;overflow:auto;border-radius:26px;background:#fff;border:8px solid currentColor;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:voltea .5s cubic-bezier(.2,1.3,.4,1) both;text-align:center}
+@keyframes voltea{0%{transform:rotateY(90deg) scale(.8);opacity:0}100%{transform:none;opacity:1}}
+.carta-res .cab{background:currentColor;padding:18px 16px 14px}
+.carta-res .cab .big svg{width:90px;height:90px}
+.carta-res .cab h2{font-family:Fredoka,sans-serif;font-size:30px;margin:6px 0 0;color:#fff}
+.carta-res .cuerpo{padding:18px 22px 22px;color:var(--tinta)}
+.carta-res .bajada{font-family:Fredoka,sans-serif;font-weight:600;font-size:19px;margin:0 0 14px}
+.carta-res .pareja{display:flex;justify-content:center;gap:10px;margin:0 0 14px;flex-wrap:wrap}
+.carta-res .pareja svg{width:22px;height:22px;vertical-align:-6px;margin-right:6px}
+.carta-res .pareja span{background:#f1f4f6;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:800}
+.razon{background:#f6f8fa;border-radius:14px;padding:10px 14px;margin:8px 0;text-align:left;font-size:15px;display:grid;grid-template-columns:28px 1fr;gap:6px}
+.razon i{font-style:normal;font-family:Fredoka,sans-serif;font-weight:700;color:currentColor}
+.carta-res .cuerpo .razon i{color:var(--c)}
+.cerrar{position:absolute;top:10px;right:12px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:22px;cursor:pointer;color:var(--tinta)}
+.botones{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.otra{font-family:inherit;font-weight:800;font-size:15px;background:var(--tinta);color:#fff;border:0;border-radius:12px;padding:11px 18px;cursor:pointer}
+.otra.clara{background:#fff;color:var(--tinta);border:2px solid #cfd8df}
+.mazo{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px;padding:0 6px}
+.naipe{position:relative;aspect-ratio:3/4;border-radius:18px;background:currentColor;border:6px solid #fff;box-shadow:0 6px 16px rgba(31,43,58,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;transition:transform .25s}
+.naipe:nth-child(1){transform:rotate(-4deg)}.naipe:nth-child(2){transform:rotate(2deg)}.naipe:nth-child(3){transform:rotate(-2deg)}.naipe:nth-child(4){transform:rotate(4deg)}
+.naipe .big{background:#fff;border-radius:50%;width:84px;height:84px;display:grid;place-items:center}.naipe .big svg{width:76px;height:76px}
+.naipe b{font-family:Fredoka,sans-serif;font-size:18px;color:#fff;margin-top:10px;line-height:1.1}
+.naipe span{color:#fff;font-size:12.5px;font-weight:700;opacity:.95;margin-top:4px;line-height:1.3}
+.naipe .esq{position:absolute;top:8px;left:10px}.naipe .esq svg{width:22px;height:22px}.naipe .esq.b{top:auto;left:auto;bottom:6px;right:10px;transform:rotate(180deg)}
+.naipe.ganadora{transform:translateY(-12px) scale(1.06);box-shadow:0 0 0 4px #fff,0 0 0 8px currentColor,0 14px 26px rgba(31,43,58,.3)}
+.mazo-t{font-family:Fredoka,sans-serif;font-weight:600;font-size:20px;margin:26px 0 0}
+.pie{text-align:center;font-size:13px;color:#556055;margin-top:34px}
+@media(max-width:700px){.asientos{grid-template-columns:1fr}.centro{display:none}.personajes,.preguntas{grid-template-columns:1fr}.mazo{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top">Aprendiendo con @LaProfeVivy</header>
+<div class="wrap">
+  <h1>¿Hay trato?</h1>
+  <div class="cabeza"><button class="ayuda" id="btnAyuda" aria-haspopup="dialog">Instrucciones</button></div>
+  <div class="modal" id="modalAyuda" role="dialog" aria-modal="true" aria-labelledby="tAyuda"><div class="ayuda-caja"><button class="cerrar" id="cerrarAyuda" aria-label="Cerrar">×</button>
+    <h2 id="tAyuda">Cómo se juega</h2>
+    <ol><li>Toca la silla <b>Usuario</b> y elige quién usará tu app.</li><li>Toca la silla <b>¿Quién la pagaría?</b> y elige quién saca el dinero.</li><li>Responde las preguntas de la mesa.</li><li>Pulsa <b>¿Hay trato?</b> para ver qué carta te sale.</li></ol>
+    <p>El <b>usuario</b> es quien usa la app; el <b>cliente</b> es quien la paga.</p>
+    <button class="otra" id="okAyuda">¡A jugar!</button></div></div>
+
+  <div class="mesa" id="mesa">
+    <div class="asientos">
+      <button class="asiento" id="s-usuario" data-slot="usuario"></button>
+      <div class="centro" id="centro" aria-hidden="true"></div>
+      <button class="asiento" id="s-paga" data-slot="paga"></button>
+    </div>
+    <div class="menu" id="menu"></div>
+    <div class="preguntas">
+      <div class="preg" id="p-existe"></div>
+      <div class="preg oculta" id="p-decide"></div>
+    </div>
+    <div class="final"><button class="trato" id="btnTrato" disabled>¿Hay trato?</button></div>
+    <div class="falta" id="falta"></div>
+  </div>
+
+  <p class="mazo-t">Las cartas que puedes sacar</p>
+  <div class="mazo" id="mazo">
+    <div class="naipe real" data-c="real"><span class="esq" data-i="real"></span><div class="big" data-i="real"></div><b>Hay trato</b><span>Cliente real: puedes venderle.</span><span class="esq b" data-i="real"></span></div>
+    <div class="naipe condicion" data-c="condicion"><span class="esq" data-i="condicion"></span><div class="big" data-i="condicion"></div><b>Trato con condición</b><span>Puedes venderle si se cumple algo.</span><span class="esq b" data-i="condicion"></span></div>
+    <div class="naipe futuro" data-c="futuro"><span class="esq" data-i="futuro"></span><div class="big" data-i="futuro"></div><b>Cliente ideal</b><span>Te gustaría venderle, pero no puedes.</span><span class="esq b" data-i="futuro"></span></div>
+    <div class="naipe no" data-c="no"><span class="esq" data-i="no"></span><div class="big" data-i="no"></div><b>Sin trato</b><span>No es tu cliente.</span><span class="esq b" data-i="no"></span></div>
+  </div>
+  <div class="modal" id="modal" role="dialog" aria-modal="true"><div id="carta"></div></div>
+  <p class="pie">Aprendiendo con @LaProfeVivy</p>
+</div>
+<script>
+const preguntas=[
+ {id:"usuario",t:"¿Quién usará tu app?",h:"El usuario es quien la usa en el día a día.",o:[
+  {v:"general",e:"🙋",l:"Personas en general",d:"Consumidores, dueños de mascotas, deportistas, viajeros."},
+  {v:"vulnerable",e:"🏚️",l:"Población vulnerable",d:"Habitantes de calle, familias sin recursos, víctimas, comunidades apartadas."},
+  {v:"mayor",e:"👵",l:"Adultos mayores o personas que dependen de otros",d:"Necesitan un familiar o cuidador para su día a día."},
+  {v:"afiliado",e:"🩺",l:"Pacientes o afiliados de una EPS o clínica",d:"Citas, autorizaciones, recordatorios, seguimiento."},
+  {v:"estudiante",e:"🎒",l:"Estudiantes o docentes",d:"Colegio, universidad, instituto."},
+  {v:"negocio",e:"🧑‍🍳",l:"Clientes o empleados de un negocio",d:"Tienda, restaurante, productor, call center."}]},
+ {id:"paga",t:"¿Quién pagaría tu app?",h:"El cliente es quien saca el dinero. Puede ser el mismo usuario o alguien más.",o:[
+  {v:"mismo",e:"📱",l:"El mismo usuario",d:"Paga desde su celular: suscripción, compra o pago por uso."},
+  {v:"familia",e:"👨‍👩‍👧",l:"Un familiar o cuidador",d:"Paga por la persona que usa la app."},
+  {v:"privada",e:"🏪",l:"Un pequeño negocio o empresa privada",d:"Tienda, restaurante, colegio privado, consultorio."},
+  {v:"grande",e:"🏢",l:"Una gran empresa o institución",d:"EPS, clínica, banco, cadena de almacenes."},
+  {v:"estado",e:"🏛️",l:"Una entidad del Estado",d:"Colegio público, alcaldía, hospital público, ministerio."},
+  {v:"ong",e:"🤲",l:"Una fundación u ONG",d:"Organización social que atiende a una población."}]},
+ {id:"existe",t:"¿Ya existe una app o sistema que haga algo parecido?",h:"Cuenta como «sí» si resuelve la misma necesidad, aunque cambie el diseño o el nombre, o aunque le falte o le sobre alguna función sencilla. Agregar una opción básica no hace original una app. Revisa tu benchmarking.",o:[
+  {v:"no",e:"✋",l:"No, nada parecido",d:"Hoy lo resuelven a mano o no lo resuelven."},
+  {v:"si",e:"📲",l:"Sí, igual o parecida",d:"Ya existe algo que hace lo mismo o casi lo mismo."}]},
+ {id:"decide",t:"¿Quién decide la compra en ese negocio?",h:"La persona que dice «sí, la compramos».",si:r=>r.paga==="privada",o:[
+  {v:"directo",e:"🧑‍💼",l:"El dueño o un directivo",d:"Decide y paga sin pasar por otras áreas."},
+  {v:"proceso",e:"📋",l:"Un área de compras o un comité",d:"Pide propuestas, requisitos y documentos."}]}
+];
+const K='#1f2b3a',V='#86a91e',VL='#e4efc7',AM='#f2b632',AZ='#6e9ccf',RO='#e06a52',PI='#f2c9a0',GR='#c9d2da',BL='#fff';
+const sv=b=>`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" stroke="${K}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${b}</svg>`;
+const ICON={
+usuario_general:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><path d="M18 54c0-9 6-15 14-15s14 6 14 15" fill="${V}"/><circle cx="32" cy="26" r="9" fill="${PI}"/><path d="M46 40l6-16" /><circle cx="52.5" cy="21.5" r="3.2" fill="${PI}"/>`),
+usuario_vulnerable:sv(`<circle cx="32" cy="32" r="29" fill="#f3e6dc" stroke="none"/><path d="M14 30L32 15l18 15" /><path d="M18 27v22h28V27" fill="${BL}"/><path d="M27 49V38h10v11" fill="${GR}"/><path d="M21 31l6 4M40 30l3 6" stroke="${RO}"/><rect x="38" y="20" width="7" height="6" fill="${AM}" transform="rotate(-12 41 23)"/>`),
+usuario_mayor:sv(`<circle cx="32" cy="32" r="29" fill="#eee7f5" stroke="none"/><path d="M16 55c0-9 5-15 13-15s13 6 13 15" fill="#b8a3d6"/><circle cx="29" cy="27" r="9" fill="${PI}"/><path d="M20 24c1-8 17-9 18 0" fill="${GR}"/><circle cx="29" cy="15" r="4" fill="${GR}"/><path d="M46 36v20M46 36c0-4 6-4 6 0"/>`),
+usuario_afiliado:sv(`<circle cx="32" cy="32" r="29" fill="#e0eefa" stroke="none"/><rect x="18" y="13" width="28" height="38" rx="4" fill="${BL}"/><rect x="25" y="9" width="14" height="8" rx="2" fill="${GR}"/><path d="M32 25v14M25 32h14" stroke="${RO}" stroke-width="4"/><path d="M23 45h18"/>`),
+usuario_estudiante:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><path d="M22 22a10 10 0 0120 0" /><rect x="17" y="22" width="30" height="32" rx="8" fill="${AM}"/><rect x="23" y="36" width="18" height="12" rx="3" fill="${BL}"/><path d="M23 30h18"/>`),
+usuario_negocio:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><path d="M18 24h28l-3 30H21z" fill="${RO}"/><path d="M25 28v-6a7 7 0 0114 0v6"/><path d="M26 38h12" stroke="${BL}"/>`),
+paga_mismo:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><rect x="18" y="10" width="22" height="42" rx="5" fill="${BL}"/><path d="M26 46h6"/><circle cx="43" cy="40" r="10" fill="${AM}"/><path d="M43 34v12M40 37h5a2 2 0 010 4h-4a2 2 0 000 4h5"/>`),
+paga_familia:sv(`<circle cx="32" cy="32" r="29" fill="#e0eefa" stroke="none"/><path d="M8 52c0-8 4-13 10-13s10 5 10 13" fill="${AZ}"/><circle cx="18" cy="29" r="7" fill="${PI}"/><path d="M36 52c0-8 4-13 10-13s10 5 10 13" fill="${V}"/><circle cx="46" cy="29" r="7" fill="${PI}"/><path d="M25 54c0-5 3-8 7-8s7 3 7 8" fill="${AM}"/><circle cx="32" cy="40" r="5" fill="${PI}"/>`),
+paga_privada:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><rect x="14" y="28" width="36" height="24" fill="${BL}"/><path d="M12 18h40l-2 10H14z" fill="${RO}"/><path d="M22 18l-2 10M32 18v10M42 18l2 10" stroke="${BL}"/><rect x="20" y="36" width="10" height="16" fill="${GR}"/><rect x="35" y="35" width="10" height="8" fill="${AZ}"/>`),
+paga_grande:sv(`<circle cx="32" cy="32" r="29" fill="#e5e9ee" stroke="none"/><rect x="20" y="8" width="24" height="46" fill="${AZ}"/><path d="M26 15h3M35 15h3M26 23h3M35 23h3M26 31h3M35 31h3M26 39h3M35 39h3" stroke="${BL}" stroke-width="3"/><rect x="28" y="45" width="8" height="9" fill="${BL}"/><path d="M14 54h36"/>`),
+paga_estado:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><path d="M12 26L32 13l20 13z" fill="${AM}"/><path d="M14 26h36M18 30v16M27 30v16M37 30v16M46 30v16M13 50h38M15 46h34"/><path d="M32 13V5l7 2-7 2" fill="${RO}"/>`),
+paga_ong:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><path d="M32 30c-4-6-13-3-11 4 2 5 11 10 11 10s9-5 11-10c2-7-7-10-11-4z" fill="${RO}"/><path d="M8 40l10 4 8 8h16l12-10" fill="${PI}"/>`),
+existe_no:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><rect x="18" y="12" width="26" height="36" rx="3" fill="${BL}"/><path d="M24 22h14M24 29h14M24 36h8"/><path d="M38 50l12-14 4 4-12 14-6 2z" fill="${AM}"/>`),
+existe_si:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><rect x="20" y="10" width="24" height="44" rx="5" fill="${BL}"/><path d="M26 32l5 5 9-10" stroke="${V}" stroke-width="4"/>`),
+decide_directo:sv(`<circle cx="32" cy="32" r="29" fill="#e0eefa" stroke="none"/><path d="M16 56c0-10 7-16 16-16s16 6 16 16" fill="${AZ}"/><path d="M32 40l-3 5 3 11 3-11z" fill="${RO}"/><circle cx="32" cy="26" r="9" fill="${PI}"/>`),
+decide_proceso:sv(`<circle cx="32" cy="32" r="29" fill="#e5e9ee" stroke="none"/><rect x="17" y="12" width="30" height="42" rx="4" fill="${BL}"/><rect x="25" y="8" width="14" height="8" rx="2" fill="${GR}"/><path d="M23 26l2 2 4-4M33 26h9M23 36l2 2 4-4M33 36h9M23 46h3M33 46h9"/>`),
+res_real:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><path d="M8 30l10-8 10 4 6-3 8 1 14 6" /><path d="M18 22l-8 18 8 6M46 24l8 16-8 6" /><path d="M26 30l8-4 10 10-4 4-6-6M30 44l-4-4M34 48l-4-4M38 44l-4-4" fill="${PI}"/>`),
+res_condicion:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><path d="M14 18h36v24H30l-8 8v-8h-8z" fill="${BL}"/><path d="M27 25a5 5 0 1110 0c0 4-5 4-5 8"/><circle cx="32" cy="38" r="1.6" fill="${K}"/>`),
+res_futuro:sv(`<circle cx="32" cy="32" r="29" fill="#e0eefa" stroke="none"/><path d="M20 10h24M20 54h24"/><path d="M22 10c0 12 10 14 10 22S22 42 22 54h20c0-12-10-14-10-22s10-10 10-22z" fill="${BL}"/><path d="M26 50c0-5 6-7 6-10 0 3 6 5 6 10z" fill="${AM}" stroke="none"/>`),
+res_no:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><circle cx="32" cy="32" r="18" fill="${BL}"/><path d="M24 24l16 16M40 24L24 40" stroke="${RO}" stroke-width="5"/>`),
+pregunta:sv(`<circle cx="32" cy="32" r="22" fill="rgba(255,255,255,.18)" stroke="#fff"/><path d="M26 26a6 6 0 1112 0c0 5-6 5-6 9" stroke="#fff"/><circle cx="32" cy="42" r="1.8" fill="#fff" stroke="#fff"/>`)
+};
+preguntas.forEach(p=>p.o.forEach(o=>{o.e=ICON[p.id+'_'+o.v];}));
+const U={general:"personas en general",vulnerable:"población vulnerable",mayor:"adultos mayores o personas que dependen de otros",afiliado:"pacientes o afiliados de una EPS o clínica",estudiante:"estudiantes o docentes",negocio:"clientes o empleados de un negocio"};
+const P={mismo:"el mismo usuario",familia:"un familiar o cuidador",privada:"un pequeño negocio o empresa privada",grande:"una gran empresa o institución",estado:"una entidad del Estado",ong:"una fundación u ONG"};
+const SELLO={real:"¡Hay trato!",condicion:"Trato con condición",futuro:"Cliente ideal",no:"Sin trato"};
+const CENTRO={real:ICON.res_real,condicion:ICON.res_condicion,futuro:ICON.res_futuro,no:ICON.res_no};
+const ROL={usuario:"Usuario: quien la usa",paga:"¿Quién la pagaría?"};
+let r={},abierto=null;
+const Q=id=>preguntas.find(p=>p.id===id);
+const $=id=>document.getElementById(id);
+function limpiarVeredicto(){document.querySelectorAll('.naipe').forEach(n=>n.classList.remove('ganadora'));$('centro').innerHTML=ICON.pregunta;const s=document.querySelector('.sello');if(s)s.remove();}
+function pintarAsiento(slot){
+ const el=$('s-'+slot),o=r[slot]&&Q(slot).o.find(x=>x.v===r[slot]);
+ el.className='asiento'+(o?' lleno':'')+(abierto===slot?' abierto':'');
+ el.innerHTML=o?`<div class="rol">${ROL[slot]}</div><div class="ico">${o.e}</div><div class="quien">${o.l}</div><div class="cambiar">Cambiar</div>`
+  :`<div class="rol">${ROL[slot]}</div><div class="toca">Toca para elegir ▾</div>`;
+}
+function pintarMenu(){
+ const m=$('menu');
+ if(!abierto){m.className='menu';m.innerHTML='';return;}
+ const p=Q(abierto);
+ m.className='menu visible';
+ m.innerHTML=`<h3>${abierto==='usuario'?'¿Quién usará tu app?':'¿Quién la pagaría?'}</h3><div class="personajes">${p.o.map(o=>`<button class="pj" data-v="${o.v}"><span class="e">${o.e}</span><span><strong>${o.l}</strong><small>${o.d}</small></span></button>`).join('')}</div>`;
+ m.querySelectorAll('.pj').forEach(b=>b.onclick=()=>{r[abierto]=b.dataset.v;if(abierto==='paga'&&r.paga!=='privada')delete r.decide;abierto=null;limpiarVeredicto();todo();});
+}
+function pintarPreg(id){
+ const p=Q(id),box=$('p-'+id);
+ if(id==='decide'&&r.paga!=='privada'){box.className='preg oculta';return;}
+ box.className='preg';
+ box.innerHTML=`<p>${p.t}</p><div class="opts">${p.o.map(o=>`<button class="chip ${r[id]===o.v?'on':''}" data-v="${o.v}">${o.e}${o.l}</button>`).join('')}</div>`;
+ box.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{r[id]=b.dataset.v;limpiarVeredicto();todo();});
+}
+function faltantes(){
+ const f=[];if(!r.usuario)f.push('quién la usa');if(!r.paga)f.push('quién la pagaría');if(!r.existe)f.push('si ya existe algo parecido');if(r.paga==='privada'&&!r.decide)f.push('quién decide la compra');return f;
+}
+function todo(){
+ pintarAsiento('usuario');pintarAsiento('paga');pintarMenu();pintarPreg('existe');pintarPreg('decide');
+ const f=faltantes();$('btnTrato').disabled=f.length>0;
+ $('falta').textContent=f.length?'Falta elegir: '+f.join(', ')+'.':'¡Listo! Pulsa el botón para ver el resultado.';
+}
+document.querySelectorAll('.asiento').forEach(b=>b.onclick=()=>{abierto=abierto===b.dataset.slot?null:b.dataset.slot;todo();});
+const REQ="Les venden los proveedores registrados que acreditan certificado de existencia y representación legal (o cédula si es persona natural), certificado de experiencia, estados financieros y capacidad financiera y organizacional.";
+$('btnTrato').onclick=()=>{
+
+ const {usuario,paga,existe,decide}=r;let c,tag,tit,z=[];
+ const R=(cl,tg,ti)=>{c=cl;tag=tg;tit=ti;};
+ if(paga==="estado"){
+  if(existe==="si")R("no","No es tu cliente","No puedes venderle");else R("futuro","Cliente ideal","No puedes venderle");
+  z.push("Las entidades del Estado compran mediante procesos de contratación pública que se publican en el SECOP (Sistema Electrónico de Contratación Pública).",REQ);
+  if(usuario==="vulnerable")z.push("La atención a la población vulnerable suele estar a cargo del Estado y de fundaciones: tu usuario es esa población y tu cliente sería la entidad que paga.");
+  if(existe==="si")z.push("Además, ya cuenta con algo igual o parecido para eso.");
+ } else if(paga==="grande"){
+  if(existe==="si"||usuario==="afiliado"){R("no","No es tu cliente","Ya resolvió esa necesidad con su propia solución");
+   z.push("Las EPS, clínicas y grandes empresas suelen tener su propia app: por ejemplo, cada EPS ofrece a sus afiliados citas, autorizaciones y recordatorios en su aplicación.","Además, compran tecnología mediante procesos formales con proveedores registrados, no a un particular.");}
+  else {R("futuro","Cliente ideal","No puedes venderle");
+   z.push("Compran tecnología mediante procesos formales de compras: piden propuestas, documentos y requisitos.","Les venden empresas constituidas legalmente, con experiencia demostrable, respaldo financiero y capacidad de dar soporte.");}
+ } else if(paga==="ong"){
+  R("condicion","Cliente con condición","Puedes venderle si tiene presupuesto para tecnología");
+  z.push("Venderle a una fundación es una venta: la fundación paga por la app, igual que cualquier cliente. Regalarla o hacerla por voluntariado es una acción social, no un proyecto comercial.","Las fundaciones funcionan con donaciones, convenios o recursos de proyectos; no siempre tienen dinero destinado a comprar una app.","Les venden quienes presentan una propuesta clara de costos y muestran cómo la app ayuda a su población.");
+  if(usuario==="vulnerable")z.push("Tu usuario es la población que atienden; tu cliente es la fundación.");
+  if(existe==="si")z.push("Como ya usan una solución, la tuya tendría que darles algo que la actual no les da.");
+ } else if(paga==="privada"){
+  if(decide==="proceso"){R("futuro","Cliente ideal","No puedes venderle");
+   z.push("Aunque sea una empresa privada, compra mediante un área o comité que pide requisitos a los proveedores.","Les venden empresas que presentan una propuesta formal, factura y respaldo de soporte.");}
+  else if(existe==="si"){R("condicion","Cliente con condición","Puedes venderle si tu app le da algo que su sistema actual no le da");
+   z.push("El dueño decide y paga directo, sin licitación.","Como ya usa algo igual o parecido, solo cambiará si la tuya es más fácil, más barata o resuelve algo que la otra no resuelve. Cambiar el diseño, el nombre o agregar una opción básica no cuenta como diferencia.");}
+  else {R("real","Cliente real","Puedes venderle");
+   z.push("El dueño o directivo decide y paga directo, sin licitación.","Hoy no tiene una solución para eso, así que tu app le resuelve una necesidad concreta.","Puedes ofrecerle una prueba, un precio mensual y soporte básico.");}
+  if(usuario==="estudiante")z.push("Tus usuarios son estudiantes o docentes; tu cliente es la institución privada.");
+ } else if(paga==="familia"){
+  if(usuario==="vulnerable"){R("futuro","Cliente ideal","No puedes venderle");
+   z.push("La familia de una persona en situación vulnerable no tiene los recursos para pagar una app.","Tu usuario es esa población. Quien podría pagarla es una entidad del Estado o una fundación que compre la app con su presupuesto: eso sí es una venta.");}
+  else {R("condicion","Cliente con condición","Puedes venderle si tiene los recursos y está dispuesto a pagar");
+   z.push("El usuario es quien usa la app; el cliente es el familiar o cuidador que la paga.","Pagará si la app le da tranquilidad o le ahorra tiempo en el cuidado, y si cuenta con el dinero para hacerlo cada mes.");
+   if(existe==="si")z.push("Como ya existen apps iguales o parecidas, la tuya tendría que ofrecer algo que las otras no ofrecen.");}
+ } else {
+  if(usuario==="vulnerable"){R("futuro","Cliente ideal","No puedes venderle");
+   z.push("La población vulnerable no tiene los recursos para pagar una app.","Es tu usuario, no tu cliente. Quien podría pagarla es una entidad del Estado o una fundación que compre la app con su presupuesto: eso sí es una venta.");}
+  else if(usuario==="afiliado"){R("no","No es tu cliente","Ya tiene lo que necesita en la app de su EPS");
+   z.push("Cada EPS ofrece a sus afiliados citas, autorizaciones y recordatorios en su propia aplicación, sin costo para el afiliado.","No pagaría por algo que su EPS ya le da.");}
+  else if(usuario==="mayor"){R("condicion","Cliente con condición","Puedes venderle si tiene recursos propios y maneja el celular");
+   z.push("Muchos adultos mayores dependen de un familiar o cuidador para pagar y usar la app.","En ese caso, la persona mayor es tu usuario y el familiar es tu cliente.");}
+  else if(usuario==="estudiante"||usuario==="negocio"){R("condicion","Cliente con condición","Puedes venderle si la app le sirve a él y no solo a la institución");
+   z.push("Cuando la app resuelve algo de la institución o del negocio, normalmente es la institución o el negocio quien paga, no el usuario.","Si el beneficio es personal, el usuario podría pagar una suscripción baja.");}
+  else if(existe==="si"){R("condicion","Cliente con condición","Puedes venderle si tu app ofrece algo que las otras no");
+   z.push("Una persona puede pagar directo desde su celular.","Como ya hay apps iguales o parecidas, y muchas son gratuitas, solo pagará si la tuya le da algo que no encuentra en las demás. Cambiar el diseño, el nombre o agregar una opción básica no cuenta como diferencia.");}
+  else {R("real","Cliente real","Puedes venderle");
+   z.push("Una persona decide y paga directo: suscripción, compra única o pago por uso.","No tiene otra app que le resuelva eso, así que tu app cubre una necesidad real.","El precio debe ser bajo, por lo que necesitarás muchos usuarios para cubrir los costos.");}
+ }
+ limpiarVeredicto();
+ $('centro').innerHTML=CENTRO[c];
+ const s=document.createElement('div');s.className='sello '+c;s.textContent=SELLO[c];$('mesa').appendChild(s);
+ const col={real:'#5f7a0f',condicion:'#b07a06',futuro:'#3d6fa6',no:'#c4452f'}[c];
+ document.querySelectorAll('.naipe').forEach(n=>n.classList.toggle('ganadora',n.dataset.c===c));
+ const uo=Q('usuario').o.find(x=>x.v===r.usuario),po=Q('paga').o.find(x=>x.v===r.paga);
+ $('carta').innerHTML=`<div class="carta-res ${c}" style="--c:${col}"><button class="cerrar" id="cerrar" aria-label="Cerrar">×</button>
+  <div class="cab"><div class="big">${CENTRO[c]}</div><h2>${SELLO[c]}</h2></div>
+  <div class="cuerpo"><p class="bajada">${tit}</p>
+  <div class="pareja"><span>${uo.e}Usa: ${uo.l}</span><span>${po.e}Pagaría: ${po.l}</span></div>
+  ${z.map((x,i)=>`<div class="razon"><i>${i+1}</i><span>${x}</span></div>`).join('')}
+  <div class="botones"><button class="otra clara" id="ver">Volver a la mesa</button><button class="otra" id="otra">Jugar otro caso</button></div></div></div>`;
+ $('modal').classList.add('visible');
+ const cerrar=()=>$('modal').classList.remove('visible');
+ $('cerrar').onclick=cerrar;$('ver').onclick=cerrar;
+ $('modal').onclick=e=>{if(e.target.id==='modal')cerrar();};
+ $('otra').onclick=()=>{cerrar();r={};abierto=null;limpiarVeredicto();todo();window.scrollTo({top:0,behavior:'smooth'});};
+ $('cerrar').focus();
+};
+document.querySelectorAll('[data-i]').forEach(el=>el.innerHTML=ICON['res_'+el.dataset.i]);
+$('centro').innerHTML=ICON.pregunta;
+const abrirAyuda=()=>{$('modalAyuda').classList.add('visible');$('okAyuda').focus();};
+const cerrarAyuda=()=>$('modalAyuda').classList.remove('visible');
+$('btnAyuda').onclick=abrirAyuda;$('cerrarAyuda').onclick=cerrarAyuda;$('okAyuda').onclick=cerrarAyuda;
+$('modalAyuda').onclick=e=>{if(e.target.id==='modalAyuda')cerrarAyuda();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('modal').classList.remove('visible');cerrarAyuda();}});
+todo();
+</script>
+</body>
+</html>
