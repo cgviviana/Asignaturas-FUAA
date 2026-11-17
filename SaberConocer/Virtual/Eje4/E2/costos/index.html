@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Los costos de tu app · Saber Conocer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--marca:#86a91e;--marca2:#5f7a0f;--tinta:#1f2b3a;--suave:#5b6878;--fondo:#e9eff3;--linea:#dfe6ec}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);font-family:Nunito,Arial,sans-serif;color:var(--tinta);line-height:1.5}
+.top{height:50px;background:#fff;display:flex;align-items:center;padding:0 26px;font-size:14px;color:#536052;border-bottom:1px solid #d9e1e7}
+.top:before{content:"";width:4px;height:22px;background:var(--marca);margin-right:12px}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 40px}
+.tarjeta{background:#fff;border-radius:20px;box-shadow:0 10px 28px rgba(31,43,58,.1);overflow:hidden}
+.barra{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px;border-bottom:1px solid var(--linea)}
+.barra h1{font-family:Fredoka,sans-serif;font-weight:600;font-size:22px;margin:0}
+.pasos{display:flex;gap:6px}
+.pasos span{width:30px;height:6px;border-radius:3px;background:#e1e7ec}
+.pasos span.on{background:var(--marca)}
+.cuerpo{display:grid;grid-template-columns:380px 1fr;gap:26px;padding:24px 26px;min-height:470px}
+/* portapapeles */
+.porta{position:relative;background:#c99a66;border-radius:16px;padding:26px 14px 14px;align-self:start}
+.porta:before{content:"";position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:110px;height:28px;border-radius:8px;background:#9aa6b2;box-shadow:inset 0 -4px 0 #7d8894}
+.hojita{background:#fffdf8;border-radius:8px;padding:14px 10px 10px;min-height:380px}
+.hojita h2{font-family:Fredoka,sans-serif;font-weight:600;font-size:16px;margin:0 6px 8px;color:var(--suave)}
+.lista{list-style:none;margin:0;padding:0}
+.lista li{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:center;padding:7px 8px;border-radius:9px;font-weight:700;font-size:15px}
+.lista li.activo{background:#e8f1d4}
+.caja{width:24px;height:24px;border:2px solid #c3ccd4;border-radius:6px;background:#fff;display:grid;place-items:center}
+.si .caja{background:var(--marca);border-color:var(--marca)}
+.si .caja:after{content:"";width:9px;height:5px;border:3px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.no .caja{background:#eef1f4}
+.no .caja:after{content:"";width:10px;height:3px;border-radius:2px;background:#9aa6b2}
+.no{color:#9aa6b2}
+/* panel */
+.panel{display:flex;flex-direction:column;animation:entra .25s ease-out}
+.marco{border:2px solid var(--linea);border-radius:18px;padding:18px 20px;background:#fff}
+.secs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.sec{border-radius:14px;padding:12px 14px;background:#f6f8fa}
+.sec h3{margin:0 0 4px!important;font-size:16px!important}
+.sec p{margin:0;font-size:15px}
+.sec.verde{background:#f2f7e6}.sec.ambar{background:#fff6e5}
+.refv{margin-top:6px!important;font-weight:700;color:#8a5f00}
+@keyframes entra{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+.p-cab{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:12px;border-bottom:2px dashed var(--linea)}
+.p-cab svg{width:64px;height:64px;flex-shrink:0}
+.p-cab h2{font-family:Fredoka,sans-serif;font-weight:600;font-size:26px;margin:0;line-height:1.1}
+.etq{display:inline-block;font-size:12px;font-weight:800;border-radius:999px;padding:2px 10px;margin-top:4px}
+.t-mes{background:#e0eefa;color:#2f5f93}.t-ano{background:#eee7f5;color:#6b4c96}.t-uno{background:#fdf0d2;color:#8a5f00}.t-uso{background:#fde3dc;color:#a8402c}
+.panel h3{font-family:Fredoka,sans-serif;font-weight:600;font-size:17px;margin:12px 0 4px}
+.panel p{margin:0 0 6px;font-size:16px}
+.cuando{background:#f4f8ec;border-radius:12px;padding:10px 14px}
+.ref{background:#fff4e0;border-radius:12px;padding:8px 14px;font-size:15px}
+.ref b{color:#a86b00}
+.decide{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto;padding-top:16px}
+.decide .fijo{grid-column:1/-1;opacity:1;cursor:default}
+.decide button{width:100%;font-family:inherit;font-weight:800;font-size:15px;border-radius:12px;padding:11px 16px;cursor:pointer;border:2px solid #cfd8df;background:#fff;color:var(--tinta)}
+.decide button.sel-si{background:var(--marca);border-color:var(--marca);color:#fff}
+.decide button.sel-no{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.decide button:focus-visible{outline:3px solid var(--marca);outline-offset:2px}
+.siempre{font-weight:800;color:var(--marca2);margin-top:auto;padding-top:18px}
+.intro{display:grid;grid-template-columns:1fr;gap:10px}
+.intro ul{margin:4px 0 0;padding-left:20px}.intro li{margin:4px 0}
+/* controles */
+.controles{display:flex;justify-content:space-between;align-items:center;padding:12px 22px;border-top:1px solid var(--linea);background:#fafbfc}
+.controles button{font-family:inherit;font-weight:800;font-size:14px;border:2px solid #cfd8df;background:#fff;color:var(--tinta);border-radius:10px;padding:8px 16px;cursor:pointer}
+.controles button.prim{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.controles button:disabled{opacity:.4;cursor:default}
+.contador{font-size:13px;color:var(--suave);font-weight:700}
+/* calculadora */
+.calc{grid-column:1/-1;display:grid;grid-template-columns:1fr 330px;gap:20px;align-items:start}
+.cc-intro{margin:0 0 12px;font-size:16px;color:var(--suave)}
+.cc-intro b{color:var(--tinta)}
+.cc-lista{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cc{display:grid;grid-template-columns:44px 1fr;gap:12px;border:2px solid var(--linea);border-radius:16px;padding:12px 14px;background:#fff}
+.cc svg{width:44px;height:44px}
+.cc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.cc-top b{font-size:15px;line-height:1.25}
+.cc-top .etq{margin:0;white-space:nowrap}
+label{display:block;font-size:12.5px;font-weight:800;color:var(--suave)}
+.peso{display:flex;align-items:center;border:2px solid #d5dee5;border-radius:10px;background:#fff;margin-top:3px;overflow:hidden}
+.peso:focus-within{border-color:var(--marca)}
+.peso i{font-style:normal;font-weight:800;color:var(--suave);padding:0 4px 0 10px}
+input{font-family:inherit;font-size:16px;font-weight:700;border:0;padding:7px 10px 7px 2px;width:100%;color:var(--tinta);background:transparent;min-width:0}
+input:focus{outline:none}
+.campos2{display:grid;grid-template-columns:1fr 1.3fr;gap:8px}
+.campos2>label>input{border:2px solid #d5dee5;border-radius:10px;padding:7px 10px;margin-top:3px}
+.campos2>label>input:focus{border-color:var(--marca)}
+.usar{font-family:inherit;font-size:12px;font-weight:800;border:0;background:#fff4e0;color:#8a5f00;border-radius:8px;padding:4px 9px;cursor:pointer;margin-top:6px}
+.cc-mes{font-size:13px;font-weight:800;color:var(--marca2);margin-top:6px;min-height:18px}
+.resumen{position:sticky;top:14px;background:var(--tinta);color:#fff;border-radius:18px;padding:18px}
+.resumen h2{font-family:Fredoka,sans-serif;font-weight:600;font-size:20px;margin:0 0 12px}
+.resumen label{color:#c9d4de;margin-bottom:12px}
+.resumen small{display:block;font-weight:600;color:#9fb0bf;margin-top:3px}
+.resumen .peso{border-color:transparent}
+.tot{background:rgba(255,255,255,.08);border-radius:12px;padding:10px 12px;margin-top:8px}
+.tot small{color:#c9d4de;font-weight:700;margin:0}
+.tot b{display:block;font-family:Fredoka,sans-serif;font-weight:600;font-size:24px}
+.tot.grande{background:var(--marca)}
+.tot.grande small{color:#fff}
+.tot.grande b{font-size:30px}
+.nota{font-size:12px;color:#9fb0bf;margin:10px 0 0}
+.vacio{background:#f6f8fa;border-radius:12px;padding:14px;color:var(--suave)}
+.pie{text-align:center;font-size:13px;color:#556055;margin-top:24px}
+@media(max-width:860px){.secs{grid-template-columns:1fr}.cuerpo{grid-template-columns:1fr}.calc{grid-template-columns:1fr}.cc-lista{grid-template-columns:1fr}.resumen{position:static}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top">Aprendiendo con @LaProfeVivy</header>
+<div class="wrap">
+  <div class="tarjeta">
+    <div class="barra"><h1 id="titulo"></h1></div>
+    <div class="cuerpo" id="cuerpo"></div>
+    <div class="controles"><button id="ant">‹ Anterior</button><span class="contador" id="contador"></span><button class="prim" id="sig">Siguiente ›</button></div>
+  </div>
+  <p class="pie">Aprendiendo con @LaProfeVivy</p>
+</div>
+<script>
+const K='#1f2b3a',V='#86a91e',VL='#e4efc7',AM='#f2b632',AZ='#6e9ccf',RO='#e06a52',PI='#f2c9a0',GR='#c9d2da',BL='#fff',LI='#b8a3d6';
+const sv=b=>`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" stroke="${K}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${b}</svg>`;
+const TIPO={mes:["t-mes","Cada mes"],ano:["t-ano","Cada año"],uno:["t-uno","Una vez"],uso:["t-uso","Según el uso"],hora:["t-mes","Horas al mes"]};
+const C={
+ plataforma:{n:"Plataforma de desarrollo",q:"En la página de precios de Lovable (lovable.dev/pricing).",t:"mes",siempre:1,usd:25,i:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><rect x="10" y="14" width="44" height="30" rx="3" fill="${BL}"/><path d="M24 52h16M32 44v8"/><path d="M24 25l-5 5 5 5M40 25l5 5-5 5M35 22l-6 16" stroke="${V}"/>`),
+  d:"El plan de la herramienta con la que se construye y se publica la app.",c:"Toda app la necesita.",ref:"Plan Pro de Lovable: USD 25 al mes, según su página de precios."},
+ diseno:{n:"Diseño e identidad",q:"Cotiza con un diseñador o revisa los precios de bancos de imágenes e íconos con licencia.",t:"uno",i:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><path d="M14 46l22-22 6 6-22 22H14z" fill="${AM}"/><path d="M36 24l6-6 6 6-6 6"/><circle cx="20" cy="20" r="5" fill="${RO}"/>`),
+  d:"Logo, colores, imágenes e íconos propios de la app.",c:"Si contratas a alguien o compras imágenes, íconos o tipografías con licencia."},
+ play:{n:"Cuenta de Google Play",q:"En la Consola de Google Play, al crear la cuenta de desarrollador.",t:"uno",usd:25,i:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><path d="M20 14l28 18-28 18z" fill="${V}"/>`),
+  d:"La cuenta de desarrollador para publicar en la tienda de Android.",c:"Si la app se publicará en Google Play y no solo como enlace web.",ref:"USD 25, un solo pago."},
+ apple:{n:"Cuenta de desarrollador de Apple",q:"En la página del Programa para Desarrolladores de Apple.",t:"ano",usd:99,i:sv(`<circle cx="32" cy="32" r="29" fill="#e5e9ee" stroke="none"/><rect x="20" y="10" width="24" height="44" rx="5" fill="${BL}"/><path d="M28 48h8"/><path d="M32 22c2-3 5-3 5-3s0 3-2 4M26 30c0-4 3-5 6-4 3-1 6 0 6 4 0 5-3 9-6 9s-6-4-6-9z" fill="${GR}"/>`),
+  d:"La cuenta para publicar en la tienda de iPhone.",c:"Si la app se publicará en la App Store.",ref:"USD 99 cada año."},
+ dominio:{n:"Dominio propio",q:"En la página de un registrador de dominios: busca el nombre de tu app y mira el precio por año.",t:"ano",i:sv(`<circle cx="32" cy="32" r="29" fill="#e0eefa" stroke="none"/><circle cx="32" cy="32" r="18" fill="${BL}"/><path d="M14 32h36M32 14c-6 6-6 30 0 36M32 14c6 6 6 30 0 36"/>`),
+  d:"Una dirección web con el nombre de la app, como miapp.com. Se renueva cada año y el valor depende de la terminación.",c:"Si la app tendrá una dirección propia en lugar de la que da la plataforma."},
+ equipos:{n:"Equipos o dispositivos",q:"En tiendas de tecnología: cotiza el aparato que necesita el cliente.",t:"uno",i:sv(`<circle cx="32" cy="32" r="29" fill="#e5e9ee" stroke="none"/><rect x="14" y="14" width="36" height="26" rx="3" fill="${BL}"/><rect x="20" y="20" width="10" height="10" fill="${K}" stroke="none"/><rect x="34" y="20" width="10" height="4" fill="${K}" stroke="none"/><path d="M26 50h12M32 40v10"/>`),
+  d:"Aparatos que la app necesita para funcionar en el lugar del cliente: tabletas, lectores, sensores o impresoras.",c:"Si la app depende de un aparato que el cliente no tiene."},
+ datos:{n:"Base de datos en la nube",q:"En la página de precios de Lovable, en la parte de Cloud, que se cobra según el uso.",t:"uso",i:sv(`<circle cx="32" cy="32" r="29" fill="#e0eefa" stroke="none"/><ellipse cx="32" cy="18" rx="14" ry="5" fill="${AZ}"/><path d="M18 18v26c0 3 6 5 14 5s14-2 14-5V18"/><path d="M18 31c0 3 6 5 14 5s14-2 14-5"/>`),
+  d:"Donde se guardan los registros. En Lovable Cloud se paga según el uso: más usuarios y más datos, más costo.",c:"Si la app guarda información: registros, citas, pedidos o historiales."},
+ sesion:{n:"Usuarios e inicio de sesión",q:"En la página de precios de Lovable, en la parte de Cloud.",t:"uso",i:sv(`<circle cx="32" cy="32" r="29" fill="#e0eefa" stroke="none"/><rect x="16" y="28" width="32" height="24" rx="4" fill="${AZ}"/><path d="M23 28v-6a9 9 0 0118 0v6"/><circle cx="32" cy="39" r="3" fill="${BL}"/>`),
+  d:"Las cuentas de los usuarios también usan la nube; con más usuarios activos, más uso.",c:"Si las personas entran con su correo o su cuenta."},
+ archivos:{n:"Almacenamiento de archivos",q:"En la página de precios de Lovable, en la parte de Cloud.",t:"uso",i:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><path d="M12 22h14l4 5h22v23H12z" fill="${RO}"/><rect x="22" y="31" width="20" height="13" rx="2" fill="${BL}"/><path d="M26 41l5-5 4 3 3-3"/>`),
+  d:"Fotos, documentos o soportes ocupan espacio en la nube, y ese espacio se paga.",c:"Si los usuarios suben fotos, documentos o certificados."},
+ ia:{n:"Inteligencia artificial",q:"En la página de precios de Lovable, en la parte de IA, que se cobra según el uso.",t:"uso",i:sv(`<circle cx="32" cy="32" r="29" fill="#eee7f5" stroke="none"/><rect x="18" y="18" width="28" height="28" rx="6" fill="${LI}"/><path d="M26 10v8M38 10v8M26 46v8M38 46v8M10 26h8M10 38h8M46 26h8M46 38h8"/><path d="M27 37l5-11 5 11M29 33h6" stroke="${BL}"/>`),
+  d:"Cada consulta a una IA (un chat, una recomendación, un análisis) consume un servicio que se paga según el uso.",c:"Si la app usa IA para responder, recomendar o analizar."},
+ mensajes:{n:"Envío de mensajes",q:"En la página de tarifas del servicio de correo, SMS o WhatsApp que vas a usar.",t:"uso",i:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><rect x="12" y="18" width="40" height="28" rx="4" fill="${BL}"/><path d="M12 22l20 14 20-14" stroke="${V}"/>`),
+  d:"Los servicios que envían correos, SMS o WhatsApp cobran por mensaje o por paquete.",c:"Si la app manda recordatorios o alertas fuera de la app."},
+ mapas:{n:"Servicio de mapas",t:"uso",i:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><path d="M10 20l14-6 16 6 14-6v32l-14 6-16-6-14 6z" fill="${BL}"/><path d="M24 14v32M40 20v32"/><path d="M32 22c-4 0-6 3-6 6 0 5 6 10 6 10s6-5 6-10c0-3-2-6-6-6z" fill="${RO}"/>`),
+  d:"Mostrar mapas, ubicaciones o rutas usa servicios externos que cobran según las consultas.",c:"Si la app muestra mapas, rutas o lugares cercanos."},
+ pagos:{n:"Pasarela de pagos",q:"En la página de tarifas de la pasarela de pagos que elijas: allí publican el porcentaje por transacción.",t:"uso",i:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><rect x="10" y="20" width="44" height="28" rx="4" fill="${AM}"/><path d="M10 28h44" stroke-width="5"/><path d="M16 40h10"/>`),
+  d:"El servicio para recibir pagos con tarjeta u otros medios. Cobra una comisión por cada pago.",c:"Si el usuario paga dentro de la app."},
+ tiendas:{n:"Comisión de las tiendas",q:"En las condiciones de Google Play y de la App Store sobre comisiones por ventas.",t:"uso",i:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><path d="M14 22h36l-3 28H17z" fill="${BL}"/><path d="M24 26v-6a8 8 0 0116 0v6"/><path d="M26 44l12-12M27 33h0M37 43h0" stroke="${RO}" stroke-width="3.5"/>`),
+  d:"Google Play y la App Store se quedan con un porcentaje de lo que vendes dentro de la app publicada en ellas.",c:"Si vendes suscripciones, extras o compras dentro de una app publicada en tienda."},
+ envios:{n:"Envíos o domicilios",q:"En las tarifas de la empresa de mensajería o domicilios que harías servir.",t:"uso",i:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><rect x="8" y="24" width="30" height="18" fill="${AM}"/><path d="M38 30h10l6 7v5H38z" fill="${BL}"/><circle cx="18" cy="46" r="4" fill="${BL}"/><circle cx="46" cy="46" r="4" fill="${BL}"/>`),
+  d:"El costo de llevar un producto al comprador, cuando la app lo asume.",c:"Si la app vende productos que hay que entregar y el envío no lo paga el comprador."},
+ seguridad:{n:"Seguridad y copias de respaldo",q:"En los planes del proveedor de la nube o de copias de respaldo.",t:"mes",i:sv(`<circle cx="32" cy="32" r="29" fill="#e5e9ee" stroke="none"/><path d="M32 10l18 7v13c0 12-8 20-18 24-10-4-18-12-18-24V17z" fill="${AZ}"/><path d="M24 32l6 6 11-12" stroke="${BL}" stroke-width="4"/>`),
+  d:"Copias de la información y protección frente a pérdidas o accesos no autorizados.",c:"Si la app guarda datos personales o información delicada de sus usuarios."},
+ mantenimiento:{n:"Mantenimiento y actualizaciones",q:"Para el valor de la hora, consulta el salario mínimo vigente en Colombia o lo que cobra un desarrollador por hora.",t:"hora",siempre:1,i:sv(`<circle cx="32" cy="32" r="29" fill="#e5e9ee" stroke="none"/><path d="M40 14a10 10 0 00-12 13L14 41a4 4 0 006 6l14-14a10 10 0 0013-12l-6 6-5-2-2-5z" fill="${GR}"/>`),
+  d:"El tiempo que el equipo dedica cada mes a corregir errores y mejorar la app.",c:"Toda app lo necesita."},
+ soporte:{n:"Soporte y capacitación",q:"Para el valor de la hora, consulta el salario mínimo vigente en Colombia o lo que cobra una persona de soporte por hora.",t:"hora",i:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><circle cx="32" cy="30" r="9" fill="${PI}"/><path d="M18 32v-4a14 14 0 0128 0v4"/><rect x="14" y="30" width="7" height="10" rx="3" fill="${RO}"/><rect x="43" y="30" width="7" height="10" rx="3" fill="${RO}"/><path d="M22 54c2-5 6-7 10-7s8 2 10 7"/>`),
+  d:"El tiempo para responder dudas, capacitar a los usuarios y resolver problemas.",c:"Si los usuarios necesitan ayuda o capacitación, como los docentes de un colegio."},
+ moderacion:{n:"Revisión de publicaciones",q:"Para el valor de la hora, consulta el salario mínimo vigente en Colombia o lo que cobra una persona por hora.",t:"hora",i:sv(`<circle cx="32" cy="32" r="29" fill="${VL}" stroke="none"/><rect x="12" y="14" width="30" height="36" rx="3" fill="${BL}"/><path d="M18 24h18M18 31h18M18 38h10"/><circle cx="44" cy="42" r="9" fill="${V}"/><path d="M50 48l6 6"/>`),
+  d:"Alguien que revisa lo que publican los usuarios antes o después de que aparezca: anuncios, fotos, comentarios o perfiles.",c:"Si los usuarios publican contenido que otros ven, como adopciones, anuncios o reseñas."},
+ contenido:{n:"Creación de contenido",q:"Para el valor de la hora, consulta lo que cobra un creador de contenido por hora o por pieza.",t:"hora",i:sv(`<circle cx="32" cy="32" r="29" fill="#eee7f5" stroke="none"/><rect x="12" y="16" width="40" height="30" rx="4" fill="${BL}"/><path d="M28 24v14l12-7z" fill="${LI}"/><path d="M20 52h24"/>`),
+  d:"Preparar y actualizar lo que la app muestra: guías, recetas, videos, artículos o ejercicios.",c:"Si el valor de la app está en el contenido que se publica de forma permanente."},
+ mercadeo:{n:"Publicidad y mercadeo",q:"En la herramienta de anuncios de la red social donde quieres anunciar: allí defines cuánto invertir.",t:"mes",i:sv(`<circle cx="32" cy="32" r="29" fill="#fde3dc" stroke="none"/><path d="M14 28v10h8l16 10V18L22 28z" fill="${RO}"/><path d="M44 26c3 3 3 9 0 12M48 22c5 5 5 15 0 20"/>`),
+  d:"Lo que se invierte para que los clientes conozcan la app: pauta en redes, material, visitas.",c:"Toda app que quiera conseguir clientes nuevos lo necesita en algún momento."},
+ empresa:{n:"Constitución de la empresa",q:"En las tarifas de la Cámara de Comercio de tu ciudad para el registro y la renovación.",t:"ano",i:sv(`<circle cx="32" cy="32" r="29" fill="#fdf0d2" stroke="none"/><path d="M12 26L32 13l20 13z" fill="${AM}"/><path d="M14 26h36M18 30v16M27 30v16M37 30v16M46 30v16M13 50h38"/>`),
+  d:"Los trámites para que el negocio exista legalmente, como el registro en la Cámara de Comercio, que se renueva cada año.",c:"Si la app se va a vender a empresas o instituciones que piden factura y documentos del proveedor."},
+ contabilidad:{n:"Contabilidad y facturación",q:"Cotiza con un contador o con un programa de facturación electrónica.",t:"mes",i:sv(`<circle cx="32" cy="32" r="29" fill="#eee7f5" stroke="none"/><rect x="14" y="10" width="36" height="44" rx="4" fill="${BL}"/><rect x="20" y="16" width="24" height="9" rx="2" fill="${LI}"/><path d="M21 33h4M30 33h4M39 33h4M21 41h4M30 41h4M39 41h4M21 48h4M30 48h13"/>`),
+  d:"Llevar las cuentas del negocio, emitir facturas a los clientes y cumplir con los impuestos.",c:"Si cobras a clientes de forma regular."},
+ legal:{n:"Asesoría legal y protección de datos",q:"Cotiza con un abogado. La Superintendencia de Industria y Comercio publica guías sobre protección de datos personales.",t:"uno",i:sv(`<circle cx="32" cy="32" r="29" fill="#e0eefa" stroke="none"/><path d="M32 12v40M20 52h24M14 20h36"/><path d="M14 20l-6 14h12zM50 20l-6 14h12z" fill="${AZ}"/>`),
+  d:"Redactar los términos de uso y la política de tratamiento de datos personales de la app.",c:"Si la app recoge datos personales de sus usuarios."}
+};
+const PAGINAS=[
+ {t:"Costos para construir y publicar",k:["plataforma","diseno","play","apple","dominio","equipos"]},
+ {t:"Costos de funcionamiento",k:["datos","sesion","archivos","ia","mensajes","mapas","pagos","tiendas","envios","seguridad"]},
+ {t:"Costos del negocio",k:["mantenimiento","soporte","moderacion","contenido","mercadeo","empresa","contabilidad","legal"]},
+ {t:"Calculadora de costos",calc:1}
+];
+const r={};Object.keys(C).forEach(k=>{if(C[k].siempre)r[k]='si';});
+const val={};let trm='',precio='';
+let pag=0,cur=-1;
+const $=id=>document.getElementById(id);
+const fmt=n=>'$ '+Math.round(n).toLocaleString('es-CO');
+const num=v=>{const x=parseFloat(String(v).replace(/\./g,'').replace(',','.'));return isNaN(x)?0:x;};
+
+function lista(p){
+ return `<div class="porta"><div class="hojita"><h2>Lista de chequeo</h2><ul class="lista">${p.k.map((k,i)=>`<li class="${r[k]||''} ${i===cur?'activo':''}"><span class="caja"></span>${C[k].n}</li>`).join('')}</ul></div></div>`;
+}
+function panel(p){
+ if(cur<0){
+  const intro=[
+   `<p>No todas las apps necesitan lo mismo. Una app que solo se abre con un enlace no paga tiendas; una que guarda fotos paga espacio en la nube; una que vende productos puede pagar envíos.</p><p>En cada costo de la lista verás qué es, cuándo lo necesita una app y cada cuánto se paga. Marca si tu app lo necesita o no.</p><p>Esta primera lista reúne lo que se paga para <b>construir y publicar</b> la app.</p>`,
+   `<p>Estos son los costos de tener la app <b>funcionando</b> todos los días. La mayoría se pagan según el uso: con más usuarios, más costo.</p>`,
+   `<p>Estos costos no son de la tecnología sino del <b>negocio</b>: el tiempo del equipo, conseguir clientes y cumplir con lo legal.</p>`][pag];
+  return `<div class="panel marco"><div class="p-cab"><h2>${pag===0?'¿Qué costos tiene tu app?':p.t}</h2></div>${intro}</div>`;
+ }
+ const k=p.k[cur],c=C[k],t=TIPO[c.t];
+ return `<div class="panel marco" key="${k}"><div class="p-cab">${c.i}<div><h2>${c.n}</h2><span class="etq ${t[0]}">${t[1]}</span></div></div>
+ <div class="secs"><div class="sec"><h3>¿Qué es?</h3><p>${c.d}</p></div><div class="sec verde"><h3>¿Cuándo lo necesita una app?</h3><p>${c.c}</p></div></div>
+ <div class="sec ambar"><h3>¿Dónde consultar el precio?</h3><p>${c.q}</p>${c.ref?`<p class="refv"><b>Referencia:</b> ${c.ref}</p>`:''}</div>
+ <div class="decide">${c.siempre?`<button class="sel-si fijo" disabled>Toda app lo necesita</button>`:`<button data-r="si" class="${r[k]==='si'?'sel-si':''}">Sí, mi app lo necesita</button><button data-r="no" class="${r[k]==='no'?'sel-no':''}">No lo necesita</button>`}</div></div>`;
+}
+function calc(){
+ const ks=Object.keys(C).filter(k=>r[k]==='si');
+ if(!ks.length)return `<div class="calc"><div class="vacio">Primero marca en las listas los costos que tiene tu app.</div></div>`;
+ const card=k=>{const c=C[k],t=TIPO[c.t],v=val[k]||{};
+  const campos=c.t==='hora'
+   ?`<div class="campos2"><label>Horas al mes<input data-k="${k}" data-f="h" inputmode="decimal" value="${v.h||''}"></label><label>Valor de la hora<span class="peso"><i>$</i><input data-k="${k}" data-f="v" inputmode="decimal" value="${v.v||''}"></span></label></div>`
+   :`<label>${c.t==='uso'?'Estimado al mes':c.t==='ano'?'Valor al año':c.t==='uno'?'Valor total':'Valor al mes'}<span class="peso"><i>$</i><input data-k="${k}" data-f="v" inputmode="decimal" value="${v.v||''}"></span></label>${c.usd?`<button class="usar" data-usd="${k}">Usar referencia: USD ${c.usd}</button>`:''}`;
+  return `<div class="cc">${c.i}<div class="cc-cuerpo"><div class="cc-top"><b>${c.n}</b><span class="etq ${t[0]}">${c.t==='uso'?'Según el uso':t[1]}</span></div>${campos}<div class="cc-mes" id="m-${k}"></div></div></div>`;};
+ return `<div class="calc"><div><p class="cc-intro">Estos son los <b>${ks.length} costos</b> que marcaste en las listas. Escribe el valor de cada uno; el resumen se calcula solo.</p><div class="cc-lista">${ks.map(card).join('')}</div></div>
+ <aside class="resumen"><h2>Resumen</h2>
+  <label>Valor del dólar hoy<span class="peso"><i>$</i><input id="trm" inputmode="decimal" value="${trm}"></span><small>Consúltalo el día que hagas el cálculo.</small></label>
+  <label>Lo que cobrarás a cada cliente al mes<span class="peso"><i>$</i><input id="precio" inputmode="decimal" value="${precio}"></span></label>
+  <div class="tot"><small>Costo de mantener la app al mes</small><b id="tMes">$ 0</b></div>
+  <div class="tot"><small>Pagos de una sola vez para empezar</small><b id="tUno">$ 0</b></div>
+  <div class="tot grande"><small>Clientes que necesitas para cubrir el mes</small><b id="tCli">—</b></div>
+  <p class="nota">Los pagos de cada año se dividen entre 12. Los de una sola vez se pagan al comenzar y no entran en el mes.</p>
+ </aside></div>`;
+}
+function calcular(){
+ let mes=0,uno=0;
+ Object.keys(C).filter(k=>r[k]==='si').forEach(k=>{const c=C[k],v=val[k]||{};let m=0;
+  if(c.t==='hora')m=num(v.h)*num(v.v);else if(c.t==='ano')m=num(v.v)/12;else if(c.t==='uno'){uno+=num(v.v);}else m=num(v.v);
+  mes+=m;const el=$('m-'+k);if(el)el.textContent=c.t==='uno'?(num(v.v)?'Pago inicial: '+fmt(num(v.v)):''):(m?'Al mes: '+fmt(m):'');});
+ if($('tMes')){$('tMes').textContent=fmt(mes);$('tUno').textContent=fmt(uno);
+  const p=num(precio),n=p>0&&mes>0?Math.ceil(mes/p):0;$('tCli').textContent=n?n+(n===1?' cliente':' clientes'):'—';}
+}
+function pintar(){
+ const p=PAGINAS[pag];
+ $('titulo').textContent=p.t;
+ $('cuerpo').innerHTML=p.calc?calc():lista(p)+panel(p);
+ $('contador').textContent=p.calc?'Calculadora':`Lista ${pag+1} de 3 · `+(cur<0?'Introducción':`Costo ${cur+1} de ${p.k.length}`);
+ $('ant').disabled=pag===0&&cur<0;
+ $('sig').disabled=!!p.calc;
+ $('sig').textContent=(!p.calc&&cur===p.k.length-1)?(pag===PAGINAS.length-2?'Ir a la calculadora ›':'Siguiente lista ›'):'Siguiente ›';
+ $('cuerpo').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{r[p.k[cur]]=b.dataset.r;pintar();});
+ if(p.calc){
+  $('cuerpo').querySelectorAll('input[data-k]').forEach(inp=>inp.oninput=()=>{(val[inp.dataset.k]=val[inp.dataset.k]||{})[inp.dataset.f]=inp.value;calcular();});
+  const t=$('trm');if(t)t.oninput=()=>{trm=t.value;};
+  const pr=$('precio');if(pr)pr.oninput=()=>{precio=pr.value;calcular();};
+  $('cuerpo').querySelectorAll('[data-usd]').forEach(b=>b.onclick=()=>{const k=b.dataset.usd,x=num(trm);
+   if(!x){$('trm').focus();$('trm').placeholder='Escribe primero el valor del dólar';return;}
+   (val[k]=val[k]||{}).v=String(Math.round(C[k].usd*x));pintar();});
+  calcular();
+ }
+}
+$('sig').onclick=()=>{const p=PAGINAS[pag];if(!p.calc&&cur<p.k.length-1){cur++;}else{pag++;cur=-1;}pintar();};
+$('ant').onclick=()=>{if(cur>=0){cur--;}else if(pag>0){pag--;cur=PAGINAS[pag].calc?-1:PAGINAS[pag].k.length-1;}pintar();};
+pintar();
+</script>
+</body>
+</html>
