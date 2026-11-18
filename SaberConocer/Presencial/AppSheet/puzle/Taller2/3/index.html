@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Puzle 3 · Arma el correo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#152039;--y:#ffc83d;--ok:#137333;--okb:#e6f4ea;--bad:#c5221f;--g:#1a73e8;--mut:#4a5675}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;font-family:Rubik,system-ui,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#8fd0f8,#d4efff 70%,#e9f8ee) fixed;position:relative}
+body:after{content:"";position:fixed;left:-40px;right:-40px;bottom:-60px;height:120px;background:#6cc070;border-radius:50%;z-index:0}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:18px 16px 110px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.av{width:68px;height:68px;flex:0 0 auto}
+.av svg{width:100%;height:100%;border-radius:50%;border:4px solid var(--ink);background:#fff;box-shadow:0 4px 0 var(--ink)}
+.pill{display:inline-block;background:var(--y);border:3px solid var(--ink);border-radius:12px;padding:2px 12px;font-weight:800;font-size:15px}
+h1{font-size:clamp(24px,4.6vw,36px);line-height:1.1;margin:6px 0 0;font-weight:800}
+.goal{font-size:clamp(17px,2.6vw,21px);margin:6px 0 14px;line-height:1.35}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.cnt{white-space:nowrap;background:#fff;border:3px solid var(--ink);border-radius:99px;padding:2px 12px;font-weight:800}
+.msg{min-height:26px;font-size:17px;font-weight:600;color:#9c2e1a}
+.msg.okm{color:var(--ok)}
+.pz{background:#fff;border:3px solid var(--ink);border-radius:12px;box-shadow:0 4px 0 var(--ink);padding:6px 14px;font-weight:700;font-size:clamp(15px,2.3vw,18px);line-height:1.3;text-align:left}
+.pz:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.pz.sel{background:var(--y)}
+.pz.done{background:var(--okb);border-color:var(--ok);box-shadow:0 4px 0 var(--ok);color:var(--ok);cursor:default}
+.pz.gone{visibility:hidden}
+.mono{font-family:ui-monospace,Consolas,monospace}
+.shake{animation:sh .4s}
+@keyframes sh{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.pop{animation:pp .35s}
+@keyframes pp{50%{transform:scale(1.06)}}
+.main{background:var(--y);border:3px solid var(--ink);border-radius:12px;box-shadow:0 4px 0 var(--ink);padding:6px 28px;font-weight:800;font-size:17px}
+.sig{display:block;text-align:right;margin-top:40px;font-weight:700;color:#fff;font-size:15px;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.ov{position:fixed;inset:0;background:rgba(15,24,48,.6);display:none;align-items:center;justify-content:center;z-index:20;padding:14px}
+.ov.on{display:flex}
+.ovb{width:min(640px,100%);max-height:92vh;overflow:auto;background:#fff;border:4px solid var(--ink);border-radius:22px;box-shadow:0 8px 0 var(--ink);padding:20px 24px;animation:in .3s}
+@keyframes in{from{opacity:0;transform:translateY(20px)}}
+.ovh{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.ovh .av{width:56px;height:56px}
+.ovb h3{margin:0;font-size:clamp(22px,4vw,28px)}
+.ovb p{font-size:clamp(16px,2.4vw,19px);line-height:1.4;margin:8px 0}
+.ovb ul{margin:6px 0 12px;padding-left:0;list-style:none}
+.ovb li{font-size:clamp(15px,2.3vw,18px);line-height:1.35;padding:8px 0;border-bottom:2px solid #eef1f6}
+.ovb li b{color:var(--ok)}
+.ovb .ft{text-align:center;margin-top:12px}
+.sd{display:none;min-height:190px;animation:in .3s}
+.sd.on{display:block}
+.sd .sn{display:inline-flex;width:40px;height:40px;border-radius:50%;background:var(--y);border:3px solid var(--ink);align-items:center;justify-content:center;font-weight:800;font-size:20px;vertical-align:middle;margin-right:10px}
+.sd h4{display:inline;font-size:clamp(19px,3vw,23px);vertical-align:middle}
+.sd p{margin-top:12px}
+.cn{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px}
+.ci{width:44px;height:44px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);font-size:26px;font-weight:800;line-height:1;padding:0}
+.ci:disabled{opacity:.3;cursor:default}
+#dots{display:flex;gap:6px}
+#dots i{width:10px;height:10px;border-radius:50%;background:#cfd6e6}
+#dots i.on{background:var(--ink)}
+.cl{display:none;text-align:center;margin-top:12px}
+.cl.on{display:block}
+
+.mail{background:#fff;border:4px solid var(--ink);border-radius:18px;box-shadow:0 6px 0 var(--ink);overflow:hidden;margin-bottom:18px}
+.mh{padding:10px 16px;border-bottom:2px solid #e8eaed;font-size:16px;color:var(--mut)}
+.mh b{color:var(--ink)}
+.mb{padding:16px;font-size:clamp(18px,2.9vw,23px);line-height:2.1}
+.gap{display:inline-block;min-width:120px;border-bottom:3px dashed #7a88a8;text-align:center;padding:0 6px;line-height:1.5;font-family:ui-monospace,Consolas,monospace;font-weight:700}
+.gap.now{background:#fff8dc;border-bottom-color:var(--ink)}
+.gap.done{border-bottom:3px solid var(--ok);color:#c2185b;background:var(--okb)}
+.pool{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.prev{display:none;background:#fff;border:4px solid var(--ok);border-radius:18px;box-shadow:0 6px 0 var(--ok);overflow:hidden}
+.prev.on{display:block;animation:in .4s}
+.prev .mb b{color:var(--ok)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="av"><svg viewBox="0 0 120 120" aria-hidden="true"><defs><clipPath id="av1"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#av1)"><rect width="120" height="120" fill="#ffe9e4"/><path d="M27 66C22 32 42 16 61 16c22 0 37 17 32 50-2 13 1 23 6 32H21c5-9 8-20 6-32z" fill="#7d1a35"/><rect x="52" y="74" width="16" height="20" rx="6" fill="#ecc3a8"/><path d="M18 126c2-23 18-34 42-34s40 11 42 34z" fill="#2f8f83"/><path d="M50 92l10 12 10-12z" fill="#ecc3a8"/><ellipse cx="60" cy="58" rx="21" ry="24" fill="#f5d5bf"/><circle cx="39" cy="61" r="4" fill="#ecc3a8"/><circle cx="81" cy="61" r="4" fill="#ecc3a8"/><path d="M37 60c-3-22 9-33 25-33 16 0 26 11 23 28-4-8-10-11-17-12-3 4-9 7-16 8-6 1-11 4-15 9z" fill="#9b2445"/><path d="M38 57c-4 10-4 20 1 30-7-6-10-18-8-30z" fill="#8a1f3d"/><path d="M83 52c4 11 4 22-1 33 7-8 10-20 7-33z" fill="#8a1f3d"/><path d="M45 51q5-2.5 10 0M65 51q5-2.5 10 0" stroke="#5a2a28" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M45 58q5-3 10 0M65 58q5-3 10 0" stroke="#2b1b1b" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="46" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><circle cx="74" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><path d="M53 70q7 5 14 0" stroke="#a8384a" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></svg></div><div><span class="pill">Puzle 3 · Automation</span><h1>Arma el correo</h1></div></header>
+<p class="goal">Completa el mensaje del correo con las piezas de datos.</p>
+<div class="bar"><span class="cnt" id="cnt"></span><span class="msg" id="msg"></span></div>
+<div class="mail"><div class="mh">Email Body · <b>Aviso de venta</b></div><div class="mb" id="tpl">Se vendió <span class="gap" id="g0"></span> x <span class="gap" id="g1"></span>. Total: <span class="gap" id="g2"></span>. Envío: <span class="gap" id="g3"></span>.</div></div>
+<div class="pool" id="pool"></div>
+<div class="prev" id="prev"><div class="mh">De: AppSheet · <b>Nueva venta</b></div><div class="mb">Se vendió <b>Cuaderno</b> x <b>3</b>. Total: <b>$7,500.00</b>. Envío: <b>Gratis</b>.</div></div>
+<span class="sig">Aprendiendo con @LaProfeVivy</span>
+</div>
+<div class="ov" id="ov"><div class="ovb"><div class="ovh"><div class="av"><svg viewBox="0 0 120 120" aria-hidden="true"><defs><clipPath id="av2"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#av2)"><rect width="120" height="120" fill="#ffe9e4"/><path d="M27 66C22 32 42 16 61 16c22 0 37 17 32 50-2 13 1 23 6 32H21c5-9 8-20 6-32z" fill="#7d1a35"/><rect x="52" y="74" width="16" height="20" rx="6" fill="#ecc3a8"/><path d="M18 126c2-23 18-34 42-34s40 11 42 34z" fill="#2f8f83"/><path d="M50 92l10 12 10-12z" fill="#ecc3a8"/><ellipse cx="60" cy="58" rx="21" ry="24" fill="#f5d5bf"/><circle cx="39" cy="61" r="4" fill="#ecc3a8"/><circle cx="81" cy="61" r="4" fill="#ecc3a8"/><path d="M37 60c-3-22 9-33 25-33 16 0 26 11 23 28-4-8-10-11-17-12-3 4-9 7-16 8-6 1-11 4-15 9z" fill="#9b2445"/><path d="M38 57c-4 10-4 20 1 30-7-6-10-18-8-30z" fill="#8a1f3d"/><path d="M83 52c4 11 4 22-1 33 7-8 10-20 7-33z" fill="#8a1f3d"/><path d="M45 51q5-2.5 10 0M65 51q5-2.5 10 0" stroke="#5a2a28" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M45 58q5-3 10 0M65 58q5-3 10 0" stroke="#2b1b1b" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="46" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><circle cx="74" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><path d="M53 70q7 5 14 0" stroke="#a8384a" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></svg></div><h3>¡Correo listo! ✉</h3></div><div class="car"><div class="sd"><p>El mensaje del correo se escribe una sola vez, pero llega con los datos de cada venta. Eso se logra con las piezas que van entre <b>&lt;&lt; &gt;&gt;</b>.</p></div><div class="sd"><span class="sn">1</span><h4>Dónde se escribe</h4><p>En el panel del correo está el <b>campo</b> <b>Email Body</b>. Al tocarlo se abre la <b>ventana</b> <b>Template Assistant</b>; ahí escribimos el mensaje y tocamos el <b>botón</b> <b>Save</b>.</p></div><div class="sd"><span class="sn">2</span><h4>Qué es &lt;&lt;[ ]&gt;&gt;</h4><p>Lo que va entre <b>&lt;&lt; &gt;&gt;</b> no se envía tal cual: la app lo cambia por el dato de esa venta. Entre <b>[ ]</b> va el nombre de una columna de la tabla Ventas, escrito igual que en la tabla.</p></div><div class="sd"><span class="sn">3</span><h4>Cada pieza</h4><p><b class="mono">&lt;&lt;[producto]&gt;&gt;</b> → Cuaderno<br><b class="mono">&lt;&lt;[cantidad]&gt;&gt;</b> → 3<br><b class="mono">&lt;&lt;[total]&gt;&gt;</b> → $7,500.00<br><b class="mono">&lt;&lt;[envio]&gt;&gt;</b> → Gratis</p></div><div class="sd"><span class="sn">4</span><h4>El resultado</h4><p>Si se venden 3 cuadernos, al dueño le llega: <b>Se vendió Cuaderno x 3. Total: $7,500.00. Envío: Gratis.</b> Con la siguiente venta, el mismo mensaje llega con los datos nuevos.</p></div></div><div class="cn"><button class="ci" type="button" id="cp" aria-label="Anterior">‹</button><span id="dots"></span><button class="ci" type="button" id="cx" aria-label="Siguiente">›</button></div><div class="cl"><button class="main" type="button" onclick="$('#ov').classList.remove('on')">Cerrar</button></div></div></div>
+<script>
+const $=s=>document.querySelector(s);
+const mix=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const shake=el=>{el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')};
+const say=(t,ok)=>{const m=$('#msg');m.innerHTML=t;m.classList.toggle('okm',!!ok)};
+const fin=()=>setTimeout(()=>$('#ov').classList.add('on'),700);
+
+const G=['producto','cantidad','total','envio'];
+const W=['precio','fecha'];
+const TIP=['Después de “Se vendió” va <b>qué</b> se vendió.','Después de la “x” va <b>cuántos</b> se vendieron.','Después de “Total:” va lo que se paga en total.','Después de “Envío:” va si el envío es gratis o se paga.'];
+const OK=['✓ La app pondrá el nombre del producto.','✓ La app pondrá cuántas unidades.','✓ La app pondrá el total calculado.','✓ La app pondrá “Gratis” o “Paga”.'];
+let k=0;
+$('#pool').innerHTML=mix([...G,...W]).map(c=>`<button class="pz mono" type="button" data-c="${c}">&lt;&lt;[${c}]&gt;&gt;</button>`).join('');
+const upd=()=>{$('#cnt').textContent=k+' / 4';G.forEach((g,i)=>$('#g'+i).classList.toggle('now',i===k))};
+$('#pool').onclick=e=>{const b=e.target.closest('.pz');if(!b||b.classList.contains('gone')||k>=4)return;
+ if(b.dataset.c===G[k]){const g=$('#g'+k);g.innerHTML=b.innerHTML;g.classList.add('done','pop');b.classList.add('gone');say(OK[k],1);k++;upd();
+  if(k===4){say('✓ Así le llega el correo al dueño:',1);$('#prev').classList.add('on');fin()}}
+ else{shake(b);say(TIP[k])}};
+upd();
+
+const SD=[...document.querySelectorAll('.sd')];let c=0;
+$('#dots').innerHTML=SD.map(()=>'<i></i>').join('');
+const car=i=>{c=Math.max(0,Math.min(SD.length-1,i));SD.forEach((d,j)=>d.classList.toggle('on',j===c));document.querySelectorAll('#dots i').forEach((d,j)=>d.classList.toggle('on',j===c));$('#cp').disabled=c===0;$('#cx').disabled=c===SD.length-1;$('.cl').classList.toggle('on',c===SD.length-1)};
+$('#cp').onclick=()=>car(c-1);$('#cx').onclick=()=>car(c+1);car(0);
+</script>
+</body>
+</html>
