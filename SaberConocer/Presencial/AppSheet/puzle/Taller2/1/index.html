@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Puzle 1 · Ordena el bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#152039;--y:#ffc83d;--ok:#137333;--okb:#e6f4ea;--bad:#c5221f;--g:#1a73e8;--mut:#4a5675}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;font-family:Rubik,system-ui,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#8fd0f8,#d4efff 70%,#e9f8ee) fixed;position:relative}
+body:after{content:"";position:fixed;left:-40px;right:-40px;bottom:-60px;height:120px;background:#6cc070;border-radius:50%;z-index:0}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:18px 16px 110px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.av{width:68px;height:68px;flex:0 0 auto}
+.av svg{width:100%;height:100%;border-radius:50%;border:4px solid var(--ink);background:#fff;box-shadow:0 4px 0 var(--ink)}
+.pill{display:inline-block;background:var(--y);border:3px solid var(--ink);border-radius:12px;padding:2px 12px;font-weight:800;font-size:15px}
+h1{font-size:clamp(24px,4.6vw,36px);line-height:1.1;margin:6px 0 0;font-weight:800}
+.goal{font-size:clamp(17px,2.6vw,21px);margin:6px 0 14px;line-height:1.35}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.cnt{background:#fff;border:3px solid var(--ink);border-radius:99px;padding:2px 12px;font-weight:800}
+.msg{min-height:26px;font-size:17px;font-weight:600;color:#9c2e1a}
+.msg.okm{color:var(--ok)}
+.pz{background:#fff;border:3px solid var(--ink);border-radius:12px;box-shadow:0 4px 0 var(--ink);padding:6px 14px;font-weight:700;font-size:clamp(15px,2.3vw,18px);line-height:1.3;text-align:left}
+.pz:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.pz.sel{background:var(--y)}
+.pz.done{background:var(--okb);border-color:var(--ok);box-shadow:0 4px 0 var(--ok);color:var(--ok);cursor:default}
+.pz.gone{visibility:hidden}
+.mono{font-family:ui-monospace,Consolas,monospace}
+.shake{animation:sh .4s}
+@keyframes sh{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.pop{animation:pp .35s}
+@keyframes pp{50%{transform:scale(1.06)}}
+.main{background:var(--y);border:3px solid var(--ink);border-radius:12px;box-shadow:0 4px 0 var(--ink);padding:6px 28px;font-weight:800;font-size:17px}
+.sig{display:block;text-align:right;margin-top:40px;font-weight:700;color:#fff;font-size:15px;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.ov{position:fixed;inset:0;background:rgba(15,24,48,.6);display:none;align-items:center;justify-content:center;z-index:20;padding:14px}
+.ov.on{display:flex}
+.ovb{width:min(640px,100%);max-height:92vh;overflow:auto;background:#fff;border:4px solid var(--ink);border-radius:22px;box-shadow:0 8px 0 var(--ink);padding:20px 24px;animation:in .3s}
+@keyframes in{from{opacity:0;transform:translateY(20px)}}
+.ovh{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.ovh .av{width:56px;height:56px}
+.ovb h3{margin:0;font-size:clamp(22px,4vw,28px)}
+.ovb p{font-size:clamp(16px,2.4vw,19px);line-height:1.4;margin:8px 0}
+.ovb ul{margin:6px 0 12px;padding-left:0;list-style:none}
+.ovb li{font-size:clamp(15px,2.3vw,18px);line-height:1.35;padding:8px 0;border-bottom:2px solid #eef1f6}
+.ovb li b{color:var(--ok)}
+.ovb .ft{text-align:center;margin-top:12px}
+
+.slots{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.slot{display:flex;align-items:center;gap:10px;min-height:46px;border:3px dashed #7a88a8;border-radius:12px;padding:4px 10px;background:rgba(255,255,255,.5);font-size:clamp(15px,2.3vw,18px);font-weight:700}
+.slot .n{flex:0 0 32px;height:32px;border-radius:50%;background:#fff;border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:800}
+.slot.now{border-color:var(--ink);background:#fff8dc}
+.slot.done{border:3px solid var(--ok);background:var(--okb);color:var(--ok)}
+.slot.done .n{background:var(--ok);border-color:var(--ok);color:#fff}
+.pool{display:flex;flex-wrap:wrap;gap:10px}
+.sd{display:none;min-height:190px;animation:in .3s}
+.sd.on{display:block}
+.sd .sn{display:inline-flex;width:40px;height:40px;border-radius:50%;background:var(--y);border:3px solid var(--ink);align-items:center;justify-content:center;font-weight:800;font-size:20px;vertical-align:middle;margin-right:10px}
+.sd h4{display:inline;font-size:clamp(19px,3vw,23px);vertical-align:middle}
+.sd p{margin-top:12px}
+.cn{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px}
+.ci{width:44px;height:44px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);font-size:26px;font-weight:800;line-height:1;padding:0}
+.ci:disabled{opacity:.3;cursor:default}
+#dots{display:flex;gap:6px}
+#dots i{width:10px;height:10px;border-radius:50%;background:#cfd6e6}
+#dots i.on{background:var(--ink)}
+.cl{display:none;text-align:center;margin-top:12px}
+.cl.on{display:block}
+#ov .ft{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="av"><svg viewBox="0 0 120 120" aria-hidden="true"><defs><clipPath id="av1"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#av1)"><rect width="120" height="120" fill="#ffe9e4"/><path d="M27 66C22 32 42 16 61 16c22 0 37 17 32 50-2 13 1 23 6 32H21c5-9 8-20 6-32z" fill="#7d1a35"/><rect x="52" y="74" width="16" height="20" rx="6" fill="#ecc3a8"/><path d="M18 126c2-23 18-34 42-34s40 11 42 34z" fill="#2f8f83"/><path d="M50 92l10 12 10-12z" fill="#ecc3a8"/><ellipse cx="60" cy="58" rx="21" ry="24" fill="#f5d5bf"/><circle cx="39" cy="61" r="4" fill="#ecc3a8"/><circle cx="81" cy="61" r="4" fill="#ecc3a8"/><path d="M37 60c-3-22 9-33 25-33 16 0 26 11 23 28-4-8-10-11-17-12-3 4-9 7-16 8-6 1-11 4-15 9z" fill="#9b2445"/><path d="M38 57c-4 10-4 20 1 30-7-6-10-18-8-30z" fill="#8a1f3d"/><path d="M83 52c4 11 4 22-1 33 7-8 10-20 7-33z" fill="#8a1f3d"/><path d="M45 51q5-2.5 10 0M65 51q5-2.5 10 0" stroke="#5a2a28" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M45 58q5-3 10 0M65 58q5-3 10 0" stroke="#2b1b1b" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="46" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><circle cx="74" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><path d="M53 70q7 5 14 0" stroke="#a8384a" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></svg></div><div><span class="pill">Puzle 1 · Automation</span><h1>Ordena el bot</h1></div></header>
+<p class="goal">Toca los pasos en el orden en que se crea el bot <b>Aviso de venta</b>.</p>
+<div class="bar"><span class="cnt" id="cnt"></span><span class="msg" id="msg"></span></div>
+<div class="slots" id="slots"></div><div class="pool" id="pool"></div>
+<span class="sig">Aprendiendo con @LaProfeVivy</span>
+</div>
+<div class="ov" id="ov"><div class="ovb"><div class="ovh"><div class="av"><svg viewBox="0 0 120 120" aria-hidden="true"><defs><clipPath id="av2"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#av2)"><rect width="120" height="120" fill="#ffe9e4"/><path d="M27 66C22 32 42 16 61 16c22 0 37 17 32 50-2 13 1 23 6 32H21c5-9 8-20 6-32z" fill="#7d1a35"/><rect x="52" y="74" width="16" height="20" rx="6" fill="#ecc3a8"/><path d="M18 126c2-23 18-34 42-34s40 11 42 34z" fill="#2f8f83"/><path d="M50 92l10 12 10-12z" fill="#ecc3a8"/><ellipse cx="60" cy="58" rx="21" ry="24" fill="#f5d5bf"/><circle cx="39" cy="61" r="4" fill="#ecc3a8"/><circle cx="81" cy="61" r="4" fill="#ecc3a8"/><path d="M37 60c-3-22 9-33 25-33 16 0 26 11 23 28-4-8-10-11-17-12-3 4-9 7-16 8-6 1-11 4-15 9z" fill="#9b2445"/><path d="M38 57c-4 10-4 20 1 30-7-6-10-18-8-30z" fill="#8a1f3d"/><path d="M83 52c4 11 4 22-1 33 7-8 10-20 7-33z" fill="#8a1f3d"/><path d="M45 51q5-2.5 10 0M65 51q5-2.5 10 0" stroke="#5a2a28" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M45 58q5-3 10 0M65 58q5-3 10 0" stroke="#2b1b1b" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="46" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><circle cx="74" cy="67" r="3.5" fill="#ef9a8c" opacity=".45"/><path d="M53 70q7 5 14 0" stroke="#a8384a" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></svg></div><h3>¡Bot armado! 🔔</h3></div><div class="car"><div class="sd"><p>Un bot hace algo solo cuando pasa algo. Tiene dos partes: el <b>evento</b> (cuando se registra una venta) y la <b>acción</b> (enviar un correo al dueño).</p></div><div class="sd"><span class="sn">1</span><h4>Abrir Automation</h4><p>En la barra de la izquierda tocamos el <b>ícono</b> del robot 🤖, que nos lleva a la sección <b>Automation</b>. Ahí tocamos el <b>botón</b> azul <b>Create my first automation</b>.</p></div><div class="sd"><span class="sn">2</span><h4>Elegir Send an email daily</h4><p>Se abre la <b>ventana</b> <b>Add a new bot</b> con una lista de sugerencias, que son bots ya armados. Tocamos la <b>opción</b> <b>Send an email daily</b>, porque ya trae listo el envío del correo, que es la acción. Pero viene programado para enviar un correo cada día; en los pasos 3 y 4 cambiamos su evento para que actúe con cada venta.</p></div><div class="sd"><span class="sn">3</span><h4>Cambiar el evento</h4><p>Arriba del bot está el <b>cuadro</b> del evento que trajo la sugerencia: <b>Scheduled: Every day</b>. Lo tocamos y a la derecha se abre el <b>panel</b> <b>Settings</b>, con las opciones de ese evento. En la <b>lista desplegable</b> <b>Event source</b> elegimos la opción <b>App</b>, porque la venta se registra desde la app. En la <b>lista desplegable</b> <b>Table</b> elegimos la opción <b>Ventas</b>, la tabla donde se guardan las ventas. Así el evento deja de ser “cada día” y el bot vigila la tabla Ventas.</p></div><div class="sd"><span class="sn">4</span><h4>Data change type</h4><p>En el mismo panel <b>Settings</b>, más abajo, hay tres <b>casillas</b> para marcar: <b>Adds</b> (agregar), <b>Deletes</b> (borrar) y <b>Updates</b> (editar). Dejamos con ✓ solo la casilla <b>Adds</b>, para que el bot actúe cada vez que se agrega una venta nueva.</p></div><div class="sd"><span class="sn">5</span><h4>Correo</h4><p>Abajo del bot está el <b>cuadro</b> <b>Send an email</b>. Tocamos su <b>botón</b> <b>⋮</b> (tres puntos) y luego la <b>opción</b> <b>Edit</b>. A la derecha se abre el <b>panel</b> del correo con tres <b>campos</b> para escribir: <b>To</b>, el correo que recibe el aviso; <b>Email Subject</b>, el asunto (Nueva venta); y <b>Email Body</b>, el mensaje con los datos de la venta.</p></div><div class="sd"><span class="sn">6</span><h4>SAVE y venta de prueba</h4><p>Tocamos el <b>botón</b> <b>SAVE</b>, arriba a la derecha, para guardar el bot. Luego, en el <b>celular</b> 📱 del panel derecho, tocamos el <b>botón</b> <b>+</b> y registramos una venta: esa venta es el evento, el bot se activa y envía el correo. Si el correo llega, el bot funciona.</p></div></div><div class="cn"><button class="ci" type="button" id="cp" aria-label="Anterior">‹</button><span id="dots"></span><button class="ci" type="button" id="cx" aria-label="Siguiente">›</button></div><div class="cl"><button class="main" type="button" onclick="$('#ov').classList.remove('on')">Cerrar</button></div><div class="ft"><button class="main" type="button" onclick="location.reload()">Jugar otra vez</button></div></div></div>
+<script>
+const $=s=>document.querySelector(s);
+const mix=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const shake=el=>{el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')};
+const say=(t,ok)=>{const m=$('#msg');m.innerHTML=t;m.classList.toggle('okm',!!ok)};
+const fin=()=>setTimeout(()=>$('#ov').classList.add('on'),700);
+
+const S=[
+ ['🤖 Abrir Automation y tocar Create my first automation','Abre la sección donde viven los bots.'],
+ ['📧 Elegir la sugerencia Send an email daily','Trae listo el paso de enviar correo.'],
+ ['🗂 Evento: Event source App y Table Ventas','La venta se registra en la app y se guarda en Ventas.'],
+ ['➕ Data change type: dejar solo Adds','El bot actúa con cada venta nueva.'],
+ ['✉ Correo: To, Email Subject y Email Body','Dice a quién le llega el aviso y qué dice.'],
+ ['💾 SAVE y registrar una venta de prueba','La venta nueva despierta al bot y llega el correo.']];
+const TIP=['Primero hay que entrar a la sección de los bots.','Antes de configurar, se elige una sugerencia.','Ahora toca decir de dónde viene la venta y en qué tabla queda.','Ahora toca decir qué cambio despierta al bot.','Ahora toca armar la acción: el correo.','Al final se guarda y se prueba.'];
+let k=0,err=0;
+$('#slots').innerHTML=S.map((s,i)=>`<div class="slot" id="s${i}"><span class="n">${i+1}</span><span></span></div>`).join('');
+$('#pool').innerHTML=mix(S.map((s,i)=>i)).map(i=>`<button class="pz" type="button" data-i="${i}">${S[i][0]}</button>`).join('');
+const upd=()=>{$('#cnt').textContent=k+' / '+S.length;document.querySelectorAll('.slot').forEach((s,i)=>s.classList.toggle('now',i===k))};
+$('#pool').onclick=e=>{const b=e.target.closest('.pz');if(!b||b.classList.contains('gone'))return;const i=+b.dataset.i;
+ if(i===k){const s=$('#s'+k);s.lastChild.textContent=S[i][0];s.classList.add('done','pop');b.classList.add('gone');say('✓ '+S[i][1],1);k++;upd();if(k===S.length)fin()}
+ else{err++;shake(b);say(TIP[k])}};
+upd();
+const SD=[...document.querySelectorAll('.sd')];let c=0;
+$('#dots').innerHTML=SD.map(()=>'<i></i>').join('');
+const car=i=>{c=Math.max(0,Math.min(SD.length-1,i));SD.forEach((d,j)=>d.classList.toggle('on',j===c));document.querySelectorAll('#dots i').forEach((d,j)=>d.classList.toggle('on',j===c));$('#cp').disabled=c===0;$('#cx').disabled=c===SD.length-1;$('.cl').classList.toggle('on',c===SD.length-1)};
+$('#cp').onclick=()=>car(c-1);$('#cx').onclick=()=>car(c+1);car(0);
+
+</script>
+</body>
+</html>
